@@ -1,0 +1,331 @@
+.lepopup-builder-wrap {
+    margin: 15px 20px 0 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.lepopup-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.lepopup-main-title {
+    font-size: 23px;
+    font-weight: 400;
+    color: #1d2327;
+    margin: 0;
+    padding: 0;
+}
+
+.lepopup-header-actions {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.lepopup-outline-btn {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #b5295c;
+    border: 1px solid #b5295c;
+    background: #ffffff;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lepopup-outline-btn:hover {
+    background: #b5295c;
+    color: #ffffff;
+}
+
+.lepopup-editor-workspace {
+    background: #ffffff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* Dark Top Bar */
+.lepopup-dark-bar {
+    background-color: #383838;
+    height: 52px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lepopup-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.lepopup-icon-btn {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.lepopup-icon-btn .dashicons {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+}
+
+.lepopup-title-input {
+    background: #252525;
+    border: 1px solid #4a4a4a;
+    color: #ffffff;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 2px;
+    width: 280px;
+    outline: none;
+}
+
+.lepopup-title-input:focus {
+    border-color: #72777c;
+}
+
+.lepopup-btn-save {
+    background: #d82761;
+    color: #ffffff;
+    border: none;
+    padding: 8px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 2px;
+    transition: background 0.15s ease;
+}
+
+.lepopup-btn-save:hover {
+    background: #b81f51;
+}
+
+/* Tab Bar */
+.lepopup-tabs-bar {
+    background: #f1f1f1;
+    border-bottom: 1px solid #dcdcde;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px 0;
+    gap: 4px;
+}
+
+.lepopup-tab {
+    background: #e5e5e5;
+    border: 1px solid #dcdcde;
+    border-bottom: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555d66;
+    cursor: pointer;
+    border-radius: 3px 3px 0 0;
+}
+
+.lepopup-tab.active {
+    background: #ffffff;
+    color: #1d2327;
+    border-bottom: 1px solid #ffffff;
+    margin-bottom: -1px;
+}
+
+.lepopup-tab-add {
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    color: #2271b1;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.lepopup-tab-add:hover {
+    color: #135e96;
+}
+
+/* Toolbar */
+.lepopup-elements-toolbar {
+    background: #ffffff;
+    border-bottom: 1px solid #dcdcde;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+}
+
+.lepopup-tool-btn {
+    background: #ffffff;
+    border: 1px solid transparent;
+    color: #50575e;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s ease;
+}
+
+.lepopup-tool-btn:hover {
+    background: #f0f0f1;
+    border-color: #ccd0d4;
+    color: #1d2327;
+}
+
+.lepopup-tool-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.lepopup-txt-icon {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Checkered Canvas Area */
+.lepopup-canvas-container {
+    position: relative;
+    min-height: 600px;
+    background-color: #f7f7f7;
+    background-image: 
+        linear-gradient(45deg, #eeeeee 25%, transparent 25%), 
+        linear-gradient(-45deg, #eeeeee 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #eeeeee 75%), 
+        linear-gradient(-45deg, transparent 75%, #eeeeee 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    overflow: hidden;
+}
+
+.lepopup-canvas-box {
+    position: relative;
+    width: 640px;
+    height: 420px;
+    border: 1px dashed #787c82;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+.lepopup-resize-handle {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 10px;
+    height: 10px;
+    cursor: nwse-resize;
+    border-right: 2px solid #50575e;
+    border-bottom: 2px solid #50575e;
+}
+
+/* Floating Layers Panel */
+.lepopup-layers-panel {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 280px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.lepopup-layers-header {
+    background: #b5295c;
+    color: #ffffff;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: move;
+}
+
+.lepopup-layers-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.lepopup-layers-drag-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.lepopup-layers-body {
+    padding: 14px;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+.lepopup-layers-hint {
+    color: #787c82;
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.lepopup-layers-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lepopup-layer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 2px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.lepopup-layer-item:hover {
+    background: #edf0f2;
+}
+
+.lepopup-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1d2327;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 3px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 99999;
+}
+
+.lepopup-toast.is-active {
+    opacity: 1;
+}

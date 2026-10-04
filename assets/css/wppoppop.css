@@ -1,0 +1,268 @@
+.wppoppop-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 999999;
+    padding: 24px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+}
+
+.wppoppop-overlay.wppoppop-visible {
+    display: flex;
+    opacity: 1;
+}
+
+/* 9 Screen Viewport Positions */
+.wppoppop-pos-center        { align-items: center; justify-content: center; }
+.wppoppop-pos-top-left      { align-items: flex-start; justify-content: flex-start; }
+.wppoppop-pos-top-center    { align-items: flex-start; justify-content: center; }
+.wppoppop-pos-top-right     { align-items: flex-start; justify-content: flex-end; }
+.wppoppop-pos-middle-left   { align-items: center; justify-content: flex-start; }
+.wppoppop-pos-middle-right  { align-items: center; justify-content: flex-end; }
+.wppoppop-pos-bottom-left   { align-items: flex-end; justify-content: flex-start; }
+.wppoppop-pos-bottom-center { align-items: flex-end; justify-content: center; }
+.wppoppop-pos-bottom-right  { align-items: flex-end; justify-content: flex-end; }
+
+.wppoppop-container {
+    background: #ffffff;
+    color: #1e1e1e;
+    padding: 36px 32px 32px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    font-family: var(--wppoppop-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    font-weight: var(--wppoppop-font-weight, 400);
+    transform: translateY(12px);
+    transition: transform 0.25s ease-out;
+}
+
+.wppoppop-overlay.wppoppop-visible .wppoppop-container {
+    transform: translateY(0);
+}
+
+/* Progress Tracker */
+.wppoppop-progress-track {
+    width: 100%;
+    height: 5px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.wppoppop-progress-bar {
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.35s ease-in-out;
+}
+
+/* Multi-Step Transitions */
+.wppoppop-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.wppoppop-step.wppoppop-step-active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.wppoppop-step-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.wppoppop-choice-dismiss {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 6px;
+}
+
+.wppoppop-choice-dismiss:hover {
+    color: #1e293b;
+}
+
+/* Reward Coupon Box */
+.wppoppop-coupon-box {
+    background: #f8fafc;
+    border: 2px dashed #3b82f6;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.wppoppop-coupon-box code {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #1d4ed8;
+    background: transparent;
+}
+
+/* Inline & Widget Containers */
+.wppoppop-inline-container,
+.wppoppop-widget-container {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 16px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    font-family: var(--wppoppop-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    font-weight: var(--wppoppop-font-weight, 400);
+}
+
+.wppoppop-widget-trigger {
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    text-align: center;
+}
+
+.wppoppop-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    color: #666;
+}
+
+.wppoppop-close:hover {
+    color: #000;
+}
+
+.wppoppop-layer-badge {
+    margin-bottom: 12px;
+}
+
+.wppoppop-layer-badge span {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.wppoppop-layer-header h3 {
+    margin: 0 0 10px 0;
+    font-size: var(--wppoppop-h-size, 22px);
+    font-weight: 700;
+    color: #111827;
+}
+
+.wppoppop-layer-body {
+    margin-bottom: 20px;
+    font-size: var(--wppoppop-b-size, 15px);
+    line-height: 1.5;
+    color: #4b5563;
+}
+
+.wppoppop-form-group {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.wppoppop-form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+.wppoppop-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.wppoppop-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.wppoppop-form-gdpr {
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #4b5563;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+}
+
+.wppoppop-form-gdpr input {
+    margin-top: 2px;
+}
+
+.wppoppop-btn {
+    width: 100%;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.15s ease;
+}
+
+.wppoppop-btn:hover {
+    background: #1d4ed8;
+}
+
+.wppoppop-btn:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+}
+
+.wppoppop-feedback {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.wppoppop-feedback.wppoppop-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.wppoppop-feedback.wppoppop-success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
