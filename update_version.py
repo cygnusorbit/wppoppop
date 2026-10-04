@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 target_version = sys.argv[1] if len(sys.argv) > 1 else "1.0.0"
-plugin_file = Path.home() / "Desktop" / "wppoppop" / "wppoppop.php"
+plugin_file = Path.home() / "Desktop" / "wppoppop" / "green-popups.php"
 
 if not plugin_file.exists():
     print(f"Error: {plugin_file} not found")
