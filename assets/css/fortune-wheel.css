@@ -1,0 +1,100 @@
+.wppoppop-wheel-stage {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 10px auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.wppoppop-wheel-canvas {
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    background: #ffffff;
+}
+
+/* Wheel Center Pin Indicator */
+.wppoppop-wheel-pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 26px solid #e11d48;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* Center Hub Spin Trigger */
+.wppoppop-wheel-hub {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 15;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 13px;
+    color: #b5295c;
+    border: 3px solid #f1f5f9;
+    text-transform: uppercase;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.wppoppop-wheel-hub:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: #fff1f2;
+}
+
+.wppoppop-wheel-hub:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.wppoppop-wheel-hub.spinning {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+/* Won Prize Announcement Banner */
+.wppoppop-wheel-result-banner {
+    display: none;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    animation: wppoppopFadeIn 0.3s ease;
+}
+
+.wppoppop-wheel-result-banner.won {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+}
+
+.wppoppop-wheel-result-banner.miss {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+@keyframes wppoppopFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

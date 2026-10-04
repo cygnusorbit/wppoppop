@@ -1,0 +1,78 @@
+/* HTML5 Canvas Signature Pad */
+.wppoppop-signature-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.wppoppop-signature-canvas {
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 4px;
+    width: 100%;
+    height: 120px;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.wppoppop-sig-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.wppoppop-sig-clear {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.wppoppop-sig-clear:hover {
+    color: #0f172a;
+}
+
+/* Range Slider with Live Tooltip */
+.wppoppop-slider-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.wppoppop-slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.wppoppop-range-input {
+    width: 100%;
+    accent-color: #b5295c;
+    cursor: pointer;
+}
+
+/* Real-Time Calculation Display Badge */
+.wppoppop-calc-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.wppoppop-calc-val {
+    color: #b5295c;
+    font-size: 18px;
+    font-weight: 700;
+}

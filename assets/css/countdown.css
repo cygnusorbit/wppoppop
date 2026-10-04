@@ -1,0 +1,59 @@
+.wppoppop-countdown-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    user-select: none;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.wppoppop-countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+}
+
+.wppoppop-countdown-card {
+    background: #1e293b;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 10px 8px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    letter-spacing: 1px;
+}
+
+.wppoppop-countdown-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+.wppoppop-countdown-separator {
+    font-size: 22px;
+    font-weight: 800;
+    color: #b5295c;
+    margin-bottom: 14px;
+}
+
+/* Urgency Pulse for Last 60 Seconds */
+.wppoppop-countdown-wrap.urgent .wppoppop-countdown-card {
+    background: #b5295c;
+    animation: wppoppopPulse 1s infinite alternate;
+}
+
+@keyframes wppoppopPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.04); }
+}

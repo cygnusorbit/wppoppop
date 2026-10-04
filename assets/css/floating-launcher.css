@@ -1,0 +1,111 @@
+.wppoppop-tab-launcher {
+    position: fixed;
+    z-index: 999980;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, filter 0.2s ease;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.wppoppop-tab-launcher:hover {
+    filter: brightness(1.1);
+}
+
+/* 1. Right Middle Edge */
+.wppoppop-tab-launcher.wppoppop-tab-right-middle {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg) translateY(-18%);
+    transform-origin: right center;
+    border-radius: 8px 8px 0 0;
+}
+.wppoppop-tab-launcher.wppoppop-tab-right-middle:hover {
+    transform: translateY(-50%) rotate(-90deg) translateY(0);
+}
+
+/* 2. Left Middle Edge */
+.wppoppop-tab-launcher.wppoppop-tab-left-middle {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg) translateY(-18%);
+    transform-origin: left center;
+    border-radius: 8px 8px 0 0;
+}
+.wppoppop-tab-launcher.wppoppop-tab-left-middle:hover {
+    transform: translateY(-50%) rotate(90deg) translateY(0);
+}
+
+/* 3. Bottom Right Corner */
+.wppoppop-tab-launcher.wppoppop-tab-bottom-right {
+    bottom: 24px;
+    right: 24px;
+    border-radius: 30px;
+}
+.wppoppop-tab-launcher.wppoppop-tab-bottom-right:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+/* 4. Bottom Left Corner */
+.wppoppop-tab-launcher.wppoppop-tab-bottom-left {
+    bottom: 24px;
+    left: 24px;
+    border-radius: 30px;
+}
+.wppoppop-tab-launcher.wppoppop-tab-bottom-left:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+/* 5. Bottom Center Dock */
+.wppoppop-tab-launcher.wppoppop-tab-bottom-center {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 8px 8px 0 0;
+}
+.wppoppop-tab-launcher.wppoppop-tab-bottom-center:hover {
+    transform: translateX(-50%) translateY(-3px);
+}
+
+/* Visibility Control for 'after_close' */
+.wppoppop-tab-launcher.wppoppop-tab-after-close {
+    display: none;
+    opacity: 0;
+}
+
+.wppoppop-tab-launcher.wppoppop-tab-visible {
+    display: inline-flex !important;
+    opacity: 1 !important;
+    animation: wppoppopTabFadeIn 0.35s ease forwards;
+}
+
+@keyframes wppoppopTabFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Subtle Pulse Glow */
+.wppoppop-tab-pulse {
+    animation: wppoppopTabGlow 2.4s infinite;
+}
+
+@keyframes wppoppopTabGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(181, 41, 92, 0.6);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(181, 41, 92, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(181, 41, 92, 0);
+    }
+}

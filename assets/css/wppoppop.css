@@ -1,0 +1,113 @@
+.wppoppop-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center; z-index: 99999;
+}
+.wppoppop-container {
+    background: #ffffff; border-radius: 8px; padding: 24px; position: relative; max-width: 520px; width: 90%;
+}
+.wppoppop-close {
+    position: absolute; top: 10px; right: 14px; background: transparent; border: none; font-size: 24px; cursor: pointer;
+}
+.wppoppop-badge {
+    background: #b5295c; color: #fff; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 700;
+}
+.wppoppop-input {
+    width: 100%; border: 1px solid #ccd0d4; padding: 8px 12px; margin: 8px 0; border-radius: 4px; box-sizing: border-box;
+}
+.wppoppop-btn-pink {
+    background-color: #b5295c; color: #ffffff; border: none; border-radius: 3px; padding: 8px 18px; cursor: pointer; font-weight: 600;
+}
+
+/* Responsive Rendered Canvas */
+.wppoppop-container {
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    max-width: 640px !important;
+    box-shadow: none !important;
+}
+
+.wppoppop-rendered-canvas {
+    box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+@media (max-width: 680px) {
+    .wppoppop-rendered-canvas {
+        transform: scale(0.85);
+        transform-origin: center center;
+    }
+}
+
+@media (max-width: 480px) {
+    .wppoppop-rendered-canvas {
+        transform: scale(0.65);
+        transform-origin: center center;
+    }
+}
+
+/* Full-Page Locker Mode */
+body.wppoppop-page-locked > *:not(#wppoppop-modal):not(.wppoppop-modal-element) {
+    filter: blur(8px) grayscale(20%);
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
+body.wppoppop-page-locked {
+    overflow: hidden !important;
+}
+
+.wppoppop-overlay.wppoppop-is-locker .wppoppop-close {
+    display: none !important;
+}
+
+/* Inline Gated Content Locker */
+.wppoppop-inline-locker {
+    position: relative;
+    margin: 28px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.wppoppop-locked-preview {
+    max-height: 240px;
+    overflow: hidden;
+    opacity: 0.45;
+}
+
+.wppoppop-locker-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(248,250,252,0.6) 0%, rgba(248,250,252,0.95) 100%);
+    z-index: 10;
+    padding: 20px;
+}
+
+.wppoppop-locker-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 100%;
+    padding: 24px;
+    border: 1px solid #cbd5e1;
+    text-align: center;
+}
+
+.wppoppop-locker-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #b5295c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
