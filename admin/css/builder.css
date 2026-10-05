@@ -1,203 +1,178 @@
 
 .wppoppop-builder-wrap {
     margin-left: -20px;
-    background: #f0f0f1;
+    background: #090d16;
     min-height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;
+    color: #e2e8f0;
+    position: relative;
+    overflow-x: hidden;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
-.wppoppop-builder-header {
-    background: #ffffff;
-    border-bottom: 1px solid #dcdcde;
-    padding: 10px 20px;
+
+/* 1. Top Bar */
+.wppoppop-top-bar {
+    background: #111827;
+    height: 48px;
+    border-bottom: 1px solid #1f2937;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 16px;
+    z-index: 40;
 }
-.header-left {
+.top-bar-left, .top-bar-right {
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 #wppoppop-popup-title {
-    font-size: 17px;
-    font-weight: 600;
-    width: 280px;
-}
-.wppoppop-builder-body {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-.wppoppop-panel {
-    width: 280px;
-    background: #ffffff;
-    border-right: 1px solid #dcdcde;
-    display: flex;
-    flex-direction: column;
-}
-.wppoppop-sidebar-right {
-    width: 320px;
-    border-right: none;
-    border-left: 1px solid #dcdcde;
-    overflow-y: auto;
-    padding: 0;
-    background: #ffffff;
-}
-
-/* Left Panel Tabs */
-.panel-tabs {
-    display: flex;
-    border-bottom: 1px solid #dcdcde;
-    background: #f6f7f7;
-}
-.tab-btn {
-    flex: 1;
-    padding: 10px 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-    color: #50575e;
-    border-bottom: 2px solid transparent;
-}
-.tab-btn.active {
-    background: #ffffff;
-    color: #2271b1;
-    border-bottom: 2px solid #2271b1;
-}
-.tab-pane {
-    display: none;
-    padding: 15px;
-    overflow-y: auto;
-    flex: 1;
-}
-.tab-pane.active {
-    display: block;
-}
-
-/* Vertical Accordion Components */
-.wppoppop-accordion {
-    display: flex;
-    flex-direction: column;
-}
-.accordion-item {
-    border-bottom: 1px solid #dcdcde;
-    background: #ffffff;
-}
-.accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: #f6f7f7;
-    cursor: pointer;
-    user-select: none;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1d2327;
-    border-left: 3px solid transparent;
-    transition: background 0.15s ease, color 0.15s ease, border-left 0.15s ease;
-}
-.accordion-header:hover {
-    background: #f0f0f1;
-    color: #2271b1;
-}
-.accordion-item.active .accordion-header {
-    background: #ffffff;
-    color: #2271b1;
-    border-left: 3px solid #2271b1;
-}
-.accordion-header .accordion-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.accordion-header .accordion-title .dashicons {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: #50575e;
-}
-.accordion-item.active .accordion-header .accordion-title .dashicons {
-    color: #2271b1;
-}
-.accordion-header .accordion-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    color: #8c8f94;
-    transition: transform 0.2s ease;
-    transform: rotate(-90deg);
-}
-.accordion-item.active .accordion-header .accordion-icon {
-    transform: rotate(0deg);
-    color: #2271b1;
-}
-.accordion-body {
-    display: none;
-    padding: 16px;
-    background: #ffffff;
-}
-.accordion-item.active .accordion-body {
-    display: block;
-}
-
-/* Palette Elements */
-.element-item {
-    background: #f6f7f7;
-    border: 1px solid #dcdcde;
-    padding: 9px 12px;
-    margin-bottom: 7px;
+    background: #1f2937;
+    color: #f8fafc;
+    border: 1px solid #374151;
     border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.15s ease-in-out;
+    padding: 5px 10px;
+    font-weight: 600;
     font-size: 13px;
+    width: 220px;
 }
-.element-item:hover {
-    background: #2271b1;
-    color: #ffffff;
-    border-color: #2271b1;
-}
-
-/* Canvas Viewport */
-.wppoppop-canvas-viewport {
-    flex: 1;
+.btn-top-icon {
+    background: #1f2937;
+    color: #94a3b8;
+    border: 1px solid #374151;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #dcdcde;
-    position: relative;
-    overflow: auto;
-    padding: 20px 40px 40px;
+    transition: all 0.15s ease;
 }
-.canvas-alignment-toolbar {
-    background: #ffffff;
-    border: 1px solid #c3c4c7;
+.btn-top-icon:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #38bdf8;
+}
+.btn-top-save {
+    background: #d6336c;
+    color: #ffffff;
+    border: none;
     border-radius: 4px;
-    padding: 6px 12px;
-    margin-bottom: 15px;
+    padding: 6px 18px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    gap: 4px;
+    transition: background 0.15s ease;
 }
-.toolbar-sep {
-    color: #c3c4c7;
-    margin: 0 4px;
+.btn-top-save:hover {
+    background: #e64980;
 }
-.wppoppop-stage {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+
+/* 2. Pages Bar */
+.wppoppop-pages-bar {
+    background: #1f2937;
+    height: 36px;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 16px;
+    border-bottom: 1px solid #374151;
+}
+.pages-tabs-list {
+    display: flex;
+    gap: 4px;
+}
+.btn-page-tab {
+    background: #374151;
+    color: #94a3b8;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-page-tab.active {
+    background: #090d16;
+    color: #38bdf8;
+    border-top: 2px solid #38bdf8;
+}
+.btn-add-page {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px dashed #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* 3. Horizontal Elements Ribbon */
+.wppoppop-elements-ribbon {
+    background: #111827;
+    height: 48px;
+    border-bottom: 1px solid #1f2937;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    overflow-x: auto;
+}
+.ribbon-items-scroll {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+.ribbon-btn {
+    width: 32px;
+    height: 32px;
+    background: #1f2937;
+    color: #e2e8f0;
+    border: 1px solid #374151;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.ribbon-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #38bdf8;
+}
+
+/* 4. Canvas Viewport */
+.wppoppop-canvas-viewport {
+    flex: 1;
     position: relative;
-    border-radius: 8px;
-    transition: width 0.25s ease, height 0.25s ease, border-radius 0.15s ease, box-shadow 0.15s ease;
+    min-height: calc(100vh - 132px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    padding: 40px;
+    background: #090d16;
 }
+
+/* Checkerboard Transparency Pattern */
+.wppoppop-stage {
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    background-color: #ffffff;
+    background-image: 
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Canvas Element */
 .canvas-element {
     position: absolute !important;
     cursor: move;
@@ -206,151 +181,259 @@
     box-sizing: border-box;
 }
 .canvas-element.selected {
-    border-color: #2271b1 !important;
-    outline: 1px solid #2271b1;
+    border-color: #38bdf8;
+    outline: 1px solid #38bdf8;
 }
-.canvas-element.layer-locked {
-    cursor: not-allowed !important;
-    opacity: 0.85;
+.canvas-element.locked {
+    cursor: default !important;
 }
-.canvas-element.layer-hidden {
-    display: none !important;
+.ui-resizable-handle {
+    position: absolute;
+    font-size: 0.1px;
+    display: block;
+}
+.ui-resizable-se {
+    cursor: se-resize;
+    width: 8px;
+    height: 8px;
+    right: -4px;
+    bottom: -4px;
+    background: #38bdf8;
+    border-radius: 2px;
 }
 
-/* Layers Management List with Actions */
-.layers-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+/* 5. Floating Layers Panel */
+.wppoppop-floating-layers {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 240px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    overflow: hidden;
 }
-.layers-list li {
-    padding: 8px 10px;
-    background: #f9f9f9;
-    border: 1px solid #e2e4e7;
-    margin-bottom: 6px;
-    border-radius: 4px;
-    font-size: 12px;
+.layers-header {
+    background: #c2185b;
+    color: #ffffff;
+    padding: 8px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: move;
+}
+.layers-drag-handle {
+    cursor: move;
+}
+.layers-list {
+    max-height: 260px;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+}
+.layers-list li {
+    background: #0f172a;
+    border: 1px solid #334155;
+    padding: 5px 8px;
+    margin-bottom: 4px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #e2e8f0;
+    cursor: pointer;
 }
 .layers-list li.selected {
-    background: #e7f3fb;
-    border-color: #2271b1;
+    border-color: #38bdf8;
+    background: #1e293b;
+    color: #38bdf8;
     font-weight: 600;
 }
-.layer-title-text {
+.layers-list .layer-title {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    cursor: pointer;
 }
-.layer-actions {
+.layers-list .layer-actions {
     display: flex;
-    align-items: center;
-    gap: 4px;
+    gap: 2px;
 }
-.layer-action-btn {
+.layers-list .layer-actions button {
+    background: none;
     border: none;
-    background: transparent;
+    color: #94a3b8;
     cursor: pointer;
-    padding: 2px;
-    color: #64748b;
-    border-radius: 2px;
+    padding: 1px 3px;
+    font-size: 11px;
 }
-.layer-action-btn:hover {
-    color: #1e293b;
-    background: #e2e8f0;
+.layers-list .layer-actions button:hover {
+    color: #38bdf8;
 }
-
-/* Live In-Builder Sandbox Modal */
-.wppoppop-preview-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.75);
-    z-index: 100000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-}
-.wppoppop-preview-container {
-    background: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-}
-.preview-top-toolbar {
-    background: #ffffff;
-    padding: 8px 18px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+.layers-footer-hint {
+    padding: 6px 10px;
+    font-size: 10px;
+    color: #94a3b8;
+    font-style: italic;
+    border-top: 1px solid #334155;
+    background: #0f172a;
+    line-height: 1.3;
 }
 
-/* Icon Browser Modal */
-.wppoppop-icon-modal {
+/* 6. Slide-out Drawers */
+.wppoppop-slide-drawer {
     position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.6);
-    z-index: 100002;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.wppoppop-icon-modal-dialog {
-    background: #ffffff;
-    width: 520px;
-    max-width: 90vw;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.icon-modal-header {
-    padding: 14px 18px;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-.icon-modal-header h3 {
-    margin: 0;
-    font-size: 15px;
-}
-#icon-search-input {
-    flex: 1;
-    max-width: 240px;
-    padding: 4px 10px;
-}
-.icon-modal-grid {
-    padding: 18px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
-    gap: 8px;
-    max-height: 320px;
+    top: 0;
+    bottom: 0;
+    width: 340px;
+    background: #1e293b;
+    color: #e2e8f0;
+    z-index: 9999;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+    transition: transform 0.25s ease;
     overflow-y: auto;
 }
-.icon-picker-cell {
-    height: 44px;
-    border: 1px solid #e2e8f0;
+#wppoppop-settings-drawer {
+    left: 0;
+    transform: translateX(-100%);
+}
+#wppoppop-settings-drawer.open {
+    transform: translateX(0);
+}
+#wppoppop-inspector-drawer {
+    right: 0;
+    transform: translateX(100%);
+}
+#wppoppop-inspector-drawer.open {
+    transform: translateX(0);
+}
+.wppoppop-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    display: none;
+}
+.drawer-header {
+    background: #0f172a;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+}
+.drawer-header h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-close-drawer {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+}
+.drawer-content {
+    padding: 12px;
+}
+
+/* Accordions inside Settings */
+.wppoppop-accordion .accordion-item {
+    border: 1px solid #334155;
     border-radius: 4px;
+    margin-bottom: 6px;
+    background: #0f172a;
+    overflow: hidden;
+}
+.wppoppop-accordion .accordion-header {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: #f1f5f9;
+    background: #1e293b;
+}
+.wppoppop-accordion .accordion-body {
+    padding: 10px;
+    display: none;
+    font-size: 12px;
+}
+.wppoppop-accordion .accordion-item.active .accordion-body {
+    display: block;
+}
+.form-group {
+    margin-bottom: 10px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 3px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Modals */
+.wppoppop-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 99999;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 20px;
-    color: #334155;
-    transition: all 0.15s ease;
 }
-.icon-picker-cell:hover {
-    background: #2271b1;
-    color: #ffffff;
-    border-color: #2271b1;
+.wppoppop-modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    width: 520px;
+    max-width: 90%;
+    color: #f8fafc;
+    overflow: hidden;
+}
+.modal-box-header {
+    background: #0f172a;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+}
+.modal-box-header h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #94a3b8;
+    cursor: pointer;
+}
+.modal-box-body {
+    padding: 16px;
 }

@@ -11,7 +11,6 @@ $feat_air_datepicker   = isset($settings['air_datepicker']) ? !empty($settings['
 $feat_signature_pad    = !empty($settings['signature_pad']);
 $feat_range_slider     = !empty($settings['range_slider']);
 $feat_adblock_detector = !empty($settings['adblock_detector']);
-$feat_js_parser        = !empty($settings['js_parser']);
 $feat_jquery_mask      = !empty($settings['jquery_mask']);
 
 $custom_fonts_raw = isset($settings['custom_fonts']) ? $settings['custom_fonts'] : '';
@@ -20,360 +19,217 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
 <div class="wppoppop-builder-wrap">
     <?php wp_nonce_field('wppoppop_builder_nonce', 'wppoppop_builder_nonce_field'); ?>
 
-    <!-- Header Toolbar -->
-    <header class="wppoppop-builder-header">
-        <div class="header-left">
-            <span class="dashicons dashicons-external" style="font-size: 24px; margin-right: 8px;"></span>
-            <input type="text" id="wppoppop-popup-title" value="New Converting Popup" placeholder="Popup Name...">
+    <!-- 1. Top Dark Control Bar -->
+    <header class="wppoppop-top-bar">
+        <div class="top-bar-left">
+            <button type="button" class="btn-top-icon" id="wppoppop-btn-settings" title="Campaign & Popup Settings">
+                <span class="dashicons dashicons-admin-generic"></span>
+            </button>
+            <input type="text" id="wppoppop-popup-title" value="yes-no-3" placeholder="Popup Name...">
             <input type="hidden" id="wppoppop-popup-uid" value="<?php echo esc_attr($current_uid); ?>">
-            <select id="wppoppop-popup-status" style="margin-left: 8px; height: 32px; font-size: 13px;">
-                <option value="publish">Status: Active</option>
-                <option value="draft">Status: Inactive</option>
-            </select>
+            <input type="hidden" id="wppoppop-popup-status" value="publish">
         </div>
-        <div class="header-center">
-            <div class="screen-switch-bar" id="screen-switch-container">
-                <button type="button" class="button btn-screen-toggle active" data-screen="1">Screen 1</button>
-                <button type="button" class="button btn-screen-toggle" data-screen="2">Screen 2</button>
-                <button type="button" class="button btn-screen-toggle" data-screen="3">Screen 3</button>
-            </div>
-            <span class="toolbar-sep">|</span>
-            <button type="button" class="button button-small btn-viewport-toggle active" data-viewport="desktop">Desktop</button>
-            <button type="button" class="button button-small btn-viewport-toggle" data-viewport="mobile">Mobile</button>
-            <label style="margin-left: 15px;">W: <input type="number" id="stage-width" value="640" style="width: 65px;"> px</label>
-            <label style="margin-left: 8px;">H: <input type="number" id="stage-height" value="400" style="width: 65px;"> px</label>
-        </div>
-        <div class="header-right">
-            <button type="button" class="button button-secondary" id="wppoppop-btn-embed"><span class="dashicons dashicons-shortcode" style="vertical-align:middle;"></span> Embed Code</button>
-            <button type="button" class="button button-secondary" id="wppoppop-btn-preview"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Live Preview</button>
-            <button type="button" class="button button-primary" id="wppoppop-btn-save"><span class="dashicons dashicons-saved" style="vertical-align:middle;margin-top:-2px;"></span> Save Popup</button>
+        <div class="top-bar-right">
+            <button type="button" class="btn-top-icon" id="wppoppop-btn-preview" title="Live Preview">
+                <span class="dashicons dashicons-visibility"></span>
+            </button>
+            <button type="button" class="btn-top-icon" id="wppoppop-btn-embed" title="Embed Shortcode & HTML">
+                <span class="dashicons dashicons-editor-code"></span>
+            </button>
+            <button type="button" class="btn-top-save" id="wppoppop-btn-save">
+                <span class="dashicons dashicons-saved"></span> Save
+            </button>
         </div>
     </header>
 
-    <div class="wppoppop-builder-body">
-        <!-- Elements & Layers Left Sidebar -->
-        <aside class="wppoppop-panel wppoppop-sidebar-left">
-            <div class="panel-tabs">
-                <button type="button" class="tab-btn active" data-tab="tab-elements">Elements</button>
-                <button type="button" class="tab-btn" data-tab="tab-layers">Layers</button>
+    <!-- 2. Screens / Pages Tab Strip -->
+    <div class="wppoppop-pages-bar">
+        <div class="pages-tabs-list">
+            <button type="button" class="btn-page-tab active" data-screen="1">Yes No</button>
+            <button type="button" class="btn-page-tab" data-screen="2">Confirmation</button>
+            <button type="button" class="btn-page-tab btn-add-page" data-screen="3"><span class="dashicons dashicons-plus-alt2"></span> Add Page</button>
+        </div>
+    </div>
+
+    <!-- 3. Horizontal Elements Ribbon Toolbar -->
+    <div class="wppoppop-elements-ribbon">
+        <div class="ribbon-items-scroll">
+            <button type="button" class="ribbon-btn" data-type="box" title="Box / Container"><span class="dashicons dashicons-screenoptions"></span></button>
+            <button type="button" class="ribbon-btn" data-type="image" title="Image Block"><span class="dashicons dashicons-format-image"></span></button>
+            <button type="button" class="ribbon-btn" data-type="video" title="Video Player"><span class="dashicons dashicons-video-alt3"></span></button>
+            <button type="button" class="ribbon-btn" data-type="text" title="Text / Heading"><span style="font-weight:800;font-size:15px;line-height:1;">A</span></button>
+            <button type="button" class="ribbon-btn" data-type="html" title="Raw HTML Code"><span class="dashicons dashicons-editor-code"></span></button>
+            <button type="button" class="ribbon-btn" data-type="close" title="Close Icon (X)"><span class="dashicons dashicons-no-alt"></span></button>
+            <button type="button" class="ribbon-btn" data-type="nextstep" title="Next Page / Step Button"><span class="dashicons dashicons-arrow-right-alt"></span></button>
+            <button type="button" class="ribbon-btn" data-type="divider" title="Divider / Line"><span class="dashicons dashicons-minus"></span></button>
+            <button type="button" class="ribbon-btn" data-type="link" title="Hyperlink Button"><span class="dashicons dashicons-admin-links"></span></button>
+            <button type="button" class="ribbon-btn" data-type="textarea" title="Textarea Field"><span class="dashicons dashicons-edit"></span></button>
+            <button type="button" class="ribbon-btn" data-type="input" title="Email / Input Field"><span class="dashicons dashicons-email-alt"></span></button>
+            <button type="button" class="ribbon-btn" data-type="number" title="Number Field"><span style="font-weight:700;font-size:12px;">42</span></button>
+            
+            <?php if ($feat_range_slider): ?>
+                <button type="button" class="ribbon-btn" data-type="slider" title="Range Slider"><span class="dashicons dashicons-leftright"></span></button>
+            <?php endif; ?>
+
+            <button type="button" class="ribbon-btn" data-type="dropdown" title="Select Dropdown"><span class="dashicons dashicons-menu-alt"></span></button>
+            <button type="button" class="ribbon-btn" data-type="checkbox" title="Checkbox"><span class="dashicons dashicons-yes"></span></button>
+            <button type="button" class="ribbon-btn" data-type="radio" title="Radio Options"><span class="dashicons dashicons-marker"></span></button>
+            <button type="button" class="ribbon-btn" data-type="list" title="Bullet List"><span class="dashicons dashicons-editor-ul"></span></button>
+            <button type="button" class="ribbon-btn" data-type="gallery" title="Image Gallery"><span class="dashicons dashicons-images-alt2"></span></button>
+            <button type="button" class="ribbon-btn" data-type="coupon" title="Coupon / Badge"><span style="font-size:10px;font-weight:800;border:1px solid currentColor;padding:1px 3px;border-radius:2px;">tile</span></button>
+
+            <?php if ($feat_air_datepicker): ?>
+                <button type="button" class="ribbon-btn" data-type="date" title="Date Picker"><span class="dashicons dashicons-calendar-alt"></span></button>
+            <?php endif; ?>
+
+            <button type="button" class="ribbon-btn" data-type="countdown" title="Countdown Timer"><span class="dashicons dashicons-clock"></span></button>
+            <button type="button" class="ribbon-btn" data-type="file" title="File Upload"><span class="dashicons dashicons-upload"></span></button>
+            <button type="button" class="ribbon-btn" data-type="rating" title="Star Rating"><span class="dashicons dashicons-star-filled"></span></button>
+            <button type="button" class="ribbon-btn" data-type="button" title="Submit Button"><span class="dashicons dashicons-share-alt2"></span></button>
+
+            <!-- Gamified & Conversion Elements -->
+            <button type="button" class="ribbon-btn" data-type="wheel" title="Lucky Wheel"><span class="dashicons dashicons-chart-pie"></span></button>
+            <button type="button" class="ribbon-btn" data-type="scratch" title="Scratch Card"><span class="dashicons dashicons-tickets-alt"></span></button>
+            <button type="button" class="ribbon-btn" data-type="progress" title="Progress Bar"><span class="dashicons dashicons-ellipsis"></span></button>
+            
+            <?php if ($feat_signature_pad): ?>
+                <button type="button" class="ribbon-btn" data-type="signature" title="Signature Pad"><span class="dashicons dashicons-welcome-write-blog"></span></button>
+            <?php endif; ?>
+
+            <button type="button" class="ribbon-btn" data-type="pay_btn" title="Payment Button"><span class="dashicons dashicons-cart"></span></button>
+        </div>
+    </div>
+
+    <!-- 4. Canvas Viewport with Transparency Grid -->
+    <main class="wppoppop-canvas-viewport">
+        <!-- Stage / Popup Window -->
+        <div class="wppoppop-stage" id="wppoppop-stage" style="width: 620px; height: 380px;">
+            <!-- Canvas elements render here -->
+        </div>
+
+        <!-- 5. Floating Layers Panel on Canvas Right -->
+        <aside class="wppoppop-floating-layers" id="wppoppop-floating-layers">
+            <div class="layers-header">
+                <span class="layers-title">LAYERS</span>
+                <span class="dashicons dashicons-move layers-drag-handle" title="Move Layers Box"></span>
             </div>
-
-            <!-- Complete 19 Elements Registry -->
-            <div id="tab-elements" class="tab-pane active">
-                <p class="panel-hint">Add element to active screen:</p>
-                <div class="element-item" data-type="text"><span class="dashicons dashicons-editor-textcolor"></span> Text Block</div>
-                <div class="element-item" data-type="input"><span class="dashicons dashicons-email-alt"></span> Email Field</div>
-                <div class="element-item" data-type="number"><span class="dashicons dashicons-calculator"></span> Number Field</div>
-                <div class="element-item" data-type="dropdown"><span class="dashicons dashicons-menu-alt"></span> Select Dropdown</div>
-                <div class="element-item" data-type="radio"><span class="dashicons dashicons-marker"></span> Radio Options</div>
-                <div class="element-item" data-type="checkbox"><span class="dashicons dashicons-yes"></span> Checkbox List</div>
-                <div class="element-item" data-type="rating"><span class="dashicons dashicons-star-filled"></span> Star Rating</div>
-                
-                <?php if ($feat_air_datepicker) : ?>
-                    <div class="element-item" data-type="date"><span class="dashicons dashicons-calendar-alt"></span> Date Picker</div>
-                <?php endif; ?>
-
-                <?php if ($feat_range_slider) : ?>
-                    <div class="element-item" data-type="slider"><span class="dashicons dashicons-leftright"></span> Range Slider</div>
-                <?php endif; ?>
-
-                <?php if ($feat_signature_pad) : ?>
-                    <div class="element-item" data-type="signature"><span class="dashicons dashicons-edit"></span> Signature Pad</div>
-                <?php endif; ?>
-
-                <div class="element-item" data-type="wheel"><span class="dashicons dashicons-chart-pie"></span> Lucky Wheel</div>
-                <div class="element-item" data-type="scratch"><span class="dashicons dashicons-tickets-alt"></span> Scratch Card</div>
-                <div class="element-item" data-type="countdown"><span class="dashicons dashicons-clock"></span> Countdown Timer</div>
-                <div class="element-item" data-type="progress"><span class="dashicons dashicons-ellipsis"></span> Progress Bar</div>
-                <div class="element-item" data-type="file"><span class="dashicons dashicons-upload"></span> File Upload</div>
-                <div class="element-item" data-type="nextstep"><span class="dashicons dashicons-arrow-right-alt"></span> Next Step Button</div>
-                <div class="element-item" data-type="button"><span class="dashicons dashicons-button"></span> Submit Button</div>
-                <div class="element-item" data-type="pay_btn"><span class="dashicons dashicons-cart"></span> Payment Button</div>
-                <div class="element-item" data-type="html"><span class="dashicons dashicons-editor-code"></span> Raw HTML</div>
-            </div>
-
-            <div id="tab-layers" class="tab-pane">
-                <p class="panel-hint" style="margin-bottom:8px;">Active screen layer hierarchy:</p>
-                <ul id="wppoppop-layers-list" class="layers-list">
-                    <li class="empty-layers">No elements on current screen.</li>
-                </ul>
+            <ul id="wppoppop-layers-list" class="layers-list">
+                <!-- Dynamically populated layers list -->
+            </ul>
+            <div class="layers-footer-hint">
+                1. Click any button on elements toolbar to add new layer. 2. Sort layers to change z-index.
             </div>
         </aside>
+    </main>
 
-        <!-- Canvas Viewport -->
-        <main class="wppoppop-canvas-viewport">
-            <div class="canvas-alignment-toolbar">
-                <button type="button" class="button button-small" id="btn-undo" title="Undo (Ctrl+Z)"><span class="dashicons dashicons-undo" style="vertical-align:middle;"></span> Undo</button>
-                <button type="button" class="button button-small" id="btn-redo" title="Redo (Ctrl+Y)"><span class="dashicons dashicons-redo" style="vertical-align:middle;"></span> Redo</button>
-                <span class="toolbar-sep">|</span>
-                <label style="font-size:12px;cursor:pointer;"><input type="checkbox" id="chk-grid-snap" checked> Snap 10px Grid</label>
-                <span class="toolbar-sep">|</span>
-                <button type="button" class="button button-small btn-align" data-align="left">Left</button>
-                <button type="button" class="button button-small btn-align" data-align="center-h">Center H</button>
-                <button type="button" class="button button-small btn-align" data-align="right">Right</button>
-                <span class="toolbar-sep">|</span>
-                <button type="button" class="button button-small btn-align" data-align="top">Top</button>
-                <button type="button" class="button button-small btn-align" data-align="center-v">Center V</button>
-                <button type="button" class="button button-small btn-align" data-align="bottom">Bottom</button>
-            </div>
+    <!-- Overlay Backdrop for Slide-out Drawers -->
+    <div id="wppoppop-drawer-backdrop" class="wppoppop-drawer-backdrop"></div>
 
-            <div class="wppoppop-stage" id="wppoppop-stage" style="width: 640px; height: 400px; background-color: #ffffff;">
-                <div class="canvas-grid-guide"></div>
-            </div>
-        </main>
-
-        <!-- Right Configuration Sidebar: Full 17 Accordions -->
-        <aside class="wppoppop-panel wppoppop-sidebar-right">
+    <!-- 6. Slide-out Campaign Settings Drawer -->
+    <aside id="wppoppop-settings-drawer" class="wppoppop-slide-drawer">
+        <div class="drawer-header">
+            <h3><span class="dashicons dashicons-admin-generic"></span> Campaign Settings</h3>
+            <button type="button" class="btn-close-drawer">&times;</button>
+        </div>
+        <div class="drawer-content">
             <div class="wppoppop-accordion">
-
-                <!-- 1. Inspector -->
-                <div class="accordion-item active" data-accordion="inspector">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-admin-generic"></span> Inspector</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                <!-- Box & Backdrop Styling -->
+                <div class="accordion-item active" data-accordion="backdrop">
+                    <div class="accordion-header"><span>Box & Dimensions</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <div id="inspector-empty-state">Select any canvas layer to edit properties.</div>
-                        <div id="inspector-controls" style="display: none;">
-                            <div class="form-group">
-                                <label>Binding Key (e.g. email, name, phone):</label>
-                                <input type="text" id="prop-field-name" class="widefat">
-                            </div>
-                            <div class="form-group">
-                                <label>Content / Dynamic Tokens ({coupon_code}):</label>
-                                <input type="text" id="prop-content" class="widefat">
-                            </div>
-                            <div class="form-group" id="group-prop-goto" style="display:none;">
-                                <label>Navigate to Screen:</label>
-                                <select id="prop-goto-screen" class="widefat">
-                                    <option value="1">Screen 1</option>
-                                    <option value="2">Screen 2</option>
-                                    <option value="3">Screen 3</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="group-prop-options" style="display:none;">
-                                <label>Options / Slices (comma-separated):</label>
-                                <input type="text" id="prop-options" class="widefat">
-                            </div>
-                            <div class="form-group" id="group-prop-validation" style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0;">
-                                <label style="font-weight:700;"><input type="checkbox" id="prop-required"> Mandatory Field (Required)</label>
-                                <div style="margin-top:6px;">
-                                    <label>Custom Error Bubble Text:</label>
-                                    <input type="text" id="prop-error-msg" value="Please fill out this field." class="widefat">
-                                </div>
-                            </div>
-
-                            <?php if ($feat_jquery_mask) : ?>
-                            <div class="form-group" id="group-prop-mask" style="display:none;">
-                                <label>Input Mask (jQuery Mask):</label>
-                                <input type="text" id="prop-mask" placeholder="e.g. (999) 999-9999" class="widefat">
-                            </div>
-                            <?php endif; ?>
-
-                            <div class="form-group">
-                                <label>Font Family:</label>
-                                <select id="prop-font-family" class="widefat">
-                                    <optgroup label="Standard Fonts">
-                                        <option value="Inherit">Inherit Theme Font</option>
-                                        <option value="Arial, sans-serif">Arial</option>
-                                        <option value="Georgia, serif">Georgia</option>
-                                        <option value="'Times New Roman', serif">Times New Roman</option>
-                                    </optgroup>
-                                    <?php if ($feat_google_fonts) : ?>
-                                    <optgroup label="Google Fonts">
-                                        <option value="Inter">Inter (Sans-serif)</option>
-                                        <option value="Roboto">Roboto (Sans-serif)</option>
-                                        <option value="Montserrat">Montserrat (Modern)</option>
-                                        <option value="Poppins">Poppins (Geometric)</option>
-                                    </optgroup>
-                                    <?php endif; ?>
-                                    <?php if (!empty($custom_fonts)) : ?>
-                                    <optgroup label="Custom Local Fonts">
-                                        <?php foreach ($custom_fonts as $cf) : ?>
-                                            <option value="<?php echo esc_attr($cf); ?>"><?php echo esc_html($cf); ?></option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Font Size (px):</label>
-                                <input type="number" id="prop-font-size" value="16" min="10" max="72">
-                            </div>
-                            <div class="form-group">
-                                <label>Border Radius (px):</label>
-                                <input type="number" id="prop-border-radius" value="4" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label>Opacity (0.1 - 1.0):</label>
-                                <input type="number" id="prop-opacity" value="1.0" min="0.1" max="1.0" step="0.1">
-                            </div>
-                            <div class="form-group">
-                                <label>Text Color:</label>
-                                <input type="color" id="prop-color" value="#222222">
-                            </div>
-                            <div class="form-group">
-                                <label>Background Color:</label>
-                                <input type="color" id="prop-bg-color" value="#00a32a">
-                            </div>
-                            <div class="form-row-actions">
-                                <button type="button" class="button" id="prop-duplicate-element">Duplicate</button>
-                                <button type="button" class="button button-link-delete" id="prop-delete-element">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Layer Animation -->
-                <div class="accordion-item" data-accordion="animation">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-controls-play"></span> Layer Animation</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
-                    <div class="accordion-body">
-                        <div class="form-group">
-                            <label>Entrance Effect:</label>
-                            <select id="prop-anim-effect" class="widefat">
-                                <option value="none">None (Instant)</option>
-                                <option value="fade">Fade In</option>
-                                <option value="slideDown">Slide Down</option>
-                                <option value="zoomIn">Zoom In</option>
-                                <option value="bounceIn">Bounce In</option>
-                            </select>
+                        <div style="display:flex;gap:8px;margin-bottom:8px;">
+                            <label style="flex:1;">Width (px): <input type="number" id="stage-width" value="620" class="widefat"></label>
+                            <label style="flex:1;">Height (px): <input type="number" id="stage-height" value="380" class="widefat"></label>
                         </div>
                         <div class="form-group">
-                            <label>Start Delay (ms):</label>
-                            <input type="number" id="prop-anim-delay" value="0" min="0" step="50" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>Duration (ms):</label>
-                            <input type="number" id="prop-anim-duration" value="500" min="100" step="50" class="widefat">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Sound Effects -->
-                <div class="accordion-item" data-accordion="sounds">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-format-audio"></span> Sound Effects</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
-                    <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="snd-enable" checked> Enable Web Audio Synth Chimes</label>
-                    </div>
-                </div>
-
-                <!-- 4. Box & Backdrop Styling -->
-                <div class="accordion-item" data-accordion="backdrop">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-art"></span> Box & Placement</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
-                    <div class="accordion-body">
-                        <div class="form-group">
-                            <label>Display Mode / Position:</label>
+                            <label>Display Mode:</label>
                             <select id="style-position-mode" class="widefat">
                                 <option value="modal">Centered Modal Window</option>
-                                <option value="ribbon_top">Sticky Top Floating Ribbon</option>
-                                <option value="ribbon_bottom">Sticky Bottom Floating Ribbon</option>
+                                <option value="ribbon_top">Sticky Top Ribbon</option>
+                                <option value="ribbon_bottom">Sticky Bottom Ribbon</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Glassmorphism Blur (px):</label>
                             <input type="number" id="style-backdrop-blur" value="5" min="0" max="25" class="widefat">
                         </div>
-                        <label class="trigger-option"><input type="checkbox" id="style-close-esc" checked> Close on ESC key</label>
-                        <label class="trigger-option"><input type="checkbox" id="style-close-backdrop" checked> Close on backdrop click</label>
-                        <hr>
                         <div class="form-group">
                             <label>Corner Radius (px):</label>
-                            <input type="number" id="box-border-radius" value="8" min="0" max="60" class="widefat">
+                            <input type="number" id="box-border-radius" value="4" min="0" max="40" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Background Fill:</label>
+                            <label>Stage Background Image URL:</label>
+                            <input type="text" id="box-bg-image" placeholder="https://..." class="widefat">
+                        </div>
+                        <div class="form-group">
+                            <label>Stage Background Color:</label>
                             <input type="color" id="box-bg-color" value="#ffffff" style="width:100%;height:32px;">
                         </div>
+                        <label><input type="checkbox" id="style-close-esc" checked> Close on ESC key</label><br>
+                        <label><input type="checkbox" id="style-close-backdrop" checked> Close on backdrop click</label>
                     </div>
                 </div>
 
-                <!-- 5. Display Triggers -->
+                <!-- Display Triggers -->
                 <div class="accordion-item" data-accordion="triggers">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-clock"></span> Display Triggers</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Display Triggers</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="trig-load" checked> On Page Load</label>
-                        <div class="sub-option">Delay: <input type="number" id="trig-load-delay" value="0" min="0" style="width: 60px;"> sec</div>
-                        <label class="trigger-option"><input type="checkbox" id="trig-exit"> On Exit Intent</label>
-                        <label class="trigger-option"><input type="checkbox" id="trig-scroll"> On Scroll Depth (> 50%)</label>
-                        <label class="trigger-option"><input type="checkbox" id="trig-idle"> On User Inactivity (15s)</label>
-                        <?php if ($feat_adblock_detector) : ?>
-                            <label class="trigger-option"><input type="checkbox" id="trig-adblock"> On AdBlock Detected</label>
+                        <label><input type="checkbox" id="trig-load" checked> On Page Load</label>
+                        <div style="margin-left:20px;margin-bottom:6px;">Delay (sec): <input type="number" id="trig-load-delay" value="0" min="0" style="width:60px;"></div>
+                        <label><input type="checkbox" id="trig-exit"> On Exit Intent</label><br>
+                        <label><input type="checkbox" id="trig-scroll"> On Scroll Depth (> 50%)</label><br>
+                        <label><input type="checkbox" id="trig-idle"> On User Inactivity (15s)</label><br>
+                        <label><input type="checkbox" id="trig-mobile-back"> On Mobile Back Button</label>
+                        <?php if ($feat_adblock_detector): ?>
+                            <br><label><input type="checkbox" id="trig-adblock"> On AdBlock Detected</label>
                         <?php endif; ?>
-                        <label class="trigger-option"><input type="checkbox" id="trig-mobile-back"> On Mobile Back-Button</label>
                     </div>
                 </div>
 
-                <!-- 6. Conditional Logic & Math -->
+                <!-- Conditional Logic & Math -->
                 <div class="accordion-item" data-accordion="logic">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-calculator"></span> Conditional Logic & Math</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Conditional Logic & Math</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
                         <div class="form-group">
-                            <label>Calculation Formula (e.g. {qty} * 25):</label>
+                            <label>Math Formula (e.g. {qty} * 25):</label>
                             <input type="text" id="math-expression" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Target Layer ID for Output:</label>
+                            <label>Target Layer ID for Calculation Output:</label>
                             <input type="text" id="math-output-target" class="widefat">
                         </div>
                     </div>
                 </div>
 
-                <!-- 7. WooCommerce & Dynamic Coupons -->
+                <!-- WooCommerce & Coupons -->
                 <div class="accordion-item" data-accordion="coupons">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-tickets"></span> Coupons & WooCommerce</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>WooCommerce & Coupons</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="cpn-enable"> Generate Unique Discount Coupon</label>
+                        <label><input type="checkbox" id="cpn-enable"> Generate Unique Dynamic Coupon</label>
                         <div class="form-group" style="margin-top:6px;">
-                            <label>Coupon Code Prefix:</label>
+                            <label>Coupon Prefix:</label>
                             <input type="text" id="cpn-prefix" value="POP-" class="widefat">
                         </div>
                         <div class="form-group">
                             <label>Discount Type:</label>
                             <select id="cpn-type" class="widefat">
-                                <option value="percent">Percentage Discount (%)</option>
-                                <option value="fixed_cart">Fixed Cart Discount ($)</option>
+                                <option value="percent">Percentage (%)</option>
+                                <option value="fixed_cart">Fixed Cart ($)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Discount Amount:</label>
+                            <label>Amount:</label>
                             <input type="number" id="cpn-amount" value="15" class="widefat">
                         </div>
-                        <label class="trigger-option"><input type="checkbox" id="cpn-auto-apply" checked> Auto-Apply to WooCommerce Cart</label>
-                        <hr>
-                        <label class="trigger-option"><input type="checkbox" id="woo-cart-rule"> Trigger on Cart Subtotal</label>
-                        <div class="form-group" style="margin-top:6px;">
-                            <label>Minimum Cart Total ($):</label>
-                            <input type="number" id="woo-min-cart" value="50" class="widefat">
-                        </div>
+                        <label><input type="checkbox" id="cpn-auto-apply" checked> Auto-apply to cart</label>
                     </div>
                 </div>
 
-                <!-- 8. Sticky Side Tabs -->
+                <!-- Sticky Side Tabs -->
                 <div class="accordion-item" data-accordion="sidetabs">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-tag"></span> Sticky Side Tabs</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Sticky Side Tabs</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="tab-enable"> Enable Sticky Side Tab</label>
+                        <label><input type="checkbox" id="tab-enable"> Enable Sticky Tab</label>
                         <div class="form-group" style="margin-top:6px;">
                             <label>Tab Label:</label>
                             <input type="text" id="tab-text" value="Special Offer" class="widefat">
@@ -388,14 +244,11 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                     </div>
                 </div>
 
-                <!-- 9. Payments & Checkout -->
+                <!-- Payments -->
                 <div class="accordion-item" data-accordion="payments">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-money-alt"></span> Payments & Checkout</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Payments & Checkout</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="pay-enable"> Enable Checkout</label>
+                        <label><input type="checkbox" id="pay-enable"> Enable Checkout</label>
                         <div class="form-group" style="margin-top:6px;">
                             <label>Default Amount:</label>
                             <input type="number" id="pay-amount" value="10.00" step="0.01" class="widefat">
@@ -407,14 +260,11 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                     </div>
                 </div>
 
-                <!-- 10. Secure Downloads -->
+                <!-- Secure Downloads -->
                 <div class="accordion-item" data-accordion="downloads">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-download"></span> Secure Downloads</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Secure Downloads</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="dl-enable"> Enable File Download on Submit</label>
+                        <label><input type="checkbox" id="dl-enable"> Enable File Download on Submit</label>
                         <div class="form-group" style="margin-top:6px;">
                             <label>Media File URL:</label>
                             <input type="url" id="dl-url" placeholder="https://site.com/file.zip" class="widefat">
@@ -422,63 +272,50 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                     </div>
                 </div>
 
-                <!-- 11. Video Listeners -->
+                <!-- Video Listeners -->
                 <div class="accordion-item" data-accordion="video">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-video-alt3"></span> Video Listeners</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Video Listeners</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="vid-enable"> Trigger on Video Ended</label>
+                        <label><input type="checkbox" id="vid-enable"> Trigger Popup when Video Ends</label>
                     </div>
                 </div>
 
-                <!-- 12. Subscriber Autoresponder -->
+                <!-- Autoresponder -->
                 <div class="accordion-item" data-accordion="autoresponder">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-email"></span> Autoresponder</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Autoresponder</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="ar-enable"> Send User Autoresponder Email</label>
+                        <label><input type="checkbox" id="ar-enable"> Send User Autoresponder Email</label>
                         <div class="form-group" style="margin-top:6px;">
                             <label>Subject:</label>
                             <input type="text" id="ar-subject" value="Thank you!" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Message Content ({coupon_code}, {email}):</label>
-                            <textarea id="ar-message" class="widefat" rows="4">Thank you for subscribing! Your discount code: {coupon_code}</textarea>
+                            <label>Message Content ({coupon_code}):</label>
+                            <textarea id="ar-message" class="widefat" rows="3">Thank you for subscribing! Here is your coupon code: {coupon_code}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- 13. Marketing & Webhooks -->
+                <!-- Marketing & Webhooks -->
                 <div class="accordion-item" data-accordion="marketing">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-share-alt"></span> Marketing & Webhooks</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Marketing & Webhooks</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
                         <div class="form-group">
                             <label>Webhook URL:</label>
-                            <input type="url" id="mkt-webhook-url" placeholder="https://webhook.site/..." class="widefat">
+                            <input type="url" id="mkt-webhook-url" placeholder="https://..." class="widefat">
                         </div>
                         <div class="form-group">
                             <label>HMAC-SHA256 Secret:</label>
                             <input type="password" id="mkt-webhook-secret" class="widefat">
                         </div>
-                        <button type="button" class="button" id="btn-test-webhook">Ping Webhook</button>
                     </div>
                 </div>
 
-                <!-- 14. Twilio SMS Alerts -->
+                <!-- Twilio SMS Alerts -->
                 <div class="accordion-item" data-accordion="twilio">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-phone"></span> Twilio SMS Alerts</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Twilio SMS Alerts</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="sms-enable"> Enable Real-Time SMS</label>
+                        <label><input type="checkbox" id="sms-enable"> Enable Real-Time SMS</label>
                         <div class="form-group" style="margin-top:6px;">
                             <label>Account SID:</label>
                             <input type="text" id="sms-sid" class="widefat">
@@ -488,23 +325,15 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                             <input type="password" id="sms-token" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>From Number:</label>
-                            <input type="text" id="sms-from" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>To Mobile Number:</label>
+                            <label>To Phone Number:</label>
                             <input type="text" id="sms-to" class="widefat">
                         </div>
-                        <button type="button" class="button" id="btn-test-sms">Test SMS Dispatch</button>
                     </div>
                 </div>
 
-                <!-- 15. Targeting & Attribution -->
+                <!-- Targeting & Attribution -->
                 <div class="accordion-item" data-accordion="targeting">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-location-alt"></span> Targeting & Attribution</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Targeting & Attribution</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
                         <div class="form-group">
                             <label>Visitor Authentication:</label>
@@ -514,46 +343,28 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                                 <option value="logged_in_only">Logged-In Users Only</option>
                             </select>
                         </div>
-                        <div class="form-group" id="group-target-roles">
-                            <label>Target User Roles (comma-separated):</label>
-                            <input type="text" id="target-roles" placeholder="subscriber, customer" class="widefat">
-                        </div>
-                        <hr>
                         <div class="form-group">
-                            <label>Require URL Query / UTM Param:</label>
-                            <input type="text" id="target-url-param-key" placeholder="e.g. utm_campaign, ref" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>Expected Parameter Value:</label>
-                            <input type="text" id="target-url-param-val" placeholder="e.g. summer_sale" class="widefat">
-                        </div>
-                        <hr>
-                        <div class="form-group">
-                            <label>Display Location:</label>
+                            <label>Display Scope:</label>
                             <select id="target-scope" class="widefat">
                                 <option value="everywhere">Everywhere</option>
                                 <option value="posts">Single Posts</option>
                                 <option value="pages">Pages Only</option>
-                                <option value="specific">Specific Post IDs</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Country Rules:</label>
                             <select id="target-geo-mode" class="widefat">
                                 <option value="all">All Countries</option>
-                                <option value="whitelist">Show Only In Selected</option>
+                                <option value="whitelist">Show in Selected</option>
                                 <option value="blacklist">Block Selected</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- 16. Frequency & Cookies -->
+                <!-- Frequency & Cookies -->
                 <div class="accordion-item" data-accordion="cookies">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-visibility"></span> Frequency & Cookies</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Frequency & Cookies</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
                         <div class="form-group">
                             <label>Display Frequency:</label>
@@ -563,62 +374,139 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                                 <option value="days">Once Every X Days</option>
                             </select>
                         </div>
-                        <label class="trigger-option"><input type="checkbox" id="freq-hide-submitted" checked> Suppress after submission</label>
+                        <label><input type="checkbox" id="freq-hide-submitted" checked> Suppress after submission</label>
                     </div>
                 </div>
 
-                <!-- 17. Custom Scoped CSS & JavaScript Hooks -->
+                <!-- Scoped Code & Hooks -->
                 <div class="accordion-item" data-accordion="customcode">
-                    <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-editor-code"></span> Scoped Code & Hooks</span>
-                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
-                    </div>
+                    <div class="accordion-header"><span>Scoped Code & Hooks</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
                         <div class="form-group">
-                            <label>Scoped Custom CSS:</label>
-                            <textarea id="code-custom-css" rows="4" class="widefat" placeholder="#wppoppop-popup-UID { ... }"></textarea>
+                            <label>Custom Scoped CSS:</label>
+                            <textarea id="code-custom-css" rows="3" class="widefat" placeholder="#wppoppop-popup-UID { ... }"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Custom JS Lifecycle Callback:</label>
-                            <textarea id="code-custom-js" rows="4" class="widefat" placeholder="function(uid) { console.log('Initialized', uid); }"></textarea>
+                            <textarea id="code-custom-js" rows="3" class="widefat" placeholder="function(uid) { console.log(uid); }"></textarea>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </aside>
-    </div>
-
-    <!-- Live In-Builder Preview Modal -->
-    <div id="wppoppop-live-preview-modal" class="wppoppop-preview-backdrop" style="display:none;">
-        <div class="wppoppop-preview-container">
-            <div class="preview-top-toolbar">
-                <span style="font-weight:700;font-size:13px;"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Interactive Preview</span>
-                <button type="button" class="button button-small" id="btn-close-live-preview">&times; Close</button>
-            </div>
-            <div id="wppoppop-preview-stage-mount"></div>
         </div>
-    </div>
+    </aside>
+
+    <!-- 7. Slide-out Layer Inspector Drawer -->
+    <aside id="wppoppop-inspector-drawer" class="wppoppop-slide-drawer">
+        <div class="drawer-header">
+            <h3><span class="dashicons dashicons-art"></span> Layer Properties</h3>
+            <button type="button" class="btn-close-drawer">&times;</button>
+        </div>
+        <div class="drawer-content">
+            <div id="inspector-controls">
+                <div class="form-group">
+                    <label>Layer Label / Name:</label>
+                    <input type="text" id="prop-layer-name" class="widefat" placeholder="e.g. Header, Button...">
+                </div>
+                <div class="form-group">
+                    <label>Binding Key (e.g. email, phone):</label>
+                    <input type="text" id="prop-field-name" class="widefat">
+                </div>
+                <div class="form-group" id="group-prop-content">
+                    <label>Text Content / HTML:</label>
+                    <textarea id="prop-content" rows="3" class="widefat"></textarea>
+                </div>
+                <div class="form-group" id="group-prop-options" style="display:none;">
+                    <label>Options / Slices (comma-separated):</label>
+                    <input type="text" id="prop-options" class="widefat">
+                </div>
+
+                <div class="form-group">
+                    <label>Font Family:</label>
+                    <select id="prop-font-family" class="widefat">
+                        <option value="Inherit">Inherit Theme Font</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <?php if ($feat_google_fonts): ?>
+                            <option value="Inter">Inter</option>
+                            <option value="Roboto">Roboto</option>
+                            <option value="Montserrat">Montserrat</option>
+                            <option value="Poppins">Poppins</option>
+                        <?php endif; ?>
+                    </select>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Font Size (px):</label>
+                        <input type="number" id="prop-font-size" value="16" min="8" max="72" class="widefat">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Corner Radius (px):</label>
+                        <input type="number" id="prop-border-radius" value="4" min="0" max="100" class="widefat">
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Text Color:</label>
+                        <input type="color" id="prop-color" value="#ffffff" style="width:100%;height:32px;">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Background Color:</label>
+                        <input type="color" id="prop-bg-color" value="#000000" style="width:100%;height:32px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Opacity (0.1 - 1.0):</label>
+                    <input type="number" id="prop-opacity" value="1.0" min="0.1" max="1.0" step="0.1" class="widefat">
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="prop-required"> Mandatory Field (Required)</label>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:16px;">
+                    <button type="button" class="button button-secondary" id="prop-duplicate-element" style="flex:1;">Duplicate</button>
+                    <button type="button" class="button button-link-delete" id="prop-delete-element" style="flex:1;">Delete Layer</button>
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <!-- Embed Code Modal -->
-    <div id="wppoppop-embed-modal" class="wppoppop-preview-backdrop" style="display:none;">
-        <div class="wppoppop-preview-container" style="background:#fff; padding:20px; border-radius:8px; width:480px; max-width:90%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
-                <h3 style="margin:0;"><span class="dashicons dashicons-shortcode"></span> Embed Snippets</h3>
-                <button type="button" class="button button-small" id="btn-close-embed-modal">&times;</button>
+    <div id="wppoppop-embed-modal" class="wppoppop-modal-backdrop" style="display:none;">
+        <div class="wppoppop-modal-box">
+            <div class="modal-box-header">
+                <h3><span class="dashicons dashicons-editor-code"></span> Embed Snippets</h3>
+                <button type="button" class="btn-close-modal">&times;</button>
             </div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label style="font-weight:600;display:block;margin-bottom:4px;">WordPress Shortcode:</label>
-                <input type="text" id="embed-code-shortcode" class="widefat" readonly onclick="this.select();">
-            </div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label style="font-weight:600;display:block;margin-bottom:4px;">Button Trigger Shortcode:</label>
-                <input type="text" id="embed-code-button" class="widefat" readonly onclick="this.select();">
-            </div>
-            <div class="form-group">
-                <label style="font-weight:600;display:block;margin-bottom:4px;">HTML Trigger Class:</label>
-                <input type="text" id="embed-code-class" class="widefat" readonly onclick="this.select();">
+            <div class="modal-box-body">
+                <div class="form-group">
+                    <label>WordPress Shortcode:</label>
+                    <input type="text" id="embed-code-shortcode" class="widefat" readonly onclick="this.select();">
+                </div>
+                <div class="form-group">
+                    <label>Button Trigger Shortcode:</label>
+                    <input type="text" id="embed-code-button" class="widefat" readonly onclick="this.select();">
+                </div>
+                <div class="form-group">
+                    <label>HTML Class Trigger:</label>
+                    <input type="text" id="embed-code-class" class="widefat" readonly onclick="this.select();">
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Live Preview Modal -->
+    <div id="wppoppop-live-preview-modal" class="wppoppop-modal-backdrop" style="display:none;">
+        <div class="wppoppop-modal-box" style="width:720px;max-width:95%;">
+            <div class="modal-box-header">
+                <h3><span class="dashicons dashicons-visibility"></span> Live Interactive Preview</h3>
+                <button type="button" class="btn-close-modal">&times;</button>
+            </div>
+            <div class="modal-box-body" style="background:#090d16;display:flex;align-items:center;justify-content:center;padding:30px;min-height:420px;">
+                <div id="wppoppop-preview-stage-mount"></div>
+            </div>
+        </div>
+    </div>
+
 </div>
