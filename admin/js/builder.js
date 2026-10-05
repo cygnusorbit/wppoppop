@@ -9,7 +9,6 @@ jQuery(document).ready(function($) {
     const stage = $('#wppoppop-stage');
     const features = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.features) ? wppoppop_vars.features : {};
 
-    // Standard Icon Library Catalog
     const standardIcons = [
         'dashicons-star-filled', 'dashicons-heart', 'dashicons-cart', 'dashicons-email',
         'dashicons-bell', 'dashicons-yes', 'dashicons-dismiss', 'dashicons-lock',
@@ -18,7 +17,129 @@ jQuery(document).ready(function($) {
         'dashicons-download', 'dashicons-smartphone', 'dashicons-laptop', 'dashicons-shield'
     ];
 
-    // Responsive Mobile Viewport Mode Switcher
+    // 1-Click Color Scheme Theme Preset Applier
+    $('#theme-preset-picker').on('change', function() {
+        const theme = $(this).val();
+        if (!theme) return;
+
+        if (theme === 'midnight') {
+            $('#box-bg-type').val('gradient');
+            $('#box-grad-c1').val('#1e293b');
+            $('#box-grad-c2').val('#0f172a');
+            $('#box-grad-angle').val(135);
+            $('#box-border-radius').val(10);
+            $('#box-shadow-preset').val('deep');
+        } else if (theme === 'emerald') {
+            $('#box-bg-type').val('gradient');
+            $('#box-grad-c1').val('#065f46');
+            $('#box-grad-c2').val('#022c22');
+            $('#box-grad-angle').val(135);
+            $('#box-border-radius').val(12);
+            $('#box-shadow-preset').val('glow');
+        } else if (theme === 'cyberpunk') {
+            $('#box-bg-type').val('gradient');
+            $('#box-grad-c1').val('#4c0519');
+            $('#box-grad-c2').val('#831843');
+            $('#box-grad-angle').val(90);
+            $('#box-border-radius').val(6);
+            $('#box-shadow-preset').val('glow');
+        } else if (theme === 'sunset') {
+            $('#box-bg-type').val('gradient');
+            $('#box-grad-c1').val('#ea580c');
+            $('#box-grad-c2').val('#be185d');
+            $('#box-grad-angle').val(135);
+            $('#box-border-radius').val(16);
+            $('#box-shadow-preset').val('subtle');
+        } else if (theme === 'corporate') {
+            $('#box-bg-type').val('solid');
+            $('#box-bg-color').val('#ffffff');
+            $('#box-border-radius').val(6);
+            $('#box-shadow-preset').val('subtle');
+        }
+
+        updateStageDecoration();
+        $(this).val('');
+    });
+
+    // Embed Code Modal Opener
+    $('#wppoppop-btn-embed').on('click', function(e) {
+        e.preventDefault();
+        const uid = $('#wppoppop-popup-uid').val() || 'SAMPLE_UID';
+        $('#embed-code-shortcode').val('[wppoppop uid="' + uid + '"]');
+        $('#embed-code-locker').val('[wppoppop_locker uid="' + uid + '"]Protected Content Here[/wppoppop_locker]');
+        $('#embed-code-link').val('<a href="#" class="wppoppop-open-btn" data-target-uid="' + uid + '">Open Popup</a>');
+        $('#embed-code-remote').val('<script src="' + wppoppop_vars.ajax_url + '?action=wppoppop_remote_embed&uid=' + uid + '" async><\/script>');
+        $('#wppoppop-embed-modal').fadeIn(150);
+    });
+
+    $('.btn-close-embed-modal, #wppoppop-embed-modal').on('click', function(e) {
+        if (e.target === this || $(this).hasClass('btn-close-embed-modal')) {
+            $('#wppoppop-embed-modal').fadeOut(150);
+        }
+    });
+
+    // In-Builder Diagnostic Ping Handlers
+    $('#btn-test-webhook').on('click', function(e) {
+        e.preventDefault();
+        const btn = $(this);
+        const url = $('#int-webhook-url').val();
+        if (!url) { alert('Please enter a webhook URL first.'); return; }
+
+        btn.prop('disabled', true).text('Testing...');
+        $.post(wppoppop_vars.ajax_url, {
+            action: 'wppoppop_test_webhook',
+            nonce: wppoppop_vars.nonce,
+            webhook_url: url,
+            webhook_secret: $('#int-webhook-secret').val()
+        }, function(res) {
+            btn.prop('disabled', false).text('Test');
+            alert(res.data.message);
+        });
+    });
+
+    $('#btn-test-sms').on('click', function(e) {
+        e.preventDefault();
+        const btn = $(this);
+        btn.prop('disabled', true).text('Testing...');
+        $.post(wppoppop_vars.ajax_url, {
+            action: 'wppoppop_test_sms',
+            nonce: wppoppop_vars.nonce,
+            twilio_sid: $('#sms-twilio-sid').val(),
+            twilio_token: $('#sms-twilio-token').val(),
+            from_phone: $('#sms-from-phone').val(),
+            to_phone: $('#sms-to-phone').val()
+        }, function(res) {
+            btn.prop('disabled', false).text('Test');
+            alert(res.data.message);
+        });
+    });
+
+    // Multi-Rule Conditional Logic Matrix
+    $('#btn-add-logic-rule').on('click', function() { addLogicRuleRow({}); });
+
+    function addLogicRuleRow(rule) {
+        const row = $(
+            '<div class="logic-rule-row" style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0; margin-bottom:8px;">' +
+            '<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="font-weight:700;font-size:11px;">Condition</span><button type="button" class="button-link btn-remove-rule" style="color:#d63638;">&times;</button></div>' +
+            '<input type="text" class="widefat rule-field" placeholder="Field name (e.g. qty)" value="' + (rule.field || '') + '" style="margin-bottom:4px;">' +
+            '<div style="display:flex; gap:4px; margin-bottom:4px;">' +
+            '<select class="rule-op" style="width:40%;"><option value="==">Equals (==)</option><option value="!=">Not Equals (!=)</option><option value="contains">Contains</option><option value=">">Greater (&gt;)</option><option value="<">Less (&lt;)</option></select>' +
+            '<input type="text" class="widefat rule-val" placeholder="Value" value="' + (rule.value || '') + '">' +
+            '</div>' +
+            '<div style="display:flex; gap:4px;">' +
+            '<select class="rule-action" style="width:40%;"><option value="show">Show</option><option value="hide">Hide</option></select>' +
+            '<input type="text" class="widefat rule-target" placeholder="Target Layer ID" value="' + (rule.target || '') + '">' +
+            '</div>' +
+            '</div>'
+        );
+        if (rule.operator) row.find('.rule-op').val(rule.operator);
+        if (rule.action) row.find('.rule-action').val(rule.action);
+
+        row.find('.btn-remove-rule').on('click', function() { row.remove(); });
+        $('#wppoppop-rules-container').append(row);
+    }
+
+    // Viewport Mode Switcher
     $('.btn-viewport-toggle').on('click', function() {
         $('.btn-viewport-toggle').removeClass('active');
         $(this).addClass('active');
@@ -96,14 +217,8 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         const item = $(this).closest('.accordion-item');
         const body = item.find('.accordion-body');
-
-        if (item.hasClass('active')) {
-            item.removeClass('active');
-            body.slideUp(150);
-        } else {
-            item.addClass('active');
-            body.slideDown(150);
-        }
+        item.toggleClass('active');
+        body.slideToggle(150);
     });
 
     // History Buffer
@@ -159,28 +274,15 @@ jQuery(document).ready(function($) {
         refreshLayers();
     }
 
-    $('#btn-undo').on('click', function() {
-        if (historyIndex > 0) {
-            historyIndex--;
-            applyState(historyStack[historyIndex]);
-        }
-    });
-
-    $('#btn-redo').on('click', function() {
-        if (historyIndex < historyStack.length - 1) {
-            historyIndex++;
-            applyState(historyStack[historyIndex]);
-        }
-    });
+    $('#btn-undo').on('click', function() { if (historyIndex > 0) { historyIndex--; applyState(historyStack[historyIndex]); } });
+    $('#btn-redo').on('click', function() { if (historyIndex < historyStack.length - 1) { historyIndex++; applyState(historyStack[historyIndex]); } });
 
     // Alignment Toolbar
     $('.btn-align').on('click', function() {
         if (!activeElement) return;
         const alignType = $(this).data('align');
-        const stageW = stage.width();
-        const stageH = stage.height();
-        const elW = activeElement.outerWidth();
-        const elH = activeElement.outerHeight();
+        const stageW = stage.width(), stageH = stage.height();
+        const elW = activeElement.outerWidth(), elH = activeElement.outerHeight();
 
         if (alignType === 'left') activeElement.css('left', 0);
         if (alignType === 'center-h') activeElement.css('left', Math.round((stageW - elW) / 2));
@@ -206,21 +308,15 @@ jQuery(document).ready(function($) {
         currentScreen = parseInt($(this).data('screen'), 10);
 
         $('.canvas-element').each(function() {
-            const elScreen = $(this).data('screen') || 1;
-            $(this).toggle(elScreen === currentScreen);
+            $(this).toggle(($(this).data('screen') || 1) === currentScreen);
         });
         deselectElement();
         refreshLayers();
     });
 
-    $('#stage-width').on('input', function() {
-        stage.width(parseInt($(this).val(), 10) || 640);
-    });
-    $('#stage-height').on('input', function() {
-        stage.height(parseInt($(this).val(), 10) || 400);
-    });
+    $('#stage-width').on('input', function() { stage.width(parseInt($(this).val(), 10) || 640); });
+    $('#stage-height').on('input', function() { stage.height(parseInt($(this).val(), 10) || 400); });
 
-    // Box Decoration Handlers
     function updateStageDecoration() {
         const radius = $('#box-border-radius').val() || 8;
         const shadowPreset = $('#box-shadow-preset').val();
@@ -263,7 +359,17 @@ jQuery(document).ready(function($) {
         let options = [];
 
         let innerMarkup = '';
-        if (type === 'countdown') {
+        if (type === 'scratch') {
+            fieldName = 'scratch_code';
+            width = 240;
+            height = 80;
+            innerMarkup = '<div style="background:#94a3b8;color:#1e293b;border-radius:4px;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;border:1px dashed #64748b;">[Scratch Card Foil]</div>';
+        } else if (type === 'file') {
+            fieldName = 'user_file';
+            width = 240;
+            height = 45;
+            innerMarkup = '<input type="file" disabled style="width:100%;">';
+        } else if (type === 'countdown') {
             width = 240;
             height = 55;
             innerMarkup = '<div style="background:#0f172a;color:#fff;border-radius:4px;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;">15:00 Evergreen Timer</div>';
@@ -291,39 +397,6 @@ jQuery(document).ready(function($) {
             fieldName = 'email';
             width = 220;
             innerMarkup = '<input type="email" placeholder="Enter email..." disabled style="width:100%;height:100%;">';
-        } else if (type === 'dropdown') {
-            fieldName = 'choice';
-            width = 220;
-            options = ['Option 1', 'Option 2', 'Option 3'];
-            innerMarkup = '<select disabled style="width:100%;height:100%;"><option>Option 1</option><option>Option 2</option></select>';
-        } else if (type === 'radio') {
-            fieldName = 'radio_choice';
-            width = 240;
-            options = ['Option 1', 'Option 2'];
-            innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="radio" checked disabled> Opt 1</label></div>';
-        } else if (type === 'checkbox') {
-            fieldName = 'terms';
-            width = 240;
-            options = ['Agree to terms'];
-            innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="checkbox" checked disabled> Agree</label></div>';
-        } else if (type === 'rating') {
-            fieldName = 'rating';
-            width = 160;
-            height = 35;
-            innerMarkup = '<div style="color:#f0ad4e;font-size:22px;letter-spacing:4px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>';
-        } else if (type === 'date') {
-            fieldName = 'date';
-            width = 180;
-            innerMarkup = '<input type="date" disabled style="width:100%;height:100%;">';
-        } else if (type === 'number') {
-            fieldName = 'qty';
-            width = 120;
-            innerMarkup = '<input type="number" value="1" disabled style="width:100%;height:100%;">';
-        } else if (type === 'paybutton') {
-            width = 160;
-            defaultContent = 'Pay Now';
-            defaultBg = '#0284c7';
-            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">' + defaultContent + '</button>';
         } else if (type === 'button') {
             width = 160;
             innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">Submit</button>';
@@ -338,6 +411,9 @@ jQuery(document).ready(function($) {
             .data('field-name', fieldName)
             .data('options', options)
             .data('content', defaultContent)
+            .data('scratch-secret', 'LUCKY50')
+            .data('scratch-foil', '#94a3b8')
+            .data('scratch-pct', 50)
             .data('timer-mins', 15)
             .data('progress-pct', 50)
             .data('slider-min', 0)
@@ -432,6 +508,13 @@ jQuery(document).ready(function($) {
 
         $('#group-prop-slider').toggle(type === 'slider');
         $('#group-prop-countdown').toggle(type === 'countdown');
+        $('#group-prop-scratch').toggle(type === 'scratch');
+
+        if (type === 'scratch') {
+            $('#prop-scratch-secret').val(elem.data('scratch-secret') || 'LUCKY50');
+            $('#prop-scratch-foil').val(elem.data('scratch-foil') || '#94a3b8');
+            $('#prop-scratch-pct').val(elem.data('scratch-pct') || 50);
+        }
 
         if (type === 'slider') {
             $('#prop-slider-min').val(elem.data('slider-min') || 0);
@@ -464,47 +547,27 @@ jQuery(document).ready(function($) {
     stage.on('click', deselectElement);
 
     // Inspector Live Updates
+    $('#prop-scratch-secret').on('input', function() { if (activeElement) activeElement.data('scratch-secret', $(this).val()); });
+    $('#prop-scratch-foil').on('change', function() { if (activeElement) activeElement.data('scratch-foil', $(this).val()); });
+    $('#prop-scratch-pct').on('input', function() { if (activeElement) activeElement.data('scratch-pct', $(this).val()); });
+
     $('#prop-border-radius').on('input', function() {
         if (!activeElement) return;
-        const val = $(this).val();
-        activeElement.data('border-radius', val).css('border-radius', val + 'px');
-        activeElement.find('button, input, select').css('border-radius', val + 'px');
+        activeElement.data('border-radius', $(this).val()).css('border-radius', $(this).val() + 'px');
     });
     $('#prop-opacity').on('input', function() {
         if (!activeElement) return;
-        const val = $(this).val();
-        activeElement.data('opacity', val).css('opacity', val);
+        activeElement.data('opacity', $(this).val()).css('opacity', $(this).val());
     });
     $('#prop-padding').on('input', function() {
         if (!activeElement) return;
-        const val = $(this).val();
-        activeElement.data('padding', val).css('padding', val + 'px');
+        activeElement.data('padding', $(this).val()).css('padding', $(this).val() + 'px');
     });
-
-    $('#prop-hover-color').on('input', function() { if (activeElement) activeElement.data('hover-color', $(this).val()); });
-    $('#prop-hover-bg').on('input', function() { if (activeElement) activeElement.data('hover-bg', $(this).val()); });
-
-    $('#prop-anim-effect').on('change', function() { if (activeElement) activeElement.data('anim', $(this).val()); });
-    $('#prop-anim-exit').on('change', function() { if (activeElement) activeElement.data('anim-exit', $(this).val()); });
-    $('#prop-anim-loop').on('change', function() { if (activeElement) activeElement.data('anim-loop', $(this).val()); });
-    $('#prop-anim-delay').on('input', function() { if (activeElement) activeElement.data('anim-delay', parseInt($(this).val(), 10) || 0); });
-    $('#prop-anim-duration').on('input', function() { if (activeElement) activeElement.data('anim-duration', parseInt($(this).val(), 10) || 500); });
-
-    $('#prop-slider-min').on('input', function() { if (activeElement) activeElement.data('slider-min', $(this).val()); });
-    $('#prop-slider-max').on('input', function() { if (activeElement) activeElement.data('slider-max', $(this).val()); });
-    $('#prop-slider-val').on('input', function() { if (activeElement) activeElement.data('slider-val', $(this).val()); });
-    $('#prop-slider-prefix').on('input', function() { if (activeElement) activeElement.data('slider-prefix', $(this).val()); });
-    $('#prop-countdown-mins').on('input', function() { if (activeElement) activeElement.data('timer-mins', $(this).val()); });
     $('#prop-field-name').on('input', function() { if (activeElement) activeElement.data('field-name', $(this).val()); });
-    $('#prop-options').on('input', function() {
-        if (!activeElement) return;
-        activeElement.data('options', $(this).val().split(',').map(s => s.trim()).filter(Boolean));
-    });
 
     $('#prop-content').on('input', function() {
         if (!activeElement) return;
-        const val = $(this).val();
-        activeElement.data('content', val);
+        activeElement.data('content', $(this).val());
         updateElementDisplay(activeElement);
         refreshLayers();
     });
@@ -532,7 +595,6 @@ jQuery(document).ready(function($) {
         recordState();
     });
 
-    // Layer Hierarchy Management
     function refreshLayers() {
         const list = $('#wppoppop-layers-list').empty();
         const elements = stage.find('.canvas-element').filter(function() {
@@ -556,10 +618,10 @@ jQuery(document).ready(function($) {
             const titleSpan = $('<span class="layer-title-text">[' + type + '] ' + label + '</span>');
             const actions = $('<div class="layer-actions"></div>');
 
-            const btnVis = $('<button type="button" class="layer-action-btn btn-layer-vis" title="Toggle Visibility"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>');
-            const btnLock = $('<button type="button" class="layer-action-btn btn-layer-lock" title="Lock/Unlock Drag"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>');
-            const btnUp = $('<button type="button" class="layer-action-btn btn-layer-up" title="Bring Forward"><span class="dashicons dashicons-arrow-up-alt2"></span></button>');
-            const btnDown = $('<button type="button" class="layer-action-btn btn-layer-down" title="Send Backward"><span class="dashicons dashicons-arrow-down-alt2"></span></button>');
+            const btnVis = $('<button type="button" class="layer-action-btn btn-layer-vis"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>');
+            const btnLock = $('<button type="button" class="layer-action-btn btn-layer-lock"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>');
+            const btnUp = $('<button type="button" class="layer-action-btn btn-layer-up"><span class="dashicons dashicons-arrow-up-alt2"></span></button>');
+            const btnDown = $('<button type="button" class="layer-action-btn btn-layer-down"><span class="dashicons dashicons-arrow-down-alt2"></span></button>');
 
             actions.append(btnVis, btnLock, btnUp, btnDown);
             li.append(titleSpan, actions);
@@ -567,29 +629,23 @@ jQuery(document).ready(function($) {
         });
 
         list.find('.layer-title-text').on('click', function() {
-            const targetId = $(this).closest('li').data('target');
-            const el = $('#' + targetId);
+            const el = $('#' + $(this).closest('li').data('target'));
             if (el.length) selectElement(el);
         });
 
         list.find('.btn-layer-vis').on('click', function(e) {
             e.stopPropagation();
-            const targetId = $(this).closest('li').data('target');
-            const el = $('#' + targetId);
+            const el = $('#' + $(this).closest('li').data('target'));
             const isHidden = el.data('hidden') == 1;
-            el.data('hidden', isHidden ? 0 : 1);
-            el.toggleClass('layer-hidden', !isHidden);
+            el.data('hidden', isHidden ? 0 : 1).toggleClass('layer-hidden', !isHidden);
             refreshLayers();
         });
 
         list.find('.btn-layer-lock').on('click', function(e) {
             e.stopPropagation();
-            const targetId = $(this).closest('li').data('target');
-            const el = $('#' + targetId);
+            const el = $('#' + $(this).closest('li').data('target'));
             const isLocked = el.data('locked') == 1;
-            el.data('locked', isLocked ? 0 : 1);
-            el.toggleClass('layer-locked', !isLocked);
-
+            el.data('locked', isLocked ? 0 : 1).toggleClass('layer-locked', !isLocked);
             if (!isLocked) {
                 if (el.hasClass('ui-draggable')) el.draggable('destroy');
                 if (el.hasClass('ui-resizable')) el.resizable('destroy');
@@ -601,24 +657,18 @@ jQuery(document).ready(function($) {
 
         list.find('.btn-layer-up').on('click', function(e) {
             e.stopPropagation();
-            const targetId = $(this).closest('li').data('target');
-            const el = $('#' + targetId);
-            let z = parseInt(el.css('z-index'), 10) || 1;
-            z += 2;
+            const el = $('#' + $(this).closest('li').data('target'));
+            let z = (parseInt(el.css('z-index'), 10) || 1) + 2;
             el.css('z-index', z).data('z-index', z);
             refreshLayers();
-            recordState();
         });
 
         list.find('.btn-layer-down').on('click', function(e) {
             e.stopPropagation();
-            const targetId = $(this).closest('li').data('target');
-            const el = $('#' + targetId);
-            let z = parseInt(el.css('z-index'), 10) || 1;
-            z = Math.max(1, z - 2);
+            const el = $('#' + $(this).closest('li').data('target'));
+            let z = Math.max(1, (parseInt(el.css('z-index'), 10) || 1) - 2);
             el.css('z-index', z).data('z-index', z);
             refreshLayers();
-            recordState();
         });
     }
 
@@ -627,40 +677,7 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
 
-    // Live In-Builder Sandbox Preview Compiler
-    $('#wppoppop-btn-preview').on('click', function(e) {
-        e.preventDefault();
-        const modal = $('#wppoppop-live-preview-modal');
-        const mount = $('#wppoppop-preview-stage-mount').empty();
-
-        const previewBox = $('<div class="wppoppop-box"></div>').css({
-            width: stage.width(),
-            height: stage.height(),
-            'border-radius': stage.css('border-radius'),
-            'box-shadow': stage.css('box-shadow'),
-            'background': stage.css('background'),
-            position: 'relative',
-            overflow: 'hidden'
-        });
-
-        const elementsClone = stage.clone();
-        elementsClone.find('.canvas-element').each(function() {
-            $(this).removeClass('selected ui-draggable-handle ui-resizable')
-                   .find('.ui-resizable-handle').remove();
-        });
-
-        previewBox.html(elementsClone.html());
-        mount.append(previewBox);
-        modal.fadeIn(200);
-    });
-
-    $('#btn-close-live-preview, #wppoppop-live-preview-modal').on('click', function(e) {
-        if (e.target === this || e.target.id === 'btn-close-live-preview') {
-            $('#wppoppop-live-preview-modal').fadeOut(150);
-        }
-    });
-
-    // Master Save Action
+    // Save Action
     $('#wppoppop-btn-save').on('click', function(e) {
         e.preventDefault();
         const saveBtn = $(this);
@@ -675,6 +692,9 @@ jQuery(document).ready(function($) {
                 type: el.data('type'),
                 field_name: el.data('field-name') || '',
                 options: el.data('options') || [],
+                scratch_secret: el.data('scratch-secret') || 'LUCKY50',
+                scratch_foil: el.data('scratch-foil') || '#94a3b8',
+                scratch_pct: el.data('scratch-pct') || 50,
                 timer_mins: el.data('timer-mins') || 15,
                 progress_pct: el.data('progress-pct') || 50,
                 slider_min: el.data('slider-min') || 0,
@@ -708,6 +728,17 @@ jQuery(document).ready(function($) {
             });
         });
 
+        const logicRules = [];
+        $('.logic-rule-row').each(function() {
+            logicRules.push({
+                field: $(this).find('.rule-field').val(),
+                operator: $(this).find('.rule-op').val(),
+                value: $(this).find('.rule-val').val(),
+                action: $(this).find('.rule-action').val(),
+                target: $(this).find('.rule-target').val()
+            });
+        });
+
         const payload = {
             meta: {
                 title: $('#wppoppop-popup-title').val() || 'Untitled Popup',
@@ -729,9 +760,7 @@ jQuery(document).ready(function($) {
                 close_esc: $('#style-close-esc').is(':checked'),
                 close_backdrop: $('#style-close-backdrop').is(':checked')
             },
-            sound_fx: {
-                enable: $('#sound-enable').is(':checked') ? 1 : 0
-            },
+            sound_fx: { enable: $('#sound-enable').is(':checked') ? 1 : 0 },
             triggers: {
                 on_load: $('#trig-load').is(':checked'),
                 on_load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
@@ -739,14 +768,10 @@ jQuery(document).ready(function($) {
                 on_scroll: $('#trig-scroll').is(':checked') ? 50 : 0,
                 on_idle: $('#trig-idle').is(':checked') ? 15 : 0,
                 click_selector: $('#trig-click-selector').val() || '',
-                on_adblock: $('#trig-adblock').length ? $('#trig-adblock').is(':checked') : false
+                on_adblock: $('#trig-adblock').length ? $('#trig-adblock').is(':checked') : false,
+                on_mobile_back: $('#trig-mobile-back').is(':checked')
             },
-            conditional_logic: {
-                if_field: $('#logic-if-field').val() || '',
-                equals_val: $('#logic-equals-val').val() || '',
-                target_layer: $('#logic-target-layer').val() || '',
-                action: $('#logic-action').val() || 'show'
-            },
+            conditional_logic: { rules: logicRules },
             math: {
                 expression: $('#math-expression').length ? $('#math-expression').val() : '',
                 output_target: $('#math-output-target').length ? $('#math-output-target').val() : ''
@@ -789,7 +814,8 @@ jQuery(document).ready(function($) {
             },
             integrations: {
                 enable_webhook: $('#int-enable-webhook').is(':checked'),
-                webhook_url: $('#int-webhook-url').val() || ''
+                webhook_url: $('#int-webhook-url').val() || '',
+                webhook_secret: $('#int-webhook-secret').val() || ''
             },
             sms: {
                 enable_sms: $('#sms-enable').is(':checked'),
@@ -851,15 +877,17 @@ jQuery(document).ready(function($) {
                 $('#wppoppop-popup-title').val(res.data.title);
                 $('#wppoppop-popup-uid').val(res.data.uid);
 
-                if (config.box_styling) {
-                    $('#box-border-radius').val(config.box_styling.radius || 8);
-                    $('#box-shadow-preset').val(config.box_styling.shadow_preset || 'subtle');
-                    $('#box-bg-type').val(config.box_styling.bg_type || 'solid');
-                    $('#box-bg-color').val(config.box_styling.solid_color || '#ffffff');
-                    $('#box-grad-c1').val(config.box_styling.grad_c1 || '#1e293b');
-                    $('#box-grad-c2').val(config.box_styling.grad_c2 || '#0f172a');
-                    $('#box-grad-angle').val(config.box_styling.grad_angle || 135);
-                    updateStageDecoration();
+                if (config.triggers && config.triggers.on_mobile_back) {
+                    $('#trig-mobile-back').prop('checked', true);
+                }
+
+                if (config.integrations && config.integrations.webhook_secret) {
+                    $('#int-webhook-secret').val(config.integrations.webhook_secret);
+                }
+
+                if (config.conditional_logic && Array.isArray(config.conditional_logic.rules)) {
+                    $('#wppoppop-rules-container').empty();
+                    config.conditional_logic.rules.forEach(r => addLogicRuleRow(r));
                 }
 
                 if (Array.isArray(config.elements)) {

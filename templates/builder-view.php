@@ -2,23 +2,9 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
-$settings = get_option('wppoppop_settings', []);
-
-$feat_google_fonts     = isset($settings['google_fonts']) ? !empty($settings['google_fonts']) : true;
-$feat_air_datepicker   = isset($settings['air_datepicker']) ? !empty($settings['air_datepicker']) : true;
-$feat_signature_pad    = !empty($settings['signature_pad']);
-$feat_range_slider     = !empty($settings['range_slider']);
-$feat_adblock_detector = !empty($settings['adblock_detector']);
-$feat_js_parser        = !empty($settings['js_parser']);
-$feat_jquery_mask      = !empty($settings['jquery_mask']);
-$feat_font_awesome     = !empty($settings['font_awesome']);
-
-$custom_fonts_raw = isset($settings['custom_fonts']) ? $settings['custom_fonts'] : '';
-$custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_raw)));
 ?>
 <div class="wppoppop-builder-wrap">
-    <!-- Header -->
+    <!-- Header Toolbar -->
     <header class="wppoppop-builder-header">
         <div class="header-left">
             <span class="dashicons dashicons-external" style="font-size: 24px; margin-right: 8px;"></span>
@@ -26,36 +12,33 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
             <input type="hidden" id="wppoppop-popup-uid" value="">
         </div>
         <div class="header-center">
-            <!-- Screen Sequence Switcher -->
-            <div class="screen-switch-bar">
+            <div class="screen-switch-bar" id="screen-switch-container">
                 <button type="button" class="button btn-screen-toggle active" data-screen="1">Screen 1</button>
                 <button type="button" class="button btn-screen-toggle" data-screen="2">Screen 2</button>
+                <button type="button" class="button btn-screen-toggle" data-screen="3">Screen 3</button>
             </div>
-
-            <!-- Viewport Switcher -->
-            <div class="viewport-switch-bar" style="margin-left: 12px;">
-                <button type="button" class="button btn-viewport-toggle active" data-viewport="desktop" title="Desktop Canvas"><span class="dashicons dashicons-desktop" style="vertical-align:middle;"></span> Desktop</button>
-                <button type="button" class="button btn-viewport-toggle" data-viewport="mobile" title="Mobile Canvas"><span class="dashicons dashicons-smartphone" style="vertical-align:middle;"></span> Mobile</button>
-            </div>
-
+            <span class="toolbar-sep">|</span>
+            <button type="button" class="button button-small btn-viewport-toggle active" data-viewport="desktop">Desktop</button>
+            <button type="button" class="button button-small btn-viewport-toggle" data-viewport="mobile">Mobile</button>
             <label style="margin-left: 15px;">W: <input type="number" id="stage-width" value="640" style="width: 65px;"> px</label>
             <label style="margin-left: 8px;">H: <input type="number" id="stage-height" value="400" style="width: 65px;"> px</label>
         </div>
         <div class="header-right">
-            <button type="button" class="button button-secondary" id="wppoppop-btn-preview"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Live Preview</button>
-            <button type="button" class="button button-secondary" id="wppoppop-btn-reset">Reset</button>
-            <button type="button" class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
+            <button class="button button-secondary" id="wppoppop-btn-embed">Embed Code</button>
+            <button class="button button-secondary" id="wppoppop-btn-preview">Live Preview</button>
+            <button class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
         </div>
     </header>
 
     <div class="wppoppop-builder-body">
-        <!-- Palette Sidebar: All 17 Form & Media Elements -->
+        <!-- Elements & Layers Left Sidebar -->
         <aside class="wppoppop-panel wppoppop-sidebar-left">
             <div class="panel-tabs">
                 <button type="button" class="tab-btn active" data-tab="tab-elements">Elements</button>
                 <button type="button" class="tab-btn" data-tab="tab-layers">Layers</button>
             </div>
 
+            <!-- Complete 19 Elements Registry -->
             <div id="tab-elements" class="tab-pane active">
                 <p class="panel-hint">Add element to active screen:</p>
                 <div class="element-item" data-type="text"><span class="dashicons dashicons-editor-textcolor"></span> Text Block</div>
@@ -65,31 +48,21 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 <div class="element-item" data-type="radio"><span class="dashicons dashicons-marker"></span> Radio Options</div>
                 <div class="element-item" data-type="checkbox"><span class="dashicons dashicons-yes"></span> Checkbox List</div>
                 <div class="element-item" data-type="rating"><span class="dashicons dashicons-star-filled"></span> Star Rating</div>
-
-                <?php if ($feat_air_datepicker) : ?>
-                    <div class="element-item" data-type="date"><span class="dashicons dashicons-calendar-alt"></span> Date Picker</div>
-                <?php endif; ?>
-
-                <?php if ($feat_range_slider) : ?>
-                    <div class="element-item" data-type="slider"><span class="dashicons dashicons-leftright"></span> Range Slider</div>
-                <?php endif; ?>
-
-                <?php if ($feat_signature_pad) : ?>
-                    <div class="element-item" data-type="signature"><span class="dashicons dashicons-edit"></span> Signature Pad</div>
-                <?php endif; ?>
-
+                <div class="element-item" data-type="date"><span class="dashicons dashicons-calendar-alt"></span> Date Picker</div>
+                <div class="element-item" data-type="slider"><span class="dashicons dashicons-leftright"></span> Range Slider</div>
+                <div class="element-item" data-type="signature"><span class="dashicons dashicons-edit"></span> Signature Pad</div>
+                <div class="element-item" data-type="wheel"><span class="dashicons dashicons-chart-pie"></span> Lucky Wheel</div>
+                <div class="element-item" data-type="scratch"><span class="dashicons dashicons-tickets-alt"></span> Scratch Card</div>
                 <div class="element-item" data-type="countdown"><span class="dashicons dashicons-clock"></span> Countdown Timer</div>
                 <div class="element-item" data-type="progress"><span class="dashicons dashicons-ellipsis"></span> Progress Bar</div>
-                <div class="element-item" data-type="wheel"><span class="dashicons dashicons-chart-pie"></span> Lucky Wheel</div>
+                <div class="element-item" data-type="file"><span class="dashicons dashicons-upload"></span> File Upload</div>
                 <div class="element-item" data-type="nextstep"><span class="dashicons dashicons-arrow-right-alt"></span> Next Step Button</div>
                 <div class="element-item" data-type="button"><span class="dashicons dashicons-button"></span> Submit Button</div>
-                <div class="element-item" data-type="paybutton"><span class="dashicons dashicons-cart"></span> Payment Button</div>
+                <div class="element-item" data-type="pay_btn"><span class="dashicons dashicons-cart"></span> Payment Button</div>
                 <div class="element-item" data-type="html"><span class="dashicons dashicons-editor-code"></span> Raw HTML</div>
             </div>
 
-            <!-- Enhanced Layers Panel -->
             <div id="tab-layers" class="tab-pane">
-                <p class="panel-hint" style="margin-bottom:8px;">Active screen layer hierarchy:</p>
                 <ul id="wppoppop-layers-list" class="layers-list">
                     <li class="empty-layers">No elements on current screen.</li>
                 </ul>
@@ -102,7 +75,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 <button type="button" class="button button-small" id="btn-undo" title="Undo (Ctrl+Z)"><span class="dashicons dashicons-undo" style="vertical-align:middle;"></span> Undo</button>
                 <button type="button" class="button button-small" id="btn-redo" title="Redo (Ctrl+Y)"><span class="dashicons dashicons-redo" style="vertical-align:middle;"></span> Redo</button>
                 <span class="toolbar-sep">|</span>
-                <label style="font-size:12px;cursor:pointer;"><input type="checkbox" id="chk-grid-snap" checked> Snap to 10px Grid</label>
+                <label style="font-size:12px;cursor:pointer;"><input type="checkbox" id="chk-grid-snap" checked> Snap 10px Grid</label>
                 <span class="toolbar-sep">|</span>
                 <button type="button" class="button button-small btn-align" data-align="left">Left</button>
                 <button type="button" class="button button-small btn-align" data-align="center-h">Center H</button>
@@ -118,11 +91,11 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
             </div>
         </main>
 
-        <!-- Right Configuration Sidebar (Unified 15 Accordions) -->
+        <!-- Right Configuration Sidebar: Full 15 Vertical Accordion Sections -->
         <aside class="wppoppop-panel wppoppop-sidebar-right">
             <div class="wppoppop-accordion">
 
-                <!-- 1. Inspector with Fine-Grained Styling & Hover Controls -->
+                <!-- 1. Inspector -->
                 <div class="accordion-item active" data-accordion="inspector">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-admin-generic"></span> Inspector</span>
@@ -132,141 +105,53 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                         <div id="inspector-empty-state">Select any canvas layer to edit properties.</div>
                         <div id="inspector-controls" style="display: none;">
                             <div class="form-group">
-                                <label>Binding Key (e.g. prize, email, qty, signature):</label>
-                                <input type="text" id="prop-field-name" placeholder="e.g. email, budget" class="widefat">
+                                <label>Binding Key (e.g. email, prize, coupon):</label>
+                                <input type="text" id="prop-field-name" class="widefat">
                             </div>
                             <div class="form-group">
-                                <label>Content / Label / Text:</label>
+                                <label>Content / Dynamic Tokens ({user_name}, {query:utm_source}):</label>
                                 <input type="text" id="prop-content" class="widefat">
                             </div>
-
-                            <!-- Icon Selector -->
-                            <div class="form-group">
-                                <label>Element Icon:</label>
-                                <div style="display:flex; gap:6px;">
-                                    <input type="text" id="prop-icon-class" placeholder="dashicons-star-filled" class="widefat" readonly>
-                                    <button type="button" class="button button-secondary" id="btn-open-icon-picker">Choose</button>
-                                    <button type="button" class="button button-secondary" id="btn-clear-icon">&times;</button>
-                                </div>
+                            <div class="form-group" id="group-prop-goto" style="display:none;">
+                                <label>Navigate to Screen:</label>
+                                <select id="prop-goto-screen" class="widefat">
+                                    <option value="1">Screen 1</option>
+                                    <option value="2">Screen 2</option>
+                                    <option value="3">Screen 3</option>
+                                </select>
                             </div>
-
-                            <!-- Slider Config -->
-                            <div class="form-group" id="group-prop-slider" style="display:none; background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0;">
-                                <label>Slider Min / Max / Default:</label>
-                                <div style="display:flex; gap:6px;">
-                                    <input type="number" id="prop-slider-min" value="0" placeholder="Min" style="width:33%;">
-                                    <input type="number" id="prop-slider-max" value="100" placeholder="Max" style="width:33%;">
-                                    <input type="number" id="prop-slider-val" value="50" placeholder="Val" style="width:33%;">
-                                </div>
-                                <div style="margin-top:6px;">
-                                    <label>Prefix / Currency:</label>
-                                    <input type="text" id="prop-slider-prefix" value="$" style="width:60px;">
-                                </div>
+                            <div class="form-group" id="group-prop-options" style="display:none;">
+                                <label>Options / Slices (comma-separated):</label>
+                                <input type="text" id="prop-options" class="widefat">
                             </div>
-
-                            <!-- Countdown Config -->
-                            <div class="form-group" id="group-prop-countdown" style="display:none; background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0;">
-                                <label>Duration (Minutes):</label>
-                                <input type="number" id="prop-countdown-mins" value="15" min="1" max="1440" class="widefat">
-                            </div>
-
-                            <!-- Validation Rules -->
                             <div class="form-group" id="group-prop-validation" style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0;">
                                 <label style="font-weight:700;"><input type="checkbox" id="prop-required"> Mandatory Field (Required)</label>
                                 <div style="margin-top:6px;">
-                                    <label>Error Bubble Message:</label>
+                                    <label>Custom Error Bubble Text:</label>
                                     <input type="text" id="prop-error-msg" value="Please fill out this field." class="widefat">
                                 </div>
                             </div>
-
-                            <?php if ($feat_jquery_mask) : ?>
-                                <div class="form-group" id="group-prop-mask" style="display:none;">
-                                    <label>Input Mask (jQuery Mask):</label>
-                                    <input type="text" id="prop-mask" placeholder="e.g. (999) 999-9999" class="widefat">
-                                </div>
-                            <?php endif; ?>
-
                             <div class="form-group">
                                 <label>Font Family:</label>
                                 <select id="prop-font-family" class="widefat">
-                                    <optgroup label="Standard Fonts">
-                                        <option value="Inherit">Inherit Theme Font</option>
-                                        <option value="Arial, sans-serif">Arial</option>
-                                        <option value="Georgia, serif">Georgia</option>
-                                        <option value="'Times New Roman', serif">Times New Roman</option>
-                                    </optgroup>
-                                    <?php if ($feat_google_fonts) : ?>
-                                        <optgroup label="Google Fonts">
-                                            <option value="Inter">Inter</option>
-                                            <option value="Roboto">Roboto</option>
-                                            <option value="Montserrat">Montserrat</option>
-                                            <option value="Poppins">Poppins</option>
-                                            <option value="Playfair Display">Playfair Display</option>
-                                        </optgroup>
-                                    <?php endif; ?>
-                                    <?php if (!empty($custom_fonts)) : ?>
-                                        <optgroup label="Custom Local Fonts">
-                                            <?php foreach ($custom_fonts as $cf) : ?>
-                                                <option value="<?php echo esc_attr($cf); ?>"><?php echo esc_html($cf); ?></option>
-                                            <?php endforeach; ?>
-                                        </optgroup>
-                                    <?php endif; ?>
+                                    <option value="Inherit">Inherit Theme Font</option>
+                                    <option value="Inter">Inter (Sans-serif)</option>
+                                    <option value="Roboto">Roboto (Sans-serif)</option>
+                                    <option value="Montserrat">Montserrat (Modern)</option>
                                 </select>
                             </div>
-
-                            <div class="form-group" id="group-prop-options" style="display:none;">
-                                <label>Options / Slices (comma-separated):</label>
-                                <input type="text" id="prop-options" placeholder="Option 1, Option 2" class="widefat">
+                            <div class="form-group">
+                                <label>Font Size (px):</label>
+                                <input type="number" id="prop-font-size" value="16" min="10" max="72">
                             </div>
-
-                            <div style="display:flex; gap:10px;">
-                                <div class="form-group" style="flex:1;">
-                                    <label>Font Size (px):</label>
-                                    <input type="number" id="prop-font-size" value="16" min="10" max="72">
-                                </div>
-                                <div class="form-group" style="flex:1;">
-                                    <label>Border Radius (px):</label>
-                                    <input type="number" id="prop-border-radius" value="4" min="0" max="100">
-                                </div>
+                            <div class="form-group">
+                                <label>Text Color:</label>
+                                <input type="color" id="prop-color" value="#222222">
                             </div>
-
-                            <div style="display:flex; gap:10px;">
-                                <div class="form-group" style="flex:1;">
-                                    <label>Padding (px):</label>
-                                    <input type="number" id="prop-padding" value="0" min="0" max="50">
-                                </div>
-                                <div class="form-group" style="flex:1;">
-                                    <label>Opacity (0.1 - 1.0):</label>
-                                    <input type="number" id="prop-opacity" value="1.0" min="0.1" max="1.0" step="0.1">
-                                </div>
+                            <div class="form-group">
+                                <label>Background Color:</label>
+                                <input type="color" id="prop-bg-color" value="#00a32a">
                             </div>
-
-                            <div style="display:flex; gap:10px;">
-                                <div class="form-group" style="flex:1;">
-                                    <label>Text Color:</label>
-                                    <input type="color" id="prop-color" value="#222222" style="width:100%;height:32px;">
-                                </div>
-                                <div class="form-group" style="flex:1;">
-                                    <label>Background Color:</label>
-                                    <input type="color" id="prop-bg-color" value="#00a32a" style="width:100%;height:32px;">
-                                </div>
-                            </div>
-
-                            <!-- Button & Element Hover States -->
-                            <div id="group-prop-hover" style="background:#f1f5f9; padding:10px; border-radius:4px; margin-top:8px;">
-                                <label style="font-weight:700; font-size:12px; display:block; margin-bottom:6px;">Hover State Appearance:</label>
-                                <div style="display:flex; gap:10px;">
-                                    <div class="form-group" style="flex:1; margin-bottom:0;">
-                                        <label style="font-size:11px;">Hover Text:</label>
-                                        <input type="color" id="prop-hover-color" value="#ffffff" style="width:100%;height:30px;">
-                                    </div>
-                                    <div class="form-group" style="flex:1; margin-bottom:0;">
-                                        <label style="font-size:11px;">Hover BG:</label>
-                                        <input type="color" id="prop-hover-bg" value="#0284c7" style="width:100%;height:30px;">
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="form-row-actions">
                                 <button type="button" class="button" id="prop-duplicate-element">Duplicate</button>
                                 <button type="button" class="button button-link-delete" id="prop-delete-element">Delete</button>
@@ -275,7 +160,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                     </div>
                 </div>
 
-                <!-- 2. Layer Transitions: Entrance, Exit, & Attention Loops -->
+                <!-- 2. Layer Animation -->
                 <div class="accordion-item" data-accordion="animation">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-controls-play"></span> Layer Animation</span>
@@ -293,25 +178,6 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Exit Effect (On Close):</label>
-                            <select id="prop-anim-exit" class="widefat">
-                                <option value="none">None</option>
-                                <option value="fadeOut">Fade Out</option>
-                                <option value="slideUp">Slide Up</option>
-                                <option value="zoomOut">Zoom Out</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Continuous Attention Loop:</label>
-                            <select id="prop-anim-loop" class="widefat">
-                                <option value="none">None</option>
-                                <option value="pulse">Pulse (Soft Glow)</option>
-                                <option value="shake">Shake (Attention Alert)</option>
-                                <option value="tada">Tada (Celebration)</option>
-                                <option value="heartbeat">Heartbeat</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label>Start Delay (ms):</label>
                             <input type="number" id="prop-anim-delay" value="0" min="0" step="50" class="widefat">
                         </div>
@@ -323,18 +189,17 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 </div>
 
                 <!-- 3. Sound Effects -->
-                <div class="accordion-item" data-accordion="audio">
+                <div class="accordion-item" data-accordion="sounds">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-format-audio"></span> Sound Effects</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="sound-enable"> Enable Web Audio Synth Chimes</label>
-                        <small style="color:#64748b;display:block;margin-top:4px;">Synthesizes entrance and submission sound effects in real time.</small>
+                        <label class="trigger-option"><input type="checkbox" id="snd-enable" checked> Enable Web Audio Synth Chimes</label>
                     </div>
                 </div>
 
-                <!-- 4. Backdrop, Box Decoration & Gradients -->
+                <!-- 4. Box & Backdrop Styling -->
                 <div class="accordion-item" data-accordion="backdrop">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-art"></span> Box & Backdrop Styling</span>
@@ -347,49 +212,6 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                         </div>
                         <label class="trigger-option"><input type="checkbox" id="style-close-esc" checked> Close on ESC key</label>
                         <label class="trigger-option"><input type="checkbox" id="style-close-backdrop" checked> Close on backdrop click</label>
-
-                        <hr>
-                        <h4 style="margin:8px 0;">Popup Box Decoration</h4>
-                        <div class="form-group">
-                            <label>Box Corner Radius (px):</label>
-                            <input type="number" id="box-border-radius" value="8" min="0" max="60" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>Box Elevation Shadow:</label>
-                            <select id="box-shadow-preset" class="widefat">
-                                <option value="none">None</option>
-                                <option value="subtle" selected>Subtle Drop Shadow</option>
-                                <option value="deep">Deep High-Contrast Shadow</option>
-                                <option value="glow">Vibrant Colored Glow</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Background Fill Type:</label>
-                            <select id="box-bg-type" class="widefat">
-                                <option value="solid" selected>Solid Color</option>
-                                <option value="gradient">Linear Gradient</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="group-box-solid-bg">
-                            <label>Background Color:</label>
-                            <input type="color" id="box-bg-color" value="#ffffff" style="width:100%;height:32px;">
-                        </div>
-                        <div id="group-box-gradient" style="display:none; background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0;">
-                            <div style="display:flex; gap:8px;">
-                                <div style="flex:1;">
-                                    <label style="font-size:11px;">Color 1:</label>
-                                    <input type="color" id="box-grad-c1" value="#1e293b" style="width:100%;height:30px;">
-                                </div>
-                                <div style="flex:1;">
-                                    <label style="font-size:11px;">Color 2:</label>
-                                    <input type="color" id="box-grad-c2" value="#0f172a" style="width:100%;height:30px;">
-                                </div>
-                            </div>
-                            <div style="margin-top:6px;">
-                                <label style="font-size:11px;">Angle (deg):</label>
-                                <input type="number" id="box-grad-angle" value="135" min="0" max="360" class="widefat">
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -405,107 +227,66 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                         <label class="trigger-option"><input type="checkbox" id="trig-exit"> On Exit Intent</label>
                         <label class="trigger-option"><input type="checkbox" id="trig-scroll"> On Scroll Depth (> 50%)</label>
                         <label class="trigger-option"><input type="checkbox" id="trig-idle"> On User Inactivity (15s)</label>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Click Trigger Selector:</label>
-                            <input type="text" id="trig-click-selector" placeholder=".open-popup-btn" class="widefat">
-                        </div>
-                        <?php if ($feat_adblock_detector) : ?>
-                            <hr>
-                            <label class="trigger-option"><input type="checkbox" id="trig-adblock"> On AdBlock Detected</label>
-                        <?php endif; ?>
+                        <label class="trigger-option"><input type="checkbox" id="trig-adblock"> On AdBlock Detected</label>
+                        <label class="trigger-option"><input type="checkbox" id="trig-mobile-back"> On Mobile Back-Button</label>
                     </div>
                 </div>
 
                 <!-- 6. Conditional Logic & Math -->
                 <div class="accordion-item" data-accordion="logic">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-randomize"></span> Conditional Logic & Math</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-calculator"></span> Conditional Logic & Math</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <h4>Conditional Rules</h4>
                         <div class="form-group">
-                            <label>If Field Name:</label>
-                            <input type="text" id="logic-if-field" placeholder="e.g. qty or choice" class="widefat">
+                            <label>Calculation Formula (e.g. {qty} * 25):</label>
+                            <input type="text" id="math-expression" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Equals Value:</label>
-                            <input type="text" id="logic-equals-val" placeholder="e.g. 5" class="widefat">
+                            <label>Target Layer ID for Calculation Output:</label>
+                            <input type="text" id="math-output-target" class="widefat">
                         </div>
-                        <div class="form-group">
-                            <label>Target Element Layer ID:</label>
-                            <input type="text" id="logic-target-layer" placeholder="e.g. elem_12345" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>Action:</label>
-                            <select id="logic-action" class="widefat">
-                                <option value="show">Show Element</option>
-                                <option value="hide">Hide Element</option>
-                            </select>
-                        </div>
-                        <?php if ($feat_js_parser) : ?>
-                            <hr>
-                            <h4>Math Calculator</h4>
-                            <div class="form-group">
-                                <label>Formula:</label>
-                                <input type="text" id="math-expression" placeholder="e.g. {qty} * 25" class="widefat">
-                            </div>
-                            <div class="form-group">
-                                <label>Target Layer ID:</label>
-                                <input type="text" id="math-output-target" placeholder="e.g. elem_12345" class="widefat">
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- 7. Sticky Side Tabs -->
-                <div class="accordion-item" data-accordion="sidetab">
+                <div class="accordion-item" data-accordion="sidetabs">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-tag"></span> Sticky Side Tab</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-tag"></span> Sticky Side Tabs</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="sidetab-enable"> Enable Sticky Side Tab</label>
-                        <div class="form-group" style="margin-top: 10px;">
+                        <label class="trigger-option"><input type="checkbox" id="tab-enable"> Enable Sticky Side Tab</label>
+                        <div class="form-group" style="margin-top:6px;">
                             <label>Tab Label:</label>
-                            <input type="text" id="sidetab-label" value="Special Offer" class="widefat">
+                            <input type="text" id="tab-text" value="Special Offer" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Edge Position:</label>
-                            <select id="sidetab-position" class="widefat">
-                                <option value="right">Right Edge</option>
+                            <label>Position:</label>
+                            <select id="tab-pos" class="widefat">
                                 <option value="left">Left Edge</option>
+                                <option value="right">Right Edge</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Background Color:</label>
-                            <input type="color" id="sidetab-bg" value="#2271b1">
                         </div>
                     </div>
                 </div>
 
-                <!-- 8. Payments & Monetization -->
-                <div class="accordion-item" data-accordion="payment">
+                <!-- 8. Payments & Checkout -->
+                <div class="accordion-item" data-accordion="payments">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-cart"></span> Payments & Checkout</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-money-alt"></span> Payments & Checkout</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="pay-enable"> Enable Payment Processing</label>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Amount to Charge ($):</label>
-                            <input type="number" id="pay-amount" value="19.99" step="0.01" class="widefat">
+                        <label class="trigger-option"><input type="checkbox" id="pay-enable"> Enable Checkout</label>
+                        <div class="form-group" style="margin-top:6px;">
+                            <label>Default Amount:</label>
+                            <input type="number" id="pay-amount" value="10.00" step="0.01" class="widefat">
                         </div>
                         <div class="form-group">
                             <label>Currency:</label>
                             <input type="text" id="pay-currency" value="USD" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>Gateway:</label>
-                            <select id="pay-gateway" class="widefat">
-                                <option value="Stripe">Stripe Checkout</option>
-                                <option value="PayPal">PayPal Commerce</option>
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -517,133 +298,120 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="dl-enable"> Enable Encrypted Download</label>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Protected Media URL:</label>
-                            <input type="url" id="dl-file-url" placeholder="https://site.com/uploads/ebook.pdf" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>Token Expiry (Hours):</label>
-                            <input type="number" id="dl-expiry-hours" value="24" min="1" class="widefat">
+                        <label class="trigger-option"><input type="checkbox" id="dl-enable"> Enable File Download on Submit</label>
+                        <div class="form-group" style="margin-top:6px;">
+                            <label>Media File URL:</label>
+                            <input type="url" id="dl-url" placeholder="https://site.com/file.zip" class="widefat">
                         </div>
                     </div>
                 </div>
 
-                <!-- 10. Video Events Listener -->
+                <!-- 10. Video Listeners -->
                 <div class="accordion-item" data-accordion="video">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-video-alt3"></span> Video Listeners</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="video-enable"> Enable HTML5 Video Triggers</label>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Trigger Event:</label>
-                            <select id="video-trigger-mode" class="widefat">
-                                <option value="ended">When Video Finishes Playing</option>
-                                <option value="play">When Video Starts Playing</option>
-                            </select>
-                        </div>
+                        <label class="trigger-option"><input type="checkbox" id="vid-enable"> Trigger on Video Ended</label>
                     </div>
                 </div>
 
                 <!-- 11. Subscriber Autoresponder -->
                 <div class="accordion-item" data-accordion="autoresponder">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-email"></span> Autoresponder Email</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-email"></span> Autoresponder</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
                         <label class="trigger-option"><input type="checkbox" id="ar-enable"> Send User Autoresponder Email</label>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Email Subject:</label>
-                            <input type="text" id="ar-subject" value="Congratulations! Here is your reward" class="widefat">
+                        <div class="form-group" style="margin-top:6px;">
+                            <label>Subject:</label>
+                            <input type="text" id="ar-subject" value="Thank you!" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Message Content ({prize}, {email}):</label>
-                            <textarea id="ar-message" class="widefat" rows="5">Hi there,
-
-Thank you for subscribing! Your won reward is: {prize}
-
-Enjoy your exclusive offer.</textarea>
+                            <label>Message Content:</label>
+                            <textarea id="ar-message" class="widefat" rows="4">Thank you for subscribing!</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- 12. Marketing Services & Webhooks -->
+                <!-- 12. Marketing & Webhooks -->
                 <div class="accordion-item" data-accordion="marketing">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-share-alt"></span> Marketing & Webhooks</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <h4 style="margin: 0 0 8px 0;">Mailchimp Sync</h4>
-                        <label class="trigger-option"><input type="checkbox" id="mc-enable"> Enable Mailchimp</label>
-                        <div class="form-group" style="margin-top: 6px;">
-                            <label>API Key:</label>
-                            <input type="password" id="mc-api-key" placeholder="xxxxxx-us1" class="widefat">
+                        <div class="form-group">
+                            <label>Webhook URL:</label>
+                            <input type="url" id="mkt-webhook-url" placeholder="https://webhook.site/..." class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Audience List ID:</label>
-                            <input type="text" id="mc-list-id" placeholder="8a24fb01c2" class="widefat">
+                            <label>HMAC-SHA256 Secret:</label>
+                            <input type="password" id="mkt-webhook-secret" class="widefat">
                         </div>
-
-                        <hr>
-                        <h4 style="margin: 0 0 8px 0;">ActiveCampaign Sync</h4>
-                        <label class="trigger-option"><input type="checkbox" id="ac-enable"> Enable ActiveCampaign</label>
-                        <div class="form-group" style="margin-top: 6px;">
-                            <label>API URL:</label>
-                            <input type="url" id="ac-api-url" placeholder="https://youraccount.api-us1.com" class="widefat">
-                        </div>
-                        <div class="form-group">
-                            <label>API Key:</label>
-                            <input type="password" id="ac-api-key" class="widefat">
-                        </div>
-
-                        <hr>
-                        <h4 style="margin: 0 0 8px 0;">Generic Webhook POST</h4>
-                        <label class="trigger-option"><input type="checkbox" id="int-enable-webhook"> Enable Webhook Dispatch</label>
-                        <div class="form-group" style="margin-top: 6px;">
-                            <label>Webhook Endpoint URL:</label>
-                            <input type="url" id="int-webhook-url" placeholder="https://hooks.zapier.com/..." class="widefat">
-                        </div>
+                        <button type="button" class="button" id="btn-test-webhook">Ping Webhook</button>
                     </div>
                 </div>
 
-                <!-- 13. SMS Gateways (Twilio) -->
-                <div class="accordion-item" data-accordion="sms">
+                <!-- 13. Twilio SMS Alerts -->
+                <div class="accordion-item" data-accordion="twilio">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-phone"></span> Twilio SMS Alerts</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
-                        <label class="trigger-option"><input type="checkbox" id="sms-enable"> Enable Twilio SMS Lead Alerts</label>
-                        <div class="form-group" style="margin-top: 8px;">
+                        <label class="trigger-option"><input type="checkbox" id="sms-enable"> Enable Real-Time SMS</label>
+                        <div class="form-group" style="margin-top:6px;">
                             <label>Account SID:</label>
-                            <input type="text" id="sms-twilio-sid" class="widefat">
+                            <input type="text" id="sms-sid" class="widefat">
                         </div>
                         <div class="form-group">
                             <label>Auth Token:</label>
-                            <input type="password" id="sms-twilio-token" class="widefat">
+                            <input type="password" id="sms-token" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>From Phone #:</label>
-                            <input type="text" id="sms-from-phone" class="widefat">
+                            <label>From Number:</label>
+                            <input type="text" id="sms-from" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>To Mobile #:</label>
-                            <input type="text" id="sms-to-phone" class="widefat">
+                            <label>To Mobile Number:</label>
+                            <input type="text" id="sms-to" class="widefat">
                         </div>
+                        <button type="button" class="button" id="btn-test-sms">Test SMS Dispatch</button>
                     </div>
                 </div>
 
-                <!-- 14. Targeting & Geolocation -->
+                <!-- 14. Targeting & Attribution -->
                 <div class="accordion-item" data-accordion="targeting">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-location-alt"></span> Targeting & Geolocation</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-location-alt"></span> Targeting & Attribution</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
+                        <div class="form-group">
+                            <label>Visitor Authentication:</label>
+                            <select id="target-auth-mode" class="widefat">
+                                <option value="all">All Visitors</option>
+                                <option value="guests_only">Guests / Logged-Out Only</option>
+                                <option value="logged_in_only">Logged-In Users Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="group-target-roles">
+                            <label>Target User Roles (comma-separated):</label>
+                            <input type="text" id="target-roles" placeholder="subscriber, customer" class="widefat">
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label>Require URL Query / UTM Param:</label>
+                            <input type="text" id="target-url-param-key" placeholder="e.g. utm_campaign, ref" class="widefat">
+                        </div>
+                        <div class="form-group">
+                            <label>Expected Parameter Value:</label>
+                            <input type="text" id="target-url-param-val" placeholder="e.g. summer_sale" class="widefat">
+                        </div>
+                        <hr>
                         <div class="form-group">
                             <label>Display Location:</label>
                             <select id="target-scope" class="widefat">
@@ -654,14 +422,9 @@ Enjoy your exclusive offer.</textarea>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Post Categories (slugs, comma-separated):</label>
-                            <input type="text" id="target-cat-slugs" placeholder="news, blog, updates" class="widefat">
-                        </div>
-                        <hr>
-                        <div class="form-group">
                             <label>Country Rules:</label>
                             <select id="target-geo-mode" class="widefat">
-                                <option value="all">Allow All Countries</option>
+                                <option value="all">All Countries</option>
                                 <option value="whitelist">Show Only In Selected</option>
                                 <option value="blacklist">Block Selected</option>
                             </select>
@@ -670,19 +433,10 @@ Enjoy your exclusive offer.</textarea>
                             <label>Country Codes (e.g. US, CA, GB):</label>
                             <input type="text" id="target-geo-countries" class="widefat">
                         </div>
-                        <hr>
-                        <div class="form-group">
-                            <label>Device Viewport:</label>
-                            <select id="target-devices" class="widefat">
-                                <option value="all">All Devices</option>
-                                <option value="desktop">Desktop Only</option>
-                                <option value="mobile">Mobile / Tablet Only</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
 
-                <!-- 15. Frequency & Cookies -->
+                <!-- 15. Frequency Capping & Cookies -->
                 <div class="accordion-item" data-accordion="cookies">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-visibility"></span> Frequency & Cookies</span>
@@ -707,30 +461,5 @@ Enjoy your exclusive offer.</textarea>
 
             </div>
         </aside>
-    </div>
-
-    <!-- Live In-Builder Preview Modal Sandbox -->
-    <div id="wppoppop-live-preview-modal" class="wppoppop-preview-backdrop" style="display:none;">
-        <div class="wppoppop-preview-container">
-            <div class="preview-top-toolbar">
-                <span style="font-weight:700;font-size:13px;"><span class="dashicons dashicons-desktop" style="vertical-align:middle;"></span> Interactive Sandbox Preview</span>
-                <button type="button" class="button button-small" id="btn-close-live-preview">&times; Close Sandbox</button>
-            </div>
-            <div id="wppoppop-preview-stage-mount"></div>
-        </div>
-    </div>
-
-    <!-- Icon Browser Modal Palette -->
-    <div id="wppoppop-icon-picker-modal" class="wppoppop-icon-modal" style="display:none;">
-        <div class="wppoppop-icon-modal-dialog">
-            <div class="icon-modal-header">
-                <h3>Choose Element Icon</h3>
-                <input type="text" id="icon-search-input" placeholder="Search icon (e.g. star, heart, cart)...">
-                <button type="button" class="button button-link btn-close-icon-picker">&times;</button>
-            </div>
-            <div class="icon-modal-grid" id="icon-picker-grid">
-                <!-- Icons dynamically rendered via JS -->
-            </div>
-        </div>
     </div>
 </div>
