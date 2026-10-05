@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WpPopPop
  * Description: Fully functional drag-and-drop popup builder inspired by Green Popups.
- * Version: 1.9.0
+ * Version: 2.1.0
  * Author: WpPopPop Team
  */
 
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WPPOPPOP_VERSION', '1.9.0');
+define('WPPOPPOP_VERSION', '2.1.0');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 
@@ -117,6 +117,9 @@ function wppoppop_install_schema() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
 
+    $wpdb->query("ALTER TABLE `{$table_items}` MODIFY COLUMN `uid` varchar(64) NOT NULL;");
+    $wpdb->query("ALTER TABLE `{$table_submissions}` MODIFY COLUMN `popup_uid` varchar(64) NOT NULL;");
+
     update_option('wppoppop_db_version', WPPOPPOP_VERSION);
 }
 
@@ -127,9 +130,7 @@ require_once WPPOPPOP_PATH . 'includes/class-wppoppop-admin.php';
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-ajax.php';
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-rest.php';
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-front.php';
-if (file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php')) {
-    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php';
-}
+require_once WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php';
 
 add_action('widgets_init', function () {
     register_widget('WpPopPop_Widget');
@@ -138,11 +139,9 @@ add_action('widgets_init', function () {
 add_action('plugins_loaded', function () {
     global $wpdb;
     $table_items = $wpdb->prefix . 'wppoppop_items';
-    $table_logs  = $wpdb->prefix . 'wppoppop_logs';
 
     if (get_option('wppoppop_db_version') !== WPPOPPOP_VERSION || 
-        $wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items ||
-        $wpdb->get_var("SHOW TABLES LIKE '{$table_logs}'") !== $table_logs) {
+        $wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items) {
         wppoppop_install_schema();
     }
 
@@ -150,9 +149,7 @@ add_action('plugins_loaded', function () {
     new WpPopPop_Ajax();
     new WpPopPop_Rest();
     new WpPopPop_Front();
-    if (class_exists('WpPopPop_Addons')) {
-        new WpPopPop_Addons();
-    }
+    new WpPopPop_Addons();
 });
 
 add_action('template_redirect', function () {
@@ -166,8 +163,7 @@ add_action('template_redirect', function () {
         if ($sub) {
             $wpdb->update($table_subs, ['status' => 'confirmed', 'confirm_token' => ''], ['id' => $sub->id]);
             $wpdb->query($wpdb->prepare("UPDATE {$table_items} SET confirmations = confirmations + 1 WHERE uid = %s", $sub->popup_uid));
-
-            wppoppop_log_event('confirmation', 'Subscriber email address verified: ' . $sub->email, ['uid' => $sub->popup_uid]);
+            wppoppop_log_event('confirmation', 'Subscriber email verified: ' . $sub->email, ['uid' => $sub->popup_uid]);
 
             wp_die('
                 <div style="max-width:550px;margin:80px auto;text-align:center;font-family:sans-serif;padding:30px;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 15px rgba(0,0,0,0.08);">

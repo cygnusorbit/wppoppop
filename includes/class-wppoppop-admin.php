@@ -37,20 +37,10 @@ class WpPopPop_Admin {
             return;
         }
 
-        // Library Assets
-        if ($page === 'wppoppop-library') {
-            wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', [], WPPOPPOP_VERSION);
-            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], WPPOPPOP_VERSION, true);
-            wp_localize_script('wppoppop-library-js', 'wppoppop_lib_vars', [
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce'    => wp_create_nonce('wppoppop_builder_nonce')
-            ]);
-            return;
-        }
-
         // Settings Assets
-        if ($page === 'wppoppop-settings') {
+        if ($page === 'wppoppop-settings' || strpos($hook, 'wppoppop-settings') !== false) {
             wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', [], WPPOPPOP_VERSION);
+            wp_enqueue_script('jquery');
             wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', [
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -59,18 +49,43 @@ class WpPopPop_Admin {
             return;
         }
 
+        // Library Assets
+        if ($page === 'wppoppop-library') {
+            wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', [], WPPOPPOP_VERSION);
+            wp_enqueue_script('jquery');
+            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_localize_script('wppoppop-library-js', 'wppoppop_lib_vars', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('wppoppop_builder_nonce')
+            ]);
+            return;
+        }
+
         // Builder Assets
-        if ($page === 'wppoppop-builder') {
+        if ($page === 'wppoppop-builder' || strpos($hook, 'wppoppop-builder') !== false) {
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
             wp_enqueue_script('jquery');
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable'], WPPOPPOP_VERSION, true);
 
+            $settings = get_option('wppoppop_settings', []);
+            $features = [
+                'google_fonts'     => isset($settings['google_fonts']) ? !empty($settings['google_fonts']) : true,
+                'font_awesome'     => !empty($settings['font_awesome']),
+                'air_datepicker'   => isset($settings['air_datepicker']) ? !empty($settings['air_datepicker']) : true,
+                'jquery_mask'      => !empty($settings['jquery_mask']),
+                'js_parser'        => !empty($settings['js_parser']),
+                'signature_pad'    => !empty($settings['signature_pad']),
+                'range_slider'     => !empty($settings['range_slider']),
+                'adblock_detector' => !empty($settings['adblock_detector'])
+            ];
+
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', [
                 'ajax_url'    => admin_url('admin-ajax.php'),
                 'nonce'       => wp_create_nonce('wppoppop_builder_nonce'),
-                'current_uid' => isset($_GET['uid']) ? sanitize_key($_GET['uid']) : ''
+                'current_uid' => isset($_GET['uid']) ? sanitize_key($_GET['uid']) : '',
+                'features'    => $features
             ]);
         }
     }

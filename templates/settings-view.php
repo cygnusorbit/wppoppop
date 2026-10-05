@@ -3,9 +3,39 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Native PHP POST Fallback Handler
+if (isset($_POST['wppoppop_save_settings_submit']) && check_admin_referer('wppoppop_save_settings_action', 'wppoppop_save_settings_nonce_field')) {
+    if (current_user_can('manage_options')) {
+        $settings = [
+            'sender_name'       => isset($_POST['sender_name']) ? sanitize_text_field($_POST['sender_name']) : 'wppoppop',
+            'sender_email'      => isset($_POST['sender_email']) ? sanitize_email($_POST['sender_email']) : 'noreply@localhost',
+            'preload_popups'    => !empty($_POST['preload_popups']) ? 1 : 0,
+            'preload_events'    => !empty($_POST['preload_events']) ? 1 : 0,
+            'ga_tracking'       => !empty($_POST['ga_tracking']) ? 1 : 0,
+            'google_fonts'      => !empty($_POST['google_fonts']) ? 1 : 0,
+            'font_awesome'      => !empty($_POST['font_awesome']) ? 1 : 0,
+            'air_datepicker'    => !empty($_POST['air_datepicker']) ? 1 : 0,
+            'no_air_datepicker' => !empty($_POST['no_air_datepicker']) ? 1 : 0,
+            'jquery_mask'       => !empty($_POST['jquery_mask']) ? 1 : 0,
+            'js_parser'         => !empty($_POST['js_parser']) ? 1 : 0,
+            'signature_pad'     => !empty($_POST['signature_pad']) ? 1 : 0,
+            'range_slider'      => !empty($_POST['range_slider']) ? 1 : 0,
+            'adblock_detector'  => !empty($_POST['adblock_detector']) ? 1 : 0,
+            'csv_separator'     => isset($_POST['csv_separator']) ? sanitize_text_field($_POST['csv_separator']) : ',',
+            'custom_fonts'      => isset($_POST['custom_fonts']) ? sanitize_textarea_field($_POST['custom_fonts']) : '',
+            'email_validation'  => isset($_POST['email_validation']) ? sanitize_text_field($_POST['email_validation']) : 'basic',
+            'geoip_service'     => isset($_POST['geoip_service']) ? sanitize_text_field($_POST['geoip_service']) : 'none',
+            'user_uploads'      => isset($_POST['user_uploads']) ? sanitize_text_field($_POST['user_uploads']) : 'keep',
+            'custom_css'        => isset($_POST['custom_css']) ? sanitize_textarea_field($_POST['custom_css']) : '',
+            'custom_js'         => isset($_POST['custom_js']) ? sanitize_textarea_field($_POST['custom_js']) : ''
+        ];
+        update_option('wppoppop_settings', $settings);
+        echo '<div class="notice notice-success is-dismissible" style="margin: 15px 0;"><p>Settings saved successfully!</p></div>';
+    }
+}
+
 $settings = get_option('wppoppop_settings', []);
 
-// Defaults
 $sender_name       = isset($settings['sender_name']) ? $settings['sender_name'] : 'wppoppop';
 $sender_email      = isset($settings['sender_email']) ? $settings['sender_email'] : 'noreply@localhost';
 $preload_popups    = !empty($settings['preload_popups']);
@@ -29,6 +59,8 @@ $custom_css        = isset($settings['custom_css']) ? $settings['custom_css'] : 
 $custom_js         = isset($settings['custom_js']) ? $settings['custom_js'] : '';
 ?>
 <div class="wrap wppoppop-settings-wrap">
+    <div id="wppoppop-settings-notice-area"></div>
+
     <div class="settings-header-bar">
         <h1>WpPopPop - General Settings</h1>
         <a href="https://github.com/cygnusorbit/wppoppop" target="_blank" class="button button-secondary btn-docs">Online Documentation</a>
@@ -39,10 +71,14 @@ $custom_js         = isset($settings['custom_js']) ? $settings['custom_js'] : ''
         <button type="button" class="nav-tab" data-tab="tab-advanced">Advanced</button>
     </div>
 
-    <form id="wppoppop-settings-form">
+    <form method="post" action="" id="wppoppop-settings-form">
+        <?php wp_nonce_field('wppoppop_save_settings_action', 'wppoppop_save_settings_nonce_field'); ?>
+        <input type="hidden" name="wppoppop_save_settings_submit" value="1">
+        <input type="hidden" name="action" value="wppoppop_save_settings">
+        <input type="hidden" name="nonce" id="wppoppop_settings_nonce_field" value="<?php echo esc_attr(wp_create_nonce('wppoppop_settings_nonce')); ?>">
+
         <!-- Tab 1: General Settings -->
         <div id="tab-general" class="settings-tab-pane active">
-            
             <!-- Mailing Settings Section -->
             <div class="settings-section-badge">Mailing Settings</div>
             <table class="settings-form-table">
@@ -330,7 +366,7 @@ $custom_js         = isset($settings['custom_js']) ? $settings['custom_js'] : ''
 
         <!-- Fixed / Bottom Actions Bar -->
         <div class="settings-actions-footer">
-            <button type="submit" id="btn-save-settings" class="button btn-save-primary">
+            <button type="submit" name="btn_save_settings" id="btn-save-settings" class="button btn-save-primary">
                 <span class="dashicons dashicons-yes"></span> Save Settings
             </button>
         </div>

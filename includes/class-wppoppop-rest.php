@@ -20,6 +20,29 @@ class WpPopPop_Rest {
             'callback'            => [$this, 'handle_submission'],
             'permission_callback' => '__return_true'
         ]);
+
+        register_rest_route('wppoppop/v1', '/popup/(?P<uid>[a-zA-Z0-9_-]+)', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'handle_get_popup'],
+            'permission_callback' => '__return_true'
+        ]);
+    }
+
+    public function handle_get_popup(WP_REST_Request $request) {
+        $uid = sanitize_key($request->get_param('uid'));
+        global $wpdb;
+        $row = $wpdb->get_row($wpdb->prepare("SELECT uid, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s AND status = 'publish'", $uid), ARRAY_A);
+
+        if (!$row) {
+            return new WP_REST_Response(['message' => 'Popup not found'], 404);
+        }
+
+        $config = json_decode($row['data'], true);
+        ob_start();
+        (new WpPopPop_Front())->render_popup_markup($row['uid'], $config, false);
+        $html = ob_get_clean();
+
+        return new WP_REST_Response(['html' => $html], 200);
     }
 
     public function handle_impression(WP_REST_Request $request) {
@@ -41,7 +64,6 @@ class WpPopPop_Rest {
         $fields = isset($params['fields']) ? (array)$params['fields'] : [];
         $country = isset($params['country']) ? sanitize_text_field($params['country']) : '';
 
-        // Honeypot validation
         if (!empty($params['_wppoppop_hp_email'])) {
             return new WP_REST_Response(['success' => false, 'message' => 'Spam blocked.'], 400);
         }
@@ -70,9 +92,6 @@ class WpPopPop_Rest {
             'country_code'  => $country
         ]);
 
-        return new WP_REST_Response([
-            'success' => true,
-            'message' => 'Thank you! Submission processed successfully.'
-        ], 200);
+        return new WP_REST_Response(['success' => true, 'message' => 'Thank you! Submission processed successfully.'], 200);
     }
 }

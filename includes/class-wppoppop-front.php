@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 class WpPopPop_Front {
     public function __construct() {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
-        add_action('wp_footer', [$this, 'render_targeted_popups']);
+        add_action('wp_footer', [$this, 'render_frontend_delivery']);
         add_shortcode('wppoppop', [$this, 'render_shortcode']);
         add_shortcode('wppoppop_ab', [$this, 'render_ab_shortcode']);
     }
@@ -29,18 +29,38 @@ class WpPopPop_Front {
         return '';
     }
 
-    public function render_targeted_popups() {
+    public function render_frontend_delivery() {
         if (is_admin()) return;
 
         global $wpdb;
         $popups = $wpdb->get_results("SELECT uid, data FROM {$wpdb->prefix}wppoppop_items WHERE status = 'publish'");
         if (empty($popups)) return;
 
+        $preload_popups = !empty(wppoppop_get_setting('preload_popups'));
+        $manifest = [];
+
         foreach ($popups as $popup) {
             $config = json_decode($popup->data, true);
-            if (!empty($config) && $this->matches_targeting($config)) {
+            if (empty($config) || !$this->matches_targeting($config)) continue;
+
+            if ($preload_popups) {
                 $this->render_popup_markup($popup->uid, $config, false);
+            } else {
+                $manifest[] = [
+                    'uid'      => $popup->uid,
+                    'triggers' => $config['triggers'] ?? [],
+                    'styling'  => $config['styling'] ?? [],
+                    'sound_fx' => $config['sound_fx'] ?? []
+                ];
             }
+        }
+
+        if (!$preload_popups && !empty($manifest)) {
+            ?>
+            <script type="text/javascript" id="wppoppop-ondemand-manifest">
+                window.wppoppop_manifest = <?php echo wp_json_encode($manifest); ?>;
+            </script>
+            <?php
         }
     }
 
@@ -57,9 +77,13 @@ class WpPopPop_Front {
         if ($geo_mode !== 'all' && !empty($targeting['geo_countries'])) {
             $countries = array_map('trim', explode(',', strtoupper($targeting['geo_countries'])));
             $visitor_country = $this->detect_visitor_country();
-
             if ($geo_mode === 'whitelist' && (!in_array($visitor_country, $countries, true))) return false;
             if ($geo_mode === 'blacklist' && in_array($visitor_country, $countries, true)) return false;
+        }
+
+        if (!empty($targeting['category_slugs']) && is_single()) {
+            $cats = array_map('trim', explode(',', $targeting['category_slugs']));
+            if (!has_category($cats)) return false;
         }
 
         if ($scope === 'everywhere') return true;
@@ -109,9 +133,9 @@ class WpPopPop_Front {
         $bg_color = isset($meta['bg_color']) ? esc_attr($meta['bg_color']) : '#ffffff';
         $elements = isset($config['elements']) ? (array)$config['elements'] : [];
         $styling  = isset($config['styling']) ? $config['styling'] : [];
+        $sound_fx = isset($config['sound_fx']) ? $config['sound_fx'] : [];
         $config_json = esc_attr(wp_json_encode($config));
 
-        // Backdrop Glassmorphism Blur
         $backdrop_blur = !empty($styling['backdrop_blur']) ? intval($styling['backdrop_blur']) : 0;
         $overlay_style = $backdrop_blur > 0 ? "backdrop-filter: blur({$backdrop_blur}px); -webkit-backdrop-filter: blur({$backdrop_blur}px);" : "";
 
@@ -122,6 +146,7 @@ class WpPopPop_Front {
              class="<?php echo esc_attr($wrapper_class); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
              data-config="<?php echo $config_json; ?>"
+             data-sound-fx="<?php echo esc_attr($sound_fx['enable'] ?? 0); ?>"
              style="<?php echo $display_style; ?>">
 
             <div class="wppoppop-box" style="width: <?php echo $width; ?>px; height: <?php echo $height; ?>px; background-color: <?php echo $bg_color; ?>;">
@@ -133,6 +158,7 @@ class WpPopPop_Front {
                     <input type="text" name="_wppoppop_hp_email" class="_wppoppop_hp_field" tabindex="-1" autocomplete="off">
                 </div>
 
+                <!-- Screen 1 -->
                 <div class="wppoppop-screen-container wppoppop-screen-active" data-screen-index="1">
                     <div class="wppoppop-box-content">
                         <?php foreach ($elements as $el) : 
@@ -142,6 +168,7 @@ class WpPopPop_Front {
                     </div>
                 </div>
 
+                <!-- Screen 2 -->
                 <div class="wppoppop-screen-container" data-screen-index="2" style="display:none;">
                     <div class="wppoppop-box-content">
                         <?php foreach ($elements as $el) : 
@@ -171,7 +198,9 @@ class WpPopPop_Front {
         $anim_delay = isset($el['anim_delay']) ? intval($el['anim_delay']) : 0;
         $anim_dur = isset($el['anim_duration']) ? intval($el['anim_duration']) : 500;
         $custom_class = isset($el['custom_class']) ? esc_attr($el['custom_class']) : '';
-        $options = isset($el['options']) ? (array)$el['options'] : ['10% OFF', 'FREE SHIP', '20% OFF', '5% OFF'];
+        $options = isset($el['options']) ? (array)$el['options'] : [];
+        $is_required = !empty($el['required']);
+        $req_attr = $is_required ? 'required' : '';
 
         $styles = "position:absolute;left:{$left}px;top:{$top}px;width:{$w}px;height:{$h}px;z-index:{$z};font-family:{$font_family};";
         ?>
@@ -182,14 +211,55 @@ class WpPopPop_Front {
              data-anim-delay="<?php echo $anim_delay; ?>"
              data-anim-duration="<?php echo $anim_dur; ?>"
              data-type="<?php echo esc_attr($el['type']); ?>"
-             data-field-name="<?php echo $field_name; ?>">
+             data-field-name="<?php echo $field_name; ?>"
+             data-required="<?php echo $is_required ? '1' : '0'; ?>"
+             data-error-msg="<?php echo esc_attr($el['error_msg'] ?? 'Please fill out this field.'); ?>">
 
-            <?php if ($el['type'] === 'wheel') : ?>
+            <?php if ($el['type'] === 'countdown') : 
+                $timer_mins = isset($el['timer_mins']) ? intval($el['timer_mins']) : 15;
+                ?>
+                <div class="wppoppop-countdown-widget" data-mins="<?php echo $timer_mins; ?>">
+                    <div class="countdown-col"><span class="unit-val unit-mins"><?php echo sprintf('%02d', $timer_mins); ?></span><span class="unit-label">Mins</span></div>
+                    <span class="countdown-sep">:</span>
+                    <div class="countdown-col"><span class="unit-val unit-secs">00</span><span class="unit-label">Secs</span></div>
+                </div>
+
+            <?php elseif ($el['type'] === 'progress') : 
+                $pct = isset($el['progress_pct']) ? intval($el['progress_pct']) : 50;
+                ?>
+                <div class="wppoppop-progress-track">
+                    <div class="wppoppop-progress-fill" style="width: <?php echo $pct; ?>%; background-color: <?php echo esc_attr($el['bg_color'] ?: '#2271b1'); ?>;">
+                        <span class="wppoppop-progress-label"><?php echo esc_html($el['content'] ?: $pct . '% Completed'); ?></span>
+                    </div>
+                </div>
+
+            <?php elseif ($el['type'] === 'slider') : 
+                $s_min = isset($el['slider_min']) ? intval($el['slider_min']) : 0;
+                $s_max = isset($el['slider_max']) ? intval($el['slider_max']) : 100;
+                $s_val = isset($el['slider_val']) ? intval($el['slider_val']) : 50;
+                $s_prefix = isset($el['slider_prefix']) ? esc_attr($el['slider_prefix']) : '$';
+                ?>
+                <div class="wppoppop-slider-widget">
+                    <div class="wppoppop-slider-header">
+                        <span class="slider-field-title"><?php echo esc_html($el['content'] ?: 'Select Value'); ?>:</span>
+                        <span class="slider-live-value"><?php echo $s_prefix . $s_val; ?></span>
+                    </div>
+                    <input type="range" class="wppoppop-slider-control" name="<?php echo $field_name ?: 'slider_value'; ?>" min="<?php echo $s_min; ?>" max="<?php echo $s_max; ?>" value="<?php echo $s_val; ?>" data-prefix="<?php echo $s_prefix; ?>">
+                </div>
+
+            <?php elseif ($el['type'] === 'signature') : ?>
+                <div class="wppoppop-signature-wrap" style="width:100%;height:100%;">
+                    <canvas class="wppoppop-sig-canvas" width="<?php echo $w; ?>" height="<?php echo $h; ?>"></canvas>
+                    <button type="button" class="wppoppop-sig-clear-btn">Clear</button>
+                    <input type="hidden" name="<?php echo $field_name ?: 'signature'; ?>" class="wppoppop-sig-input" value="">
+                </div>
+
+            <?php elseif ($el['type'] === 'wheel') : ?>
                 <div class="wppoppop-wheel-wrapper">
                     <canvas class="wppoppop-wheel-canvas" width="220" height="220" data-slices="<?php echo esc_attr(wp_json_encode($options)); ?>"></canvas>
                     <div class="wppoppop-wheel-pointer">&#9660;</div>
                     <button type="button" class="wppoppop-wheel-spin-btn">SPIN!</button>
-                    <input type="hidden" name="<?php echo $field_name ? $field_name : 'prize'; ?>" value="">
+                    <input type="hidden" name="<?php echo $field_name ?: 'prize'; ?>" value="">
                 </div>
 
             <?php elseif ($el['type'] === 'text') : ?>
@@ -198,50 +268,7 @@ class WpPopPop_Front {
                 </div>
 
             <?php elseif ($el['type'] === 'input') : ?>
-                <input type="email" class="wppoppop-field-email" name="<?php echo $field_name ? $field_name : 'email'; ?>" placeholder="<?php echo esc_attr(isset($el['content']) ? $el['content'] : 'Enter your email...'); ?>" required style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
-
-            <?php elseif ($el['type'] === 'dropdown') : ?>
-                <select name="<?php echo $field_name ? $field_name : 'choice'; ?>" class="wppoppop-field-select" style="width:100%;height:100%;padding:0 10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
-                    <?php foreach ($options as $opt) : ?>
-                        <option value="<?php echo esc_attr($opt); ?>"><?php echo esc_html($opt); ?></option>
-                    <?php endforeach; ?>
-                </select>
-
-            <?php elseif ($el['type'] === 'radio') : ?>
-                <div class="wppoppop-radio-group" style="display:flex;gap:12px;align-items:center;height:100%;font-size:13px;">
-                    <?php foreach ($options as $idx => $opt) : ?>
-                        <label style="cursor:pointer;display:flex;align-items:center;gap:4px;">
-                            <input type="radio" name="<?php echo $field_name ? $field_name : 'radio_option'; ?>" value="<?php echo esc_attr($opt); ?>" <?php checked($idx, 0); ?>>
-                            <?php echo esc_html($opt); ?>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-
-            <?php elseif ($el['type'] === 'checkbox') : ?>
-                <div class="wppoppop-checkbox-group" style="display:flex;gap:12px;align-items:center;height:100%;font-size:13px;">
-                    <?php foreach ($options as $opt) : ?>
-                        <label style="cursor:pointer;display:flex;align-items:center;gap:4px;">
-                            <input type="checkbox" name="<?php echo $field_name ? $field_name . '[]' : 'terms[]'; ?>" value="<?php echo esc_attr($opt); ?>">
-                            <?php echo esc_html($opt); ?>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-
-            <?php elseif ($el['type'] === 'rating') : ?>
-                <div class="wppoppop-rating-stars" data-name="<?php echo $field_name ? $field_name : 'rating'; ?>" style="font-size:24px;color:#f0ad4e;cursor:pointer;user-select:none;display:flex;align-items:center;height:100%;">
-                    <span class="star-item" data-value="1">&#9733;</span>
-                    <span class="star-item" data-value="2">&#9733;</span>
-                    <span class="star-item" data-value="3">&#9733;</span>
-                    <span class="star-item" data-value="4">&#9733;</span>
-                    <span class="star-item" data-value="5">&#9733;</span>
-                    <input type="hidden" name="<?php echo $field_name ? $field_name : 'rating'; ?>" value="5">
-                </div>
-
-            <?php elseif ($el['type'] === 'date') : ?>
-                <input type="date" name="<?php echo $field_name ? $field_name : 'date'; ?>" class="wppoppop-field-date" style="width:100%;height:100%;padding:0 10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
-
-            <?php elseif ($el['type'] === 'number') : ?>
-                <input type="number" class="wppoppop-field-number" name="<?php echo $field_name ? $field_name : 'qty'; ?>" value="1" min="0" style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+                <input type="email" class="wppoppop-field-email" name="<?php echo $field_name ?: 'email'; ?>" placeholder="<?php echo esc_attr(isset($el['content']) ? $el['content'] : 'Enter your email...'); ?>" <?php echo $req_attr; ?> style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
 
             <?php elseif ($el['type'] === 'button') : ?>
                 <button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#00a32a'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">

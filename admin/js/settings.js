@@ -1,61 +1,101 @@
 
-(function($) {
+jQuery(document).ready(function($) {
     'use strict';
 
-    $(document).ready(function() {
-        // Tab switching
-        $('.settings-nav-tabs .nav-tab').on('click', function(e) {
-            e.preventDefault();
-            $('.settings-nav-tabs .nav-tab').removeClass('active');
-            $('.settings-tab-pane').removeClass('active');
+    // Tab switching
+    $('.settings-nav-tabs .nav-tab').on('click', function(e) {
+        e.preventDefault();
+        $('.settings-nav-tabs .nav-tab').removeClass('active');
+        $('.settings-tab-pane').removeClass('active');
 
-            $(this).addClass('active');
-            $('#' + $(this).data('tab')).addClass('active');
-        });
+        $(this).addClass('active');
+        $('#' + $(this).data('tab')).addClass('active');
+    });
 
-        // Save Settings via AJAX
-        $('#wppoppop-settings-form').on('submit', function(e) {
-            e.preventDefault();
-            const btn = $('#btn-save-settings');
-            btn.prop('disabled', true).text('Saving...');
+    function showNotice(type, msg) {
+        const noticeArea = $('#wppoppop-settings-notice-area');
+        const alertClass = (type === 'success') ? 'notice-success' : 'notice-error';
+        noticeArea.html('<div class="notice ' + alertClass + ' is-dismissible" style="margin: 15px 0;"><p>' + msg + '</p></div>');
+        $('html, body').animate({ scrollTop: 0 }, 200);
+    }
 
-            const formData = $(this).serialize();
+    // Save Settings via AJAX
+    $('#wppoppop-settings-form').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const btn = $('#btn-save-settings');
+        btn.prop('disabled', true).text('Saving...');
 
-            $.post(wppoppop_settings_vars.ajax_url, {
+        const ajaxUrl = (typeof wppoppop_settings_vars !== 'undefined' && wppoppop_settings_vars.ajax_url)
+            ? wppoppop_settings_vars.ajax_url
+            : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
+
+        const nonce = (typeof wppoppop_settings_vars !== 'undefined' && wppoppop_settings_vars.nonce)
+            ? wppoppop_settings_vars.nonce
+            : $('#wppoppop_settings_nonce_field').val();
+
+        const formData = form.serialize();
+
+        $.ajax({
+            url: ajaxUrl,
+            type: 'POST',
+            data: {
                 action: 'wppoppop_save_settings',
-                nonce: wppoppop_settings_vars.nonce,
+                nonce: nonce,
                 data: formData
-            }, function(res) {
+            },
+            success: function(res) {
                 btn.prop('disabled', false).html('<span class="dashicons dashicons-yes"></span> Save Settings');
-                if (res.success) {
-                    alert(res.data.message);
+                if (res && res.success) {
+                    showNotice('success', res.data.message || 'Settings saved successfully!');
                 } else {
-                    alert('Error: ' + res.data.message);
+                    showNotice('error', (res && res.data && res.data.message) ? res.data.message : 'Error saving settings.');
                 }
-            });
-        });
-
-        // Reset Cookies Action
-        $('#btn-reset-cookie').on('click', function(e) {
-            e.preventDefault();
-            if (!confirm('Are you sure you want to reset all visitor cookies? Popups will reappear for all users.')) {
-                return;
+            },
+            error: function(xhr, status, error) {
+                btn.prop('disabled', false).html('<span class="dashicons dashicons-yes"></span> Save Settings');
+                showNotice('error', 'AJAX save failed (HTTP ' + xhr.status + '): ' + (xhr.responseText || error));
             }
-
-            const btn = $(this);
-            btn.prop('disabled', true);
-
-            $.post(wppoppop_settings_vars.ajax_url, {
-                action: 'wppoppop_reset_cookies',
-                nonce: wppoppop_settings_vars.nonce
-            }, function(res) {
-                btn.prop('disabled', false);
-                if (res.success) {
-                    alert(res.data.message);
-                } else {
-                    alert(res.data.message);
-                }
-            });
         });
     });
-})(jQuery);
+
+    // Reset Cookies Action
+    $('#btn-reset-cookie').on('click', function(e) {
+        e.preventDefault();
+        if (!confirm('Are you sure you want to reset all visitor cookies? Popups will reappear for all users.')) {
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true);
+
+        const ajaxUrl = (typeof wppoppop_settings_vars !== 'undefined' && wppoppop_settings_vars.ajax_url)
+            ? wppoppop_settings_vars.ajax_url
+            : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
+
+        const nonce = (typeof wppoppop_settings_vars !== 'undefined' && wppoppop_settings_vars.nonce)
+            ? wppoppop_settings_vars.nonce
+            : $('#wppoppop_settings_nonce_field').val();
+
+        $.ajax({
+            url: ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'wppoppop_reset_cookies',
+                nonce: nonce
+            },
+            success: function(res) {
+                btn.prop('disabled', false);
+                if (res && res.success) {
+                    showNotice('success', res.data.message);
+                } else {
+                    showNotice('error', (res && res.data) ? res.data.message : 'Error resetting cookies.');
+                }
+            },
+            error: function(xhr, status, error) {
+                btn.prop('disabled', false);
+                showNotice('error', 'AJAX request failed (HTTP ' + xhr.status + '): ' + error);
+            }
+        });
+    });
+});

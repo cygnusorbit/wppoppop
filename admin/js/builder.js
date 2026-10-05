@@ -6,8 +6,9 @@ jQuery(document).ready(function($) {
     let currentScreen = 1;
     let zIndexCounter = 1;
     const stage = $('#wppoppop-stage');
+    const features = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.features) ? wppoppop_vars.features : {};
 
-    // Vertical Accordion Toggle
+    // Accordion Toggle
     $('.wppoppop-sidebar-right').on('click', '.accordion-header', function(e) {
         e.preventDefault();
         const item = $(this).closest('.accordion-item');
@@ -89,17 +90,6 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $(document).on('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-            e.preventDefault();
-            $('#btn-undo').trigger('click');
-        }
-        if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-            e.preventDefault();
-            $('#btn-redo').trigger('click');
-        }
-    });
-
     // Alignment Toolbar
     $('.btn-align').on('click', function() {
         if (!activeElement) return;
@@ -118,7 +108,7 @@ jQuery(document).ready(function($) {
         recordState();
     });
 
-    // Left Panel Tabs
+    // Left Tabs
     $('.panel-tabs .tab-btn').on('click', function() {
         const parent = $(this).closest('.wppoppop-panel');
         parent.find('.tab-btn, .tab-pane').removeClass('active');
@@ -126,7 +116,7 @@ jQuery(document).ready(function($) {
         $('#' + $(this).data('tab')).addClass('active');
     });
 
-    // Multi-Screen Tabs
+    // Screen Switcher
     $('.btn-screen-toggle').on('click', function() {
         $('.btn-screen-toggle').removeClass('active');
         $(this).addClass('active');
@@ -166,17 +156,33 @@ jQuery(document).ready(function($) {
         let width = 200;
         let height = 40;
         let fieldName = '';
-        let options = ['10% OFF', 'FREE SHIP', '20% OFF', '5% OFF'];
+        let options = [];
 
         let innerMarkup = '';
-        if (type === 'wheel') {
+        if (type === 'countdown') {
+            width = 240;
+            height = 55;
+            innerMarkup = '<div style="background:#0f172a;color:#fff;border-radius:4px;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;">15:00 Evergreen Timer</div>';
+        } else if (type === 'progress') {
+            width = 300;
+            height = 24;
+            innerMarkup = '<div style="background:#2271b1;color:#fff;border-radius:12px;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">50% Completed</div>';
+        } else if (type === 'slider') {
+            fieldName = 'budget';
+            width = 220;
+            height = 45;
+            innerMarkup = '<div style="font-size:12px;font-weight:600;">Slider: $50 <input type="range" disabled style="width:100%;"></div>';
+        } else if (type === 'signature') {
+            fieldName = 'signature';
+            width = 240;
+            height = 100;
+            innerMarkup = '<div style="background:#f8fafc;border:1px dashed #94a3b8;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px;">Sign Here</div>';
+        } else if (type === 'wheel') {
             fieldName = 'prize';
             width = 220;
             height = 220;
+            options = ['10% OFF', 'FREE SHIP', '20% OFF', '5% OFF'];
             innerMarkup = '<div style="background:#f6f7f7;border:2px dashed #999;border-radius:50%;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;">Fortune Wheel</div>';
-        } else if (type === 'text') {
-            height = 30;
-            innerMarkup = '<div class="content-render" style="font-size:16px;color:#222;">' + defaultContent + '</div>';
         } else if (type === 'input') {
             fieldName = 'email';
             width = 220;
@@ -184,15 +190,18 @@ jQuery(document).ready(function($) {
         } else if (type === 'dropdown') {
             fieldName = 'choice';
             width = 220;
+            options = ['Option 1', 'Option 2', 'Option 3'];
             innerMarkup = '<select disabled style="width:100%;height:100%;"><option>Option 1</option><option>Option 2</option></select>';
         } else if (type === 'radio') {
             fieldName = 'radio_choice';
             width = 240;
+            options = ['Option 1', 'Option 2'];
             innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="radio" checked disabled> Opt 1</label></div>';
         } else if (type === 'checkbox') {
             fieldName = 'terms';
             width = 240;
-            innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="checkbox" checked disabled> Checkbox</label></div>';
+            options = ['Agree to terms'];
+            innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="checkbox" checked disabled> Agree</label></div>';
         } else if (type === 'rating') {
             fieldName = 'rating';
             width = 160;
@@ -206,14 +215,14 @@ jQuery(document).ready(function($) {
             fieldName = 'qty';
             width = 120;
             innerMarkup = '<input type="number" value="1" disabled style="width:100%;height:100%;">';
+        } else if (type === 'paybutton') {
+            width = 160;
+            defaultContent = 'Pay Now';
+            defaultBg = '#0284c7';
+            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">' + defaultContent + '</button>';
         } else if (type === 'button') {
             width = 160;
             innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">Submit</button>';
-        } else if (type === 'nextstep') {
-            width = 160;
-            defaultContent = 'Next Step &rarr;';
-            defaultBg = '#2271b1';
-            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">' + defaultContent + '</button>';
         } else {
             innerMarkup = '<div class="content-render">[' + type + ']</div>';
         }
@@ -224,6 +233,12 @@ jQuery(document).ready(function($) {
             .data('screen', currentScreen)
             .data('field-name', fieldName)
             .data('options', options)
+            .data('timer-mins', 15)
+            .data('progress-pct', 50)
+            .data('slider-min', 0)
+            .data('slider-max', 100)
+            .data('slider-val', 50)
+            .data('slider-prefix', '$')
             .data('font-family', 'Inherit')
             .data('anim', 'fade')
             .data('anim-delay', 0)
@@ -279,24 +294,22 @@ jQuery(document).ready(function($) {
         $('#inspector-empty-state').hide();
         $('#inspector-controls').show();
 
-        const inspectorItem = $('.accordion-item[data-accordion="inspector"]');
-        if (!inspectorItem.hasClass('active')) {
-            inspectorItem.addClass('active');
-            inspectorItem.find('.accordion-body').slideDown(150);
-        }
-
         const type = elem.data('type');
-        let contentVal = '';
-        if (type === 'text' || type === 'html') contentVal = elem.find('.content-render').text();
-        if (type === 'button' || type === 'nextstep') contentVal = elem.find('button').text();
-        if (type === 'input') contentVal = elem.find('input').attr('placeholder');
-
         $('#prop-field-name').val(elem.data('field-name') || '');
-        $('#prop-content').val(contentVal);
-        $('#prop-font-family').val(elem.data('font-family') || 'Inherit');
-        $('#prop-font-size').val(elem.data('font-size') || 16);
-        $('#prop-color').val(rgbToHex(elem.data('color') || '#222222'));
-        $('#prop-bg-color').val(rgbToHex(elem.data('bg-color') || '#00a32a'));
+        $('#prop-content').val(elem.text().trim());
+
+        $('#group-prop-slider').toggle(type === 'slider');
+        $('#group-prop-countdown').toggle(type === 'countdown');
+
+        if (type === 'slider') {
+            $('#prop-slider-min').val(elem.data('slider-min') || 0);
+            $('#prop-slider-max').val(elem.data('slider-max') || 100);
+            $('#prop-slider-val').val(elem.data('slider-val') || 50);
+            $('#prop-slider-prefix').val(elem.data('slider-prefix') || '$');
+        }
+        if (type === 'countdown') {
+            $('#prop-countdown-mins').val(elem.data('timer-mins') || 15);
+        }
 
         if (type === 'wheel' || type === 'dropdown' || type === 'radio' || type === 'checkbox') {
             $('#group-prop-options').show();
@@ -305,10 +318,6 @@ jQuery(document).ready(function($) {
         } else {
             $('#group-prop-options').hide();
         }
-
-        $('#prop-anim-effect').val(elem.data('anim') || 'fade');
-        $('#prop-anim-delay').val(elem.data('anim-delay') || 0);
-        $('#prop-anim-duration').val(elem.data('anim-duration') || 500);
 
         highlightLayerItem(elem.attr('id'));
     }
@@ -322,42 +331,22 @@ jQuery(document).ready(function($) {
 
     stage.on('click', deselectElement);
 
-    $('#prop-field-name').on('input', function() {
-        if (activeElement) activeElement.data('field-name', $(this).val());
-    });
+    $('#prop-slider-min').on('input', function() { if (activeElement) activeElement.data('slider-min', $(this).val()); });
+    $('#prop-slider-max').on('input', function() { if (activeElement) activeElement.data('slider-max', $(this).val()); });
+    $('#prop-slider-val').on('input', function() { if (activeElement) activeElement.data('slider-val', $(this).val()); });
+    $('#prop-slider-prefix').on('input', function() { if (activeElement) activeElement.data('slider-prefix', $(this).val()); });
+    $('#prop-countdown-mins').on('input', function() { if (activeElement) activeElement.data('timer-mins', $(this).val()); });
 
-    $('#prop-font-family').on('change', function() {
-        if (activeElement) {
-            const font = $(this).val();
-            activeElement.data('font-family', font);
-            activeElement.css('font-family', font === 'Inherit' ? 'inherit' : font);
-        }
-    });
-
+    $('#prop-field-name').on('input', function() { if (activeElement) activeElement.data('field-name', $(this).val()); });
     $('#prop-options').on('input', function() {
         if (!activeElement) return;
         const opts = $(this).val().split(',').map(s => s.trim()).filter(Boolean);
         activeElement.data('options', opts);
     });
-
     $('#prop-content').on('input', function() {
         if (!activeElement) return;
-        const val = $(this).val();
-        const type = activeElement.data('type');
-        if (type === 'text' || type === 'html') activeElement.find('.content-render').text(val);
-        if (type === 'button' || type === 'nextstep') activeElement.find('button').text(val);
-        if (type === 'input') activeElement.find('input').attr('placeholder', val);
+        activeElement.find('.content-render').text($(this).val());
         refreshLayers();
-    });
-
-    $('#prop-anim-effect').on('change', function() {
-        if (activeElement) activeElement.data('anim', $(this).val());
-    });
-    $('#prop-anim-delay').on('input', function() {
-        if (activeElement) activeElement.data('anim-delay', parseInt($(this).val(), 10) || 0);
-    });
-    $('#prop-anim-duration').on('input', function() {
-        if (activeElement) activeElement.data('anim-duration', parseInt($(this).val(), 10) || 500);
     });
 
     $('#prop-duplicate-element').on('click', function() {
@@ -411,16 +400,10 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
 
-    // Save Action
+    // Save Action: Consolidates all 15 Sections
     $('#wppoppop-btn-save').on('click', function(e) {
         e.preventDefault();
         const saveBtn = $(this);
-
-        if (typeof wppoppop_vars === 'undefined' || !wppoppop_vars.ajax_url) {
-            alert('Configuration error: wppoppop_vars is not defined. Please refresh the page.');
-            return;
-        }
-
         saveBtn.prop('disabled', true).text('Saving...');
 
         const elementsData = [];
@@ -432,6 +415,12 @@ jQuery(document).ready(function($) {
                 type: el.data('type'),
                 field_name: el.data('field-name') || '',
                 options: el.data('options') || [],
+                timer_mins: el.data('timer-mins') || 15,
+                progress_pct: el.data('progress-pct') || 50,
+                slider_min: el.data('slider-min') || 0,
+                slider_max: el.data('slider-max') || 100,
+                slider_val: el.data('slider-val') || 50,
+                slider_prefix: el.data('slider-prefix') || '$',
                 font_family: el.data('font-family') || 'Inherit',
                 anim: el.data('anim') || 'none',
                 anim_delay: el.data('anim-delay') || 0,
@@ -462,13 +451,48 @@ jQuery(document).ready(function($) {
                 close_esc: $('#style-close-esc').is(':checked'),
                 close_backdrop: $('#style-close-backdrop').is(':checked')
             },
+            sound_fx: {
+                enable: $('#sound-enable').is(':checked') ? 1 : 0
+            },
             triggers: {
                 on_load: $('#trig-load').is(':checked'),
                 on_load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
                 on_exit: $('#trig-exit').is(':checked'),
                 on_scroll: $('#trig-scroll').is(':checked') ? 50 : 0,
                 on_idle: $('#trig-idle').is(':checked') ? 15 : 0,
-                click_selector: $('#trig-click-selector').val() || ''
+                click_selector: $('#trig-click-selector').val() || '',
+                on_adblock: $('#trig-adblock').length ? $('#trig-adblock').is(':checked') : false
+            },
+            conditional_logic: {
+                if_field: $('#logic-if-field').val() || '',
+                equals_val: $('#logic-equals-val').val() || '',
+                target_layer: $('#logic-target-layer').val() || '',
+                action: $('#logic-action').val() || 'show'
+            },
+            math: {
+                expression: $('#math-expression').length ? $('#math-expression').val() : '',
+                output_target: $('#math-output-target').length ? $('#math-output-target').val() : ''
+            },
+            sidetab: {
+                enable: $('#sidetab-enable').is(':checked'),
+                label: $('#sidetab-label').val() || 'Special Offer',
+                position: $('#sidetab-position').val() || 'right',
+                bg_color: $('#sidetab-bg').val() || '#2271b1'
+            },
+            payment: {
+                enable: $('#pay-enable').is(':checked'),
+                amount: parseFloat($('#pay-amount').val()) || 19.99,
+                currency: $('#pay-currency').val() || 'USD',
+                gateway: $('#pay-gateway').val() || 'Stripe'
+            },
+            downloads: {
+                enable: $('#dl-enable').is(':checked'),
+                file_url: $('#dl-file-url').val() || '',
+                expiry_hours: parseInt($('#dl-expiry-hours').val(), 10) || 24
+            },
+            video: {
+                enable: $('#video-enable').is(':checked'),
+                mode: $('#video-trigger-mode').val() || 'ended'
             },
             autoresponder: {
                 enable_user_email: $('#ar-enable').is(':checked'),
@@ -485,7 +509,20 @@ jQuery(document).ready(function($) {
                 api_url: $('#ac-api-url').val() || '',
                 api_key: $('#ac-api-key').val() || ''
             },
+            integrations: {
+                enable_webhook: $('#int-enable-webhook').is(':checked'),
+                webhook_url: $('#int-webhook-url').val() || ''
+            },
+            sms: {
+                enable_sms: $('#sms-enable').is(':checked'),
+                twilio_sid: $('#sms-twilio-sid').val() || '',
+                twilio_token: $('#sms-twilio-token').val() || '',
+                from_phone: $('#sms-from-phone').val() || '',
+                to_phone: $('#sms-to-phone').val() || ''
+            },
             targeting: {
+                scope: $('#target-scope').val() || 'everywhere',
+                category_slugs: $('#target-cat-slugs').val() || '',
                 geo_mode: $('#target-geo-mode').val() || 'all',
                 geo_countries: $('#target-geo-countries').val() || '',
                 devices: $('#target-devices').val() || 'all'
@@ -512,10 +549,6 @@ jQuery(document).ready(function($) {
                 saveBtn.prop('disabled', false).text('Save Popup');
                 if (res.success) {
                     $('#wppoppop-popup-uid').val(res.data.uid);
-                    if (window.history && window.history.replaceState) {
-                        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + res.data.uid;
-                        window.history.replaceState({path: newUrl}, '', newUrl);
-                    }
                     alert(res.data.message || 'Popup saved successfully!');
                 } else {
                     alert('Save failed: ' + (res.data ? res.data.message : 'Unknown error'));
@@ -523,12 +556,12 @@ jQuery(document).ready(function($) {
             },
             error: function(xhr, status, error) {
                 saveBtn.prop('disabled', false).text('Save Popup');
-                alert('Save failed (HTTP ' + xhr.status + '): ' + (xhr.responseText || error));
+                alert('Save failed: ' + error);
             }
         });
     });
 
-    // Populate on edit
+    // Populate on edit: Restores all 15 Sections
     if (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.current_uid) {
         $.get(wppoppop_vars.ajax_url, {
             action: 'wppoppop_load_popup',
@@ -550,6 +583,9 @@ jQuery(document).ready(function($) {
                     $('#style-close-esc').prop('checked', config.styling.close_esc !== false);
                     $('#style-close-backdrop').prop('checked', config.styling.close_backdrop !== false);
                 }
+                if (config.sound_fx) {
+                    $('#sound-enable').prop('checked', !!config.sound_fx.enable);
+                }
                 if (config.triggers) {
                     $('#trig-load').prop('checked', !!config.triggers.on_load);
                     $('#trig-load-delay').val(config.triggers.on_load_delay || 0);
@@ -557,6 +593,38 @@ jQuery(document).ready(function($) {
                     $('#trig-scroll').prop('checked', !!config.triggers.on_scroll);
                     $('#trig-idle').prop('checked', !!config.triggers.on_idle);
                     $('#trig-click-selector').val(config.triggers.click_selector || '');
+                    if ($('#trig-adblock').length) $('#trig-adblock').prop('checked', !!config.triggers.on_adblock);
+                }
+                if (config.conditional_logic) {
+                    $('#logic-if-field').val(config.conditional_logic.if_field || '');
+                    $('#logic-equals-val').val(config.conditional_logic.equals_val || '');
+                    $('#logic-target-layer').val(config.conditional_logic.target_layer || '');
+                    $('#logic-action').val(config.conditional_logic.action || 'show');
+                }
+                if (config.math) {
+                    if ($('#math-expression').length) $('#math-expression').val(config.math.expression || '');
+                    if ($('#math-output-target').length) $('#math-output-target').val(config.math.output_target || '');
+                }
+                if (config.sidetab) {
+                    $('#sidetab-enable').prop('checked', !!config.sidetab.enable);
+                    $('#sidetab-label').val(config.sidetab.label || 'Special Offer');
+                    $('#sidetab-position').val(config.sidetab.position || 'right');
+                    $('#sidetab-bg').val(config.sidetab.bg_color || '#2271b1');
+                }
+                if (config.payment) {
+                    $('#pay-enable').prop('checked', !!config.payment.enable);
+                    $('#pay-amount').val(config.payment.amount || 19.99);
+                    $('#pay-currency').val(config.payment.currency || 'USD');
+                    $('#pay-gateway').val(config.payment.gateway || 'Stripe');
+                }
+                if (config.downloads) {
+                    $('#dl-enable').prop('checked', !!config.downloads.enable);
+                    $('#dl-file-url').val(config.downloads.file_url || '');
+                    $('#dl-expiry-hours').val(config.downloads.expiry_hours || 24);
+                }
+                if (config.video) {
+                    $('#video-enable').prop('checked', !!config.video.enable);
+                    $('#video-trigger-mode').val(config.video.mode || 'ended');
                 }
                 if (config.autoresponder) {
                     $('#ar-enable').prop('checked', !!config.autoresponder.enable_user_email);
@@ -573,7 +641,20 @@ jQuery(document).ready(function($) {
                     $('#ac-api-url').val(config.activecampaign.api_url || '');
                     $('#ac-api-key').val(config.activecampaign.api_key || '');
                 }
+                if (config.integrations) {
+                    $('#int-enable-webhook').prop('checked', !!config.integrations.enable_webhook);
+                    $('#int-webhook-url').val(config.integrations.webhook_url || '');
+                }
+                if (config.sms) {
+                    $('#sms-enable').prop('checked', !!config.sms.enable_sms);
+                    $('#sms-twilio-sid').val(config.sms.twilio_sid || '');
+                    $('#sms-twilio-token').val(config.sms.twilio_token || '');
+                    $('#sms-from-phone').val(config.sms.from_phone || '');
+                    $('#sms-to-phone').val(config.sms.to_phone || '');
+                }
                 if (config.targeting) {
+                    $('#target-scope').val(config.targeting.scope || 'everywhere');
+                    $('#target-cat-slugs').val(config.targeting.category_slugs || '');
                     $('#target-geo-mode').val(config.targeting.geo_mode || 'all').trigger('change');
                     $('#target-geo-countries').val(config.targeting.geo_countries || '');
                     $('#target-devices').val(config.targeting.devices || 'all');
