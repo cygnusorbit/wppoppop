@@ -95,7 +95,17 @@ class WpPopPop_Front {
             }
         }
 
-        // 4. URL Query / UTM Targeting
+        // 4. WooCommerce Cart Subtotal Targeting
+        $woo = $config['woocommerce'] ?? [];
+        if (!empty($woo['enable_cart_rule']) && class_exists('WooCommerce') && function_exists('WC') && WC()->cart) {
+            $subtotal = floatval(WC()->cart->get_subtotal());
+            $min_sub = floatval($woo['min_cart_total'] ?? 0);
+            $max_sub = floatval($woo['max_cart_total'] ?? 0);
+            if ($min_sub > 0 && $subtotal < $min_sub) return false;
+            if ($max_sub > 0 && $subtotal > $max_sub) return false;
+        }
+
+        // 5. URL Query / UTM Targeting
         if (!empty($targeting['url_param_key'])) {
             $key = sanitize_key($targeting['url_param_key']);
             if (!isset($_GET[$key])) return false;
@@ -104,13 +114,13 @@ class WpPopPop_Front {
             }
         }
 
-        // 5. Taxonomy Category Filter
+        // 6. Category Taxonomy Filter
         if (!empty($targeting['category_slugs']) && is_single()) {
             $cats = array_map('trim', explode(',', $targeting['category_slugs']));
             if (!has_category($cats)) return false;
         }
 
-        // 6. Page Scope
+        // 7. Page Scope
         if ($scope === 'everywhere') return true;
         if ($scope === 'posts' && is_single()) return true;
         if ($scope === 'pages' && is_page()) return true;
@@ -175,12 +185,24 @@ class WpPopPop_Front {
         $elements = (array)($config['elements'] ?? []);
         $styling  = $config['styling'] ?? [];
         $tabs     = $config['tabs'] ?? [];
+        $custom_code = $config['custom_code'] ?? [];
         $config_json = esc_attr(wp_json_encode($config));
 
+        $position_mode = $styling['position_mode'] ?? 'modal'; // modal, ribbon_top, ribbon_bottom
         $backdrop_blur = intval($styling['backdrop_blur'] ?? 0);
-        $overlay_style = $backdrop_blur > 0 ? "backdrop-filter: blur({$backdrop_blur}px); -webkit-backdrop-filter: blur({$backdrop_blur}px);" : "";
+        $overlay_style = ($backdrop_blur > 0 && $position_mode === 'modal') 
+            ? "backdrop-filter: blur({$backdrop_blur}px); -webkit-backdrop-filter: blur({$backdrop_blur}px);" 
+            : "";
 
-        $wrapper_class = $is_inline ? 'wppoppop-inline-container' : 'wppoppop-overlay';
+        $wrapper_class = 'wppoppop-overlay';
+        if ($is_inline) {
+            $wrapper_class = 'wppoppop-inline-container';
+        } elseif ($position_mode === 'ribbon_top') {
+            $wrapper_class = 'wppoppop-ribbon wppoppop-ribbon-top';
+        } elseif ($position_mode === 'ribbon_bottom') {
+            $wrapper_class = 'wppoppop-ribbon wppoppop-ribbon-bottom';
+        }
+
         $display_style = $is_inline ? 'position: relative;' : 'display: none; ' . $overlay_style;
 
         // Group elements by screen
@@ -193,6 +215,13 @@ class WpPopPop_Front {
         if (empty($screens)) $screens[1] = [];
         ksort($screens);
         ?>
+        <!-- Injected Scoped CSS -->
+        <?php if (!empty($custom_code['custom_css'])) : ?>
+            <style type="text/css">
+                <?php echo wp_strip_all_tags($custom_code['custom_css']); ?>
+            </style>
+        <?php endif; ?>
+
         <!-- Sticky Side Tab Trigger -->
         <?php if (!empty($tabs['enable'])) : ?>
             <div class="wppoppop-side-tab wppoppop-side-tab-<?php echo esc_attr($tabs['position'] ?? 'left'); ?>"
@@ -213,7 +242,7 @@ class WpPopPop_Front {
                     <button type="button" class="wppoppop-close-btn" aria-label="Close">&times;</button>
                 <?php endif; ?>
 
-                <!-- Anti-Spam Honeypot Field -->
+                <!-- Anti-Spam Honeypot -->
                 <div style="display:none !important;" aria-hidden="true">
                     <input type="text" name="_wppoppop_hp_email" class="_wppoppop_hp_field" tabindex="-1" autocomplete="off">
                 </div>
@@ -235,6 +264,20 @@ class WpPopPop_Front {
                 </div>
             </div>
         </div>
+
+        <!-- Custom JS Hooks Script -->
+        <?php if (!empty($custom_code['custom_js'])) : ?>
+            <script type="text/javascript">
+                (function() {
+                    try {
+                        const hookFn = <?php echo $custom_code['custom_js']; ?>;
+                        if (typeof hookFn === 'function') {
+                            hookFn('<?php echo esc_js($uid); ?>');
+                        }
+                    } catch(e) { console.error('WpPopPop Hook Error:', e); }
+                })();
+            </script>
+        <?php endif; ?>
         <?php
     }
 

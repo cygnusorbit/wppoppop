@@ -66,7 +66,7 @@ class WpPopPop_Ajax {
     public function save_popup() {
         check_ajax_referer('wppoppop_builder_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized']);
+            wp_send_json_error(['message' => 'Unauthorized action']);
         }
 
         global $wpdb;
@@ -94,14 +94,14 @@ class WpPopPop_Ajax {
             ]);
         }
 
-        wp_send_json_success(['uid' => $uid, 'message' => 'Configuration saved successfully!']);
+        wp_send_json_success(['uid' => $uid, 'message' => 'Popup configuration saved successfully!']);
     }
 
     public function load_popup() {
         check_ajax_referer('wppoppop_builder_nonce', 'nonce');
         global $wpdb;
         $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_GET['uid'])), ARRAY_A);
-        if (!$row) wp_send_json_error(['message' => 'Not found']);
+        if (!$row) wp_send_json_error(['message' => 'Popup not found']);
         wp_send_json_success($row);
     }
 
@@ -110,7 +110,7 @@ class WpPopPop_Ajax {
         if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized']);
         global $wpdb;
         $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_POST['uid'])), ARRAY_A);
-        if (!$row) wp_send_json_error(['message' => 'Source not found']);
+        if (!$row) wp_send_json_error(['message' => 'Source popup not found']);
 
         $new_uid = substr(md5(uniqid(wp_rand(), true)), 0, 16);
         $wpdb->insert($wpdb->prefix . 'wppoppop_items', [
@@ -119,7 +119,7 @@ class WpPopPop_Ajax {
             'data' => $row['data'],
             'status' => 'publish'
         ]);
-        wp_send_json_success(['uid' => $new_uid, 'message' => 'Duplicated successfully!']);
+        wp_send_json_success(['uid' => $new_uid, 'message' => 'Popup duplicated successfully!']);
     }
 
     public function delete_popup() {
@@ -127,7 +127,7 @@ class WpPopPop_Ajax {
         if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized']);
         global $wpdb;
         $wpdb->delete($wpdb->prefix . 'wppoppop_items', ['uid' => sanitize_key($_POST['uid'])]);
-        wp_send_json_success(['message' => 'Deleted successfully.']);
+        wp_send_json_success(['message' => 'Popup deleted successfully.']);
     }
 
     public function export_popup() {
@@ -151,7 +151,7 @@ class WpPopPop_Ajax {
             'data' => $raw,
             'status' => 'publish'
         ]);
-        wp_send_json_success(['message' => 'Imported successfully!']);
+        wp_send_json_success(['message' => 'Popup imported successfully!']);
     }
 
     public function save_campaign() {
@@ -208,7 +208,7 @@ class WpPopPop_Ajax {
         if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized']);
         global $wpdb;
         $row = $wpdb->get_row($wpdb->prepare("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid WHERE s.id = %d", intval($_GET['id'])), ARRAY_A);
-        if (!$row) wp_send_json_error(['message' => 'Not found']);
+        if (!$row) wp_send_json_error(['message' => 'Record not found']);
         $row['fields'] = json_decode($row['fields_data'], true) ?: [];
         wp_send_json_success($row);
     }
@@ -221,7 +221,7 @@ class WpPopPop_Ajax {
             'email' => sanitize_email($_POST['email']),
             'fields_data' => wp_json_encode((array)($_POST['fields'] ?? []))
         ], ['id' => intval($_POST['id'])]);
-        wp_send_json_success(['message' => 'Submission updated!']);
+        wp_send_json_success(['message' => 'Submission updated successfully!']);
     }
 
     public function delete_submission() {
@@ -313,7 +313,7 @@ class WpPopPop_Ajax {
         if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized']);
         parse_str(isset($_POST['data']) ? wp_unslash($_POST['data']) : '', $parsed);
         update_option('wppoppop_settings', $parsed);
-        wp_send_json_success(['message' => 'Settings updated!']);
+        wp_send_json_success(['message' => 'Settings updated successfully!']);
     }
 
     public function reset_cookies() {
@@ -351,7 +351,7 @@ class WpPopPop_Ajax {
     public function submit_form() {
         $this->set_cors_headers();
 
-        // 1. Honeypot check
+        // 1. Anti-Spam Honeypot Verification
         if (!empty($_POST['_wppoppop_hp_email'])) {
             wp_send_json_error(['message' => 'Bot activity absorbed.']);
         }
@@ -361,7 +361,7 @@ class WpPopPop_Ajax {
         $fields = isset($_POST['fields']) ? (array)$_POST['fields'] : [];
         $visitor_country = sanitize_text_field($_POST['country'] ?? '');
 
-        // 2. Handle File Uploads (if sent as multipart/form-data)
+        // 2. Handle File Uploads
         if (!empty($_FILES)) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             foreach ($_FILES as $fk => $fval) {
@@ -398,6 +398,35 @@ class WpPopPop_Ajax {
         $notif  = $config['notifications'] ?? [];
         $is_double_optin = !empty($notif['enable_double_optin']);
 
+        // 5. Dynamic WooCommerce Coupon Engine
+        $generated_coupon = '';
+        $coupon_cfg = $config['coupons'] ?? [];
+        if (!empty($coupon_cfg['enable'])) {
+            $prefix = !empty($coupon_cfg['prefix']) ? strtoupper(sanitize_text_field($coupon_cfg['prefix'])) : 'POP-';
+            $generated_coupon = $prefix . strtoupper(wp_generate_password(8, false));
+            $fields['coupon_code'] = $generated_coupon;
+
+            // If WooCommerce is active, create unique coupon entry
+            if (class_exists('WooCommerce')) {
+                $discount_type = !empty($coupon_cfg['discount_type']) ? sanitize_text_field($coupon_cfg['discount_type']) : 'percent';
+                $amount = !empty($coupon_cfg['amount']) ? floatval($coupon_cfg['amount']) : 10;
+                
+                $coupon = new WC_Coupon();
+                $coupon->set_code($generated_coupon);
+                $coupon->set_discount_type($discount_type);
+                $coupon->set_amount($amount);
+                $coupon->set_individual_use(true);
+                $coupon->set_usage_limit(1);
+                $coupon->set_description('Auto-generated by WpPopPop for ' . $email);
+                $coupon->save();
+
+                // Auto-Apply directly to live WooCommerce cart
+                if (!empty($coupon_cfg['auto_apply']) && function_exists('WC') && WC()->cart) {
+                    WC()->cart->apply_coupon($generated_coupon);
+                }
+            }
+        }
+
         $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}wppoppop_items SET submissions = submissions + 1 WHERE uid = %s", $uid));
         if (!$is_double_optin) {
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}wppoppop_items SET confirmations = confirmations + 1 WHERE uid = %s", $uid));
@@ -412,21 +441,26 @@ class WpPopPop_Ajax {
             'country_code'  => $visitor_country
         ]);
 
-        wppoppop_log_event('lead_submission', "Lead captured: {$email}", ['uid' => $uid, 'utm_campaign' => $fields['utm_campaign'] ?? 'direct']);
+        wppoppop_log_event('lead_submission', "Lead captured: {$email}", [
+            'uid'          => $uid,
+            'coupon'       => $generated_coupon,
+            'utm_campaign' => $fields['utm_campaign'] ?? 'direct'
+        ]);
 
-        // 5. Secure Download Token Delivery
+        // 6. Secure Downloads Pipeline
         $download_url = '';
         $downloads = $config['downloads'] ?? [];
         if (!empty($downloads['enable']) && !empty($downloads['file_url'])) {
             $download_url = $downloads['file_url'];
         }
 
-        // 6. User Autoresponder Email
+        // 7. Autoresponder Email Delivery
         $autoresponder = $config['autoresponder'] ?? [];
         if (!empty($autoresponder['enable_user_email']) && !$is_double_optin) {
             $subject = $autoresponder['subject'] ?? 'Thank you for subscribing!';
             $body    = $autoresponder['message'] ?? 'Thank you!';
             $body = str_replace('{email}', $email, $body);
+            $body = str_replace('{coupon_code}', $generated_coupon, $body);
             foreach ($fields as $k => $v) {
                 $v_str = is_array($v) ? implode(', ', $v) : $v;
                 $body = str_replace('{' . $k . '}', $v_str, $body);
@@ -434,7 +468,7 @@ class WpPopPop_Ajax {
             wp_mail($email, $subject, nl2br(esc_html($body)), ['Content-Type: text/html; charset=UTF-8']);
         }
 
-        // 7. Webhook & CRM Dispatches (Mailchimp, ActiveCampaign, Generic Webhook)
+        // 8. Webhook & CRM Dispatches (HMAC-SHA256 Signing)
         $mkt = $config['marketing'] ?? [];
         if (!empty($mkt['webhook_url'])) {
             $payload = wp_json_encode(['email' => $email, 'fields' => $fields, 'timestamp' => time()]);
@@ -445,10 +479,10 @@ class WpPopPop_Ajax {
             wp_remote_post(esc_url_raw($mkt['webhook_url']), ['body' => $payload, 'headers' => $headers, 'timeout' => 5]);
         }
 
-        // 8. Twilio SMS Notification
+        // 9. Twilio SMS Alerts
         $sms = $config['sms'] ?? [];
         if (!empty($sms['enable']) && !empty($sms['sid']) && !empty($sms['token']) && !empty($sms['to'])) {
-            $sms_body = "New Lead: " . $email;
+            $sms_body = "New Lead: " . $email . ($generated_coupon ? " (Coupon: {$generated_coupon})" : "");
             wp_remote_post("https://api.twilio.com/2010-04-01/Accounts/{$sms['sid']}/Messages.json", [
                 'headers' => ['Authorization' => 'Basic ' . base64_encode("{$sms['sid']}:{$sms['token']}")],
                 'body'    => ['From' => $sms['from'], 'To' => $sms['to'], 'Body' => $sms_body]
@@ -461,9 +495,10 @@ class WpPopPop_Ajax {
             : (!empty($actions['success_message']) ? esc_html($actions['success_message']) : 'Thank you! Your information has been registered.');
 
         wp_send_json_success([
-            'message'      => $resp_msg,
-            'download_url' => $download_url,
-            'redirect_url' => (!empty($actions['redirect_url']) && !$is_double_optin) ? esc_url_raw($actions['redirect_url']) : ''
+            'message'        => $resp_msg,
+            'coupon_code'    => $generated_coupon,
+            'download_url'   => $download_url,
+            'redirect_url'   => (!empty($actions['redirect_url']) && !$is_double_optin) ? esc_url_raw($actions['redirect_url']) : ''
         ]);
     }
 

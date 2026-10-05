@@ -9,7 +9,7 @@
             'fakeinbox.com', 'dispostable.com', 'getnada.com', 'burnermail.io'
         ];
 
-        // Synthesize Audio Chimes (Web Audio API)
+        // Synthesize Audio Chimes
         const AudioChimes = {
             ctx: null,
             init: function() {
@@ -53,8 +53,8 @@
             if (urlParams.has(p)) utmData[p] = urlParams.get(p);
         });
 
-        // Initialize Popups
-        $('.wppoppop-overlay, .wppoppop-inline-container').each(function() {
+        // Initialize Popups & Ribbons
+        $('.wppoppop-overlay, .wppoppop-ribbon, .wppoppop-inline-container').each(function() {
             const popup = $(this);
             const uid = popup.data('uid');
             const config = popup.data('config') || {};
@@ -63,24 +63,31 @@
             let displayed = false;
 
             // Interactive Dynamic Tag Replacement ({user_name}, {query:utm})
-            popup.find('.wppoppop-text-render').each(function() {
-                const textElem = $(this);
-                let content = textElem.data('raw-template') || textElem.text();
+            function updateDynamicTokens(couponCode) {
+                popup.find('.wppoppop-text-render').each(function() {
+                    const textElem = $(this);
+                    let content = textElem.data('raw-template') || textElem.text();
 
-                if (wppoppop_front_vars.current_user && wppoppop_front_vars.current_user.logged_in) {
-                    content = content.replace(/{user_name}/g, wppoppop_front_vars.current_user.name)
-                                     .replace(/{user_email}/g, wppoppop_front_vars.current_user.email);
-                } else {
-                    content = content.replace(/{user_name}/g, 'Friend')
-                                     .replace(/{user_email}/g, '');
-                }
+                    if (wppoppop_front_vars.current_user && wppoppop_front_vars.current_user.logged_in) {
+                        content = content.replace(/{user_name}/g, wppoppop_front_vars.current_user.name)
+                                         .replace(/{user_email}/g, wppoppop_front_vars.current_user.email);
+                    } else {
+                        content = content.replace(/{user_name}/g, 'Friend')
+                                         .replace(/{user_email}/g, '');
+                    }
 
-                urlParams.forEach(function(val, key) {
-                    content = content.replace(new RegExp('{query:' + key + '}', 'g'), val);
+                    if (couponCode) {
+                        content = content.replace(/{coupon_code}/g, couponCode);
+                    }
+
+                    urlParams.forEach(function(val, key) {
+                        content = content.replace(new RegExp('{query:' + key + '}', 'g'), val);
+                    });
+
+                    textElem.html(content);
                 });
-
-                textElem.html(content);
-            });
+            }
+            updateDynamicTokens('');
 
             // Auto-fill logged-in email
             if (wppoppop_front_vars.current_user && wppoppop_front_vars.current_user.logged_in) {
@@ -172,6 +179,10 @@
                 }, function(res) {
                     if (res.success) {
                         if (sounds.enable !== false) AudioChimes.playChime('win');
+
+                        if (res.data.coupon_code) {
+                            updateDynamicTokens(res.data.coupon_code);
+                        }
 
                         const statusOverlay = popup.find('.wppoppop-status-overlay');
                         popup.find('.wppoppop-status-message').text(res.data.message);

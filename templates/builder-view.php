@@ -91,7 +91,7 @@ if (!defined('ABSPATH')) {
             </div>
         </main>
 
-        <!-- Right Configuration Sidebar: Full 15 Vertical Accordion Sections -->
+        <!-- Right Configuration Sidebar: Full 17 Accordion Sections -->
         <aside class="wppoppop-panel wppoppop-sidebar-right">
             <div class="wppoppop-accordion">
 
@@ -105,11 +105,11 @@ if (!defined('ABSPATH')) {
                         <div id="inspector-empty-state">Select any canvas layer to edit properties.</div>
                         <div id="inspector-controls" style="display: none;">
                             <div class="form-group">
-                                <label>Binding Key (e.g. email, prize, coupon):</label>
+                                <label>Binding Key (e.g. email, prize, coupon_code):</label>
                                 <input type="text" id="prop-field-name" class="widefat">
                             </div>
                             <div class="form-group">
-                                <label>Content / Dynamic Tokens ({user_name}, {query:utm_source}):</label>
+                                <label>Content / Dynamic Tokens ({user_name}, {coupon_code}):</label>
                                 <input type="text" id="prop-content" class="widefat">
                             </div>
                             <div class="form-group" id="group-prop-goto" style="display:none;">
@@ -199,13 +199,21 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 4. Box & Backdrop Styling -->
+                <!-- 4. Box & Backdrop Styling (With Ribbon Options) -->
                 <div class="accordion-item" data-accordion="backdrop">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-art"></span> Box & Backdrop Styling</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-art"></span> Box & Placement</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
+                        <div class="form-group">
+                            <label>Display Mode / Position:</label>
+                            <select id="style-position-mode" class="widefat">
+                                <option value="modal">Centered Modal Window</option>
+                                <option value="ribbon_top">Sticky Top Floating Ribbon</option>
+                                <option value="ribbon_bottom">Sticky Bottom Floating Ribbon</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>Glassmorphism Blur (px):</label>
                             <input type="number" id="style-backdrop-blur" value="5" min="0" max="25" class="widefat">
@@ -244,13 +252,46 @@ if (!defined('ABSPATH')) {
                             <input type="text" id="math-expression" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Target Layer ID for Calculation Output:</label>
+                            <label>Target Layer ID for Output:</label>
                             <input type="text" id="math-output-target" class="widefat">
                         </div>
                     </div>
                 </div>
 
-                <!-- 7. Sticky Side Tabs -->
+                <!-- 7. WooCommerce & Dynamic Coupons -->
+                <div class="accordion-item" data-accordion="coupons">
+                    <div class="accordion-header">
+                        <span class="accordion-title"><span class="dashicons dashicons-tickets"></span> Coupons & WooCommerce</span>
+                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="trigger-option"><input type="checkbox" id="cpn-enable"> Generate Unique Discount Coupon</label>
+                        <div class="form-group" style="margin-top:6px;">
+                            <label>Coupon Code Prefix:</label>
+                            <input type="text" id="cpn-prefix" value="POP-" class="widefat">
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Type:</label>
+                            <select id="cpn-type" class="widefat">
+                                <option value="percent">Percentage Discount (%)</option>
+                                <option value="fixed_cart">Fixed Cart Discount ($)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Amount:</label>
+                            <input type="number" id="cpn-amount" value="15" class="widefat">
+                        </div>
+                        <label class="trigger-option"><input type="checkbox" id="cpn-auto-apply" checked> Auto-Apply to WooCommerce Cart</label>
+                        <hr>
+                        <label class="trigger-option"><input type="checkbox" id="woo-cart-rule"> Trigger on Cart Subtotal</label>
+                        <div class="form-group" style="margin-top:6px;">
+                            <label>Minimum Cart Total ($):</label>
+                            <input type="number" id="woo-min-cart" value="50" class="widefat">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Sticky Side Tabs -->
                 <div class="accordion-item" data-accordion="sidetabs">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-tag"></span> Sticky Side Tabs</span>
@@ -272,7 +313,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 8. Payments & Checkout -->
+                <!-- 9. Payments & Checkout -->
                 <div class="accordion-item" data-accordion="payments">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-money-alt"></span> Payments & Checkout</span>
@@ -291,7 +332,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 9. Secure Downloads -->
+                <!-- 10. Secure Downloads -->
                 <div class="accordion-item" data-accordion="downloads">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-download"></span> Secure Downloads</span>
@@ -306,7 +347,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 10. Video Listeners -->
+                <!-- 11. Video Listeners -->
                 <div class="accordion-item" data-accordion="video">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-video-alt3"></span> Video Listeners</span>
@@ -317,7 +358,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 11. Subscriber Autoresponder -->
+                <!-- 12. Subscriber Autoresponder -->
                 <div class="accordion-item" data-accordion="autoresponder">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-email"></span> Autoresponder</span>
@@ -330,13 +371,13 @@ if (!defined('ABSPATH')) {
                             <input type="text" id="ar-subject" value="Thank you!" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Message Content:</label>
-                            <textarea id="ar-message" class="widefat" rows="4">Thank you for subscribing!</textarea>
+                            <label>Message Content ({coupon_code}, {email}):</label>
+                            <textarea id="ar-message" class="widefat" rows="4">Thank you for subscribing! Your discount code: {coupon_code}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- 12. Marketing & Webhooks -->
+                <!-- 13. Marketing & Webhooks -->
                 <div class="accordion-item" data-accordion="marketing">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-share-alt"></span> Marketing & Webhooks</span>
@@ -355,7 +396,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 13. Twilio SMS Alerts -->
+                <!-- 14. Twilio SMS Alerts -->
                 <div class="accordion-item" data-accordion="twilio">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-phone"></span> Twilio SMS Alerts</span>
@@ -383,7 +424,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 14. Targeting & Attribution -->
+                <!-- 15. Targeting & Attribution -->
                 <div class="accordion-item" data-accordion="targeting">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-location-alt"></span> Targeting & Attribution</span>
@@ -429,14 +470,10 @@ if (!defined('ABSPATH')) {
                                 <option value="blacklist">Block Selected</option>
                             </select>
                         </div>
-                        <div class="form-group" id="group-geo-countries" style="display:none;">
-                            <label>Country Codes (e.g. US, CA, GB):</label>
-                            <input type="text" id="target-geo-countries" class="widefat">
-                        </div>
                     </div>
                 </div>
 
-                <!-- 15. Frequency Capping & Cookies -->
+                <!-- 16. Frequency & Cookies -->
                 <div class="accordion-item" data-accordion="cookies">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-visibility"></span> Frequency & Cookies</span>
@@ -451,11 +488,25 @@ if (!defined('ABSPATH')) {
                                 <option value="days">Once Every X Days</option>
                             </select>
                         </div>
-                        <div class="form-group" id="group-freq-days" style="display:none;">
-                            <label>Days count:</label>
-                            <input type="number" id="freq-days-count" value="7" min="1" class="widefat">
-                        </div>
                         <label class="trigger-option"><input type="checkbox" id="freq-hide-submitted" checked> Suppress after submission</label>
+                    </div>
+                </div>
+
+                <!-- 17. Custom Scoped CSS & JavaScript Hooks -->
+                <div class="accordion-item" data-accordion="customcode">
+                    <div class="accordion-header">
+                        <span class="accordion-title"><span class="dashicons dashicons-editor-code"></span> Scoped Code & Hooks</span>
+                        <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="form-group">
+                            <label>Scoped Custom CSS:</label>
+                            <textarea id="code-custom-css" rows="4" class="widefat" placeholder="#wppoppop-popup-UID { ... }"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Custom JS Lifecycle Callback:</label>
+                            <textarea id="code-custom-js" rows="4" class="widefat" placeholder="function(uid) { console.log('Initialized', uid); }"></textarea>
+                        </div>
                     </div>
                 </div>
 
