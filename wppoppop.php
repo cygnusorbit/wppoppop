@@ -45,6 +45,15 @@ add_action('plugins_loaded', function () {
     if (class_exists(\WPPopPop\Core\FloatingLauncher::class)) {
         \WPPopPop\Core\FloatingLauncher::init();
     }
+    if (class_exists(\WPPopPop\Core\MultiStepManager::class)) {
+        \WPPopPop\Core\MultiStepManager::init();
+    }
+    if (class_exists(\WPPopPop\Core\SocialProofManager::class)) {
+        \WPPopPop\Core\SocialProofManager::init();
+    }
+    if (class_exists(\WPPopPop\Core\LinkLockerManager::class)) {
+        \WPPopPop\Core\LinkLockerManager::init();
+    }
     if (class_exists(\WPPopPop\Core\Plugin::class)) {
         \WPPopPop\Core\Plugin::get_instance()->init();
     }
@@ -98,6 +107,9 @@ add_action('plugins_loaded', function () {
     }
     if (class_exists(\WPPopPop\Targeting\ABTestingManager::class)) {
         \WPPopPop\Targeting\ABTestingManager::init();
+    }
+    if (class_exists(\WPPopPop\Targeting\ScheduleManager::class)) {
+        \WPPopPop\Targeting\ScheduleManager::init();
     }
     if (class_exists(\WPPopPop\Targeting\TargetingManager::class)) {
         \WPPopPop\Targeting\TargetingManager::init();

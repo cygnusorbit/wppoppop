@@ -1001,7 +1001,54 @@ class AdminPages {
                         </tr>
                     </table>
 
-                                                                                <div class="wppoppop-section-header">WooCommerce Cart Abandonment Recovery & Offers</div>
+                                                                                                    <div class="wppoppop-section-header">Live Activity Social Proof Stream (FOMO Notifications)</div>
+                    <table class="wppoppop-form-table">
+                        <tr>
+                            <th style="width: 220px;">Social Proof Stream:</th>
+                            <td>
+                                <label class="wppoppop-switch">
+                                    <input type="checkbox" name="settings[social_proof_enabled]" value="1" <?php checked(!empty($settings['social_proof_enabled'])); ?> />
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="wppoppop-switch-label">Enable Live Activity Conversion Toasts</span>
+                                <div class="wppoppop-field-desc">Displays subtle notification cards in the corner showing recent subscriber conversions to build trust and increase urgency.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Display Position:</th>
+                            <td>
+                                <select name="settings[social_proof_position]" class="wppoppop-select" style="min-width: 180px;">
+                                    <option value="bottom-left" <?php selected($settings['social_proof_position'] ?? 'bottom-left', 'bottom-left'); ?>>Bottom Left Corner</option>
+                                    <option value="bottom-right" <?php selected($settings['social_proof_position'] ?? '', 'bottom-right'); ?>>Bottom Right Corner</option>
+                                    <option value="top-left" <?php selected($settings['social_proof_position'] ?? '', 'top-left'); ?>>Top Left Corner</option>
+                                    <option value="top-right" <?php selected($settings['social_proof_position'] ?? '', 'top-right'); ?>>Top Right Corner</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Toast Duration (Seconds):</th>
+                            <td>
+                                <input type="number" name="settings[social_proof_duration]" min="2" max="30" value="<?php echo esc_attr($settings['social_proof_duration'] ?? 5); ?>" class="wppoppop-input" style="width: 100px;" />
+                                <div class="wppoppop-field-desc">How long each notification card remains visible on screen.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Interval Delay (Seconds):</th>
+                            <td>
+                                <input type="number" name="settings[social_proof_interval]" min="4" max="120" value="<?php echo esc_attr($settings['social_proof_interval'] ?? 10); ?>" class="wppoppop-input" style="width: 100px;" />
+                                <div class="wppoppop-field-desc">Cooldown pause between successive notifications.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Fallback Activities (Name|Action|PopupID):</th>
+                            <td>
+                                <textarea name="settings[social_proof_fallbacks]" class="wppoppop-textarea" rows="4" placeholder="Sarah M.|claimed a 20% discount|0"><?php echo esc_textarea($settings['social_proof_fallbacks'] ?? ''); ?></textarea>
+                                <div class="wppoppop-field-desc">One entry per line: <code>Name|Action|PopupID</code> (used when recent database submissions are sparse).</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="wppoppop-section-header">WooCommerce Cart Abandonment Recovery & Offers</div>
                     <table class="wppoppop-form-table">
                         <tr>
                             <th style="width: 220px;">Cart Abandonment Detection:</th>

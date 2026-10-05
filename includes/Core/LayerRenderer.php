@@ -4,6 +4,11 @@ namespace WPPopPop\Core;
 class LayerRenderer {
     public static function render_layers(int $popup_id, string $fallback_content = ''): string {
         $raw_layers = get_post_meta($popup_id, '_wppoppop_builder_layers', true);
+        $canvas_cfg = get_post_meta($popup_id, '_wppoppop_canvas_config', true) ?: [];
+        $c_width    = absint($canvas_cfg['width'] ?? 640);
+        $c_height   = absint($canvas_cfg['height'] ?? 440);
+        $c_bg       = esc_attr($canvas_cfg['bgColor'] ?? '#ffffff');
+        $c_radius   = absint($canvas_cfg['borderRadius'] ?? 8);
 
         // If no visual builder layers are configured, render default template layout
         if (empty($raw_layers) || $raw_layers === '[]') {
@@ -21,7 +26,8 @@ class LayerRenderer {
                 </form>
             </div>
             <?php
-            return ob_get_clean();
+            $output = ob_get_clean();
+        return apply_filters('wppoppop_render_layers_output', $output, $popup_id, $layers);
         }
 
         $layers = json_decode($raw_layers, true);

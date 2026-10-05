@@ -1,3 +1,88 @@
+// Client-side Screen Width Check
+    if (cfg.minScreenWidth && window.innerWidth < cfg.minScreenWidth) {
+        return; // Suppress popup on smaller screens
+    }
+
+// 1. Browser Back-Button Interceptor (HTML5 History Trap)
+    if (cfg.backButtonTrap) {
+        window.history.pushState({ wppoppopTrap: true }, document.title, window.location.href);
+        window.addEventListener('popstate', function(e) {
+            if (e.state && e.state.wppoppopTrap) {
+                showModal('OnBackButton');
+                window.history.pushState(null, document.title, window.location.href);
+            }
+        });
+    }
+
+    // 2. Inactive Tab-Switch Trigger & Title Flasher (OnPageSwitch)
+    if (cfg.tabSwitchTrigger) {
+        let originalDocTitle = document.title;
+        let titleFlasherInterval = null;
+        let isTabFlasherActive = false;
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                if (!titleFlasherInterval) {
+                    isTabFlasherActive = true;
+                    titleFlasherInterval = setInterval(function() {
+                        document.title = (document.title === originalDocTitle)
+                            ? (cfg.tabSwitchTitle || '⚠️ Wait! Don\'t miss out!')
+                            : originalDocTitle;
+                    }, 1200);
+                }
+            } else if (document.visibilityState === 'visible') {
+                if (titleFlasherInterval) {
+                    clearInterval(titleFlasherInterval);
+                    titleFlasherInterval = null;
+                    document.title = originalDocTitle;
+                }
+                if (isTabFlasherActive) {
+                    isTabFlasherActive = false;
+                    showModal('OnPageSwitch');
+                }
+            }
+        });
+    }
+
+    // 3. Protected Link Locker Click Interceptor
+    let activeLockedDestination = null;
+    document.addEventListener('click', function(e) {
+        const lockTrigger = e.target.closest('[data-wppoppop-lock="1"], .wppoppop-lock-trigger');
+        if (!lockTrigger) return;
+
+        e.preventDefault();
+        const popupId = lockTrigger.getAttribute('data-popup-id') || cfg.popupId;
+        const destUrl = lockTrigger.getAttribute('data-dest-url') || lockTrigger.getAttribute('href');
+        const destTarget = lockTrigger.getAttribute('data-dest-target') || lockTrigger.getAttribute('target') || '_self';
+
+        if (destUrl && destUrl !== '#') {
+            activeLockedDestination = { url: destUrl, target: destTarget };
+        }
+
+        const targetModal = document.getElementById('wppoppop-modal-' + popupId) || document.getElementById('wppoppop-modal');
+        if (targetModal) {
+            targetModal.style.display = 'flex';
+            targetModal.setAttribute('aria-hidden', 'false');
+            if (window.WPPopPopCelebration) {
+                window.WPPopPopCelebration.playOpenSound();
+            }
+        }
+    });
+
+    // Execute post-submission Link Locker unlock navigation
+    function executeLinkLockerUnlock() {
+        if (activeLockedDestination && activeLockedDestination.url) {
+            setTimeout(function() {
+                if (activeLockedDestination.target === '_blank') {
+                    window.open(activeLockedDestination.url, '_blank');
+                } else {
+                    window.location.href = activeLockedDestination.url;
+                }
+                activeLockedDestination = null;
+            }, 1200);
+        }
+    }
+
 // Sticky Floating Tab Launcher Handlers
     document.addEventListener('click', function(e) {
         const tabBtn = e.target.closest('.wppoppop-tab-launcher');
@@ -271,6 +356,7 @@
                 form.innerHTML = '<div style="color:#10b981;padding:15px;font-weight:600;">' + (data.message || 'Subscribed successfully!') + '</div>';
                 if (window.WPPopPopCelebration) window.WPPopPopCelebration.celebrateConversion();
                 unlockContent(cfg.popupId);
+                executeLinkLockerUnlock();
                 setTimeout(closeModal, 2000);
             } else {
                 alert(data.message || 'Submission failed.');

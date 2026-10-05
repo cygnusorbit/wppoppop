@@ -3,6 +3,7 @@ namespace WPPopPop\Triggers;
 
 use WPPopPop\Core\LayerRenderer;
 use WPPopPop\Targeting\TargetingManager;
+use WPPopPop\Admin\SettingsManager;
 
 class TriggerManager {
     public function init(): void {
@@ -15,10 +16,12 @@ class TriggerManager {
         $events = ['onload', 'onscroll', 'onexit', 'oninactivity'];
         $active_event_popups = [];
 
-        foreach ($events as $event) {
-            $ids = TargetingManager::get_active_popups_for_event($event);
-            if (!empty($ids)) {
-                $active_event_popups[$event] = $ids[0];
+        if (class_exists(TargetingManager::class)) {
+            foreach ($events as $event) {
+                $ids = TargetingManager::get_active_popups_for_event($event);
+                if (!empty($ids)) {
+                    $active_event_popups[$event] = $ids[0];
+                }
             }
         }
 
@@ -29,7 +32,7 @@ class TriggerManager {
                 'post_status'    => 'publish',
                 'posts_per_page' => 1,
                 'orderby'        => 'date',
-                'order'          => 'DESC'
+                'order'          => 'DESC',
             ]);
             if (!empty($latest)) {
                 $fallback_id = $latest[0]->ID;
@@ -46,18 +49,29 @@ class TriggerManager {
 
         $primary_id = $active_event_popups['onload'] ?? ($fallback_id ?: reset($active_event_popups));
 
+        $is_locker        = (bool) get_post_meta($primary_id, '_wppoppop_is_locker', true);
+        $unlock_duration  = (int) (get_post_meta($primary_id, '_wppoppop_unlock_duration', true) ?: 30);
+        $back_button_trap = (bool) get_post_meta($primary_id, '_wppoppop_back_button_trap', true);
+        $tab_switch_trig  = (bool) get_post_meta($primary_id, '_wppoppop_tab_switch_trigger', true);
+        $tab_switch_title = get_post_meta($primary_id, '_wppoppop_tab_switch_title', true) ?: "⚠️ Don't leave your discount!";
+        $adblock_detector = class_exists(SettingsManager::class) ? (bool) SettingsManager::get('adblock_detector', 0) : false;
+
         wp_localize_script('wppoppop-triggers', 'WPPopPopConfig', [
-            'popupId'       => $primary_id,
-            'eventMap'      => $active_event_popups,
-            'exitIntent'    => isset($active_event_popups['onexit']),
-            'scrollPercent' => isset($active_event_popups['onscroll']) ? 40 : 0,
-            'inactivitySec' => isset($active_event_popups['oninactivity']) ? 15 : 0,
-            'isLocker'        => (bool) get_post_meta($primary_id, '_wppoppop_is_locker', true),
-            'unlockDuration'  => (int) (get_post_meta($primary_id, '_wppoppop_unlock_duration', true) ?: 30),
-            'adblockDetector' => (bool) \WPPopPop\Admin\SettingsManager::get('adblock_detector', 0),
-            'restUrl'       => rest_url('wppoppop/v1/submit'),
-            'impressionUrl' => rest_url('wppoppop/v1/impression'),
-            'restNonce'     => wp_create_nonce('wp_rest'),
+            'popupId'          => $primary_id,
+            'eventMap'         => $active_event_popups,
+            'exitIntent'       => isset($active_event_popups['onexit']),
+            'scrollPercent'    => isset($active_event_popups['onscroll']) ? 40 : 0,
+            'inactivitySec'    => isset($active_event_popups['oninactivity']) ? 15 : 0,
+            'isLocker'         => $is_locker,
+            'unlockDuration'   => $unlock_duration,
+            'backButtonTrap'   => $back_button_trap,
+            'tabSwitchTrigger' => $tab_switch_trig,
+            'tabSwitchTitle'   => sanitize_text_field($tab_switch_title),
+            'minScreenWidth'  => absint(get_post_meta($primary_id, '_wppoppop_min_screen_width', true) ?: 0),
+            'adblockDetector'  => $adblock_detector,
+            'restUrl'          => rest_url('wppoppop/v1/submit'),
+            'impressionUrl'    => rest_url('wppoppop/v1/impression'),
+            'restNonce'        => wp_create_nonce('wp_rest'),
         ]);
     }
 
@@ -66,7 +80,7 @@ class TriggerManager {
         $rendered = [];
 
         foreach ($events as $e) {
-            $ids = TargetingManager::get_active_popups_for_event($e);
+            $ids = class_exists(TargetingManager::class) ? TargetingManager::get_active_popups_for_event($e) : [];
             foreach ($ids as $id) {
                 if (isset($rendered[$id])) continue;
                 $rendered[$id] = true;
@@ -85,7 +99,7 @@ class TriggerManager {
     }
 
     public function inject_inline_popups(string $content): string {
-        if (!is_singular()) {
+        if (!is_singular() || !class_exists(TargetingManager::class)) {
             return $content;
         }
 

@@ -67,6 +67,12 @@ class SettingsManager {
             'woo_cart_threshold'       => 0,
             'woo_abandonment_popup'    => 0,
             'woo_auto_redirect'        => 0,
+            // Live Activity Social Proof Stream (FOMO Notifications)
+            'social_proof_enabled'     => 1,
+            'social_proof_position'    => 'bottom-left',
+            'social_proof_interval'    => 10,
+            'social_proof_duration'    => 5,
+            'social_proof_fallbacks'   => "Sarah M. from London|claimed a 20% discount|0\nAlex K. from New York|just subscribed|0\nLiam P. from Sydney|unlocked the secret promo|0",
         ];
     }
 

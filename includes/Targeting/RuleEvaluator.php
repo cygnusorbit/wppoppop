@@ -34,7 +34,17 @@ class RuleEvaluator {
             }
 
             // Check GeoIP Country Filter Gate
-            if (!GeoIPManager::is_country_allowed($p->ID)) {
+            if (class_exists(GeoIPManager::class) && !GeoIPManager::is_country_allowed($p->ID)) {
+                continue;
+            }
+
+            // Check Date-Time Flighting & Recurrence
+            if (class_exists(ScheduleManager::class) && !ScheduleManager::is_popup_scheduled($p->ID)) {
+                continue;
+            }
+
+            // Check Device Target (Desktop vs Mobile)
+            if (class_exists(ScheduleManager::class) && !ScheduleManager::is_device_allowed($p->ID)) {
                 continue;
             }
 
