@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 class WpPopPop_Ajax {
     public function __construct() {
+        // Builder actions
         add_action('wp_ajax_wppoppop_save_popup', [$this, 'save_popup']);
         add_action('wp_ajax_wppoppop_load_popup', [$this, 'load_popup']);
         add_action('wp_ajax_wppoppop_duplicate_popup', [$this, 'duplicate_popup']);
@@ -12,16 +13,24 @@ class WpPopPop_Ajax {
         add_action('wp_ajax_wppoppop_export_popup', [$this, 'export_popup']);
         add_action('wp_ajax_wppoppop_import_popup', [$this, 'import_popup']);
 
+        // A/B Campaign actions
         add_action('wp_ajax_wppoppop_save_campaign', [$this, 'save_campaign']);
         add_action('wp_ajax_wppoppop_delete_campaign', [$this, 'delete_campaign']);
         add_action('wp_ajax_wppoppop_export_submissions_csv', [$this, 'export_submissions_csv']);
 
+        // GDPR Actions
         add_action('wp_ajax_wppoppop_delete_submission', [$this, 'delete_submission']);
         add_action('wp_ajax_wppoppop_anonymize_submission', [$this, 'anonymize_submission']);
 
+        // Settings page actions
+        add_action('wp_ajax_wppoppop_save_settings', [$this, 'save_settings']);
+        add_action('wp_ajax_wppoppop_reset_cookies', [$this, 'reset_cookies']);
+
+        // Remote use embed endpoint
         add_action('wp_ajax_wppoppop_remote_embed', [$this, 'serve_remote_embed']);
         add_action('wp_ajax_nopriv_wppoppop_remote_embed', [$this, 'serve_remote_embed']);
 
+        // Frontend impression and submission
         add_action('wp_ajax_wppoppop_record_impression', [$this, 'record_impression']);
         add_action('wp_ajax_nopriv_wppoppop_record_impression', [$this, 'record_impression']);
         add_action('wp_ajax_wppoppop_submit_form', [$this, 'submit_form']);
@@ -29,17 +38,239 @@ class WpPopPop_Ajax {
 
         add_action('wp_ajax_wppoppop_process_payment', [$this, 'process_payment']);
         add_action('wp_ajax_nopriv_wppoppop_process_payment', [$this, 'process_payment']);
+    }
 
-        // Settings page actions
-        add_action('wp_ajax_wppoppop_save_settings', [$this, 'save_settings']);
-        add_action('wp_ajax_wppoppop_reset_cookies', [$this, 'reset_cookies']);
+    private function set_cors_headers() {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type");
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            status_header(200);
+            exit;
+        }
+    }
+
+    public function save_popup() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized action: Administrator permissions required.']);
+        }
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wppoppop_items';
+
+        $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : 'Untitled Popup';
+        // Generate a 16-character alphanumeric UID if empty
+        $uid   = (isset($_POST['uid']) && !empty($_POST['uid'])) ? sanitize_key($_POST['uid']) : substr(md5(uniqid(wp_rand(), true)), 0, 16);
+        $data  = isset($_POST['data']) ? wp_unslash($_POST['data']) : '{}';
+
+        if (json_decode($data) === null) {
+            wp_send_json_error(['message' => 'Malformed JSON: ' . json_last_error_msg()]);
+        }
+
+        $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE uid = %s", $uid));
+
+        if ($existing) {
+            $result = $wpdb->update(
+                $table_name,
+                ['title' => $title, 'data' => $data],
+                ['uid' => $uid],
+                ['%s', '%s'],
+                ['%s']
+            );
+
+            if ($result === false) {
+                wp_send_json_error(['message' => 'Database update error: ' . $wpdb->last_error]);
+            }
+        } else {
+            $result = $wpdb->insert(
+                $table_name,
+                [
+                    'uid'           => $uid,
+                    'title'         => $title,
+                    'data'          => $data,
+                    'status'        => 'publish',
+                    'impressions'   => 0,
+                    'submissions'   => 0,
+                    'confirmations' => 0
+                ],
+                ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
+            );
+
+            if ($result === false) {
+                wp_send_json_error(['message' => 'Database insert error: ' . $wpdb->last_error]);
+            }
+        }
+
+        wp_send_json_success([
+            'uid'     => $uid,
+            'message' => 'Popup configuration saved successfully!'
+        ]);
+    }
+
+    public function load_popup() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        global $wpdb;
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_GET['uid'])), ARRAY_A);
+        if (!$row) {
+            wp_send_json_error(['message' => 'Popup not found.']);
+        }
+        wp_send_json_success($row);
+    }
+
+    public function duplicate_popup() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
+
+        global $wpdb;
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_POST['uid'])), ARRAY_A);
+        if (!$row) wp_send_json_error(['message' => 'Source popup not found.']);
+
+        $new_uid = substr(md5(uniqid(wp_rand(), true)), 0, 16);
+        $wpdb->insert(
+            $wpdb->prefix . 'wppoppop_items',
+            [
+                'uid'           => $new_uid,
+                'title'         => $row['title'] . ' (Copy)',
+                'data'          => $row['data'],
+                'status'        => 'publish',
+                'impressions'   => 0,
+                'submissions'   => 0,
+                'confirmations' => 0
+            ],
+            ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
+        );
+
+        wp_send_json_success(['uid' => $new_uid, 'message' => 'Popup duplicated successfully!']);
+    }
+
+    public function delete_popup() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
+        global $wpdb;
+        $wpdb->delete($wpdb->prefix . 'wppoppop_items', ['uid' => sanitize_key($_POST['uid'])], ['%s']);
+        wp_send_json_success(['message' => 'Popup removed successfully.']);
+    }
+
+    public function export_popup() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
+
+        global $wpdb;
+        $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_GET['uid'])), ARRAY_A);
+        if (!$row) wp_send_json_error(['message' => 'Popup not found.']);
+
+        wp_send_json_success([
+            'filename' => sanitize_title($row['title']) . '-wppoppop-export.json',
+            'payload'  => $row['data']
+        ]);
+    }
+
+    public function import_popup() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
+
+        $json_raw = isset($_POST['import_data']) ? wp_unslash($_POST['import_data']) : '';
+        $data = json_decode($json_raw, true);
+
+        if (!$data || !isset($data['meta'])) {
+            wp_send_json_error(['message' => 'Invalid WpPopPop JSON format.']);
+        }
+
+        global $wpdb;
+        $new_uid = substr(md5(uniqid(wp_rand(), true)), 0, 16);
+        $title = isset($data['meta']['title']) ? sanitize_text_field($data['meta']['title']) . ' (Imported)' : 'Imported Popup';
+
+        $wpdb->insert(
+            $wpdb->prefix . 'wppoppop_items',
+            [
+                'uid'           => $new_uid,
+                'title'         => $title,
+                'data'          => $json_raw,
+                'status'        => 'publish',
+                'impressions'   => 0,
+                'submissions'   => 0,
+                'confirmations' => 0
+            ],
+            ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
+        );
+
+        wp_send_json_success(['uid' => $new_uid, 'message' => 'Popup imported successfully!']);
+    }
+
+    public function save_campaign() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
+
+        global $wpdb;
+        $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : 'Untitled Campaign';
+        $uids  = isset($_POST['popup_uids']) ? array_map('sanitize_key', (array)$_POST['popup_uids']) : [];
+
+        if (count($uids) < 2) wp_send_json_error(['message' => 'Select at least 2 popups for A/B testing.']);
+
+        $campaign_uid = substr(md5(uniqid(wp_rand(), true)), 0, 16);
+        $wpdb->insert(
+            $wpdb->prefix . 'wppoppop_campaigns',
+            [
+                'uid'        => $campaign_uid,
+                'title'      => $title,
+                'popup_uids' => wp_json_encode($uids),
+                'status'     => 'active'
+            ],
+            ['%s', '%s', '%s', '%s']
+        );
+
+        wp_send_json_success(['message' => 'A/B Campaign created successfully!']);
+    }
+
+    public function delete_campaign() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
+        global $wpdb;
+        $wpdb->delete($wpdb->prefix . 'wppoppop_campaigns', ['uid' => sanitize_key($_POST['uid'])], ['%s']);
+        wp_send_json_success(['message' => 'Campaign deleted.']);
+    }
+
+    public function export_submissions_csv() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_die('Unauthorized');
+
+        global $wpdb;
+        $rows = $wpdb->get_results("SELECT s.id, i.title as popup_title, s.email, s.country_code, s.status, s.fields_data, s.created_at 
+            FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC", ARRAY_A);
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=wppoppop-submissions-' . date('Y-m-d') . '.csv');
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['ID', 'Popup', 'Email', 'Country', 'Status', 'Form Fields', 'Date']);
+        foreach ($rows as $row) {
+            fputcsv($output, [$row['id'], $row['popup_title'], $row['email'], $row['country_code'], ucfirst($row['status']), $row['fields_data'], $row['created_at']]);
+        }
+        fclose($output);
+        exit;
+    }
+
+    public function delete_submission() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized.']);
+        global $wpdb;
+        $wpdb->delete($wpdb->prefix . 'wppoppop_submissions', ['id' => intval($_POST['id'])]);
+        wp_send_json_success(['message' => 'Record permanently deleted.']);
+    }
+
+    public function anonymize_submission() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized.']);
+        $id = intval($_POST['id']);
+        global $wpdb;
+        $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['email' => 'anonymized_' . $id . '@privacy.local', 'fields_data' => wp_json_encode(['gdpr' => 'anonymized'])], ['id' => $id]);
+        wp_send_json_success(['message' => 'PII anonymized.']);
     }
 
     public function save_settings() {
         check_ajax_referer('wppoppop_settings_nonce', 'nonce');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.']);
-        }
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
 
         parse_str(isset($_POST['data']) ? wp_unslash($_POST['data']) : '', $parsed);
 
@@ -73,24 +304,9 @@ class WpPopPop_Ajax {
 
     public function reset_cookies() {
         check_ajax_referer('wppoppop_settings_nonce', 'nonce');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized.']);
-        }
-
-        // Increment global cookie epoch
-        $epoch = time();
-        update_option('wppoppop_cookie_epoch', $epoch);
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized.']);
+        update_option('wppoppop_cookie_epoch', time());
         wp_send_json_success(['message' => 'Cookies have been successfully reset across all popups.']);
-    }
-
-    private function set_cors_headers() {
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type");
-        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            status_header(200);
-            exit;
-        }
     }
 
     public function serve_remote_embed() {
@@ -161,146 +377,6 @@ class WpPopPop_Ajax {
         exit;
     }
 
-    public function save_popup() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
-
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_items';
-
-        $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : 'Untitled Popup';
-        $uid   = isset($_POST['uid']) && !empty($_POST['uid']) ? sanitize_key($_POST['uid']) : wp_generate_uuid4();
-        $data  = isset($_POST['data']) ? wp_unslash($_POST['data']) : '{}';
-
-        if (json_decode($data) === null) wp_send_json_error(['message' => 'Malformed JSON definition.']);
-
-        $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE uid = %s", $uid));
-
-        if ($existing) {
-            $wpdb->update($table_name, ['title' => $title, 'data' => $data], ['uid' => $uid], ['%s', '%s'], ['%s']);
-        } else {
-            $wpdb->insert($table_name, ['uid' => $uid, 'title' => $title, 'data' => $data, 'status' => 'publish'], ['%s', '%s', '%s', '%s']);
-        }
-
-        wp_send_json_success(['uid' => $uid, 'message' => 'Popup configuration saved successfully!']);
-    }
-
-    public function load_popup() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        global $wpdb;
-        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_GET['uid'])), ARRAY_A);
-        if (!$row) wp_send_json_error(['message' => 'Popup not found.']);
-        wp_send_json_success($row);
-    }
-
-    public function duplicate_popup() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
-
-        global $wpdb;
-        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_POST['uid'])), ARRAY_A);
-        if (!$row) wp_send_json_error(['message' => 'Source popup not found.']);
-
-        $new_uid = wp_generate_uuid4();
-        $wpdb->insert(
-            $wpdb->prefix . 'wppoppop_items',
-            [
-                'uid'           => $new_uid,
-                'title'         => $row['title'] . ' (Copy)',
-                'data'          => $row['data'],
-                'status'        => 'publish',
-                'impressions'   => 0,
-                'submissions'   => 0,
-                'confirmations' => 0
-            ],
-            ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
-        );
-
-        wp_send_json_success(['uid' => $new_uid, 'message' => 'Popup duplicated successfully!']);
-    }
-
-    public function delete_popup() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized action.']);
-        global $wpdb;
-        $wpdb->delete($wpdb->prefix . 'wppoppop_items', ['uid' => sanitize_key($_POST['uid'])], ['%s']);
-        wp_send_json_success(['message' => 'Popup removed successfully.']);
-    }
-
-    public function export_popup() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        global $wpdb;
-        $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_GET['uid'])), ARRAY_A);
-        wp_send_json_success(['filename' => sanitize_title($row['title']) . '-wppoppop-export.json', 'payload' => $row['data']]);
-    }
-
-    public function import_popup() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Unauthorized']);
-        $json_raw = isset($_POST['import_data']) ? wp_unslash($_POST['import_data']) : '';
-        $data = json_decode($json_raw, true);
-        if (!$data || !isset($data['meta'])) wp_send_json_error(['message' => 'Invalid JSON']);
-
-        global $wpdb;
-        $wpdb->insert($wpdb->prefix . 'wppoppop_items', [
-            'uid' => wp_generate_uuid4(), 'title' => sanitize_text_field($data['meta']['title']) . ' (Imported)', 'data' => $json_raw, 'status' => 'publish'
-        ]);
-        wp_send_json_success(['message' => 'Popup imported successfully!']);
-    }
-
-    public function save_campaign() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        global $wpdb;
-        $wpdb->insert($wpdb->prefix . 'wppoppop_campaigns', [
-            'uid' => wp_generate_uuid4(),
-            'title' => sanitize_text_field($_POST['title']),
-            'popup_uids' => wp_json_encode(array_map('sanitize_key', (array)$_POST['popup_uids'])),
-            'status' => 'active'
-        ]);
-        wp_send_json_success(['message' => 'A/B Campaign saved!']);
-    }
-
-    public function delete_campaign() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        global $wpdb;
-        $wpdb->delete($wpdb->prefix . 'wppoppop_campaigns', ['uid' => sanitize_key($_POST['uid'])]);
-        wp_send_json_success(['message' => 'Campaign deleted.']);
-    }
-
-    public function export_submissions_csv() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        if (!current_user_can('manage_options')) wp_die('Unauthorized');
-
-        global $wpdb;
-        $rows = $wpdb->get_results("SELECT s.id, i.title as popup_title, s.email, s.country_code, s.status, s.fields_data, s.created_at 
-            FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC", ARRAY_A);
-
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=wppoppop-submissions-' . date('Y-m-d') . '.csv');
-        $output = fopen('php://output', 'w');
-        fputcsv($output, ['ID', 'Popup', 'Email', 'Country', 'Status', 'Form Fields', 'Date']);
-        foreach ($rows as $row) {
-            fputcsv($output, [$row['id'], $row['popup_title'], $row['email'], $row['country_code'], ucfirst($row['status']), $row['fields_data'], $row['created_at']]);
-        }
-        fclose($output);
-        exit;
-    }
-
-    public function delete_submission() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        global $wpdb;
-        $wpdb->delete($wpdb->prefix . 'wppoppop_submissions', ['id' => intval($_POST['id'])]);
-        wp_send_json_success(['message' => 'Record permanently deleted.']);
-    }
-
-    public function anonymize_submission() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
-        $id = intval($_POST['id']);
-        global $wpdb;
-        $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['email' => 'anonymized_' . $id . '@privacy.local', 'fields_data' => wp_json_encode(['gdpr' => 'anonymized'])], ['id' => $id]);
-        wp_send_json_success(['message' => 'PII anonymized.']);
-    }
-
     public function record_impression() {
         $this->set_cors_headers();
         $uid = isset($_POST['uid']) ? sanitize_key($_POST['uid']) : '';
@@ -359,13 +435,12 @@ class WpPopPop_Ajax {
                 ['%s', '%s', '%s', '%s', '%s', '%s']
             );
 
-            // 1. Subscriber User Autoresponder Email Dispatch
+            // Autoresponder email
             $autoresponder = isset($config['autoresponder']) ? $config['autoresponder'] : [];
             if (!empty($autoresponder['enable_user_email']) && !$is_double_optin) {
                 $ar_subject = !empty($autoresponder['subject']) ? sanitize_text_field($autoresponder['subject']) : 'Welcome! Here is your reward';
                 $ar_body    = !empty($autoresponder['message']) ? $autoresponder['message'] : "Thank you for subscribing!\n\nEnjoy your offer.";
 
-                // Token replacement
                 $ar_body = str_replace('{email}', $email, $ar_body);
                 foreach ($form_data as $k => $v) {
                     $val_str = is_array($v) ? implode(', ', $v) : $v;
@@ -375,7 +450,7 @@ class WpPopPop_Ajax {
                 wp_mail($email, $ar_subject, nl2br(esc_html($ar_body)), ['Content-Type: text/html; charset=UTF-8']);
             }
 
-            // 2. Direct Mailchimp Sync
+            // Mailchimp sync
             $mc = isset($config['mailchimp']) ? $config['mailchimp'] : [];
             if (!empty($mc['enable']) && !empty($mc['api_key']) && !empty($mc['list_id'])) {
                 $dc = substr($mc['api_key'], strpos($mc['api_key'], '-') + 1);
@@ -388,7 +463,7 @@ class WpPopPop_Ajax {
                 ]);
             }
 
-            // 3. Admin Notification Email
+            // Admin alert
             if (!empty($notif['enable_email'])) {
                 $recipient = !empty($notif['recipient']) ? sanitize_email($notif['recipient']) : get_option('admin_email');
                 $body = "New lead: {$email}\nPopup: {$row['title']}\nCountry: {$visitor_country}\n";

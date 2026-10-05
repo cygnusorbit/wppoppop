@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WpPopPop
  * Description: Fully functional drag-and-drop popup builder inspired by Green Popups.
- * Version: 1.8.1
+ * Version: 1.8.2
  * Author: WpPopPop Team
  */
 
@@ -10,13 +10,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WPPOPPOP_VERSION', '1.8.1');
+define('WPPOPPOP_VERSION', '1.8.2');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 
-/**
- * Helper to fetch WpPopPop setting values with defaults.
- */
 function wppoppop_get_setting($key, $default = '') {
     $settings = get_option('wppoppop_settings', []);
     return isset($settings[$key]) ? $settings[$key] : $default;
@@ -34,7 +31,7 @@ function wppoppop_install_schema() {
 
     $sql = "CREATE TABLE {$table_items} (
         id bigint(20) NOT NULL AUTO_INCREMENT,
-        uid varchar(32) NOT NULL,
+        uid varchar(64) NOT NULL,
         title varchar(255) NOT NULL,
         data longtext NOT NULL,
         status varchar(20) DEFAULT 'publish' NOT NULL,
@@ -48,7 +45,7 @@ function wppoppop_install_schema() {
     ) $charset_collate;
     CREATE TABLE {$table_submissions} (
         id bigint(20) NOT NULL AUTO_INCREMENT,
-        popup_uid varchar(32) NOT NULL,
+        popup_uid varchar(64) NOT NULL,
         email varchar(255) NOT NULL,
         fields_data longtext NOT NULL,
         status varchar(20) DEFAULT 'confirmed' NOT NULL,
@@ -61,7 +58,7 @@ function wppoppop_install_schema() {
     ) $charset_collate;
     CREATE TABLE {$table_campaigns} (
         id bigint(20) NOT NULL AUTO_INCREMENT,
-        uid varchar(32) NOT NULL,
+        uid varchar(64) NOT NULL,
         title varchar(255) NOT NULL,
         popup_uids text NOT NULL,
         status varchar(20) DEFAULT 'active' NOT NULL,
@@ -71,7 +68,7 @@ function wppoppop_install_schema() {
     ) $charset_collate;
     CREATE TABLE {$table_transactions} (
         id bigint(20) NOT NULL AUTO_INCREMENT,
-        popup_uid varchar(32) NOT NULL,
+        popup_uid varchar(64) NOT NULL,
         email varchar(255) NOT NULL,
         amount decimal(10,2) NOT NULL,
         currency varchar(10) DEFAULT 'USD' NOT NULL,
@@ -84,7 +81,7 @@ function wppoppop_install_schema() {
     ) $charset_collate;
     CREATE TABLE {$table_downloads} (
         id bigint(20) NOT NULL AUTO_INCREMENT,
-        popup_uid varchar(32) NOT NULL,
+        popup_uid varchar(64) NOT NULL,
         token varchar(64) NOT NULL,
         file_url text NOT NULL,
         downloads_count int(11) DEFAULT 0 NOT NULL,
@@ -96,6 +93,10 @@ function wppoppop_install_schema() {
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
+
+    // Schema alterations for existing databases
+    $wpdb->query("ALTER TABLE `{$table_items}` MODIFY COLUMN `uid` varchar(64) NOT NULL;");
+    $wpdb->query("ALTER TABLE `{$table_submissions}` MODIFY COLUMN `popup_uid` varchar(64) NOT NULL;");
 
     update_option('wppoppop_db_version', WPPOPPOP_VERSION);
 }

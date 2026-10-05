@@ -1,5 +1,5 @@
 
-(function($) {
+jQuery(document).ready(function($) {
     'use strict';
 
     let activeElement = null;
@@ -7,7 +7,7 @@
     let zIndexCounter = 1;
     const stage = $('#wppoppop-stage');
 
-    // Vertical Accordion Toggle Handler
+    // Vertical Accordion Toggle
     $('.wppoppop-sidebar-right').on('click', '.accordion-header', function(e) {
         e.preventDefault();
         const item = $(this).closest('.accordion-item');
@@ -22,7 +22,7 @@
         }
     });
 
-    // History Buffer (Undo / Redo)
+    // History Buffer
     const historyStack = [];
     let historyIndex = -1;
 
@@ -100,7 +100,7 @@
         }
     });
 
-    // Alignment Toolbar Handlers
+    // Alignment Toolbar
     $('.btn-align').on('click', function() {
         if (!activeElement) return;
         const alignType = $(this).data('align');
@@ -118,7 +118,7 @@
         recordState();
     });
 
-    // Left Panel Tabs (Elements vs Layers)
+    // Left Panel Tabs
     $('.panel-tabs .tab-btn').on('click', function() {
         const parent = $(this).closest('.wppoppop-panel');
         parent.find('.tab-btn, .tab-pane').removeClass('active');
@@ -126,7 +126,7 @@
         $('#' + $(this).data('tab')).addClass('active');
     });
 
-    // Multi-Screen Tab Switcher
+    // Multi-Screen Tabs
     $('.btn-screen-toggle').on('click', function() {
         $('.btn-screen-toggle').removeClass('active');
         $(this).addClass('active');
@@ -279,7 +279,6 @@
         $('#inspector-empty-state').hide();
         $('#inspector-controls').show();
 
-        // Auto-expand the Inspector accordion section
         const inspectorItem = $('.accordion-item[data-accordion="inspector"]');
         if (!inspectorItem.hasClass('active')) {
             inspectorItem.addClass('active');
@@ -413,7 +412,17 @@
     }
 
     // Save Action
-    $('#wppoppop-btn-save').on('click', function() {
+    $('#wppoppop-btn-save').on('click', function(e) {
+        e.preventDefault();
+        const saveBtn = $(this);
+
+        if (typeof wppoppop_vars === 'undefined' || !wppoppop_vars.ajax_url) {
+            alert('Configuration error: wppoppop_vars is not defined. Please refresh the page.');
+            return;
+        }
+
+        saveBtn.prop('disabled', true).text('Saving...');
+
         const elementsData = [];
         $('.canvas-element').each(function() {
             const el = $(this);
@@ -427,21 +436,23 @@
                 anim: el.data('anim') || 'none',
                 anim_delay: el.data('anim-delay') || 0,
                 anim_duration: el.data('anim-duration') || 500,
-                top: parseInt(el.css('top'), 10),
-                left: parseInt(el.css('left'), 10),
-                width: el.width(),
-                height: el.height(),
+                top: parseInt(el.css('top'), 10) || 0,
+                left: parseInt(el.css('left'), 10) || 0,
+                width: el.outerWidth() || el.width(),
+                height: el.outerHeight() || el.height(),
                 z_index: el.data('z-index') || 1,
                 font_size: el.data('font-size') || 16,
                 color: el.data('color') || '#222222',
                 bg_color: el.data('bg-color') || '#00a32a',
-                content: el.data('type') === 'input' ? el.find('input').attr('placeholder') : el.text().trim()
+                content: (el.data('type') === 'input' || el.data('type') === 'date') 
+                    ? el.find('input').attr('placeholder') 
+                    : (el.find('.content-render').length ? el.find('.content-render').html() : el.text().trim())
             });
         });
 
         const payload = {
             meta: {
-                title: $('#wppoppop-popup-title').val(),
+                title: $('#wppoppop-popup-title').val() || 'Untitled Popup',
                 width: stage.width(),
                 height: stage.height(),
                 bg_color: '#ffffff'
@@ -457,52 +468,68 @@
                 on_exit: $('#trig-exit').is(':checked'),
                 on_scroll: $('#trig-scroll').is(':checked') ? 50 : 0,
                 on_idle: $('#trig-idle').is(':checked') ? 15 : 0,
-                click_selector: $('#trig-click-selector').val()
+                click_selector: $('#trig-click-selector').val() || ''
             },
             autoresponder: {
                 enable_user_email: $('#ar-enable').is(':checked'),
-                subject: $('#ar-subject').val(),
-                message: $('#ar-message').val()
+                subject: $('#ar-subject').val() || '',
+                message: $('#ar-message').val() || ''
             },
             mailchimp: {
                 enable: $('#mc-enable').is(':checked'),
-                api_key: $('#mc-api-key').val(),
-                list_id: $('#mc-list-id').val()
+                api_key: $('#mc-api-key').val() || '',
+                list_id: $('#mc-list-id').val() || ''
             },
             activecampaign: {
                 enable: $('#ac-enable').is(':checked'),
-                api_url: $('#ac-api-url').val(),
-                api_key: $('#ac-api-key').val()
+                api_url: $('#ac-api-url').val() || '',
+                api_key: $('#ac-api-key').val() || ''
             },
             targeting: {
-                geo_mode: $('#target-geo-mode').val(),
-                geo_countries: $('#target-geo-countries').val(),
-                devices: $('#target-devices').val()
+                geo_mode: $('#target-geo-mode').val() || 'all',
+                geo_countries: $('#target-geo-countries').val() || '',
+                devices: $('#target-devices').val() || 'all'
             },
             frequency: {
-                mode: $('#freq-mode').val(),
+                mode: $('#freq-mode').val() || 'everytime',
                 days: parseInt($('#freq-days-count').val(), 10) || 7,
                 hide_submitted: $('#freq-hide-submitted').is(':checked')
             },
             elements: elementsData
         };
 
-        $.post(wppoppop_vars.ajax_url, {
-            action: 'wppoppop_save_popup',
-            nonce: wppoppop_vars.nonce,
-            uid: $('#wppoppop-popup-uid').val(),
-            title: $('#wppoppop-popup-title').val(),
-            data: JSON.stringify(payload)
-        }, function(res) {
-            if (res.success) {
-                $('#wppoppop-popup-uid').val(res.data.uid);
-                alert(res.data.message);
+        $.ajax({
+            url: wppoppop_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wppoppop_save_popup',
+                nonce: wppoppop_vars.nonce,
+                uid: $('#wppoppop-popup-uid').val(),
+                title: $('#wppoppop-popup-title').val(),
+                data: JSON.stringify(payload)
+            },
+            success: function(res) {
+                saveBtn.prop('disabled', false).text('Save Popup');
+                if (res.success) {
+                    $('#wppoppop-popup-uid').val(res.data.uid);
+                    if (window.history && window.history.replaceState) {
+                        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + res.data.uid;
+                        window.history.replaceState({path: newUrl}, '', newUrl);
+                    }
+                    alert(res.data.message || 'Popup saved successfully!');
+                } else {
+                    alert('Save failed: ' + (res.data ? res.data.message : 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                saveBtn.prop('disabled', false).text('Save Popup');
+                alert('Save failed (HTTP ' + xhr.status + '): ' + (xhr.responseText || error));
             }
         });
     });
 
     // Populate on edit
-    if (wppoppop_vars.current_uid) {
+    if (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.current_uid) {
         $.get(wppoppop_vars.ajax_url, {
             action: 'wppoppop_load_popup',
             nonce: wppoppop_vars.nonce,
@@ -513,6 +540,11 @@
                 $('#wppoppop-popup-title').val(res.data.title);
                 $('#wppoppop-popup-uid').val(res.data.uid);
 
+                if (config.meta) {
+                    $('#stage-width').val(config.meta.width);
+                    $('#stage-height').val(config.meta.height);
+                    stage.width(config.meta.width).height(config.meta.height);
+                }
                 if (config.styling) {
                     $('#style-backdrop-blur').val(config.styling.backdrop_blur || 0);
                     $('#style-close-esc').prop('checked', config.styling.close_esc !== false);
@@ -576,4 +608,4 @@
         const parts = rgb.match(/\d+/g);
         return "#" + ((1 << 24) + (parseInt(parts[0]) << 16) + (parseInt(parts[1]) << 8) + parseInt(parts[2])).toString(16).slice(1);
     }
-})(jQuery);
+});
