@@ -1,0 +1,57 @@
+
+.wppoppop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
+}
+.wppoppop-overlay.wppoppop-visible {
+    opacity: 1;
+    visibility: visible;
+}
+.wppoppop-box {
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 95vw;
+    max-height: 95vh;
+}
+.wppoppop-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 24px;
+    line-height: 1;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 9999;
+    color: #666;
+    padding: 0;
+}
+.wppoppop-close-btn:hover {
+    color: #000;
+}
+.wppoppop-status-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    z-index: 10000;
+}
