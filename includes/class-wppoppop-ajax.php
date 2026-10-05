@@ -38,6 +38,90 @@ class WpPopPop_Ajax {
 
         add_action('wp_ajax_wppoppop_process_payment', [$this, 'process_payment']);
         add_action('wp_ajax_nopriv_wppoppop_process_payment', [$this, 'process_payment']);
+
+        // Popups Library & Event Logging Actions
+        add_action('wp_ajax_wppoppop_import_library_template', [$this, 'import_library_template']);
+        add_action('wp_ajax_wppoppop_clear_logs', [$this, 'clear_logs']);
+    }
+
+    public function import_library_template() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized action.']);
+        }
+
+        $tpl_key = isset($_POST['template_key']) ? sanitize_key($_POST['template_key']) : '';
+        $new_uid = substr(md5(uniqid(wp_rand(), true)), 0, 16);
+
+        $templates = [
+            'minimal_newsletter' => [
+                'title' => 'Minimalist Newsletter Signup',
+                'meta' => ['width' => 580, 'height' => 340, 'bg_color' => '#ffffff'],
+                'elements' => [
+                    ['id' => 'elem_1', 'type' => 'text', 'screen' => 1, 'top' => 40, 'left' => 40, 'width' => 500, 'height' => 40, 'font_size' => 24, 'color' => '#111827', 'content' => 'Join Our Weekly Digest'],
+                    ['id' => 'elem_2', 'type' => 'text', 'screen' => 1, 'top' => 90, 'left' => 40, 'width' => 500, 'height' => 30, 'font_size' => 14, 'color' => '#64748b', 'content' => 'Curated news and insights delivered every Monday morning.'],
+                    ['id' => 'elem_3', 'type' => 'input', 'field_name' => 'email', 'screen' => 1, 'top' => 150, 'left' => 40, 'width' => 500, 'height' => 45, 'content' => 'Enter your email address...'],
+                    ['id' => 'elem_4', 'type' => 'button', 'screen' => 1, 'top' => 215, 'left' => 40, 'width' => 500, 'height' => 45, 'bg_color' => '#2271b1', 'content' => 'Subscribe Now']
+                ]
+            ],
+            'discount_coupon' => [
+                'title' => 'Flash Sale 20% Coupon',
+                'meta' => ['width' => 600, 'height' => 360, 'bg_color' => '#ffffff'],
+                'elements' => [
+                    ['id' => 'elem_1', 'type' => 'text', 'screen' => 1, 'top' => 30, 'left' => 40, 'width' => 520, 'height' => 40, 'font_size' => 24, 'color' => '#d63638', 'content' => 'UNLOCK 20% OFF TODAY'],
+                    ['id' => 'elem_2', 'type' => 'html', 'screen' => 1, 'top' => 85, 'left' => 40, 'width' => 520, 'height' => 50, 'content' => '<div style="background:#fef3c7;border:2px dashed #d97706;padding:12px;text-align:center;font-weight:700;font-size:20px;letter-spacing:2px;color:#b45309;">SAVE20</div>'],
+                    ['id' => 'elem_3', 'type' => 'input', 'field_name' => 'email', 'screen' => 1, 'top' => 160, 'left' => 40, 'width' => 520, 'height' => 45, 'content' => 'Enter email to receive code...'],
+                    ['id' => 'elem_4', 'type' => 'button', 'screen' => 1, 'top' => 225, 'left' => 40, 'width' => 520, 'height' => 45, 'bg_color' => '#00a32a', 'content' => 'Claim My Discount']
+                ]
+            ],
+            'spin_wheel' => [
+                'title' => 'Lucky Fortune Wheel',
+                'meta' => ['width' => 620, 'height' => 380, 'bg_color' => '#ffffff'],
+                'elements' => [
+                    ['id' => 'elem_1', 'type' => 'wheel', 'field_name' => 'prize', 'screen' => 1, 'top' => 30, 'left' => 30, 'width' => 220, 'height' => 220, 'options' => ['10% OFF', 'FREE SHIP', '25% OFF', 'TRY AGAIN', '$5 OFF', 'MYSTERY']],
+                    ['id' => 'elem_2', 'type' => 'text', 'screen' => 1, 'top' => 50, 'left' => 280, 'width' => 300, 'height' => 40, 'font_size' => 22, 'color' => '#1e293b', 'content' => 'Spin the Lucky Wheel!'],
+                    ['id' => 'elem_3', 'type' => 'input', 'field_name' => 'email', 'screen' => 1, 'top' => 130, 'left' => 280, 'width' => 300, 'height' => 42, 'content' => 'Enter email to claim reward...'],
+                    ['id' => 'elem_4', 'type' => 'button', 'screen' => 1, 'top' => 190, 'left' => 280, 'width' => 300, 'height' => 42, 'bg_color' => '#4338ca', 'content' => 'Claim Prize & Save']
+                ]
+            ]
+        ];
+
+        $tpl_data = $templates[$tpl_key] ?? $templates['minimal_newsletter'];
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wppoppop_items';
+
+        $wpdb->insert(
+            $table_name,
+            [
+                'uid'           => $new_uid,
+                'title'         => $tpl_data['title'],
+                'data'          => wp_json_encode($tpl_data),
+                'status'        => 'publish',
+                'impressions'   => 0,
+                'submissions'   => 0,
+                'confirmations' => 0
+            ],
+            ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
+        );
+
+        wppoppop_log_event('library_import', "Imported template '{$tpl_data['title']}'", ['uid' => $new_uid]);
+
+        wp_send_json_success([
+            'uid'          => $new_uid,
+            'redirect_url' => admin_url('admin.php?page=wppoppop-builder&uid=' . $new_uid)
+        ]);
+    }
+
+    public function clear_logs() {
+        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized.']);
+        }
+
+        global $wpdb;
+        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}wppoppop_logs");
+        wp_send_json_success();
     }
 
     private function set_cors_headers() {

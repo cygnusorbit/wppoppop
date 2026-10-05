@@ -23,9 +23,11 @@ class WpPopPop_Admin {
         add_submenu_page('wppoppop', 'Popups', 'Popups', 'manage_options', 'wppoppop', [$this, 'render_dashboard']);
         add_submenu_page('wppoppop', 'Create Popup', 'Create Popup', 'manage_options', 'wppoppop-builder', [$this, 'render_builder']);
         add_submenu_page('wppoppop', 'A/B Campaigns', 'A/B Campaigns', 'manage_options', 'wppoppop-ab', [$this, 'render_ab']);
-        add_submenu_page('wppoppop', 'Submissions & Stats', 'Submissions & Stats', 'manage_options', 'wppoppop-submissions', [$this, 'render_submissions']);
-        add_submenu_page('wppoppop', 'Payments & Sales', 'Payments & Sales', 'manage_options', 'wppoppop-payments', [$this, 'render_payments']);
-        add_submenu_page('wppoppop', 'Tools & Export', 'Tools & Export', 'manage_options', 'wppoppop-tools', [$this, 'render_tools']);
+        add_submenu_page('wppoppop', 'Log', 'Log', 'manage_options', 'wppoppop-log', [$this, 'render_log']);
+        add_submenu_page('wppoppop', 'Stats', 'Stats', 'manage_options', 'wppoppop-stats', [$this, 'render_stats']);
+        add_submenu_page('wppoppop', 'Field Analytics', 'Field Analytics', 'manage_options', 'wppoppop-field-analytics', [$this, 'render_field_analytics']);
+        add_submenu_page('wppoppop', 'Transactions', 'Transactions', 'manage_options', 'wppoppop-payments', [$this, 'render_payments']);
+        add_submenu_page('wppoppop', 'Popups Library', 'Popups Library', 'manage_options', 'wppoppop-library', [$this, 'render_library']);
         add_submenu_page('wppoppop', 'Settings', 'Settings', 'manage_options', 'wppoppop-settings', [$this, 'render_settings']);
     }
 
@@ -35,8 +37,19 @@ class WpPopPop_Admin {
             return;
         }
 
-        // Settings Page Assets
-        if ($page === 'wppoppop-settings' || strpos($hook, 'wppoppop-settings') !== false) {
+        // Library Assets
+        if ($page === 'wppoppop-library') {
+            wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', [], WPPOPPOP_VERSION);
+            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_localize_script('wppoppop-library-js', 'wppoppop_lib_vars', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('wppoppop_builder_nonce')
+            ]);
+            return;
+        }
+
+        // Settings Assets
+        if ($page === 'wppoppop-settings') {
             wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', [], WPPOPPOP_VERSION);
             wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', [
@@ -47,19 +60,17 @@ class WpPopPop_Admin {
         }
 
         // Builder Assets
-        if ($page === 'wppoppop-builder' || strpos($hook, 'wppoppop-builder') !== false) {
+        if ($page === 'wppoppop-builder') {
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
             wp_enqueue_script('jquery');
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable'], WPPOPPOP_VERSION, true);
 
-            $current_uid = isset($_GET['uid']) ? sanitize_key($_GET['uid']) : '';
-
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', [
                 'ajax_url'    => admin_url('admin-ajax.php'),
                 'nonce'       => wp_create_nonce('wppoppop_builder_nonce'),
-                'current_uid' => $current_uid
+                'current_uid' => isset($_GET['uid']) ? sanitize_key($_GET['uid']) : ''
             ]);
         }
     }
@@ -67,8 +78,10 @@ class WpPopPop_Admin {
     public function render_dashboard() { include WPPOPPOP_PATH . 'templates/dashboard-view.php'; }
     public function render_builder() { include WPPOPPOP_PATH . 'templates/builder-view.php'; }
     public function render_ab() { include WPPOPPOP_PATH . 'templates/ab-view.php'; }
-    public function render_submissions() { include WPPOPPOP_PATH . 'templates/submissions-view.php'; }
+    public function render_log() { include WPPOPPOP_PATH . 'templates/log-view.php'; }
+    public function render_stats() { include WPPOPPOP_PATH . 'templates/stats-view.php'; }
+    public function render_field_analytics() { include WPPOPPOP_PATH . 'templates/field-analytics-view.php'; }
     public function render_payments() { include WPPOPPOP_PATH . 'templates/payments-view.php'; }
-    public function render_tools() { include WPPOPPOP_PATH . 'templates/tools-view.php'; }
+    public function render_library() { include WPPOPPOP_PATH . 'templates/library-view.php'; }
     public function render_settings() { include WPPOPPOP_PATH . 'templates/settings-view.php'; }
 }

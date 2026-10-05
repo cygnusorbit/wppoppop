@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WpPopPop
  * Description: Fully functional drag-and-drop popup builder inspired by Green Popups.
- * Version: 1.8.2
+ * Version: 1.9.0
  * Author: WpPopPop Team
  */
 
@@ -10,13 +10,27 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WPPOPPOP_VERSION', '1.8.2');
+define('WPPOPPOP_VERSION', '1.9.0');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 
 function wppoppop_get_setting($key, $default = '') {
     $settings = get_option('wppoppop_settings', []);
     return isset($settings[$key]) ? $settings[$key] : $default;
+}
+
+function wppoppop_log_event($type, $message, $context = []) {
+    global $wpdb;
+    $table_logs = $wpdb->prefix . 'wppoppop_logs';
+    $wpdb->insert(
+        $table_logs,
+        [
+            'event_type' => sanitize_text_field($type),
+            'message'    => sanitize_text_field($message),
+            'context'    => wp_json_encode($context)
+        ],
+        ['%s', '%s', '%s']
+    );
 }
 
 function wppoppop_install_schema() {
@@ -28,6 +42,7 @@ function wppoppop_install_schema() {
     $table_campaigns    = $wpdb->prefix . 'wppoppop_campaigns';
     $table_transactions = $wpdb->prefix . 'wppoppop_transactions';
     $table_downloads    = $wpdb->prefix . 'wppoppop_downloads';
+    $table_logs         = $wpdb->prefix . 'wppoppop_logs';
 
     $sql = "CREATE TABLE {$table_items} (
         id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -89,14 +104,18 @@ function wppoppop_install_schema() {
         created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
         PRIMARY KEY  (id),
         UNIQUE KEY token (token)
+    ) $charset_collate;
+    CREATE TABLE {$table_logs} (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        event_type varchar(50) NOT NULL,
+        message text NOT NULL,
+        context longtext NOT NULL,
+        created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        PRIMARY KEY  (id)
     ) $charset_collate;";
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
-
-    // Schema alterations for existing databases
-    $wpdb->query("ALTER TABLE `{$table_items}` MODIFY COLUMN `uid` varchar(64) NOT NULL;");
-    $wpdb->query("ALTER TABLE `{$table_submissions}` MODIFY COLUMN `popup_uid` varchar(64) NOT NULL;");
 
     update_option('wppoppop_db_version', WPPOPPOP_VERSION);
 }
@@ -119,9 +138,11 @@ add_action('widgets_init', function () {
 add_action('plugins_loaded', function () {
     global $wpdb;
     $table_items = $wpdb->prefix . 'wppoppop_items';
+    $table_logs  = $wpdb->prefix . 'wppoppop_logs';
 
     if (get_option('wppoppop_db_version') !== WPPOPPOP_VERSION || 
-        $wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items) {
+        $wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items ||
+        $wpdb->get_var("SHOW TABLES LIKE '{$table_logs}'") !== $table_logs) {
         wppoppop_install_schema();
     }
 
@@ -145,6 +166,8 @@ add_action('template_redirect', function () {
         if ($sub) {
             $wpdb->update($table_subs, ['status' => 'confirmed', 'confirm_token' => ''], ['id' => $sub->id]);
             $wpdb->query($wpdb->prepare("UPDATE {$table_items} SET confirmations = confirmations + 1 WHERE uid = %s", $sub->popup_uid));
+
+            wppoppop_log_event('confirmation', 'Subscriber email address verified: ' . $sub->email, ['uid' => $sub->popup_uid]);
 
             wp_die('
                 <div style="max-width:550px;margin:80px auto;text-align:center;font-family:sans-serif;padding:30px;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 15px rgba(0,0,0,0.08);">
