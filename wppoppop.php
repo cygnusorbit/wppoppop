@@ -3,7 +3,7 @@
  * Plugin Name:       WP Pop Pop
  * Plugin URI:        https://github.com/cygnusorbit/wppoppop
  * Description:       High-performance, modular layered popup plugin modernizing Green Popups.
- * Version:           1.0.0
+ * Version:           1.0.03
  * Author:            Cygnus Orbit
  * License:           GPL-2.0-or-later
  * Text Domain:       wppoppop
@@ -11,7 +11,7 @@
 
 defined('ABSPATH') || exit;
 
-define('WPPOPPOP_VERSION', '1.0.0');
+define('WPPOPPOP_VERSION', '1.0.03');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 
