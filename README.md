@@ -1,4 +1,0 @@
-# WpPopPop for WordPress
-
-
-
