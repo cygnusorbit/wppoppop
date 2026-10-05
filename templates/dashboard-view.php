@@ -3,6 +3,16 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Defensive Hydration: Fallback to database if $popups was not injected by controller
+if (!isset($popups) || !is_array($popups)) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'wppoppop_items';
+    $popups = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY id DESC");
+    if (!is_array($popups)) {
+        $popups = [];
+    }
+}
+
 $total_popups = count($popups);
 $total_impressions = 0;
 $total_submissions = 0;
@@ -92,6 +102,9 @@ $overall_cr = ($total_impressions > 0) ? round(($total_submissions / $total_impr
                         $cr = ($p->impressions > 0) ? round(($p->submissions / $p->impressions) * 100, 1) : 0;
                         $is_active = ($p->status === 'publish');
                         $live_preview_url = add_query_arg(['wppoppop_preview' => $p->uid], home_url('/'));
+                        $formatted_date = (!empty($p->created_at) && strtotime($p->created_at)) 
+                            ? date_i18n(get_option('date_format'), strtotime($p->created_at)) 
+                            : '&mdash;';
                     ?>
                         <tr id="popup-row-<?php echo esc_attr($p->uid); ?>" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr(strtolower($p->title)); ?>">
                             <!-- Title & Shortcode -->
@@ -138,10 +151,10 @@ $overall_cr = ($total_impressions > 0) ? round(($total_submissions / $total_impr
 
                             <!-- Created Date -->
                             <td class="column-date" style="color: #64748b; font-size: 12px;">
-                                <?php echo esc_html(date_i18n(get_option('date_format'), strtotime($p->created_at))); ?>
+                                <?php echo esc_html($formatted_date); ?>
                             </td>
 
-                            <!-- Context Action Dropdown Trigger (Exact Screenshot Match) -->
+                            <!-- Context Action Dropdown Trigger -->
                             <td class="column-actions" style="position:relative; text-align:right;">
                                 <div class="wppoppop-action-wrap">
                                     <button type="button" class="wppoppop-action-btn" title="Options">
