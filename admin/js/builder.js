@@ -1,567 +1,265 @@
-
-jQuery(document).ready(function($) {
+(function($) {
     'use strict';
 
-    let activeElement = null;
-    let currentScreen = 1;
-    let zIndexCounter = 1;
-    const stage = $('#wppoppop-stage');
-    const historyStack = [];
-    let historyIndex = -1;
+    var currentScreen = 1;
+    var selectedElement = null;
 
-    // Accordion Toggle
-    $('.wppoppop-sidebar-right').on('click', '.accordion-header', function(e) {
-        e.preventDefault();
-        const item = $(this).closest('.accordion-item');
-        const body = item.find('.accordion-body');
-
-        if (item.hasClass('active')) {
-            item.removeClass('active');
-            body.slideUp(150);
-        } else {
-            item.addClass('active');
-            body.slideDown(150);
+    function getSecurityNonce() {
+        if (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.nonce) {
+            return wppoppop_vars.nonce;
         }
-    });
-
-    // History Tracking
-    function recordState() {
-        const state = [];
-        $('.canvas-element').each(function() {
-            const el = $(this);
-            state.push({
-                id: el.attr('id'),
-                type: el.data('type'),
-                screen: el.data('screen') || 1,
-                top: parseInt(el.css('top'), 10),
-                left: parseInt(el.css('left'), 10),
-                width: el.width(),
-                height: el.height(),
-                content: el.data('type') === 'input' ? el.find('input').attr('placeholder') : el.text().trim(),
-                data: JSON.parse(JSON.stringify(el.data()))
-            });
-        });
-
-        if (historyIndex < historyStack.length - 1) {
-            historyStack.splice(historyIndex + 1);
-        }
-        historyStack.push(state);
-        if (historyStack.length > 25) historyStack.shift();
-        historyIndex = historyStack.length - 1;
+        return $('#wppoppop_builder_nonce_field').val() || '';
     }
 
-    function applyState(state) {
-        stage.empty();
-        state.forEach(function(item) {
-            const canvasEl = $('<div class="canvas-element"></div>')
-                .attr('id', item.id)
-                .data(item.data)
-                .css({
-                    top: item.top,
-                    left: item.left,
-                    width: item.width,
-                    height: item.height,
-                    'z-index': item.data.z_index || 1,
-                    display: (item.screen || 1) === currentScreen ? 'block' : 'none'
-                })
-                .html('<div class="content-render">[' + item.type + '] ' + (item.data.field_name || item.content || '') + '</div>');
-
-            stage.append(canvasEl);
-            makeInteractive(canvasEl);
-        });
-        deselectElement();
-        refreshLayers();
+    function getAjaxUrl() {
+        if (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.ajax_url) {
+            return wppoppop_vars.ajax_url;
+        }
+        return (typeof ajaxurl !== 'undefined') ? ajaxurl : '/wp-admin/admin-ajax.php';
     }
 
-    $('#btn-undo').on('click', function() {
-        if (historyIndex > 0) {
-            historyIndex--;
-            applyState(historyStack[historyIndex]);
-        }
-    });
+    function updateLayersList() {
+        var $list = $('#wppoppop-layers-list');
+        $list.empty();
 
-    $('#btn-redo').on('click', function() {
-        if (historyIndex < historyStack.length - 1) {
-            historyIndex++;
-            applyState(historyStack[historyIndex]);
-        }
-    });
-
-    // Alignment Toolbar
-    $('.btn-align').on('click', function() {
-        if (!activeElement) return;
-        const alignType = $(this).data('align');
-        const stageW = stage.width();
-        const stageH = stage.height();
-        const elW = activeElement.outerWidth();
-        const elH = activeElement.outerHeight();
-
-        if (alignType === 'left') activeElement.css('left', 0);
-        if (alignType === 'center-h') activeElement.css('left', Math.round((stageW - elW) / 2));
-        if (alignType === 'right') activeElement.css('left', stageW - elW);
-        if (alignType === 'top') activeElement.css('top', 0);
-        if (alignType === 'center-v') activeElement.css('top', Math.round((stageH - elH) / 2));
-        if (alignType === 'bottom') activeElement.css('top', stageH - elH);
-        recordState();
-    });
-
-    // Viewport Toggle (Desktop / Mobile)
-    $('.btn-viewport-toggle').on('click', function() {
-        $('.btn-viewport-toggle').removeClass('active');
-        $(this).addClass('active');
-        const vp = $(this).data('viewport');
-        if (vp === 'mobile') {
-            stage.css({ width: '360px', height: '520px' });
-            $('#stage-width').val(360);
-            $('#stage-height').val(520);
-        } else {
-            stage.css({ width: '640px', height: '400px' });
-            $('#stage-width').val(640);
-            $('#stage-height').val(400);
-        }
-    });
-
-    // Panel Tabs Switcher
-    $('.panel-tabs .tab-btn').on('click', function() {
-        const parent = $(this).closest('.wppoppop-panel');
-        parent.find('.tab-btn, .tab-pane').removeClass('active');
-        $(this).addClass('active');
-        $('#' + $(this).data('tab')).addClass('active');
-    });
-
-    // Screen Switcher
-    $('.btn-screen-toggle').on('click', function() {
-        $('.btn-screen-toggle').removeClass('active');
-        $(this).addClass('active');
-        currentScreen = parseInt($(this).data('screen'), 10);
-
-        $('.canvas-element').each(function() {
-            const elScreen = $(this).data('screen') || 1;
-            $(this).toggle(elScreen === currentScreen);
-        });
-        deselectElement();
-        refreshLayers();
-    });
-
-    $('#stage-width').on('input', function() {
-        stage.width(parseInt($(this).val(), 10) || 640);
-    });
-    $('#stage-height').on('input', function() {
-        stage.height(parseInt($(this).val(), 10) || 400);
-    });
-
-    // Palette: Element Insertion Engine (19 Types)
-    $('.element-item').on('click', function() {
-        const type = $(this).data('type');
-        zIndexCounter++;
-        const elementId = 'elem_' + Date.now();
-
-        let defaultContent = 'Text block';
-        let defaultBg = '#00a32a';
-        let width = 200;
-        let height = 40;
-        let fieldName = '';
-        let options = [];
-        let innerMarkup = '';
-
-        if (type === 'countdown') {
-            width = 240; height = 55;
-            innerMarkup = '<div style="background:#0f172a;color:#fff;border-radius:4px;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;">15:00 Evergreen Timer</div>';
-        } else if (type === 'progress') {
-            width = 300; height = 24;
-            innerMarkup = '<div style="background:#2271b1;color:#fff;border-radius:12px;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">50% Completed</div>';
-        } else if (type === 'wheel') {
-            fieldName = 'prize'; width = 220; height = 220;
-            options = ['10% OFF', 'FREE SHIP', '20% OFF', '5% OFF'];
-            innerMarkup = '<div style="background:#f6f7f7;border:2px dashed #999;border-radius:50%;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;">Fortune Wheel</div>';
-        } else if (type === 'scratch') {
-            fieldName = 'scratch_prize'; width = 220; height = 120;
-            innerMarkup = '<div style="background:#94a3b8;color:#fff;border-radius:6px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;">Scratch Card Surface</div>';
-        } else if (type === 'slider') {
-            fieldName = 'budget'; width = 220; height = 45;
-            innerMarkup = '<div style="font-size:12px;font-weight:600;">Slider: $50 <input type="range" disabled style="width:100%;"></div>';
-        } else if (type === 'signature') {
-            fieldName = 'signature'; width = 240; height = 100;
-            innerMarkup = '<div style="background:#f8fafc;border:1px dashed #94a3b8;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px;">Sign Here</div>';
-        } else if (type === 'file') {
-            fieldName = 'attachment'; width = 220; height = 40;
-            innerMarkup = '<input type="file" disabled style="width:100%;height:100%;font-size:12px;">';
-        } else if (type === 'input') {
-            fieldName = 'email'; width = 220;
-            innerMarkup = '<input type="email" placeholder="Enter email..." disabled style="width:100%;height:100%;">';
-        } else if (type === 'dropdown') {
-            fieldName = 'choice'; width = 220;
-            options = ['Option 1', 'Option 2', 'Option 3'];
-            innerMarkup = '<select disabled style="width:100%;height:100%;"><option>Option 1</option><option>Option 2</option></select>';
-        } else if (type === 'radio') {
-            fieldName = 'radio_choice'; width = 240;
-            options = ['Option 1', 'Option 2'];
-            innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="radio" checked disabled> Opt 1</label></div>';
-        } else if (type === 'checkbox') {
-            fieldName = 'terms'; width = 240;
-            options = ['Agree to terms'];
-            innerMarkup = '<div style="display:flex;gap:10px;font-size:12px;"><label><input type="checkbox" checked disabled> Agree</label></div>';
-        } else if (type === 'rating') {
-            fieldName = 'rating'; width = 160; height = 35;
-            innerMarkup = '<div style="color:#f0ad4e;font-size:22px;letter-spacing:4px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>';
-        } else if (type === 'date') {
-            fieldName = 'date'; width = 180;
-            innerMarkup = '<input type="date" disabled style="width:100%;height:100%;">';
-        } else if (type === 'number') {
-            fieldName = 'qty'; width = 120;
-            innerMarkup = '<input type="number" value="1" disabled style="width:100%;height:100%;">';
-        } else if (type === 'pay_btn') {
-            width = 160; defaultContent = 'Pay Now'; defaultBg = '#0284c7';
-            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">' + defaultContent + '</button>';
-        } else if (type === 'nextstep') {
-            width = 160; defaultContent = 'Next Step &rarr;'; defaultBg = '#2271b1';
-            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">' + defaultContent + '</button>';
-        } else if (type === 'button') {
-            width = 160;
-            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;font-weight:600;">Submit</button>';
-        } else if (type === 'html') {
-            width = 240; height = 60;
-            innerMarkup = '<div style="border:1px dashed #aaa;padding:6px;font-family:monospace;font-size:11px;">Custom HTML</div>';
-        } else {
-            innerMarkup = '<div class="content-render">' + defaultContent + '</div>';
-        }
-
-        const elem = $('<div class="canvas-element"></div>')
-            .attr('id', elementId)
-            .data('type', type)
-            .data('screen', currentScreen)
-            .data('field-name', fieldName)
-            .data('options', options)
-            .data('goto-screen', currentScreen < 3 ? currentScreen + 1 : 1)
-            .data('required', 0)
-            .data('error-msg', 'Please fill out this field.')
-            .data('font-family', 'Inherit')
-            .data('font-size', 16)
-            .data('border-radius', 4)
-            .data('opacity', 1.0)
-            .data('color', '#222222')
-            .data('bg-color', defaultBg)
-            .data('anim-effect', 'none')
-            .data('anim-delay', 0)
-            .data('anim-duration', 500)
-            .data('z-index', zIndexCounter)
-            .css({
-                top: 40,
-                left: 40,
-                width: width,
-                height: height,
-                'z-index': zIndexCounter
-            })
-            .html(innerMarkup);
-
-        stage.append(elem);
-        makeInteractive(elem);
-        refreshLayers();
-        selectElement(elem);
-        recordState();
-    });
-
-    function makeInteractive(elem) {
-        elem.draggable({
-            containment: '#wppoppop-stage',
-            grid: $('#chk-grid-snap').is(':checked') ? [10, 10] : false,
-            stop: function() { selectElement(elem); recordState(); }
-        }).resizable({
-            containment: '#wppoppop-stage',
-            grid: $('#chk-grid-snap').is(':checked') ? [10, 10] : false,
-            stop: function() { selectElement(elem); recordState(); }
+        var $screenElements = $('#wppoppop-stage .wppoppop-element').filter(function() {
+            return parseInt($(this).attr('data-screen'), 10) === currentScreen;
         });
 
-        elem.on('click', function(e) {
-            e.stopPropagation();
-            selectElement(elem);
-        });
-    }
-
-    function selectElement(elem) {
-        $('.canvas-element').removeClass('selected');
-        elem.addClass('selected');
-        activeElement = elem;
-
-        $('#inspector-empty-state').hide();
-        $('#inspector-controls').show();
-
-        const type = elem.data('type');
-        $('#prop-field-name').val(elem.data('field-name') || '');
-        $('#prop-content').val(elem.text().trim());
-        $('#prop-required').prop('checked', elem.data('required') == 1);
-        $('#prop-error-msg').val(elem.data('error-msg') || 'Please fill out this field.');
-        $('#prop-font-family').val(elem.data('font-family') || 'Inherit');
-        $('#prop-font-size').val(elem.data('font-size') || 16);
-        $('#prop-border-radius').val(elem.data('border-radius') || 4);
-        $('#prop-opacity').val(elem.data('opacity') || 1.0);
-        $('#prop-color').val(elem.data('color') || '#222222');
-        $('#prop-bg-color').val(elem.data('bg-color') || '#00a32a');
-
-        $('#prop-anim-effect').val(elem.data('anim-effect') || 'none');
-        $('#prop-anim-delay').val(elem.data('anim-delay') || 0);
-        $('#prop-anim-duration').val(elem.data('anim-duration') || 500);
-
-        $('#group-prop-goto').toggle(type === 'nextstep');
-        if (type === 'nextstep') {
-            $('#prop-goto-screen').val(elem.data('goto-screen') || 2);
-        }
-
-        if (type === 'wheel' || type === 'dropdown' || type === 'radio' || type === 'checkbox') {
-            $('#group-prop-options').show();
-            const opts = elem.data('options') || [];
-            $('#prop-options').val(Array.isArray(opts) ? opts.join(', ') : opts);
-        } else {
-            $('#group-prop-options').hide();
-        }
-
-        highlightLayerItem(elem.attr('id'));
-    }
-
-    function deselectElement() {
-        $('.canvas-element').removeClass('selected');
-        activeElement = null;
-        $('#inspector-empty-state').show();
-        $('#inspector-controls').hide();
-    }
-
-    stage.on('click', deselectElement);
-
-    // Inspector Live Updates
-    $('#prop-field-name').on('input', function() { if (activeElement) activeElement.data('field-name', $(this).val()); });
-    $('#prop-goto-screen').on('change', function() { if (activeElement) activeElement.data('goto-screen', $(this).val()); });
-    $('#prop-options').on('input', function() {
-        if (!activeElement) return;
-        activeElement.data('options', $(this).val().split(',').map(s => s.trim()).filter(Boolean));
-    });
-    $('#prop-required').on('change', function() { if (activeElement) activeElement.data('required', $(this).is(':checked') ? 1 : 0); });
-    $('#prop-error-msg').on('input', function() { if (activeElement) activeElement.data('error-msg', $(this).val()); });
-    $('#prop-font-family').on('change', function() { if (activeElement) activeElement.data('font-family', $(this).val()).css('font-family', $(this).val()); });
-    $('#prop-font-size').on('input', function() { if (activeElement) activeElement.data('font-size', $(this).val()).css('font-size', $(this).val() + 'px'); });
-    $('#prop-border-radius').on('input', function() { if (activeElement) activeElement.data('border-radius', $(this).val()).css('border-radius', $(this).val() + 'px'); });
-    $('#prop-opacity').on('input', function() { if (activeElement) activeElement.data('opacity', $(this).val()).css('opacity', $(this).val()); });
-    $('#prop-color').on('input', function() { if (activeElement) activeElement.data('color', $(this).val()).css('color', $(this).val()); });
-    $('#prop-bg-color').on('input', function() {
-        if (!activeElement) return;
-        activeElement.data('bg-color', $(this).val());
-        activeElement.find('button').css('background-color', $(this).val());
-    });
-    $('#prop-content').on('input', function() {
-        if (!activeElement) return;
-        const txt = $(this).val();
-        if (activeElement.find('.content-render').length) {
-            activeElement.find('.content-render').text(txt);
-        } else if (activeElement.find('button').length) {
-            activeElement.find('button').text(txt);
-        }
-        refreshLayers();
-    });
-
-    $('#prop-anim-effect').on('change', function() { if (activeElement) activeElement.data('anim-effect', $(this).val()); });
-    $('#prop-anim-delay').on('input', function() { if (activeElement) activeElement.data('anim-delay', $(this).val()); });
-    $('#prop-anim-duration').on('input', function() { if (activeElement) activeElement.data('anim-duration', $(this).val()); });
-
-    $('#prop-duplicate-element').on('click', function() {
-        if (!activeElement) return;
-        const clone = activeElement.clone();
-        zIndexCounter++;
-        clone.attr('id', 'elem_' + Date.now())
-             .css({ top: parseInt(activeElement.css('top'), 10) + 15, left: parseInt(activeElement.css('left'), 10) + 15, 'z-index': zIndexCounter })
-             .data(activeElement.data());
-
-        stage.append(clone);
-        makeInteractive(clone);
-        refreshLayers();
-        selectElement(clone);
-        recordState();
-    });
-
-    $('#prop-delete-element').on('click', function() {
-        if (!activeElement) return;
-        activeElement.remove();
-        deselectElement();
-        refreshLayers();
-        recordState();
-    });
-
-    // Layers List
-    function refreshLayers() {
-        const list = $('#wppoppop-layers-list').empty();
-        const elements = stage.find('.canvas-element').filter(function() {
-            return ($(this).data('screen') || 1) === currentScreen;
-        });
-
-        if (elements.length === 0) {
-            list.html('<li class="empty-layers">No elements on current screen.</li>');
+        if ($screenElements.length === 0) {
+            $list.append('<li class="empty-layers">No elements on current screen.</li>');
             return;
         }
 
-        elements.each(function() {
-            const el = $(this);
-            const id = el.attr('id');
-            const type = el.data('type');
-            const label = el.data('field-name') || el.text().trim().substring(0, 16) || type;
+        $screenElements.each(function() {
+            var $el = $(this);
+            var id = $el.attr('id');
+            var type = $el.attr('data-type') || 'element';
+            var isSel = (selectedElement && selectedElement.attr('id') === id) ? 'active' : '';
 
-            const li = $('<li data-target="' + id + '"></li>');
-            li.html('<span class="layer-title-text">[' + type + '] ' + label + '</span>');
-            list.prepend(li);
-        });
+            var $li = $('<li class="layer-item ' + isSel + '" data-target="' + id + '">' +
+                '<span class="dashicons dashicons-menu layer-handle"></span>' +
+                '<span class="layer-label">' + type.toUpperCase() + ' (' + id + ')</span>' +
+                '<span class="dashicons dashicons-trash layer-del" title="Delete"></span>' +
+                '</li>');
 
-        list.find('.layer-title-text').on('click', function() {
-            const targetId = $(this).closest('li').data('target');
-            const el = $('#' + targetId);
-            if (el.length) selectElement(el);
+            $list.append($li);
         });
     }
 
-    function highlightLayerItem(id) {
-        $('#wppoppop-layers-list li').removeClass('selected');
-        $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
+    function selectElement($el) {
+        if (selectedElement) {
+            selectedElement.removeClass('is-selected');
+        }
+        selectedElement = $el;
+        if (!selectedElement || selectedElement.length === 0) {
+            $('#inspector-empty-state').show();
+            $('#inspector-controls').hide();
+            updateLayersList();
+            return;
+        }
+
+        selectedElement.addClass('is-selected');
+        $('#inspector-empty-state').hide();
+        $('#inspector-controls').show();
+
+        // Populate Inspector fields
+        $('#prop-field-name').val(selectedElement.attr('data-field-name') || '');
+        $('#prop-content').val(selectedElement.attr('data-content') || '');
+        $('#prop-goto-screen').val(selectedElement.attr('data-goto-screen') || '1');
+        $('#prop-options').val(selectedElement.attr('data-options') || '');
+        $('#prop-required').prop('checked', selectedElement.attr('data-required') === 'true');
+        $('#prop-error-msg').val(selectedElement.attr('data-error-msg') || 'Please fill out this field.');
+        $('#prop-mask').val(selectedElement.attr('data-mask') || '');
+        $('#prop-font-family').val(selectedElement.attr('data-font-family') || 'Inherit');
+        $('#prop-font-size').val(parseInt(selectedElement.attr('data-font-size'), 10) || 16);
+        $('#prop-border-radius').val(parseInt(selectedElement.attr('data-border-radius'), 10) || 4);
+        $('#prop-opacity').val(parseFloat(selectedElement.attr('data-opacity')) || 1.0);
+        $('#prop-color').val(selectedElement.attr('data-color') || '#222222');
+        $('#prop-bg-color').val(selectedElement.attr('data-bg-color') || '#00a32a');
+
+        $('#prop-anim-effect').val(selectedElement.attr('data-anim-effect') || 'none');
+        $('#prop-anim-delay').val(parseInt(selectedElement.attr('data-anim-delay'), 10) || 0);
+        $('#prop-anim-duration').val(parseInt(selectedElement.attr('data-anim-duration'), 10) || 500);
+
+        var type = selectedElement.attr('data-type');
+        $('#group-prop-goto').toggle(type === 'nextstep');
+        $('#group-prop-options').toggle(type === 'dropdown' || type === 'radio' || type === 'checkbox' || type === 'wheel');
+        $('#group-prop-mask').toggle(type === 'input');
+
+        updateLayersList();
     }
 
-    // Embed Code Modal
-    $('#wppoppop-btn-embed').on('click', function(e) {
-        e.preventDefault();
-        const uid = $('#wppoppop-popup-uid').val() || 'pop_sample';
-        $('#embed-code-shortcode').val('[wppoppop id="' + uid + '"]');
-        $('#embed-code-button').val('[wppoppop_button id="' + uid + '"]Click Here[/wppoppop_button]');
-        $('#embed-code-class').val('wppoppop-trigger-' + uid);
-        $('#wppoppop-embed-modal').fadeIn(200);
-    });
+    function makeInteractive($el) {
+        var isSnap = $('#chk-grid-snap').is(':checked');
+        $el.draggable({
+            containment: '#wppoppop-stage',
+            grid: isSnap ? [10, 10] : false,
+            stop: function() {
+                updateLayersList();
+            }
+        }).resizable({
+            containment: '#wppoppop-stage',
+            handles: 'n, e, s, w, se',
+            stop: function() {
+                updateLayersList();
+            }
+        });
 
-    $('#btn-close-embed-modal, #wppoppop-embed-modal').on('click', function(e) {
-        if (e.target === this || e.target.id === 'btn-close-embed-modal') {
-            $('#wppoppop-embed-modal').fadeOut(150);
+        $el.on('mousedown', function(e) {
+            e.stopPropagation();
+            selectElement($(this));
+        });
+    }
+
+    function addElementToStage(type, props) {
+        var id = 'elem_' + Date.now() + '_' + Math.floor(Math.random() * 100);
+        var screen = currentScreen;
+        var p = props || {};
+
+        var top = p.top !== undefined ? p.top : 40;
+        var left = p.left !== undefined ? p.left : 40;
+        var width = p.width !== undefined ? p.width : 280;
+        var height = p.height !== undefined ? p.height : 45;
+        var content = p.content !== undefined ? p.content : (type === 'text' ? 'Heading Text' : 'Click Here');
+
+        var $el = $('<div class="wppoppop-element" id="' + id + '"></div>');
+        $el.attr({
+            'data-type': type,
+            'data-screen': p.screen || screen,
+            'data-field-name': p.field_name || (type === 'input' ? 'email' : ''),
+            'data-content': content,
+            'data-goto-screen': p.goto_screen || '2',
+            'data-options': p.options || 'Prize 1, Prize 2, Prize 3',
+            'data-required': p.required ? 'true' : 'false',
+            'data-error-msg': p.error_msg || 'Please fill out this field.',
+            'data-mask': p.mask || '',
+            'data-font-family': p.font_family || 'Inherit',
+            'data-font-size': p.font_size || 16,
+            'data-border-radius': p.border_radius || 4,
+            'data-opacity': p.opacity || 1.0,
+            'data-color': p.color || '#222222',
+            'data-bg-color': p.bg_color || (type === 'button' ? '#00a32a' : '#ffffff'),
+            'data-anim-effect': p.anim_effect || 'none',
+            'data-anim-delay': p.anim_delay || 0,
+            'data-anim-duration': p.anim_duration || 500
+        });
+
+        $el.css({
+            top: top + 'px',
+            left: left + 'px',
+            width: width + 'px',
+            height: height + 'px',
+            fontSize: (p.font_size || 16) + 'px',
+            borderRadius: (p.border_radius || 4) + 'px',
+            opacity: p.opacity || 1.0,
+            color: p.color || '#222222',
+            backgroundColor: p.bg_color || (type === 'button' ? '#00a32a' : 'transparent')
+        });
+
+        // Content placeholder inner rendering
+        var innerHtml = '<div class="element-content-box">' + content + '</div>';
+        if (type === 'input') {
+            innerHtml = '<input type="text" placeholder="' + content + '" disabled style="width:100%;height:100%;">';
+        } else if (type === 'button' || type === 'nextstep' || type === 'pay_btn') {
+            innerHtml = '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;">' + content + '</button>';
+        } else if (type === 'wheel') {
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#fef08a;font-weight:700;"><span class="dashicons dashicons-chart-pie"></span> Lucky Wheel</div>';
+        } else if (type === 'scratch') {
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#cbd5e1;font-weight:700;"><span class="dashicons dashicons-tickets-alt"></span> Scratch Foil</div>';
         }
-    });
+        $el.html(innerHtml);
 
-    // Live In-Builder Preview Modal
-    $('#wppoppop-btn-preview').on('click', function(e) {
-        e.preventDefault();
-        const modal = $('#wppoppop-live-preview-modal');
-        const mount = $('#wppoppop-preview-stage-mount').empty();
+        $('#wppoppop-stage').append($el);
+        makeInteractive($el);
+        selectElement($el);
+    }
 
-        const previewBox = $('<div class="wppoppop-box"></div>').css({
-            width: stage.width(),
-            height: stage.height(),
-            'border-radius': $('#box-border-radius').val() + 'px',
-            'background': $('#box-bg-color').val() || '#ffffff',
-            position: 'relative',
-            overflow: 'hidden'
+    function switchScreen(screenNum) {
+        currentScreen = parseInt(screenNum, 10);
+        $('.btn-screen-toggle').removeClass('active');
+        $('.btn-screen-toggle[data-screen="' + currentScreen + '"]').addClass('active');
+
+        $('#wppoppop-stage .wppoppop-element').each(function() {
+            var elScreen = parseInt($(this).attr('data-screen'), 10) || 1;
+            if (elScreen === currentScreen) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
         });
 
-        const elementsClone = stage.clone();
-        elementsClone.find('.canvas-element').each(function() {
-            $(this).removeClass('selected ui-draggable ui-draggable-handle ui-resizable')
-                   .find('.ui-resizable-handle').remove();
-        });
+        selectElement(null);
+    }
 
-        previewBox.html(elementsClone.html());
-        mount.append(previewBox);
-        modal.fadeIn(200);
-    });
+    // Save Popup Pipeline
+    function savePopup() {
+        var $btn = $('#wppoppop-btn-save');
+        var originalText = $btn.html();
+        $btn.prop('disabled', true).html('<span class="dashicons dashicons-update dashicons-spin" style="vertical-align:middle;"></span> Saving...');
 
-    $('#btn-close-live-preview, #wppoppop-live-preview-modal').on('click', function(e) {
-        if (e.target === this || e.target.id === 'btn-close-live-preview') {
-            $('#wppoppop-live-preview-modal').fadeOut(150);
-        }
-    });
+        var uid = $('#wppoppop-popup-uid').val();
+        var title = $('#wppoppop-popup-title').val().trim() || 'New Converting Popup';
+        var status = $('#wppoppop-popup-status').val() || 'publish';
 
-    // Diagnostic Pings (Webhook & Twilio)
-    $('#btn-test-webhook').on('click', function() {
-        const url = $('#mkt-webhook-url').val();
-        if (!url) { alert('Please enter a Webhook URL.'); return; }
-        const btn = $(this).text('Pinging...').prop('disabled', true);
-        $.post(wppoppop_vars.ajax_url, {
-            action: 'wppoppop_test_webhook',
-            nonce: wppoppop_vars.nonce,
-            url: url
-        }).always(function() {
-            btn.text('Ping Webhook').prop('disabled', false);
-            alert('Webhook test request dispatched.');
-        });
-    });
-
-    $('#btn-test-sms').on('click', function() {
-        const sid = $('#sms-sid').val();
-        const to = $('#sms-to').val();
-        if (!sid || !to) { alert('Please configure Twilio SID and recipient mobile number.'); return; }
-        const btn = $(this).text('Sending...').prop('disabled', true);
-        $.post(wppoppop_vars.ajax_url, {
-            action: 'wppoppop_test_sms',
-            nonce: wppoppop_vars.nonce,
-            sid: sid,
-            to: to
-        }).always(function() {
-            btn.text('Test SMS Dispatch').prop('disabled', false);
-            alert('Test SMS request dispatched.');
-        });
-    });
-
-    // Save Popup Payload
-    $('#wppoppop-btn-save').on('click', function(e) {
-        e.preventDefault();
-        const saveBtn = $(this).prop('disabled', true).text('Saving...');
-
-        const elementsData = [];
-        $('.canvas-element').each(function() {
-            const el = $(this);
-            elementsData.push({
-                id: el.attr('id'),
-                screen: el.data('screen') || 1,
-                type: el.data('type'),
-                field_name: el.data('field-name') || '',
-                options: el.data('options') || [],
-                goto_screen: el.data('goto-screen') || 1,
-                required: el.data('required') || 0,
-                error_msg: el.data('error-msg') || '',
-                font_family: el.data('font-family') || 'Inherit',
-                font_size: el.data('font-size') || 16,
-                border_radius: el.data('border-radius') || 4,
-                opacity: el.data('opacity') || 1.0,
-                color: el.data('color') || '#222222',
-                bg_color: el.data('bg-color') || '#00a32a',
-                anim_effect: el.data('anim-effect') || 'none',
-                anim_delay: el.data('anim-delay') || 0,
-                anim_duration: el.data('anim-duration') || 500,
-                z_index: el.data('z-index') || 1,
-                top: parseInt(el.css('top'), 10) || 0,
-                left: parseInt(el.css('left'), 10) || 0,
-                width: el.outerWidth() || el.width(),
-                height: el.outerHeight() || el.height(),
-                content: el.data('type') === 'input' ? el.find('input').attr('placeholder') : el.text().trim()
+        // Gather all elements
+        var elements = [];
+        $('#wppoppop-stage .wppoppop-element').each(function() {
+            var $el = $(this);
+            elements.push({
+                id: $el.attr('id'),
+                type: $el.attr('data-type'),
+                screen: parseInt($el.attr('data-screen'), 10) || 1,
+                top: Math.round(parseFloat($el.css('top')) || 0),
+                left: Math.round(parseFloat($el.css('left')) || 0),
+                width: Math.round(parseFloat($el.css('width')) || $el.outerWidth()),
+                height: Math.round(parseFloat($el.css('height')) || $el.outerHeight()),
+                field_name: $el.attr('data-field-name') || '',
+                content: $el.attr('data-content') || '',
+                goto_screen: $el.attr('data-goto-screen') || '2',
+                options: $el.attr('data-options') || '',
+                required: $el.attr('data-required') === 'true',
+                error_msg: $el.attr('data-error-msg') || '',
+                mask: $el.attr('data-mask') || '',
+                font_family: $el.attr('data-font-family') || 'Inherit',
+                font_size: parseInt($el.attr('data-font-size'), 10) || 16,
+                border_radius: parseInt($el.attr('data-border-radius'), 10) || 4,
+                opacity: parseFloat($el.attr('data-opacity')) || 1.0,
+                color: $el.attr('data-color') || '#222222',
+                bg_color: $el.attr('data-bg-color') || '#ffffff',
+                anim_effect: $el.attr('data-anim-effect') || 'none',
+                anim_delay: parseInt($el.attr('data-anim-delay'), 10) || 0,
+                anim_duration: parseInt($el.attr('data-anim-duration'), 10) || 500
             });
         });
 
-        const payload = {
+        // Gather Accordion Configurations
+        var config = {
             meta: {
-                title: $('#wppoppop-popup-title').val() || 'Untitled Popup',
-                width: stage.width(),
-                height: stage.height()
-            },
-            box_styling: {
-                radius: $('#box-border-radius').val() || 8,
+                title: title,
+                width: parseInt($('#stage-width').val(), 10) || 640,
+                height: parseInt($('#stage-height').val(), 10) || 400,
                 bg_color: $('#box-bg-color').val() || '#ffffff',
-                position_mode: $('#style-position-mode').val() || 'modal',
+                border_radius: parseInt($('#box-border-radius').val(), 10) || 8,
                 backdrop_blur: parseInt($('#style-backdrop-blur').val(), 10) || 5,
+                position_mode: $('#style-position-mode').val() || 'modal',
                 close_esc: $('#style-close-esc').is(':checked'),
                 close_backdrop: $('#style-close-backdrop').is(':checked')
             },
-            sounds: {
-                enable: $('#snd-enable').is(':checked')
-            },
+            elements: elements,
+            sounds: { enable: $('#snd-enable').is(':checked') },
             triggers: {
-                on_load: $('#trig-load').is(':checked'),
-                on_load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
-                on_exit: $('#trig-exit').is(':checked'),
-                on_scroll: $('#trig-scroll').is(':checked'),
-                on_idle: $('#trig-idle').is(':checked'),
-                on_adblock: $('#trig-adblock').length ? $('#trig-adblock').is(':checked') : false,
-                on_mobile_back: $('#trig-mobile-back').is(':checked')
+                load: $('#trig-load').is(':checked'),
+                load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
+                exit: $('#trig-exit').is(':checked'),
+                scroll: $('#trig-scroll').is(':checked'),
+                idle: $('#trig-idle').is(':checked'),
+                adblock: $('#trig-adblock').is(':checked'),
+                mobile_back: $('#trig-mobile-back').is(':checked')
             },
-            logic_math: {
-                expression: $('#math-expression').val() || '',
-                output_target: $('#math-output-target').val() || ''
+            logic: {
+                math_expression: $('#math-expression').val() || '',
+                math_output_target: $('#math-output-target').val() || ''
             },
             coupons: {
                 enable: $('#cpn-enable').is(':checked'),
@@ -586,12 +284,10 @@ jQuery(document).ready(function($) {
                 enable: $('#dl-enable').is(':checked'),
                 url: $('#dl-url').val() || ''
             },
-            video: {
-                enable: $('#vid-enable').is(':checked')
-            },
+            video: { enable: $('#vid-enable').is(':checked') },
             autoresponder: {
-                enable: $('#ar-enable').is(':checked'),
-                subject: $('#ar-subject').val() || '',
+                enable_user_email: $('#ar-enable').is(':checked'),
+                subject: $('#ar-subject').val() || 'Thank you!',
                 message: $('#ar-message').val() || ''
             },
             marketing: {
@@ -608,100 +304,327 @@ jQuery(document).ready(function($) {
             targeting: {
                 auth_mode: $('#target-auth-mode').val() || 'all',
                 roles: $('#target-roles').val() || '',
-                param_key: $('#target-url-param-key').val() || '',
-                param_val: $('#target-url-param-val').val() || '',
+                url_param_key: $('#target-url-param-key').val() || '',
+                url_param_val: $('#target-url-param-val').val() || '',
                 scope: $('#target-scope').val() || 'everywhere',
                 geo_mode: $('#target-geo-mode').val() || 'all'
             },
-            frequency: {
-                mode: $('#freq-mode').val() || 'everytime',
+            cookies: {
+                freq_mode: $('#freq-mode').val() || 'everytime',
                 hide_submitted: $('#freq-hide-submitted').is(':checked')
             },
-            custom_code: {
+            customcode: {
                 css: $('#code-custom-css').val() || '',
                 js: $('#code-custom-js').val() || ''
-            },
-            elements: elementsData
+            }
         };
 
         $.ajax({
-            url: wppoppop_vars.ajax_url,
+            url: getAjaxUrl(),
             type: 'POST',
+            dataType: 'json',
             data: {
                 action: 'wppoppop_save_popup',
-                nonce: wppoppop_vars.nonce,
-                uid: $('#wppoppop-popup-uid').val(),
-                title: $('#wppoppop-popup-title').val(),
-                data: JSON.stringify(payload)
+                nonce: getSecurityNonce(),
+                uid: uid,
+                title: title,
+                status: status,
+                data: JSON.stringify(config)
             },
             success: function(res) {
-                saveBtn.prop('disabled', false).text('Save Popup');
-                if (res.success) {
-                    $('#wppoppop-popup-uid').val(res.data.uid);
-                    alert(res.data.message || 'Popup configuration saved successfully!');
+                $btn.prop('disabled', false).html(originalText);
+                if (res && res.success) {
+                    var savedUid = res.data && res.data.uid ? res.data.uid : uid;
+                    $('#wppoppop-popup-uid').val(savedUid);
+
+                    if (window.history && window.history.replaceState) {
+                        var newUrl = window.location.pathname + '?page=wppoppop-builder&uid=' + encodeURIComponent(savedUid);
+                        window.history.replaceState(null, '', newUrl);
+                    }
+                    alert(res.data.message || 'Popup saved successfully!');
                 } else {
-                    alert('Save error: ' + (res.data ? res.data.message : 'Unknown rejection'));
+                    var msg = (res && res.data && res.data.message) ? res.data.message : 'Unknown response error.';
+                    alert('Error: ' + msg);
                 }
             },
-            error: function(xhr, status, error) {
-                saveBtn.prop('disabled', false).text('Save Popup');
-                alert('Save failed: ' + error);
-            }
-        });
-    });
-
-    // Populate on Initial Load
-    if (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.current_uid) {
-        $.get(wppoppop_vars.ajax_url, {
-            action: 'wppoppop_load_popup',
-            nonce: wppoppop_vars.nonce,
-            uid: wppoppop_vars.current_uid
-        }, function(res) {
-            if (res.success && res.data) {
-                const config = JSON.parse(res.data.data);
-                $('#wppoppop-popup-title').val(res.data.title);
-                $('#wppoppop-popup-uid').val(res.data.uid);
-
-                if (config.box_styling) {
-                    $('#box-border-radius').val(config.box_styling.radius || 8);
-                    $('#box-bg-color').val(config.box_styling.bg_color || '#ffffff');
-                    $('#style-position-mode').val(config.box_styling.position_mode || 'modal');
-                    $('#style-backdrop-blur').val(config.box_styling.backdrop_blur || 5);
-                    $('#style-close-esc').prop('checked', !!config.box_styling.close_esc);
-                    $('#style-close-backdrop').prop('checked', !!config.box_styling.close_backdrop);
-                }
-
-                if (config.coupons) {
-                    $('#cpn-enable').prop('checked', !!config.coupons.enable);
-                    $('#cpn-prefix').val(config.coupons.prefix || 'POP-');
-                    $('#cpn-type').val(config.coupons.type || 'percent');
-                    $('#cpn-amount').val(config.coupons.amount || 15);
-                    $('#cpn-auto-apply').prop('checked', !!config.coupons.auto_apply);
-                    $('#woo-cart-rule').prop('checked', !!config.coupons.woo_cart_rule);
-                    $('#woo-min-cart').val(config.coupons.woo_min_cart || 50);
-                }
-
-                if (config.custom_code) {
-                    $('#code-custom-css').val(config.custom_code.css || '');
-                    $('#code-custom-js').val(config.custom_code.js || '');
-                }
-
-                if (Array.isArray(config.elements)) {
-                    applyState(config.elements.map(function(el) {
-                        return {
-                            id: el.id,
-                            type: el.type,
-                            screen: el.screen || 1,
-                            top: el.top,
-                            left: el.left,
-                            width: el.width,
-                            height: el.height,
-                            content: el.content,
-                            data: el
-                        };
-                    }));
-                }
+            error: function(xhr, statusText, err) {
+                $btn.prop('disabled', false).html(originalText);
+                var errDetail = (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message)
+                    ? xhr.responseJSON.data.message
+                    : (err || statusText || 'HTTP ' + xhr.status);
+                alert('Connection failure while saving: ' + errDetail);
             }
         });
     }
-});
+
+    // Hydrate Existing Popup from Database
+    function loadPopup(uid) {
+        if (!uid) return;
+        $.ajax({
+            url: getAjaxUrl(),
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'wppoppop_load_popup',
+                uid: uid,
+                nonce: getSecurityNonce()
+            },
+            success: function(res) {
+                if (!res || !res.success || !res.data) return;
+                var item = res.data;
+                $('#wppoppop-popup-title').val(item.title || 'New Converting Popup');
+                $('#wppoppop-popup-uid').val(item.uid);
+                $('#wppoppop-popup-status').val(item.status || 'publish');
+
+                var data = {};
+                try {
+                    data = (typeof item.data === 'string') ? JSON.parse(item.data) : item.data;
+                } catch(e) {
+                    data = {};
+                }
+
+                // Restore Meta Stage
+                if (data.meta) {
+                    $('#stage-width').val(data.meta.width || 640).trigger('input');
+                    $('#stage-height').val(data.meta.height || 400).trigger('input');
+                    $('#box-bg-color').val(data.meta.bg_color || '#ffffff').trigger('input');
+                    $('#box-border-radius').val(data.meta.border_radius || 8);
+                    $('#style-backdrop-blur').val(data.meta.backdrop_blur || 5);
+                    $('#style-position-mode').val(data.meta.position_mode || 'modal');
+                    $('#style-close-esc').prop('checked', data.meta.close_esc !== false);
+                    $('#style-close-backdrop').prop('checked', data.meta.close_backdrop !== false);
+                }
+
+                // Restore Accordion Rules
+                if (data.triggers) {
+                    $('#trig-load').prop('checked', !!data.triggers.load);
+                    $('#trig-load-delay').val(data.triggers.load_delay || 0);
+                    $('#trig-exit').prop('checked', !!data.triggers.exit);
+                    $('#trig-scroll').prop('checked', !!data.triggers.scroll);
+                    $('#trig-idle').prop('checked', !!data.triggers.idle);
+                    $('#trig-adblock').prop('checked', !!data.triggers.adblock);
+                    $('#trig-mobile-back').prop('checked', !!data.triggers.mobile_back);
+                }
+                if (data.logic) {
+                    $('#math-expression').val(data.logic.math_expression || '');
+                    $('#math-output-target').val(data.logic.math_output_target || '');
+                }
+                if (data.coupons) {
+                    $('#cpn-enable').prop('checked', !!data.coupons.enable);
+                    $('#cpn-prefix').val(data.coupons.prefix || 'POP-');
+                    $('#cpn-type').val(data.coupons.type || 'percent');
+                    $('#cpn-amount').val(data.coupons.amount || 15);
+                    $('#cpn-auto-apply').prop('checked', data.coupons.auto_apply !== false);
+                    $('#woo-cart-rule').prop('checked', !!data.coupons.woo_cart_rule);
+                    $('#woo-min-cart').val(data.coupons.woo_min_cart || 50);
+                }
+                if (data.sidetabs) {
+                    $('#tab-enable').prop('checked', !!data.sidetabs.enable);
+                    $('#tab-text').val(data.sidetabs.text || 'Special Offer');
+                    $('#tab-pos').val(data.sidetabs.pos || 'left');
+                }
+                if (data.payments) {
+                    $('#pay-enable').prop('checked', !!data.payments.enable);
+                    $('#pay-amount').val(data.payments.amount || 10.00);
+                    $('#pay-currency').val(data.payments.currency || 'USD');
+                }
+                if (data.downloads) {
+                    $('#dl-enable').prop('checked', !!data.downloads.enable);
+                    $('#dl-url').val(data.downloads.url || '');
+                }
+                if (data.video) {
+                    $('#vid-enable').prop('checked', !!data.video.enable);
+                }
+                if (data.autoresponder) {
+                    $('#ar-enable').prop('checked', !!data.autoresponder.enable_user_email);
+                    $('#ar-subject').val(data.autoresponder.subject || 'Thank you!');
+                    $('#ar-message').val(data.autoresponder.message || '');
+                }
+                if (data.marketing) {
+                    $('#mkt-webhook-url').val(data.marketing.webhook_url || '');
+                    $('#mkt-webhook-secret').val(data.marketing.webhook_secret || '');
+                }
+                if (data.twilio) {
+                    $('#sms-enable').prop('checked', !!data.twilio.enable);
+                    $('#sms-sid').val(data.twilio.sid || '');
+                    $('#sms-token').val(data.twilio.token || '');
+                    $('#sms-from').val(data.twilio.from || '');
+                    $('#sms-to').val(data.twilio.to || '');
+                }
+                if (data.targeting) {
+                    $('#target-auth-mode').val(data.targeting.auth_mode || 'all');
+                    $('#target-roles').val(data.targeting.roles || '');
+                    $('#target-url-param-key').val(data.targeting.url_param_key || '');
+                    $('#target-url-param-val').val(data.targeting.url_param_val || '');
+                    $('#target-scope').val(data.targeting.scope || 'everywhere');
+                    $('#target-geo-mode').val(data.targeting.geo_mode || 'all');
+                }
+                if (data.cookies) {
+                    $('#freq-mode').val(data.cookies.freq_mode || 'everytime');
+                    $('#freq-hide-submitted').prop('checked', data.cookies.hide_submitted !== false);
+                }
+                if (data.customcode) {
+                    $('#code-custom-css').val(data.customcode.css || '');
+                    $('#code-custom-js').val(data.customcode.js || '');
+                }
+
+                // Render Elements
+                $('#wppoppop-stage .wppoppop-element').remove();
+                if (Array.isArray(data.elements)) {
+                    data.elements.forEach(function(elProps) {
+                        addElementToStage(elProps.type, elProps);
+                    });
+                }
+                switchScreen(1);
+            }
+        });
+    }
+
+    // Document Ready Initializer
+    $(document).ready(function() {
+        // Tab switching
+        $('.tab-btn').on('click', function() {
+            var tab = $(this).attr('data-tab');
+            $('.tab-btn').removeClass('active');
+            $(this).addClass('active');
+            $('.tab-pane').removeClass('active');
+            $('#' + tab).addClass('active');
+            if (tab === 'tab-layers') updateLayersList();
+        });
+
+        // Element palette click
+        $('.element-item').on('click', function() {
+            var type = $(this).attr('data-type');
+            addElementToStage(type);
+        });
+
+        // Stage dimensions real-time sync
+        $('#stage-width').on('input change', function() {
+            $('#wppoppop-stage').css('width', $(this).val() + 'px');
+        });
+        $('#stage-height').on('input change', function() {
+            $('#wppoppop-stage').css('height', $(this).val() + 'px');
+        });
+        $('#box-bg-color').on('input change', function() {
+            $('#wppoppop-stage').css('background-color', $(this).val());
+        });
+
+        // Screen switching
+        $('.btn-screen-toggle').on('click', function() {
+            switchScreen($(this).attr('data-screen'));
+        });
+
+        // Accordion collapsing
+        $('.accordion-header').on('click', function() {
+            $(this).closest('.accordion-item').toggleClass('active');
+        });
+
+        // Save Button Handler
+        $('#wppoppop-btn-save').on('click', function(e) {
+            e.preventDefault();
+            savePopup();
+        });
+
+        // Live Preview Modal
+        $('#wppoppop-btn-preview').on('click', function() {
+            var $mount = $('#wppoppop-preview-stage-mount');
+            $mount.empty();
+
+            var $clone = $('#wppoppop-stage').clone();
+            $clone.find('.ui-resizable-handle, .canvas-grid-guide').remove();
+            $clone.find('.wppoppop-element').removeClass('is-selected ui-draggable ui-resizable');
+            $clone.find('input, button').prop('disabled', false);
+
+            $mount.append($clone);
+            $('#wppoppop-live-preview-modal').fadeIn(150);
+        });
+        $('#btn-close-live-preview').on('click', function() {
+            $('#wppoppop-live-preview-modal').fadeOut(150);
+        });
+
+        // Embed Code Modal
+        $('#wppoppop-btn-embed').on('click', function() {
+            var uid = $('#wppoppop-popup-uid').val() || 'pop_sample';
+            $('#embed-code-shortcode').val('[wppoppop uid="' + uid + '"]');
+            $('#embed-code-button').val('[wppoppop_button uid="' + uid + '" text="Open Popup"]');
+            $('#embed-code-class').val('wppoppop-trigger-open data-popup-uid="' + uid + '"');
+            $('#wppoppop-embed-modal').fadeIn(150);
+        });
+        $('#btn-close-embed-modal').on('click', function() {
+            $('#wppoppop-embed-modal').fadeOut(150);
+        });
+
+        // Deselect when clicking stage backdrop
+        $('#wppoppop-stage').on('mousedown', function(e) {
+            if (e.target === this) {
+                selectElement(null);
+            }
+        });
+
+        // Inspector live updates
+        $('#prop-content').on('input', function() {
+            if (selectedElement) {
+                selectedElement.attr('data-content', $(this).val());
+                var type = selectedElement.attr('data-type');
+                if (type === 'input') {
+                    selectedElement.find('input').attr('placeholder', $(this).val());
+                } else if (type === 'button' || type === 'nextstep') {
+                    selectedElement.find('button').text($(this).val());
+                } else {
+                    selectedElement.find('.element-content-box').text($(this).val());
+                }
+            }
+        });
+        $('#prop-field-name').on('input', function() {
+            if (selectedElement) selectedElement.attr('data-field-name', $(this).val());
+        });
+        $('#prop-font-size').on('input change', function() {
+            if (selectedElement) {
+                selectedElement.attr('data-font-size', $(this).val());
+                selectedElement.css('font-size', $(this).val() + 'px');
+            }
+        });
+        $('#prop-border-radius').on('input change', function() {
+            if (selectedElement) {
+                selectedElement.attr('data-border-radius', $(this).val());
+                selectedElement.css('border-radius', $(this).val() + 'px');
+            }
+        });
+        $('#prop-color').on('input change', function() {
+            if (selectedElement) {
+                selectedElement.attr('data-color', $(this).val());
+                selectedElement.css('color', $(this).val());
+            }
+        });
+        $('#prop-bg-color').on('input change', function() {
+            if (selectedElement) {
+                selectedElement.attr('data-bg-color', $(this).val());
+                selectedElement.css('background-color', $(this).val());
+            }
+        });
+
+        // Layer removal & actions
+        $('#prop-delete-element').on('click', function() {
+            if (selectedElement) {
+                selectedElement.remove();
+                selectElement(null);
+            }
+        });
+
+        // Hydrate from existing UID
+        var initUid = $('#wppoppop-popup-uid').val();
+        if (!initUid && typeof wppoppop_vars !== 'undefined' && wppoppop_vars.current_uid) {
+            initUid = wppoppop_vars.current_uid;
+            $('#wppoppop-popup-uid').val(initUid);
+        }
+        if (initUid) {
+            loadPopup(initUid);
+        } else {
+            // Default canvas startup items
+            addElementToStage('text', { top: 40, left: 40, width: 500, height: 40, content: 'Join Our Newsletter Today' });
+            addElementToStage('input', { top: 110, left: 40, width: 500, height: 45, content: 'Enter your email address...' });
+            addElementToStage('button', { top: 175, left: 40, width: 500, height: 45, content: 'Subscribe Now' });
+        }
+    });
+
+})(jQuery);

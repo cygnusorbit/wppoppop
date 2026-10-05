@@ -3,7 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$settings = get_option('wppoppop_settings', []);
+$current_uid = isset($_GET['uid']) ? sanitize_key($_GET['uid']) : '';
+$settings    = get_option('wppoppop_settings', []);
 
 $feat_google_fonts     = isset($settings['google_fonts']) ? !empty($settings['google_fonts']) : true;
 $feat_air_datepicker   = isset($settings['air_datepicker']) ? !empty($settings['air_datepicker']) : true;
@@ -17,12 +18,18 @@ $custom_fonts_raw = isset($settings['custom_fonts']) ? $settings['custom_fonts']
 $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_raw)));
 ?>
 <div class="wppoppop-builder-wrap">
+    <?php wp_nonce_field('wppoppop_builder_nonce', 'wppoppop_builder_nonce_field'); ?>
+
     <!-- Header Toolbar -->
     <header class="wppoppop-builder-header">
         <div class="header-left">
             <span class="dashicons dashicons-external" style="font-size: 24px; margin-right: 8px;"></span>
             <input type="text" id="wppoppop-popup-title" value="New Converting Popup" placeholder="Popup Name...">
-            <input type="hidden" id="wppoppop-popup-uid" value="">
+            <input type="hidden" id="wppoppop-popup-uid" value="<?php echo esc_attr($current_uid); ?>">
+            <select id="wppoppop-popup-status" style="margin-left: 8px; height: 32px; font-size: 13px;">
+                <option value="publish">Status: Active</option>
+                <option value="draft">Status: Inactive</option>
+            </select>
         </div>
         <div class="header-center">
             <div class="screen-switch-bar" id="screen-switch-container">
@@ -39,7 +46,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         <div class="header-right">
             <button type="button" class="button button-secondary" id="wppoppop-btn-embed"><span class="dashicons dashicons-shortcode" style="vertical-align:middle;"></span> Embed Code</button>
             <button type="button" class="button button-secondary" id="wppoppop-btn-preview"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Live Preview</button>
-            <button type="button" class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
+            <button type="button" class="button button-primary" id="wppoppop-btn-save"><span class="dashicons dashicons-saved" style="vertical-align:middle;margin-top:-2px;"></span> Save Popup</button>
         </div>
     </header>
 
@@ -129,11 +136,11 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                         <div id="inspector-empty-state">Select any canvas layer to edit properties.</div>
                         <div id="inspector-controls" style="display: none;">
                             <div class="form-group">
-                                <label>Binding Key (e.g. email, prize, coupon_code):</label>
+                                <label>Binding Key (e.g. email, name, phone):</label>
                                 <input type="text" id="prop-field-name" class="widefat">
                             </div>
                             <div class="form-group">
-                                <label>Content / Dynamic Tokens ({user_name}, {coupon_code}):</label>
+                                <label>Content / Dynamic Tokens ({coupon_code}):</label>
                                 <input type="text" id="prop-content" class="widefat">
                             </div>
                             <div class="form-group" id="group-prop-goto" style="display:none;">
