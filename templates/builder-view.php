@@ -2,6 +2,19 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+$settings = get_option('wppoppop_settings', []);
+
+$feat_google_fonts     = isset($settings['google_fonts']) ? !empty($settings['google_fonts']) : true;
+$feat_air_datepicker   = isset($settings['air_datepicker']) ? !empty($settings['air_datepicker']) : true;
+$feat_signature_pad    = !empty($settings['signature_pad']);
+$feat_range_slider     = !empty($settings['range_slider']);
+$feat_adblock_detector = !empty($settings['adblock_detector']);
+$feat_js_parser        = !empty($settings['js_parser']);
+$feat_jquery_mask      = !empty($settings['jquery_mask']);
+
+$custom_fonts_raw = isset($settings['custom_fonts']) ? $settings['custom_fonts'] : '';
+$custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_raw)));
 ?>
 <div class="wppoppop-builder-wrap">
     <!-- Header Toolbar -->
@@ -24,9 +37,9 @@ if (!defined('ABSPATH')) {
             <label style="margin-left: 8px;">H: <input type="number" id="stage-height" value="400" style="width: 65px;"> px</label>
         </div>
         <div class="header-right">
-            <button class="button button-secondary" id="wppoppop-btn-embed">Embed Code</button>
-            <button class="button button-secondary" id="wppoppop-btn-preview">Live Preview</button>
-            <button class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
+            <button type="button" class="button button-secondary" id="wppoppop-btn-embed"><span class="dashicons dashicons-shortcode" style="vertical-align:middle;"></span> Embed Code</button>
+            <button type="button" class="button button-secondary" id="wppoppop-btn-preview"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Live Preview</button>
+            <button type="button" class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
         </div>
     </header>
 
@@ -48,9 +61,19 @@ if (!defined('ABSPATH')) {
                 <div class="element-item" data-type="radio"><span class="dashicons dashicons-marker"></span> Radio Options</div>
                 <div class="element-item" data-type="checkbox"><span class="dashicons dashicons-yes"></span> Checkbox List</div>
                 <div class="element-item" data-type="rating"><span class="dashicons dashicons-star-filled"></span> Star Rating</div>
-                <div class="element-item" data-type="date"><span class="dashicons dashicons-calendar-alt"></span> Date Picker</div>
-                <div class="element-item" data-type="slider"><span class="dashicons dashicons-leftright"></span> Range Slider</div>
-                <div class="element-item" data-type="signature"><span class="dashicons dashicons-edit"></span> Signature Pad</div>
+                
+                <?php if ($feat_air_datepicker) : ?>
+                    <div class="element-item" data-type="date"><span class="dashicons dashicons-calendar-alt"></span> Date Picker</div>
+                <?php endif; ?>
+
+                <?php if ($feat_range_slider) : ?>
+                    <div class="element-item" data-type="slider"><span class="dashicons dashicons-leftright"></span> Range Slider</div>
+                <?php endif; ?>
+
+                <?php if ($feat_signature_pad) : ?>
+                    <div class="element-item" data-type="signature"><span class="dashicons dashicons-edit"></span> Signature Pad</div>
+                <?php endif; ?>
+
                 <div class="element-item" data-type="wheel"><span class="dashicons dashicons-chart-pie"></span> Lucky Wheel</div>
                 <div class="element-item" data-type="scratch"><span class="dashicons dashicons-tickets-alt"></span> Scratch Card</div>
                 <div class="element-item" data-type="countdown"><span class="dashicons dashicons-clock"></span> Countdown Timer</div>
@@ -63,6 +86,7 @@ if (!defined('ABSPATH')) {
             </div>
 
             <div id="tab-layers" class="tab-pane">
+                <p class="panel-hint" style="margin-bottom:8px;">Active screen layer hierarchy:</p>
                 <ul id="wppoppop-layers-list" class="layers-list">
                     <li class="empty-layers">No elements on current screen.</li>
                 </ul>
@@ -91,7 +115,7 @@ if (!defined('ABSPATH')) {
             </div>
         </main>
 
-        <!-- Right Configuration Sidebar: Full 17 Accordion Sections -->
+        <!-- Right Configuration Sidebar: Full 17 Accordions -->
         <aside class="wppoppop-panel wppoppop-sidebar-right">
             <div class="wppoppop-accordion">
 
@@ -131,18 +155,51 @@ if (!defined('ABSPATH')) {
                                     <input type="text" id="prop-error-msg" value="Please fill out this field." class="widefat">
                                 </div>
                             </div>
+
+                            <?php if ($feat_jquery_mask) : ?>
+                            <div class="form-group" id="group-prop-mask" style="display:none;">
+                                <label>Input Mask (jQuery Mask):</label>
+                                <input type="text" id="prop-mask" placeholder="e.g. (999) 999-9999" class="widefat">
+                            </div>
+                            <?php endif; ?>
+
                             <div class="form-group">
                                 <label>Font Family:</label>
                                 <select id="prop-font-family" class="widefat">
-                                    <option value="Inherit">Inherit Theme Font</option>
-                                    <option value="Inter">Inter (Sans-serif)</option>
-                                    <option value="Roboto">Roboto (Sans-serif)</option>
-                                    <option value="Montserrat">Montserrat (Modern)</option>
+                                    <optgroup label="Standard Fonts">
+                                        <option value="Inherit">Inherit Theme Font</option>
+                                        <option value="Arial, sans-serif">Arial</option>
+                                        <option value="Georgia, serif">Georgia</option>
+                                        <option value="'Times New Roman', serif">Times New Roman</option>
+                                    </optgroup>
+                                    <?php if ($feat_google_fonts) : ?>
+                                    <optgroup label="Google Fonts">
+                                        <option value="Inter">Inter (Sans-serif)</option>
+                                        <option value="Roboto">Roboto (Sans-serif)</option>
+                                        <option value="Montserrat">Montserrat (Modern)</option>
+                                        <option value="Poppins">Poppins (Geometric)</option>
+                                    </optgroup>
+                                    <?php endif; ?>
+                                    <?php if (!empty($custom_fonts)) : ?>
+                                    <optgroup label="Custom Local Fonts">
+                                        <?php foreach ($custom_fonts as $cf) : ?>
+                                            <option value="<?php echo esc_attr($cf); ?>"><?php echo esc_html($cf); ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Font Size (px):</label>
                                 <input type="number" id="prop-font-size" value="16" min="10" max="72">
+                            </div>
+                            <div class="form-group">
+                                <label>Border Radius (px):</label>
+                                <input type="number" id="prop-border-radius" value="4" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Opacity (0.1 - 1.0):</label>
+                                <input type="number" id="prop-opacity" value="1.0" min="0.1" max="1.0" step="0.1">
                             </div>
                             <div class="form-group">
                                 <label>Text Color:</label>
@@ -199,7 +256,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- 4. Box & Backdrop Styling (With Ribbon Options) -->
+                <!-- 4. Box & Backdrop Styling -->
                 <div class="accordion-item" data-accordion="backdrop">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-art"></span> Box & Placement</span>
@@ -220,6 +277,15 @@ if (!defined('ABSPATH')) {
                         </div>
                         <label class="trigger-option"><input type="checkbox" id="style-close-esc" checked> Close on ESC key</label>
                         <label class="trigger-option"><input type="checkbox" id="style-close-backdrop" checked> Close on backdrop click</label>
+                        <hr>
+                        <div class="form-group">
+                            <label>Corner Radius (px):</label>
+                            <input type="number" id="box-border-radius" value="8" min="0" max="60" class="widefat">
+                        </div>
+                        <div class="form-group">
+                            <label>Background Fill:</label>
+                            <input type="color" id="box-bg-color" value="#ffffff" style="width:100%;height:32px;">
+                        </div>
                     </div>
                 </div>
 
@@ -235,7 +301,9 @@ if (!defined('ABSPATH')) {
                         <label class="trigger-option"><input type="checkbox" id="trig-exit"> On Exit Intent</label>
                         <label class="trigger-option"><input type="checkbox" id="trig-scroll"> On Scroll Depth (> 50%)</label>
                         <label class="trigger-option"><input type="checkbox" id="trig-idle"> On User Inactivity (15s)</label>
-                        <label class="trigger-option"><input type="checkbox" id="trig-adblock"> On AdBlock Detected</label>
+                        <?php if ($feat_adblock_detector) : ?>
+                            <label class="trigger-option"><input type="checkbox" id="trig-adblock"> On AdBlock Detected</label>
+                        <?php endif; ?>
                         <label class="trigger-option"><input type="checkbox" id="trig-mobile-back"> On Mobile Back-Button</label>
                     </div>
                 </div>
@@ -512,5 +580,38 @@ if (!defined('ABSPATH')) {
 
             </div>
         </aside>
+    </div>
+
+    <!-- Live In-Builder Preview Modal -->
+    <div id="wppoppop-live-preview-modal" class="wppoppop-preview-backdrop" style="display:none;">
+        <div class="wppoppop-preview-container">
+            <div class="preview-top-toolbar">
+                <span style="font-weight:700;font-size:13px;"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Interactive Preview</span>
+                <button type="button" class="button button-small" id="btn-close-live-preview">&times; Close</button>
+            </div>
+            <div id="wppoppop-preview-stage-mount"></div>
+        </div>
+    </div>
+
+    <!-- Embed Code Modal -->
+    <div id="wppoppop-embed-modal" class="wppoppop-preview-backdrop" style="display:none;">
+        <div class="wppoppop-preview-container" style="background:#fff; padding:20px; border-radius:8px; width:480px; max-width:90%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
+                <h3 style="margin:0;"><span class="dashicons dashicons-shortcode"></span> Embed Snippets</h3>
+                <button type="button" class="button button-small" id="btn-close-embed-modal">&times;</button>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-weight:600;display:block;margin-bottom:4px;">WordPress Shortcode:</label>
+                <input type="text" id="embed-code-shortcode" class="widefat" readonly onclick="this.select();">
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-weight:600;display:block;margin-bottom:4px;">Button Trigger Shortcode:</label>
+                <input type="text" id="embed-code-button" class="widefat" readonly onclick="this.select();">
+            </div>
+            <div class="form-group">
+                <label style="font-weight:600;display:block;margin-bottom:4px;">HTML Trigger Class:</label>
+                <input type="text" id="embed-code-class" class="widefat" readonly onclick="this.select();">
+            </div>
+        </div>
     </div>
 </div>
