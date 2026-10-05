@@ -4,9 +4,92 @@ jQuery(document).ready(function($) {
 
     let activeElement = null;
     let currentScreen = 1;
+    let currentViewport = 'desktop';
     let zIndexCounter = 1;
     const stage = $('#wppoppop-stage');
     const features = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.features) ? wppoppop_vars.features : {};
+
+    // Standard Icon Library Catalog
+    const standardIcons = [
+        'dashicons-star-filled', 'dashicons-heart', 'dashicons-cart', 'dashicons-email',
+        'dashicons-bell', 'dashicons-yes', 'dashicons-dismiss', 'dashicons-lock',
+        'dashicons-unlock', 'dashicons-arrow-right-alt', 'dashicons-tag', 'dashicons-awards',
+        'dashicons-calendar-alt', 'dashicons-clock', 'dashicons-megaphone', 'dashicons-thumbs-up',
+        'dashicons-download', 'dashicons-smartphone', 'dashicons-laptop', 'dashicons-shield'
+    ];
+
+    // Responsive Mobile Viewport Mode Switcher
+    $('.btn-viewport-toggle').on('click', function() {
+        $('.btn-viewport-toggle').removeClass('active');
+        $(this).addClass('active');
+        currentViewport = $(this).data('viewport');
+
+        if (currentViewport === 'mobile') {
+            stage.css({ width: '360px', height: '520px' });
+            $('#stage-width').val(360);
+            $('#stage-height').val(520);
+        } else {
+            stage.css({ width: '640px', height: '400px' });
+            $('#stage-width').val(640);
+            $('#stage-height').val(400);
+        }
+    });
+
+    // Icon Picker Modal Handlers
+    $('#btn-open-icon-picker').on('click', function(e) {
+        e.preventDefault();
+        renderIconGrid('');
+        $('#wppoppop-icon-picker-modal').fadeIn(150);
+    });
+
+    $('.btn-close-icon-picker, #wppoppop-icon-picker-modal').on('click', function(e) {
+        if (e.target === this || $(this).hasClass('btn-close-icon-picker')) {
+            $('#wppoppop-icon-picker-modal').fadeOut(150);
+        }
+    });
+
+    $('#icon-search-input').on('input', function() {
+        renderIconGrid($(this).val().toLowerCase());
+    });
+
+    function renderIconGrid(filter) {
+        const grid = $('#icon-picker-grid').empty();
+        standardIcons.filter(ic => ic.includes(filter)).forEach(function(icon) {
+            const cell = $('<div class="icon-picker-cell" data-icon="' + icon + '"><span class="dashicons ' + icon + '"></span></div>');
+            cell.on('click', function() {
+                const chosen = $(this).data('icon');
+                $('#prop-icon-class').val(chosen);
+                if (activeElement) {
+                    activeElement.data('icon-class', chosen);
+                    updateElementDisplay(activeElement);
+                }
+                $('#wppoppop-icon-picker-modal').fadeOut(150);
+            });
+            grid.append(cell);
+        });
+    }
+
+    $('#btn-clear-icon').on('click', function() {
+        $('#prop-icon-class').val('');
+        if (activeElement) {
+            activeElement.data('icon-class', '');
+            updateElementDisplay(activeElement);
+        }
+    });
+
+    function updateElementDisplay(elem) {
+        const icon = elem.data('icon-class');
+        const content = elem.data('content') || elem.text().trim();
+        const type = elem.data('type');
+
+        if (type === 'button' || type === 'nextstep') {
+            const iconHtml = icon ? '<span class="dashicons ' + icon + '" style="vertical-align:middle;margin-right:6px;"></span>' : '';
+            elem.find('button').html(iconHtml + content);
+        } else if (type === 'text') {
+            const iconHtml = icon ? '<span class="dashicons ' + icon + '" style="vertical-align:middle;margin-right:6px;"></span>' : '';
+            elem.find('.content-render').html(iconHtml + content);
+        }
+    }
 
     // Accordion Toggle
     $('.wppoppop-sidebar-right').on('click', '.accordion-header', function(e) {
@@ -130,20 +213,41 @@ jQuery(document).ready(function($) {
         refreshLayers();
     });
 
-    $('#target-geo-mode').on('change', function() {
-        $('#group-geo-countries').toggle($(this).val() !== 'all');
-    });
-
-    $('#freq-mode').on('change', function() {
-        $('#group-freq-days').toggle($(this).val() === 'days');
-    });
-
     $('#stage-width').on('input', function() {
         stage.width(parseInt($(this).val(), 10) || 640);
     });
     $('#stage-height').on('input', function() {
         stage.height(parseInt($(this).val(), 10) || 400);
     });
+
+    // Box Decoration Handlers
+    function updateStageDecoration() {
+        const radius = $('#box-border-radius').val() || 8;
+        const shadowPreset = $('#box-shadow-preset').val();
+        const bgType = $('#box-bg-type').val();
+
+        stage.css('border-radius', radius + 'px');
+
+        if (shadowPreset === 'none') stage.css('box-shadow', 'none');
+        if (shadowPreset === 'subtle') stage.css('box-shadow', '0 8px 30px rgba(0, 0, 0, 0.15)');
+        if (shadowPreset === 'deep') stage.css('box-shadow', '0 20px 50px rgba(0, 0, 0, 0.35)');
+        if (shadowPreset === 'glow') stage.css('box-shadow', '0 0 35px rgba(34, 113, 177, 0.4)');
+
+        if (bgType === 'solid') {
+            $('#group-box-solid-bg').show();
+            $('#group-box-gradient').hide();
+            stage.css('background', $('#box-bg-color').val() || '#ffffff');
+        } else {
+            $('#group-box-solid-bg').hide();
+            $('#group-box-gradient').show();
+            const c1 = $('#box-grad-c1').val() || '#1e293b';
+            const c2 = $('#box-grad-c2').val() || '#0f172a';
+            const angle = $('#box-grad-angle').val() || 135;
+            stage.css('background', 'linear-gradient(' + angle + 'deg, ' + c1 + ', ' + c2 + ')');
+        }
+    }
+
+    $('#box-border-radius, #box-shadow-preset, #box-bg-type, #box-bg-color, #box-grad-c1, #box-grad-c2, #box-grad-angle').on('input change', updateStageDecoration);
 
     // Add Element
     $('.element-item').on('click', function() {
@@ -233,6 +337,7 @@ jQuery(document).ready(function($) {
             .data('screen', currentScreen)
             .data('field-name', fieldName)
             .data('options', options)
+            .data('content', defaultContent)
             .data('timer-mins', 15)
             .data('progress-pct', 50)
             .data('slider-min', 0)
@@ -241,8 +346,18 @@ jQuery(document).ready(function($) {
             .data('slider-prefix', '$')
             .data('font-family', 'Inherit')
             .data('anim', 'fade')
+            .data('anim-exit', 'fadeOut')
+            .data('anim-loop', 'none')
             .data('anim-delay', 0)
             .data('anim-duration', 500)
+            .data('border-radius', 4)
+            .data('opacity', 1.0)
+            .data('padding', 0)
+            .data('hover-color', '#ffffff')
+            .data('hover-bg', '#0284c7')
+            .data('icon-class', '')
+            .data('locked', 0)
+            .data('hidden', 0)
             .data('z-index', zIndexCounter)
             .data('font-size', 16)
             .data('color', '#222222')
@@ -252,7 +367,8 @@ jQuery(document).ready(function($) {
                 left: 40,
                 width: width,
                 height: height,
-                'z-index': zIndexCounter
+                'z-index': zIndexCounter,
+                'border-radius': '4px'
             })
             .html(innerMarkup);
 
@@ -264,6 +380,8 @@ jQuery(document).ready(function($) {
     });
 
     function makeInteractive(elem) {
+        if (elem.data('locked') == 1) return;
+
         elem.draggable({
             containment: '#wppoppop-stage',
             grid: $('#chk-grid-snap').is(':checked') ? [10, 10] : false,
@@ -282,8 +400,8 @@ jQuery(document).ready(function($) {
 
     $('#chk-grid-snap').on('change', function() {
         const isSnap = $(this).is(':checked');
-        $('.canvas-element').draggable('option', 'grid', isSnap ? [10, 10] : false);
-        $('.canvas-element').resizable('option', 'grid', isSnap ? [10, 10] : false);
+        $('.canvas-element').not('.layer-locked').draggable('option', 'grid', isSnap ? [10, 10] : false);
+        $('.canvas-element').not('.layer-locked').resizable('option', 'grid', isSnap ? [10, 10] : false);
     });
 
     function selectElement(elem) {
@@ -296,7 +414,21 @@ jQuery(document).ready(function($) {
 
         const type = elem.data('type');
         $('#prop-field-name').val(elem.data('field-name') || '');
-        $('#prop-content').val(elem.text().trim());
+        $('#prop-content').val(elem.data('content') || elem.text().trim());
+
+        $('#prop-icon-class').val(elem.data('icon-class') || '');
+        $('#prop-border-radius').val(elem.data('border-radius') || 0);
+        $('#prop-opacity').val(elem.data('opacity') || 1.0);
+        $('#prop-padding').val(elem.data('padding') || 0);
+
+        $('#prop-hover-color').val(rgbToHex(elem.data('hover-color') || '#ffffff'));
+        $('#prop-hover-bg').val(rgbToHex(elem.data('hover-bg') || '#0284c7'));
+
+        $('#prop-anim-effect').val(elem.data('anim') || 'fade');
+        $('#prop-anim-exit').val(elem.data('anim-exit') || 'none');
+        $('#prop-anim-loop').val(elem.data('anim-loop') || 'none');
+        $('#prop-anim-delay').val(elem.data('anim-delay') || 0);
+        $('#prop-anim-duration').val(elem.data('anim-duration') || 500);
 
         $('#group-prop-slider').toggle(type === 'slider');
         $('#group-prop-countdown').toggle(type === 'countdown');
@@ -331,21 +463,49 @@ jQuery(document).ready(function($) {
 
     stage.on('click', deselectElement);
 
+    // Inspector Live Updates
+    $('#prop-border-radius').on('input', function() {
+        if (!activeElement) return;
+        const val = $(this).val();
+        activeElement.data('border-radius', val).css('border-radius', val + 'px');
+        activeElement.find('button, input, select').css('border-radius', val + 'px');
+    });
+    $('#prop-opacity').on('input', function() {
+        if (!activeElement) return;
+        const val = $(this).val();
+        activeElement.data('opacity', val).css('opacity', val);
+    });
+    $('#prop-padding').on('input', function() {
+        if (!activeElement) return;
+        const val = $(this).val();
+        activeElement.data('padding', val).css('padding', val + 'px');
+    });
+
+    $('#prop-hover-color').on('input', function() { if (activeElement) activeElement.data('hover-color', $(this).val()); });
+    $('#prop-hover-bg').on('input', function() { if (activeElement) activeElement.data('hover-bg', $(this).val()); });
+
+    $('#prop-anim-effect').on('change', function() { if (activeElement) activeElement.data('anim', $(this).val()); });
+    $('#prop-anim-exit').on('change', function() { if (activeElement) activeElement.data('anim-exit', $(this).val()); });
+    $('#prop-anim-loop').on('change', function() { if (activeElement) activeElement.data('anim-loop', $(this).val()); });
+    $('#prop-anim-delay').on('input', function() { if (activeElement) activeElement.data('anim-delay', parseInt($(this).val(), 10) || 0); });
+    $('#prop-anim-duration').on('input', function() { if (activeElement) activeElement.data('anim-duration', parseInt($(this).val(), 10) || 500); });
+
     $('#prop-slider-min').on('input', function() { if (activeElement) activeElement.data('slider-min', $(this).val()); });
     $('#prop-slider-max').on('input', function() { if (activeElement) activeElement.data('slider-max', $(this).val()); });
     $('#prop-slider-val').on('input', function() { if (activeElement) activeElement.data('slider-val', $(this).val()); });
     $('#prop-slider-prefix').on('input', function() { if (activeElement) activeElement.data('slider-prefix', $(this).val()); });
     $('#prop-countdown-mins').on('input', function() { if (activeElement) activeElement.data('timer-mins', $(this).val()); });
-
     $('#prop-field-name').on('input', function() { if (activeElement) activeElement.data('field-name', $(this).val()); });
     $('#prop-options').on('input', function() {
         if (!activeElement) return;
-        const opts = $(this).val().split(',').map(s => s.trim()).filter(Boolean);
-        activeElement.data('options', opts);
+        activeElement.data('options', $(this).val().split(',').map(s => s.trim()).filter(Boolean));
     });
+
     $('#prop-content').on('input', function() {
         if (!activeElement) return;
-        activeElement.find('.content-render').text($(this).val());
+        const val = $(this).val();
+        activeElement.data('content', val);
+        updateElementDisplay(activeElement);
         refreshLayers();
     });
 
@@ -372,6 +532,7 @@ jQuery(document).ready(function($) {
         recordState();
     });
 
+    // Layer Hierarchy Management
     function refreshLayers() {
         const list = $('#wppoppop-layers-list').empty();
         const elements = stage.find('.canvas-element').filter(function() {
@@ -385,13 +546,79 @@ jQuery(document).ready(function($) {
 
         elements.each(function() {
             const el = $(this);
-            const li = $('<li data-target="' + el.attr('id') + '"><span>[' + el.data('type') + '] ' + (el.data('field-name') || el.text().trim().substring(0, 14)) + '</span></li>');
+            const id = el.attr('id');
+            const type = el.data('type');
+            const label = el.data('field-name') || el.data('content') || el.text().trim().substring(0, 14) || type;
+            const isLocked = el.data('locked') == 1;
+            const isHidden = el.data('hidden') == 1;
+
+            const li = $('<li data-target="' + id + '"></li>');
+            const titleSpan = $('<span class="layer-title-text">[' + type + '] ' + label + '</span>');
+            const actions = $('<div class="layer-actions"></div>');
+
+            const btnVis = $('<button type="button" class="layer-action-btn btn-layer-vis" title="Toggle Visibility"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>');
+            const btnLock = $('<button type="button" class="layer-action-btn btn-layer-lock" title="Lock/Unlock Drag"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>');
+            const btnUp = $('<button type="button" class="layer-action-btn btn-layer-up" title="Bring Forward"><span class="dashicons dashicons-arrow-up-alt2"></span></button>');
+            const btnDown = $('<button type="button" class="layer-action-btn btn-layer-down" title="Send Backward"><span class="dashicons dashicons-arrow-down-alt2"></span></button>');
+
+            actions.append(btnVis, btnLock, btnUp, btnDown);
+            li.append(titleSpan, actions);
             list.prepend(li);
         });
 
-        list.find('li').on('click', function() {
-            const el = $('#' + $(this).data('target'));
+        list.find('.layer-title-text').on('click', function() {
+            const targetId = $(this).closest('li').data('target');
+            const el = $('#' + targetId);
             if (el.length) selectElement(el);
+        });
+
+        list.find('.btn-layer-vis').on('click', function(e) {
+            e.stopPropagation();
+            const targetId = $(this).closest('li').data('target');
+            const el = $('#' + targetId);
+            const isHidden = el.data('hidden') == 1;
+            el.data('hidden', isHidden ? 0 : 1);
+            el.toggleClass('layer-hidden', !isHidden);
+            refreshLayers();
+        });
+
+        list.find('.btn-layer-lock').on('click', function(e) {
+            e.stopPropagation();
+            const targetId = $(this).closest('li').data('target');
+            const el = $('#' + targetId);
+            const isLocked = el.data('locked') == 1;
+            el.data('locked', isLocked ? 0 : 1);
+            el.toggleClass('layer-locked', !isLocked);
+
+            if (!isLocked) {
+                if (el.hasClass('ui-draggable')) el.draggable('destroy');
+                if (el.hasClass('ui-resizable')) el.resizable('destroy');
+            } else {
+                makeInteractive(el);
+            }
+            refreshLayers();
+        });
+
+        list.find('.btn-layer-up').on('click', function(e) {
+            e.stopPropagation();
+            const targetId = $(this).closest('li').data('target');
+            const el = $('#' + targetId);
+            let z = parseInt(el.css('z-index'), 10) || 1;
+            z += 2;
+            el.css('z-index', z).data('z-index', z);
+            refreshLayers();
+            recordState();
+        });
+
+        list.find('.btn-layer-down').on('click', function(e) {
+            e.stopPropagation();
+            const targetId = $(this).closest('li').data('target');
+            const el = $('#' + targetId);
+            let z = parseInt(el.css('z-index'), 10) || 1;
+            z = Math.max(1, z - 2);
+            el.css('z-index', z).data('z-index', z);
+            refreshLayers();
+            recordState();
         });
     }
 
@@ -400,7 +627,40 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
 
-    // Save Action: Consolidates all 15 Sections
+    // Live In-Builder Sandbox Preview Compiler
+    $('#wppoppop-btn-preview').on('click', function(e) {
+        e.preventDefault();
+        const modal = $('#wppoppop-live-preview-modal');
+        const mount = $('#wppoppop-preview-stage-mount').empty();
+
+        const previewBox = $('<div class="wppoppop-box"></div>').css({
+            width: stage.width(),
+            height: stage.height(),
+            'border-radius': stage.css('border-radius'),
+            'box-shadow': stage.css('box-shadow'),
+            'background': stage.css('background'),
+            position: 'relative',
+            overflow: 'hidden'
+        });
+
+        const elementsClone = stage.clone();
+        elementsClone.find('.canvas-element').each(function() {
+            $(this).removeClass('selected ui-draggable-handle ui-resizable')
+                   .find('.ui-resizable-handle').remove();
+        });
+
+        previewBox.html(elementsClone.html());
+        mount.append(previewBox);
+        modal.fadeIn(200);
+    });
+
+    $('#btn-close-live-preview, #wppoppop-live-preview-modal').on('click', function(e) {
+        if (e.target === this || e.target.id === 'btn-close-live-preview') {
+            $('#wppoppop-live-preview-modal').fadeOut(150);
+        }
+    });
+
+    // Master Save Action
     $('#wppoppop-btn-save').on('click', function(e) {
         e.preventDefault();
         const saveBtn = $(this);
@@ -423,8 +683,17 @@ jQuery(document).ready(function($) {
                 slider_prefix: el.data('slider-prefix') || '$',
                 font_family: el.data('font-family') || 'Inherit',
                 anim: el.data('anim') || 'none',
+                anim_exit: el.data('anim-exit') || 'none',
+                anim_loop: el.data('anim-loop') || 'none',
                 anim_delay: el.data('anim-delay') || 0,
                 anim_duration: el.data('anim-duration') || 500,
+                border_radius: el.data('border-radius') || 0,
+                opacity: el.data('opacity') || 1.0,
+                padding: el.data('padding') || 0,
+                hover_color: el.data('hover-color') || '#ffffff',
+                hover_bg: el.data('hover-bg') || '#0284c7',
+                icon_class: el.data('icon-class') || '',
+                locked: el.data('locked') || 0,
                 top: parseInt(el.css('top'), 10) || 0,
                 left: parseInt(el.css('left'), 10) || 0,
                 width: el.outerWidth() || el.width(),
@@ -433,9 +702,9 @@ jQuery(document).ready(function($) {
                 font_size: el.data('font-size') || 16,
                 color: el.data('color') || '#222222',
                 bg_color: el.data('bg-color') || '#00a32a',
-                content: (el.data('type') === 'input' || el.data('type') === 'date') 
+                content: el.data('content') || ((el.data('type') === 'input' || el.data('type') === 'date') 
                     ? el.find('input').attr('placeholder') 
-                    : (el.find('.content-render').length ? el.find('.content-render').html() : el.text().trim())
+                    : (el.find('.content-render').length ? el.find('.content-render').html() : el.text().trim()))
             });
         });
 
@@ -445,6 +714,15 @@ jQuery(document).ready(function($) {
                 width: stage.width(),
                 height: stage.height(),
                 bg_color: '#ffffff'
+            },
+            box_styling: {
+                radius: $('#box-border-radius').val() || 8,
+                shadow_preset: $('#box-shadow-preset').val() || 'subtle',
+                bg_type: $('#box-bg-type').val() || 'solid',
+                solid_color: $('#box-bg-color').val() || '#ffffff',
+                grad_c1: $('#box-grad-c1').val() || '#1e293b',
+                grad_c2: $('#box-grad-c2').val() || '#0f172a',
+                grad_angle: $('#box-grad-angle').val() || 135
             },
             styling: {
                 backdrop_blur: parseInt($('#style-backdrop-blur').val(), 10) || 0,
@@ -561,7 +839,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Populate on edit: Restores all 15 Sections
+    // Populate on edit
     if (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.current_uid) {
         $.get(wppoppop_vars.ajax_url, {
             action: 'wppoppop_load_popup',
@@ -573,96 +851,15 @@ jQuery(document).ready(function($) {
                 $('#wppoppop-popup-title').val(res.data.title);
                 $('#wppoppop-popup-uid').val(res.data.uid);
 
-                if (config.meta) {
-                    $('#stage-width').val(config.meta.width);
-                    $('#stage-height').val(config.meta.height);
-                    stage.width(config.meta.width).height(config.meta.height);
-                }
-                if (config.styling) {
-                    $('#style-backdrop-blur').val(config.styling.backdrop_blur || 0);
-                    $('#style-close-esc').prop('checked', config.styling.close_esc !== false);
-                    $('#style-close-backdrop').prop('checked', config.styling.close_backdrop !== false);
-                }
-                if (config.sound_fx) {
-                    $('#sound-enable').prop('checked', !!config.sound_fx.enable);
-                }
-                if (config.triggers) {
-                    $('#trig-load').prop('checked', !!config.triggers.on_load);
-                    $('#trig-load-delay').val(config.triggers.on_load_delay || 0);
-                    $('#trig-exit').prop('checked', !!config.triggers.on_exit);
-                    $('#trig-scroll').prop('checked', !!config.triggers.on_scroll);
-                    $('#trig-idle').prop('checked', !!config.triggers.on_idle);
-                    $('#trig-click-selector').val(config.triggers.click_selector || '');
-                    if ($('#trig-adblock').length) $('#trig-adblock').prop('checked', !!config.triggers.on_adblock);
-                }
-                if (config.conditional_logic) {
-                    $('#logic-if-field').val(config.conditional_logic.if_field || '');
-                    $('#logic-equals-val').val(config.conditional_logic.equals_val || '');
-                    $('#logic-target-layer').val(config.conditional_logic.target_layer || '');
-                    $('#logic-action').val(config.conditional_logic.action || 'show');
-                }
-                if (config.math) {
-                    if ($('#math-expression').length) $('#math-expression').val(config.math.expression || '');
-                    if ($('#math-output-target').length) $('#math-output-target').val(config.math.output_target || '');
-                }
-                if (config.sidetab) {
-                    $('#sidetab-enable').prop('checked', !!config.sidetab.enable);
-                    $('#sidetab-label').val(config.sidetab.label || 'Special Offer');
-                    $('#sidetab-position').val(config.sidetab.position || 'right');
-                    $('#sidetab-bg').val(config.sidetab.bg_color || '#2271b1');
-                }
-                if (config.payment) {
-                    $('#pay-enable').prop('checked', !!config.payment.enable);
-                    $('#pay-amount').val(config.payment.amount || 19.99);
-                    $('#pay-currency').val(config.payment.currency || 'USD');
-                    $('#pay-gateway').val(config.payment.gateway || 'Stripe');
-                }
-                if (config.downloads) {
-                    $('#dl-enable').prop('checked', !!config.downloads.enable);
-                    $('#dl-file-url').val(config.downloads.file_url || '');
-                    $('#dl-expiry-hours').val(config.downloads.expiry_hours || 24);
-                }
-                if (config.video) {
-                    $('#video-enable').prop('checked', !!config.video.enable);
-                    $('#video-trigger-mode').val(config.video.mode || 'ended');
-                }
-                if (config.autoresponder) {
-                    $('#ar-enable').prop('checked', !!config.autoresponder.enable_user_email);
-                    $('#ar-subject').val(config.autoresponder.subject || '');
-                    $('#ar-message').val(config.autoresponder.message || '');
-                }
-                if (config.mailchimp) {
-                    $('#mc-enable').prop('checked', !!config.mailchimp.enable);
-                    $('#mc-api-key').val(config.mailchimp.api_key || '');
-                    $('#mc-list-id').val(config.mailchimp.list_id || '');
-                }
-                if (config.activecampaign) {
-                    $('#ac-enable').prop('checked', !!config.activecampaign.enable);
-                    $('#ac-api-url').val(config.activecampaign.api_url || '');
-                    $('#ac-api-key').val(config.activecampaign.api_key || '');
-                }
-                if (config.integrations) {
-                    $('#int-enable-webhook').prop('checked', !!config.integrations.enable_webhook);
-                    $('#int-webhook-url').val(config.integrations.webhook_url || '');
-                }
-                if (config.sms) {
-                    $('#sms-enable').prop('checked', !!config.sms.enable_sms);
-                    $('#sms-twilio-sid').val(config.sms.twilio_sid || '');
-                    $('#sms-twilio-token').val(config.sms.twilio_token || '');
-                    $('#sms-from-phone').val(config.sms.from_phone || '');
-                    $('#sms-to-phone').val(config.sms.to_phone || '');
-                }
-                if (config.targeting) {
-                    $('#target-scope').val(config.targeting.scope || 'everywhere');
-                    $('#target-cat-slugs').val(config.targeting.category_slugs || '');
-                    $('#target-geo-mode').val(config.targeting.geo_mode || 'all').trigger('change');
-                    $('#target-geo-countries').val(config.targeting.geo_countries || '');
-                    $('#target-devices').val(config.targeting.devices || 'all');
-                }
-                if (config.frequency) {
-                    $('#freq-mode').val(config.frequency.mode || 'everytime').trigger('change');
-                    $('#freq-days-count').val(config.frequency.days || 7);
-                    $('#freq-hide-submitted').prop('checked', !!config.frequency.hide_submitted);
+                if (config.box_styling) {
+                    $('#box-border-radius').val(config.box_styling.radius || 8);
+                    $('#box-shadow-preset').val(config.box_styling.shadow_preset || 'subtle');
+                    $('#box-bg-type').val(config.box_styling.bg_type || 'solid');
+                    $('#box-bg-color').val(config.box_styling.solid_color || '#ffffff');
+                    $('#box-grad-c1').val(config.box_styling.grad_c1 || '#1e293b');
+                    $('#box-grad-c2').val(config.box_styling.grad_c2 || '#0f172a');
+                    $('#box-grad-angle').val(config.box_styling.grad_angle || 135);
+                    updateStageDecoration();
                 }
 
                 if (Array.isArray(config.elements)) {

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WpPopPop
  * Description: Fully functional drag-and-drop popup builder inspired by Green Popups.
- * Version: 2.1.0
+ * Version: 2.2.0
  * Author: WpPopPop Team
  */
 
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WPPOPPOP_VERSION', '2.1.0');
+define('WPPOPPOP_VERSION', '2.2.0');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 

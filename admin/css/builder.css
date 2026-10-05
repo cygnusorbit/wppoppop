@@ -148,8 +148,8 @@
 .element-item {
     background: #f6f7f7;
     border: 1px solid #dcdcde;
-    padding: 10px 12px;
-    margin-bottom: 8px;
+    padding: 9px 12px;
+    margin-bottom: 7px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
@@ -157,6 +157,7 @@
     align-items: center;
     gap: 8px;
     transition: all 0.15s ease-in-out;
+    font-size: 13px;
 }
 .element-item:hover {
     background: #2271b1;
@@ -194,18 +195,29 @@
 .wppoppop-stage {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     position: relative;
-    border-radius: 4px;
+    border-radius: 8px;
+    transition: width 0.25s ease, height 0.25s ease, border-radius 0.15s ease, box-shadow 0.15s ease;
 }
 .canvas-element {
     position: absolute !important;
     cursor: move;
     border: 1px dashed transparent;
     user-select: none;
+    box-sizing: border-box;
 }
 .canvas-element.selected {
     border-color: #2271b1 !important;
     outline: 1px solid #2271b1;
 }
+.canvas-element.layer-locked {
+    cursor: not-allowed !important;
+    opacity: 0.85;
+}
+.canvas-element.layer-hidden {
+    display: none !important;
+}
+
+/* Layers Management List with Actions */
 .layers-list {
     margin: 0;
     padding: 0;
@@ -215,40 +227,130 @@
     padding: 8px 10px;
     background: #f9f9f9;
     border: 1px solid #e2e4e7;
-    margin-bottom: 5px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 13px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    font-size: 12px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 .layers-list li.selected {
     background: #e7f3fb;
     border-color: #2271b1;
     font-weight: 600;
 }
-.form-group {
-    margin-bottom: 12px;
+.layer-title-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
 }
-.form-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-.trigger-option {
-    display: block;
-    font-weight: 600;
-    margin-top: 10px;
-}
-.sub-option {
-    margin-left: 20px;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #50575e;
-}
-.form-row-actions {
+.layer-actions {
     display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.layer-action-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 2px;
+    color: #64748b;
+    border-radius: 2px;
+}
+.layer-action-btn:hover {
+    color: #1e293b;
+    background: #e2e8f0;
+}
+
+/* Live In-Builder Sandbox Modal */
+.wppoppop-preview-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.wppoppop-preview-container {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.preview-top-toolbar {
+    background: #ffffff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Icon Browser Modal */
+.wppoppop-icon-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    z-index: 100002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.wppoppop-icon-modal-dialog {
+    background: #ffffff;
+    width: 520px;
+    max-width: 90vw;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.icon-modal-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 18px;
+    gap: 10px;
+}
+.icon-modal-header h3 {
+    margin: 0;
+    font-size: 15px;
+}
+#icon-search-input {
+    flex: 1;
+    max-width: 240px;
+    padding: 4px 10px;
+}
+.icon-modal-grid {
+    padding: 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.icon-picker-cell {
+    height: 44px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    color: #334155;
+    transition: all 0.15s ease;
+}
+.icon-picker-cell:hover {
+    background: #2271b1;
+    color: #ffffff;
+    border-color: #2271b1;
 }

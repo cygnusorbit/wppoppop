@@ -26,16 +26,25 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
             <input type="hidden" id="wppoppop-popup-uid" value="">
         </div>
         <div class="header-center">
+            <!-- Screen Sequence Switcher -->
             <div class="screen-switch-bar">
                 <button type="button" class="button btn-screen-toggle active" data-screen="1">Screen 1</button>
                 <button type="button" class="button btn-screen-toggle" data-screen="2">Screen 2</button>
             </div>
+
+            <!-- Viewport Switcher -->
+            <div class="viewport-switch-bar" style="margin-left: 12px;">
+                <button type="button" class="button btn-viewport-toggle active" data-viewport="desktop" title="Desktop Canvas"><span class="dashicons dashicons-desktop" style="vertical-align:middle;"></span> Desktop</button>
+                <button type="button" class="button btn-viewport-toggle" data-viewport="mobile" title="Mobile Canvas"><span class="dashicons dashicons-smartphone" style="vertical-align:middle;"></span> Mobile</button>
+            </div>
+
             <label style="margin-left: 15px;">W: <input type="number" id="stage-width" value="640" style="width: 65px;"> px</label>
             <label style="margin-left: 8px;">H: <input type="number" id="stage-height" value="400" style="width: 65px;"> px</label>
         </div>
         <div class="header-right">
-            <button class="button button-secondary" id="wppoppop-btn-reset">Reset</button>
-            <button class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
+            <button type="button" class="button button-secondary" id="wppoppop-btn-preview"><span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span> Live Preview</button>
+            <button type="button" class="button button-secondary" id="wppoppop-btn-reset">Reset</button>
+            <button type="button" class="button button-primary" id="wppoppop-btn-save">Save Popup</button>
         </div>
     </header>
 
@@ -78,7 +87,9 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 <div class="element-item" data-type="html"><span class="dashicons dashicons-editor-code"></span> Raw HTML</div>
             </div>
 
+            <!-- Enhanced Layers Panel -->
             <div id="tab-layers" class="tab-pane">
+                <p class="panel-hint" style="margin-bottom:8px;">Active screen layer hierarchy:</p>
                 <ul id="wppoppop-layers-list" class="layers-list">
                     <li class="empty-layers">No elements on current screen.</li>
                 </ul>
@@ -111,7 +122,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         <aside class="wppoppop-panel wppoppop-sidebar-right">
             <div class="wppoppop-accordion">
 
-                <!-- 1. Inspector -->
+                <!-- 1. Inspector with Fine-Grained Styling & Hover Controls -->
                 <div class="accordion-item active" data-accordion="inspector">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-admin-generic"></span> Inspector</span>
@@ -127,6 +138,16 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                             <div class="form-group">
                                 <label>Content / Label / Text:</label>
                                 <input type="text" id="prop-content" class="widefat">
+                            </div>
+
+                            <!-- Icon Selector -->
+                            <div class="form-group">
+                                <label>Element Icon:</label>
+                                <div style="display:flex; gap:6px;">
+                                    <input type="text" id="prop-icon-class" placeholder="dashicons-star-filled" class="widefat" readonly>
+                                    <button type="button" class="button button-secondary" id="btn-open-icon-picker">Choose</button>
+                                    <button type="button" class="button button-secondary" id="btn-clear-icon">&times;</button>
+                                </div>
                             </div>
 
                             <!-- Slider Config -->
@@ -197,18 +218,55 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                                 <label>Options / Slices (comma-separated):</label>
                                 <input type="text" id="prop-options" placeholder="Option 1, Option 2" class="widefat">
                             </div>
-                            <div class="form-group">
-                                <label>Font Size (px):</label>
-                                <input type="number" id="prop-font-size" value="16" min="10" max="72">
+
+                            <div style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label>Font Size (px):</label>
+                                    <input type="number" id="prop-font-size" value="16" min="10" max="72">
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label>Border Radius (px):</label>
+                                    <input type="number" id="prop-border-radius" value="4" min="0" max="100">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Text Color:</label>
-                                <input type="color" id="prop-color" value="#222222">
+
+                            <div style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label>Padding (px):</label>
+                                    <input type="number" id="prop-padding" value="0" min="0" max="50">
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label>Opacity (0.1 - 1.0):</label>
+                                    <input type="number" id="prop-opacity" value="1.0" min="0.1" max="1.0" step="0.1">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Background Color:</label>
-                                <input type="color" id="prop-bg-color" value="#00a32a">
+
+                            <div style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label>Text Color:</label>
+                                    <input type="color" id="prop-color" value="#222222" style="width:100%;height:32px;">
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label>Background Color:</label>
+                                    <input type="color" id="prop-bg-color" value="#00a32a" style="width:100%;height:32px;">
+                                </div>
                             </div>
+
+                            <!-- Button & Element Hover States -->
+                            <div id="group-prop-hover" style="background:#f1f5f9; padding:10px; border-radius:4px; margin-top:8px;">
+                                <label style="font-weight:700; font-size:12px; display:block; margin-bottom:6px;">Hover State Appearance:</label>
+                                <div style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1; margin-bottom:0;">
+                                        <label style="font-size:11px;">Hover Text:</label>
+                                        <input type="color" id="prop-hover-color" value="#ffffff" style="width:100%;height:30px;">
+                                    </div>
+                                    <div class="form-group" style="flex:1; margin-bottom:0;">
+                                        <label style="font-size:11px;">Hover BG:</label>
+                                        <input type="color" id="prop-hover-bg" value="#0284c7" style="width:100%;height:30px;">
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-row-actions">
                                 <button type="button" class="button" id="prop-duplicate-element">Duplicate</button>
                                 <button type="button" class="button button-link-delete" id="prop-delete-element">Delete</button>
@@ -217,7 +275,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                     </div>
                 </div>
 
-                <!-- 2. Layer Transitions -->
+                <!-- 2. Layer Transitions: Entrance, Exit, & Attention Loops -->
                 <div class="accordion-item" data-accordion="animation">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-controls-play"></span> Layer Animation</span>
@@ -232,6 +290,25 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                                 <option value="slideDown">Slide Down</option>
                                 <option value="zoomIn">Zoom In</option>
                                 <option value="bounceIn">Bounce In</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exit Effect (On Close):</label>
+                            <select id="prop-anim-exit" class="widefat">
+                                <option value="none">None</option>
+                                <option value="fadeOut">Fade Out</option>
+                                <option value="slideUp">Slide Up</option>
+                                <option value="zoomOut">Zoom Out</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Continuous Attention Loop:</label>
+                            <select id="prop-anim-loop" class="widefat">
+                                <option value="none">None</option>
+                                <option value="pulse">Pulse (Soft Glow)</option>
+                                <option value="shake">Shake (Attention Alert)</option>
+                                <option value="tada">Tada (Celebration)</option>
+                                <option value="heartbeat">Heartbeat</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -257,10 +334,10 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                     </div>
                 </div>
 
-                <!-- 4. Backdrop & Glassmorphism -->
+                <!-- 4. Backdrop, Box Decoration & Gradients -->
                 <div class="accordion-item" data-accordion="backdrop">
                     <div class="accordion-header">
-                        <span class="accordion-title"><span class="dashicons dashicons-art"></span> Backdrop Styling</span>
+                        <span class="accordion-title"><span class="dashicons dashicons-art"></span> Box & Backdrop Styling</span>
                         <span class="accordion-icon dashicons dashicons-arrow-down-alt2"></span>
                     </div>
                     <div class="accordion-body">
@@ -270,6 +347,49 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                         </div>
                         <label class="trigger-option"><input type="checkbox" id="style-close-esc" checked> Close on ESC key</label>
                         <label class="trigger-option"><input type="checkbox" id="style-close-backdrop" checked> Close on backdrop click</label>
+
+                        <hr>
+                        <h4 style="margin:8px 0;">Popup Box Decoration</h4>
+                        <div class="form-group">
+                            <label>Box Corner Radius (px):</label>
+                            <input type="number" id="box-border-radius" value="8" min="0" max="60" class="widefat">
+                        </div>
+                        <div class="form-group">
+                            <label>Box Elevation Shadow:</label>
+                            <select id="box-shadow-preset" class="widefat">
+                                <option value="none">None</option>
+                                <option value="subtle" selected>Subtle Drop Shadow</option>
+                                <option value="deep">Deep High-Contrast Shadow</option>
+                                <option value="glow">Vibrant Colored Glow</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Background Fill Type:</label>
+                            <select id="box-bg-type" class="widefat">
+                                <option value="solid" selected>Solid Color</option>
+                                <option value="gradient">Linear Gradient</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="group-box-solid-bg">
+                            <label>Background Color:</label>
+                            <input type="color" id="box-bg-color" value="#ffffff" style="width:100%;height:32px;">
+                        </div>
+                        <div id="group-box-gradient" style="display:none; background:#f8fafc; padding:10px; border-radius:4px; border:1px solid #e2e8f0;">
+                            <div style="display:flex; gap:8px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:11px;">Color 1:</label>
+                                    <input type="color" id="box-grad-c1" value="#1e293b" style="width:100%;height:30px;">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:11px;">Color 2:</label>
+                                    <input type="color" id="box-grad-c2" value="#0f172a" style="width:100%;height:30px;">
+                                </div>
+                            </div>
+                            <div style="margin-top:6px;">
+                                <label style="font-size:11px;">Angle (deg):</label>
+                                <input type="number" id="box-grad-angle" value="135" min="0" max="360" class="widefat">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -517,7 +637,7 @@ Enjoy your exclusive offer.</textarea>
                     </div>
                 </div>
 
-                <!-- 14. Targeting & Rules -->
+                <!-- 14. Targeting & Geolocation -->
                 <div class="accordion-item" data-accordion="targeting">
                     <div class="accordion-header">
                         <span class="accordion-title"><span class="dashicons dashicons-location-alt"></span> Targeting & Geolocation</span>
@@ -587,5 +707,30 @@ Enjoy your exclusive offer.</textarea>
 
             </div>
         </aside>
+    </div>
+
+    <!-- Live In-Builder Preview Modal Sandbox -->
+    <div id="wppoppop-live-preview-modal" class="wppoppop-preview-backdrop" style="display:none;">
+        <div class="wppoppop-preview-container">
+            <div class="preview-top-toolbar">
+                <span style="font-weight:700;font-size:13px;"><span class="dashicons dashicons-desktop" style="vertical-align:middle;"></span> Interactive Sandbox Preview</span>
+                <button type="button" class="button button-small" id="btn-close-live-preview">&times; Close Sandbox</button>
+            </div>
+            <div id="wppoppop-preview-stage-mount"></div>
+        </div>
+    </div>
+
+    <!-- Icon Browser Modal Palette -->
+    <div id="wppoppop-icon-picker-modal" class="wppoppop-icon-modal" style="display:none;">
+        <div class="wppoppop-icon-modal-dialog">
+            <div class="icon-modal-header">
+                <h3>Choose Element Icon</h3>
+                <input type="text" id="icon-search-input" placeholder="Search icon (e.g. star, heart, cart)...">
+                <button type="button" class="button button-link btn-close-icon-picker">&times;</button>
+            </div>
+            <div class="icon-modal-grid" id="icon-picker-grid">
+                <!-- Icons dynamically rendered via JS -->
+            </div>
+        </div>
     </div>
 </div>
