@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WpPopPop
  * Description: Fully functional drag-and-drop popup builder inspired by Green Popups.
- * Version: 1.5.0
+ * Version: 1.8.1
  * Author: WpPopPop Team
  */
 
@@ -10,9 +10,17 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WPPOPPOP_VERSION', '1.5.0');
+define('WPPOPPOP_VERSION', '1.8.1');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
+
+/**
+ * Helper to fetch WpPopPop setting values with defaults.
+ */
+function wppoppop_get_setting($key, $default = '') {
+    $settings = get_option('wppoppop_settings', []);
+    return isset($settings[$key]) ? $settings[$key] : $default;
+}
 
 function wppoppop_install_schema() {
     global $wpdb;
@@ -45,6 +53,7 @@ function wppoppop_install_schema() {
         fields_data longtext NOT NULL,
         status varchar(20) DEFAULT 'confirmed' NOT NULL,
         confirm_token varchar(64) DEFAULT '' NOT NULL,
+        country_code varchar(4) DEFAULT '' NOT NULL,
         created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
         PRIMARY KEY  (id),
         KEY popup_uid (popup_uid),
@@ -96,6 +105,7 @@ register_activation_hook(__FILE__, 'wppoppop_install_schema');
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-widget.php';
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-admin.php';
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-ajax.php';
+require_once WPPOPPOP_PATH . 'includes/class-wppoppop-rest.php';
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-front.php';
 if (file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php')) {
     require_once WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php';
@@ -116,13 +126,13 @@ add_action('plugins_loaded', function () {
 
     new WpPopPop_Admin();
     new WpPopPop_Ajax();
+    new WpPopPop_Rest();
     new WpPopPop_Front();
     if (class_exists('WpPopPop_Addons')) {
         new WpPopPop_Addons();
     }
 });
 
-// Double Opt-In handler
 add_action('template_redirect', function () {
     if (isset($_GET['wppoppop_confirm']) && !empty($_GET['wppoppop_confirm'])) {
         global $wpdb;

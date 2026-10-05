@@ -57,35 +57,44 @@
     position: relative;
 }
 
-/* CSS3 Layer Entrance Animations */
-.wppoppop-anim-fade.anim-triggered {
-    animation: wppoppopFadeIn forwards ease-out;
+/* Interactive Fortune Wheel Styling */
+.wppoppop-wheel-wrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.wppoppop-anim-slideDown.anim-triggered {
-    animation: wppoppopSlideDown forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.wppoppop-wheel-canvas {
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
 }
-.wppoppop-anim-zoomIn.anim-triggered {
-    animation: wppoppopZoomIn forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.wppoppop-wheel-pointer {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 26px;
+    color: #d63638;
+    z-index: 10;
 }
-.wppoppop-anim-bounceIn.anim-triggered {
-    animation: wppoppopBounceIn forwards cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.wppoppop-wheel-spin-btn {
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #222;
+    color: #fff;
+    border: 3px solid #fff;
+    font-weight: 700;
+    font-size: 11px;
+    cursor: pointer;
+    z-index: 12;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-
-@keyframes wppoppopFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-@keyframes wppoppopSlideDown {
-    from { opacity: 0; transform: translateY(-40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes wppoppopZoomIn {
-    from { opacity: 0; transform: scale(0.6); }
-    to { opacity: 1; transform: scale(1); }
-}
-@keyframes wppoppopBounceIn {
-    0% { opacity: 0; transform: scale(0.3); }
-    50% { opacity: 1; transform: scale(1.05); }
-    70% { transform: scale(0.9); }
-    100% { transform: scale(1); }
+.wppoppop-wheel-spin-btn:hover {
+    background: #00a32a;
 }

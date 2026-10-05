@@ -30,34 +30,37 @@
     overflow: hidden;
 }
 .wppoppop-panel {
-    width: 300px;
+    width: 280px;
     background: #ffffff;
     border-right: 1px solid #dcdcde;
     display: flex;
     flex-direction: column;
 }
 .wppoppop-sidebar-right {
+    width: 320px;
     border-right: none;
     border-left: 1px solid #dcdcde;
+    overflow-y: auto;
+    padding: 0;
+    background: #ffffff;
 }
+
+/* Left Panel Tabs */
 .panel-tabs {
     display: flex;
     border-bottom: 1px solid #dcdcde;
     background: #f6f7f7;
-    overflow-x: auto;
 }
 .tab-btn {
     flex: 1;
-    padding: 10px 6px;
+    padding: 10px 0;
     border: none;
     background: transparent;
     cursor: pointer;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 13px;
     color: #50575e;
-    text-transform: uppercase;
     border-bottom: 2px solid transparent;
-    white-space: nowrap;
 }
 .tab-btn.active {
     background: #ffffff;
@@ -73,6 +76,75 @@
 .tab-pane.active {
     display: block;
 }
+
+/* Vertical Accordion Components */
+.wppoppop-accordion {
+    display: flex;
+    flex-direction: column;
+}
+.accordion-item {
+    border-bottom: 1px solid #dcdcde;
+    background: #ffffff;
+}
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f6f7f7;
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-left 0.15s ease;
+}
+.accordion-header:hover {
+    background: #f0f0f1;
+    color: #2271b1;
+}
+.accordion-item.active .accordion-header {
+    background: #ffffff;
+    color: #2271b1;
+    border-left: 3px solid #2271b1;
+}
+.accordion-header .accordion-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.accordion-header .accordion-title .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #50575e;
+}
+.accordion-item.active .accordion-header .accordion-title .dashicons {
+    color: #2271b1;
+}
+.accordion-header .accordion-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #8c8f94;
+    transition: transform 0.2s ease;
+    transform: rotate(-90deg);
+}
+.accordion-item.active .accordion-header .accordion-icon {
+    transform: rotate(0deg);
+    color: #2271b1;
+}
+.accordion-body {
+    display: none;
+    padding: 16px;
+    background: #ffffff;
+}
+.accordion-item.active .accordion-body {
+    display: block;
+}
+
+/* Palette Elements */
 .element-item {
     background: #f6f7f7;
     border: 1px solid #dcdcde;
@@ -90,6 +162,49 @@
     background: #2271b1;
     color: #ffffff;
     border-color: #2271b1;
+}
+
+/* Canvas Viewport */
+.wppoppop-canvas-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #dcdcde;
+    position: relative;
+    overflow: auto;
+    padding: 20px 40px 40px;
+}
+.canvas-alignment-toolbar {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+}
+.toolbar-sep {
+    color: #c3c4c7;
+    margin: 0 4px;
+}
+.wppoppop-stage {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    border-radius: 4px;
+}
+.canvas-element {
+    position: absolute !important;
+    cursor: move;
+    border: 1px dashed transparent;
+    user-select: none;
+}
+.canvas-element.selected {
+    border-color: #2271b1 !important;
+    outline: 1px solid #2271b1;
 }
 .layers-list {
     margin: 0;
@@ -111,31 +226,6 @@
     background: #e7f3fb;
     border-color: #2271b1;
     font-weight: 600;
-}
-.wppoppop-canvas-viewport {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #dcdcde;
-    position: relative;
-    overflow: auto;
-    padding: 40px;
-}
-.wppoppop-stage {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    position: relative;
-    border-radius: 4px;
-}
-.canvas-element {
-    position: absolute !important;
-    cursor: move;
-    border: 1px dashed transparent;
-    user-select: none;
-}
-.canvas-element.selected {
-    border-color: #2271b1 !important;
-    outline: 1px solid #2271b1;
 }
 .form-group {
     margin-bottom: 12px;
@@ -160,44 +250,5 @@
 .form-row-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
-}
-.presets-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 100000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.presets-modal-box {
-    background: #fff;
-    width: 650px;
-    max-width: 90vw;
-    padding: 25px;
-    border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-.preset-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-top: 20px;
-}
-.preset-card {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 15px;
-    text-align: center;
-    background: #fafafa;
-}
-.preset-card h3 {
-    margin: 0 0 10px 0;
-    font-size: 14px;
-}
-.preset-card p {
-    font-size: 12px;
-    color: #666;
-    min-height: 48px;
+    margin-top: 18px;
 }

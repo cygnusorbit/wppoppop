@@ -3,69 +3,34 @@
     'use strict';
 
     $(document).ready(function() {
-        $('.wppoppop-overlay').each(function() {
+        // Sticky Side Tabs
+        $(document).on('click', '.wppoppop-sidetab, .wppoppop-open-btn', function() {
+            const uid = $(this).data('target-uid');
+            const target = $('#wppoppop-popup-' + uid);
+            if (target.length) target.addClass('wppoppop-visible').fadeIn(200);
+        });
+
+        $('.wppoppop-overlay, .wppoppop-inline-container').each(function() {
             const popup = $(this);
             const uid = popup.data('uid');
             const config = popup.data('config') || {};
-            const triggers = config.triggers || {};
-            const freq = config.frequency || {};
+            const styling = config.styling || {};
             let displayed = false;
-
-            // 1. Frequency Capping & Cookie Rules Evaluation
-            function canDisplay() {
-                if (freq.hide_submitted && getCookie('wppoppop_submitted_' + uid)) {
-                    return false;
-                }
-                if (freq.mode === 'once_session' && sessionStorage.getItem('wppoppop_seen_' + uid)) {
-                    return false;
-                }
-                if (freq.mode === 'days' && getCookie('wppoppop_seen_' + uid)) {
-                    return false;
-                }
-                return true;
-            }
-
-            if (!canDisplay()) return;
-
-            // 2. Play Staggered Entrance Animations
-            function triggerLayerAnimations(screenContainer) {
-                screenContainer.find('.wppoppop-layer-item').each(function() {
-                    const layer = $(this);
-                    const anim = layer.data('anim');
-                    const delay = parseInt(layer.data('anim-delay'), 10) || 0;
-                    const duration = parseInt(layer.data('anim-duration'), 10) || 500;
-
-                    if (anim && anim !== 'none') {
-                        layer.css({
-                            'opacity': 0,
-                            'animation-delay': delay + 'ms',
-                            'animation-duration': duration + 'ms'
-                        });
-                        setTimeout(function() {
-                            layer.addClass('anim-triggered');
-                        }, 20);
-                    }
-                });
-            }
 
             function showPopup() {
                 if (displayed) return;
                 displayed = true;
                 popup.addClass('wppoppop-visible').fadeIn(200);
 
-                // Mark seen
-                if (freq.mode === 'once_session') {
-                    sessionStorage.setItem('wppoppop_seen_' + uid, '1');
-                } else if (freq.mode === 'days') {
-                    setCookie('wppoppop_seen_' + uid, '1', freq.days || 7);
+                // Use REST API for Impression
+                const restUrl = wppoppop_front_vars.rest_url + 'impression';
+                if (window.fetch) {
+                    fetch(restUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ uid: uid })
+                    });
                 }
-
-                triggerLayerAnimations(popup.find('.wppoppop-screen-container[data-screen-index="1"]'));
-
-                $.post(wppoppop_front_vars.ajax_url, {
-                    action: 'wppoppop_record_impression',
-                    uid: uid
-                });
             }
 
             function closePopup() {
@@ -73,62 +38,85 @@
             }
 
             popup.find('.wppoppop-close-btn').on('click', closePopup);
-            popup.on('click', function(e) {
-                if ($(e.target).hasClass('wppoppop-overlay')) closePopup();
-            });
 
-            // 3. Multi-Step Transition Handler
-            popup.find('.wppoppop-next-screen-btn').on('click', function() {
-                const nextScreenIndex = $(this).data('goto') || 2;
-                popup.find('.wppoppop-screen-container').hide();
-                const nextContainer = popup.find('.wppoppop-screen-container[data-screen-index="' + nextScreenIndex + '"]');
-                nextContainer.fadeIn(200);
-                triggerLayerAnimations(nextContainer);
-            });
-
-            // 4. Real-Time Interactive Input Replacement
-            popup.on('input', 'input', function() {
-                const name = $(this).attr('name');
-                const val = $(this).val();
-                if (!name) return;
-
-                popup.find('.wppoppop-text-render').each(function() {
-                    const textContainer = $(this);
-                    let raw = textContainer.data('raw-template');
-                    if (raw && raw.indexOf('{' + name + '}') !== -1) {
-                        textContainer.text(raw.replace(new RegExp('\\{' + name + '\\}', 'g'), val || '...'));
-                    }
-                });
-            });
-
-            // 5. Triggers
-            if (triggers.on_load) {
-                setTimeout(showPopup, (parseInt(triggers.on_load_delay, 10) || 0) * 1000);
-            }
-            if (triggers.on_exit) {
-                $(document).on('mouseleave', function(e) {
-                    if (e.clientY <= 0) showPopup();
-                });
-            }
-            if (triggers.on_scroll && triggers.on_scroll > 0) {
-                $(window).on('scroll', function() {
-                    const scrollPercent = ($(window).scrollTop() / ($(document).height() - $(window).height())) * 100;
-                    if (scrollPercent >= triggers.on_scroll) showPopup();
+            // Close on Backdrop Click
+            if (styling.close_backdrop !== false) {
+                popup.on('click', function(e) {
+                    if ($(e.target).hasClass('wppoppop-overlay')) closePopup();
                 });
             }
 
-            // 6. Form Submission
+            // Close on ESC Key
+            if (styling.close_esc !== false) {
+                $(document).on('keydown', function(e) {
+                    if (e.key === 'Escape' && popup.hasClass('wppoppop-visible')) closePopup();
+                });
+            }
+
+            // Render & Handle Fortune Wheel
+            popup.find('.wppoppop-wheel-canvas').each(function() {
+                const canvas = this;
+                const ctx = canvas.getContext('2d');
+                const slices = $(canvas).data('slices') || ['10% OFF', 'FREE SHIP', '20% OFF', 'TRY AGAIN'];
+                const numSlices = slices.length;
+                const arc = (2 * Math.PI) / numSlices;
+                const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#009688', '#4caf50'];
+
+                // Draw Wheel
+                for (let i = 0; i < numSlices; i++) {
+                    const angle = i * arc;
+                    ctx.fillStyle = colors[i % colors.length];
+                    ctx.beginPath();
+                    ctx.arc(110, 110, 105, angle, angle + arc, false);
+                    ctx.lineTo(110, 110);
+                    ctx.fill();
+
+                    // Text label
+                    ctx.save();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.translate(110, 110);
+                    ctx.rotate(angle + arc / 2);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(slices[i], 95, 4);
+                    ctx.restore();
+                }
+
+                // Spin Interaction
+                const spinBtn = $(this).siblings('.wppoppop-wheel-spin-btn');
+                spinBtn.on('click', function() {
+                    spinBtn.prop('disabled', true);
+                    const selectedIdx = Math.floor(Math.random() * numSlices);
+                    const wonPrize = slices[selectedIdx];
+                    const degrees = 1800 + (360 - (selectedIdx * (360 / numSlices)) - (180 / numSlices));
+
+                    $(canvas).css('transform', 'rotate(' + degrees + 'deg)');
+
+                    setTimeout(function() {
+                        popup.find('input[name="prize"]').val(wonPrize);
+                        // Update interactive token text
+                        popup.find('.wppoppop-text-render').each(function() {
+                            const raw = $(this).data('raw-template');
+                            if (raw && raw.indexOf('{prize}') !== -1) {
+                                $(this).text(raw.replace(/{prize}/g, wonPrize));
+                            }
+                        });
+                        alert('Congratulations! You won: ' + wonPrize);
+                    }, 4200);
+                });
+            });
+
+            // Form Submission with REST Engine
             popup.find('.wppoppop-submit-trigger').on('click', function() {
                 const emailInput = popup.find('.wppoppop-field-email');
                 const email = emailInput.val();
-
                 if (!email) {
                     alert('Please enter your email address.');
                     return;
                 }
 
                 const fields = {};
-                popup.find('input').each(function() {
+                popup.find('input, select').each(function() {
                     const name = $(this).attr('name');
                     if (name && name !== 'email') fields[name] = $(this).val();
                 });
@@ -140,14 +128,9 @@
                     fields: fields
                 }, function(res) {
                     if (res.success) {
-                        if (freq.hide_submitted) {
-                            setCookie('wppoppop_submitted_' + uid, '1', 365);
-                        }
-
                         const statusOverlay = popup.find('.wppoppop-status-overlay');
                         popup.find('.wppoppop-status-message').text(res.data.message);
                         statusOverlay.fadeIn();
-
                         setTimeout(function() {
                             closePopup();
                             statusOverlay.hide();
@@ -158,20 +141,8 @@
                 });
             });
 
-            function setCookie(cname, cvalue, exdays) {
-                const d = new Date();
-                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-                document.cookie = cname + "=" + cvalue + ";expires=" + d.toUTCString() + ";path=/";
-            }
-            function getCookie(cname) {
-                const name = cname + "=";
-                const ca = document.cookie.split(';');
-                for (let i = 0; i < ca.length; i++) {
-                    let c = ca[i].trim();
-                    if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
-                }
-                return "";
-            }
+            // Trigger Display by default
+            setTimeout(showPopup, 1000);
         });
     });
 })(jQuery);
