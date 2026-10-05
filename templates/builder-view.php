@@ -8,11 +8,14 @@ if (!defined('ABSPATH')) {
     <header class="wppoppop-builder-header">
         <div class="header-left">
             <span class="dashicons dashicons-external" style="font-size: 24px; margin-right: 8px;"></span>
-            <input type="text" id="wppoppop-popup-title" value="New High-Converting Popup" placeholder="Popup Name...">
+            <input type="text" id="wppoppop-popup-title" value="New Converting Popup" placeholder="Popup Name...">
             <input type="hidden" id="wppoppop-popup-uid" value="">
         </div>
         <div class="header-center">
-            <button type="button" class="button button-secondary" id="btn-open-templates"><span class="dashicons dashicons-layout" style="vertical-align: middle;"></span> Presets</button>
+            <div class="screen-switch-bar">
+                <button type="button" class="button btn-screen-toggle active" data-screen="1">Screen 1</button>
+                <button type="button" class="button btn-screen-toggle" data-screen="2">Screen 2 (Step 2)</button>
+            </div>
             <label style="margin-left: 15px;">W: <input type="number" id="stage-width" value="640" style="width: 65px;"> px</label>
             <label style="margin-left: 8px;">H: <input type="number" id="stage-height" value="400" style="width: 65px;"> px</label>
         </div>
@@ -31,18 +34,18 @@ if (!defined('ABSPATH')) {
             </div>
 
             <div id="tab-elements" class="tab-pane active">
-                <p class="panel-hint">Click an element to add to canvas:</p>
+                <p class="panel-hint">Add element to active screen:</p>
                 <div class="element-item" data-type="text"><span class="dashicons dashicons-editor-textcolor"></span> Text Block</div>
                 <div class="element-item" data-type="input"><span class="dashicons dashicons-email-alt"></span> Email Field</div>
                 <div class="element-item" data-type="number"><span class="dashicons dashicons-calculator"></span> Number Field</div>
-                <div class="element-item" data-type="button"><span class="dashicons dashicons-button"></span> Action Button</div>
-                <div class="element-item" data-type="paybutton"><span class="dashicons dashicons-cart"></span> Payment Button</div>
-                <div class="element-item" data-type="html"><span class="dashicons dashicons-editor-code"></span> Raw HTML</div>
+                <div class="element-item" data-type="nextstep"><span class="dashicons dashicons-arrow-right-alt"></span> Next Step Button</div>
+                <div class="element-item" data-type="button"><span class="dashicons dashicons-button"></span> Submit Button</div>
+                <div class="element-item" data-type="html"><span class="dashicons dashicons-editor-code"></span> Raw HTML / Embed</div>
             </div>
 
             <div id="tab-layers" class="tab-pane">
                 <ul id="wppoppop-layers-list" class="layers-list">
-                    <li class="empty-layers">No elements on canvas.</li>
+                    <li class="empty-layers">No elements on current screen.</li>
                 </ul>
             </div>
         </aside>
@@ -57,12 +60,11 @@ if (!defined('ABSPATH')) {
         <!-- Configuration Sidebar -->
         <aside class="wppoppop-panel wppoppop-sidebar-right">
             <div class="panel-tabs">
-                <button type="button" class="tab-btn active" data-tab="tab-props">Props</button>
+                <button type="button" class="tab-btn active" data-tab="tab-props">Inspector</button>
+                <button type="button" class="tab-btn" data-tab="tab-animation">Animation</button>
                 <button type="button" class="tab-btn" data-tab="tab-triggers">Triggers</button>
-                <button type="button" class="tab-btn" data-tab="tab-sidetab">Side Tab</button>
-                <button type="button" class="tab-btn" data-tab="tab-payment">Pay</button>
-                <button type="button" class="tab-btn" data-tab="tab-downloads">Downloads</button>
-                <button type="button" class="tab-btn" data-tab="tab-video">Video</button>
+                <button type="button" class="tab-btn" data-tab="tab-frequency">Cookies</button>
+                <button type="button" class="tab-btn" data-tab="tab-targeting">Targeting</button>
             </div>
 
             <!-- Inspector Tab -->
@@ -70,11 +72,11 @@ if (!defined('ABSPATH')) {
                 <div id="inspector-empty-state">Select any canvas layer to edit properties.</div>
                 <div id="inspector-controls" style="display: none;">
                     <div class="form-group">
-                        <label>Binding Key:</label>
-                        <input type="text" id="prop-field-name" placeholder="e.g. qty, email, item" class="widefat">
+                        <label>Binding Key / Name (for Live Token {name}):</label>
+                        <input type="text" id="prop-field-name" placeholder="e.g. email, user_name, total" class="widefat">
                     </div>
                     <div class="form-group">
-                        <label>Content / Label:</label>
+                        <label>Content / Label / Text:</label>
                         <input type="text" id="prop-content" class="widefat">
                     </div>
                     <div class="form-group">
@@ -82,16 +84,42 @@ if (!defined('ABSPATH')) {
                         <input type="number" id="prop-font-size" value="16" min="10" max="72">
                     </div>
                     <div class="form-group">
-                        <label>Color:</label>
+                        <label>Text Color:</label>
                         <input type="color" id="prop-color" value="#222222">
                     </div>
                     <div class="form-group">
-                        <label>Background:</label>
+                        <label>Background Color:</label>
                         <input type="color" id="prop-bg-color" value="#00a32a">
                     </div>
                     <div class="form-row-actions">
                         <button type="button" class="button" id="prop-duplicate-element">Duplicate</button>
                         <button type="button" class="button button-link-delete" id="prop-delete-element">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layer Animation Tab -->
+            <div id="tab-animation" class="tab-pane">
+                <h4>Layer-by-Layer Transitions</h4>
+                <div id="anim-empty-state">Select a layer to customize entrance animation.</div>
+                <div id="anim-controls" style="display: none;">
+                    <div class="form-group">
+                        <label>Entrance Effect:</label>
+                        <select id="prop-anim-effect" class="widefat">
+                            <option value="none">None (Instant)</option>
+                            <option value="fade">Fade In</option>
+                            <option value="slideDown">Slide Down</option>
+                            <option value="zoomIn">Zoom In</option>
+                            <option value="bounceIn">Bounce In</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Delay (ms):</label>
+                        <input type="number" id="prop-anim-delay" value="0" min="0" step="50" class="widefat">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (ms):</label>
+                        <input type="number" id="prop-anim-duration" value="500" min="100" step="50" class="widefat">
                     </div>
                 </div>
             </div>
@@ -106,101 +134,53 @@ if (!defined('ABSPATH')) {
                 <label class="trigger-option"><input type="checkbox" id="trig-idle"> On User Inactivity (15s)</label>
             </div>
 
-            <!-- Side Tabs Add-On Tab -->
-            <div id="tab-sidetab" class="tab-pane">
-                <h4>Sticky Side Tab Add-On</h4>
-                <label class="trigger-option"><input type="checkbox" id="sidetab-enable"> Enable Sticky Side Tab</label>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Tab Text Label:</label>
-                    <input type="text" id="sidetab-label" value="Special Offer" class="widefat">
-                </div>
+            <!-- Frequency & Cookies Tab -->
+            <div id="tab-frequency" class="tab-pane">
+                <h4>Frequency Capping</h4>
                 <div class="form-group">
-                    <label>Position:</label>
-                    <select id="sidetab-position" class="widefat">
-                        <option value="right">Right Screen Edge</option>
-                        <option value="left">Left Screen Edge</option>
+                    <label>Popup Display Frequency:</label>
+                    <select id="freq-mode" class="widefat">
+                        <option value="everytime">Every Page View</option>
+                        <option value="once_session">Once Per Browser Session</option>
+                        <option value="days">Once Every X Days</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Tab Background Color:</label>
-                    <input type="color" id="sidetab-bg" value="#2271b1">
+                <div class="form-group" id="group-freq-days" style="display:none;">
+                    <label>Days before showing again:</label>
+                    <input type="number" id="freq-days-count" value="7" min="1" class="widefat">
                 </div>
+                <hr>
+                <label class="trigger-option"><input type="checkbox" id="freq-hide-submitted" checked> Do not show again after form submission</label>
             </div>
 
-            <!-- Payments Tab -->
-            <div id="tab-payment" class="tab-pane">
-                <h4>Payment Popups</h4>
-                <label class="trigger-option"><input type="checkbox" id="pay-enable"> Enable Payment Processing</label>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Amount to Charge ($):</label>
-                    <input type="number" id="pay-amount" value="19.99" step="0.01" class="widefat">
-                </div>
+            <!-- Device & Location Targeting Tab -->
+            <div id="tab-targeting" class="tab-pane">
+                <h4>Device Targeting</h4>
                 <div class="form-group">
-                    <label>Currency:</label>
-                    <input type="text" id="pay-currency" value="USD" class="widefat">
-                </div>
-                <div class="form-group">
-                    <label>Payment Gateway Provider:</label>
-                    <select id="pay-gateway" class="widefat">
-                        <option value="Stripe">Stripe Checkout</option>
-                        <option value="PayPal">PayPal Commerce</option>
+                    <label>Target Viewports:</label>
+                    <select id="target-devices" class="widefat">
+                        <option value="all">All Devices (Desktop & Mobile)</option>
+                        <option value="desktop">Desktop Only (> 768px)</option>
+                        <option value="mobile">Mobile / Tablet Only (<= 768px)</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- Secure Downloads Add-On Tab -->
-            <div id="tab-downloads" class="tab-pane">
-                <h4>Secure Downloads Add-On</h4>
-                <label class="trigger-option"><input type="checkbox" id="dl-enable"> Enable Secure Download</label>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Protected Media URL:</label>
-                    <input type="url" id="dl-file-url" placeholder="https://site.com/wp-content/uploads/file.pdf" class="widefat">
-                </div>
+                <hr>
+                <h4>Location Targeting</h4>
                 <div class="form-group">
-                    <label>Token Expiry (Hours):</label>
-                    <input type="number" id="dl-expiry-hours" value="24" min="1" class="widefat">
-                </div>
-            </div>
-
-            <!-- Video Events Listener Add-On Tab -->
-            <div id="tab-video" class="tab-pane">
-                <h4>Video Events Listener</h4>
-                <label class="trigger-option"><input type="checkbox" id="video-enable"> Enable Video Triggers</label>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Trigger on Video Event:</label>
-                    <select id="video-trigger-mode" class="widefat">
-                        <option value="ended">When Video Finishes Playing</option>
-                        <option value="play">When Video Starts Playing</option>
+                    <label>Display Location:</label>
+                    <select id="target-scope" class="widefat">
+                        <option value="everywhere">Everywhere</option>
+                        <option value="posts">Single Posts</option>
+                        <option value="pages">Pages Only</option>
+                        <option value="specific">Specific Post IDs</option>
                     </select>
+                </div>
+                <div class="form-group" id="group-specific-ids" style="display:none;">
+                    <label>Post IDs (comma-separated):</label>
+                    <input type="text" id="target-specific-ids" placeholder="e.g. 1, 14, 25" class="widefat">
                 </div>
             </div>
         </aside>
-    </div>
-
-    <!-- Presets Modal -->
-    <div id="wppoppop-presets-modal" class="presets-modal-backdrop" style="display:none;">
-        <div class="presets-modal-box">
-            <h2>Select a Library Template Preset</h2>
-            <div class="preset-cards">
-                <div class="preset-card" data-preset="newsletter">
-                    <h3>1. Minimal Newsletter</h3>
-                    <p>Clean design optimized for email capturing.</p>
-                    <button type="button" class="button button-primary btn-apply-preset">Load Template</button>
-                </div>
-                <div class="preset-card" data-preset="payment">
-                    <h3>2. Instant Checkout</h3>
-                    <p>Monetize content directly with payment button element.</p>
-                    <button type="button" class="button button-primary btn-apply-preset">Load Template</button>
-                </div>
-                <div class="preset-card" data-preset="download">
-                    <h3>3. Lead Magnet PDF</h3>
-                    <p>Delivers secure, encrypted download link upon signup.</p>
-                    <button type="button" class="button button-primary btn-apply-preset">Load Template</button>
-                </div>
-            </div>
-            <p style="text-align: right; margin-top: 20px;">
-                <button type="button" class="button button-secondary" id="btn-close-presets">Close</button>
-            </p>
-        </div>
     </div>
 </div>

@@ -45,6 +45,17 @@ class WpPopPop_Front {
         $targeting = isset($config['targeting']) ? $config['targeting'] : [];
         $scope = isset($targeting['scope']) ? $targeting['scope'] : 'everywhere';
 
+        // Device Check
+        $device_target = isset($targeting['devices']) ? $targeting['devices'] : 'all';
+        $is_mobile = wp_is_mobile();
+
+        if ($device_target === 'desktop' && $is_mobile) {
+            return false;
+        }
+        if ($device_target === 'mobile' && !$is_mobile) {
+            return false;
+        }
+
         if ($scope === 'everywhere') return true;
         if ($scope === 'posts' && is_single()) return true;
         if ($scope === 'pages' && is_page()) return true;
@@ -113,43 +124,98 @@ class WpPopPop_Front {
                     <button type="button" class="wppoppop-close-btn" aria-label="Close">&times;</button>
                 <?php endif; ?>
 
-                <div class="wppoppop-box-content">
-                    <?php foreach ($elements as $el) : 
-                        $left = isset($el['left']) ? intval($el['left']) : 0;
-                        $top = isset($el['top']) ? intval($el['top']) : 0;
-                        $w = isset($el['width']) ? intval($el['width']) : 160;
-                        $h = isset($el['height']) ? intval($el['height']) : 40;
-                        $z = isset($el['z_index']) ? intval($el['z_index']) : 1;
-                        $field_name = isset($el['field_name']) ? esc_attr($el['field_name']) : '';
-                        $custom_class = isset($el['custom_class']) ? esc_attr($el['custom_class']) : '';
-                        $styles = "position:absolute;left:{$left}px;top:{$top}px;width:{$w}px;height:{$h}px;z-index:{$z};";
-                        ?>
-                        <div id="<?php echo esc_attr($el['id']); ?>"
-                             class="wppoppop-layer-item <?php echo $custom_class; ?>"
-                             style="<?php echo $styles; ?>"
-                             data-type="<?php echo esc_attr($el['type']); ?>"
-                             data-field-name="<?php echo $field_name; ?>">
-                            <?php if ($el['type'] === 'text') : ?>
-                                <div class="wppoppop-text-render" style="font-size:<?php echo esc_attr(isset($el['font_size']) ? $el['font_size'] : '16'); ?>px;color:<?php echo esc_attr(isset($el['color']) ? $el['color'] : '#222'); ?>;">
-                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : ''); ?>
-                                </div>
-                            <?php elseif ($el['type'] === 'input') : ?>
-                                <input type="email" class="wppoppop-field-email" name="<?php echo $field_name ? $field_name : 'email'; ?>" placeholder="<?php echo esc_attr(isset($el['content']) ? $el['content'] : 'Enter your email...'); ?>" required style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
-                            <?php elseif ($el['type'] === 'number') : ?>
-                                <input type="number" class="wppoppop-field-number" name="<?php echo $field_name; ?>" value="1" min="0" style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
-                            <?php elseif ($el['type'] === 'button') : ?>
-                                <button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#00a32a'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
-                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Submit'); ?>
-                                </button>
-                            <?php elseif ($el['type'] === 'paybutton') : ?>
-                                <button type="button" class="wppoppop-pay-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#2271b1'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
-                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Pay Now'); ?>
-                                </button>
-                            <?php elseif ($el['type'] === 'html') : ?>
-                                <div><?php echo wp_kses_post(isset($el['content']) ? $el['content'] : ''); ?></div>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
+                <!-- Multi-Screen Sequence Wrapper: Screen 1 -->
+                <div class="wppoppop-screen-container wppoppop-screen-active" data-screen-index="1">
+                    <div class="wppoppop-box-content">
+                        <?php foreach ($elements as $el) : 
+                            $el_screen = isset($el['screen']) ? intval($el['screen']) : 1;
+                            if ($el_screen !== 1) continue;
+
+                            $left = isset($el['left']) ? intval($el['left']) : 0;
+                            $top = isset($el['top']) ? intval($el['top']) : 0;
+                            $w = isset($el['width']) ? intval($el['width']) : 160;
+                            $h = isset($el['height']) ? intval($el['height']) : 40;
+                            $z = isset($el['z_index']) ? intval($el['z_index']) : 1;
+                            $field_name = isset($el['field_name']) ? esc_attr($el['field_name']) : '';
+                            $anim = isset($el['anim']) ? esc_attr($el['anim']) : 'none';
+                            $anim_delay = isset($el['anim_delay']) ? intval($el['anim_delay']) : 0;
+                            $anim_dur = isset($el['anim_duration']) ? intval($el['anim_duration']) : 500;
+                            $custom_class = isset($el['custom_class']) ? esc_attr($el['custom_class']) : '';
+
+                            $styles = "position:absolute;left:{$left}px;top:{$top}px;width:{$w}px;height:{$h}px;z-index:{$z};";
+                            ?>
+                            <div id="<?php echo esc_attr($el['id']); ?>"
+                                 class="wppoppop-layer-item wppoppop-anim-<?php echo $anim; ?> <?php echo $custom_class; ?>"
+                                 style="<?php echo $styles; ?>"
+                                 data-anim="<?php echo $anim; ?>"
+                                 data-anim-delay="<?php echo $anim_delay; ?>"
+                                 data-anim-duration="<?php echo $anim_dur; ?>"
+                                 data-type="<?php echo esc_attr($el['type']); ?>"
+                                 data-field-name="<?php echo $field_name; ?>">
+                                <?php if ($el['type'] === 'text') : ?>
+                                    <div class="wppoppop-text-render" data-raw-template="<?php echo esc_attr($el['content']); ?>" style="font-size:<?php echo esc_attr(isset($el['font_size']) ? $el['font_size'] : '16'); ?>px;color:<?php echo esc_attr(isset($el['color']) ? $el['color'] : '#222'); ?>;">
+                                        <?php echo esc_html(isset($el['content']) ? $el['content'] : ''); ?>
+                                    </div>
+                                <?php elseif ($el['type'] === 'input') : ?>
+                                    <input type="email" class="wppoppop-field-email" name="<?php echo $field_name ? $field_name : 'email'; ?>" placeholder="<?php echo esc_attr(isset($el['content']) ? $el['content'] : 'Enter your email...'); ?>" required style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+                                <?php elseif ($el['type'] === 'number') : ?>
+                                    <input type="number" class="wppoppop-field-number" name="<?php echo $field_name; ?>" value="1" min="0" style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+                                <?php elseif ($el['type'] === 'button') : ?>
+                                    <button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#00a32a'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
+                                        <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Submit'); ?>
+                                    </button>
+                                <?php elseif ($el['type'] === 'nextstep') : ?>
+                                    <button type="button" class="wppoppop-next-screen-btn" data-goto="2" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#2271b1'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
+                                        <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Next &rarr;'); ?>
+                                    </button>
+                                <?php elseif ($el['type'] === 'html') : ?>
+                                    <div><?php echo wp_kses_post(isset($el['content']) ? $el['content'] : ''); ?></div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Screen 2 (Follow-up / Confirmation Step) -->
+                <div class="wppoppop-screen-container" data-screen-index="2" style="display:none;">
+                    <div class="wppoppop-box-content">
+                        <?php foreach ($elements as $el) : 
+                            $el_screen = isset($el['screen']) ? intval($el['screen']) : 1;
+                            if ($el_screen !== 2) continue;
+
+                            $left = isset($el['left']) ? intval($el['left']) : 0;
+                            $top = isset($el['top']) ? intval($el['top']) : 0;
+                            $w = isset($el['width']) ? intval($el['width']) : 160;
+                            $h = isset($el['height']) ? intval($el['height']) : 40;
+                            $z = isset($el['z_index']) ? intval($el['z_index']) : 1;
+                            $field_name = isset($el['field_name']) ? esc_attr($el['field_name']) : '';
+                            $anim = isset($el['anim']) ? esc_attr($el['anim']) : 'none';
+                            $anim_delay = isset($el['anim_delay']) ? intval($el['anim_delay']) : 0;
+                            $anim_dur = isset($el['anim_duration']) ? intval($el['anim_duration']) : 500;
+                            $styles = "position:absolute;left:{$left}px;top:{$top}px;width:{$w}px;height:{$h}px;z-index:{$z};";
+                            ?>
+                            <div id="<?php echo esc_attr($el['id']); ?>"
+                                 class="wppoppop-layer-item wppoppop-anim-<?php echo $anim; ?>"
+                                 style="<?php echo $styles; ?>"
+                                 data-anim="<?php echo $anim; ?>"
+                                 data-anim-delay="<?php echo $anim_delay; ?>"
+                                 data-anim-duration="<?php echo $anim_dur; ?>"
+                                 data-type="<?php echo esc_attr($el['type']); ?>"
+                                 data-field-name="<?php echo $field_name; ?>">
+                                <?php if ($el['type'] === 'text') : ?>
+                                    <div class="wppoppop-text-render" data-raw-template="<?php echo esc_attr($el['content']); ?>" style="font-size:<?php echo esc_attr(isset($el['font_size']) ? $el['font_size'] : '16'); ?>px;color:<?php echo esc_attr(isset($el['color']) ? $el['color'] : '#222'); ?>;">
+                                        <?php echo esc_html(isset($el['content']) ? $el['content'] : ''); ?>
+                                    </div>
+                                <?php elseif ($el['type'] === 'button') : ?>
+                                    <button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#00a32a'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
+                                        <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Complete'); ?>
+                                    </button>
+                                <?php elseif ($el['type'] === 'html') : ?>
+                                    <div><?php echo wp_kses_post(isset($el['content']) ? $el['content'] : ''); ?></div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
 
                 <div class="wppoppop-status-overlay" style="display:none;">

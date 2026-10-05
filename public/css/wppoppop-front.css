@@ -51,57 +51,41 @@
     font-weight: 600;
     z-index: 10000;
 }
-/* Sticky Side Tabs */
-.wppoppop-sidetab {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 12px 16px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    z-index: 99999;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    border-radius: 0 6px 6px 0;
-    transition: transform 0.2s ease;
-}
-.wppoppop-sidetab-right {
-    right: 0;
-    border-radius: 6px 0 0 6px;
-    writing-mode: vertical-lr;
-}
-.wppoppop-sidetab-left {
-    left: 0;
-    border-radius: 0 6px 6px 0;
-}
-.wppoppop-sidetab:hover {
-    transform: translateY(-50%) scale(1.05);
-}
-/* Inline Content Locker */
-.wppoppop-content-locker {
+.wppoppop-screen-container {
+    width: 100%;
+    height: 100%;
     position: relative;
-    overflow: hidden;
-    margin: 20px 0;
-    min-height: 180px;
 }
-.wppoppop-locked-content {
-    filter: blur(6px);
-    pointer-events: none;
-    user-select: none;
+
+/* CSS3 Layer Entrance Animations */
+.wppoppop-anim-fade.anim-triggered {
+    animation: wppoppopFadeIn forwards ease-out;
 }
-.wppoppop-locker-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-    z-index: 10;
+.wppoppop-anim-slideDown.anim-triggered {
+    animation: wppoppopSlideDown forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.wppoppop-locker-prompt {
-    max-width: 400px;
+.wppoppop-anim-zoomIn.anim-triggered {
+    animation: wppoppopZoomIn forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.wppoppop-anim-bounceIn.anim-triggered {
+    animation: wppoppopBounceIn forwards cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes wppoppopFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes wppoppopSlideDown {
+    from { opacity: 0; transform: translateY(-40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes wppoppopZoomIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+}
+@keyframes wppoppopBounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
 }
