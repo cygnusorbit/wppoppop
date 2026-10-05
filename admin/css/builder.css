@@ -162,3 +162,42 @@
     justify-content: space-between;
     margin-top: 20px;
 }
+.presets-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.presets-modal-box {
+    background: #fff;
+    width: 650px;
+    max-width: 90vw;
+    padding: 25px;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.preset-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+.preset-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    background: #fafafa;
+}
+.preset-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+.preset-card p {
+    font-size: 12px;
+    color: #666;
+    min-height: 48px;
+}

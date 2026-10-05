@@ -8,6 +8,7 @@ class WpPopPop_Front {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('wp_footer', [$this, 'render_targeted_popups']);
         add_shortcode('wppoppop', [$this, 'render_shortcode']);
+        add_shortcode('wppoppop_ab', [$this, 'render_ab_shortcode']);
     }
 
     public function enqueue_frontend_assets() {
@@ -26,8 +27,7 @@ class WpPopPop_Front {
         }
 
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_items';
-        $popups = $wpdb->get_results("SELECT uid, data FROM {$table_name} WHERE status = 'publish'");
+        $popups = $wpdb->get_results("SELECT uid, data FROM {$wpdb->prefix}wppoppop_items WHERE status = 'publish'");
 
         if (empty($popups)) {
             return;
@@ -45,54 +45,48 @@ class WpPopPop_Front {
         $targeting = isset($config['targeting']) ? $config['targeting'] : [];
         $scope = isset($targeting['scope']) ? $targeting['scope'] : 'everywhere';
 
-        if ($scope === 'everywhere') {
-            return true;
-        }
-
-        if ($scope === 'posts' && is_single()) {
-            return true;
-        }
-
-        if ($scope === 'pages' && is_page()) {
-            return true;
-        }
-
+        if ($scope === 'everywhere') return true;
+        if ($scope === 'posts' && is_single()) return true;
+        if ($scope === 'pages' && is_page()) return true;
         if ($scope === 'specific') {
             $allowed_ids = isset($targeting['specific_ids']) ? array_filter(array_map('intval', explode(',', $targeting['specific_ids']))) : [];
-            $current_id = get_queried_object_id();
-            if (in_array($current_id, $allowed_ids, true)) {
-                return true;
-            }
+            return in_array(get_queried_object_id(), $allowed_ids, true);
         }
-
         return false;
     }
 
     public function render_shortcode($atts) {
         $atts = shortcode_atts(['uid' => ''], $atts, 'wppoppop');
-        if (empty($atts['uid'])) {
-            return '';
-        }
+        if (empty($atts['uid'])) return '';
 
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_items';
-        $popup = $wpdb->get_row($wpdb->prepare("SELECT uid, data FROM {$table_name} WHERE uid = %s AND status = 'publish'", sanitize_key($atts['uid'])));
-
-        if (!$popup) {
-            return '';
-        }
+        $popup = $wpdb->get_row($wpdb->prepare("SELECT uid, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s AND status = 'publish'", sanitize_key($atts['uid'])));
+        if (!$popup) return '';
 
         $config = json_decode($popup->data, true);
-        if (!$config) {
-            return '';
-        }
+        if (!$config) return '';
 
         ob_start();
         $this->render_popup_markup($popup->uid, $config, true);
         return ob_get_clean();
     }
 
-    private function render_popup_markup($uid, array $config, $is_inline = false) {
+    public function render_ab_shortcode($atts) {
+        $atts = shortcode_atts(['uid' => ''], $atts, 'wppoppop_ab');
+        if (empty($atts['uid'])) return '';
+
+        global $wpdb;
+        $campaign = $wpdb->get_row($wpdb->prepare("SELECT popup_uids FROM {$wpdb->prefix}wppoppop_campaigns WHERE uid = %s AND status = 'active'", sanitize_key($atts['uid'])));
+        if (!$campaign) return '';
+
+        $uids = json_decode($campaign->popup_uids, true);
+        if (empty($uids)) return '';
+
+        $selected_uid = $uids[array_rand($uids)];
+        return $this->render_shortcode(['uid' => $selected_uid]);
+    }
+
+    public function render_popup_markup($uid, array $config, $is_inline = false) {
         $meta = isset($config['meta']) ? $config['meta'] : [];
         $width = isset($meta['width']) ? intval($meta['width']) : 640;
         $height = isset($meta['height']) ? intval($meta['height']) : 400;
@@ -146,6 +140,10 @@ class WpPopPop_Front {
                             <?php elseif ($el['type'] === 'button') : ?>
                                 <button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#00a32a'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
                                     <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Submit'); ?>
+                                </button>
+                            <?php elseif ($el['type'] === 'paybutton') : ?>
+                                <button type="button" class="wppoppop-pay-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#2271b1'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
+                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Pay Now'); ?>
                                 </button>
                             <?php elseif ($el['type'] === 'html') : ?>
                                 <div><?php echo wp_kses_post(isset($el['content']) ? $el['content'] : ''); ?></div>

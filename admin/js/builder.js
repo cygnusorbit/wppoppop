@@ -6,6 +6,95 @@
     let zIndexCounter = 1;
     const stage = $('#wppoppop-stage');
 
+    // Preset Library Modal Handlers
+    $('#btn-open-templates').on('click', function() {
+        $('#wppoppop-presets-modal').fadeIn(150);
+    });
+    $('#btn-close-presets').on('click', function() {
+        $('#wppoppop-presets-modal').fadeOut(150);
+    });
+
+    // Preset Template Applicator
+    $('.btn-apply-preset').on('click', function() {
+        const type = $(this).closest('.preset-card').data('preset');
+        stage.empty();
+        $('#wppoppop-presets-modal').fadeOut(150);
+
+        if (type === 'newsletter') {
+            $('#stage-width').val(580).trigger('input');
+            $('#stage-height').val(340).trigger('input');
+            $('#wppoppop-popup-title').val('Newsletter Subscription');
+
+            createElementOnCanvas('text', 40, 40, 500, 40, 'Subscribe to our Newsletter', 24, '#111', '#fff');
+            createElementOnCanvas('text', 40, 90, 500, 30, 'Get daily updates and premium curated content straight to your inbox.', 14, '#666', '#fff');
+            createElementOnCanvas('input', 40, 150, 500, 45, 'Your best email address...', 15, '#222', '#fff', 'email');
+            createElementOnCanvas('button', 40, 215, 500, 45, 'Join Free Newsletter', 16, '#fff', '#2271b1');
+        } else if (type === 'coupon') {
+            $('#stage-width').val(600).trigger('input');
+            $('#stage-height').val(360).trigger('input');
+            $('#wppoppop-popup-title').val('Unlock 20% Discount');
+
+            createElementOnCanvas('text', 40, 30, 520, 40, 'SPECIAL DISCOUNT CODE', 24, '#d63638', '#fff');
+            createElementOnCanvas('text', 40, 80, 520, 30, 'Use promo code SAVE20 at checkout for instant savings.', 15, '#444', '#fff');
+            createElementOnCanvas('html', 40, 130, 520, 50, '<div style="background:#eee;border:2px dashed #999;padding:12px;text-align:center;font-weight:700;font-size:20px;letter-spacing:2px;">SAVE20</div>', 16, '#111', '#fff');
+            createElementOnCanvas('input', 40, 205, 520, 45, 'Enter email to receive copy...', 15, '#222', '#fff', 'email');
+            createElementOnCanvas('button', 40, 265, 520, 45, 'Claim My 20% Off', 16, '#fff', '#00a32a');
+        } else if (type === 'calculator') {
+            $('#stage-width').val(560).trigger('input');
+            $('#stage-height').val(340).trigger('input');
+            $('#wppoppop-popup-title').val('Order Estimate Calculator');
+
+            createElementOnCanvas('text', 40, 30, 480, 40, 'Calculate Your Pricing', 22, '#222', '#fff');
+            createElementOnCanvas('text', 40, 80, 220, 30, 'Quantity ($25 each):', 14, '#555', '#fff');
+            createElementOnCanvas('number', 240, 80, 100, 35, '1', 15, '#222', '#fff', 'qty');
+            createElementOnCanvas('text', 40, 140, 480, 35, 'Total Cost: $25', 18, '#00a32a', '#fff', 'total_display');
+            createElementOnCanvas('input', 40, 195, 480, 45, 'Enter email to get invoice...', 15, '#222', '#fff', 'email');
+            createElementOnCanvas('button', 40, 255, 480, 45, 'Confirm & Receive Quote', 16, '#fff', '#2271b1');
+
+            $('#math-expression').val('{qty} * 25');
+        }
+    });
+
+    function createElementOnCanvas(type, left, top, width, height, content, fontSize, color, bgColor, fieldName) {
+        zIndexCounter++;
+        const elementId = 'elem_' + Date.now() + '_' + Math.floor(Math.random() * 100);
+
+        let innerMarkup = '';
+        if (type === 'text') {
+            innerMarkup = '<div class="content-render" style="font-size:' + fontSize + 'px;color:' + color + ';">' + content + '</div>';
+        } else if (type === 'input') {
+            innerMarkup = '<input type="email" placeholder="' + content + '" disabled style="width:100%;height:100%;">';
+        } else if (type === 'number') {
+            innerMarkup = '<input type="number" value="' + content + '" disabled style="width:100%;height:100%;">';
+        } else if (type === 'button') {
+            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + bgColor + ';color:' + color + ';border:none;border-radius:4px;font-weight:600;">' + content + '</button>';
+        } else if (type === 'html') {
+            innerMarkup = '<div class="content-render">' + content + '</div>';
+        }
+
+        const elem = $('<div class="canvas-element"></div>')
+            .attr('id', elementId)
+            .data('type', type)
+            .data('field-name', fieldName || '')
+            .data('z-index', zIndexCounter)
+            .data('font-size', fontSize)
+            .data('color', color)
+            .data('bg-color', bgColor)
+            .data('custom-class', '')
+            .css({
+                top: top,
+                left: left,
+                width: width,
+                height: height,
+                'z-index': zIndexCounter
+            })
+            .html(innerMarkup);
+
+        stage.append(elem);
+        makeInteractive(elem);
+        refreshLayers();
+    }
+
     // Tab Switching
     $('.panel-tabs .tab-btn').on('click', function() {
         const parent = $(this).closest('.wppoppop-panel');
@@ -15,7 +104,6 @@
         $('#' + $(this).data('tab')).addClass('active');
     });
 
-    // Targeting Dropdown
     $('#target-scope').on('change', function() {
         if ($(this).val() === 'specific') {
             $('#group-specific-ids').show();
@@ -24,7 +112,6 @@
         }
     });
 
-    // Canvas Sizing
     $('#stage-width').on('input', function() {
         stage.width(parseInt($(this).val(), 10) || 640);
     });
@@ -35,9 +122,6 @@
     // Add Element
     $('.element-item').on('click', function() {
         const type = $(this).data('type');
-        const elementId = 'elem_' + Date.now();
-        zIndexCounter++;
-
         let defaultContent = 'Heading or message';
         let defaultBg = '#00a32a';
         let defaultColor = '#222222';
@@ -45,48 +129,14 @@
         let height = 40;
         let fieldName = '';
 
-        let innerMarkup = '';
-        if (type === 'text') {
-            innerMarkup = '<div class="content-render" style="font-size:16px;color:#222;">Double-click or inspect to edit</div>';
-            height = 30;
-        } else if (type === 'input') {
-            fieldName = 'email';
-            innerMarkup = '<input type="email" placeholder="Enter your email..." disabled style="width:100%;height:100%;">';
-            width = 220;
-        } else if (type === 'number') {
-            fieldName = 'qty';
-            innerMarkup = '<input type="number" value="1" disabled style="width:100%;height:100%;">';
-            width = 120;
-        } else if (type === 'button') {
-            innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + defaultBg + ';color:#fff;border:none;border-radius:4px;">Submit</button>';
-            width = 160;
-        } else if (type === 'html') {
-            innerMarkup = '<div class="content-render"><strong>Custom HTML Block</strong></div>';
-            height = 50;
-        }
+        if (type === 'text') height = 30;
+        if (type === 'input') { fieldName = 'email'; width = 220; defaultContent = 'Enter your email...'; }
+        if (type === 'number') { fieldName = 'qty'; width = 120; defaultContent = '1'; }
+        if (type === 'button') { width = 160; defaultContent = 'Submit'; defaultColor = '#fff'; }
+        if (type === 'html') { height = 50; defaultContent = '<strong>Custom HTML Block</strong>'; }
 
-        const elem = $('<div class="canvas-element"></div>')
-            .attr('id', elementId)
-            .data('type', type)
-            .data('field-name', fieldName)
-            .data('z-index', zIndexCounter)
-            .data('font-size', 16)
-            .data('color', defaultColor)
-            .data('bg-color', defaultBg)
-            .data('custom-class', '')
-            .css({
-                top: 40,
-                left: 40,
-                width: width,
-                height: height,
-                'z-index': zIndexCounter
-            })
-            .html(innerMarkup);
-
-        stage.append(elem);
-        makeInteractive(elem);
-        refreshLayers();
-        selectElement(elem);
+        createElementOnCanvas(type, 40, 40, width, height, defaultContent, 16, defaultColor, defaultBg, fieldName);
+        selectElement(stage.find('.canvas-element').last());
     });
 
     function makeInteractive(elem) {
@@ -120,6 +170,8 @@
             contentVal = elem.find('button').text();
         } else if (type === 'input') {
             contentVal = elem.find('input').attr('placeholder');
+        } else if (type === 'number') {
+            contentVal = elem.find('input').val();
         }
 
         $('#prop-field-name').val(elem.data('field-name') || '');
@@ -140,7 +192,6 @@
         $('#wppoppop-layers-list li').removeClass('selected');
     });
 
-    // Inspector Live Updates
     $('#prop-field-name').on('input', function() {
         if (activeElement) activeElement.data('field-name', $(this).val());
     });
@@ -155,6 +206,8 @@
             activeElement.find('button').text(val);
         } else if (type === 'input') {
             activeElement.find('input').attr('placeholder', val);
+        } else if (type === 'number') {
+            activeElement.find('input').val(val);
         }
         refreshLayers();
     });
@@ -216,7 +269,7 @@
     });
 
     $('#wppoppop-btn-reset').on('click', function() {
-        if (confirm('Clear all elements from canvas?')) {
+        if (confirm('Clear canvas elements?')) {
             stage.empty();
             refreshLayers();
             $('#inspector-empty-state').show();
@@ -254,6 +307,24 @@
         $('#wppoppop-layers-list li').removeClass('selected');
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
+
+    function updateRemoteEmbedCode(uid) {
+        if (!uid) {
+            $('#remote-embed-code').val('Save popup first to generate remote embed snippet.');
+            return;
+        }
+        const scriptUrl = wppoppop_vars.ajax_url + '?action=wppoppop_remote_embed&uid=' + uid;
+        const snippet = '<script src="' + scriptUrl + '" async><\/script>';
+        $('#remote-embed-code').val(snippet);
+    }
+
+    $('#btn-copy-remote-code').on('click', function() {
+        const copyText = $('#remote-embed-code');
+        copyText.select();
+        navigator.clipboard.writeText(copyText.val()).then(function() {
+            alert('Remote snippet copied to clipboard!');
+        });
+    });
 
     // Save Action
     $('#wppoppop-btn-save').on('click', function() {
@@ -306,12 +377,14 @@
                 expression: $('#math-expression').val(),
                 output_target: $('#math-output-target').val()
             },
-            custom_css: $('#custom-css-area').val(),
-            custom_js: {
-                on_init: $('#custom-js-init').val(),
-                on_submit: $('#custom-js-submit').val()
+            integrations: {
+                enable_ga: $('#int-enable-ga').is(':checked'),
+                enable_webhook: $('#int-enable-webhook').is(':checked'),
+                webhook_url: $('#int-webhook-url').val()
             },
             notifications: {
+                enable_double_optin: $('#notif-enable-double-optin').is(':checked'),
+                confirm_subject: $('#notif-confirm-subject').val(),
                 enable_email: $('#notif-enable').is(':checked'),
                 recipient: $('#notif-recipient').val(),
                 subject: $('#notif-subject').val()
@@ -332,6 +405,7 @@
         }, function(res) {
             if (res.success) {
                 $('#wppoppop-popup-uid').val(res.data.uid);
+                updateRemoteEmbedCode(res.data.uid);
                 alert(res.data.message);
             } else {
                 alert('Save failed: ' + res.data.message);
@@ -339,7 +413,7 @@
         });
     });
 
-    // Populate Builder on Edit
+    // Populate on edit
     if (wppoppop_vars.current_uid) {
         $.get(wppoppop_vars.ajax_url, {
             action: 'wppoppop_load_popup',
@@ -350,6 +424,7 @@
                 const row = res.data;
                 $('#wppoppop-popup-title').val(row.title);
                 $('#wppoppop-popup-uid').val(row.uid);
+                updateRemoteEmbedCode(row.uid);
 
                 const config = JSON.parse(row.data);
                 if (config.meta) {
@@ -381,14 +456,14 @@
                     $('#math-expression').val(config.math.expression || '');
                     $('#math-output-target').val(config.math.output_target || '');
                 }
-                if (config.custom_css) {
-                    $('#custom-css-area').val(config.custom_css);
-                }
-                if (config.custom_js) {
-                    $('#custom-js-init').val(config.custom_js.on_init || '');
-                    $('#custom-js-submit').val(config.custom_js.on_submit || '');
+                if (config.integrations) {
+                    $('#int-enable-ga').prop('checked', config.integrations.enable_ga !== false);
+                    $('#int-enable-webhook').prop('checked', !!config.integrations.enable_webhook);
+                    $('#int-webhook-url').val(config.integrations.webhook_url || '');
                 }
                 if (config.notifications) {
+                    $('#notif-enable-double-optin').prop('checked', !!config.notifications.enable_double_optin);
+                    $('#notif-confirm-subject').val(config.notifications.confirm_subject || 'Please confirm your subscription');
                     $('#notif-enable').prop('checked', !!config.notifications.enable_email);
                     $('#notif-recipient').val(config.notifications.recipient || '');
                     $('#notif-subject').val(config.notifications.subject || '');
@@ -398,33 +473,11 @@
                     $('#act-redirect-url').val(config.actions.redirect_url || '');
                 }
 
-                // Render Elements
                 if (Array.isArray(config.elements)) {
                     stage.empty();
                     config.elements.forEach(function(el) {
-                        let innerMarkup = '';
-                        if (el.type === 'text') innerMarkup = '<div class="content-render" style="font-size:' + el.font_size + 'px;color:' + el.color + ';">' + el.content + '</div>';
-                        if (el.type === 'input') innerMarkup = '<input type="email" placeholder="' + el.content + '" disabled style="width:100%;height:100%;">';
-                        if (el.type === 'number') innerMarkup = '<input type="number" value="1" disabled style="width:100%;height:100%;">';
-                        if (el.type === 'button') innerMarkup = '<button type="button" style="width:100%;height:100%;background:' + el.bg_color + ';color:#fff;border:none;border-radius:4px;">' + el.content + '</button>';
-                        if (el.type === 'html') innerMarkup = '<div class="content-render">' + el.content + '</div>';
-
-                        const canvasEl = $('<div class="canvas-element"></div>')
-                            .attr('id', el.id)
-                            .data(el)
-                            .css({
-                                top: el.top,
-                                left: el.left,
-                                width: el.width,
-                                height: el.height,
-                                'z-index': el.z_index
-                            })
-                            .html(innerMarkup);
-
-                        stage.append(canvasEl);
-                        makeInteractive(canvasEl);
+                        createElementOnCanvas(el.type, el.left, el.top, el.width, el.height, el.content, el.font_size, el.color, el.bg_color, el.field_name);
                     });
-                    refreshLayers();
                 }
             }
         });

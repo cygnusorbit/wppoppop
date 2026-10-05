@@ -20,32 +20,12 @@ class WpPopPop_Admin {
             30
         );
 
-        add_submenu_page(
-            'wppoppop',
-            'All Popups',
-            'All Popups',
-            'manage_options',
-            'wppoppop',
-            [$this, 'render_dashboard']
-        );
-
-        add_submenu_page(
-            'wppoppop',
-            'Create Popup',
-            'Create Popup',
-            'manage_options',
-            'wppoppop-builder',
-            [$this, 'render_builder']
-        );
-
-        add_submenu_page(
-            'wppoppop',
-            'Tools & Export',
-            'Tools & Export',
-            'manage_options',
-            'wppoppop-tools',
-            [$this, 'render_tools']
-        );
+        add_submenu_page('wppoppop', 'All Popups', 'All Popups', 'manage_options', 'wppoppop', [$this, 'render_dashboard']);
+        add_submenu_page('wppoppop', 'Create Popup', 'Create Popup', 'manage_options', 'wppoppop-builder', [$this, 'render_builder']);
+        add_submenu_page('wppoppop', 'A/B Testing', 'A/B Testing', 'manage_options', 'wppoppop-ab', [$this, 'render_ab']);
+        add_submenu_page('wppoppop', 'Submissions & Stats', 'Submissions & Stats', 'manage_options', 'wppoppop-submissions', [$this, 'render_submissions']);
+        add_submenu_page('wppoppop', 'Payments & Sales', 'Payments & Sales', 'manage_options', 'wppoppop-payments', [$this, 'render_payments']);
+        add_submenu_page('wppoppop', 'Tools & Export', 'Tools & Export', 'manage_options', 'wppoppop-tools', [$this, 'render_tools']);
     }
 
     public function enqueue_assets($hook) {
@@ -67,15 +47,10 @@ class WpPopPop_Admin {
         ]);
     }
 
-    public function render_dashboard() {
-        include WPPOPPOP_PATH . 'templates/dashboard-view.php';
-    }
-
-    public function render_builder() {
-        include WPPOPPOP_PATH . 'templates/builder-view.php';
-    }
-
-    public function render_tools() {
-        include WPPOPPOP_PATH . 'templates/tools-view.php';
-    }
+    public function render_dashboard() { include WPPOPPOP_PATH . 'templates/dashboard-view.php'; }
+    public function render_builder() { include WPPOPPOP_PATH . 'templates/builder-view.php'; }
+    public function render_ab() { include WPPOPPOP_PATH . 'templates/ab-view.php'; }
+    public function render_submissions() { include WPPOPPOP_PATH . 'templates/submissions-view.php'; }
+    public function render_payments() { include WPPOPPOP_PATH . 'templates/payments-view.php'; }
+    public function render_tools() { include WPPOPPOP_PATH . 'templates/tools-view.php'; }
 }
