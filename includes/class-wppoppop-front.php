@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 class WpPopPop_Front {
     public function __construct() {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
-        add_action('wp_footer', [$this, 'render_triggered_popups']);
+        add_action('wp_footer', [$this, 'render_targeted_popups']);
         add_shortcode('wppoppop', [$this, 'render_shortcode']);
     }
 
@@ -20,7 +20,7 @@ class WpPopPop_Front {
         ]);
     }
 
-    public function render_triggered_popups() {
+    public function render_targeted_popups() {
         if (is_admin()) {
             return;
         }
@@ -35,10 +35,37 @@ class WpPopPop_Front {
 
         foreach ($popups as $popup) {
             $config = json_decode($popup->data, true);
-            if (!empty($config)) {
+            if (!empty($config) && $this->matches_targeting($config)) {
                 $this->render_popup_markup($popup->uid, $config, false);
             }
         }
+    }
+
+    private function matches_targeting(array $config) {
+        $targeting = isset($config['targeting']) ? $config['targeting'] : [];
+        $scope = isset($targeting['scope']) ? $targeting['scope'] : 'everywhere';
+
+        if ($scope === 'everywhere') {
+            return true;
+        }
+
+        if ($scope === 'posts' && is_single()) {
+            return true;
+        }
+
+        if ($scope === 'pages' && is_page()) {
+            return true;
+        }
+
+        if ($scope === 'specific') {
+            $allowed_ids = isset($targeting['specific_ids']) ? array_filter(array_map('intval', explode(',', $targeting['specific_ids']))) : [];
+            $current_id = get_queried_object_id();
+            if (in_array($current_id, $allowed_ids, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function render_shortcode($atts) {
@@ -71,11 +98,16 @@ class WpPopPop_Front {
         $height = isset($meta['height']) ? intval($meta['height']) : 400;
         $bg_color = isset($meta['bg_color']) ? esc_attr($meta['bg_color']) : '#ffffff';
         $elements = isset($config['elements']) ? (array)$config['elements'] : [];
+        $custom_css = isset($config['custom_css']) ? $config['custom_css'] : '';
         $config_json = esc_attr(wp_json_encode($config));
 
         $wrapper_class = $is_inline ? 'wppoppop-inline-container' : 'wppoppop-overlay';
         $display_style = $is_inline ? 'position: relative;' : 'display: none;';
         ?>
+        <?php if (!empty($custom_css)) : ?>
+            <style type="text/css"><?php echo wp_strip_all_tags($custom_css); ?></style>
+        <?php endif; ?>
+
         <div id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              class="<?php echo esc_attr($wrapper_class); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
@@ -94,19 +126,26 @@ class WpPopPop_Front {
                         $w = isset($el['width']) ? intval($el['width']) : 160;
                         $h = isset($el['height']) ? intval($el['height']) : 40;
                         $z = isset($el['z_index']) ? intval($el['z_index']) : 1;
+                        $field_name = isset($el['field_name']) ? esc_attr($el['field_name']) : '';
                         $custom_class = isset($el['custom_class']) ? esc_attr($el['custom_class']) : '';
                         $styles = "position:absolute;left:{$left}px;top:{$top}px;width:{$w}px;height:{$h}px;z-index:{$z};";
                         ?>
-                        <div class="wppoppop-layer-item <?php echo $custom_class; ?>" style="<?php echo $styles; ?>" data-type="<?php echo esc_attr($el['type']); ?>">
+                        <div id="<?php echo esc_attr($el['id']); ?>"
+                             class="wppoppop-layer-item <?php echo $custom_class; ?>"
+                             style="<?php echo $styles; ?>"
+                             data-type="<?php echo esc_attr($el['type']); ?>"
+                             data-field-name="<?php echo $field_name; ?>">
                             <?php if ($el['type'] === 'text') : ?>
-                                <div style="font-size:<?php echo esc_attr(isset($el['font_size']) ? $el['font_size'] : '16'); ?>px;color:<?php echo esc_attr(isset($el['color']) ? $el['color'] : '#222'); ?>;">
-                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Heading or text block'); ?>
+                                <div class="wppoppop-text-render" style="font-size:<?php echo esc_attr(isset($el['font_size']) ? $el['font_size'] : '16'); ?>px;color:<?php echo esc_attr(isset($el['color']) ? $el['color'] : '#222'); ?>;">
+                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : ''); ?>
                                 </div>
                             <?php elseif ($el['type'] === 'input') : ?>
-                                <input type="email" class="wppoppop-field-email" placeholder="<?php echo esc_attr(isset($el['content']) ? $el['content'] : 'Enter your email...'); ?>" required style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+                                <input type="email" class="wppoppop-field-email" name="<?php echo $field_name ? $field_name : 'email'; ?>" placeholder="<?php echo esc_attr(isset($el['content']) ? $el['content'] : 'Enter your email...'); ?>" required style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+                            <?php elseif ($el['type'] === 'number') : ?>
+                                <input type="number" class="wppoppop-field-number" name="<?php echo $field_name; ?>" value="1" min="0" style="width:100%;height:100%;padding:0 12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
                             <?php elseif ($el['type'] === 'button') : ?>
                                 <button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background-color:<?php echo esc_attr(isset($el['bg_color']) ? $el['bg_color'] : '#00a32a'); ?>;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;">
-                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Subscribe'); ?>
+                                    <?php echo esc_html(isset($el['content']) ? $el['content'] : 'Submit'); ?>
                                 </button>
                             <?php elseif ($el['type'] === 'html') : ?>
                                 <div><?php echo wp_kses_post(isset($el['content']) ? $el['content'] : ''); ?></div>

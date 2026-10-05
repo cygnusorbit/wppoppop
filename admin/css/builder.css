@@ -30,7 +30,7 @@
     overflow: hidden;
 }
 .wppoppop-panel {
-    width: 280px;
+    width: 300px;
     background: #ffffff;
     border-right: 1px solid #dcdcde;
     display: flex;
@@ -44,17 +44,20 @@
     display: flex;
     border-bottom: 1px solid #dcdcde;
     background: #f6f7f7;
+    overflow-x: auto;
 }
 .tab-btn {
     flex: 1;
-    padding: 10px 0;
+    padding: 10px 6px;
     border: none;
     background: transparent;
     cursor: pointer;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
     color: #50575e;
+    text-transform: uppercase;
     border-bottom: 2px solid transparent;
+    white-space: nowrap;
 }
 .tab-btn.active {
     background: #ffffff;

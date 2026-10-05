@@ -22,11 +22,29 @@ class WpPopPop_Admin {
 
         add_submenu_page(
             'wppoppop',
+            'All Popups',
+            'All Popups',
+            'manage_options',
+            'wppoppop',
+            [$this, 'render_dashboard']
+        );
+
+        add_submenu_page(
+            'wppoppop',
             'Create Popup',
             'Create Popup',
             'manage_options',
             'wppoppop-builder',
             [$this, 'render_builder']
+        );
+
+        add_submenu_page(
+            'wppoppop',
+            'Tools & Export',
+            'Tools & Export',
+            'manage_options',
+            'wppoppop-tools',
+            [$this, 'render_tools']
         );
     }
 
@@ -40,17 +58,24 @@ class WpPopPop_Admin {
         wp_enqueue_script('jquery-ui-resizable');
         wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable'], WPPOPPOP_VERSION, true);
 
+        $current_uid = isset($_GET['uid']) ? sanitize_key($_GET['uid']) : '';
+
         wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', [
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('wppoppop_builder_nonce')
+            'ajax_url'    => admin_url('admin-ajax.php'),
+            'nonce'       => wp_create_nonce('wppoppop_builder_nonce'),
+            'current_uid' => $current_uid
         ]);
     }
 
     public function render_dashboard() {
-        echo '<div class="wrap"><h1>WpPopPop Dashboard</h1><p>Select <a href="' . admin_url('admin.php?page=wppoppop-builder') . '">Create Popup</a> to open the builder.</p></div>';
+        include WPPOPPOP_PATH . 'templates/dashboard-view.php';
     }
 
     public function render_builder() {
         include WPPOPPOP_PATH . 'templates/builder-view.php';
+    }
+
+    public function render_tools() {
+        include WPPOPPOP_PATH . 'templates/tools-view.php';
     }
 }
