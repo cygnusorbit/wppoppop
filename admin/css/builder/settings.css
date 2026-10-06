@@ -17,6 +17,16 @@
     box-sizing: border-box;
 }
 
+body.admin-bar #wppoppop-settings-drawer {
+    top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+    body.admin-bar #wppoppop-settings-drawer {
+        top: 46px;
+    }
+}
+
 .wppoppop-accordion-group {
     display: flex;
     flex-direction: column;

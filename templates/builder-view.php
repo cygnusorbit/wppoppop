@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-builder-wrap" style="position:fixed;inset:0;background:#0f172a;z-index:99990;display:flex;flex-direction:column;overflow:hidden;">
+<div class="wppoppop-builder-wrap">
     <!-- 1. Top Application Toolbar -->
     <?php include WPPOPPOP_PATH . 'templates/builder/header.php'; ?>
 

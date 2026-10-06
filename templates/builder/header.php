@@ -3,12 +3,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-builder-header" style="background:#111827;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#fff;border-bottom:1px solid #1f2937;z-index:9999;position:relative;">
-    <div style="display:flex;align-items:center;gap:12px;">
+<div class="wppoppop-builder-header" style="background:#111827;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#fff;border-bottom:1px solid #1f2937;z-index:9999;position:relative;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" id="wppoppop-btn-back-dashboard" class="button button-secondary" style="background:#1f2937;color:#f3f4f6;border-color:#374151;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;text-decoration:none;" title="Return to Dashboard">
+            <span class="dashicons dashicons-arrow-left-alt" style="font-size:16px;width:16px;height:16px;"></span> Dashboard
+        </a>
         <button type="button" id="wppoppop-btn-settings" class="button button-secondary" style="background:#1f2937;color:#f3f4f6;border-color:#374151;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;" title="Campaign Settings">
             <span class="dashicons dashicons-admin-generic" style="font-size:16px;width:16px;height:16px;"></span> Settings
         </button>
-        <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." style="background:#1f2937;border:1px solid #374151;color:#fff;font-weight:600;font-size:13px;border-radius:4px;padding:4px 10px;width:240px;height:32px;">
+        <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr(isset($popup) && $popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." style="background:#1f2937;border:1px solid #374151;color:#fff;font-weight:600;font-size:13px;border-radius:4px;padding:4px 10px;width:220px;height:32px;">
     </div>
 
     <!-- Screen Sequence Tabs & Viewport Switcher -->
