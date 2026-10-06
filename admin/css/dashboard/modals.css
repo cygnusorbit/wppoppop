@@ -1,0 +1,37 @@
+/* ==========================================================================
+   WpPopPop Dashboard: Import & Embed Modal Dialogs
+   ========================================================================== */
+
+.wppoppop-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+#wppoppop-import-modal > div,
+#wppoppop-dash-embed-modal > div {
+    background: #ffffff;
+    border-radius: 8px;
+    max-width: 90vw;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: wppoppopModalFade 0.2s ease-out forwards;
+}
+
+@keyframes wppoppopModalFade {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

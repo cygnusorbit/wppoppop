@@ -1,0 +1,89 @@
+/* ==========================================================================
+   WpPopPop Dashboard: Contextual Action Dropdown Menu
+   ========================================================================== */
+
+.wppoppop-action-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.wppoppop-action-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+    border-color: #94a3b8;
+}
+
+.wppoppop-action-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.wppoppop-action-menu {
+    display: none;
+    position: absolute;
+    right: 14px;
+    top: 42px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    min-width: 200px;
+    padding: 6px 0;
+    text-align: left;
+}
+
+.wppoppop-action-menu.show {
+    display: block;
+}
+
+.wppoppop-action-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    color: #334155;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wppoppop-action-menu a:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+}
+
+.wppoppop-action-menu a .dashicons {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    color: #64748b;
+}
+
+.wppoppop-action-menu a:hover .dashicons {
+    color: #2563eb;
+}
+
+.wppoppop-action-menu a.wppoppop-action-delete {
+    color: #ef4444;
+}
+
+.wppoppop-action-menu a.wppoppop-action-delete:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.wppoppop-action-menu a.wppoppop-action-delete .dashicons {
+    color: #ef4444;
+}
