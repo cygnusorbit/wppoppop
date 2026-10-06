@@ -9,7 +9,112 @@ jQuery(document).ready(function($) {
     const stage = $('#wppoppop-stage');
     const builderWrap = $('#wppoppop-builder-wrap');
 
-    // 1. Settings Drawer (Left Side)
+    // 1. History Buffer (Undo / Redo)
+    const historyStack = [];
+    let historyIndex = -1;
+
+    function recordState() {
+        const state = [];
+        $('.canvas-element').each(function() {
+            const el = $(this);
+            state.push({
+                id: el.attr('id'),
+                type: el.data('type'),
+                screen: el.data('screen') || 1,
+                top: parseInt(el.css('top'), 10) || 0,
+                left: parseInt(el.css('left'), 10) || 0,
+                width: el.outerWidth(),
+                height: el.outerHeight(),
+                data: JSON.parse(JSON.stringify(el.data()))
+            });
+        });
+
+        if (historyIndex < historyStack.length - 1) {
+            historyStack.splice(historyIndex + 1);
+        }
+        historyStack.push(state);
+        if (historyStack.length > 30) historyStack.shift();
+        historyIndex = historyStack.length - 1;
+    }
+
+    function applyHistoryState(state) {
+        stage.find('.canvas-element').remove();
+        state.forEach(function(item) {
+            const el = $('<div class="canvas-element"></div>')
+                .attr('id', item.id)
+                .data(item.data)
+                .css({
+                    top: item.top + 'px',
+                    left: item.left + 'px',
+                    width: item.width + 'px',
+                    height: item.height + 'px',
+                    'z-index': item.data.z_index || 10,
+                    'border-radius': (item.data.border_radius || 4) + 'px',
+                    opacity: item.data.opacity !== undefined ? item.data.opacity : 1,
+                    'background-color': item.data.bg_color || '#000000',
+                    color: item.data.color || '#ffffff',
+                    display: (item.screen || 1) === currentScreen ? 'block' : 'none'
+                })
+                .html(renderElementMarkup(item.type, item.data));
+
+            stage.append(el);
+            makeInteractive(el);
+        });
+        deselectElement();
+        refreshLayers();
+    }
+
+    $('#btn-undo').on('click', function() {
+        if (historyIndex > 0) {
+            historyIndex--;
+            applyHistoryState(historyStack[historyIndex]);
+        }
+    });
+
+    $('#btn-redo').on('click', function() {
+        if (historyIndex < historyStack.length - 1) {
+            historyIndex++;
+            applyHistoryState(historyStack[historyIndex]);
+        }
+    });
+
+    // Keyboard Shortcuts (Undo/Redo & Esc)
+    $(document).on('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            e.preventDefault();
+            $('#btn-undo').trigger('click');
+        } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+            e.preventDefault();
+            $('#btn-redo').trigger('click');
+        } else if (e.key === 'Escape') {
+            closeInspectorPanel();
+            $('#wppoppop-settings-drawer').removeClass('open');
+            $('.wppoppop-modal-backdrop').fadeOut(150);
+        }
+    });
+
+    // Alignment Buttons
+    $('.btn-align').on('click', function() {
+        if (!activeElement) return;
+        const align = $(this).data('align');
+        const sW = stage.width();
+        const sH = stage.height();
+        const eW = activeElement.outerWidth();
+        const eH = activeElement.outerHeight();
+
+        if (align === 'left') activeElement.css('left', '0px');
+        if (align === 'center-h') activeElement.css('left', Math.round((sW - eW) / 2) + 'px');
+        if (align === 'right') activeElement.css('left', (sW - eW) + 'px');
+        if (align === 'top') activeElement.css('top', '0px');
+        if (align === 'center-v') activeElement.css('top', Math.round((sH - eH) / 2) + 'px');
+        if (align === 'bottom') activeElement.css('top', (sH - eH) + 'px');
+
+        $('#prop-pos-top').val(parseInt(activeElement.css('top'), 10));
+        $('#prop-pos-left').val(parseInt(activeElement.css('left'), 10));
+        recordState();
+    });
+
+    // 2. Settings Drawer & Accordion Handlers
     $('#wppoppop-btn-settings').on('click', function(e) {
         e.preventDefault();
         $('#wppoppop-settings-drawer').toggleClass('open');
@@ -19,14 +124,13 @@ jQuery(document).ready(function($) {
         $('#wppoppop-settings-drawer').removeClass('open');
     });
 
-    // Accordions inside settings
     $(document).on('click', '.accordion-header', function() {
         const item = $(this).closest('.accordion-item');
         item.toggleClass('active');
         item.find('.accordion-body').slideToggle(150);
     });
 
-    // 2. Inspector Tabs Switcher (Basic / Style / Logic)
+    // 3. Inspector Tabs & Frame Pushing
     $('.inspector-tab-btn').on('click', function() {
         $('.inspector-tab-btn').removeClass('active');
         $('.inspector-tab-pane').removeClass('active');
@@ -34,7 +138,6 @@ jQuery(document).ready(function($) {
         $('#' + $(this).data('tab')).addClass('active');
     });
 
-    // Close Inspector: Slides out panel and expands frame back
     $('#btn-close-inspector').on('click', function(e) {
         e.preventDefault();
         closeInspectorPanel();
@@ -49,16 +152,7 @@ jQuery(document).ready(function($) {
         deselectElement();
     }
 
-    // Close on ESC
-    $(document).on('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeInspectorPanel();
-            $('#wppoppop-settings-drawer').removeClass('open');
-            $('.wppoppop-modal-backdrop').fadeOut(150);
-        }
-    });
-
-    // 3. Stage Dimensions & Styling Live Synchronization
+    // 4. Stage Box Dimensions & Styling
     function updateStageStyles() {
         const w = parseInt($('#stage-width').val(), 10) || 620;
         const h = parseInt($('#stage-height').val(), 10) || 380;
@@ -67,25 +161,59 @@ jQuery(document).ready(function($) {
         const radius = parseInt($('#box-border-radius').val(), 10) || 4;
         stage.css('border-radius', radius + 'px');
 
-        const bgColor = $('#box-bg-color').val() || '#ffffff';
-        const bgImg = $('#box-bg-image').val();
-        if (bgImg) {
-            stage.css({
-                'background-color': bgColor,
-                'background-image': 'url(' + bgImg + ')',
-                'background-size': 'cover',
-                'background-position': 'center'
-            });
+        const shadow = $('#box-shadow').val() || 'deep';
+        if (shadow === 'subtle') stage.css('box-shadow', '0 10px 25px rgba(0,0,0,0.15)');
+        else if (shadow === 'glow') stage.css('box-shadow', '0 0 35px rgba(56,189,248,0.4)');
+        else if (shadow === 'none') stage.css('box-shadow', 'none');
+        else stage.css('box-shadow', '0 25px 50px -12px rgba(0, 0, 0, 0.7)');
+
+        const fillType = $('#box-fill-type').val();
+        if (fillType === 'gradient') {
+            $('#group-box-gradient-controls').show();
+            $('#group-box-solid-color').hide();
+            const angle = $('#box-grad-angle').val() || 135;
+            const c1 = $('#box-grad-c1').val() || '#1e293b';
+            const c2 = $('#box-grad-c2').val() || '#0f172a';
+            stage.css({ 'background': 'linear-gradient(' + angle + 'deg, ' + c1 + ', ' + c2 + ')' });
         } else {
-            stage.css({
-                'background-color': bgColor,
-                'background-image': 'none'
-            });
+            $('#group-box-gradient-controls').hide();
+            $('#group-box-solid-color').show();
+            const bgColor = $('#box-bg-color').val() || '#ffffff';
+            const bgImg = $('#box-bg-image').val();
+            if (bgImg) {
+                stage.css({
+                    'background-color': bgColor,
+                    'background-image': 'url(' + bgImg + ')',
+                    'background-size': 'cover',
+                    'background-position': 'center'
+                });
+            } else {
+                stage.css({ 'background-color': bgColor, 'background-image': 'none' });
+            }
         }
     }
-    $('#stage-width, #stage-height, #box-border-radius, #box-bg-color, #box-bg-image').on('input change', updateStageStyles);
+    $('#stage-width, #stage-height, #box-border-radius, #box-shadow, #box-fill-type, #box-bg-color, #box-grad-angle, #box-grad-c1, #box-grad-c2, #box-bg-image').on('input change', updateStageStyles);
 
-    // 4. Screens / Pages Tab Strip
+    // 1-Click Theme Palettes
+    $('.btn-theme-preset').on('click', function() {
+        const theme = $(this).data('theme');
+        $('#box-fill-type').val('gradient');
+        if (theme === 'midnight') {
+            $('#box-grad-angle').val(135); $('#box-grad-c1').val('#1e293b'); $('#box-grad-c2').val('#0f172a');
+        } else if (theme === 'emerald') {
+            $('#box-grad-angle').val(135); $('#box-grad-c1').val('#064e3b'); $('#box-grad-c2').val('#022c22');
+        } else if (theme === 'sunset') {
+            $('#box-grad-angle').val(135); $('#box-grad-c1').val('#881337'); $('#box-grad-c2').val('#4c0519');
+        } else if (theme === 'neon') {
+            $('#box-grad-angle').val(135); $('#box-grad-c1').val('#18181b'); $('#box-grad-c2').val('#09090b');
+        } else if (theme === 'clean') {
+            $('#box-grad-angle').val(135); $('#box-grad-c1').val('#ffffff'); $('#box-grad-c2').val('#f1f5f9');
+        }
+        updateStageStyles();
+        recordState();
+    });
+
+    // 5. Screen Navigation
     $('.pages-tabs-list').on('click', '.btn-page-tab', function() {
         if ($(this).hasClass('btn-add-page')) {
             pageCount++;
@@ -108,7 +236,7 @@ jQuery(document).ready(function($) {
         refreshLayers();
     });
 
-    // 5. Element Factory Creation Helper (All 27+ Types)
+    // 6. Complete Element Factory
     function createNewElement(type, posX, posY) {
         zIndexCounter += 5;
         const elementId = 'elem_' + Date.now();
@@ -116,13 +244,14 @@ jQuery(document).ready(function($) {
         let w = 180, h = 40, content = 'New ' + type, fieldName = '';
         let opts = ['10% OFF', 'FREE SHIPPING', '25% OFF', '$5 REWARD'];
         let bgColor = '#0284c7', color = '#ffffff', fontSize = 16, radius = 4;
-        let imgUrl = 'https://via.placeholder.com/400x240';
+        let imgUrl = 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=620';
+        let videoUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
         if (type === 'box') { w = 240; h = 120; bgColor = '#f8fafc'; color = '#334155'; content = ''; }
         else if (type === 'text') { w = 220; h = 32; bgColor = 'transparent'; color = '#1e293b'; content = 'Headline Text'; fontSize = 20; }
         else if (type === 'image') { w = 400; h = 240; bgColor = 'transparent'; content = ''; }
-        else if (type === 'video') { w = 260; h = 150; bgColor = '#0f172a'; color = '#38bdf8'; content = 'Video Player'; }
-        else if (type === 'html') { w = 200; h = 60; bgColor = 'transparent'; color = '#0f172a'; content = '<p>Custom HTML snippet</p>'; }
+        else if (type === 'video') { w = 280; h = 160; bgColor = '#0f172a'; color = '#38bdf8'; content = 'Video Player'; }
+        else if (type === 'html') { w = 200; h = 60; bgColor = 'transparent'; color = '#0f172a'; content = '<p>Custom HTML code</p>'; }
         else if (type === 'close') { w = 32; h = 32; bgColor = 'transparent'; color = '#64748b'; content = '&times;'; fontSize = 24; }
         else if (type === 'nextstep') { w = 140; h = 38; bgColor = '#2563eb'; content = 'Next Step &rarr;'; }
         else if (type === 'divider') { w = 260; h = 2; bgColor = '#cbd5e1'; content = ''; }
@@ -134,7 +263,7 @@ jQuery(document).ready(function($) {
         else if (type === 'dropdown') { w = 200; h = 38; bgColor = '#ffffff'; color = '#1e293b'; content = 'Select Option'; fieldName = 'dropdown'; }
         else if (type === 'checkbox') { w = 180; h = 30; bgColor = 'transparent'; color = '#1e293b'; content = 'Agree to terms'; fieldName = 'agree'; }
         else if (type === 'radio') { w = 180; h = 30; bgColor = 'transparent'; color = '#1e293b'; content = 'Option A'; fieldName = 'choice'; }
-        else if (type === 'list') { w = 180; h = 60; bgColor = 'transparent'; color = '#1e293b'; content = '• Feature 1\n• Feature 2'; }
+        else if (type === 'list') { w = 180; h = 60; bgColor = 'transparent'; color = '#1e293b'; content = '• Item 1\n• Item 2'; }
         else if (type === 'gallery') { w = 220; h = 70; bgColor = '#cbd5e1'; color = '#475569'; content = 'Gallery (3 items)'; }
         else if (type === 'coupon') { w = 140; h = 36; bgColor = '#fef08a'; color = '#854d0e'; content = 'SAVE20'; radius = 6; }
         else if (type === 'date') { w = 180; h = 38; bgColor = '#ffffff'; color = '#1e293b'; content = 'Select Date'; fieldName = 'date'; }
@@ -157,10 +286,15 @@ jQuery(document).ready(function($) {
             content: content,
             options: opts,
             image_url: imgUrl,
+            video_url: videoUrl,
             img_size: 'cover',
             img_pos_h: 'center',
             img_pos_v: 'center',
             img_repeat: 'no-repeat',
+            slider_min: 0,
+            slider_max: 100,
+            slider_step: 1,
+            countdown_minutes: 15,
             url: '',
             target_blank: 0,
             close_action: 'none',
@@ -169,6 +303,9 @@ jQuery(document).ready(function($) {
             anim_duration: 1000,
             anim_delay: 0,
             anim_disappear: 'fade',
+            calc_formula: '',
+            calc_target: '',
+            goto_screen: 'none',
             font_family: 'Inherit',
             font_size: fontSize,
             border_radius: radius,
@@ -176,6 +313,7 @@ jQuery(document).ready(function($) {
             bg_color: bgColor,
             opacity: 1.0,
             required: 0,
+            error_msg: 'Please complete this field.',
             z_index: zIndexCounter,
             locked: 0
         };
@@ -187,10 +325,10 @@ jQuery(document).ready(function($) {
             .attr('id', elementId)
             .data(initialData)
             .css({
-                top: topPos,
-                left: leftPos,
-                width: w,
-                height: h,
+                top: topPos + 'px',
+                left: leftPos + 'px',
+                width: w + 'px',
+                height: h + 'px',
                 'z-index': zIndexCounter,
                 'border-radius': radius + 'px',
                 'opacity': 1,
@@ -203,14 +341,13 @@ jQuery(document).ready(function($) {
         makeInteractive(elem);
         refreshLayers();
         selectElement(elem);
+        recordState();
     }
 
-    // Ribbon Click Handler
     $('.ribbon-btn').on('click', function() {
         createNewElement($(this).data('type'));
     });
 
-    // Ribbon Drag & Drop onto Stage
     $('.ribbon-btn').attr('draggable', 'true').on('dragstart', function(e) {
         e.originalEvent.dataTransfer.setData('text/plain', $(this).data('type'));
         e.originalEvent.dataTransfer.effectAllowed = 'copy';
@@ -237,19 +374,21 @@ jQuery(document).ready(function($) {
     function renderElementMarkup(type, d) {
         const c = d.content || '';
         if (type === 'image') {
-            const url = d.image_url || 'https://via.placeholder.com/400x240';
-            return '<div class="img-render-box" style="width:100%;height:100%;background-image:url(' + url + ');background-size:' + (d.img_size || 'cover') + ';background-position:' + (d.img_pos_h || 'center') + ' ' + (d.img_pos_v || 'center') + ';background-repeat:' + (d.img_repeat || 'no-repeat') + ';"></div>';
+            const url = d.image_url || 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=620';
+            return '<div class="img-render-box" style="width:100%;height:100%;background-image:url(' + url + ');background-size:' + (d.img_size || 'cover') + ';background-position:' + (d.img_pos_h || 'center') + ' ' + (d.img_pos_v || 'center') + ';background-repeat:' + (d.img_repeat || 'no-repeat') + ';border-radius:' + (d.border_radius || 4) + 'px;"></div>';
         }
-        if (type === 'wheel') return '<div style="width:100%;height:100%;border-radius:50%;border:2px dashed #475569;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">Lucky Wheel</div>';
-        if (type === 'scratch') return '<div style="width:100%;height:100%;background:linear-gradient(135deg,#94a3b8,#cbd5e1);display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b;">Scratch Card</div>';
-        if (type === 'countdown') return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:2px;">' + (c || '15:00') + '</div>';
-        if (type === 'progress') return '<div style="background:#22c55e;width:50%;height:100%;"></div>';
-        if (type === 'signature') return '<div style="border:1px dashed #94a3b8;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;">Sign Here</div>';
-        if (type === 'rating') return '<div style="font-size:18px;letter-spacing:3px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>';
+        if (type === 'video') return '<div style="width:100%;height:100%;background:#0f172a;color:#38bdf8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;"><span class="dashicons dashicons-video-alt3" style="margin-right:4px;"></span> ' + (d.video_url ? 'Video Feed' : 'Video Player') + '</div>';
+        if (type === 'wheel') return '<div style="width:100%;height:100%;border-radius:50%;border:2px dashed #475569;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:#f8fafc;color:#0f172a;">Lucky Wheel</div>';
+        if (type === 'scratch') return '<div style="width:100%;height:100%;background:linear-gradient(135deg,#94a3b8,#cbd5e1);display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b;border-radius:' + (d.border_radius || 4) + 'px;">' + (d.field_name || 'Scratch Card') + '</div>';
+        if (type === 'countdown') return '<div style="width:100%;height:100%;background:#0f172a;color:#38bdf8;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:2px;border-radius:' + (d.border_radius || 4) + 'px;">' + (d.countdown_minutes ? d.countdown_minutes + ' : 00' : (c || '15:00')) + '</div>';
+        if (type === 'progress') return '<div style="background:#e2e8f0;width:100%;height:100%;border-radius:10px;overflow:hidden;"><div style="background:#22c55e;width:' + (parseInt(c, 10) || 50) + '%;height:100%;"></div></div>';
+        if (type === 'signature') return '<div style="border:1px dashed #94a3b8;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;background:#f8fafc;">Sign Here</div>';
+        if (type === 'rating') return '<div style="font-size:18px;letter-spacing:3px;color:#f59e0b;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>';
         if (type === 'close') return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + (d.font_size || 22) + 'px;cursor:pointer;">&times;</div>';
         if (type === 'button' || type === 'nextstep' || type === 'pay_btn') return '<button type="button" style="width:100%;height:100%;background:transparent;border:none;color:inherit;font-weight:700;cursor:pointer;font-size:' + (d.font_size || 14) + 'px;">' + (c || 'SUBMIT') + '</button>';
         if (type === 'input') return '<input type="text" placeholder="' + c + '" disabled style="width:100%;height:100%;background:transparent;border:none;padding:0 8px;color:inherit;">';
-        if (type === 'divider') return '<div style="width:100%;height:100%;"></div>';
+        if (type === 'slider') return '<div style="font-size:11px;padding:4px;"><input type="range" min="' + (d.slider_min||0) + '" max="' + (d.slider_max||100) + '" value="' + (c||50) + '" disabled style="width:100%;"></div>';
+        if (type === 'divider') return '<div style="width:100%;height:100%;background:#cbd5e1;"></div>';
         return '<div class="content-render" style="width:100%;height:100%;display:flex;align-items:center;font-size:' + (d.font_size || 16) + 'px;">' + c + '</div>';
     }
 
@@ -257,23 +396,25 @@ jQuery(document).ready(function($) {
         elem.draggable({
             containment: '#wppoppop-stage',
             cancel: '.locked',
+            grid: $('#chk-grid-snap').is(':checked') ? [10, 10] : false,
             drag: function() {
                 if (activeElement && activeElement.is(elem)) {
                     $('#prop-pos-top').val(parseInt(elem.css('top'), 10) || 0);
                     $('#prop-pos-left').val(parseInt(elem.css('left'), 10) || 0);
                 }
             },
-            stop: function() { selectElement(elem); }
+            stop: function() { selectElement(elem); recordState(); }
         }).resizable({
             containment: '#wppoppop-stage',
             cancel: '.locked',
+            grid: $('#chk-grid-snap').is(':checked') ? [10, 10] : false,
             resize: function() {
                 if (activeElement && activeElement.is(elem)) {
                     $('#prop-size-width').val(elem.outerWidth() || 0);
                     $('#prop-size-height').val(elem.outerHeight() || 0);
                 }
             },
-            stop: function() { selectElement(elem); }
+            stop: function() { selectElement(elem); recordState(); }
         });
 
         elem.on('click', function(e) {
@@ -282,7 +423,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // 6. Element Selection: Opens Slide-in Property Panel Pushing Frame (NOT as modal)
+    // 7. Inspector Selection & Dynamic Binding
     function selectElement(elem) {
         $('.canvas-element').removeClass('selected');
         elem.addClass('selected');
@@ -295,11 +436,17 @@ jQuery(document).ready(function($) {
         $('#prop-size-width').val(elem.outerWidth() || 0);
         $('#prop-size-height').val(elem.outerHeight() || 0);
 
-        // Dynamic Element Type Sections
         const isImg = d.type === 'image';
+        const isVid = d.type === 'video';
+        const isSlider = d.type === 'slider';
+        const isCountdown = d.type === 'countdown';
+
         $('#group-prop-image').toggle(isImg);
+        $('#group-prop-video').toggle(isVid);
+        $('#group-prop-slider').toggle(isSlider);
+        $('#group-prop-countdown').toggle(isCountdown);
         $('#group-prop-content').toggle(!isImg && ['divider', 'box'].indexOf(d.type) === -1);
-        $('#group-prop-field-name').toggle(['input', 'textarea', 'dropdown', 'radio', 'checkbox', 'date', 'number', 'wheel', 'signature', 'file'].indexOf(d.type) !== -1);
+        $('#group-prop-field-name').toggle(['input', 'textarea', 'dropdown', 'radio', 'checkbox', 'date', 'number', 'wheel', 'signature', 'file', 'slider'].indexOf(d.type) !== -1);
         $('#group-prop-options').toggle(['wheel', 'dropdown', 'radio', 'checkbox'].indexOf(d.type) !== -1);
 
         if (isImg) {
@@ -309,6 +456,14 @@ jQuery(document).ready(function($) {
             setActiveSeg('#group-img-pos-v', d.img_pos_v || 'center');
             setActiveSeg('#group-img-repeat', d.img_repeat || 'no-repeat');
         }
+
+        if (isVid) $('#prop-video-url').val(d.video_url || '');
+        if (isSlider) {
+            $('#prop-slider-min').val(d.slider_min !== undefined ? d.slider_min : 0);
+            $('#prop-slider-max').val(d.slider_max !== undefined ? d.slider_max : 100);
+            $('#prop-slider-step').val(d.slider_step !== undefined ? d.slider_step : 1);
+        }
+        if (isCountdown) $('#prop-countdown-minutes').val(d.countdown_minutes || 15);
 
         $('#prop-content').val(d.content || '');
         $('#prop-field-name').val(d.field_name || '');
@@ -323,7 +478,10 @@ jQuery(document).ready(function($) {
         $('#prop-anim-delay').val(d.anim_delay || 0);
         $('#prop-anim-disappear').val(d.anim_disappear || 'fade');
 
-        // Style Tab Inputs
+        $('#prop-calc-formula').val(d.calc_formula || '');
+        $('#prop-calc-target').val(d.calc_target || '');
+        $('#prop-goto-screen').val(d.goto_screen || 'none');
+
         $('#prop-font-family').val(d.font_family || 'Inherit');
         $('#prop-font-size').val(d.font_size || 16);
         $('#prop-border-radius').val(d.border_radius || 4);
@@ -331,8 +489,8 @@ jQuery(document).ready(function($) {
         $('#prop-bg-color').val(rgbToHex(elem.css('background-color')) || '#000000');
         $('#prop-opacity').val(d.opacity !== undefined ? d.opacity : 1.0);
         $('#prop-required').prop('checked', d.required == 1);
+        $('#prop-error-msg').val(d.error_msg || 'Please complete this field.');
 
-        // Slide in panel pushing frame (No modal backdrop)
         openInspectorPanel();
         highlightLayer(elem.attr('id'));
     }
@@ -348,35 +506,46 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li').removeClass('selected');
     }
 
-    // Canvas click outside element deselects and slides out panel
     stage.on('click', function(e) {
         if ($(e.target).is('#wppoppop-stage')) {
             closeInspectorPanel();
         }
     });
 
-    // 7. Live Real-Time Property Synchronization
+    // 8. Two-Way Coords & Dimension Inputs
+    $('#prop-pos-top').on('input change', function() {
+        if (activeElement) {
+            activeElement.css('top', parseInt($(this).val(), 10) + 'px');
+            recordState();
+        }
+    });
+
+    $('#prop-pos-left').on('input change', function() {
+        if (activeElement) {
+            activeElement.css('left', parseInt($(this).val(), 10) + 'px');
+            recordState();
+        }
+    });
+
+    $('#prop-size-width').on('input change', function() {
+        if (activeElement) {
+            activeElement.css('width', parseInt($(this).val(), 10) + 'px');
+            recordState();
+        }
+    });
+
+    $('#prop-size-height').on('input change', function() {
+        if (activeElement) {
+            activeElement.css('height', parseInt($(this).val(), 10) + 'px');
+            recordState();
+        }
+    });
+
     $('#prop-layer-name').on('input', function() {
         if (activeElement) {
             activeElement.data('layer_name', $(this).val());
             refreshLayers();
         }
-    });
-
-    $('#prop-pos-top').on('input change', function() {
-        if (activeElement) activeElement.css('top', parseInt($(this).val(), 10) + 'px');
-    });
-
-    $('#prop-pos-left').on('input change', function() {
-        if (activeElement) activeElement.css('left', parseInt($(this).val(), 10) + 'px');
-    });
-
-    $('#prop-size-width').on('input change', function() {
-        if (activeElement) activeElement.css('width', parseInt($(this).val(), 10) + 'px');
-    });
-
-    $('#prop-size-height').on('input change', function() {
-        if (activeElement) activeElement.css('height', parseInt($(this).val(), 10) + 'px');
     });
 
     $('#prop-content').on('input', function() {
@@ -394,6 +563,29 @@ jQuery(document).ready(function($) {
         if (activeElement) activeElement.data('options', $(this).val().split(',').map(s => s.trim()));
     });
 
+    $('#prop-video-url').on('input', function() {
+        if (activeElement) {
+            activeElement.data('video_url', $(this).val());
+            activeElement.html(renderElementMarkup('video', activeElement.data()));
+        }
+    });
+
+    $('#prop-slider-min, #prop-slider-max, #prop-slider-step').on('input', function() {
+        if (activeElement) {
+            activeElement.data('slider_min', parseInt($('#prop-slider-min').val(), 10) || 0);
+            activeElement.data('slider_max', parseInt($('#prop-slider-max').val(), 10) || 100);
+            activeElement.data('slider_step', parseInt($('#prop-slider-step').val(), 10) || 1);
+            activeElement.html(renderElementMarkup('slider', activeElement.data()));
+        }
+    });
+
+    $('#prop-countdown-minutes').on('input', function() {
+        if (activeElement) {
+            activeElement.data('countdown_minutes', parseInt($(this).val(), 10) || 15);
+            activeElement.html(renderElementMarkup('countdown', activeElement.data()));
+        }
+    });
+
     $('#prop-url').on('input', function() { if (activeElement) activeElement.data('url', $(this).val()); });
     $('#prop-target-blank').on('change', function() { if (activeElement) activeElement.data('target_blank', $(this).is(':checked') ? 1 : 0); });
     $('#prop-onclick').on('input', function() { if (activeElement) activeElement.data('onclick', $(this).val()); });
@@ -403,20 +595,16 @@ jQuery(document).ready(function($) {
     $('#prop-anim-delay').on('input', function() { if (activeElement) activeElement.data('anim_delay', parseInt($(this).val(), 10)); });
     $('#prop-anim-disappear').on('change', function() { if (activeElement) activeElement.data('anim_disappear', $(this).val()); });
 
-    // Image URL & Live Refresh
-    $('#prop-image-url').on('input', function() {
-        if (!activeElement) return;
-        const url = $(this).val();
-        activeElement.data('image_url', url);
-        activeElement.find('.img-render-box').css('background-image', 'url(' + url + ')');
-    });
+    $('#prop-calc-formula').on('input', function() { if (activeElement) activeElement.data('calc_formula', $(this).val()); });
+    $('#prop-calc-target').on('input', function() { if (activeElement) activeElement.data('calc_target', $(this).val()); });
+    $('#prop-goto-screen').on('change', function() { if (activeElement) activeElement.data('goto_screen', $(this).val()); });
 
-    // WordPress Media Library Picker Integration
+    // WordPress Media Library Modal Integration
     $('#btn-prop-media-picker').on('click', function(e) {
         e.preventDefault();
         if (typeof wp !== 'undefined' && wp.media) {
             const mediaFrame = wp.media({
-                title: 'Select Image',
+                title: 'Select Image Asset',
                 multiple: false,
                 library: { type: 'image' }
             });
@@ -431,7 +619,13 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Segmented Buttons Actions (Size, Alignment, Repeat, Close)
+    $('#prop-image-url').on('input', function() {
+        if (!activeElement) return;
+        const url = $(this).val();
+        activeElement.data('image_url', url);
+        activeElement.find('.img-render-box').css('background-image', 'url(' + url + ')');
+    });
+
     $('.btn-group-segmented').on('click', '.btn-seg', function(e) {
         e.preventDefault();
         const parent = $(this).closest('.btn-group-segmented');
@@ -461,12 +655,11 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Style Live Bindings
+    // Style Properties
     $('#prop-font-family').on('change', function() {
         if (activeElement) {
             const font = $(this).val();
-            activeElement.css('font-family', font === 'Inherit' ? 'inherit' : font);
-            activeElement.data('font_family', font);
+            activeElement.css('font-family', font === 'Inherit' ? 'inherit' : font).data('font_family', font);
         }
     });
     $('#prop-font-size').on('input', function() {
@@ -495,8 +688,10 @@ jQuery(document).ready(function($) {
     $('#prop-required').on('change', function() {
         if (activeElement) activeElement.data('required', $(this).is(':checked') ? 1 : 0);
     });
+    $('#prop-error-msg').on('input', function() {
+        if (activeElement) activeElement.data('error_msg', $(this).val());
+    });
 
-    // Duplicate & Delete
     $('#prop-duplicate-element').on('click', function() {
         if (!activeElement) return;
         zIndexCounter += 5;
@@ -504,17 +699,18 @@ jQuery(document).ready(function($) {
         const cloneId = 'elem_' + Date.now();
         clone.attr('id', cloneId)
             .css({
-                top: parseInt(activeElement.css('top'), 10) + 15,
-                left: parseInt(activeElement.css('left'), 10) + 15,
+                top: (parseInt(activeElement.css('top'), 10) + 15) + 'px',
+                left: (parseInt(activeElement.css('left'), 10) + 15) + 'px',
                 'z-index': zIndexCounter
             })
-            .data(activeElement.data());
+            .data(JSON.parse(JSON.stringify(activeElement.data())));
         clone.data('id', cloneId);
         clone.data('z_index', zIndexCounter);
         stage.append(clone);
         makeInteractive(clone);
         refreshLayers();
         selectElement(clone);
+        recordState();
     });
 
     $('#prop-delete-element').on('click', function() {
@@ -522,9 +718,10 @@ jQuery(document).ready(function($) {
         activeElement.remove();
         closeInspectorPanel();
         refreshLayers();
+        recordState();
     });
 
-    // 8. Floating Layers Management with Drag & Drop Only
+    // 9. Floating Layers Drag & Drop
     $('#wppoppop-floating-layers').draggable({
         handle: '.layers-header',
         containment: '.wppoppop-canvas-viewport'
@@ -556,7 +753,6 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        // Descending z-index so top item is foremost
         elems.sort(function(a, b) {
             const zA = parseInt($(a).css('z-index'), 10) || parseInt($(a).data('z_index'), 10) || 1;
             const zB = parseInt($(b).css('z-index'), 10) || parseInt($(b).data('z_index'), 10) || 1;
@@ -575,7 +771,7 @@ jQuery(document).ready(function($) {
             const li = $('<li data-target="' + id + '" class="layer-item' + (isSelected ? ' selected' : '') + '" draggable="true"></li>');
             li.html(
                 '<span class="layer-drag-grip" title="Drag to reorder depth"><span class="dashicons dashicons-menu"></span></span>' +
-                '<span class="layer-title" title="[' + d.type + '] ' + name + '">[' + d.type + '] ' + name + '</span>' +
+                '<span class="layer-title" title="' + name + '">' + name + '</span>' +
                 '<div class="layer-actions">' +
                     '<button type="button" class="btn-layer-lock ' + (isLocked ? 'active-action' : '') + '" title="Lock Dragging"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
                     '<button type="button" class="btn-layer-eye ' + (isHidden ? 'active-action' : '') + '" title="Toggle Visibility"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
@@ -584,11 +780,8 @@ jQuery(document).ready(function($) {
             list.append(li);
         });
 
-        // Initialize jQuery UI sortable
         if ($.fn.sortable) {
-            if (list.hasClass('ui-sortable')) {
-                list.sortable('destroy');
-            }
+            if (list.hasClass('ui-sortable')) list.sortable('destroy');
             list.sortable({
                 items: 'li[data-target]',
                 handle: '.layer-drag-grip, .layer-title',
@@ -599,58 +792,42 @@ jQuery(document).ready(function($) {
                 opacity: 0.85,
                 update: function() {
                     recomputeZIndicesFromList();
+                    recordState();
                 }
             });
         }
     }
 
-    // HTML5 Drag-and-Drop Handlers for Layers
     $('#wppoppop-layers-list').on('dragstart', 'li.layer-item', function(e) {
         draggedItem = this;
         $(this).addClass('is-dragging');
         e.originalEvent.dataTransfer.effectAllowed = 'move';
-        e.originalEvent.dataTransfer.setData('text/html', this.outerHTML);
-    });
-
-    $('#wppoppop-layers-list').on('dragover', 'li.layer-item', function(e) {
+    }).on('dragover', 'li.layer-item', function(e) {
         e.preventDefault();
         e.originalEvent.dataTransfer.dropEffect = 'move';
         if (this === draggedItem) return;
-
         const rect = this.getBoundingClientRect();
-        const midY = rect.top + (rect.height / 2);
-        if (e.originalEvent.clientY < midY) {
+        if (e.originalEvent.clientY < rect.top + (rect.height / 2)) {
             $(this).addClass('drag-over-top').removeClass('drag-over-bottom');
         } else {
             $(this).addClass('drag-over-bottom').removeClass('drag-over-top');
         }
-    });
-
-    $('#wppoppop-layers-list').on('dragleave', 'li.layer-item', function() {
+    }).on('dragleave', 'li.layer-item', function() {
         $(this).removeClass('drag-over-top drag-over-bottom');
-    });
-
-    $('#wppoppop-layers-list').on('drop', 'li.layer-item', function(e) {
+    }).on('drop', 'li.layer-item', function(e) {
         e.preventDefault();
         e.stopPropagation();
         if (!draggedItem || this === draggedItem) return;
-
         const isBefore = $(this).hasClass('drag-over-top');
         $(this).removeClass('drag-over-top drag-over-bottom');
-
-        if (isBefore) {
-            $(draggedItem).insertBefore(this);
-        } else {
-            $(draggedItem).insertAfter(this);
-        }
-
+        if (isBefore) $(draggedItem).insertBefore(this);
+        else $(draggedItem).insertAfter(this);
         recomputeZIndicesFromList();
         const targetId = $(draggedItem).data('target');
         const targetEl = $('#' + targetId);
         if (targetEl.length) selectElement(targetEl);
-    });
-
-    $('#wppoppop-layers-list').on('dragend', 'li.layer-item', function() {
+        recordState();
+    }).on('dragend', 'li.layer-item', function() {
         $(this).removeClass('is-dragging');
         $('#wppoppop-layers-list li').removeClass('drag-over-top drag-over-bottom');
         draggedItem = null;
@@ -661,14 +838,12 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
 
-    // Clicking layer in list triggers selection & panel slide-in
     $('#wppoppop-layers-list').on('click', '.layer-title', function(e) {
         e.stopPropagation();
         const target = $('#' + $(this).closest('li').data('target'));
         if (target.length) selectElement(target);
     });
 
-    // Layer Eye Visibility Toggle
     $('#wppoppop-layers-list').on('click', '.btn-layer-eye', function(e) {
         e.stopPropagation();
         const li = $(this).closest('li');
@@ -677,9 +852,9 @@ jQuery(document).ready(function($) {
         const isHidden = target.is(':hidden');
         $(this).toggleClass('active-action', isHidden);
         $(this).find('.dashicons').toggleClass('dashicons-visibility', !isHidden).toggleClass('dashicons-hidden', isHidden);
+        recordState();
     });
 
-    // Layer Drag Lock Toggle
     $('#wppoppop-layers-list').on('click', '.btn-layer-lock', function(e) {
         e.stopPropagation();
         const li = $(this).closest('li');
@@ -688,29 +863,41 @@ jQuery(document).ready(function($) {
         target.data('locked', locked).toggleClass('locked', locked === 1);
         $(this).toggleClass('active-action', locked === 1);
         $(this).find('.dashicons').toggleClass('dashicons-lock', locked === 1).toggleClass('dashicons-unlock', locked === 0);
+        recordState();
     });
 
-    // 9. Embed Code & Live Preview Modals
-    $('#wppoppop-btn-embed').on('click', function() {
+    // 10. Modals (Embed & Preview) & Webhook/Twilio Tests
+    $('#wppoppop-btn-embed').on('click', function(e) {
+        e.preventDefault();
         const uid = $('#wppoppop-popup-uid').val() || 'pop_sample';
         $('#embed-code-shortcode').val('[wppoppop uid="' + uid + '"]');
         $('#embed-code-button').val('[wppoppop_button uid="' + uid + '"]Click to Open[/wppoppop_button]');
         $('#embed-code-class').val('<a href="#" class="wppoppop-trigger-' + uid + '">Open Popup</a>');
-        $('#wppoppop-embed-modal').fadeIn(150);
+        $('#wppoppop-embed-modal').css('display', 'flex').hide().fadeIn(150);
     });
 
-    $('#wppoppop-btn-preview').on('click', function() {
+    $('.btn-copy-snippet').on('click', function() {
+        const targetId = $(this).data('target');
+        const input = $('#' + targetId);
+        input.select();
+        navigator.clipboard.writeText(input.val()).then(() => {
+            const btn = $(this);
+            btn.text('Copied!');
+            setTimeout(() => btn.text('Copy'), 1500);
+        });
+    });
+
+    $('#wppoppop-btn-preview').on('click', function(e) {
+        e.preventDefault();
         const mount = $('#wppoppop-preview-stage-mount').empty();
         const pStage = $('<div class="preview-stage-box"></div>').css({
-            width: stage.width(),
-            height: stage.height(),
-            background: stage.css('background-color'),
-            'background-image': stage.css('background-image'),
-            'background-size': stage.css('background-size'),
-            'background-position': stage.css('background-position'),
+            width: stage.width() + 'px',
+            height: stage.height() + 'px',
+            background: stage.css('background'),
             'border-radius': stage.css('border-radius'),
+            'box-shadow': stage.css('box-shadow'),
             position: 'relative',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+            overflow: 'hidden'
         });
 
         stage.find('.canvas-element').filter(function() {
@@ -733,7 +920,7 @@ jQuery(document).ready(function($) {
         });
 
         mount.append(pStage);
-        $('#wppoppop-live-preview-modal').fadeIn(150);
+        $('#wppoppop-live-preview-modal').css('display', 'flex').hide().fadeIn(150);
     });
 
     $('.btn-close-modal, .wppoppop-modal-backdrop').on('click', function(e) {
@@ -742,7 +929,43 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // 10. Save Popup Payload & Load Initial Canvas
+    $('#btn-test-webhook').on('click', function() {
+        const url = $('#mkt-webhook-url').val();
+        if (!url) { alert('Please enter a Webhook URL.'); return; }
+        const btn = $(this).text('Pinging...').prop('disabled', true);
+        const ajaxUrl = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.ajax_url) ? wppoppop_vars.ajax_url : ajaxurl;
+        const nonce = $('#wppoppop_builder_nonce_field').val() || (typeof wppoppop_vars !== 'undefined' ? wppoppop_vars.nonce : '');
+        $.post(ajaxUrl, {
+            action: 'wppoppop_test_webhook',
+            nonce: nonce,
+            url: url,
+            secret: $('#mkt-webhook-secret').val()
+        }).always(function() {
+            btn.text('Test Webhook Ping').prop('disabled', false);
+            alert('Webhook ping dispatched.');
+        });
+    });
+
+    $('#btn-test-sms').on('click', function() {
+        const sid = $('#sms-sid').val();
+        const to = $('#sms-to').val();
+        if (!sid || !to) { alert('Please configure Twilio Account SID and recipient phone.'); return; }
+        const btn = $(this).text('Sending...').prop('disabled', true);
+        const ajaxUrl = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.ajax_url) ? wppoppop_vars.ajax_url : ajaxurl;
+        const nonce = $('#wppoppop_builder_nonce_field').val() || (typeof wppoppop_vars !== 'undefined' ? wppoppop_vars.nonce : '');
+        $.post(ajaxUrl, {
+            action: 'wppoppop_test_sms',
+            nonce: nonce,
+            sid: sid,
+            token: $('#sms-token').val(),
+            to: to
+        }).always(function() {
+            btn.text('Test SMS Ping').prop('disabled', false);
+            alert('Test SMS dispatched.');
+        });
+    });
+
+    // 11. Serialization & Persistence
     $('#wppoppop-btn-save').on('click', function(e) {
         e.preventDefault();
         const btn = $(this);
@@ -761,10 +984,15 @@ jQuery(document).ready(function($) {
                 content: d.content || '',
                 options: d.options || [],
                 image_url: d.image_url || '',
+                video_url: d.video_url || '',
                 img_size: d.img_size || 'cover',
                 img_pos_h: d.img_pos_h || 'center',
                 img_pos_v: d.img_pos_v || 'center',
                 img_repeat: d.img_repeat || 'no-repeat',
+                slider_min: d.slider_min !== undefined ? d.slider_min : 0,
+                slider_max: d.slider_max !== undefined ? d.slider_max : 100,
+                slider_step: d.slider_step !== undefined ? d.slider_step : 1,
+                countdown_minutes: d.countdown_minutes || 15,
                 url: d.url || '',
                 target_blank: d.target_blank || 0,
                 close_action: d.close_action || 'none',
@@ -773,6 +1001,9 @@ jQuery(document).ready(function($) {
                 anim_duration: d.anim_duration || 1000,
                 anim_delay: d.anim_delay || 0,
                 anim_disappear: d.anim_disappear || 'fade',
+                calc_formula: d.calc_formula || '',
+                calc_target: d.calc_target || '',
+                goto_screen: d.goto_screen || 'none',
                 font_family: d.font_family || 'Inherit',
                 font_size: d.font_size || 16,
                 border_radius: d.border_radius || 4,
@@ -780,6 +1011,7 @@ jQuery(document).ready(function($) {
                 bg_color: d.bg_color || '#000000',
                 opacity: d.opacity !== undefined ? d.opacity : 1.0,
                 required: d.required || 0,
+                error_msg: d.error_msg || '',
                 top: parseInt(el.css('top'), 10) || 0,
                 left: parseInt(el.css('left'), 10) || 0,
                 width: el.outerWidth(),
@@ -797,11 +1029,16 @@ jQuery(document).ready(function($) {
                 status: $('#wppoppop-popup-status').val() || 'publish'
             },
             styling: {
-                position_mode: $('#style-position-mode').val(),
-                backdrop_blur: parseInt($('#style-backdrop-blur').val(), 10) || 5,
-                border_radius: parseInt($('#box-border-radius').val(), 10) || 4,
+                fill_type: $('#box-fill-type').val() || 'solid',
                 bg_color: $('#box-bg-color').val() || '#ffffff',
+                grad_angle: parseInt($('#box-grad-angle').val(), 10) || 135,
+                grad_c1: $('#box-grad-c1').val() || '#1e293b',
+                grad_c2: $('#box-grad-c2').val() || '#0f172a',
                 bg_image: $('#box-bg-image').val() || '',
+                border_radius: parseInt($('#box-border-radius').val(), 10) || 4,
+                box_shadow: $('#box-shadow').val() || 'deep',
+                position_mode: $('#style-position-mode').val() || 'modal',
+                backdrop_blur: parseInt($('#style-backdrop-blur').val(), 10) || 5,
                 close_esc: $('#style-close-esc').is(':checked'),
                 close_backdrop: $('#style-close-backdrop').is(':checked')
             },
@@ -809,9 +1046,10 @@ jQuery(document).ready(function($) {
                 on_load: $('#trig-load').is(':checked'),
                 on_load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
                 on_exit: $('#trig-exit').is(':checked'),
+                on_mobile_back: $('#trig-mobile-back').is(':checked'),
                 on_scroll: $('#trig-scroll').is(':checked'),
                 on_idle: $('#trig-idle').is(':checked'),
-                on_mobile_back: $('#trig-mobile-back').is(':checked'),
+                on_selector: $('#trig-selector').val() || '',
                 on_adblock: $('#trig-adblock').length ? $('#trig-adblock').is(':checked') : false
             },
             logic: {
@@ -894,7 +1132,7 @@ jQuery(document).ready(function($) {
                         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + res.data.uid;
                         window.history.replaceState({ path: newUrl }, '', newUrl);
                     }
-                    alert(res.data.message || 'Popup saved successfully!');
+                    alert(res.data.message || 'Popup configuration saved successfully!');
                 } else {
                     alert('Save failed: ' + (res.data ? res.data.message : 'Unknown rejection'));
                 }
@@ -906,7 +1144,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Populate Popup on Page Load
+    // 12. Load Saved Popup Configuration
     function loadPopupData() {
         const uid = $('#wppoppop-popup-uid').val();
         const ajaxUrl = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.ajax_url) ? wppoppop_vars.ajax_url : ajaxurl;
@@ -928,11 +1166,16 @@ jQuery(document).ready(function($) {
                         if (conf.meta.height) $('#stage-height').val(conf.meta.height);
                     }
                     if (conf.styling) {
+                        $('#box-fill-type').val(conf.styling.fill_type || 'solid');
+                        $('#box-bg-color').val(conf.styling.bg_color || '#ffffff');
+                        $('#box-grad-angle').val(conf.styling.grad_angle || 135);
+                        $('#box-grad-c1').val(conf.styling.grad_c1 || '#1e293b');
+                        $('#box-grad-c2').val(conf.styling.grad_c2 || '#0f172a');
+                        $('#box-bg-image').val(conf.styling.bg_image || '');
+                        $('#box-border-radius').val(conf.styling.border_radius || 4);
+                        $('#box-shadow').val(conf.styling.box_shadow || 'deep');
                         $('#style-position-mode').val(conf.styling.position_mode || 'modal');
                         $('#style-backdrop-blur').val(conf.styling.backdrop_blur || 5);
-                        $('#box-border-radius').val(conf.styling.border_radius || 4);
-                        $('#box-bg-color').val(conf.styling.bg_color || '#ffffff');
-                        $('#box-bg-image').val(conf.styling.bg_image || '');
                         $('#style-close-esc').prop('checked', conf.styling.close_esc !== false);
                         $('#style-close-backdrop').prop('checked', conf.styling.close_backdrop !== false);
                     }
@@ -940,9 +1183,19 @@ jQuery(document).ready(function($) {
                         $('#trig-load').prop('checked', !!conf.triggers.on_load);
                         $('#trig-load-delay').val(conf.triggers.on_load_delay || 0);
                         $('#trig-exit').prop('checked', !!conf.triggers.on_exit);
+                        $('#trig-mobile-back').prop('checked', conf.triggers.on_mobile_back !== false);
                         $('#trig-scroll').prop('checked', !!conf.triggers.on_scroll);
                         $('#trig-idle').prop('checked', !!conf.triggers.on_idle);
-                        $('#trig-mobile-back').prop('checked', !!conf.triggers.on_mobile_back);
+                        $('#trig-selector').val(conf.triggers.on_selector || '');
+                    }
+                    if (conf.marketing) {
+                        $('#mkt-webhook-url').val(conf.marketing.webhook_url || '');
+                        $('#mkt-webhook-secret').val(conf.marketing.webhook_secret || '');
+                    }
+                    if (conf.twilio) {
+                        $('#sms-sid').val(conf.twilio.sid || '');
+                        $('#sms-token').val(conf.twilio.token || '');
+                        $('#sms-to').val(conf.twilio.to || '');
                     }
                     updateStageStyles();
 
@@ -952,10 +1205,10 @@ jQuery(document).ready(function($) {
                                 .attr('id', d.id)
                                 .data(d)
                                 .css({
-                                    top: d.top,
-                                    left: d.left,
-                                    width: d.width,
-                                    height: d.height,
+                                    top: d.top + 'px',
+                                    left: d.left + 'px',
+                                    width: d.width + 'px',
+                                    height: d.height + 'px',
                                     'z-index': d.z_index || 1,
                                     'border-radius': (d.border_radius || 4) + 'px',
                                     opacity: d.opacity !== undefined ? d.opacity : 1.0,
@@ -969,6 +1222,7 @@ jQuery(document).ready(function($) {
                             makeInteractive(elem);
                         });
                         refreshLayers();
+                        recordState();
                         return;
                     }
                 }
@@ -979,7 +1233,6 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // Default Starter Canvas
     function initStarterElements() {
         if (stage.find('.canvas-element').length > 0) return;
         updateStageStyles();
@@ -990,8 +1243,7 @@ jQuery(document).ready(function($) {
             { id: 'el_title', type: 'text', screen: 1, top: 50, left: 60, width: 500, height: 36, content: 'License Agreement', layer_name: 'Header', font_size: 22, color: '#1e293b', bg_color: 'transparent', z_index: 10 },
             { id: 'el_desc', type: 'text', screen: 1, top: 95, left: 60, width: 500, height: 110, content: 'Please read our terms and conditions before proceeding. By clicking Agree, you accept our standard end-user license agreement and privacy policy.', layer_name: 'Description', font_size: 14, color: '#475569', bg_color: 'transparent', z_index: 11 },
             { id: 'el_agree', type: 'nextstep', screen: 1, top: 230, left: 140, width: 140, height: 42, content: 'AGREE', layer_name: 'AGREE', font_size: 15, color: '#ffffff', bg_color: '#00a32a', border_radius: 6, z_index: 12 },
-            { id: 'el_decline', type: 'close', screen: 1, top: 230, left: 320, width: 140, height: 42, content: 'DECLINE', layer_name: 'DECLINE', font_size: 15, color: '#ffffff', bg_color: '#dc2626', border_radius: 6, z_index: 13 },
-            { id: 'el_x', type: 'close', screen: 1, top: 15, left: 575, width: 28, height: 28, content: '&times;', layer_name: 'Close Icon', font_size: 22, color: '#64748b', bg_color: 'transparent', z_index: 14 }
+            { id: 'el_decline', type: 'close', screen: 1, top: 230, left: 320, width: 140, height: 42, content: 'DECLINE', layer_name: 'DECLINE', font_size: 15, color: '#ffffff', bg_color: '#dc2626', border_radius: 6, z_index: 13 }
         ];
 
         starters.forEach(function(d) {
@@ -999,10 +1251,10 @@ jQuery(document).ready(function($) {
                 .attr('id', d.id)
                 .data(d)
                 .css({
-                    top: d.top,
-                    left: d.left,
-                    width: d.width,
-                    height: d.height,
+                    top: d.top + 'px',
+                    left: d.left + 'px',
+                    width: d.width + 'px',
+                    height: d.height + 'px',
                     'z-index': d.z_index,
                     'border-radius': (d.border_radius || 4) + 'px',
                     'background-color': d.bg_color,
@@ -1015,6 +1267,7 @@ jQuery(document).ready(function($) {
         });
 
         refreshLayers();
+        recordState();
     }
 
     function rgbToHex(rgb) {
