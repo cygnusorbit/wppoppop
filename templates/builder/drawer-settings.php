@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     </div>
 
     <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
-        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename, 50%/50% Color Pickers & Animations -->
+        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename, 50%/50% Color Pickers & Animate.style -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header active" id="wppoppop-acc-canvas-dimensions">
                 <span>1. Canvas Dimensions & Background</span>
@@ -37,7 +37,7 @@ if (!defined('ABSPATH')) {
                     <button type="button" class="wppoppop-screen-subtab" data-subtab="logic" style="flex:1;background:transparent;color:#94a3b8;border:none;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;text-align:center;">Logic</button>
                 </div>
 
-                <!-- SUBTAB PANE 1: Dimensions, Rename, 50%/50% Colors & Animations -->
+                <!-- SUBTAB PANE 1: Dimensions, Rename, 50%/50% Colors & Animate.style -->
                 <div id="wppoppop-subtab-pane-canvas">
                     <div style="margin-bottom:12px;background:#1e293b;padding:10px;border-radius:6px;border:1px solid #334155;">
                         <label style="display:block;font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:4px;text-transform:uppercase;">Screen Name (Rename)</label>
@@ -100,31 +100,88 @@ if (!defined('ABSPATH')) {
                         <input type="number" id="set-grad-angle" value="135">
                     </div>
 
-                    <!-- Screen Animation Settings Section (Appearance, Duration, Delay, Disappearance) -->
+                    <!-- Screen Animation Settings Section (Animate.style Library) -->
                     <div class="wppoppop-screen-anim-section" style="margin-top:14px;padding-top:12px;border-top:1px solid #334155;">
-                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                            <label style="font-size:12px;font-weight:800;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.5px;margin:0;">ANIMATION</label>
-                            <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#94a3b8;cursor:help;" title="Configure entrance and exit transitions for this screen/canvas."></span>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <label style="font-size:12px;font-weight:800;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.5px;margin:0;">ANIMATION</label>
+                                <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#94a3b8;cursor:help;" title="Powered by Animate.css (https://animate.style). Entrance and exit transitions for this screen."></span>
+                            </div>
+                            <span style="font-size:10px;font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.1);padding:2px 6px;border-radius:4px;border:1px solid rgba(56,189,248,0.25);">Animate.style</span>
                         </div>
 
-                        <!-- Appearance (Entrance Dropdown) -->
+                        <!-- Appearance (Entrance Dropdown from Animate.style) -->
                         <div style="margin-bottom:10px;">
                             <select id="set-screen-anim-in">
-                                <option value="fade">Fade</option>
-                                <option value="slideDown">Slide Down</option>
-                                <option value="bounceIn">Bounce In</option>
-                                <option value="zoomIn">Zoom In</option>
-                                <option value="flipIn">Flip In</option>
                                 <option value="none">None</option>
+                                <optgroup label="Fading Entrances">
+                                    <option value="animate__fadeIn" selected>Fade (fadeIn)</option>
+                                    <option value="animate__fadeInDown">Fade In Down</option>
+                                    <option value="animate__fadeInDownBig">Fade In Down Big</option>
+                                    <option value="animate__fadeInUp">Fade In Up</option>
+                                    <option value="animate__fadeInUpBig">Fade In Up Big</option>
+                                    <option value="animate__fadeInLeft">Fade In Left</option>
+                                    <option value="animate__fadeInRight">Fade In Right</option>
+                                    <option value="animate__fadeInTopLeft">Fade In Top Left</option>
+                                    <option value="animate__fadeInTopRight">Fade In Top Right</option>
+                                    <option value="animate__fadeInBottomLeft">Fade In Bottom Left</option>
+                                    <option value="animate__fadeInBottomRight">Fade In Bottom Right</option>
+                                </optgroup>
+                                <optgroup label="Bouncing Entrances">
+                                    <option value="animate__bounceIn">Bounce In</option>
+                                    <option value="animate__bounceInDown">Bounce In Down</option>
+                                    <option value="animate__bounceInUp">Bounce In Up</option>
+                                    <option value="animate__bounceInLeft">Bounce In Left</option>
+                                    <option value="animate__bounceInRight">Bounce In Right</option>
+                                </optgroup>
+                                <optgroup label="Zooming Entrances">
+                                    <option value="animate__zoomIn">Zoom In</option>
+                                    <option value="animate__zoomInDown">Zoom In Down</option>
+                                    <option value="animate__zoomInUp">Zoom In Up</option>
+                                    <option value="animate__zoomInLeft">Zoom In Left</option>
+                                    <option value="animate__zoomInRight">Zoom In Right</option>
+                                </optgroup>
+                                <optgroup label="Sliding Entrances">
+                                    <option value="animate__slideInDown">Slide In Down</option>
+                                    <option value="animate__slideInUp">Slide In Up</option>
+                                    <option value="animate__slideInLeft">Slide In Left</option>
+                                    <option value="animate__slideInRight">Slide In Right</option>
+                                </optgroup>
+                                <optgroup label="Back Entrances">
+                                    <option value="animate__backInDown">Back In Down</option>
+                                    <option value="animate__backInUp">Back In Up</option>
+                                    <option value="animate__backInLeft">Back In Left</option>
+                                    <option value="animate__backInRight">Back In Right</option>
+                                </optgroup>
+                                <optgroup label="Flippers">
+                                    <option value="animate__flip">Flip</option>
+                                    <option value="animate__flipInX">Flip In X</option>
+                                    <option value="animate__flipInY">Flip In Y</option>
+                                </optgroup>
+                                <optgroup label="Rotating Entrances">
+                                    <option value="animate__rotateIn">Rotate In</option>
+                                    <option value="animate__rotateInDownLeft">Rotate In Down Left</option>
+                                    <option value="animate__rotateInDownRight">Rotate In Down Right</option>
+                                    <option value="animate__rotateInUpLeft">Rotate In Up Left</option>
+                                    <option value="animate__rotateInUpRight">Rotate In Up Right</option>
+                                </optgroup>
+                                <optgroup label="Lightspeed">
+                                    <option value="animate__lightSpeedInRight">LightSpeed In Right</option>
+                                    <option value="animate__lightSpeedInLeft">LightSpeed In Left</option>
+                                </optgroup>
+                                <optgroup label="Specials">
+                                    <option value="animate__jackInTheBox">Jack In The Box</option>
+                                    <option value="animate__rollIn">Roll In</option>
+                                </optgroup>
                             </select>
                             <span class="wppoppop-field-subcaption">Appearance</span>
                         </div>
 
-                        <!-- Duration & Start Delay (Two Inputs with Unit Badges) -->
+                        <!-- Duration & Start Delay -->
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                             <div>
                                 <div class="wppoppop-unit-input-wrap">
-                                    <input type="number" id="set-screen-anim-duration" value="1000" min="0" step="50">
+                                    <input type="number" id="set-screen-anim-duration" value="1000" min="50" step="50">
                                     <span class="wppoppop-unit-badge">ms</span>
                                 </div>
                                 <span class="wppoppop-field-subcaption">Duration</span>
@@ -138,14 +195,68 @@ if (!defined('ABSPATH')) {
                             </div>
                         </div>
 
-                        <!-- Disappearance (Exit Dropdown) -->
+                        <!-- Disappearance (Exit Dropdown from Animate.style) -->
                         <div style="margin-bottom:6px;">
                             <select id="set-screen-anim-out">
-                                <option value="fade">Fade</option>
-                                <option value="slideUp">Slide Up</option>
-                                <option value="zoomOut">Zoom Out</option>
-                                <option value="flipOut">Flip Out</option>
                                 <option value="none">None</option>
+                                <optgroup label="Fading Exits">
+                                    <option value="animate__fadeOut" selected>Fade (fadeOut)</option>
+                                    <option value="animate__fadeOutDown">Fade Out Down</option>
+                                    <option value="animate__fadeOutDownBig">Fade Out Down Big</option>
+                                    <option value="animate__fadeOutUp">Fade Out Up</option>
+                                    <option value="animate__fadeOutUpBig">Fade Out Up Big</option>
+                                    <option value="animate__fadeOutLeft">Fade Out Left</option>
+                                    <option value="animate__fadeOutRight">Fade Out Right</option>
+                                    <option value="animate__fadeOutTopLeft">Fade Out Top Left</option>
+                                    <option value="animate__fadeOutTopRight">Fade Out Top Right</option>
+                                    <option value="animate__fadeOutBottomLeft">Fade Out Bottom Left</option>
+                                    <option value="animate__fadeOutBottomRight">Fade Out Bottom Right</option>
+                                </optgroup>
+                                <optgroup label="Bouncing Exits">
+                                    <option value="animate__bounceOut">Bounce Out</option>
+                                    <option value="animate__bounceOutDown">Bounce Out Down</option>
+                                    <option value="animate__bounceOutUp">Bounce Out Up</option>
+                                    <option value="animate__bounceOutLeft">Bounce Out Left</option>
+                                    <option value="animate__bounceOutRight">Bounce Out Right</option>
+                                </optgroup>
+                                <optgroup label="Zooming Exits">
+                                    <option value="animate__zoomOut">Zoom Out</option>
+                                    <option value="animate__zoomOutDown">Zoom Out Down</option>
+                                    <option value="animate__zoomOutUp">Zoom Out Up</option>
+                                    <option value="animate__zoomOutLeft">Zoom Out Left</option>
+                                    <option value="animate__zoomOutRight">Zoom Out Right</option>
+                                </optgroup>
+                                <optgroup label="Sliding Exits">
+                                    <option value="animate__slideOutDown">Slide Out Down</option>
+                                    <option value="animate__slideOutUp">Slide Out Up</option>
+                                    <option value="animate__slideOutLeft">Slide Out Left</option>
+                                    <option value="animate__slideOutRight">Slide Out Right</option>
+                                </optgroup>
+                                <optgroup label="Back Exits">
+                                    <option value="animate__backOutDown">Back Out Down</option>
+                                    <option value="animate__backOutUp">Back Out Up</option>
+                                    <option value="animate__backOutLeft">Back Out Left</option>
+                                    <option value="animate__backOutRight">Back Out Right</option>
+                                </optgroup>
+                                <optgroup label="Flippers">
+                                    <option value="animate__flipOutX">Flip Out X</option>
+                                    <option value="animate__flipOutY">Flip Out Y</option>
+                                </optgroup>
+                                <optgroup label="Rotating Exits">
+                                    <option value="animate__rotateOut">Rotate Out</option>
+                                    <option value="animate__rotateOutDownLeft">Rotate Out Down Left</option>
+                                    <option value="animate__rotateOutDownRight">Rotate Out Down Right</option>
+                                    <option value="animate__rotateOutUpLeft">Rotate Out Up Left</option>
+                                    <option value="animate__rotateOutUpRight">Rotate Out Up Right</option>
+                                </optgroup>
+                                <optgroup label="Lightspeed">
+                                    <option value="animate__lightSpeedOutRight">LightSpeed Out Right</option>
+                                    <option value="animate__lightSpeedOutLeft">LightSpeed Out Left</option>
+                                </optgroup>
+                                <optgroup label="Specials">
+                                    <option value="animate__hinge">Hinge</option>
+                                    <option value="animate__rollOut">Roll Out</option>
+                                </optgroup>
                             </select>
                             <span class="wppoppop-field-subcaption">Disappearance</span>
                         </div>

@@ -226,11 +226,24 @@
                 $('#set-gradient-wrap').hide();
             }
 
-            // Load Screen Animation Settings
-            $('#set-screen-anim-in').val(sc.animIn || 'fade');
+            // Load Animate.style values with fallback for legacy classes
+            var animInVal = sc.animIn || 'animate__fadeIn';
+            if (animInVal === 'fade') animInVal = 'animate__fadeIn';
+            if (animInVal === 'slideDown') animInVal = 'animate__slideInDown';
+            if (animInVal === 'bounceIn') animInVal = 'animate__bounceIn';
+            if (animInVal === 'zoomIn') animInVal = 'animate__zoomIn';
+            if (animInVal === 'flipIn') animInVal = 'animate__flipInX';
+
+            var animOutVal = sc.animOut || 'animate__fadeOut';
+            if (animOutVal === 'fade') animOutVal = 'animate__fadeOut';
+            if (animOutVal === 'slideUp') animOutVal = 'animate__slideOutUp';
+            if (animOutVal === 'zoomOut') animOutVal = 'animate__zoomOut';
+            if (animOutVal === 'flipOut') animOutVal = 'animate__flipOutX';
+
+            $('#set-screen-anim-in').val(animInVal);
             $('#set-screen-anim-duration').val(sc.animInDuration !== undefined ? sc.animInDuration : 1000);
             $('#set-screen-anim-delay').val(sc.animInDelay !== undefined ? sc.animInDelay : 0);
-            $('#set-screen-anim-out').val(sc.animOut || 'fade');
+            $('#set-screen-anim-out').val(animOutVal);
 
             var isEmpty = this.checkScreenEmptyState(sc.id);
 
@@ -333,7 +346,7 @@
                 if (Core) Core.isDirty = true;
             });
 
-            // Live Animation Inputs Listeners
+            // Live Animate.style Preview Listeners
             $('#set-screen-anim-in, #set-screen-anim-duration, #set-screen-anim-delay, #set-screen-anim-out').on('input change', function() {
                 self.saveCurrentScreenData();
                 self.previewAnimation();
@@ -392,27 +405,21 @@
             var delay = parseInt($('#set-screen-anim-delay').val(), 10) || 0;
             var $box = $('#wppoppop-canvas-box');
 
-            if (animIn === 'none') {
-                $box.css({ animation: 'none' });
+            // Strip existing animate.css classes and properties
+            $box.removeClass(function(i, c) {
+                return (c.match(/(^|\s)animate__\S+/g) || []).join(' ');
+            }).css({
+                '--animate-duration': (duration / 1000) + 's',
+                'animation-delay': (delay / 1000) + 's'
+            });
+
+            if (!animIn || animIn === 'none') {
                 return;
             }
 
-            var animClassMap = {
-                fade: 'wppoppopFadeIn',
-                slideDown: 'wppoppopSlideDown',
-                bounceIn: 'wppoppopBounceIn',
-                zoomIn: 'wppoppopZoomIn',
-                flipIn: 'wppoppopFlipIn'
-            };
-
-            var keyframeName = animClassMap[animIn] || 'wppoppopFadeIn';
-
-            $box.css('animation', 'none');
             setTimeout(function() {
-                $box.css({
-                    animation: keyframeName + ' ' + (duration / 1000) + 's ease-out ' + (delay / 1000) + 's forwards'
-                });
-            }, 20);
+                $box.addClass('animate__animated ' + animIn);
+            }, 30);
         },
 
         saveCurrentScreenData: function() {
@@ -430,11 +437,10 @@
                 sc.gradColor2 = $('#set-grad-color2').val() || '#1d4ed8';
                 sc.gradAngle = parseInt($('#set-grad-angle').val(), 10) || 135;
 
-                // Save Screen Animation Properties
-                sc.animIn = $('#set-screen-anim-in').val() || 'fade';
+                sc.animIn = $('#set-screen-anim-in').val() || 'animate__fadeIn';
                 sc.animInDuration = parseInt($('#set-screen-anim-duration').val(), 10) || 1000;
                 sc.animInDelay = parseInt($('#set-screen-anim-delay').val(), 10) || 0;
-                sc.animOut = $('#set-screen-anim-out').val() || 'fade';
+                sc.animOut = $('#set-screen-anim-out').val() || 'animate__fadeOut';
 
                 sc.logic = {
                     enable: $('#set-screen-cond-enable').is(':checked') && !self.checkScreenEmptyState(sc.id),

@@ -14,6 +14,41 @@ if (!defined('ABSPATH')) {
     <div style="flex:1;overflow-y:auto;padding:16px;">
         <!-- Basic Tab -->
         <div class="wppoppop-insp-content" id="insp-tab-basic">
+            <!-- Layer Actions: Duplicate & Delete -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;">
+                <button type="button" id="wppoppop-insp-btn-duplicate" class="wppoppop-insp-action-btn" title="Duplicate Layer (Cmd/Ctrl+D)" style="flex:1;background:#1e293b;border:1px solid #334155;color:#94a3b8;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;">
+                    <span class="dashicons dashicons-admin-page" style="font-size:14px;width:14px;height:14px;"></span> Duplicate
+                </button>
+                <button type="button" id="wppoppop-insp-btn-delete" class="wppoppop-insp-action-btn" title="Delete Layer (Delete/Backspace)" style="flex:1;background:#1e293b;border:1px solid rgba(239,68,68,0.4);color:#fca5a5;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;">
+                    <span class="dashicons dashicons-trash" style="font-size:14px;width:14px;height:14px;color:#ef4444;"></span> Delete
+                </button>
+            </div>
+
+            <!-- Alignment Toolbar -->
+            <div style="margin-bottom:12px;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:8px;">
+                <label style="display:block;font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Align to Canvas</label>
+                <div class="wppoppop-align-btn-group" style="display:grid;grid-template-columns:repeat(6, 1fr);gap:4px;">
+                    <button type="button" class="wppoppop-align-btn" data-align="left" title="Align Left">
+                        <span class="dashicons dashicons-align-left" style="font-size:14px;width:14px;height:14px;"></span>
+                    </button>
+                    <button type="button" class="wppoppop-align-btn" data-align="center_h" title="Center Horizontally">
+                        <span class="dashicons dashicons-align-center" style="font-size:14px;width:14px;height:14px;"></span>
+                    </button>
+                    <button type="button" class="wppoppop-align-btn" data-align="right" title="Align Right">
+                        <span class="dashicons dashicons-align-right" style="font-size:14px;width:14px;height:14px;"></span>
+                    </button>
+                    <button type="button" class="wppoppop-align-btn" data-align="top" title="Align Top">
+                        <span class="dashicons dashicons-arrow-up-alt2" style="font-size:14px;width:14px;height:14px;"></span>
+                    </button>
+                    <button type="button" class="wppoppop-align-btn" data-align="center_v" title="Middle Vertically">
+                        <span class="dashicons dashicons-minus" style="font-size:14px;width:14px;height:14px;"></span>
+                    </button>
+                    <button type="button" class="wppoppop-align-btn" data-align="bottom" title="Align Bottom">
+                        <span class="dashicons dashicons-arrow-down-alt2" style="font-size:14px;width:14px;height:14px;"></span>
+                    </button>
+                </div>
+            </div>
+
             <div style="margin-bottom:12px;">
                 <label>Layer Label</label>
                 <input type="text" id="prop-layer-name">
@@ -47,7 +82,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- Style Tab -->
+        <!-- Style Tab with 50%/50% Color Pickers & Live Animate.style Previews -->
         <div class="wppoppop-insp-content" id="insp-tab-style" style="display:none;">
             <div style="margin-bottom:12px;">
                 <label>Font Family</label>
@@ -73,14 +108,25 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-                <div>
-                    <label>Text Color</label>
-                    <input type="text" id="prop-color" value="#1e293b">
+            <!-- Text Color: 50% Color Swatch + 50% Hex Input on Same Row -->
+            <div style="margin-bottom:12px;">
+                <label style="display:block;margin-bottom:4px;">Text Color</label>
+                <div class="wppoppop-color-picker-row">
+                    <div class="wppoppop-color-picker-wrap">
+                        <input type="color" class="wppoppop-color-swatch-input" data-target="#prop-color" value="#1e293b" title="Pick text color">
+                    </div>
+                    <input type="text" id="prop-color" class="wppoppop-color-hex-input" value="#1e293b" placeholder="#1e293b">
                 </div>
-                <div>
-                    <label>Background</label>
-                    <input type="text" id="prop-bg-color" value="#ffffff">
+            </div>
+
+            <!-- Background Color: 50% Color Swatch + 50% Hex Input on Same Row -->
+            <div style="margin-bottom:12px;">
+                <label style="display:block;margin-bottom:4px;">Background Color</label>
+                <div class="wppoppop-color-picker-row">
+                    <div class="wppoppop-color-picker-wrap">
+                        <input type="color" class="wppoppop-color-swatch-input" data-target="#prop-bg-color" value="#ffffff" title="Pick background color">
+                    </div>
+                    <input type="text" id="prop-bg-color" class="wppoppop-color-hex-input" value="#ffffff" placeholder="#ffffff">
                 </div>
             </div>
 
@@ -89,23 +135,49 @@ if (!defined('ABSPATH')) {
                 <input type="number" id="prop-opacity" step="0.1" min="0" max="1" value="1">
             </div>
 
+            <!-- Element Animation Effect with Replay Action -->
             <div style="margin-bottom:12px;">
-                <label>Animation Effect</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                    <label style="margin:0;">Animation Effect (Animate.style)</label>
+                    <button type="button" id="wppoppop-insp-btn-replay-anim" title="Replay Animation on Canvas" style="background:transparent;border:none;color:#38bdf8;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:3px;padding:0;">
+                        <span class="dashicons dashicons-controls-play" style="font-size:13px;width:13px;height:13px;"></span> Replay
+                    </button>
+                </div>
                 <select id="prop-anim-effect">
                     <option value="none">None</option>
-                    <option value="fadeIn">Fade In</option>
-                    <option value="bounceIn">Bounce In</option>
-                    <option value="zoomIn">Zoom In</option>
-                    <option value="slideInUp">Slide In Up</option>
-                    <option value="pulse">Pulse</option>
-                    <option value="tada">Tada</option>
+                    <optgroup label="Attention Seekers">
+                        <option value="animate__bounce">Bounce</option>
+                        <option value="animate__flash">Flash</option>
+                        <option value="animate__pulse">Pulse</option>
+                        <option value="animate__rubberBand">Rubber Band</option>
+                        <option value="animate__shakeX">Shake X</option>
+                        <option value="animate__shakeY">Shake Y</option>
+                        <option value="animate__headShake">Head Shake</option>
+                        <option value="animate__swing">Swing</option>
+                        <option value="animate__tada">Tada</option>
+                        <option value="animate__wobble">Wobble</option>
+                        <option value="animate__jello">Jello</option>
+                        <option value="animate__heartBeat">HeartBeat</option>
+                    </optgroup>
+                    <optgroup label="Entrances">
+                        <option value="animate__fadeIn">Fade In</option>
+                        <option value="animate__fadeInDown">Fade In Down</option>
+                        <option value="animate__fadeInUp">Fade In Up</option>
+                        <option value="animate__fadeInLeft">Fade In Left</option>
+                        <option value="animate__fadeInRight">Fade In Right</option>
+                        <option value="animate__bounceIn">Bounce In</option>
+                        <option value="animate__zoomIn">Zoom In</option>
+                        <option value="animate__slideInUp">Slide In Up</option>
+                        <option value="animate__slideInDown">Slide In Down</option>
+                        <option value="animate__flipInX">Flip In X</option>
+                        <option value="animate__flipInY">Flip In Y</option>
+                    </optgroup>
                 </select>
             </div>
         </div>
 
         <!-- Logic Tab -->
         <div class="wppoppop-insp-content" id="insp-tab-logic" style="display:none;">
-            <!-- Primary Action -->
             <div style="margin-bottom:12px;">
                 <label>Action on Click / Submit</label>
                 <select id="prop-action-close">
@@ -117,7 +189,6 @@ if (!defined('ABSPATH')) {
                 </select>
             </div>
 
-            <!-- Target Screen Dropdown for Screen Transitions -->
             <div id="prop-target-screen-wrap" style="margin-bottom:12px;">
                 <label>Default Target Screen</label>
                 <select id="prop-target-screen">
@@ -136,7 +207,6 @@ if (!defined('ABSPATH')) {
                 </label>
             </div>
 
-            <!-- Enhanced Conditional Logic Section with Enable/Disable Switch -->
             <div class="wppoppop-cond-toggle-wrap" style="margin-top:14px;padding:12px;background:#1e293b;border:1px solid #334155;border-radius:6px;">
                 <label style="display:flex;align-items:center;gap:8px;font-weight:700;color:#f8fafc;cursor:pointer;margin-bottom:6px;">
                     <input type="checkbox" id="prop-cond-enable">
@@ -150,7 +220,7 @@ if (!defined('ABSPATH')) {
                     <div style="margin-bottom:10px;">
                         <label>Evaluate Element</label>
                         <select id="prop-cond-field">
-                            <!-- Populated with input/form elements active on current screen -->
+                            <!-- Populated dynamically -->
                         </select>
                     </div>
 

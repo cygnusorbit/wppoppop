@@ -16,7 +16,6 @@ class WpPopPop_Admin_Assets {
         $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
         $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
 
-        // Shared general config
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),
             'nonce'       => wp_create_nonce('wppoppop_admin_nonce'),
@@ -43,16 +42,23 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 2. Visual Builder Assets (Fully Segregated Sub-Modules)
+        // 2. Visual Builder Assets (Enqueuing Animate.css)
         if ($page === 'wppoppop-builder') {
             wp_enqueue_style('dashicons');
-            wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
+
+            // Enqueue Animate.css with fallback
+            if (file_exists(WPPOPPOP_PATH . 'admin/css/vendor/animate.min.css')) {
+                wp_enqueue_style('wppoppop-animate-css', WPPOPPOP_URL . 'admin/css/vendor/animate.min.css', [], '4.1.1');
+            } else {
+                wp_enqueue_style('wppoppop-animate-css', 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css', [], '4.1.1');
+            }
+
+            wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', ['wppoppop-animate-css'], WPPOPPOP_VERSION);
             
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
 
-            // Segregated Builder Subsystems
             wp_enqueue_script('wppoppop-builder-core-js', WPPOPPOP_URL . 'admin/js/builder/builder-core.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-canvas-js', WPPOPPOP_URL . 'admin/js/builder/builder-canvas.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-layers-js', WPPOPPOP_URL . 'admin/js/builder/builder-layers.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
@@ -61,7 +67,6 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-builder-modals-js', WPPOPPOP_URL . 'admin/js/builder/builder-modals.js', ['jquery', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-io-js', WPPOPPOP_URL . 'admin/js/builder/builder-io.js', ['jquery', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
 
-            // Master Coordinator
             wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', [
                 'jquery',
                 'wppoppop-builder-core-js',

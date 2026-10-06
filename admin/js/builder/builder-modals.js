@@ -75,21 +75,16 @@
                 $box.css('background', initialScreen.bgColor || '#ffffff');
             }
 
-            // Apply Initial Screen Entrance Animation
-            var initAnim = initialScreen.animIn || 'fade';
+            // Animate.style Entrance for Initial Screen
+            var initAnim = initialScreen.animIn || 'animate__fadeIn';
             var initDur = (initialScreen.animInDuration !== undefined ? initialScreen.animInDuration : 1000) / 1000;
             var initDelay = (initialScreen.animInDelay !== undefined ? initialScreen.animInDelay : 0) / 1000;
 
-            var animClassMap = {
-                fade: 'wppoppopFadeIn',
-                slideDown: 'wppoppopSlideDown',
-                bounceIn: 'wppoppopBounceIn',
-                zoomIn: 'wppoppopZoomIn',
-                flipIn: 'wppoppopFlipIn'
-            };
-
-            if (initAnim !== 'none' && animClassMap[initAnim]) {
-                $box.css('animation', animClassMap[initAnim] + ' ' + initDur + 's ease-out ' + initDelay + 's forwards');
+            if (initAnim && initAnim !== 'none') {
+                $box.css({
+                    '--animate-duration': initDur + 's',
+                    'animation-delay': initDelay + 's'
+                }).addClass('animate__animated ' + initAnim);
             }
 
             var $closeBtn = $('<button type="button">&times;</button>')
@@ -129,6 +124,11 @@
                 screenEls.forEach(function(el, elIdx) {
                     var $elNode = Canvas.buildElementNode(el, elIdx + 10);
                     $elNode.removeClass('active locked').css('cursor', 'default');
+
+                    // Apply element-level Animate.style
+                    if (el.animEffect && el.animEffect !== 'none') {
+                        $elNode.addClass('animate__animated ' + el.animEffect);
+                    }
 
                     if (el.type === 'email' || el.type === 'number' || el.type === 'text') {
                         $elNode.html('<input type="' + (el.type === 'email' ? 'email' : (el.type === 'number' ? 'number' : 'text')) + '" class="wppoppop-preview-input" data-el-id="' + el.id + '" placeholder="' + (el.content || el.label || '') + '" style="width:100%;height:100%;padding:0 10px;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;background:#ffffff;color:#1e293b;">');
@@ -216,20 +216,26 @@
                                         $box.css('background', targetScObj.bgColor || '#ffffff');
                                     }
 
-                                    // Apply Destination Screen Entrance Animation
-                                    var nextAnim = targetScObj.animIn || 'fade';
+                                    // Apply Animate.style for target screen
+                                    var nextAnim = targetScObj.animIn || 'animate__fadeIn';
                                     var nextDur = (targetScObj.animInDuration !== undefined ? targetScObj.animInDuration : 1000) / 1000;
                                     var nextDelay = (targetScObj.animInDelay !== undefined ? targetScObj.animInDelay : 0) / 1000;
 
-                                    if (nextAnim !== 'none' && animClassMap[nextAnim]) {
-                                        $box.css('animation', 'none');
+                                    $box.removeClass(function(i, c) {
+                                        return (c.match(/(^|\s)animate__\S+/g) || []).join(' ');
+                                    });
+
+                                    if (nextAnim && nextAnim !== 'none') {
                                         setTimeout(function() {
-                                            $box.css('animation', animClassMap[nextAnim] + ' ' + nextDur + 's ease-out ' + nextDelay + 's forwards');
+                                            $box.css({
+                                                '--animate-duration': nextDur + 's',
+                                                'animation-delay': nextDelay + 's'
+                                            }).addClass('animate__animated ' + nextAnim);
                                         }, 10);
                                     }
                                 }
                                 $box.find('[data-preview-screen]').hide();
-                                $box.find('[data-preview-screen="' + targetScreenId + '"]').fadeIn(200);
+                                $box.find('[data-preview-screen="' + targetScreenId + '"]').show();
                             }
                         });
                     }

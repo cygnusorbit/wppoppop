@@ -37,18 +37,18 @@
                         gradColor1: sc.gradColor1 || defaultGradColor1,
                         gradColor2: sc.gradColor2 || defaultGradColor2,
                         gradAngle: parseInt(sc.gradAngle, 10) || defaultGradAngle,
-                        animIn: sc.animIn || 'fade',
+                        animIn: sc.animIn || 'animate__fadeIn',
                         animInDuration: sc.animInDuration !== undefined ? parseInt(sc.animInDuration, 10) : 1000,
                         animInDelay: sc.animInDelay !== undefined ? parseInt(sc.animInDelay, 10) : 0,
-                        animOut: sc.animOut || 'fade',
+                        animOut: sc.animOut || 'animate__fadeOut',
                         logic: sc.logic || { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' }
                     };
                 });
             } else {
                 this.screens = [
-                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'fade', animInDuration: 1000, animInDelay: 0, animOut: 'fade', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' } },
-                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'fade', animInDuration: 1000, animInDelay: 0, animOut: 'fade', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 3, fallback: 'next_screen' } },
-                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'fade', animInDuration: 1000, animInDelay: 0, animOut: 'fade', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' } }
+                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'animate__fadeIn', animInDuration: 1000, animInDelay: 0, animOut: 'animate__fadeOut', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' } },
+                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'animate__fadeIn', animInDuration: 1000, animInDelay: 0, animOut: 'animate__fadeOut', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 3, fallback: 'next_screen' } },
+                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'animate__fadeIn', animInDuration: 1000, animInDelay: 0, animOut: 'animate__fadeOut', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' } }
                 ];
             }
 
@@ -68,6 +68,15 @@
                     e.preventDefault();
                     $('#wppoppop-btn-save').trigger('click');
                     return;
+                }
+
+                // Duplicate hotkey: Cmd/Ctrl + D
+                if ((e.metaKey || e.ctrlKey) && (e.key === 'd' || e.key === 'D') && self.activeId) {
+                    if (!$(e.target).is('input, textarea, select')) {
+                        e.preventDefault();
+                        self.duplicateElement(self.activeId);
+                        return;
+                    }
                 }
 
                 if ($(e.target).is('input, textarea, select') || $(e.target).is('[contenteditable="true"]')) {
@@ -211,10 +220,10 @@
                 gradColor1: activeSc ? activeSc.gradColor1 : '#3b82f6',
                 gradColor2: activeSc ? activeSc.gradColor2 : '#1d4ed8',
                 gradAngle: activeSc ? activeSc.gradAngle : 135,
-                animIn: 'fade',
+                animIn: 'animate__fadeIn',
                 animInDuration: 1000,
                 animInDelay: 0,
-                animOut: 'fade',
+                animOut: 'animate__fadeOut',
                 logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' }
             };
 
@@ -341,6 +350,19 @@
             $(document).trigger('builder:element:selected', [elementData.id]);
         },
 
+        duplicateElement: function(id) {
+            var orig = this.getElementById(id);
+            if (!orig) return;
+
+            var clone = $.extend(true, {}, orig);
+            clone.id = 'el_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+            clone.label = (orig.label || orig.type) + ' (Copy)';
+            clone.top = (orig.top || 0) + 10;
+            clone.left = (orig.left || 0) + 10;
+
+            this.addElement(clone);
+        },
+
         updateElement: function(id, props) {
             var el = this.getElementById(id);
             if (el) {
@@ -379,6 +401,43 @@
             this.isDirty = true;
             this.pushHistory();
             $(document).trigger('builder:elements:updated');
+        },
+
+        alignActiveElement: function(alignment) {
+            if (!this.activeId) return;
+            var el = this.getElementById(this.activeId);
+            if (!el || el.locked) return;
+
+            var $box = $('#wppoppop-canvas-box');
+            var boxW = $box.width() || 640;
+            var boxH = $box.height() || 400;
+            var elW = el.width || 200;
+            var elH = el.height || 40;
+
+            var updates = {};
+            switch (alignment) {
+                case 'left':
+                    updates.left = 0;
+                    break;
+                case 'center_h':
+                    updates.left = Math.max(0, Math.round((boxW - elW) / 2));
+                    break;
+                case 'right':
+                    updates.left = Math.max(0, boxW - elW);
+                    break;
+                case 'top':
+                    updates.top = 0;
+                    break;
+                case 'center_v':
+                    updates.top = Math.max(0, Math.round((boxH - elH) / 2));
+                    break;
+                case 'bottom':
+                    updates.top = Math.max(0, boxH - elH);
+                    break;
+            }
+
+            this.updateElement(this.activeId, updates);
+            this.pushHistory();
         },
 
         pushHistory: function() {

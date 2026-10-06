@@ -1,9 +1,72 @@
 /* ==========================================================================
-   WpPopPop Public Frontend Stylesheet Aggregator
-   Decomposed Domain Subsystems
+   WpPopPop Front-End Public Popup Delivery Stylesheet
+   Supports Animate.style transitions and dynamic multi-screen resizing
    ========================================================================== */
 
-@import url("front/modal.css");
-@import url("front/animations.css");
-@import url("front/elements.css");
-@import url("front/addons.css");
+.wppoppop-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.wppoppop-modal-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+.wppoppop-popup-box {
+    position: relative !important;
+    border-radius: 8px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+    overflow: hidden !important;
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                height 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                background 0.3s ease !important;
+    z-index: 2 !important;
+}
+
+.wppoppop-modal-close {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: rgba(0, 0, 0, 0.25) !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    z-index: 999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.15s ease !important;
+}
+
+.wppoppop-modal-close:hover {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.wppoppop-screen-viewport {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.wppoppop-element {
+    box-sizing: border-box !important;
+}
+
+body.wppoppop-lock-scroll {
+    overflow: hidden !important;
+}

@@ -7,6 +7,7 @@
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
+            this.bindActions();
             this.bindEvents();
         },
 
@@ -24,6 +25,42 @@
             $('#wppoppop-inspector-close').on('click', function() {
                 window.WpPopPopBuilder.Core.activeId = null;
                 $(document).trigger('builder:element:deselected');
+            });
+        },
+
+        bindActions: function() {
+            var self = this;
+            var Core = window.WpPopPopBuilder.Core;
+
+            // Duplicate active element
+            $('#wppoppop-insp-btn-duplicate').on('click', function(e) {
+                e.preventDefault();
+                if (Core.activeId) {
+                    Core.duplicateElement(Core.activeId);
+                }
+            });
+
+            // Delete active element
+            $('#wppoppop-insp-btn-delete').on('click', function(e) {
+                e.preventDefault();
+                if (Core.activeId) {
+                    Core.removeElement(Core.activeId);
+                }
+            });
+
+            // Alignment buttons
+            $('.wppoppop-align-btn').on('click', function(e) {
+                e.preventDefault();
+                var alignType = $(this).data('align');
+                if (alignType && Core.alignActiveElement) {
+                    Core.alignActiveElement(alignType);
+                }
+            });
+
+            // Replay animation button
+            $('#wppoppop-insp-btn-replay-anim').on('click', function(e) {
+                e.preventDefault();
+                self.previewElementAnimation();
             });
         },
 
@@ -61,7 +98,6 @@
             var Core = window.WpPopPopBuilder.Core;
             var $fieldSelect = $('#prop-cond-field').empty();
 
-            // Candidate elements used on the current active screen
             var inputTypes = ['email', 'number', 'text', 'select', 'radios', 'checkboxes', 'rating', 'slider', 'date'];
             var screenElements = Core.elements.filter(function(e) {
                 return e.screen === Core.currentScreen && inputTypes.indexOf(e.type) !== -1;
@@ -78,6 +114,7 @@
         },
 
         bindInputs: function() {
+            var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
             function syncLiveProperty(inputSelector, propKey, isNum) {
@@ -104,7 +141,14 @@
             syncLiveProperty('#prop-color', 'color', false);
             syncLiveProperty('#prop-bg-color', 'bgColor', false);
             syncLiveProperty('#prop-opacity', 'opacity', true);
-            syncLiveProperty('#prop-anim-effect', 'animEffect', false);
+
+            // Element Animation Change Listener (Triggers live canvas playback)
+            $('#prop-anim-effect').on('change', function() {
+                if (!Core.activeId) return;
+                var effect = $(this).val();
+                Core.updateElement(Core.activeId, { animEffect: effect });
+                self.previewElementAnimation();
+            });
 
             syncLiveProperty('#prop-action-close', 'actionClose', false);
             syncLiveProperty('#prop-target-screen', 'actionTargetScreen', true);
@@ -116,7 +160,6 @@
                 Core.updateElement(Core.activeId, { actionBlank: $(this).is(':checked') });
             });
 
-            // Conditional Logic Controls
             $('#prop-cond-enable').on('change', function() {
                 if (!Core.activeId) return;
                 var enabled = $(this).is(':checked');
@@ -134,11 +177,7 @@
 
             $('#prop-cond-operator').on('change', function() {
                 var op = $(this).val();
-                if (op === 'is_empty' || op === 'is_not_empty') {
-                    $('#prop-cond-val-wrap').hide();
-                } else {
-                    $('#prop-cond-val-wrap').show();
-                }
+                $('#prop-cond-val-wrap').toggle(op !== 'is_empty' && op !== 'is_not_empty');
             });
 
             $('#prop-action-close').on('change', function() {
@@ -154,6 +193,30 @@
                     $('#prop-action-url-wrap').hide();
                 }
             });
+        },
+
+        previewElementAnimation: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core || !Core.activeId) return;
+
+            var $canvasEl = $('#canvas-el-' + Core.activeId);
+            if (!$canvasEl.length) return;
+
+            var effect = $('#prop-anim-effect').val();
+            if (!effect || effect === 'none') {
+                $canvasEl.removeClass(function(i, c) {
+                    return (c.match(/(^|\s)animate__\S+/g) || []).join(' ');
+                });
+                return;
+            }
+
+            $canvasEl.removeClass(function(i, c) {
+                return (c.match(/(^|\s)animate__\S+/g) || []).join(' ');
+            });
+
+            setTimeout(function() {
+                $canvasEl.addClass('animate__animated ' + effect);
+            }, 30);
         },
 
         bindEvents: function() {
@@ -203,8 +266,17 @@
             $('#prop-font-family').val(el.fontFamily || 'inherit');
             $('#prop-font-size').val(el.fontSize || 14);
             $('#prop-border-radius').val(el.borderRadius || 0);
-            $('#prop-color').val(el.color || '#1e293b');
-            $('#prop-bg-color').val(el.bgColor || 'transparent');
+
+            // Sync Text Color Swatch & Hex input
+            var textColor = el.color || '#1e293b';
+            $('#prop-color').val(textColor);
+            $('.wppoppop-color-swatch-input[data-target="#prop-color"]').val(textColor.indexOf('#') === 0 ? textColor : '#1e293b');
+
+            // Sync Background Color Swatch & Hex input
+            var bgColor = el.bgColor || '#ffffff';
+            $('#prop-bg-color').val(bgColor);
+            $('.wppoppop-color-swatch-input[data-target="#prop-bg-color"]').val(bgColor.indexOf('#') === 0 ? bgColor : '#ffffff');
+
             $('#prop-opacity').val(el.opacity !== undefined ? el.opacity : 1);
             $('#prop-anim-effect').val(el.animEffect || 'none');
 
@@ -214,7 +286,6 @@
             $('#prop-action-blank').prop('checked', !!el.actionBlank);
             $('#prop-action-js').val(el.actionJs || '');
 
-            // Load Conditional Logic State
             var condEnabled = !!el.condEnable;
             $('#prop-cond-enable').prop('checked', condEnabled);
             $('#prop-cond-box').toggle(condEnabled);
