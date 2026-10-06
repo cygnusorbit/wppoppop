@@ -1,0 +1,103 @@
+/* ==========================================================================
+   WpPopPop Frontend: 19 Canvas Element Layers & Form Controls
+   ========================================================================== */
+
+.wppoppop-layer-item {
+    box-sizing: border-box;
+}
+
+/* Form Input Controls */
+.wppoppop-field-email,
+.wppoppop-field-number,
+.wppoppop-field-date {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #1e293b;
+    outline: none;
+    background: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wppoppop-field-email:focus,
+.wppoppop-field-number:focus,
+.wppoppop-field-date:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.wppoppop-field-select {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #1e293b;
+    background: #ffffff;
+    outline: none;
+}
+
+/* Radio & Checkbox */
+.wppoppop-field-radios input,
+.wppoppop-field-checkboxes input {
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+.wppoppop-field-radios label,
+.wppoppop-field-checkboxes label {
+    font-size: 14px;
+    color: #1e293b;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Star Rating */
+.wppoppop-field-rating {
+    user-select: none;
+    transition: transform 0.15s ease;
+}
+
+.wppoppop-field-rating:hover {
+    transform: scale(1.05);
+}
+
+/* Action Buttons */
+.wppoppop-submit-trigger,
+.wppoppop-pay-trigger,
+.wppoppop-next-screen-btn {
+    border: none;
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.wppoppop-submit-trigger:hover,
+.wppoppop-pay-trigger:hover,
+.wppoppop-next-screen-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.wppoppop-submit-trigger:active,
+.wppoppop-pay-trigger:active,
+.wppoppop-next-screen-btn:active {
+    transform: translateY(0);
+}
+
+/* Signature Pad */
+.wppoppop-sig-canvas {
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.wppoppop-sig-clear-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 2px 6px;
+    color: #475569;
+    cursor: pointer;
+}
+
+.wppoppop-sig-clear-btn:hover {
+    background: #e2e8f0;
+}

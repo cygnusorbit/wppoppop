@@ -1,0 +1,101 @@
+/* ==========================================================================
+   WpPopPop Frontend: Sticky Side Tabs, Floating Ribbons & Content Lockers
+   ========================================================================== */
+
+/* Sticky Side Tabs */
+.wppoppop-side-tab {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999990;
+    padding: 12px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease;
+    user-select: none;
+}
+
+.wppoppop-side-tab:hover {
+    transform: translateY(-50%) scale(1.05);
+}
+
+.wppoppop-side-tab-left {
+    left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    writing-mode: vertical-rl;
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.wppoppop-side-tab-right {
+    right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    writing-mode: vertical-rl;
+}
+
+/* Sticky Floating Ribbons */
+.wppoppop-ribbon-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 999995;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.wppoppop-ribbon-top {
+    top: 0;
+}
+
+.wppoppop-ribbon-bottom {
+    bottom: 0;
+}
+
+/* Inline Content Locker */
+.wppoppop-locker-wrap {
+    position: relative;
+    margin: 24px 0;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.wppoppop-locker-blurred {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.wppoppop-locker-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.wppoppop-locker-btn {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.wppoppop-locker-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}

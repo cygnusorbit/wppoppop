@@ -1,0 +1,98 @@
+/* ==========================================================================
+   WpPopPop Frontend: CSS3 Entrance Transitions & Continuous Loops
+   ========================================================================== */
+
+/* Keyframe Definitions */
+@keyframes wppoppopFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes wppoppopSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes wppoppopBounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes wppoppopZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.75);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes wppoppopPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes wppoppopTada {
+    0% { transform: scale(1); }
+    10%, 20% { transform: scale(0.9) rotate(-3deg); }
+    30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+    40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes wppoppopShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* Entrance Animation Utility Classes */
+.wppoppop-anim-fade {
+    animation: wppoppopFadeIn 0.4s ease-out forwards;
+}
+
+.wppoppop-anim-slideDown {
+    animation: wppoppopSlideDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.wppoppop-anim-bounceIn {
+    animation: wppoppopBounceIn 0.55s ease-out forwards;
+}
+
+.wppoppop-anim-zoomIn {
+    animation: wppoppopZoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Continuous Attention-Seeker Loops */
+.wppoppop-loop-pulse {
+    animation: wppoppopPulse 2s infinite ease-in-out;
+}
+
+.wppoppop-loop-tada {
+    animation: wppoppopTada 2.5s infinite;
+}
+
+.wppoppop-loop-shake {
+    animation: wppoppopShake 3s infinite;
+}

@@ -1,0 +1,83 @@
+/* ==========================================================================
+   WpPopPop Frontend: Gamified Wheels, Scratch Cards & Countdown Timers
+   ========================================================================== */
+
+/* Lucky Prize Wheel */
+.wppoppop-wheel-wrapper {
+    position: relative;
+    width: 220px;
+    height: 270px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wppoppop-wheel-canvas {
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.wppoppop-wheel-pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    color: #ef4444;
+    z-index: 10;
+    line-height: 1;
+}
+
+.wppoppop-wheel-spin-btn {
+    margin-top: 12px;
+    background: #f59e0b;
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.wppoppop-wheel-spin-btn:hover {
+    background: #d97706;
+    transform: scale(1.04);
+}
+
+/* Scratch-Off Card */
+.wppoppop-scratch-wrapper {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.wppoppop-scratch-secret {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    background: #fef08a;
+    color: #1e293b;
+    user-select: none;
+}
+
+.wppoppop-scratch-canvas {
+    position: absolute;
+    inset: 0;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+/* Urgency Countdown Timer */
+.wppoppop-countdown-timer {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-family: monospace;
+    letter-spacing: 1px;
+}
