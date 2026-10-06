@@ -8,18 +8,31 @@ jQuery(document).ready(function($) {
     let pageCount = 2;
     const stage = $('#wppoppop-stage');
 
-    // 1. Drawer Controls
+    // 1. Drawer Controls & Full-Screen Backdrop Dismissal
     $('#wppoppop-btn-settings').on('click', function(e) {
         e.preventDefault();
         $('#wppoppop-inspector-drawer').removeClass('open');
         $('#wppoppop-settings-drawer').addClass('open');
-        $('#wppoppop-drawer-backdrop').fadeIn(150);
+        $('#wppoppop-drawer-backdrop').fadeIn(200);
     });
 
-    $('.btn-close-drawer, #wppoppop-drawer-backdrop').on('click', function() {
+    function closeAllDrawers() {
         $('#wppoppop-settings-drawer').removeClass('open');
         $('#wppoppop-inspector-drawer').removeClass('open');
-        $('#wppoppop-drawer-backdrop').fadeOut(150);
+        $('#wppoppop-drawer-backdrop').fadeOut(200);
+    }
+
+    $('.btn-close-drawer, #btn-done-inspector, #wppoppop-drawer-backdrop').on('click', function(e) {
+        e.preventDefault();
+        closeAllDrawers();
+    });
+
+    // Close on ESC Key
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAllDrawers();
+            $('.wppoppop-modal-backdrop').fadeOut(150);
+        }
     });
 
     // Accordions
@@ -224,7 +237,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // 5. Element Selection & Inspector Drawer
+    // 5. Element Selection: Slides in Layer Properties Panel with Entire Background Overlay (GreenPop Style)
     function selectElement(elem) {
         $('.canvas-element').removeClass('selected');
         elem.addClass('selected');
@@ -249,9 +262,10 @@ jQuery(document).ready(function($) {
             $('#group-prop-options').hide();
         }
 
+        // Slide-in Layer Inspector with Entire Background Overlay
         $('#wppoppop-settings-drawer').removeClass('open');
         $('#wppoppop-inspector-drawer').addClass('open');
-        $('#wppoppop-drawer-backdrop').fadeIn(150);
+        $('#wppoppop-drawer-backdrop').fadeIn(200);
 
         highlightLayer(elem.attr('id'));
     }
@@ -363,12 +377,11 @@ jQuery(document).ready(function($) {
         if (!activeElement) return;
         activeElement.remove();
         deselectElement();
-        $('#wppoppop-inspector-drawer').removeClass('open');
-        $('#wppoppop-drawer-backdrop').fadeOut(150);
+        closeAllDrawers();
         refreshLayers();
     });
 
-    // 6. Floating Layers Management with Native HTML5 + jQuery UI Sortable Drag & Drop
+    // 6. Floating Layers Management with Drag & Drop Only (NO Up/Down Arrows)
     $('#wppoppop-floating-layers').draggable({
         handle: '.layers-header',
         containment: '.wppoppop-canvas-viewport'
@@ -401,7 +414,7 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        // Sort descending by z-index so highest appears on top
+        // Sort descending by z-index so highest is on top
         elems.sort(function(a, b) {
             const zA = parseInt($(a).css('z-index'), 10) || parseInt($(a).data('z_index'), 10) || 1;
             const zB = parseInt($(b).css('z-index'), 10) || parseInt($(b).data('z_index'), 10) || 1;
@@ -417,13 +430,12 @@ jQuery(document).ready(function($) {
             const isHidden = el.is(':hidden');
             const isSelected = activeElement && activeElement.attr('id') === id;
 
+            // Notice: Up & Down arrow buttons removed completely
             const li = $('<li data-target="' + id + '" class="layer-item' + (isSelected ? ' selected' : '') + '" draggable="true"></li>');
             li.html(
-                '<span class="layer-drag-grip" title="Drag to reorder layer"><span class="dashicons dashicons-menu"></span></span>' +
+                '<span class="layer-drag-grip" title="Drag by grip to reorder depth"><span class="dashicons dashicons-menu"></span></span>' +
                 '<span class="layer-title" title="[' + d.type + '] ' + name + '">[' + d.type + '] ' + name + '</span>' +
                 '<div class="layer-actions">' +
-                    '<button type="button" class="btn-layer-up" title="Move Layer Up (Bring Forward)">&uarr;</button>' +
-                    '<button type="button" class="btn-layer-down" title="Move Layer Down (Send Backward)">&darr;</button>' +
                     '<button type="button" class="btn-layer-lock ' + (isLocked ? 'active-action' : '') + '" title="Lock Dragging"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
                     '<button type="button" class="btn-layer-eye ' + (isHidden ? 'active-action' : '') + '" title="Toggle Visibility"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
                 '</div>'
@@ -431,7 +443,7 @@ jQuery(document).ready(function($) {
             list.append(li);
         });
 
-        // Initialize jQuery UI sortable if loaded
+        // Initialize jQuery UI sortable
         if ($.fn.sortable) {
             if (list.hasClass('ui-sortable')) {
                 list.sortable('destroy');
@@ -454,7 +466,7 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // HTML5 Drag and Drop Reordering Handlers (Universal Fallback & Precision)
+    // HTML5 Drag-and-Drop Reordering Handlers (Grip-driven Fallback)
     $('#wppoppop-layers-list').on('dragstart', 'li.layer-item', function(e) {
         draggedItem = this;
         $(this).addClass('is-dragging');
@@ -511,37 +523,11 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
 
-    // Layer Title Click to Select
+    // Layer Title Click in Floating Panel triggers Inspector slide-in with backdrop
     $('#wppoppop-layers-list').on('click', '.layer-title', function(e) {
         e.stopPropagation();
         const target = $('#' + $(this).closest('li').data('target'));
         if (target.length) selectElement(target);
-    });
-
-    // Move Layer UP Button (Higher z-index / Forward)
-    $('#wppoppop-layers-list').on('click', '.btn-layer-up', function(e) {
-        e.stopPropagation();
-        const li = $(this).closest('li');
-        const prevLi = li.prev('li[data-target]');
-        if (prevLi.length) {
-            li.insertBefore(prevLi);
-            recomputeZIndicesFromList();
-            const target = $('#' + li.data('target'));
-            if (target.length) selectElement(target);
-        }
-    });
-
-    // Move Layer DOWN Button (Lower z-index / Backward)
-    $('#wppoppop-layers-list').on('click', '.btn-layer-down', function(e) {
-        e.stopPropagation();
-        const li = $(this).closest('li');
-        const nextLi = li.next('li[data-target]');
-        if (nextLi.length) {
-            li.insertAfter(nextLi);
-            recomputeZIndicesFromList();
-            const target = $('#' + li.data('target'));
-            if (target.length) selectElement(target);
-        }
     });
 
     // Toggle Eye Visibility

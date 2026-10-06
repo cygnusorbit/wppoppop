@@ -98,13 +98,13 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         </div>
     </div>
 
-    <!-- 4. Canvas Viewport with Transparency Checkerboard & Floating Layers -->
+    <!-- 4. Canvas Viewport with Checkerboard Stage -->
     <main class="wppoppop-canvas-viewport">
         <div class="wppoppop-stage" id="wppoppop-stage" style="width: 620px; height: 380px;">
             <!-- Canvas elements render here -->
         </div>
 
-        <!-- 5. Floating Magenta "LAYERS" Panel -->
+        <!-- 5. Floating Magenta "LAYERS" Panel (No up/down arrows; Drag & Drop Only) -->
         <aside class="wppoppop-floating-layers" id="wppoppop-floating-layers">
             <div class="layers-header">
                 <span class="layers-title">LAYERS</span>
@@ -114,23 +114,23 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 <!-- Dynamically populated sortable list -->
             </ul>
             <div class="layers-footer-hint">
-                1. Click any button on elements toolbar to add new layer. 2. Sort layers to change z-index.
+                1. Click any button on elements toolbar to add new layer. 2. Drag by grip to reorder depth (z-index).
             </div>
         </aside>
     </main>
 
-    <!-- Overlay Backdrop for Slide-out Drawers -->
+    <!-- Full-Screen Backdrop Overlay (Entire Background Dimmer) -->
     <div id="wppoppop-drawer-backdrop" class="wppoppop-drawer-backdrop"></div>
 
     <!-- 6. Slide-out Campaign Settings Drawer (Left) -->
     <aside id="wppoppop-settings-drawer" class="wppoppop-slide-drawer">
         <div class="drawer-header">
             <h3><span class="dashicons dashicons-admin-generic"></span> Campaign Settings</h3>
-            <button type="button" class="btn-close-drawer">&times;</button>
+            <button type="button" class="btn-close-drawer" title="Close Settings">&times;</button>
         </div>
         <div class="drawer-content">
             <div class="wppoppop-accordion">
-                <!-- Box & Backdrop Styling -->
+                <!-- Box & Dimensions -->
                 <div class="accordion-item active" data-accordion="backdrop">
                     <div class="accordion-header"><span>Box & Dimensions</span><span class="dashicons dashicons-arrow-down-alt2"></span></div>
                     <div class="accordion-body">
@@ -192,7 +192,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                             <input type="text" id="math-expression" class="widefat">
                         </div>
                         <div class="form-group">
-                            <label>Target Layer ID for Calculation Output:</label>
+                            <label>Target Layer ID for Output:</label>
                             <input type="text" id="math-output-target" class="widefat">
                         </div>
                     </div>
@@ -393,11 +393,11 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         </div>
     </aside>
 
-    <!-- 7. Slide-out Layer Inspector Drawer (Right) -->
+    <!-- 7. GreenPop Slide-in Layer Properties Inspector Drawer (Right) -->
     <aside id="wppoppop-inspector-drawer" class="wppoppop-slide-drawer">
         <div class="drawer-header">
             <h3><span class="dashicons dashicons-art"></span> Layer Properties</h3>
-            <button type="button" class="btn-close-drawer">&times;</button>
+            <button type="button" class="btn-close-drawer" id="btn-close-inspector" title="Close Layer Properties">&times;</button>
         </div>
         <div class="drawer-content">
             <div id="inspector-controls">
@@ -464,6 +464,9 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 <div style="display:flex;gap:8px;margin-top:16px;">
                     <button type="button" class="button button-secondary" id="prop-duplicate-element" style="flex:1;">Duplicate</button>
                     <button type="button" class="button button-link-delete" id="prop-delete-element" style="flex:1;">Delete Layer</button>
+                </div>
+                <div style="margin-top:12px;">
+                    <button type="button" class="button button-primary" id="btn-done-inspector" style="width:100%;height:36px;font-weight:700;">Done / Close</button>
                 </div>
             </div>
         </div>
