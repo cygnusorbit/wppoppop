@@ -4,60 +4,108 @@ if (!defined('ABSPATH')) {
 }
 
 global $wpdb;
-$table_logs = $wpdb->prefix . 'wppoppop_logs';
-$logs = $wpdb->get_results("SELECT * FROM {$table_logs} ORDER BY id DESC LIMIT 100");
-?>
-<div class="wrap wppoppop-log-wrap">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h1 style="margin:0;">System & Integration Event Log</h1>
-        <button type="button" class="button button-secondary" id="btn-clear-logs">Clear Event Log</button>
-    </div>
-    <p class="description">Audit trail of webhook events, SMS dispatches, user confirmation tokens, and delivery statuses.</p>
+$table = $wpdb->prefix . 'wppoppop_logs';
 
-    <table class="wp-list-table widefat fixed striped" style="margin-top: 15px;">
-        <thead>
-            <tr>
-                <th style="width: 70px;">ID</th>
-                <th style="width: 140px;">Event</th>
-                <th>Message</th>
-                <th>Payload Context</th>
-                <th style="width: 170px;">Timestamp</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($logs)) : ?>
-                <tr><td colspan="5">No system events logged yet.</td></tr>
-            <?php else : ?>
-                <?php foreach ($logs as $log) : 
-                    $badge_color = ($log->event_type === 'confirmation') ? '#0284c7' : '#10b981';
-                    ?>
-                    <tr>
-                        <td>#<?php echo esc_html($log->id); ?></td>
-                        <td>
-                            <span style="display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; color:#fff; background:<?php echo $badge_color; ?>;">
-                                <?php echo esc_html(strtoupper($log->event_type)); ?>
-                            </span>
-                        </td>
-                        <td><strong><?php echo esc_html($log->message); ?></strong></td>
-                        <td><code><?php echo esc_html($log->context); ?></code></td>
-                        <td><?php echo esc_html($log->created_at); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+// 1. Process Log Purge Action
+$notice_msg = '';
+if (isset($_POST['wppoppop_clear_logs']) && check_admin_referer('wppoppop_clear_logs_action', 'wppoppop_clear_logs_nonce')) {
+    if (current_user_can('manage_options')) {
+        $wpdb->query("TRUNCATE TABLE {$table}");
+        $notice_msg = 'All event logs have been successfully cleared.';
+    }
+}
+
+// 2. Fetch Aggregated Diagnostic Totals
+$total_logs    = (int)$wpdb->get_var("SELECT COUNT(id) FROM {$table}");
+$error_logs    = (int)$wpdb->get_var("SELECT COUNT(id) FROM {$table} WHERE event_type LIKE '%error%' OR event_type LIKE '%failed%'");
+$dispatch_logs = (int)$wpdb->get_var("SELECT COUNT(id) FROM {$table} WHERE event_type LIKE '%sms%' OR event_type LIKE '%webhook%'");
+$optin_logs    = (int)$wpdb->get_var("SELECT COUNT(id) FROM {$table} WHERE event_type LIKE '%optin%' OR event_type LIKE '%submission%'");
+
+// 3. Process Event Filtering
+$selected_type = isset($_GET['type']) ? sanitize_key($_GET['type']) : '';
+if (!empty($selected_type)) {
+    if ($selected_type === 'errors') {
+        $logs = $wpdb->get_results("SELECT * FROM {$table} WHERE event_type LIKE '%error%' OR event_type LIKE '%failed%' ORDER BY id DESC LIMIT 150");
+    } else {
+        $logs = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE event_type = %s ORDER BY id DESC LIMIT 150", $selected_type));
+    }
+} else {
+    $logs = $wpdb->get_results("SELECT * FROM {$table} ORDER BY id DESC LIMIT 150");
+}
+?>
+<div class="wrap wppoppop-log-wrap" style="max-width:1200px;">
+    <!-- Top Action & Search Header -->
+    <?php include WPPOPPOP_PATH . 'templates/log/header.php'; ?>
+
+    <!-- KPI Totals Summary Cards -->
+    <?php include WPPOPPOP_PATH . 'templates/log/kpi-summary.php'; ?>
+
+    <!-- Activity Log List Table -->
+    <?php include WPPOPPOP_PATH . 'templates/log/table.php'; ?>
+
+    <!-- JSON Payload Inspection Modal -->
+    <?php include WPPOPPOP_PATH . 'templates/log/modal-payload.php'; ?>
 </div>
 
 <script>
-jQuery(document).ready(function($) {
-    $('#btn-clear-logs').on('click', function() {
-        if (!confirm('Clear all system activity logs?')) return;
-        $.post(wppoppop_lib_vars ? wppoppop_lib_vars.ajax_url : ajaxurl, {
-            action: 'wppoppop_clear_logs',
-            nonce: '<?php echo wp_create_nonce('wppoppop_builder_nonce'); ?>'
-        }, function(res) {
-            location.reload();
+(function($) {
+    'use strict';
+    $(document).ready(function() {
+        // 1. Live Keyword Search
+        $('#wppoppop-log-search').on('input', function() {
+            var term = $(this).val().toLowerCase();
+            $('.wppoppop-log-row').each(function() {
+                var type = $(this).data('type') || '';
+                var msg  = $(this).data('msg') || '';
+                if (type.indexOf(term) !== -1 || msg.indexOf(term) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // 2. Payload Inspection Modal
+        var currentRawPayload = '';
+        $('.wppoppop-view-payload-btn').on('click', function() {
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var type = $btn.data('type');
+            var msg = $btn.data('msg');
+            var date = $btn.data('date');
+            var payload = $btn.data('payload');
+
+            $('#wppoppop-modal-log-title').text('#' + id + ' • ' + type + ' (' + date + ')');
+            $('#wppoppop-modal-log-desc').text(msg);
+
+            var prettyJson = '';
+            try {
+                var parsed = (typeof payload === 'string') ? JSON.parse(payload) : payload;
+                prettyJson = JSON.stringify(parsed, null, 2);
+            } catch(e) {
+                prettyJson = String(payload);
+            }
+
+            currentRawPayload = prettyJson;
+            $('#wppoppop-modal-payload-code').text(prettyJson);
+            $('#wppoppop-payload-modal').css('display', 'flex');
+        });
+
+        // 3. Modal Dismissal
+        $('#wppoppop-payload-close, #wppoppop-payload-done').on('click', function() {
+            $('#wppoppop-payload-modal').hide();
+        });
+
+        // 4. Copy Payload Action
+        $('#wppoppop-payload-copy-btn').on('click', function() {
+            if (navigator.clipboard && currentRawPayload) {
+                navigator.clipboard.writeText(currentRawPayload);
+                var orig = $(this).text();
+                $(this).text('Copied!');
+                var $self = $(this);
+                setTimeout(function() { $self.text(orig); }, 1500);
+            }
         });
     });
-});
+})(jQuery);
 </script>
