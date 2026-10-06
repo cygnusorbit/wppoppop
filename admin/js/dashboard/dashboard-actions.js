@@ -1,124 +1,137 @@
-(function(window, $) {
+/**
+ * WpPopPop Dashboard: Row Actions Sub-Module
+ * Handles single-item duplication, deletion, export, and shortcode copying.
+ */
+(function($) {
     'use strict';
-    window.WpPopPopDashboard = window.WpPopPopDashboard || {};
 
-    var Actions = {
+    window.WpPopPopDashboardActions = {
         init: function() {
-            this.bindCopyShortcode();
             this.bindDuplicate();
             this.bindDelete();
             this.bindExport();
-        },
-
-        getVars: function() {
-            return window.wppoppop_vars || {
-                ajax_url: ajaxurl || '',
-                nonce: ''
-            };
-        },
-
-        bindCopyShortcode: function() {
-            $('.wppoppop-copy-sc-btn').on('click', function() {
-                var sc = $(this).data('shortcode');
-                var $btn = $(this);
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(sc);
-                }
-                var orig = $btn.text();
-                $btn.text('Copied!');
-                setTimeout(function() { $btn.text(orig); }, 1500);
-            });
+            this.bindCopyShortcode();
         },
 
         bindDuplicate: function() {
-            var self = this;
-            $('.wppoppop-duplicate-btn').on('click', function() {
-                var uid = $(this).data('uid');
-                var $btn = $(this);
-                var vars = self.getVars();
+            $(document).on('click', '.wppoppop-duplicate-btn', function(e) {
+                e.preventDefault();
+                var uid = $(this).attr('data-uid');
+                if (!uid) return;
 
-                $btn.prop('disabled', true).text('Copying...');
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
+                var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                $.post(vars.ajax_url, {
-                    action: 'wppoppop_duplicate_popup',
-                    nonce: vars.nonce,
-                    uid: uid
-                }).done(function(res) {
-                    if (res.success) {
-                        location.reload();
-                    } else {
-                        alert('Duplication Error: ' + (res.data ? res.data.message : 'Unable to duplicate.'));
-                        $btn.prop('disabled', false).text('Copy');
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'wppoppop_duplicate_popup',
+                        nonce: nonce,
+                        uid: uid
+                    },
+                    success: function(res) {
+                        if (res && res.success) {
+                            window.location.reload();
+                        } else {
+                            alert((res.data && res.data.message) ? res.data.message : 'Duplication failed.');
+                        }
+                    },
+                    error: function() {
+                        alert('Error communicating with the server.');
                     }
-                }).fail(function() {
-                    alert('Network error while duplicating popup.');
-                    $btn.prop('disabled', false).text('Copy');
                 });
             });
         },
 
         bindDelete: function() {
-            var self = this;
-            $('.wppoppop-delete-btn').on('click', function() {
-                if (!confirm('Are you sure you want to permanently delete this popup campaign?')) {
+            $(document).on('click', '.wppoppop-delete-btn', function(e) {
+                e.preventDefault();
+                var uid = $(this).attr('data-uid');
+                if (!uid || !window.confirm('Are you sure you want to permanently delete this popup campaign?')) {
                     return;
                 }
 
-                var uid = $(this).data('uid');
-                var $row = $(this).closest('tr');
-                var vars = self.getVars();
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
+                var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                $.post(vars.ajax_url, {
-                    action: 'wppoppop_delete_popup',
-                    nonce: vars.nonce,
-                    uid: uid
-                }).done(function(res) {
-                    if (res.success) {
-                        $row.fadeOut(250, function() { $(this).remove(); });
-                    } else {
-                        alert('Delete Error: ' + (res.data ? res.data.message : 'Unable to delete.'));
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'wppoppop_delete_popup',
+                        nonce: nonce,
+                        uid: uid
+                    },
+                    success: function(res) {
+                        if (res && res.success) {
+                            var $row =$('#wppoppop-table-tbody .wppoppop-table-row[data-uid="' + uid + '"]');
+                            $row.fadeOut(300, function() {$(this).remove();
+                                if (window.WpPopPopDashboardTable) {
+                                    window.WpPopPopDashboardTable.reindex();
+                                }
+                            });
+                        } else {
+                            alert((res.data && res.data.message) ? res.data.message : 'Failed to delete popup.');
+                        }
+                    },
+                    error: function() {
+                        alert('Error communicating with the server.');
                     }
-                }).fail(function() {
-                    alert('Network error while deleting popup.');
                 });
             });
         },
 
         bindExport: function() {
-            var self = this;
-            $('.wppoppop-export-btn').on('click', function() {
-                var uid = $(this).data('uid');
-                var vars = self.getVars();
-                var $btn = $(this);
+            $(document).on('click', '.wppoppop-export-btn', function(e) {
+                e.preventDefault();
+                var uid = $(this).attr('data-uid');
+                if (!uid) return;
 
-                $btn.prop('disabled', true).text('Exporting...');
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
+                var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                $.get(vars.ajax_url, {
-                    action: 'wppoppop_export_popup',
-                    nonce: vars.nonce,
-                    uid: uid
-                }).done(function(res) {
-                    if (res.success && res.data) {
-                        var filename = res.data.filename || 'wppoppop-export.json';
-                        var payloadStr = typeof res.data.payload === 'string' ? res.data.payload : JSON.stringify(res.data.payload, null, 2);
-                        var blob = new Blob([payloadStr], { type: 'application/json;charset=utf-8;' });
-                        var link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.setAttribute('download', filename);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    } else {
-                        alert('Export Error: ' + (res.data ? res.data.message : 'Unable to export.'));
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        action: 'wppoppop_export_popup',
+                        nonce: nonce,
+                        uid: uid
+                    },
+                    success: function(res) {
+                        if (res && res.success && res.data) {
+                            var blob = new Blob([res.data.payload], { type: 'application/json;charset=utf-8;' });
+                            var link = document.createElement('a');
+                            link.href = URL.createObjectURL(blob);
+                            link.download = res.data.filename || ('popup-' + uid + '.json');
+                            link.click();
+                        } else {
+                            alert('Export failed.');
+                        }
                     }
-                }).fail(function() {
-                    alert('Network error while exporting popup.');
-                }).always(function() {
-                    $btn.prop('disabled', false).text('Export');
                 });
+            });
+        },
+
+        bindCopyShortcode: function() {
+            $(document).on('click', '.wppoppop-shortcode-chip', function() {
+                var copyText = $(this).attr('data-copy');
+                var $elem =$(this);
+                var origText = $elem.text();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(copyText).then(function() {
+                        $elem.text('Copied!');
+                        setTimeout(function() {
+                            $elem.text(origText);
+                        }, 1200);
+                    });
+                }
             });
         }
     };
-
-    window.WpPopPopDashboard.Actions = Actions;
-})(window, jQuery);
+})(jQuery);

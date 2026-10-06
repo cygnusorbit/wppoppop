@@ -1,9 +1,14 @@
 /* ==========================================================================
-   WpPopPop Admin Dashboard Stylesheet Aggregator
-   Decomposed Domain Subsystems
+   WpPopPop Dashboard Styles: Aggregator
    ========================================================================== */
 
 @import url("dashboard/kpi.css");
 @import url("dashboard/table.css");
 @import url("dashboard/actions-menu.css");
 @import url("dashboard/modals.css");
+
+.wppoppop-dashboard-wrap {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}

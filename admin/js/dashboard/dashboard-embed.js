@@ -1,38 +1,30 @@
-(function(window, $) {
+/**
+ * WpPopPop Dashboard: Embed Snippet Modal Controller
+ */
+(function($) {
     'use strict';
-    window.WpPopPopDashboard = window.WpPopPopDashboard || {};
 
-    var Embed = {
+    window.WpPopPopDashboardEmbed = {
         init: function() {
             this.bindModal();
-            this.bindAutoSelect();
-        },
-
-        open: function(uid) {
-            $('#wppoppop-dash-sc-field').val('[wppoppop uid="' + uid + '"]');
-            $('#wppoppop-dash-locker-field').val('[wppoppop_locker uid="' + uid + '"]Exclusive Locked Content Here[/wppoppop_locker]');
-            $('#wppoppop-dash-btn-field').val('<a href="#" class="wppoppop-open-btn" data-target-uid="' + uid + '">Open Popup</a>');
-            $('#wppoppop-dash-embed-modal').css('display', 'flex');
         },
 
         bindModal: function() {
-            $('#wppoppop-dash-embed-close').on('click', function() {
-                $('#wppoppop-dash-embed-modal').hide();
+            $(document).on('click', '.wppoppop-embed-btn', function(e) {
+                e.preventDefault();
+                var uid = $(this).attr('data-uid');
+                var title = $(this).attr('data-title');
+
+                $('#wppoppop-embed-popup-title').text(title);
+                $('#wppoppop-embed-shortcode-val').val('[wppoppop uid="' + uid + '"]');
+                $('#wppoppop-embed-locker-val').val('[wppoppop_lock uid="' + uid + '"]Hidden Premium Content[/wppoppop_lock]');
+                $('#wppoppop-embed-btn-val').val('<button class="wppoppop-open-btn" data-target-uid="' + uid + '">Open Popup</button>');
+
+                $('#wppoppop-dash-embed-modal').fadeIn(200);
             });
 
-            $('#wppoppop-dash-embed-modal').on('click', function(e) {
-                if (e.target === this) {
-                    $(this).hide();
-                }
-            });
-        },
-
-        bindAutoSelect: function() {
-            $('#wppoppop-dash-sc-field, #wppoppop-dash-locker-field, #wppoppop-dash-btn-field').on('click', function() {
-                $(this).select();
+            $(document).on('click', '.wppoppop-close-embed-modal', function() {$('#wppoppop-dash-embed-modal').fadeOut(200);
             });
         }
     };
-
-    window.WpPopPopDashboard.Embed = Embed;
-})(window, jQuery);
+})(jQuery);

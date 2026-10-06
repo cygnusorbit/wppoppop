@@ -1,23 +1,30 @@
-(function(window, $) {
+/**
+ * WpPopPop Dashboard: Master Coordinator
+ */
+(function($) {
     'use strict';
 
+    window.WpPopPopDashboard = {
+        init: function() {
+            if (window.WpPopPopDashboardTable) {
+                window.WpPopPopDashboardTable.init();
+            }
+            if (window.WpPopPopDashboardActions) {
+                window.WpPopPopDashboardActions.init();
+            }
+            if (window.WpPopPopDashboardSearch) {
+                window.WpPopPopDashboardSearch.init();
+            }
+            if (window.WpPopPopDashboardImport) {
+                window.WpPopPopDashboardImport.init();
+            }
+            if (window.WpPopPopDashboardEmbed) {
+                window.WpPopPopDashboardEmbed.init();
+            }
+        }
+    };
+
     $(document).ready(function() {
-        if (!window.WpPopPopDashboard) return;
-
-        if (window.WpPopPopDashboard.Actions) {
-            window.WpPopPopDashboard.Actions.init();
-        }
-
-        if (window.WpPopPopDashboard.Import) {
-            window.WpPopPopDashboard.Import.init();
-        }
-
-        if (window.WpPopPopDashboard.Embed) {
-            window.WpPopPopDashboard.Embed.init();
-        }
-
-        if (window.WpPopPopDashboard.Search) {
-            window.WpPopPopDashboard.Search.init();
-        }
+        window.WpPopPopDashboard.init();
     });
-})(window, jQuery);
+})(jQuery);

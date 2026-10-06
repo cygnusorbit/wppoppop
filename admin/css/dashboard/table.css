@@ -1,88 +1,247 @@
 /* ==========================================================================
-   WpPopPop Dashboard: Campaigns List Table & Badges
+   WpPopPop Dashboard: Native WordPress List Table Styles
    ========================================================================== */
 
-.wppoppop-table-container,
-.wppoppop-card-table {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    margin-bottom: 24px;
+.wppoppop-table-wrap {
+    width: 100% !important;
 }
 
-.wppoppop-campaigns-table {
-    border: none;
-    border-collapse: collapse;
-    width: 100%;
+/* Subsubsub Filters */
+.wppoppop-table-wrap .subsubsub {
+    float: left;
+    margin: 8px 0 0;
+    color: #646970;
+    font-size: 13px;
 }
 
-.wppoppop-campaigns-table thead th {
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    color: #475569;
+.wppoppop-table-wrap .subsubsub a.current {
     font-weight: 600;
-    font-size: 12px;
-    padding: 12px 14px;
+    color: #000;
 }
 
-.wppoppop-campaigns-table tbody tr {
-    transition: background 0.15s ease;
+/* Tablenav & Search */
+.wppoppop-table-wrap .search-box {
+    float: right;
+    margin: 0 0 8px;
 }
 
-.wppoppop-campaigns-table tbody tr:hover {
-    background: #f8fafc;
-}
-
-.wppoppop-campaigns-table tbody td {
-    padding: 12px 14px;
+.wppoppop-table-wrap .tablenav {
+    clear: both;
+    height: 32px;
+    margin: 6px 0 4px;
     vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9;
+}
+
+.wppoppop-table-wrap .tablenav.top {
+    margin: 10px 0 6px;
+}
+
+.wppoppop-table-wrap .tablenav.bottom {
+    margin: 8px 0 16px;
+}
+
+.wppoppop-table-wrap .tablenav .actions {
+    padding: 0 8px 0 0;
+}
+
+.wppoppop-table-wrap .tablenav .tablenav-pages {
+    float: right;
+    height: 28px;
+    color: #50575e;
+}
+
+.wppoppop-table-wrap .tablenav .displaying-num {
+    margin-right: 7px;
+    font-size: 12px;
+}
+
+.wppoppop-table-wrap .tablenav .pagination-links button {
+    min-width: 30px;
+    height: 28px;
+    line-height: 26px;
+    padding: 0 6px;
+    font-size: 14px;
+}
+
+.wppoppop-table-wrap .tablenav .paging-input {
+    margin: 0 6px;
+    font-size: 12px;
+}
+
+/* Table Design */
+.wppoppop-campaigns-table {
+    border: 1px solid #c3c4c7 !important;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04) !important;
+    background: #ffffff !important;
+    width: 100% !important;
+}
+
+.wppoppop-campaigns-table thead th,
+.wppoppop-campaigns-table tfoot th {
+    font-weight: 400;
+    font-size: 14px;
+    color: #2c3338;
+}
+
+.wppoppop-campaigns-table tbody td,
+.wppoppop-campaigns-table tbody th {
+    font-size: 13px;
+    vertical-align: top;
+    padding: 8px 10px;
+}
+
+.wppoppop-campaigns-table .column-title strong a.row-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.wppoppop-campaigns-table .column-title strong a.row-title:hover {
+    color: #135e96;
+}
+
+.wppoppop-campaigns-table .post-state {
+    color: #50575e;
+    font-weight: 400;
+}
+
+/* Row Actions (Revealed on hover) */
+.wppoppop-campaigns-table .row-actions {
+    color: #a7aaad;
+    font-size: 13px;
+    padding: 2px 0 0;
+    position: relative;
+    left: -9999em;
+}
+
+.wppoppop-campaigns-table tr:hover .row-actions,
+.wppoppop-campaigns-table tr:focus-within .row-actions {
+    left: 0;
+}
+
+.wppoppop-campaigns-table .row-actions span a,
+.wppoppop-campaigns-table .row-actions span button {
+    display: inline;
+    padding: 0;
     font-size: 13px;
 }
 
 /* Status Badges */
 .wppoppop-status-badge {
     display: inline-block;
-    padding: 2px 10px;
+    padding: 2px 8px;
     border-radius: 12px;
     font-size: 11px;
-    font-weight: 700;
-    text-transform: capitalize;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
 .wppoppop-status-badge.badge-active {
-    background: #dcfce7;
-    color: #166534;
+    background: #edfaef;
+    color: #007017;
+    border: 1px solid #c2ecc6;
 }
 
 .wppoppop-status-badge.badge-inactive {
-    background: #f1f5f9;
-    color: #64748b;
+    background: #f0f0f1;
+    color: #646970;
+    border: 1px solid #dcdcde;
 }
 
-/* Shortcode Badge Chip */
-.wppoppop-shortcode-badge {
-    display: inline-block;
+/* Shortcode Code Chip */
+.wppoppop-shortcode-chip {
     cursor: pointer;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 2px 6px;
+    background: #f6f7f7;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #dcdcde;
     font-size: 11px;
-    font-family: monospace;
-    color: #334155;
-    transition: all 0.15s ease;
+    display: inline-block;
 }
 
-.wppoppop-shortcode-badge:hover {
-    background: #e2e8f0;
-    color: #0f172a;
-    border-color: #cbd5e1;
+.wppoppop-shortcode-chip:hover {
+    background: #f0f0f1;
+    border-color: #c3c4c7;
 }
 
-.wppoppop-copy-sc-btn {
-    font-size: 11px;
-    font-family: monospace;
+/* Button Group in Action Column */
+.wppoppop-row-action-buttons {
+    display: inline-flex;
+    gap: 3px;
+    justify-content: flex-end;
+}
+
+/* Quick Edit Inline Styles */
+.inline-edit-row {
+    background: #f0f0f1 !important;
+}
+
+.inline-edit-row .colspanchange {
+    padding: 12px 14px !important;
+}
+
+.inline-edit-row fieldset {
+    float: left;
+    margin: 0;
+    padding: 0 12px 0 0;
+    box-sizing: border-box;
+}
+
+.inline-edit-row .inline-edit-col-left {
+    width: 50%;
+}
+
+.inline-edit-row .inline-edit-col-right {
+    width: 50%;
+}
+
+.inline-edit-row .inline-edit-legend {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+    margin-bottom: 8px;
+}
+
+.inline-edit-row label {
+    display: block;
+    margin: 4px 0;
+}
+
+.inline-edit-row .title {
+    display: block;
+    float: left;
+    width: 5em;
+    line-height: 2.5;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c3338;
+}
+
+.inline-edit-row .input-text-wrap {
+    display: block;
+    margin-left: 5em;
+}
+
+.inline-edit-row input[type="text"],
+.inline-edit-row select {
+    width: 100%;
+    height: 30px;
+}
+
+.inline-edit-row .submit {
+    clear: both;
+    padding: 10px 0 4px;
+    margin: 0;
+    border-top: 1px solid #dcdcde;
+    margin-top: 8px;
+}
+
+@keyframes wppoppop-pulse-highlight {
+    0% { background-color: #fcf9e8 !important; }
+    100% { background-color: transparent; }
+}
+
+.wppoppop-row-updated {
+    animation: wppoppop-pulse-highlight 1.5s ease-out;
 }

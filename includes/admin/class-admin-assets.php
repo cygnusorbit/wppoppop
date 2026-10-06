@@ -16,7 +16,7 @@ class WpPopPop_Admin_Assets {
         $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
         $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
 
-        // Shared general config
+        // Shared general configuration
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),
             'nonce'       => wp_create_nonce('wppoppop_admin_nonce'),
@@ -26,7 +26,22 @@ class WpPopPop_Admin_Assets {
         // 1. Dashboard Assets
         if ($page === 'wppoppop' || $hook === 'toplevel_page_wppoppop') {
             wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], WPPOPPOP_VERSION);
-            wp_enqueue_script('wppoppop-dashboard-js', WPPOPPOP_URL . 'admin/js/dashboard.js', ['jquery'], WPPOPPOP_VERSION, true);
+            
+            wp_enqueue_script('wppoppop-dashboard-actions-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-actions.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-import-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-import.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-embed-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-embed.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-table-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-table.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-search-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-search.js', ['jquery', 'wppoppop-dashboard-table-js'], WPPOPPOP_VERSION, true);
+            
+            wp_enqueue_script('wppoppop-dashboard-js', WPPOPPOP_URL . 'admin/js/dashboard.js', [
+                'jquery',
+                'wppoppop-dashboard-actions-js',
+                'wppoppop-dashboard-import-js',
+                'wppoppop-dashboard-embed-js',
+                'wppoppop-dashboard-table-js',
+                'wppoppop-dashboard-search-js'
+            ], WPPOPPOP_VERSION, true);
+
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
         }
 

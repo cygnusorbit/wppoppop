@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wrap wppoppop-dashboard-wrap" style="max-width:1200px;">
+<div class="wrap wppoppop-dashboard-wrap" style="width: 100%; padding-right: 30px; max-width: none; box-sizing: border-box;">
     <!-- Dashboard Header & Top Actions -->
     <?php include WPPOPPOP_PATH . 'templates/dashboard/header.php'; ?>
 

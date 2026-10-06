@@ -1,21 +1,26 @@
-(function(window, $) {
+/**
+ * WpPopPop Dashboard: Search Filter
+ * Synchronizes real-time text input with WpPopPopDashboardTable.
+ */
+(function($) {
     'use strict';
-    window.WpPopPopDashboard = window.WpPopPopDashboard || {};
 
-    var Search = {
+    window.WpPopPopDashboardSearch = {
         init: function() {
-            var $input = $('#wppoppop-dash-search');
-            if (!$input.length) return;
+            this.bindSearch();
+        },
 
-            $input.on('input', function() {
-                var term = $(this).val().toLowerCase().trim();
-                $('.wp-list-table tbody tr').each(function() {
-                    var text = $(this).text().toLowerCase();
-                    $(this).toggle(text.indexOf(term) !== -1);
-                });
+        bindSearch: function() {
+            var debounceTimer;
+            $('#wppoppop-search-input').on('keyup input', function() {
+                var query = $(this).val();
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    if (window.WpPopPopDashboardTable) {
+                        window.WpPopPopDashboardTable.filter(query);
+                    }
+                }, 150);
             });
         }
     };
-
-    window.WpPopPopDashboard.Search = Search;
-})(window, jQuery);
+})(jQuery);
