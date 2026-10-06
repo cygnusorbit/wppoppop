@@ -9,15 +9,20 @@ jQuery(document).ready(function($) {
     const stage = $('#wppoppop-stage');
     const builderWrap = $('#wppoppop-builder-wrap');
 
-    // 1. History Buffer (Undo / Redo)
+    // 1. History Buffer (Undo / Redo with Stage Dimensions Support)
     const historyStack = [];
     let historyIndex = -1;
 
     function recordState() {
-        const state = [];
+        const state = {
+            stageWidth: stage.width(),
+            stageHeight: stage.height(),
+            elements: []
+        };
+
         $('.canvas-element').each(function() {
             const el = $(this);
-            state.push({
+            state.elements.push({
                 id: el.attr('id'),
                 type: el.data('type'),
                 screen: el.data('screen') || 1,
@@ -38,8 +43,17 @@ jQuery(document).ready(function($) {
     }
 
     function applyHistoryState(state) {
+        if (!state) return;
+        const sWidth = state.stageWidth || (Array.isArray(state) ? stage.width() : 620);
+        const sHeight = state.stageHeight || (Array.isArray(state) ? stage.height() : 380);
+        stage.css({ width: sWidth + 'px', height: sHeight + 'px' });
+        $('#stage-width').val(sWidth);
+        $('#stage-height').val(sHeight);
+        updateStageSizeBadge(sWidth, sHeight);
+
+        const elementsList = Array.isArray(state) ? state : (state.elements || []);
         stage.find('.canvas-element').remove();
-        state.forEach(function(item) {
+        elementsList.forEach(function(item) {
             const el = $('<div class="canvas-element"></div>')
                 .attr('id', item.id)
                 .data(item.data)
@@ -152,11 +166,52 @@ jQuery(document).ready(function($) {
         deselectElement();
     }
 
-    // 4. Stage Box Dimensions & Styling
+    // 4. DIRECT STAGE RESIZING ENGINE (Box & Dimensions Dragging on Stage)
+    function updateStageSizeBadge(w, h) {
+        w = w || stage.width();
+        h = h || stage.height();
+        $('#stage-dimension-badge .badge-text').text(w + ' × ' + h + ' px');
+    }
+
+    function initStageResizable() {
+        if ($.fn.resizable) {
+            if (stage.hasClass('ui-resizable')) {
+                stage.resizable('destroy');
+            }
+            stage.resizable({
+                handles: 'e, s, se',
+                minWidth: 260,
+                minHeight: 180,
+                grid: $('#chk-grid-snap').is(':checked') ? [10, 10] : false,
+                start: function() {
+                    stage.addClass('stage-is-resizing');
+                },
+                resize: function(e, ui) {
+                    const w = Math.round(ui.size.width);
+                    const h = Math.round(ui.size.height);
+                    $('#stage-width').val(w);
+                    $('#stage-height').val(h);
+                    updateStageSizeBadge(w, h);
+                },
+                stop: function(e, ui) {
+                    stage.removeClass('stage-is-resizing');
+                    const w = Math.round(ui.size.width);
+                    const h = Math.round(ui.size.height);
+                    $('#stage-width').val(w);
+                    $('#stage-height').val(h);
+                    updateStageSizeBadge(w, h);
+                    recordState();
+                }
+            });
+        }
+    }
+
+    // Stage Dimensions Input Change
     function updateStageStyles() {
         const w = parseInt($('#stage-width').val(), 10) || 620;
         const h = parseInt($('#stage-height').val(), 10) || 380;
         stage.css({ width: w + 'px', height: h + 'px' });
+        updateStageSizeBadge(w, h);
 
         const radius = parseInt($('#box-border-radius').val(), 10) || 4;
         stage.css('border-radius', radius + 'px');
@@ -423,6 +478,16 @@ jQuery(document).ready(function($) {
         });
     }
 
+    $('#chk-grid-snap').on('change', function() {
+        const isSnap = $(this).is(':checked');
+        const gridVal = isSnap ? [10, 10] : false;
+        $('.canvas-element').not('.locked').draggable('option', 'grid', gridVal);
+        $('.canvas-element').not('.locked').resizable('option', 'grid', gridVal);
+        if (stage.hasClass('ui-resizable')) {
+            stage.resizable('option', 'grid', gridVal);
+        }
+    });
+
     // 7. Inspector Selection & Dynamic Binding
     function selectElement(elem) {
         $('.canvas-element').removeClass('selected');
@@ -599,7 +664,6 @@ jQuery(document).ready(function($) {
     $('#prop-calc-target').on('input', function() { if (activeElement) activeElement.data('calc_target', $(this).val()); });
     $('#prop-goto-screen').on('change', function() { if (activeElement) activeElement.data('goto_screen', $(this).val()); });
 
-    // WordPress Media Library Modal Integration
     $('#btn-prop-media-picker').on('click', function(e) {
         e.preventDefault();
         if (typeof wp !== 'undefined' && wp.media) {
@@ -1024,8 +1088,8 @@ jQuery(document).ready(function($) {
         const payload = {
             meta: {
                 title: $('#wppoppop-popup-title').val() || 'yes-no-3',
-                width: parseInt($('#stage-width').val(), 10) || 620,
-                height: parseInt($('#stage-height').val(), 10) || 380,
+                width: parseInt($('#stage-width').val(), 10) || stage.width(),
+                height: parseInt($('#stage-height').val(), 10) || stage.height(),
                 status: $('#wppoppop-popup-status').val() || 'publish'
             },
             styling: {
@@ -1222,6 +1286,7 @@ jQuery(document).ready(function($) {
                             makeInteractive(elem);
                         });
                         refreshLayers();
+                        initStageResizable();
                         recordState();
                         return;
                     }
@@ -1267,6 +1332,7 @@ jQuery(document).ready(function($) {
         });
 
         refreshLayers();
+        initStageResizable();
         recordState();
     }
 
@@ -1277,5 +1343,7 @@ jQuery(document).ready(function($) {
         return "#" + ((1 << 24) + (parseInt(parts[0]) << 16) + (parseInt(parts[1]) << 8) + parseInt(parts[2])).toString(16).slice(1);
     }
 
+    // Initialize Stage Resize Capabilities on Document Ready
+    initStageResizable();
     loadPopupData();
 });

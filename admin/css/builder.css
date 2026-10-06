@@ -183,6 +183,7 @@
     color: #475569;
 }
 
+/* STAGE CANVAS WITH DRAGGABLE RESIZE HANDLES */
 .wppoppop-stage {
     position: relative;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
@@ -195,12 +196,105 @@
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     border-radius: 4px;
-    overflow: hidden;
+    overflow: visible !important;
     transition: outline 0.15s ease;
 }
 .wppoppop-stage.stage-drop-hover {
     outline: 2px dashed #38bdf8 !important;
     outline-offset: 4px;
+}
+.wppoppop-stage.stage-is-resizing {
+    outline: 2px dashed #d6336c !important;
+    outline-offset: 4px;
+}
+
+/* Stage Box & Dimensions Drag Resize Grips */
+#wppoppop-stage > .ui-resizable-handle {
+    z-index: 999999 !important;
+}
+#wppoppop-stage > .ui-resizable-e {
+    cursor: e-resize;
+    width: 14px;
+    right: -7px;
+    top: 0;
+    height: 100%;
+}
+#wppoppop-stage > .ui-resizable-e:hover,
+#wppoppop-stage.stage-is-resizing > .ui-resizable-e {
+    background: rgba(56, 189, 248, 0.4);
+    border-radius: 4px;
+}
+#wppoppop-stage > .ui-resizable-s {
+    cursor: s-resize;
+    height: 14px;
+    bottom: -7px;
+    left: 0;
+    width: 100%;
+}
+#wppoppop-stage > .ui-resizable-s:hover,
+#wppoppop-stage.stage-is-resizing > .ui-resizable-s {
+    background: rgba(56, 189, 248, 0.4);
+    border-radius: 4px;
+}
+#wppoppop-stage > .ui-resizable-se {
+    cursor: nwse-resize;
+    width: 24px;
+    height: 24px;
+    right: -2px;
+    bottom: -2px;
+    background: #d6336c;
+    border: 2px solid #ffffff;
+    border-top-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, background 0.15s ease;
+}
+#wppoppop-stage > .ui-resizable-se:hover,
+#wppoppop-stage.stage-is-resizing > .ui-resizable-se {
+    background: #e64980;
+    transform: scale(1.15);
+}
+#wppoppop-stage > .ui-resizable-se::after {
+    content: "";
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+/* Stage Dimension Live Badge */
+.stage-dimension-badge {
+    position: absolute;
+    bottom: -32px;
+    right: 0;
+    background: #111827;
+    border: 1px solid #374151;
+    color: #38bdf8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    user-select: none;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 99998;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.stage-dimension-badge .dashicons {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    color: #94a3b8;
 }
 
 /* Canvas Elements */
@@ -223,7 +317,7 @@
     font-size: 0.1px;
     display: block;
 }
-.ui-resizable-se {
+.canvas-element .ui-resizable-se {
     cursor: se-resize;
     width: 8px;
     height: 8px;

@@ -100,7 +100,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
             </div>
         </div>
 
-        <!-- 4. Canvas Viewport with Alignment Toolbar & Stage -->
+        <!-- 4. Canvas Viewport with Alignment Toolbar & Direct Stage Resizing -->
         <main class="wppoppop-canvas-viewport">
             <div class="canvas-alignment-toolbar">
                 <button type="button" class="button button-small" id="btn-undo" title="Undo (Ctrl+Z)"><span class="dashicons dashicons-undo"></span> Undo</button>
@@ -117,8 +117,12 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
                 <button type="button" class="button button-small btn-align" data-align="bottom">Bottom</button>
             </div>
 
+            <!-- Resizable Stage Canvas with Live Dimension Badge -->
             <div class="wppoppop-stage" id="wppoppop-stage" style="width: 620px; height: 380px;">
                 <!-- Canvas elements render here -->
+                <div class="stage-dimension-badge" id="stage-dimension-badge">
+                    <span class="dashicons dashicons-editor-expand"></span> <span class="badge-text">620 &times; 380 px</span>
+                </div>
             </div>
 
             <!-- Floating Magenta LAYERS Panel -->
@@ -449,7 +453,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         </div>
     </aside>
 
-    <!-- Slide-out Campaign Settings Drawer (Left side) with Full 17 Accordions -->
+    <!-- Slide-out Campaign Settings Drawer (Left side) -->
     <aside id="wppoppop-settings-drawer" class="wppoppop-slide-drawer">
         <div class="drawer-header">
             <h3><span class="dashicons dashicons-admin-generic"></span> Campaign Settings</h3>
