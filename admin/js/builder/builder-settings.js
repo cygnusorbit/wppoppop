@@ -226,6 +226,12 @@
                 $('#set-gradient-wrap').hide();
             }
 
+            // Load Screen Animation Settings
+            $('#set-screen-anim-in').val(sc.animIn || 'fade');
+            $('#set-screen-anim-duration').val(sc.animInDuration !== undefined ? sc.animInDuration : 1000);
+            $('#set-screen-anim-delay').val(sc.animInDelay !== undefined ? sc.animInDelay : 0);
+            $('#set-screen-anim-out').val(sc.animOut || 'fade');
+
             var isEmpty = this.checkScreenEmptyState(sc.id);
 
             var log = sc.logic || {};
@@ -289,7 +295,6 @@
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
-            // Swatch input -> Syncs directly to companion hex text input
             $(document).on('input change', '.wppoppop-color-swatch-input', function() {
                 var targetSelector = $(this).data('target');
                 var hexVal = $(this).val();
@@ -298,7 +303,6 @@
                 }
             });
 
-            // Hex input -> Syncs directly back to color swatch
             $(document).on('input change', '.wppoppop-color-hex-input', function() {
                 var hexVal = $(this).val().trim();
                 var inputId = $(this).attr('id');
@@ -326,6 +330,13 @@
             $('#set-box-width, #set-box-height, #set-bg-mode, #set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
                 self.saveCurrentScreenData();
                 self.applyLiveStyles();
+                if (Core) Core.isDirty = true;
+            });
+
+            // Live Animation Inputs Listeners
+            $('#set-screen-anim-in, #set-screen-anim-duration, #set-screen-anim-delay, #set-screen-anim-out').on('input change', function() {
+                self.saveCurrentScreenData();
+                self.previewAnimation();
                 if (Core) Core.isDirty = true;
             });
 
@@ -375,6 +386,35 @@
             });
         },
 
+        previewAnimation: function() {
+            var animIn = $('#set-screen-anim-in').val();
+            var duration = parseInt($('#set-screen-anim-duration').val(), 10) || 1000;
+            var delay = parseInt($('#set-screen-anim-delay').val(), 10) || 0;
+            var $box = $('#wppoppop-canvas-box');
+
+            if (animIn === 'none') {
+                $box.css({ animation: 'none' });
+                return;
+            }
+
+            var animClassMap = {
+                fade: 'wppoppopFadeIn',
+                slideDown: 'wppoppopSlideDown',
+                bounceIn: 'wppoppopBounceIn',
+                zoomIn: 'wppoppopZoomIn',
+                flipIn: 'wppoppopFlipIn'
+            };
+
+            var keyframeName = animClassMap[animIn] || 'wppoppopFadeIn';
+
+            $box.css('animation', 'none');
+            setTimeout(function() {
+                $box.css({
+                    animation: keyframeName + ' ' + (duration / 1000) + 's ease-out ' + (delay / 1000) + 's forwards'
+                });
+            }, 20);
+        },
+
         saveCurrentScreenData: function() {
             var Core = window.WpPopPopBuilder.Core;
             if (!Core || !Array.isArray(Core.screens)) return;
@@ -389,6 +429,12 @@
                 sc.gradColor1 = $('#set-grad-color1').val() || '#3b82f6';
                 sc.gradColor2 = $('#set-grad-color2').val() || '#1d4ed8';
                 sc.gradAngle = parseInt($('#set-grad-angle').val(), 10) || 135;
+
+                // Save Screen Animation Properties
+                sc.animIn = $('#set-screen-anim-in').val() || 'fade';
+                sc.animInDuration = parseInt($('#set-screen-anim-duration').val(), 10) || 1000;
+                sc.animInDelay = parseInt($('#set-screen-anim-delay').val(), 10) || 0;
+                sc.animOut = $('#set-screen-anim-out').val() || 'fade';
 
                 sc.logic = {
                     enable: $('#set-screen-cond-enable').is(':checked') && !self.checkScreenEmptyState(sc.id),

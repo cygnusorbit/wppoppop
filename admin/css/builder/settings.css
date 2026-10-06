@@ -1,6 +1,6 @@
 /* ==========================================================================
    WpPopPop Visual Builder: Slide-Out Campaign Settings Drawer
-   Slide Buttons, Simple Color Pickers (50%/50% Columns) & Screen Bullets
+   Slide Buttons, Simple Color Pickers (50%/50% Columns), Animations & Screen Bullets
    ========================================================================== */
 
 #wppoppop-settings-drawer {
@@ -251,4 +251,38 @@
 .wppoppop-color-hex-input:focus {
     border-color: #3b82f6 !important;
     box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+/* ==========================================================================
+   Screen Animation Section: Unit Badge Input Group & Subcaptions
+   ========================================================================== */
+.wppoppop-unit-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.wppoppop-unit-input-wrap input {
+    width: 100% !important;
+    padding-right: 32px !important;
+    box-sizing: border-box !important;
+}
+
+.wppoppop-unit-badge {
+    position: absolute;
+    right: 8px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    pointer-events: none;
+    user-select: none;
+}
+
+.wppoppop-field-subcaption {
+    display: block;
+    font-style: italic;
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 3px;
+    line-height: 1.2;
 }

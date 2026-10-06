@@ -25,7 +25,6 @@
             var defaultGradColor2 = (initialConfig.settings && initialConfig.settings.gradColor2) ? initialConfig.settings.gradColor2 : '#1d4ed8';
             var defaultGradAngle = (initialConfig.settings && initialConfig.settings.gradAngle) ? initialConfig.settings.gradAngle : 135;
 
-            // Initialize Screens Array with Default Screen Logic
             if (Array.isArray(initialConfig.screens) && initialConfig.screens.length > 0) {
                 this.screens = initialConfig.screens.map(function(sc) {
                     return {
@@ -38,14 +37,18 @@
                         gradColor1: sc.gradColor1 || defaultGradColor1,
                         gradColor2: sc.gradColor2 || defaultGradColor2,
                         gradAngle: parseInt(sc.gradAngle, 10) || defaultGradAngle,
+                        animIn: sc.animIn || 'fade',
+                        animInDuration: sc.animInDuration !== undefined ? parseInt(sc.animInDuration, 10) : 1000,
+                        animInDelay: sc.animInDelay !== undefined ? parseInt(sc.animInDelay, 10) : 0,
+                        animOut: sc.animOut || 'fade',
                         logic: sc.logic || { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' }
                     };
                 });
             } else {
                 this.screens = [
-                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' } },
-                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 3, fallback: 'next_screen' } },
-                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' } }
+                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'fade', animInDuration: 1000, animInDelay: 0, animOut: 'fade', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' } },
+                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'fade', animInDuration: 1000, animInDelay: 0, animOut: 'fade', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 3, fallback: 'next_screen' } },
+                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, animIn: 'fade', animInDuration: 1000, animInDelay: 0, animOut: 'fade', logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' } }
                 ];
             }
 
@@ -133,7 +136,6 @@
                 var sId = parseInt($(this).data('screen'), 10);
                 self.setScreen(sId);
 
-                // Slide in Campaign Settings drawer focused on Accordion 1
                 if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
                     window.WpPopPopBuilder.Settings.open();
                     window.WpPopPopBuilder.Settings.setActiveScreen(sId);
@@ -209,6 +211,10 @@
                 gradColor1: activeSc ? activeSc.gradColor1 : '#3b82f6',
                 gradColor2: activeSc ? activeSc.gradColor2 : '#1d4ed8',
                 gradAngle: activeSc ? activeSc.gradAngle : 135,
+                animIn: 'fade',
+                animInDuration: 1000,
+                animInDelay: 0,
+                animOut: 'fade',
                 logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' }
             };
 
@@ -259,13 +265,9 @@
                 sc.title = newTitle;
                 this.isDirty = true;
 
-                // Sync header tab text
                 $('.wppoppop-screen-tab[data-screen="' + sId + '"] .wppoppop-screen-tab-title').text(newTitle);
-
-                // Sync bullet button title
                 $('.wppoppop-screen-bullet[data-screen="' + sId + '"] .bullet-title').text(newTitle);
 
-                // Sync settings input if active
                 if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
                     if (window.WpPopPopBuilder.Settings.activeSettingsScreen === sId && !$('#set-screen-title').is(':focus')) {
                         $('#set-screen-title').val(newTitle);

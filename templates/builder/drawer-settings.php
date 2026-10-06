@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     </div>
 
     <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
-        <!-- 1. Box & Canvas Dimensions per Screen with 50%/50% Color Picker Row -->
+        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename, 50%/50% Color Pickers & Animations -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header active" id="wppoppop-acc-canvas-dimensions">
                 <span>1. Canvas Dimensions & Background</span>
@@ -37,7 +37,7 @@ if (!defined('ABSPATH')) {
                     <button type="button" class="wppoppop-screen-subtab" data-subtab="logic" style="flex:1;background:transparent;color:#94a3b8;border:none;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;text-align:center;">Logic</button>
                 </div>
 
-                <!-- SUBTAB PANE 1: Dimensions, Rename & 50%/50% Color Pickers -->
+                <!-- SUBTAB PANE 1: Dimensions, Rename, 50%/50% Colors & Animations -->
                 <div id="wppoppop-subtab-pane-canvas">
                     <div style="margin-bottom:12px;background:#1e293b;padding:10px;border-radius:6px;border:1px solid #334155;">
                         <label style="display:block;font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:4px;text-transform:uppercase;">Screen Name (Rename)</label>
@@ -63,7 +63,7 @@ if (!defined('ABSPATH')) {
                         </select>
                     </div>
 
-                    <!-- Solid Background with 50% Color Picker Wrap & 50% Hex Input on Same Row -->
+                    <!-- Solid Background with 50%/50% Row -->
                     <div id="set-solid-wrap" style="margin-bottom:10px;">
                         <label style="display:block;margin-bottom:4px;">Background Color</label>
                         <div class="wppoppop-color-picker-row">
@@ -74,7 +74,7 @@ if (!defined('ABSPATH')) {
                         </div>
                     </div>
 
-                    <!-- Linear Gradient with 50% Color Picker Wrap & 50% Hex Input on Same Row -->
+                    <!-- Linear Gradient with 50%/50% Rows -->
                     <div id="set-gradient-wrap" style="display:none;margin-bottom:10px;">
                         <div style="margin-bottom:8px;">
                             <label style="display:block;margin-bottom:4px;">Gradient Start</label>
@@ -98,6 +98,57 @@ if (!defined('ABSPATH')) {
 
                         <label>Angle (deg)</label>
                         <input type="number" id="set-grad-angle" value="135">
+                    </div>
+
+                    <!-- Screen Animation Settings Section (Appearance, Duration, Delay, Disappearance) -->
+                    <div class="wppoppop-screen-anim-section" style="margin-top:14px;padding-top:12px;border-top:1px solid #334155;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                            <label style="font-size:12px;font-weight:800;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.5px;margin:0;">ANIMATION</label>
+                            <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#94a3b8;cursor:help;" title="Configure entrance and exit transitions for this screen/canvas."></span>
+                        </div>
+
+                        <!-- Appearance (Entrance Dropdown) -->
+                        <div style="margin-bottom:10px;">
+                            <select id="set-screen-anim-in">
+                                <option value="fade">Fade</option>
+                                <option value="slideDown">Slide Down</option>
+                                <option value="bounceIn">Bounce In</option>
+                                <option value="zoomIn">Zoom In</option>
+                                <option value="flipIn">Flip In</option>
+                                <option value="none">None</option>
+                            </select>
+                            <span class="wppoppop-field-subcaption">Appearance</span>
+                        </div>
+
+                        <!-- Duration & Start Delay (Two Inputs with Unit Badges) -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                            <div>
+                                <div class="wppoppop-unit-input-wrap">
+                                    <input type="number" id="set-screen-anim-duration" value="1000" min="0" step="50">
+                                    <span class="wppoppop-unit-badge">ms</span>
+                                </div>
+                                <span class="wppoppop-field-subcaption">Duration</span>
+                            </div>
+                            <div>
+                                <div class="wppoppop-unit-input-wrap">
+                                    <input type="number" id="set-screen-anim-delay" value="0" min="0" step="50">
+                                    <span class="wppoppop-unit-badge">ms</span>
+                                </div>
+                                <span class="wppoppop-field-subcaption">Start delay</span>
+                            </div>
+                        </div>
+
+                        <!-- Disappearance (Exit Dropdown) -->
+                        <div style="margin-bottom:6px;">
+                            <select id="set-screen-anim-out">
+                                <option value="fade">Fade</option>
+                                <option value="slideUp">Slide Up</option>
+                                <option value="zoomOut">Zoom Out</option>
+                                <option value="flipOut">Flip Out</option>
+                                <option value="none">None</option>
+                            </select>
+                            <span class="wppoppop-field-subcaption">Disappearance</span>
+                        </div>
                     </div>
                 </div>
 

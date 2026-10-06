@@ -75,6 +75,23 @@
                 $box.css('background', initialScreen.bgColor || '#ffffff');
             }
 
+            // Apply Initial Screen Entrance Animation
+            var initAnim = initialScreen.animIn || 'fade';
+            var initDur = (initialScreen.animInDuration !== undefined ? initialScreen.animInDuration : 1000) / 1000;
+            var initDelay = (initialScreen.animInDelay !== undefined ? initialScreen.animInDelay : 0) / 1000;
+
+            var animClassMap = {
+                fade: 'wppoppopFadeIn',
+                slideDown: 'wppoppopSlideDown',
+                bounceIn: 'wppoppopBounceIn',
+                zoomIn: 'wppoppopZoomIn',
+                flipIn: 'wppoppopFlipIn'
+            };
+
+            if (initAnim !== 'none' && animClassMap[initAnim]) {
+                $box.css('animation', animClassMap[initAnim] + ' ' + initDur + 's ease-out ' + initDelay + 's forwards');
+            }
+
             var $closeBtn = $('<button type="button">&times;</button>')
                 .css({
                     position: 'absolute',
@@ -99,7 +116,6 @@
                 });
             $box.append($closeBtn);
 
-            // Render all screens inside sandbox
             Core.screens.forEach(function(sc, idx) {
                 var $screen = $('<div></div>')
                     .attr('data-preview-screen', sc.id)
@@ -124,13 +140,11 @@
                         $elNode.html('<label style="display:flex;align-items:center;gap:8px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;cursor:pointer;"><input type="checkbox" class="wppoppop-preview-input" data-el-id="' + el.id + '" value="1" checked><span style="font-size:inherit;color:inherit;">' + (el.content || el.label || 'Accept terms') + '</span></label>');
                     }
 
-                    // Button Action Routing & Conditional Branching Evaluator
                     if (el.type === 'step_btn' || el.type === 'submit' || el.type === 'pay') {
                         $elNode.find('button').on('click', function(evt) {
                             evt.preventDefault();
                             var targetScreenId = null;
 
-                            // 1. Evaluate Screen-Level Conditional Logic from Accordion 1
                             var scObj = Core.screens.find(function(s) { return s.id === sc.id; });
                             if (scObj && scObj.logic && scObj.logic.enable && scObj.logic.field) {
                                 var $fieldInput = $box.find('.wppoppop-preview-input[data-el-id="' + scObj.logic.field + '"]');
@@ -172,7 +186,6 @@
                                 }
                             }
 
-                            // 2. Fallback to default element routing if no screen logic matched
                             if (!targetScreenId) {
                                 if (el.actionClose === 'jump_screen' && el.actionTargetScreen) {
                                     targetScreenId = parseInt(el.actionTargetScreen, 10);
@@ -193,7 +206,6 @@
                                 }
                             }
 
-                            // Perform Screen Transition with Dimensions & Background
                             if (targetScreenId) {
                                 var targetScObj = Core.screens.find(function(s) { return s.id === targetScreenId; });
                                 if (targetScObj) {
@@ -202,6 +214,18 @@
                                         $box.css('background', 'linear-gradient(' + (targetScObj.gradAngle || 135) + 'deg, ' + (targetScObj.gradColor1 || '#3b82f6') + ', ' + (targetScObj.gradColor2 || '#1d4ed8') + ')');
                                     } else {
                                         $box.css('background', targetScObj.bgColor || '#ffffff');
+                                    }
+
+                                    // Apply Destination Screen Entrance Animation
+                                    var nextAnim = targetScObj.animIn || 'fade';
+                                    var nextDur = (targetScObj.animInDuration !== undefined ? targetScObj.animInDuration : 1000) / 1000;
+                                    var nextDelay = (targetScObj.animInDelay !== undefined ? targetScObj.animInDelay : 0) / 1000;
+
+                                    if (nextAnim !== 'none' && animClassMap[nextAnim]) {
+                                        $box.css('animation', 'none');
+                                        setTimeout(function() {
+                                            $box.css('animation', animClassMap[nextAnim] + ' ' + nextDur + 's ease-out ' + nextDelay + 's forwards');
+                                        }, 10);
                                     }
                                 }
                                 $box.find('[data-preview-screen]').hide();
