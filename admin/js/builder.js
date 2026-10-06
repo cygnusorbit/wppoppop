@@ -7,42 +7,58 @@ jQuery(document).ready(function($) {
     let zIndexCounter = 10;
     let pageCount = 2;
     const stage = $('#wppoppop-stage');
+    const builderWrap = $('#wppoppop-builder-wrap');
 
-    // 1. Drawer Controls & Full-Screen Backdrop Dismissal
+    // 1. Settings Drawer (Left Side)
     $('#wppoppop-btn-settings').on('click', function(e) {
         e.preventDefault();
-        $('#wppoppop-inspector-drawer').removeClass('open');
-        $('#wppoppop-settings-drawer').addClass('open');
-        $('#wppoppop-drawer-backdrop').fadeIn(200);
+        $('#wppoppop-settings-drawer').toggleClass('open');
     });
 
-    function closeAllDrawers() {
+    $('#btn-close-settings').on('click', function() {
         $('#wppoppop-settings-drawer').removeClass('open');
-        $('#wppoppop-inspector-drawer').removeClass('open');
-        $('#wppoppop-drawer-backdrop').fadeOut(200);
-    }
-
-    $('.btn-close-drawer, #btn-done-inspector, #wppoppop-drawer-backdrop').on('click', function(e) {
-        e.preventDefault();
-        closeAllDrawers();
     });
 
-    // Close on ESC Key
-    $(document).on('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeAllDrawers();
-            $('.wppoppop-modal-backdrop').fadeOut(150);
-        }
-    });
-
-    // Accordions
+    // Accordions inside settings
     $(document).on('click', '.accordion-header', function() {
         const item = $(this).closest('.accordion-item');
         item.toggleClass('active');
         item.find('.accordion-body').slideToggle(150);
     });
 
-    // 2. Stage Dimensions & Styling Live Synchronization
+    // 2. Inspector Tabs Switcher (Basic / Style / Logic)
+    $('.inspector-tab-btn').on('click', function() {
+        $('.inspector-tab-btn').removeClass('active');
+        $('.inspector-tab-pane').removeClass('active');
+        $(this).addClass('active');
+        $('#' + $(this).data('tab')).addClass('active');
+    });
+
+    // Close Inspector: Slides out panel and expands frame back
+    $('#btn-close-inspector').on('click', function(e) {
+        e.preventDefault();
+        closeInspectorPanel();
+    });
+
+    function openInspectorPanel() {
+        builderWrap.addClass('panel-open');
+    }
+
+    function closeInspectorPanel() {
+        builderWrap.removeClass('panel-open');
+        deselectElement();
+    }
+
+    // Close on ESC
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeInspectorPanel();
+            $('#wppoppop-settings-drawer').removeClass('open');
+            $('.wppoppop-modal-backdrop').fadeOut(150);
+        }
+    });
+
+    // 3. Stage Dimensions & Styling Live Synchronization
     function updateStageStyles() {
         const w = parseInt($('#stage-width').val(), 10) || 620;
         const h = parseInt($('#stage-height').val(), 10) || 380;
@@ -69,7 +85,7 @@ jQuery(document).ready(function($) {
     }
     $('#stage-width, #stage-height, #box-border-radius, #box-bg-color, #box-bg-image').on('input change', updateStageStyles);
 
-    // 3. Screens / Pages Tab Strip
+    // 4. Screens / Pages Tab Strip
     $('.pages-tabs-list').on('click', '.btn-page-tab', function() {
         if ($(this).hasClass('btn-add-page')) {
             pageCount++;
@@ -92,7 +108,7 @@ jQuery(document).ready(function($) {
         refreshLayers();
     });
 
-    // 4. Element Factory Creation Helper
+    // 5. Element Factory Creation Helper (All 27+ Types)
     function createNewElement(type, posX, posY) {
         zIndexCounter += 5;
         const elementId = 'elem_' + Date.now();
@@ -100,10 +116,11 @@ jQuery(document).ready(function($) {
         let w = 180, h = 40, content = 'New ' + type, fieldName = '';
         let opts = ['10% OFF', 'FREE SHIPPING', '25% OFF', '$5 REWARD'];
         let bgColor = '#0284c7', color = '#ffffff', fontSize = 16, radius = 4;
+        let imgUrl = 'https://via.placeholder.com/400x240';
 
         if (type === 'box') { w = 240; h = 120; bgColor = '#f8fafc'; color = '#334155'; content = ''; }
         else if (type === 'text') { w = 220; h = 32; bgColor = 'transparent'; color = '#1e293b'; content = 'Headline Text'; fontSize = 20; }
-        else if (type === 'image') { w = 160; h = 120; bgColor = '#e2e8f0'; content = 'https://via.placeholder.com/160x120'; }
+        else if (type === 'image') { w = 400; h = 240; bgColor = 'transparent'; content = ''; }
         else if (type === 'video') { w = 260; h = 150; bgColor = '#0f172a'; color = '#38bdf8'; content = 'Video Player'; }
         else if (type === 'html') { w = 200; h = 60; bgColor = 'transparent'; color = '#0f172a'; content = '<p>Custom HTML snippet</p>'; }
         else if (type === 'close') { w = 32; h = 32; bgColor = 'transparent'; color = '#64748b'; content = '&times;'; fontSize = 24; }
@@ -135,10 +152,23 @@ jQuery(document).ready(function($) {
             id: elementId,
             type: type,
             screen: currentScreen,
-            layer_name: type.toUpperCase(),
+            layer_name: type === 'image' ? 'Image' : type.toUpperCase(),
             field_name: fieldName,
             content: content,
             options: opts,
+            image_url: imgUrl,
+            img_size: 'cover',
+            img_pos_h: 'center',
+            img_pos_v: 'center',
+            img_repeat: 'no-repeat',
+            url: '',
+            target_blank: 0,
+            close_action: 'none',
+            onclick: '',
+            anim_appear: 'fade',
+            anim_duration: 1000,
+            anim_delay: 0,
+            anim_disappear: 'fade',
             font_family: 'Inherit',
             font_size: fontSize,
             border_radius: radius,
@@ -206,6 +236,10 @@ jQuery(document).ready(function($) {
 
     function renderElementMarkup(type, d) {
         const c = d.content || '';
+        if (type === 'image') {
+            const url = d.image_url || 'https://via.placeholder.com/400x240';
+            return '<div class="img-render-box" style="width:100%;height:100%;background-image:url(' + url + ');background-size:' + (d.img_size || 'cover') + ';background-position:' + (d.img_pos_h || 'center') + ' ' + (d.img_pos_v || 'center') + ';background-repeat:' + (d.img_repeat || 'no-repeat') + ';"></div>';
+        }
         if (type === 'wheel') return '<div style="width:100%;height:100%;border-radius:50%;border:2px dashed #475569;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">Lucky Wheel</div>';
         if (type === 'scratch') return '<div style="width:100%;height:100%;background:linear-gradient(135deg,#94a3b8,#cbd5e1);display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b;">Scratch Card</div>';
         if (type === 'countdown') return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:2px;">' + (c || '15:00') + '</div>';
@@ -213,9 +247,8 @@ jQuery(document).ready(function($) {
         if (type === 'signature') return '<div style="border:1px dashed #94a3b8;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;">Sign Here</div>';
         if (type === 'rating') return '<div style="font-size:18px;letter-spacing:3px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>';
         if (type === 'close') return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + (d.font_size || 22) + 'px;cursor:pointer;">&times;</div>';
-        if (type === 'button' || type === 'nextstep' || type === 'pay_btn') return '<button type="button" style="width:100%;height:100%;background:transparent;border:none;color:inherit;font-weight:700;cursor:pointer;font-size:' + (d.font_size || 14) + 'px;">' + c + '</button>';
+        if (type === 'button' || type === 'nextstep' || type === 'pay_btn') return '<button type="button" style="width:100%;height:100%;background:transparent;border:none;color:inherit;font-weight:700;cursor:pointer;font-size:' + (d.font_size || 14) + 'px;">' + (c || 'SUBMIT') + '</button>';
         if (type === 'input') return '<input type="text" placeholder="' + c + '" disabled style="width:100%;height:100%;background:transparent;border:none;padding:0 8px;color:inherit;">';
-        if (type === 'image') return '<img src="' + (c.startsWith('http') ? c : 'https://via.placeholder.com/160x120') + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
         if (type === 'divider') return '<div style="width:100%;height:100%;"></div>';
         return '<div class="content-render" style="width:100%;height:100%;display:flex;align-items:center;font-size:' + (d.font_size || 16) + 'px;">' + c + '</div>';
     }
@@ -224,10 +257,22 @@ jQuery(document).ready(function($) {
         elem.draggable({
             containment: '#wppoppop-stage',
             cancel: '.locked',
+            drag: function() {
+                if (activeElement && activeElement.is(elem)) {
+                    $('#prop-pos-top').val(parseInt(elem.css('top'), 10) || 0);
+                    $('#prop-pos-left').val(parseInt(elem.css('left'), 10) || 0);
+                }
+            },
             stop: function() { selectElement(elem); }
         }).resizable({
             containment: '#wppoppop-stage',
             cancel: '.locked',
+            resize: function() {
+                if (activeElement && activeElement.is(elem)) {
+                    $('#prop-size-width').val(elem.outerWidth() || 0);
+                    $('#prop-size-height').val(elem.outerHeight() || 0);
+                }
+            },
             stop: function() { selectElement(elem); }
         });
 
@@ -237,17 +282,48 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // 5. Element Selection: Slides in Layer Properties Panel with Entire Background Overlay (GreenPop Style)
+    // 6. Element Selection: Opens Slide-in Property Panel Pushing Frame (NOT as modal)
     function selectElement(elem) {
         $('.canvas-element').removeClass('selected');
         elem.addClass('selected');
         activeElement = elem;
 
         const d = elem.data();
-        $('#prop-layer-name').val(d.layer_name || d.type.toUpperCase());
-        $('#prop-field-name').val(d.field_name || '');
+        $('#prop-layer-name').val(d.layer_name || (d.type === 'image' ? 'Image' : d.type.toUpperCase()));
+        $('#prop-pos-top').val(parseInt(elem.css('top'), 10) || 0);
+        $('#prop-pos-left').val(parseInt(elem.css('left'), 10) || 0);
+        $('#prop-size-width').val(elem.outerWidth() || 0);
+        $('#prop-size-height').val(elem.outerHeight() || 0);
+
+        // Dynamic Element Type Sections
+        const isImg = d.type === 'image';
+        $('#group-prop-image').toggle(isImg);
+        $('#group-prop-content').toggle(!isImg && ['divider', 'box'].indexOf(d.type) === -1);
+        $('#group-prop-field-name').toggle(['input', 'textarea', 'dropdown', 'radio', 'checkbox', 'date', 'number', 'wheel', 'signature', 'file'].indexOf(d.type) !== -1);
+        $('#group-prop-options').toggle(['wheel', 'dropdown', 'radio', 'checkbox'].indexOf(d.type) !== -1);
+
+        if (isImg) {
+            $('#prop-image-url').val(d.image_url || '');
+            setActiveSeg('#group-img-size', d.img_size || 'cover');
+            setActiveSeg('#group-img-pos-h', d.img_pos_h || 'center');
+            setActiveSeg('#group-img-pos-v', d.img_pos_v || 'center');
+            setActiveSeg('#group-img-repeat', d.img_repeat || 'no-repeat');
+        }
+
         $('#prop-content').val(d.content || '');
+        $('#prop-field-name').val(d.field_name || '');
         $('#prop-options').val(Array.isArray(d.options) ? d.options.join(', ') : (d.options || ''));
+        $('#prop-url').val(d.url || '');
+        $('#prop-target-blank').prop('checked', d.target_blank == 1);
+        setActiveSeg('#group-prop-close-action', d.close_action || 'none');
+        $('#prop-onclick').val(d.onclick || '');
+
+        $('#prop-anim-appear').val(d.anim_appear || 'fade');
+        $('#prop-anim-duration').val(d.anim_duration || 1000);
+        $('#prop-anim-delay').val(d.anim_delay || 0);
+        $('#prop-anim-disappear').val(d.anim_disappear || 'fade');
+
+        // Style Tab Inputs
         $('#prop-font-family').val(d.font_family || 'Inherit');
         $('#prop-font-size').val(d.font_size || 16);
         $('#prop-border-radius').val(d.border_radius || 4);
@@ -256,18 +332,14 @@ jQuery(document).ready(function($) {
         $('#prop-opacity').val(d.opacity !== undefined ? d.opacity : 1.0);
         $('#prop-required').prop('checked', d.required == 1);
 
-        if (['wheel', 'dropdown', 'radio', 'checkbox'].indexOf(d.type) !== -1) {
-            $('#group-prop-options').show();
-        } else {
-            $('#group-prop-options').hide();
-        }
-
-        // Slide-in Layer Inspector with Entire Background Overlay
-        $('#wppoppop-settings-drawer').removeClass('open');
-        $('#wppoppop-inspector-drawer').addClass('open');
-        $('#wppoppop-drawer-backdrop').fadeIn(200);
-
+        // Slide in panel pushing frame (No modal backdrop)
+        openInspectorPanel();
         highlightLayer(elem.attr('id'));
+    }
+
+    function setActiveSeg(containerSelector, val) {
+        $(containerSelector).find('.btn-seg').removeClass('active');
+        $(containerSelector).find('.btn-seg[data-val="' + val + '"]').addClass('active');
     }
 
     function deselectElement() {
@@ -275,9 +347,15 @@ jQuery(document).ready(function($) {
         activeElement = null;
         $('#wppoppop-layers-list li').removeClass('selected');
     }
-    stage.on('click', deselectElement);
 
-    // Inspector Live Bindings
+    // Canvas click outside element deselects and slides out panel
+    stage.on('click', function(e) {
+        if ($(e.target).is('#wppoppop-stage')) {
+            closeInspectorPanel();
+        }
+    });
+
+    // 7. Live Real-Time Property Synchronization
     $('#prop-layer-name').on('input', function() {
         if (activeElement) {
             activeElement.data('layer_name', $(this).val());
@@ -285,8 +363,20 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $('#prop-field-name').on('input', function() {
-        if (activeElement) activeElement.data('field_name', $(this).val());
+    $('#prop-pos-top').on('input change', function() {
+        if (activeElement) activeElement.css('top', parseInt($(this).val(), 10) + 'px');
+    });
+
+    $('#prop-pos-left').on('input change', function() {
+        if (activeElement) activeElement.css('left', parseInt($(this).val(), 10) + 'px');
+    });
+
+    $('#prop-size-width').on('input change', function() {
+        if (activeElement) activeElement.css('width', parseInt($(this).val(), 10) + 'px');
+    });
+
+    $('#prop-size-height').on('input change', function() {
+        if (activeElement) activeElement.css('height', parseInt($(this).val(), 10) + 'px');
     });
 
     $('#prop-content').on('input', function() {
@@ -296,10 +386,82 @@ jQuery(document).ready(function($) {
         activeElement.html(renderElementMarkup(activeElement.data('type'), activeElement.data()));
     });
 
+    $('#prop-field-name').on('input', function() {
+        if (activeElement) activeElement.data('field_name', $(this).val());
+    });
+
     $('#prop-options').on('input', function() {
         if (activeElement) activeElement.data('options', $(this).val().split(',').map(s => s.trim()));
     });
 
+    $('#prop-url').on('input', function() { if (activeElement) activeElement.data('url', $(this).val()); });
+    $('#prop-target-blank').on('change', function() { if (activeElement) activeElement.data('target_blank', $(this).is(':checked') ? 1 : 0); });
+    $('#prop-onclick').on('input', function() { if (activeElement) activeElement.data('onclick', $(this).val()); });
+
+    $('#prop-anim-appear').on('change', function() { if (activeElement) activeElement.data('anim_appear', $(this).val()); });
+    $('#prop-anim-duration').on('input', function() { if (activeElement) activeElement.data('anim_duration', parseInt($(this).val(), 10)); });
+    $('#prop-anim-delay').on('input', function() { if (activeElement) activeElement.data('anim_delay', parseInt($(this).val(), 10)); });
+    $('#prop-anim-disappear').on('change', function() { if (activeElement) activeElement.data('anim_disappear', $(this).val()); });
+
+    // Image URL & Live Refresh
+    $('#prop-image-url').on('input', function() {
+        if (!activeElement) return;
+        const url = $(this).val();
+        activeElement.data('image_url', url);
+        activeElement.find('.img-render-box').css('background-image', 'url(' + url + ')');
+    });
+
+    // WordPress Media Library Picker Integration
+    $('#btn-prop-media-picker').on('click', function(e) {
+        e.preventDefault();
+        if (typeof wp !== 'undefined' && wp.media) {
+            const mediaFrame = wp.media({
+                title: 'Select Image',
+                multiple: false,
+                library: { type: 'image' }
+            });
+            mediaFrame.on('select', function() {
+                const attachment = mediaFrame.state().get('selection').first().toJSON();
+                $('#prop-image-url').val(attachment.url).trigger('input');
+            });
+            mediaFrame.open();
+        } else {
+            const promptUrl = prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
+            if (promptUrl) $('#prop-image-url').val(promptUrl).trigger('input');
+        }
+    });
+
+    // Segmented Buttons Actions (Size, Alignment, Repeat, Close)
+    $('.btn-group-segmented').on('click', '.btn-seg', function(e) {
+        e.preventDefault();
+        const parent = $(this).closest('.btn-group-segmented');
+        parent.find('.btn-seg').removeClass('active');
+        $(this).addClass('active');
+        const val = $(this).data('val');
+        const parentId = parent.attr('id');
+
+        if (!activeElement) return;
+
+        if (parentId === 'group-img-size') {
+            activeElement.data('img_size', val);
+            activeElement.find('.img-render-box').css('background-size', val);
+        } else if (parentId === 'group-img-pos-h') {
+            activeElement.data('img_pos_h', val);
+            const v = activeElement.data('img_pos_v') || 'center';
+            activeElement.find('.img-render-box').css('background-position', val + ' ' + v);
+        } else if (parentId === 'group-img-pos-v') {
+            activeElement.data('img_pos_v', val);
+            const h = activeElement.data('img_pos_h') || 'center';
+            activeElement.find('.img-render-box').css('background-position', h + ' ' + val);
+        } else if (parentId === 'group-img-repeat') {
+            activeElement.data('img_repeat', val);
+            activeElement.find('.img-render-box').css('background-repeat', val);
+        } else if (parentId === 'group-prop-close-action') {
+            activeElement.data('close_action', val);
+        }
+    });
+
+    // Style Live Bindings
     $('#prop-font-family').on('change', function() {
         if (activeElement) {
             const font = $(this).val();
@@ -307,52 +469,34 @@ jQuery(document).ready(function($) {
             activeElement.data('font_family', font);
         }
     });
-
     $('#prop-font-size').on('input', function() {
         if (activeElement) {
             const sz = parseInt($(this).val(), 10);
-            activeElement.css('font-size', sz + 'px');
-            activeElement.data('font_size', sz);
+            activeElement.css('font-size', sz + 'px').data('font_size', sz);
             activeElement.html(renderElementMarkup(activeElement.data('type'), activeElement.data()));
         }
     });
-
     $('#prop-border-radius').on('input', function() {
         if (activeElement) {
             const r = parseInt($(this).val(), 10);
-            activeElement.css('border-radius', r + 'px');
-            activeElement.data('border_radius', r);
+            activeElement.css('border-radius', r + 'px').data('border_radius', r);
+            activeElement.find('.img-render-box').css('border-radius', r + 'px');
         }
     });
-
     $('#prop-color').on('input', function() {
-        if (activeElement) {
-            const c = $(this).val();
-            activeElement.css('color', c);
-            activeElement.data('color', c);
-        }
+        if (activeElement) activeElement.css('color', $(this).val()).data('color', $(this).val());
     });
-
     $('#prop-bg-color').on('input', function() {
-        if (activeElement) {
-            const bg = $(this).val();
-            activeElement.css('background-color', bg);
-            activeElement.data('bg_color', bg);
-        }
+        if (activeElement) activeElement.css('background-color', $(this).val()).data('bg_color', $(this).val());
     });
-
     $('#prop-opacity').on('input', function() {
-        if (activeElement) {
-            const op = parseFloat($(this).val());
-            activeElement.css('opacity', op);
-            activeElement.data('opacity', op);
-        }
+        if (activeElement) activeElement.css('opacity', parseFloat($(this).val())).data('opacity', parseFloat($(this).val()));
     });
-
     $('#prop-required').on('change', function() {
         if (activeElement) activeElement.data('required', $(this).is(':checked') ? 1 : 0);
     });
 
+    // Duplicate & Delete
     $('#prop-duplicate-element').on('click', function() {
         if (!activeElement) return;
         zIndexCounter += 5;
@@ -376,12 +520,11 @@ jQuery(document).ready(function($) {
     $('#prop-delete-element').on('click', function() {
         if (!activeElement) return;
         activeElement.remove();
-        deselectElement();
-        closeAllDrawers();
+        closeInspectorPanel();
         refreshLayers();
     });
 
-    // 6. Floating Layers Management with Drag & Drop Only (NO Up/Down Arrows)
+    // 8. Floating Layers Management with Drag & Drop Only
     $('#wppoppop-floating-layers').draggable({
         handle: '.layers-header',
         containment: '.wppoppop-canvas-viewport'
@@ -394,7 +537,6 @@ jQuery(document).ready(function($) {
             const targetId = $(this).data('target');
             const el = $('#' + targetId);
             if (el.length) {
-                // Top item in list has highest z-index
                 const calculatedZ = (total - index) * 10;
                 el.css('z-index', calculatedZ).data('z_index', calculatedZ);
             }
@@ -414,7 +556,7 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        // Sort descending by z-index so highest is on top
+        // Descending z-index so top item is foremost
         elems.sort(function(a, b) {
             const zA = parseInt($(a).css('z-index'), 10) || parseInt($(a).data('z_index'), 10) || 1;
             const zB = parseInt($(b).css('z-index'), 10) || parseInt($(b).data('z_index'), 10) || 1;
@@ -425,15 +567,14 @@ jQuery(document).ready(function($) {
             const el = $(domEl);
             const id = el.attr('id');
             const d = el.data();
-            const name = d.layer_name || d.content || d.type.toUpperCase();
+            const name = d.layer_name || (d.type === 'image' ? 'Image' : d.type.toUpperCase());
             const isLocked = d.locked == 1;
             const isHidden = el.is(':hidden');
             const isSelected = activeElement && activeElement.attr('id') === id;
 
-            // Notice: Up & Down arrow buttons removed completely
             const li = $('<li data-target="' + id + '" class="layer-item' + (isSelected ? ' selected' : '') + '" draggable="true"></li>');
             li.html(
-                '<span class="layer-drag-grip" title="Drag by grip to reorder depth"><span class="dashicons dashicons-menu"></span></span>' +
+                '<span class="layer-drag-grip" title="Drag to reorder depth"><span class="dashicons dashicons-menu"></span></span>' +
                 '<span class="layer-title" title="[' + d.type + '] ' + name + '">[' + d.type + '] ' + name + '</span>' +
                 '<div class="layer-actions">' +
                     '<button type="button" class="btn-layer-lock ' + (isLocked ? 'active-action' : '') + '" title="Lock Dragging"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
@@ -456,9 +597,6 @@ jQuery(document).ready(function($) {
                 placeholder: 'layer-sortable-placeholder',
                 forcePlaceholderSize: true,
                 opacity: 0.85,
-                start: function(e, ui) {
-                    ui.placeholder.height(ui.item.outerHeight());
-                },
                 update: function() {
                     recomputeZIndicesFromList();
                 }
@@ -466,7 +604,7 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // HTML5 Drag-and-Drop Reordering Handlers (Grip-driven Fallback)
+    // HTML5 Drag-and-Drop Handlers for Layers
     $('#wppoppop-layers-list').on('dragstart', 'li.layer-item', function(e) {
         draggedItem = this;
         $(this).addClass('is-dragging');
@@ -523,14 +661,14 @@ jQuery(document).ready(function($) {
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
 
-    // Layer Title Click in Floating Panel triggers Inspector slide-in with backdrop
+    // Clicking layer in list triggers selection & panel slide-in
     $('#wppoppop-layers-list').on('click', '.layer-title', function(e) {
         e.stopPropagation();
         const target = $('#' + $(this).closest('li').data('target'));
         if (target.length) selectElement(target);
     });
 
-    // Toggle Eye Visibility
+    // Layer Eye Visibility Toggle
     $('#wppoppop-layers-list').on('click', '.btn-layer-eye', function(e) {
         e.stopPropagation();
         const li = $(this).closest('li');
@@ -541,19 +679,18 @@ jQuery(document).ready(function($) {
         $(this).find('.dashicons').toggleClass('dashicons-visibility', !isHidden).toggleClass('dashicons-hidden', isHidden);
     });
 
-    // Toggle Drag Lock
+    // Layer Drag Lock Toggle
     $('#wppoppop-layers-list').on('click', '.btn-layer-lock', function(e) {
         e.stopPropagation();
         const li = $(this).closest('li');
         const target = $('#' + li.data('target'));
         const locked = target.data('locked') == 1 ? 0 : 1;
-        target.data('locked', locked);
-        target.toggleClass('locked', locked === 1);
+        target.data('locked', locked).toggleClass('locked', locked === 1);
         $(this).toggleClass('active-action', locked === 1);
         $(this).find('.dashicons').toggleClass('dashicons-lock', locked === 1).toggleClass('dashicons-unlock', locked === 0);
     });
 
-    // 7. Embed Snippets Modal
+    // 9. Embed Code & Live Preview Modals
     $('#wppoppop-btn-embed').on('click', function() {
         const uid = $('#wppoppop-popup-uid').val() || 'pop_sample';
         $('#embed-code-shortcode').val('[wppoppop uid="' + uid + '"]');
@@ -562,7 +699,6 @@ jQuery(document).ready(function($) {
         $('#wppoppop-embed-modal').fadeIn(150);
     });
 
-    // 8. Live Interactive Preview Modal
     $('#wppoppop-btn-preview').on('click', function() {
         const mount = $('#wppoppop-preview-stage-mount').empty();
         const pStage = $('<div class="preview-stage-box"></div>').css({
@@ -600,14 +736,13 @@ jQuery(document).ready(function($) {
         $('#wppoppop-live-preview-modal').fadeIn(150);
     });
 
-    // Modals Close
     $('.btn-close-modal, .wppoppop-modal-backdrop').on('click', function(e) {
         if (e.target === this || $(this).hasClass('btn-close-modal')) {
             $('.wppoppop-modal-backdrop').fadeOut(150);
         }
     });
 
-    // 9. Full Payload Serialization & Persistence
+    // 10. Save Popup Payload & Load Initial Canvas
     $('#wppoppop-btn-save').on('click', function(e) {
         e.preventDefault();
         const btn = $(this);
@@ -621,10 +756,23 @@ jQuery(document).ready(function($) {
                 id: el.attr('id'),
                 type: d.type,
                 screen: d.screen || 1,
-                layer_name: d.layer_name || d.type.toUpperCase(),
+                layer_name: d.layer_name || (d.type === 'image' ? 'Image' : d.type.toUpperCase()),
                 field_name: d.field_name || '',
                 content: d.content || '',
                 options: d.options || [],
+                image_url: d.image_url || '',
+                img_size: d.img_size || 'cover',
+                img_pos_h: d.img_pos_h || 'center',
+                img_pos_v: d.img_pos_v || 'center',
+                img_repeat: d.img_repeat || 'no-repeat',
+                url: d.url || '',
+                target_blank: d.target_blank || 0,
+                close_action: d.close_action || 'none',
+                onclick: d.onclick || '',
+                anim_appear: d.anim_appear || 'fade',
+                anim_duration: d.anim_duration || 1000,
+                anim_delay: d.anim_delay || 0,
+                anim_disappear: d.anim_disappear || 'fade',
                 font_family: d.font_family || 'Inherit',
                 font_size: d.font_size || 16,
                 border_radius: d.border_radius || 4,
@@ -746,7 +894,7 @@ jQuery(document).ready(function($) {
                         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + res.data.uid;
                         window.history.replaceState({ path: newUrl }, '', newUrl);
                     }
-                    alert(res.data.message || 'Popup configuration saved successfully!');
+                    alert(res.data.message || 'Popup saved successfully!');
                 } else {
                     alert('Save failed: ' + (res.data ? res.data.message : 'Unknown rejection'));
                 }
@@ -758,7 +906,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // 10. Load Existing Campaign or Initialize Starter Template
+    // Populate Popup on Page Load
     function loadPopupData() {
         const uid = $('#wppoppop-popup-uid').val();
         const ajaxUrl = (typeof wppoppop_vars !== 'undefined' && wppoppop_vars.ajax_url) ? wppoppop_vars.ajax_url : ajaxurl;
@@ -837,15 +985,16 @@ jQuery(document).ready(function($) {
         updateStageStyles();
 
         const starters = [
-            { id: 'el_title', type: 'text', screen: 1, top: 40, left: 50, width: 520, height: 40, content: 'License Agreement', font_size: 24, color: '#1e293b', bg_color: 'transparent', z_index: 10 },
-            { id: 'el_desc', type: 'text', screen: 1, top: 90, left: 50, width: 520, height: 120, content: 'Please read our terms and conditions before proceeding. By clicking Agree, you accept our standard end-user license agreement and privacy policy.', font_size: 15, color: '#475569', bg_color: 'transparent', z_index: 11 },
-            { id: 'el_agree', type: 'nextstep', screen: 1, top: 250, left: 140, width: 140, height: 44, content: 'AGREE', font_size: 15, color: '#ffffff', bg_color: '#00a32a', border_radius: 6, z_index: 12 },
-            { id: 'el_decline', type: 'close', screen: 1, top: 250, left: 320, width: 140, height: 44, content: 'DECLINE', font_size: 15, color: '#ffffff', bg_color: '#dc2626', border_radius: 6, z_index: 13 },
-            { id: 'el_x', type: 'close', screen: 1, top: 15, left: 580, width: 28, height: 28, content: '&times;', font_size: 22, color: '#64748b', bg_color: 'transparent', z_index: 14 }
+            { id: 'el_img_main', type: 'image', screen: 1, top: 0, left: 0, width: 620, height: 380, layer_name: 'Image', image_url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=620', img_size: 'cover', img_pos_h: 'center', img_pos_v: 'center', img_repeat: 'no-repeat', z_index: 5 },
+            { id: 'el_box_card', type: 'box', screen: 1, top: 30, left: 30, width: 560, height: 320, layer_name: 'Rectangle / Square', bg_color: '#ffffff', border_radius: 8, opacity: 0.95, z_index: 8 },
+            { id: 'el_title', type: 'text', screen: 1, top: 50, left: 60, width: 500, height: 36, content: 'License Agreement', layer_name: 'Header', font_size: 22, color: '#1e293b', bg_color: 'transparent', z_index: 10 },
+            { id: 'el_desc', type: 'text', screen: 1, top: 95, left: 60, width: 500, height: 110, content: 'Please read our terms and conditions before proceeding. By clicking Agree, you accept our standard end-user license agreement and privacy policy.', layer_name: 'Description', font_size: 14, color: '#475569', bg_color: 'transparent', z_index: 11 },
+            { id: 'el_agree', type: 'nextstep', screen: 1, top: 230, left: 140, width: 140, height: 42, content: 'AGREE', layer_name: 'AGREE', font_size: 15, color: '#ffffff', bg_color: '#00a32a', border_radius: 6, z_index: 12 },
+            { id: 'el_decline', type: 'close', screen: 1, top: 230, left: 320, width: 140, height: 42, content: 'DECLINE', layer_name: 'DECLINE', font_size: 15, color: '#ffffff', bg_color: '#dc2626', border_radius: 6, z_index: 13 },
+            { id: 'el_x', type: 'close', screen: 1, top: 15, left: 575, width: 28, height: 28, content: '&times;', layer_name: 'Close Icon', font_size: 22, color: '#64748b', bg_color: 'transparent', z_index: 14 }
         ];
 
         starters.forEach(function(d) {
-            d.layer_name = d.content.substring(0, 16);
             const elem = $('<div class="canvas-element"></div>')
                 .attr('id', d.id)
                 .data(d)
