@@ -26,20 +26,24 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
+    <!-- Dynamic Addable & Renameable Screen Sequence Tabs -->
     <div class="wppoppop-hdr-center">
-        <div class="wppoppop-screen-tabs">
-            <button type="button" class="wppoppop-screen-tab active" data-screen="1">Screen 1</button>
-            <button type="button" class="wppoppop-screen-tab" data-screen="2">Screen 2</button>
-            <button type="button" class="wppoppop-screen-tab" data-screen="3">Screen 3</button>
+        <div class="wppoppop-screen-tabs-wrapper">
+            <div class="wppoppop-screen-tabs" id="wppoppop-screen-tabs-list">
+                <!-- Rendered dynamically by Core.renderScreenTabs() -->
+            </div>
+            <button type="button" id="wppoppop-btn-add-screen" class="wppoppop-add-screen-btn" title="Add New Screen">
+                <span class="dashicons dashicons-plus"></span>
+            </button>
         </div>
     </div>
 
     <div class="wppoppop-hdr-right">
         <div class="wppoppop-viewport-toggles">
-            <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
+            <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport">
                 <span class="dashicons dashicons-desktop"></span>
             </button>
-            <button type="button" class="wppoppop-viewport-btn" data-mode="mobile" title="Mobile Viewport (360px)">
+            <button type="button" class="wppoppop-viewport-btn" data-mode="mobile" title="Mobile Viewport">
                 <span class="dashicons dashicons-smartphone"></span>
             </button>
         </div>

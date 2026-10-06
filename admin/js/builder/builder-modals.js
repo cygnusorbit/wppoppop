@@ -9,7 +9,6 @@
         },
 
         bindEmbed: function() {
-            var self = this;
             $('#wppoppop-btn-embed').on('click', function() {
                 var uid = (window.wppoppop_vars && window.wppoppop_vars.current_uid) || 'temp_preview';
                 $('#wppoppop-embed-sc').val('[wppoppop uid="' + uid + '"]');
@@ -22,7 +21,6 @@
                 $('#wppoppop-builder-embed-modal').removeClass('open');
             });
 
-            // 1-Click Clipboard Copy
             $('#wppoppop-embed-sc, #wppoppop-embed-locker, #wppoppop-embed-click').on('click', function() {
                 var $input = $(this);
                 $input.select();
@@ -58,15 +56,16 @@
             var $root = $('#wppoppop-preview-sandbox-root');
             $root.empty();
 
-            // Background Wrapper
+            var initialScreen = Core.screens[0];
             var $box = $('<div></div>')
                 .css({
                     position: 'relative',
-                    width: set.width + 'px',
-                    height: set.height + 'px',
+                    width: (initialScreen.width || set.width) + 'px',
+                    height: (initialScreen.height || set.height) + 'px',
                     borderRadius: '8px',
                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    transition: 'width 0.25s ease, height 0.25s ease'
                 });
 
             if (set.bgMode === 'gradient') {
@@ -75,7 +74,6 @@
                 $box.css('background', set.bgColor);
             }
 
-            // Close Button
             var $closeBtn = $('<button type="button">&times;</button>')
                 .css({
                     position: 'absolute',
@@ -99,37 +97,66 @@
                 });
             $box.append($closeBtn);
 
-            // Screen Viewports
-            [1, 2, 3].forEach(function(sNum) {
+            // Dynamically Render All Screens into Sandbox
+            Core.screens.forEach(function(sc, idx) {
                 var $screen = $('<div></div>')
-                    .attr('data-preview-screen', sNum)
+                    .attr('data-preview-screen', sc.id)
                     .css({
                         position: 'absolute',
                         inset: 0,
-                        display: (sNum === 1) ? 'block' : 'none'
+                        display: (idx === 0) ? 'block' : 'none'
                     });
 
-                var screenEls = Core.elements.filter(function(e) { return e.screen === sNum && !e.hidden; });
-                screenEls.forEach(function(el, idx) {
-                    var $elNode = Canvas.buildElementNode(el, idx + 10);
+                var screenEls = Core.elements.filter(function(e) { return e.screen === sc.id && !e.hidden; });
+                screenEls.forEach(function(el, elIdx) {
+                    var $elNode = Canvas.buildElementNode(el, elIdx + 10);
                     $elNode.removeClass('active locked').css('cursor', 'default');
-                    
-                    // Wire Screen Jump for Next Step Buttons
-                    if (el.type === 'step_btn') {
+
+                    // Button Action Routing & Conditional Branching
+                    if (el.type === 'step_btn' || el.type === 'submit' || el.type === 'pay') {
                         $elNode.find('button').on('click', function(evt) {
                             evt.preventDefault();
-                            var target = (sNum < 3) ? (sNum + 1) : 1;
-                            $box.find('[data-preview-screen]').hide();
-                            $box.find('[data-preview-screen="' + target + '"]').fadeIn(200);
+                            var targetScreenId = null;
+
+                            // 1. Evaluate Conditional Logic
+                            if (el.condVal && el.condTargetScreen) {
+                                var enteredVal = $box.find('input, select, textarea').first().val();
+                                if (enteredVal && enteredVal.toLowerCase().trim() === el.condVal.toLowerCase().trim()) {
+                                    targetScreenId = el.condTargetScreen;
+                                }
+                            }
+
+                            // 2. Default Navigation Flow
+                            if (!targetScreenId) {
+                                if (el.actionClose === 'jump_screen' && el.actionTargetScreen) {
+                                    targetScreenId = el.actionTargetScreen;
+                                } else if (el.actionClose === 'next_screen') {
+                                    var currentIdx = Core.screens.findIndex(function(s) { return s.id === sc.id; });
+                                    var nextSc = Core.screens[currentIdx + 1] || Core.screens[0];
+                                    targetScreenId = nextSc.id;
+                                } else if (el.actionClose === 'close') {
+                                    $('#wppoppop-builder-preview-modal').removeClass('open');
+                                    return;
+                                }
+                            }
+
+                            if (targetScreenId) {
+                                var targetScObj = Core.screens.find(function(s) { return s.id === targetScreenId; });
+                                if (targetScObj) {
+                                    $box.css({ width: targetScObj.width + 'px', height: targetScObj.height + 'px' });
+                                }
+                                $box.find('[data-preview-screen]').hide();
+                                $box.find('[data-preview-screen="' + targetScreenId + '"]').fadeIn(200);
+                            }
                         });
                     }
+
                     $screen.append($elNode);
                 });
 
                 $box.append($screen);
             });
 
-            // Append Scoped Custom CSS if configured
             if (set.customCss) {
                 $box.append('<style>' + set.customCss + '</style>');
             }

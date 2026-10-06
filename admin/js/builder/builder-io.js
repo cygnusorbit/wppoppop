@@ -18,9 +18,9 @@
                 var title = $('#wppoppop-builder-title').val().trim() || 'Untitled Popup Campaign';
                 var currentSettings = Settings.getSettings();
 
-                // Build standardized configuration payload
                 var payloadConfig = {
                     elements: Core.elements,
+                    screens: Core.screens,
                     settings: currentSettings,
                     triggers: currentSettings.triggers,
                     custom_css: currentSettings.customCss,
@@ -47,8 +47,6 @@
                     if (res.success) {
                         Core.isDirty = false;
                         $btn.html('<span class="dashicons dashicons-yes" style="font-size:14px;width:14px;height:14px;"></span> Saved!');
-                        
-                        // If new record, update window state and URL
                         if (res.data && res.data.uid) {
                             window.wppoppop_vars.current_uid = res.data.uid;
                             var currentUrl = new URL(window.location.href);
@@ -56,7 +54,7 @@
                             window.history.replaceState({ path: currentUrl.toString() }, '', currentUrl.toString());
                         }
                     } else {
-                        alert(res.data && res.data.message ? res.data.message : 'Save error: Unable to update popup.');
+                        alert(res.data && res.data.message ? res.data.message : 'Save error');
                     }
                 }).fail(function() {
                     alert('Network communication error with server.');

@@ -106,28 +106,55 @@ if (!defined('ABSPATH')) {
         <!-- Logic Tab -->
         <div class="wppoppop-insp-content" id="insp-tab-logic" style="display:none;">
             <div style="margin-bottom:12px;">
+                <label>Action on Click / Submit</label>
+                <select id="prop-action-close">
+                    <option value="none">Do Nothing</option>
+                    <option value="next_screen">Proceed to Next Screen</option>
+                    <option value="jump_screen">Jump to Specific Screen</option>
+                    <option value="close">Close Popup</option>
+                    <option value="redirect">Redirect to URL</option>
+                </select>
+            </div>
+
+            <!-- Target Screen Dropdown for Screen Transitions -->
+            <div id="prop-target-screen-wrap" style="margin-bottom:12px;">
+                <label>Target Screen</label>
+                <select id="prop-target-screen">
+                    <!-- Populated dynamically with available screens -->
+                </select>
+            </div>
+
+            <div id="prop-action-url-wrap" style="margin-bottom:12px;">
                 <label>Redirect URL</label>
                 <input type="url" id="prop-action-url" placeholder="https://example.com/checkout">
             </div>
 
             <div style="margin-bottom:12px;">
                 <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                    <input type="checkbox" id="prop-action-blank"> Open in new window
+                    <input type="checkbox" id="prop-action-blank"> Open link in new window
                 </label>
             </div>
 
-            <div style="margin-bottom:12px;">
-                <label>Close Action</label>
-                <select id="prop-action-close">
-                    <option value="none">Do Nothing</option>
-                    <option value="close">Close Popup</option>
-                    <option value="next_screen">Proceed to Next Screen</option>
-                </select>
+            <!-- Screen 1 Conditional Routing Logic -->
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid #1e293b;">
+                <label style="font-weight:700;color:#f1f5f9;margin-bottom:6px;display:block;">Conditional Logic Routing</label>
+                <p style="font-size:10px;color:#94a3b8;margin:0 0 8px 0;">Evaluate conditions from Screen 1 before progressing:</p>
+                
+                <div style="margin-bottom:8px;">
+                    <label>If Field Value Matches</label>
+                    <input type="text" id="prop-cond-val" placeholder="e.g. VIP or Yes">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label>Then Jump to Screen</label>
+                    <select id="prop-cond-target-screen">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
             </div>
 
-            <div style="margin-bottom:12px;">
+            <div style="margin-top:12px;">
                 <label>Custom JavaScript OnClick</label>
-                <textarea id="prop-action-js" rows="3" placeholder="console.log('Clicked');"></textarea>
+                <textarea id="prop-action-js" rows="3" placeholder="console.log('Action triggered');"></textarea>
             </div>
         </div>
     </div>

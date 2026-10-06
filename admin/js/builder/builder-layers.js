@@ -15,20 +15,66 @@
         makePanelDraggable: function() {
             var self = this;
             var $panel = $('#wppoppop-floating-layers-panel');
+            var $header = $('#wppoppop-layers-header');
+
+            // Default positioning if untouched
+            if (!self.hasBeenMoved) {
+                $panel.css({
+                    top: '16px',
+                    right: '16px',
+                    left: 'auto',
+                    bottom: 'auto'
+                });
+            }
+
+            // 1. Try jQuery UI Draggable
             if (typeof $.fn.draggable === 'function') {
                 $panel.draggable({
                     handle: '#wppoppop-layers-header',
-                    containment: '#wppoppop-builder-stage',
+                    containment: '.wppoppop-main-frame',
                     scroll: false,
                     start: function(evt, ui) {
                         self.hasBeenMoved = true;
+                        var pos = $(this).position();
                         $(this).css({
+                            right: 'auto',
                             bottom: 'auto',
-                            right: 'auto'
+                            left: pos.left + 'px',
+                            top: pos.top + 'px'
                         });
                     }
                 });
             }
+
+            // 2. Custom Native Pointer Physics Fallback
+            $header.on('mousedown', function(e) {
+                if ($(e.target).closest('#wppoppop-layers-count').length) return;
+                self.hasBeenMoved = true;
+                
+                var startX = e.clientX;
+                var startY = e.clientY;
+                var startPos = $panel.position();
+                
+                $panel.css({
+                    right: 'auto',
+                    bottom: 'auto',
+                    left: startPos.left + 'px',
+                    top: startPos.top + 'px'
+                });
+
+                $(document).on('mousemove.layersDrag', function(ev) {
+                    var dx = ev.clientX - startX;
+                    var dy = ev.clientY - startY;
+                    $panel.css({
+                        left: Math.max(10, startPos.left + dx) + 'px',
+                        top: Math.max(10, startPos.top + dy) + 'px'
+                    });
+                });
+
+                $(document).on('mouseup.layersDrag', function() {
+                    $(document).off('.layersDrag');
+                });
+            });
         },
 
         bindWindowResize: function() {
@@ -43,15 +89,6 @@
                         left: 'auto',
                         bottom: 'auto'
                     });
-                } else {
-                    var $stage = $('#wppoppop-builder-stage');
-                    var stageWidth = $stage.width();
-                    var panelLeft = parseInt($panel.css('left'), 10) || 0;
-                    var panelWidth = $panel.outerWidth();
-
-                    if (panelLeft + panelWidth > stageWidth) {
-                        $panel.css('left', Math.max(16, stageWidth - panelWidth - 16) + 'px');
-                    }
                 }
             });
         },

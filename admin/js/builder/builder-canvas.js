@@ -7,6 +7,7 @@
             this.bindRibbonTools();
             this.bindStageClick();
             this.bindCustomEvents();
+            this.bindCornerResizer();
             this.render();
         },
 
@@ -24,6 +25,54 @@
                     window.WpPopPopBuilder.Core.activeId = null;
                     $(document).trigger('builder:element:deselected');
                 }
+            });
+        },
+
+        bindCornerResizer: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            var $handle = $('#wppoppop-canvas-resize-handle');
+            var $box = $('#wppoppop-canvas-box');
+            var $tooltip = $('#wppoppop-canvas-dim-tooltip');
+            var isResizing = false;
+            var startX, startY, startW, startH;
+
+            $handle.on('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                isResizing = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startW = $box.outerWidth();
+                startH = $box.outerHeight();
+                $handle.addClass('active');
+                $tooltip.text(startW + ' × ' + startH + ' px').show();
+
+                $(document).on('mousemove.canvasResize', function(ev) {
+                    if (!isResizing) return;
+                    var dx = ev.clientX - startX;
+                    var dy = ev.clientY - startY;
+
+                    var newW = Math.max(260, Math.min(1600, Math.round((startW + dx) / 10) * 10));
+                    var newH = Math.max(160, Math.min(1200, Math.round((startH + dy) / 10) * 10));
+
+                    $box.css({ width: newW + 'px', height: newH + 'px' });
+                    $tooltip.text(newW + ' × ' + newH + ' px');
+                    $('#set-box-width').val(newW);
+                    $('#set-box-height').val(newH);
+                });
+
+                $(document).on('mouseup.canvasResize', function(ev) {
+                    if (!isResizing) return;
+                    isResizing = false;
+                    $handle.removeClass('active');
+                    $tooltip.hide();
+                    $(document).off('.canvasResize');
+
+                    var finalW = $box.outerWidth();
+                    var finalH = $box.outerHeight();
+                    Core.updateScreenDimensions(finalW, finalH);
+                    Core.pushHistory();
+                });
             });
         },
 
@@ -56,6 +105,11 @@
             var defaultBg = '#ffffff';
             var defaultColor = '#1e293b';
             var defaultContent = '';
+
+            // Default Action Close configuration:
+            // If created on Screen 1, default transition targets Screen 2
+            var defaultActionClose = 'none';
+            var defaultTargetScreen = (Core.currentScreen === 1 && Core.screens.length > 1) ? 2 : Core.currentScreen;
 
             switch (type) {
                 case 'text':
@@ -110,16 +164,19 @@
                     defaultContent = 'Next Step →';
                     defaultBg = '#3b82f6';
                     defaultColor = '#ffffff';
+                    defaultActionClose = 'next_screen';
                     break;
                 case 'submit':
                     defaultContent = 'Claim Your Discount';
                     defaultBg = '#10b981';
                     defaultColor = '#ffffff';
+                    defaultActionClose = (Core.currentScreen === 1) ? 'next_screen' : 'close';
                     break;
                 case 'pay':
                     defaultContent = 'Pay $19.99 Now';
                     defaultBg = '#6366f1';
                     defaultColor = '#ffffff';
+                    defaultActionClose = 'next_screen';
                     break;
                 case 'html':
                     defaultContent = '<div style="padding:10px;text-align:center;">Custom HTML Box</div>';
@@ -148,7 +205,10 @@
                 animEffect: 'none',
                 actionUrl: '',
                 actionBlank: false,
-                actionClose: 'none',
+                actionClose: defaultActionClose,
+                actionTargetScreen: defaultTargetScreen,
+                condVal: '',
+                condTargetScreen: defaultTargetScreen,
                 actionJs: '',
                 locked: false,
                 hidden: false
@@ -167,7 +227,6 @@
                 return e.screen === Core.currentScreen && !e.hidden;
             });
 
-            // Set stacking z-index based on element index in array
             currentEls.forEach(function(el, idx) {
                 var $el = self.buildElementNode(el, idx + 10);
                 $root.append($el);
@@ -198,7 +257,6 @@
                 });
 
             if (el.locked) $el.addClass('locked');
-
             $el.html(this.generateMarkupForType(el));
             return $el;
         },
@@ -208,61 +266,42 @@
             switch (el.type) {
                 case 'text':
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;padding:0 8px;line-height:1.4;box-sizing:border-box;">' + text + '</div>';
-
                 case 'email':
                     return '<div style="display:flex;align-items:center;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span class="dashicons dashicons-email" style="color:#94a3b8;margin-right:8px;font-size:16px;"></span><span style="color:#94a3b8;font-size:inherit;">' + (text || 'user@example.com') + '</span></div>';
-
                 case 'number':
                     return '<div style="display:flex;align-items:center;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span class="dashicons dashicons-calculator" style="color:#94a3b8;margin-right:8px;font-size:16px;"></span><span style="color:#94a3b8;font-size:inherit;">' + (text || '0') + '</span></div>';
-
                 case 'select':
                     return '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span style="color:#475569;font-size:inherit;">Select an option...</span><span class="dashicons dashicons-arrow-down-alt2" style="color:#94a3b8;font-size:14px;"></span></div>';
-
                 case 'radios':
                     return '<div style="display:flex;align-items:center;gap:12px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;"><label style="display:flex;align-items:center;gap:4px;font-size:inherit;color:inherit;"><input type="radio" checked disabled> Choice A</label><label style="display:flex;align-items:center;gap:4px;font-size:inherit;color:inherit;"><input type="radio" disabled> Choice B</label></div>';
-
                 case 'checkboxes':
                     return '<div style="display:flex;align-items:center;gap:8px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;"><input type="checkbox" checked disabled><span style="font-size:inherit;color:inherit;">' + (text || 'I accept terms & conditions') + '</span></div>';
-
                 case 'rating':
                     return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;color:#f59e0b;font-size:22px;"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>';
-
                 case 'date':
                     return '<div style="display:flex;align-items:center;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span class="dashicons dashicons-calendar-alt" style="color:#94a3b8;margin-right:8px;font-size:16px;"></span><span style="color:#94a3b8;font-size:inherit;">YYYY-MM-DD</span></div>';
-
                 case 'slider':
                     return '<div style="display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;padding:0 10px;box-sizing:border-box;"><div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:4px;"><span>0</span><span>Value: 50</span><span>100</span></div><input type="range" min="0" max="100" value="50" style="width:100%;pointer-events:none;"></div>';
-
                 case 'signature':
                     return '<div style="display:flex;flex-direction:column;justify-content:flex-end;width:100%;height:100%;border:1px dashed #94a3b8;background:rgba(255,255,255,0.95);border-radius:inherit;padding:8px;box-sizing:border-box;"><div style="border-bottom:1px solid #64748b;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;font-style:italic;padding-bottom:2px;"><span>Sign here ✕</span><span class="dashicons dashicons-edit"></span></div></div>';
-
                 case 'wheel':
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle, #f59e0b 20%, #ef4444 80%);border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 6px rgba(0,0,0,0.2);color:#ffffff;font-weight:800;font-size:12px;letter-spacing:1px;text-align:center;">🎡 SPIN</div>';
-
                 case 'scratch':
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg, #94a3b8, #94a3b8 10px, #64748b 10px, #64748b 20px);border-radius:inherit;color:#ffffff;font-weight:700;font-size:12px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">✨ SCRATCH HERE ✨</div>';
-
                 case 'countdown':
                     return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;"><div style="background:#1e293b;color:#fff;padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;text-align:center;">00<span style="display:block;font-size:8px;color:#94a3b8;">HRS</span></div><span>:</span><div style="background:#1e293b;color:#fff;padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;text-align:center;">15<span style="display:block;font-size:8px;color:#94a3b8;">MIN</span></div><span>:</span><div style="background:#1e293b;color:#fff;padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;text-align:center;">30<span style="display:block;font-size:8px;color:#94a3b8;">SEC</span></div></div>';
-
                 case 'progress':
                     return '<div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 8px;box-sizing:border-box;"><div style="width:100%;height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;"><div style="width:65%;height:100%;background:#3b82f6;border-radius:6px;"></div></div><span style="font-size:10px;color:#64748b;margin-top:2px;text-align:right;">Step 1 of 2 (65%)</span></div>';
-
                 case 'file':
-                    return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;border:2px dashed #94a3b8;border-radius:inherit;background:rgba(248,250,252,0.9);color:#64748b;font-size:12px;font-weight:600;"><span class="dashicons dashicons-upload" style="font-size:16px;"></span> Choose file or drag here</div>';
-
+                    return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;border:2px dashed #94a3b8;border-radius:inherit;background:rgba(248,250,252,0.9);color:#64748b;font-size:12px;font-weight:600;"><span class="dashicons dashicons-upload" style="font-size:16px;"></span> Choose file</div>';
                 case 'step_btn':
                     return '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">' + (text || 'Next Step') + ' <span class="dashicons dashicons-controls-forward" style="font-size:14px;width:14px;height:14px;"></span></button>';
-
                 case 'submit':
                     return '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><span class="dashicons dashicons-yes" style="font-size:14px;width:14px;height:14px;"></span> ' + (text || 'Submit') + '</button>';
-
                 case 'pay':
                     return '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><span class="dashicons dashicons-cart" style="font-size:14px;width:14px;height:14px;"></span> ' + (text || 'Pay Now') + '</button>';
-
                 case 'html':
                     return '<div style="width:100%;height:100%;overflow:hidden;box-sizing:border-box;">' + (text || '<div>Custom HTML</div>') + '</div>';
-
                 default:
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">[' + el.label + ']</div>';
             }
@@ -312,7 +351,6 @@
                 Core.selectElement(el.id);
             });
 
-            // Initialize Draggable with 10px grid and real-time live drag updates
             $el.draggable({
                 containment: '#wppoppop-canvas-box',
                 grid: [10, 10],
@@ -332,7 +370,6 @@
                 }
             });
 
-            // Initialize Resizable with 10px grid and real-time live resize updates
             $el.resizable({
                 containment: '#wppoppop-canvas-box',
                 grid: [10, 10],

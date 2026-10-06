@@ -4,6 +4,7 @@
 
     var Core = {
         elements: [],
+        screens: [],
         activeId: null,
         currentScreen: 1,
         viewport: 'desktop',
@@ -15,49 +16,60 @@
         init: function(initialConfig) {
             this.config = initialConfig || {};
             this.elements = Array.isArray(initialConfig.elements) ? initialConfig.elements : [];
+            
+            // Initialize Screens Array (Default to Screen 1, Screen 2, Screen 3 if not present)
+            if (Array.isArray(initialConfig.screens) && initialConfig.screens.length > 0) {
+                this.screens = initialConfig.screens;
+            } else {
+                var defaultW = (initialConfig.settings && initialConfig.settings.width) ? initialConfig.settings.width : 640;
+                var defaultH = (initialConfig.settings && initialConfig.settings.height) ? initialConfig.settings.height : 400;
+                this.screens = [
+                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH },
+                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH },
+                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH }
+                ];
+            }
+
+            this.currentScreen = this.screens[0].id;
+            this.renderScreenTabs();
             this.pushHistory();
             this.bindHotkeys();
             this.bindTopControls();
             this.bindRevisionButtons();
+            this.applyCurrentScreenDimensions();
         },
 
         bindHotkeys: function() {
             var self = this;
             $(document).on('keydown', function(e) {
-                // Intercept Cmd/Ctrl+S for Save
                 if ((e.metaKey || e.ctrlKey) && e.key === 's') {
                     e.preventDefault();
                     $('#wppoppop-btn-save').trigger('click');
                     return;
                 }
 
-                // Ignore hotkeys when typing in form controls
                 if ($(e.target).is('input, textarea, select') || $(e.target).is('[contenteditable="true"]')) {
                     return;
                 }
 
-                // Undo: Cmd/Ctrl+Z
                 if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
                     e.preventDefault();
                     self.undo();
                     return;
                 }
 
-                // Redo: Cmd/Ctrl+Y or Cmd/Ctrl+Shift+Z
                 if ((e.metaKey || e.ctrlKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
                     e.preventDefault();
                     self.redo();
                     return;
                 }
 
-                // Delete active element
                 if ((e.key === 'Delete' || e.key === 'Backspace') && self.activeId) {
                     e.preventDefault();
                     self.removeElement(self.activeId);
                     return;
                 }
 
-                // Keyboard Arrow Nudging (1px, 10px with Shift)
                 if (self.activeId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.key) !== -1) {
                     e.preventDefault();
                     var el = self.getElementById(self.activeId);
@@ -76,7 +88,6 @@
                 }
             });
 
-            // Prevent accidental tab closure if unsaved
             window.addEventListener('beforeunload', function(e) {
                 if (self.isDirty) {
                     e.preventDefault();
@@ -87,41 +98,170 @@
 
         bindTopControls: function() {
             var self = this;
-            $('.wppoppop-screen-tab').on('click', function() {
-                var screen = parseInt($(this).data('screen'), 10) || 1;
-                self.setScreen(screen);
-            });
 
+            // Viewport switching
             $('.wppoppop-viewport-btn').on('click', function() {
                 var mode = $(this).data('mode');
                 self.setViewport(mode);
             });
+
+            // Add Screen Button
+            $(document).on('click', '#wppoppop-btn-add-screen', function(e) {
+                e.preventDefault();
+                self.addScreen();
+            });
+
+            // Screen Tab Click Selection
+            $(document).on('click', '.wppoppop-screen-tab', function(e) {
+                if ($(e.target).hasClass('wppoppop-screen-tab-close') || $(e.target).is('input')) return;
+                var sId = parseInt($(this).data('screen'), 10);
+                self.setScreen(sId);
+            });
+
+            // Screen Tab Delete
+            $(document).on('click', '.wppoppop-screen-tab-close', function(e) {
+                e.stopPropagation();
+                var sId = parseInt($(this).closest('.wppoppop-screen-tab').data('screen'), 10);
+                self.removeScreen(sId);
+            });
+
+            // Screen Tab Inline Rename on Double Click
+            $(document).on('dblclick', '.wppoppop-screen-tab-title', function(e) {
+                e.stopPropagation();
+                var $titleSpan = $(this);
+                var $tab = $titleSpan.closest('.wppoppop-screen-tab');
+                var sId = parseInt($tab.data('screen'), 10);
+                var currentText = $titleSpan.text().trim();
+
+                var $input = $('<input type="text" class="wppoppop-screen-tab-input">')
+                    .val(currentText)
+                    .on('blur keydown', function(ev) {
+                        if (ev.type === 'blur' || ev.key === 'Enter') {
+                            var newName = $(this).val().trim() || currentText;
+                            self.renameScreen(sId, newName);
+                        } else if (ev.key === 'Escape') {
+                            self.renderScreenTabs();
+                        }
+                    });
+
+                $titleSpan.replaceWith($input);
+                $input.focus().select();
+            });
         },
 
-        bindRevisionButtons: function() {
+        renderScreenTabs: function() {
             var self = this;
-            $('#wppoppop-btn-undo').on('click', function() {
-                self.undo();
+            var $list = $('#wppoppop-screen-tabs-list');
+            $list.empty();
+
+            this.screens.forEach(function(sc) {
+                var isActive = (sc.id === self.currentScreen);
+                var $tab = $('<div></div>')
+                    .addClass('wppoppop-screen-tab' + (isActive ? ' active' : ''))
+                    .attr('data-screen', sc.id)
+                    .html(
+                        '<span class="wppoppop-screen-tab-title" title="Double click to rename">' + sc.title + '</span>' +
+                        (self.screens.length > 1 ? '<span class="dashicons dashicons-no-alt wppoppop-screen-tab-close" title="Delete screen"></span>' : '')
+                    );
+                $list.append($tab);
             });
-            $('#wppoppop-btn-redo').on('click', function() {
-                self.redo();
-            });
+
+            $(document).trigger('builder:screens:rendered', [this.screens]);
         },
 
-        setScreen: function(screenNum) {
-            this.currentScreen = screenNum;
-            $('.wppoppop-screen-tab').removeClass('active');
-            $('.wppoppop-screen-tab[data-screen="' + screenNum + '"]').addClass('active');
+        addScreen: function() {
+            var maxId = 0;
+            this.screens.forEach(function(s) { if (s.id > maxId) maxId = s.id; });
+            var newId = maxId + 1;
+            var activeSc = this.getCurrentScreenObj();
+            var newScreen = {
+                id: newId,
+                title: 'Screen ' + newId,
+                width: activeSc ? activeSc.width : 640,
+                height: activeSc ? activeSc.height : 400
+            };
+
+            this.screens.push(newScreen);
+            this.currentScreen = newId;
+            this.isDirty = true;
+            this.renderScreenTabs();
+            this.applyCurrentScreenDimensions();
+            this.pushHistory();
+            $(document).trigger('builder:screen:change', [newId]);
+        },
+
+        removeScreen: function(sId) {
+            if (this.screens.length <= 1) return;
+            if (!confirm('Are you sure you want to delete this screen and its layers?')) return;
+
+            this.screens = this.screens.filter(function(s) { return s.id !== sId; });
+            this.elements = this.elements.filter(function(e) { return e.screen !== sId; });
+
+            if (this.currentScreen === sId) {
+                this.currentScreen = this.screens[0].id;
+            }
+
+            this.isDirty = true;
+            this.renderScreenTabs();
+            this.applyCurrentScreenDimensions();
+            this.pushHistory();
+            $(document).trigger('builder:screen:change', [this.currentScreen]);
+        },
+
+        renameScreen: function(sId, newTitle) {
+            var sc = this.screens.find(function(s) { return s.id === sId; });
+            if (sc) {
+                sc.title = newTitle;
+                this.isDirty = true;
+                this.renderScreenTabs();
+                this.pushHistory();
+            }
+        },
+
+        setScreen: function(sId) {
+            this.currentScreen = sId;
             this.activeId = null;
-            $(document).trigger('builder:screen:change', [screenNum]);
+            this.renderScreenTabs();
+            this.applyCurrentScreenDimensions();
+            $(document).trigger('builder:screen:change', [sId]);
+            $(document).trigger('builder:element:deselected');
+        },
+
+        getCurrentScreenObj: function() {
+            var self = this;
+            return this.screens.find(function(s) { return s.id === self.currentScreen; }) || this.screens[0];
+        },
+
+        applyCurrentScreenDimensions: function() {
+            var sc = this.getCurrentScreenObj();
+            if (!sc) return;
+
+            if (this.viewport === 'mobile') {
+                $('#wppoppop-canvas-box').css({ width: '360px', height: (sc.height || 400) + 'px' });
+            } else {
+                $('#wppoppop-canvas-box').css({ width: (sc.width || 640) + 'px', height: (sc.height || 400) + 'px' });
+            }
+
+            // Sync with Settings Drawer Inputs
+            $('#set-box-width').val(sc.width || 640);
+            $('#set-box-height').val(sc.height || 400);
+        },
+
+        updateScreenDimensions: function(newW, newH) {
+            var sc = this.getCurrentScreenObj();
+            if (sc) {
+                sc.width = newW;
+                sc.height = newH;
+                this.isDirty = true;
+                this.applyCurrentScreenDimensions();
+            }
         },
 
         setViewport: function(mode) {
             this.viewport = mode;
             $('.wppoppop-viewport-btn').removeClass('active');
             $('.wppoppop-viewport-btn[data-mode="' + mode + '"]').addClass('active');
-            var width = (mode === 'mobile') ? '360px' : ($('#set-box-width').val() ? $('#set-box-width').val() + 'px' : '640px');
-            $('#wppoppop-canvas-box').css('width', width);
+            this.applyCurrentScreenDimensions();
         },
 
         addElement: function(elementData) {
@@ -177,7 +317,10 @@
             if (this.historyIndex < this.history.length - 1) {
                 this.history = this.history.slice(0, this.historyIndex + 1);
             }
-            this.history.push(JSON.stringify(this.elements));
+            this.history.push(JSON.stringify({
+                elements: this.elements,
+                screens: this.screens
+            }));
             if (this.history.length > 30) this.history.shift();
             this.historyIndex = this.history.length - 1;
             this.updateRevisionButtonsState();
@@ -186,9 +329,13 @@
         undo: function() {
             if (this.historyIndex > 0) {
                 this.historyIndex--;
-                this.elements = JSON.parse(this.history[this.historyIndex]);
+                var snapshot = JSON.parse(this.history[this.historyIndex]);
+                this.elements = snapshot.elements || [];
+                if (snapshot.screens) this.screens = snapshot.screens;
                 this.activeId = null;
                 this.isDirty = true;
+                this.renderScreenTabs();
+                this.applyCurrentScreenDimensions();
                 this.updateRevisionButtonsState();
                 $(document).trigger('builder:elements:updated');
                 $(document).trigger('builder:element:deselected');
@@ -198,19 +345,28 @@
         redo: function() {
             if (this.historyIndex < this.history.length - 1) {
                 this.historyIndex++;
-                this.elements = JSON.parse(this.history[this.historyIndex]);
+                var snapshot = JSON.parse(this.history[this.historyIndex]);
+                this.elements = snapshot.elements || [];
+                if (snapshot.screens) this.screens = snapshot.screens;
                 this.activeId = null;
                 this.isDirty = true;
+                this.renderScreenTabs();
+                this.applyCurrentScreenDimensions();
                 this.updateRevisionButtonsState();
                 $(document).trigger('builder:elements:updated');
                 $(document).trigger('builder:element:deselected');
             }
         },
 
+        bindRevisionButtons: function() {
+            var self = this;
+            $('#wppoppop-btn-undo').on('click', function() { self.undo(); });
+            $('#wppoppop-btn-redo').on('click', function() { self.redo(); });
+        },
+
         updateRevisionButtonsState: function() {
             var canUndo = this.historyIndex > 0;
             var canRedo = this.historyIndex < this.history.length - 1;
-
             $('#wppoppop-btn-undo').prop('disabled', !canUndo).css('opacity', canUndo ? '1' : '0.4');
             $('#wppoppop-btn-redo').prop('disabled', !canRedo).css('opacity', canRedo ? '1' : '0.4');
         }
