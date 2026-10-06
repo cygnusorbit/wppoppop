@@ -128,5 +128,19 @@ class WpPopPop_Admin_Assets {
 
             wp_localize_script('wppoppop-submissions-actions-js', 'wppoppop_vars', $shared_payload);
         }
+
+        // 6. A/B Testing Assets (Segregated Sub-Modules)
+        if ($page === 'wppoppop-ab') {
+            wp_enqueue_script('wppoppop-ab-modal-js', WPPOPPOP_URL . 'admin/js/ab/ab-modal.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-ab-actions-js', WPPOPPOP_URL . 'admin/js/ab/ab-actions.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-ab-js', WPPOPPOP_URL . 'admin/js/ab.js', [
+                'jquery',
+                'wppoppop-ab-modal-js',
+                'wppoppop-ab-actions-js'
+            ], WPPOPPOP_VERSION, true);
+
+            wp_localize_script('wppoppop-ab-actions-js', 'wppoppop_vars', $shared_payload);
+        }
     }
 }
