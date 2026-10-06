@@ -8,6 +8,7 @@
         init: function() {
             this.bindToggle();
             this.bindAccordions();
+            this.bindSubtabs();
             this.bindLiveInputs();
             this.bindBulletNav();
             this.hydrate(window.wppoppop_initial_config || {});
@@ -76,6 +77,27 @@
             });
         },
 
+        bindSubtabs: function() {
+            var self = this;
+            $(document).on('click', '.wppoppop-screen-subtab', function(e) {
+                e.preventDefault();
+                var subtab = $(this).data('subtab');
+
+                $('.wppoppop-screen-subtab').removeClass('active').css({ background: 'transparent', color: '#94a3b8' });
+                $(this).addClass('active').css({ background: '#2563eb', color: '#ffffff' });
+
+                if (subtab === 'logic') {
+                    $('#wppoppop-subtab-pane-canvas').hide();
+                    $('#wppoppop-subtab-pane-logic').show();
+                    self.populateScreenLogicFields(self.activeSettingsScreen);
+                    self.populateScreenTargetDropdowns();
+                } else {
+                    $('#wppoppop-subtab-pane-canvas').show();
+                    $('#wppoppop-subtab-pane-logic').hide();
+                }
+            });
+        },
+
         bindBulletNav: function() {
             var self = this;
 
@@ -105,14 +127,13 @@
             Core.screens.forEach(function(sc) {
                 var isActive = (sc.id === self.activeSettingsScreen);
                 var $btn = $('<button type="button" class="wppoppop-screen-bullet' + (isActive ? ' active' : '') + '" data-screen="' + sc.id + '">' +
-                    '<span class="bullet-dot"></span> ' + sc.title +
+                    '<span class="bullet-dot"></span> <span class="bullet-title">' + sc.title + '</span>' +
                 '</button>');
                 $container.append($btn);
             });
 
             var activeSc = Core.screens.find(function(s) { return s.id === self.activeSettingsScreen; }) || Core.screens[0];
             if (activeSc) {
-                $('#wppoppop-current-screen-badge').text('Configuring: ' + activeSc.title);
                 this.loadScreenData(activeSc);
             }
         },
@@ -121,16 +142,12 @@
             var Core = window.WpPopPopBuilder.Core;
             this.activeSettingsScreen = sId;
 
-            // Update bullet visual active states
             $('.wppoppop-screen-bullet').removeClass('active');
             $('.wppoppop-screen-bullet[data-screen="' + sId + '"]').addClass('active');
 
             var sc = Core.screens.find(function(s) { return s.id === sId; });
             if (sc) {
-                $('#wppoppop-current-screen-badge').text('Configuring: ' + sc.title);
                 this.loadScreenData(sc);
-
-                // Switch workspace to this screen as well
                 if (Core.currentScreen !== sId) {
                     Core.setScreen(sId);
                 }
@@ -138,6 +155,11 @@
         },
 
         loadScreenData: function(sc) {
+            var self = this;
+            // Load Screen Name
+            $('#set-screen-title').val(sc.title || ('Screen ' + sc.id));
+
+            // Load Canvas Dimensions & Background
             $('#set-box-width').val(sc.width || 640);
             $('#set-box-height').val(sc.height || 400);
             $('#set-bg-mode').val(sc.bgMode || 'solid');
@@ -153,12 +175,78 @@
                 $('#set-solid-wrap').show();
                 $('#set-gradient-wrap').hide();
             }
+
+            // Load Screen-Level Conditional Logic
+            var log = sc.logic || {};
+            var isCondEnabled = !!log.enable;
+            $('#set-screen-cond-enable').prop('checked', isCondEnabled);
+            $('#set-screen-cond-box').toggle(isCondEnabled);
+
+            this.populateScreenLogicFields(sc.id);
+            if (log.field) $('#set-screen-cond-field').val(log.field);
+            $('#set-screen-cond-operator').val(log.operator || 'equals');
+            $('#set-screen-cond-val').val(log.val || '');
+
+            this.populateScreenTargetDropdowns();
+            if (log.targetScreen) $('#set-screen-cond-target').val(log.targetScreen);
+            if (log.fallback) $('#set-screen-cond-fallback').val(log.fallback);
+
+            var op = log.operator || 'equals';
+            $('#set-screen-cond-val-wrap').toggle(op !== 'is_empty' && op !== 'is_not_empty');
+        },
+
+        populateScreenLogicFields: function(screenId) {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core) return;
+
+            var $fieldSelect = $('#set-screen-cond-field').empty();
+            var inputTypes = ['email', 'number', 'text', 'select', 'radios', 'checkboxes', 'rating', 'slider', 'date'];
+            
+            var screenElements = Core.elements.filter(function(e) {
+                return e.screen === screenId && inputTypes.indexOf(e.type) !== -1;
+            });
+
+            if (screenElements.length === 0) {
+                $fieldSelect.append('<option value="">(No form elements found on Screen ' + screenId + ')</option>');
+            } else {
+                screenElements.forEach(function(el) {
+                    var label = el.label || el.content || el.type;
+                    $fieldSelect.append('<option value="' + el.id + '">[' + el.type.toUpperCase() + '] ' + label + '</option>');
+                });
+            }
+        },
+
+        populateScreenTargetDropdowns: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core || !Array.isArray(Core.screens)) return;
+
+            var $target = $('#set-screen-cond-target').empty();
+            var $fallback = $('#set-screen-cond-fallback').empty();
+
+            $fallback.append('<option value="next_screen">Proceed to Next Screen</option>');
+            $fallback.append('<option value="close">Close Popup</option>');
+
+            var self = this;
+            Core.screens.forEach(function(sc) {
+                var opt = '<option value="' + sc.id + '">' + sc.title + '</option>';
+                $target.append(opt);
+                $fallback.append(opt);
+            });
         },
 
         bindLiveInputs: function() {
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
+            // Screen Rename input listener
+            $('#set-screen-title').on('input change', function() {
+                var newTitle = $(this).val().trim() || ('Screen ' + self.activeSettingsScreen);
+                if (Core) {
+                    Core.renameScreen(self.activeSettingsScreen, newTitle);
+                }
+            });
+
+            // Dimensions & Background listeners
             $('#set-box-width, #set-box-height, #set-bg-mode, #set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
                 self.saveCurrentScreenData();
                 self.applyLiveStyles();
@@ -176,6 +264,28 @@
                 }
             });
 
+            // Screen-Level Logic Listeners
+            $('#set-screen-cond-enable').on('change', function() {
+                var isEnabled = $(this).is(':checked');
+                $('#set-screen-cond-box').slideToggle(150, function() {
+                    $(this).toggle(isEnabled);
+                });
+                self.saveCurrentScreenData();
+                if (Core) Core.isDirty = true;
+            });
+
+            $('#set-screen-cond-operator').on('change', function() {
+                var op = $(this).val();
+                $('#set-screen-cond-val-wrap').toggle(op !== 'is_empty' && op !== 'is_not_empty');
+                self.saveCurrentScreenData();
+                if (Core) Core.isDirty = true;
+            });
+
+            $('#set-screen-cond-field, #set-screen-cond-val, #set-screen-cond-target, #set-screen-cond-fallback').on('input change', function() {
+                self.saveCurrentScreenData();
+                if (Core) Core.isDirty = true;
+            });
+
             $('#set-custom-css').on('input change', function() {
                 self.applyCustomCss($(this).val());
                 if (Core) Core.isDirty = true;
@@ -190,6 +300,7 @@
             var Core = window.WpPopPopBuilder.Core;
             if (!Core || !Array.isArray(Core.screens)) return;
 
+            var self = this;
             var sc = Core.screens.find(function(s) { return s.id === self.activeSettingsScreen; }) || Core.getCurrentScreenObj();
             if (sc) {
                 sc.width = parseInt($('#set-box-width').val(), 10) || 640;
@@ -199,6 +310,16 @@
                 sc.gradColor1 = $('#set-grad-color1').val() || '#3b82f6';
                 sc.gradColor2 = $('#set-grad-color2').val() || '#1d4ed8';
                 sc.gradAngle = parseInt($('#set-grad-angle').val(), 10) || 135;
+
+                // Save screen logic
+                sc.logic = {
+                    enable: $('#set-screen-cond-enable').is(':checked'),
+                    field: $('#set-screen-cond-field').val() || '',
+                    operator: $('#set-screen-cond-operator').val() || 'equals',
+                    val: $('#set-screen-cond-val').val() || '',
+                    targetScreen: parseInt($('#set-screen-cond-target').val(), 10) || 2,
+                    fallback: $('#set-screen-cond-fallback').val() || 'next_screen'
+                };
             }
         },
 

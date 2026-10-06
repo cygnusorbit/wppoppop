@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     </div>
 
     <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
-        <!-- 1. Box & Canvas Dimensions per Screen with Bullet Navigation -->
+        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename & Logic Tab -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header active" id="wppoppop-acc-canvas-dimensions">
                 <span>1. Canvas Dimensions & Background</span>
@@ -31,44 +31,109 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                    <span id="wppoppop-current-screen-badge" style="font-size:11px;font-weight:700;color:#60a5fa;background:#1e3a8a;padding:2px 8px;border-radius:10px;">Configuring: Screen 1</span>
+                <!-- Sub-Tabs: Dimensions & Background VS Screen Logic -->
+                <div class="wppoppop-screen-subtabs" style="display:flex;background:#0f172a;border-radius:4px;padding:2px;gap:4px;margin-bottom:12px;border:1px solid #334155;">
+                    <button type="button" class="wppoppop-screen-subtab active" data-subtab="canvas" style="flex:1;background:#2563eb;color:#ffffff;border:none;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;text-align:center;">Dimensions & Background</button>
+                    <button type="button" class="wppoppop-screen-subtab" data-subtab="logic" style="flex:1;background:transparent;color:#94a3b8;border:none;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;text-align:center;">Logic</button>
                 </div>
 
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-                    <div>
-                        <label>Width (px)</label>
-                        <input type="number" id="set-box-width" value="640">
+                <!-- SUBTAB PANE 1: Dimensions, Rename & Background -->
+                <div id="wppoppop-subtab-pane-canvas">
+                    <!-- Screen Rename Field -->
+                    <div style="margin-bottom:12px;background:#1e293b;padding:10px;border-radius:6px;border:1px solid #334155;">
+                        <label style="display:block;font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:4px;text-transform:uppercase;">Screen Name (Rename)</label>
+                        <input type="text" id="set-screen-title" placeholder="e.g. Screen 1, Offer Step, Thank You" style="width:100%;font-weight:600;">
                     </div>
-                    <div>
-                        <label>Height (px)</label>
-                        <input type="number" id="set-box-height" value="400">
-                    </div>
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label>Background Style</label>
-                    <select id="set-bg-mode">
-                        <option value="solid">Solid Color</option>
-                        <option value="gradient">Linear Gradient</option>
-                    </select>
-                </div>
-                <div id="set-solid-wrap" style="margin-bottom:10px;">
-                    <label>Background Color</label>
-                    <input type="text" id="set-bg-color" value="#ffffff">
-                </div>
-                <div id="set-gradient-wrap" style="display:none;margin-bottom:10px;">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                         <div>
-                            <label>Gradient Start</label>
-                            <input type="text" id="set-grad-color1" value="#3b82f6">
+                            <label>Width (px)</label>
+                            <input type="number" id="set-box-width" value="640">
                         </div>
                         <div>
-                            <label>Gradient End</label>
-                            <input type="text" id="set-grad-color2" value="#1d4ed8">
+                            <label>Height (px)</label>
+                            <input type="number" id="set-box-height" value="400">
                         </div>
                     </div>
-                    <label>Angle (deg)</label>
-                    <input type="number" id="set-grad-angle" value="135">
+                    <div style="margin-bottom:10px;">
+                        <label>Background Style</label>
+                        <select id="set-bg-mode">
+                            <option value="solid">Solid Color</option>
+                            <option value="gradient">Linear Gradient</option>
+                        </select>
+                    </div>
+                    <div id="set-solid-wrap" style="margin-bottom:10px;">
+                        <label>Background Color</label>
+                        <input type="text" id="set-bg-color" value="#ffffff">
+                    </div>
+                    <div id="set-gradient-wrap" style="display:none;margin-bottom:10px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+                            <div>
+                                <label>Gradient Start</label>
+                                <input type="text" id="set-grad-color1" value="#3b82f6">
+                            </div>
+                            <div>
+                                <label>Gradient End</label>
+                                <input type="text" id="set-grad-color2" value="#1d4ed8">
+                            </div>
+                        </div>
+                        <label>Angle (deg)</label>
+                        <input type="number" id="set-grad-angle" value="135">
+                    </div>
+                </div>
+
+                <!-- SUBTAB PANE 2: Screen Conditional Logic -->
+                <div id="wppoppop-subtab-pane-logic" style="display:none;">
+                    <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:12px;margin-bottom:10px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-weight:700;color:#f8fafc;cursor:pointer;margin-bottom:6px;">
+                            <input type="checkbox" id="set-screen-cond-enable">
+                            <span>Enable Conditional Logic for this Screen</span>
+                        </label>
+                        <p style="font-size:11px;color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">
+                            Evaluate inputs from elements on this screen to branch visitors to specific destination screens.
+                        </p>
+
+                        <div id="set-screen-cond-box" style="display:none;border-top:1px solid #334155;padding-top:10px;">
+                            <div style="margin-bottom:10px;">
+                                <label>Evaluate Form Element</label>
+                                <select id="set-screen-cond-field">
+                                    <!-- Populated dynamically with active elements on this screen -->
+                                </select>
+                            </div>
+
+                            <div style="margin-bottom:10px;">
+                                <label>Condition Operator</label>
+                                <select id="set-screen-cond-operator">
+                                    <option value="equals">Equals (=)</option>
+                                    <option value="not_equals">Does not equal (!=)</option>
+                                    <option value="contains">Contains text</option>
+                                    <option value="greater_than">Greater than (&gt;)</option>
+                                    <option value="less_than">Less than (&lt;)</option>
+                                    <option value="is_empty">Is Empty</option>
+                                    <option value="is_not_empty">Is Not Empty</option>
+                                </select>
+                            </div>
+
+                            <div id="set-screen-cond-val-wrap" style="margin-bottom:10px;">
+                                <label>Match Value</label>
+                                <input type="text" id="set-screen-cond-val" placeholder="e.g. VIP, Yes, 5">
+                            </div>
+
+                            <div style="margin-bottom:10px;">
+                                <label>If Condition Matches &rarr; Jump to Screen</label>
+                                <select id="set-screen-cond-target">
+                                    <!-- Populated dynamically with other screens -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label>Otherwise (Default Fallback)</label>
+                                <select id="set-screen-cond-fallback">
+                                    <!-- Populated dynamically: Next Screen, Close, etc. -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

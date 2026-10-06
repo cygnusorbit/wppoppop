@@ -25,7 +25,7 @@
             var defaultGradColor2 = (initialConfig.settings && initialConfig.settings.gradColor2) ? initialConfig.settings.gradColor2 : '#1d4ed8';
             var defaultGradAngle = (initialConfig.settings && initialConfig.settings.gradAngle) ? initialConfig.settings.gradAngle : 135;
 
-            // Initialize Per-Screen Dimensions and Background Properties
+            // Initialize Screens Array with Default Screen Logic
             if (Array.isArray(initialConfig.screens) && initialConfig.screens.length > 0) {
                 this.screens = initialConfig.screens.map(function(sc) {
                     return {
@@ -37,14 +37,15 @@
                         bgColor: sc.bgColor || defaultBgColor,
                         gradColor1: sc.gradColor1 || defaultGradColor1,
                         gradColor2: sc.gradColor2 || defaultGradColor2,
-                        gradAngle: parseInt(sc.gradAngle, 10) || defaultGradAngle
+                        gradAngle: parseInt(sc.gradAngle, 10) || defaultGradAngle,
+                        logic: sc.logic || { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' }
                     };
                 });
             } else {
                 this.screens = [
-                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle },
-                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle },
-                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle }
+                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 2, fallback: 'next_screen' } },
+                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 3, fallback: 'next_screen' } },
+                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle, logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' } }
                 ];
             }
 
@@ -127,17 +128,15 @@
                 self.addScreen();
             });
 
-            // Clicking any screen tab (Screen 1, 2, etc.) switches screen and slides in Campaign Settings
             $(document).on('click', '.wppoppop-screen-tab', function(e) {
                 if ($(e.target).hasClass('wppoppop-screen-tab-close') || $(e.target).is('input')) return;
                 var sId = parseInt($(this).data('screen'), 10);
                 self.setScreen(sId);
 
-                // Slide in Campaign Settings drawer focused on this screen's dimensions & background
+                // Slide in Campaign Settings drawer focused on Accordion 1
                 if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
                     window.WpPopPopBuilder.Settings.open();
                     window.WpPopPopBuilder.Settings.setActiveScreen(sId);
-                    // Unfold Accordion 1
                     var $accHeader = $('#wppoppop-acc-canvas-dimensions');
                     var $accBody = $accHeader.next('.wppoppop-acc-body');
                     $accHeader.addClass('active');
@@ -145,14 +144,12 @@
                 }
             });
 
-            // Screen Tab Delete
             $(document).on('click', '.wppoppop-screen-tab-close', function(e) {
                 e.stopPropagation();
                 var sId = parseInt($(this).closest('.wppoppop-screen-tab').data('screen'), 10);
                 self.removeScreen(sId);
             });
 
-            // Inline Tab Rename
             $(document).on('dblclick', '.wppoppop-screen-tab-title', function(e) {
                 e.stopPropagation();
                 var $titleSpan = $(this);
@@ -183,7 +180,6 @@
 
             this.screens.forEach(function(sc) {
                 var isActive = (sc.id === self.currentScreen);
-                // Screen 1 is permanently protected from deletion
                 var canDelete = (sc.id !== 1 && self.screens.length > 1);
                 var $tab = $('<div></div>')
                     .addClass('wppoppop-screen-tab' + (isActive ? ' active' : ''))
@@ -212,7 +208,8 @@
                 bgColor: activeSc ? activeSc.bgColor : '#ffffff',
                 gradColor1: activeSc ? activeSc.gradColor1 : '#3b82f6',
                 gradColor2: activeSc ? activeSc.gradColor2 : '#1d4ed8',
-                gradAngle: activeSc ? activeSc.gradAngle : 135
+                gradAngle: activeSc ? activeSc.gradAngle : 135,
+                logic: { enable: false, field: '', operator: 'equals', val: '', targetScreen: 1, fallback: 'close' }
             };
 
             this.screens.push(newScreen);
@@ -230,9 +227,8 @@
         },
 
         removeScreen: function(sId) {
-            // Screen 1 cannot be deleted
             if (sId === 1) {
-                alert('Screen 1 is the default primary screen and cannot be deleted.');
+                alert('Screen 1 is the default root screen and cannot be deleted.');
                 return;
             }
             if (this.screens.length <= 1) return;
@@ -262,11 +258,22 @@
             if (sc) {
                 sc.title = newTitle;
                 this.isDirty = true;
-                this.renderScreenTabs();
-                this.pushHistory();
+
+                // Sync header tab text
+                $('.wppoppop-screen-tab[data-screen="' + sId + '"] .wppoppop-screen-tab-title').text(newTitle);
+
+                // Sync bullet button title
+                $('.wppoppop-screen-bullet[data-screen="' + sId + '"] .bullet-title').text(newTitle);
+
+                // Sync settings input if active
                 if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
-                    window.WpPopPopBuilder.Settings.renderScreenBullets();
+                    if (window.WpPopPopBuilder.Settings.activeSettingsScreen === sId && !$('#set-screen-title').is(':focus')) {
+                        $('#set-screen-title').val(newTitle);
+                    }
+                    window.WpPopPopBuilder.Settings.populateScreenTargetDropdowns();
                 }
+
+                this.pushHistory();
             }
         },
 
@@ -296,7 +303,6 @@
                 $box.css({ width: (sc.width || 640) + 'px', height: (sc.height || 400) + 'px' });
             }
 
-            // Apply Per-Screen Background Style
             if (sc.bgMode === 'gradient') {
                 $box.css('background', 'linear-gradient(' + (sc.gradAngle || 135) + 'deg, ' + (sc.gradColor1 || '#3b82f6') + ', ' + (sc.gradColor2 || '#1d4ed8') + ')');
             } else {

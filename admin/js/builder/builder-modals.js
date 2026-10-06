@@ -69,7 +69,6 @@
                     transition: 'width 0.25s ease, height 0.25s ease, background 0.25s ease'
                 });
 
-            // Apply Initial Screen Background
             if (initialScreen.bgMode === 'gradient') {
                 $box.css('background', 'linear-gradient(' + (initialScreen.gradAngle || 135) + 'deg, ' + (initialScreen.gradColor1 || '#3b82f6') + ', ' + (initialScreen.gradColor2 || '#1d4ed8') + ')');
             } else {
@@ -115,7 +114,6 @@
                     var $elNode = Canvas.buildElementNode(el, elIdx + 10);
                     $elNode.removeClass('active locked').css('cursor', 'default');
 
-                    // Interactive Input Elements in Sandbox
                     if (el.type === 'email' || el.type === 'number' || el.type === 'text') {
                         $elNode.html('<input type="' + (el.type === 'email' ? 'email' : (el.type === 'number' ? 'number' : 'text')) + '" class="wppoppop-preview-input" data-el-id="' + el.id + '" placeholder="' + (el.content || el.label || '') + '" style="width:100%;height:100%;padding:0 10px;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;background:#ffffff;color:#1e293b;">');
                     } else if (el.type === 'select') {
@@ -132,56 +130,49 @@
                             evt.preventDefault();
                             var targetScreenId = null;
 
-                            // 1. Evaluate Conditional Logic if Enabled
-                            if (el.condEnable && el.condField) {
-                                var $fieldInput = $box.find('.wppoppop-preview-input[data-el-id="' + el.condField + '"]');
+                            // 1. Evaluate Screen-Level Conditional Logic from Accordion 1
+                            var scObj = Core.screens.find(function(s) { return s.id === sc.id; });
+                            if (scObj && scObj.logic && scObj.logic.enable && scObj.logic.field) {
+                                var $fieldInput = $box.find('.wppoppop-preview-input[data-el-id="' + scObj.logic.field + '"]');
                                 var fieldValue = '';
 
                                 if ($fieldInput.is(':checkbox')) {
                                     fieldValue = $fieldInput.is(':checked') ? ($fieldInput.val() || '1') : '';
                                 } else if ($fieldInput.is(':radio')) {
-                                    fieldValue = $box.find('.wppoppop-preview-input[data-el-id="' + el.condField + '"]:checked').val() || '';
+                                    fieldValue = $box.find('.wppoppop-preview-input[data-el-id="' + scObj.logic.field + '"]:checked').val() || '';
                                 } else {
                                     fieldValue = ($fieldInput.val() || '').trim();
                                 }
 
-                                var condOp = el.condOperator || 'equals';
-                                var matchVal = (el.condVal || '').trim();
+                                var condOp = scObj.logic.operator || 'equals';
+                                var matchVal = (scObj.logic.val || '').trim();
                                 var isMatch = false;
 
-                                if (condOp === 'equals') {
-                                    isMatch = (fieldValue.toLowerCase() === matchVal.toLowerCase());
-                                } else if (condOp === 'not_equals') {
-                                    isMatch = (fieldValue.toLowerCase() !== matchVal.toLowerCase());
-                                } else if (condOp === 'contains') {
-                                    isMatch = (fieldValue.toLowerCase().indexOf(matchVal.toLowerCase()) !== -1);
-                                } else if (condOp === 'greater_than') {
-                                    isMatch = (parseFloat(fieldValue) > parseFloat(matchVal));
-                                } else if (condOp === 'less_than') {
-                                    isMatch = (parseFloat(fieldValue) < parseFloat(matchVal));
-                                } else if (condOp === 'is_empty') {
-                                    isMatch = (!fieldValue || fieldValue === '');
-                                } else if (condOp === 'is_not_empty') {
-                                    isMatch = (fieldValue && fieldValue !== '');
-                                }
+                                if (condOp === 'equals') isMatch = (fieldValue.toLowerCase() === matchVal.toLowerCase());
+                                else if (condOp === 'not_equals') isMatch = (fieldValue.toLowerCase() !== matchVal.toLowerCase());
+                                else if (condOp === 'contains') isMatch = (fieldValue.toLowerCase().indexOf(matchVal.toLowerCase()) !== -1);
+                                else if (condOp === 'greater_than') isMatch = (parseFloat(fieldValue) > parseFloat(matchVal));
+                                else if (condOp === 'less_than') isMatch = (parseFloat(fieldValue) < parseFloat(matchVal));
+                                else if (condOp === 'is_empty') isMatch = (!fieldValue || fieldValue === '');
+                                else if (condOp === 'is_not_empty') isMatch = (fieldValue && fieldValue !== '');
 
                                 if (isMatch) {
-                                    targetScreenId = parseInt(el.condTargetScreen, 10);
-                                } else if (el.condFallbackScreen) {
-                                    if (el.condFallbackScreen === 'close') {
+                                    targetScreenId = parseInt(scObj.logic.targetScreen, 10);
+                                } else if (scObj.logic.fallback) {
+                                    if (scObj.logic.fallback === 'close') {
                                         $('#wppoppop-builder-preview-modal').removeClass('open');
                                         return;
-                                    } else if (el.condFallbackScreen === 'next_screen') {
+                                    } else if (scObj.logic.fallback === 'next_screen') {
                                         var curIdx = Core.screens.findIndex(function(s) { return s.id === sc.id; });
                                         var nextSc = Core.screens[curIdx + 1] || Core.screens[0];
                                         targetScreenId = nextSc.id;
                                     } else {
-                                        targetScreenId = parseInt(el.condFallbackScreen, 10);
+                                        targetScreenId = parseInt(scObj.logic.fallback, 10);
                                     }
                                 }
                             }
 
-                            // 2. Default Navigation Flow if condition not met
+                            // 2. Fallback to default element routing if no screen logic matched
                             if (!targetScreenId) {
                                 if (el.actionClose === 'jump_screen' && el.actionTargetScreen) {
                                     targetScreenId = parseInt(el.actionTargetScreen, 10);
@@ -202,7 +193,7 @@
                                 }
                             }
 
-                            // Perform Screen Transition with Per-Screen Canvas Dimensions & Background
+                            // Perform Screen Transition with Dimensions & Background
                             if (targetScreenId) {
                                 var targetScObj = Core.screens.find(function(s) { return s.id === targetScreenId; });
                                 if (targetScObj) {
