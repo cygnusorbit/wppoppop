@@ -4,45 +4,6 @@ if (!defined('ABSPATH')) {
 }
 
 class WpPopPop_Admin_Pages {
-    public function __construct() {
-        add_action('admin_post_wppoppop_bulk_export', [$this, 'handle_bulk_export']);
-    }
-
-    public function handle_bulk_export() {
-        if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized action', 'wppoppop'));
-        }
-        check_admin_referer('wppoppop_tools_action', 'wppoppop_tools_nonce');
-
-        global $wpdb;
-        $items = $wpdb->get_results("SELECT uid, title, data, status FROM {$wpdb->prefix}wppoppop_items", ARRAY_A);
-        $campaigns = $wpdb->get_results("SELECT uid, title, popup_uids, status FROM {$wpdb->prefix}wppoppop_campaigns", ARRAY_A);
-
-        $backup_payload = [
-            'generator' => 'WpPopPop ' . (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION : '1.0.0'),
-            'exported'  => current_time('mysql'),
-            'items'     => $items ?: [],
-            'campaigns' => $campaigns ?: []
-        ];
-
-        $json_out = wp_json_encode($backup_payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        $filename = 'wppoppop-bulk-backup-' . gmdate('Y-m-d') . '.json';
-
-        // Clear any residual output buffer
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
-
-        header('Content-Type: application/json; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($json_out));
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-        echo $json_out;
-        exit;
-    }
-
     public function render_dashboard() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
@@ -51,6 +12,13 @@ class WpPopPop_Admin_Pages {
     }
 
     public function render_builder() {
+        global $wpdb;
+        $uid = isset($_GET['uid']) ? sanitize_key($_GET['uid']) : '';
+        $popup = null;
+        if (!empty($uid)) {
+            $table_name = $wpdb->prefix . 'wppoppop_items';
+            $popup = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name} WHERE uid = %s", $uid));
+        }
         include WPPOPPOP_PATH . 'templates/builder-view.php';
     }
 

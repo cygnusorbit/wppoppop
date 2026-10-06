@@ -4,142 +4,114 @@
 
     var Layers = {
         init: function() {
-            this.makePanelDraggable();
-            this.initSortable();
+            this.makeDraggable();
+            this.bindEvents();
+            this.render();
         },
 
-        makePanelDraggable: function() {
-            var $panel = $('#wppoppop-floating-layers-panel');
-            if ($panel.length && $.fn.draggable) {
-                $panel.draggable({
-                    handle: '#wppoppop-layers-header',
-                    containment: 'window'
-                });
-            }
+        makeDraggable: function() {
+            $('#wppoppop-floating-layers-panel').draggable({
+                handle: '#wppoppop-layers-header',
+                containment: 'window'
+            });
         },
 
-        initSortable: function() {
+        bindEvents: function() {
             var self = this;
-            var $list = $('#wppoppop-layers-list');
-            if ($list.length && $.fn.sortable) {
-                $list.sortable({
-                    handle: '.wppoppop-layer-grip',
-                    placeholder: 'wppoppop-layer-drop-placeholder',
-                    update: function() {
-                        self.reindexStack();
-                    }
-                });
-            }
+            var Core = window.WpPopPopBuilder.Core;
+
+            $(document).on('builder:elements:updated builder:screen:change', function() {
+                self.render();
+            });
+
+            $(document).on('builder:element:selected', function(e, id) {
+                $('.wppoppop-layer-card').removeClass('active');
+                $('#layer-card-' + id).addClass('active');
+            });
+
+            $(document).on('builder:element:deselected', function() {
+                $('.wppoppop-layer-card').removeClass('active');
+            });
+
+            // Sortable layer list for live Z-Index reordering
+            $('#wppoppop-layers-list').sortable({
+                handle: '.wppoppop-layer-grip',
+                placeholder: 'wppoppop-layer-card-placeholder',
+                update: function() {
+                    // Top of list = Highest visual layer (topmost Z-Index)
+                    var newOrder = [];
+                    $('#wppoppop-layers-list .wppoppop-layer-card').each(function() {
+                        newOrder.push($(this).data('id'));
+                    });
+
+                    // Reverse for stack order (index 0 is frontmost layer)
+                    var reversedStack = newOrder.slice().reverse();
+                    reversedStack.forEach(function(layerId, zIdx) {
+                        $('#canvas-el-' + layerId).css('z-index', 10 + zIdx);
+                    });
+
+                    Core.reorderElements(newOrder);
+                }
+            });
         },
 
-        renderList: function() {
-            var self = this;
-            var core = window.WpPopPopBuilder.Core;
-            if (!core) return;
-
+        render: function() {
+            var Core = window.WpPopPopBuilder.Core;
             var $list = $('#wppoppop-layers-list');
             $list.empty();
 
-            var currentLayers = [];
-            $.each(core.state.elements, function(idx, el) {
-                if (el.screen === core.state.currentScreen) {
-                    currentLayers.push(el);
-                }
+            var currentEls = Core.elements.filter(function(e) {
+                return e.screen === Core.currentScreen;
             });
 
-            $('#wppoppop-layers-count').text(currentLayers.length);
+            $('#wppoppop-layers-count').text(currentEls.length);
 
-            // Stacking order: highest zIndex on top
-            currentLayers.sort(function(a, b) {
-                return (b.zIndex || 0) - (a.zIndex || 0);
-            });
-
-            $.each(currentLayers, function(idx, el) {
-                var $item = $('<div class="wppoppop-layer-item"></div>')
+            currentEls.forEach(function(el) {
+                var $card = $('<div></div>')
+                    .attr('id', 'layer-card-' + el.id)
                     .attr('data-id', el.id)
-                    .toggleClass('active', el.id === core.state.activeId);
+                    .addClass('wppoppop-layer-card')
+                    .html(
+                        '<div style="display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;">' +
+                            '<span class="dashicons dashicons-menu wppoppop-layer-grip" style="font-size:13px;width:13px;height:13px;color:#64748b;cursor:grab;"></span>' +
+                            '<span class="wppoppop-layer-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (el.label || el.type) + '</span>' +
+                        '</div>' +
+                        '<div style="display:flex;align-items:center;gap:6px;">' +
+                            '<span class="dashicons ' + (el.locked ? 'dashicons-lock' : 'dashicons-unlock') + ' layer-lock-btn" title="Toggle Lock" style="font-size:14px;width:14px;height:14px;cursor:pointer;color:' + (el.locked ? '#f59e0b' : '#94a3b8') + ';"></span>' +
+                            '<span class="dashicons ' + (el.hidden ? 'dashicons-hidden' : 'dashicons-visibility') + ' layer-hide-btn" title="Toggle Visibility" style="font-size:14px;width:14px;height:14px;cursor:pointer;color:' + (el.hidden ? '#ef4444' : '#94a3b8') + ';"></span>' +
+                        '</div>'
+                    );
 
-                var grip = '<span class="dashicons dashicons-menu wppoppop-layer-grip"></span>';
-                var titleText = el.name || ((el.type ? el.type.toUpperCase() : 'LAYER') + ' (' + el.id.substring(3, 8) + ')');
-                var title = '<span class="wppoppop-layer-title">' + titleText + '</span>';
-                
-                var lockIcon = el.locked ? 'dashicons-lock' : 'dashicons-unlock';
-                var lockActive = el.locked ? 'active' : '';
-                var eyeIcon = el.hidden ? 'dashicons-hidden' : 'dashicons-visibility';
-                var eyeActive = el.hidden ? 'active' : '';
+                if (Core.activeId === el.id) $card.addClass('active');
 
-                var actions = '<div class="wppoppop-layer-actions">' +
-                    '<button type="button" class="wppoppop-layer-action-btn btn-lock ' + lockActive + '" data-id="' + el.id + '" title="Lock Element"><span class="dashicons ' + lockIcon + '"></span></button>' +
-                    '<button type="button" class="wppoppop-layer-action-btn btn-eye ' + eyeActive + '" data-id="' + el.id + '" title="Toggle Visibility"><span class="dashicons ' + eyeIcon + '"></span></button>' +
-                    '</div>';
+                $card.on('click', function() {
+                    Core.selectElement(el.id);
+                });
 
-                $item.html(grip + title + actions);
-                $list.append($item);
+                // Lock toggle listener
+                $card.find('.layer-lock-btn').on('click', function(e) {
+                    e.stopPropagation();
+                    var isLocked = !el.locked;
+                    Core.updateElement(el.id, { locked: isLocked });
+                    Core.pushHistory();
+                    Layers.render();
+                });
+
+                // Visibility toggle listener
+                $card.find('.layer-hide-btn').on('click', function(e) {
+                    e.stopPropagation();
+                    var isHidden = !el.hidden;
+                    Core.updateElement(el.id, { hidden: isHidden });
+                    if (isHidden && Core.activeId === el.id) {
+                        Core.activeId = null;
+                        $(document).trigger('builder:element:deselected');
+                    }
+                    Core.pushHistory();
+                    Layers.render();
+                });
+
+                $list.append($card);
             });
-
-            if ($.fn.sortable && $list.data('ui-sortable')) {
-                $list.sortable('refresh');
-            }
-
-            this.bindLayerEvents();
-        },
-
-        bindLayerEvents: function() {
-            var self = this;
-            var core = window.WpPopPopBuilder.Core;
-
-            $('.wppoppop-layer-item').off('click').on('click', function(e) {
-                if ($(e.target).closest('.wppoppop-layer-action-btn').length) return;
-                var id = $(this).data('id');
-                if (window.WpPopPopBuilder.Canvas) {
-                    window.WpPopPopBuilder.Canvas.selectElement(id);
-                }
-            });
-
-            $('.btn-lock').off('click').on('click', function(e) {
-                e.stopPropagation();
-                var id = $(this).data('id');
-                var el = core.getElementById(id);
-                if (el) {
-                    el.locked = !el.locked;
-                    self.renderList();
-                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
-                }
-            });
-
-            $('.btn-eye').off('click').on('click', function(e) {
-                e.stopPropagation();
-                var id = $(this).data('id');
-                var el = core.getElementById(id);
-                if (el) {
-                    el.hidden = !el.hidden;
-                    self.renderList();
-                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
-                }
-            });
-        },
-
-        highlightItem: function(id) {
-            $('.wppoppop-layer-item').removeClass('active');
-            $('.wppoppop-layer-item[data-id="' + id + '"]').addClass('active');
-        },
-
-        reindexStack: function() {
-            var core = window.WpPopPopBuilder.Core;
-            if (!core) return;
-
-            var total = $('#wppoppop-layers-list .wppoppop-layer-item').length;
-
-            $('#wppoppop-layers-list .wppoppop-layer-item').each(function(index) {
-                var id = $(this).data('id');
-                var el = core.getElementById(id);
-                if (el) {
-                    el.zIndex = total - index;
-                }
-            });
-
-            core.recordHistory();
-            if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
         }
     };
 

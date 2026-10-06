@@ -3,160 +3,216 @@
     window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var Core = {
-        state: {
-            uid: (window.wppoppop_vars && window.wppoppop_vars.current_uid) || '',
-            currentScreen: 1,
-            viewport: 'desktop',
-            activeId: null,
-            elements: [],
-            config: {
-                meta: { width: 640, height: 400, bgMode: 'solid', bgColor: '#ffffff', gradColor1: '#3b82f6', gradColor2: '#1d4ed8', gradAngle: 135 },
-                triggers: { onLoad: false, onLoadDelay: 0, onExit: false, onScroll: false, scrollVal: 50, onAdblock: false, onBackButton: false },
-                logic: { formula: '', targetId: '' },
-                sideTab: { enable: false, label: '', pos: 'left' },
-                payment: { gateway: 'stripe', amount: 0 },
-                downloads: { enable: false, url: '' },
-                video: { enable: false, time: 0 },
-                autoresponder: { enable: false, subject: '', body: '' },
-                marketing: { webhookUrl: '', webhookSecret: '' },
-                twilio: { enable: false, phone: '' },
-                targeting: { auth: 'all' },
-                frequency: { mode: 'always' },
-                woocommerce: { enableCoupon: false, couponAmount: '' },
-                customCode: { css: '', js: '' },
-                quiz: { enable: false, passScore: 0, confetti: false }
+        elements: [],
+        activeId: null,
+        currentScreen: 1,
+        viewport: 'desktop',
+        history: [],
+        historyIndex: -1,
+        config: {},
+        isDirty: false,
+
+        init: function(initialConfig) {
+            this.config = initialConfig || {};
+            this.elements = Array.isArray(initialConfig.elements) ? initialConfig.elements : [];
+            this.pushHistory();
+            this.bindHotkeys();
+            this.bindTopControls();
+            this.bindRevisionButtons();
+        },
+
+        bindHotkeys: function() {
+            var self = this;
+            $(document).on('keydown', function(e) {
+                // Intercept Cmd/Ctrl+S for Save
+                if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                    e.preventDefault();
+                    $('#wppoppop-btn-save').trigger('click');
+                    return;
+                }
+
+                // Ignore hotkeys when typing in form controls
+                if ($(e.target).is('input, textarea, select') || $(e.target).is('[contenteditable="true"]')) {
+                    return;
+                }
+
+                // Undo: Cmd/Ctrl+Z
+                if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    self.undo();
+                    return;
+                }
+
+                // Redo: Cmd/Ctrl+Y or Cmd/Ctrl+Shift+Z
+                if ((e.metaKey || e.ctrlKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+                    e.preventDefault();
+                    self.redo();
+                    return;
+                }
+
+                // Delete active element
+                if ((e.key === 'Delete' || e.key === 'Backspace') && self.activeId) {
+                    e.preventDefault();
+                    self.removeElement(self.activeId);
+                    return;
+                }
+
+                // Keyboard Arrow Nudging (1px, 10px with Shift)
+                if (self.activeId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.key) !== -1) {
+                    e.preventDefault();
+                    var el = self.getElementById(self.activeId);
+                    if (!el || el.locked) return;
+
+                    var step = e.shiftKey ? 10 : 1;
+                    var newTop = el.top || 0;
+                    var newLeft = el.left || 0;
+
+                    if (e.key === 'ArrowUp') newTop = Math.max(0, newTop - step);
+                    if (e.key === 'ArrowDown') newTop = newTop + step;
+                    if (e.key === 'ArrowLeft') newLeft = Math.max(0, newLeft - step);
+                    if (e.key === 'ArrowRight') newLeft = newLeft + step;
+
+                    self.updateElement(self.activeId, { top: newTop, left: newLeft });
+                }
+            });
+
+            // Prevent accidental tab closure if unsaved
+            window.addEventListener('beforeunload', function(e) {
+                if (self.isDirty) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+        },
+
+        bindTopControls: function() {
+            var self = this;
+            $('.wppoppop-screen-tab').on('click', function() {
+                var screen = parseInt($(this).data('screen'), 10) || 1;
+                self.setScreen(screen);
+            });
+
+            $('.wppoppop-viewport-btn').on('click', function() {
+                var mode = $(this).data('mode');
+                self.setViewport(mode);
+            });
+        },
+
+        bindRevisionButtons: function() {
+            var self = this;
+            $('#wppoppop-btn-undo').on('click', function() {
+                self.undo();
+            });
+            $('#wppoppop-btn-redo').on('click', function() {
+                self.redo();
+            });
+        },
+
+        setScreen: function(screenNum) {
+            this.currentScreen = screenNum;
+            $('.wppoppop-screen-tab').removeClass('active');
+            $('.wppoppop-screen-tab[data-screen="' + screenNum + '"]').addClass('active');
+            this.activeId = null;
+            $(document).trigger('builder:screen:change', [screenNum]);
+        },
+
+        setViewport: function(mode) {
+            this.viewport = mode;
+            $('.wppoppop-viewport-btn').removeClass('active');
+            $('.wppoppop-viewport-btn[data-mode="' + mode + '"]').addClass('active');
+            var width = (mode === 'mobile') ? '360px' : ($('#set-box-width').val() ? $('#set-box-width').val() + 'px' : '640px');
+            $('#wppoppop-canvas-box').css('width', width);
+        },
+
+        addElement: function(elementData) {
+            this.elements.push(elementData);
+            this.activeId = elementData.id;
+            this.isDirty = true;
+            this.pushHistory();
+            $(document).trigger('builder:elements:updated');
+            $(document).trigger('builder:element:selected', [elementData.id]);
+        },
+
+        updateElement: function(id, props) {
+            var el = this.getElementById(id);
+            if (el) {
+                Object.assign(el, props);
+                this.isDirty = true;
+                $(document).trigger('builder:element:modified', [el]);
             }
         },
 
-        undoStack: [],
-        redoStack: [],
+        removeElement: function(id) {
+            this.elements = this.elements.filter(function(e) { return e.id !== id; });
+            if (this.activeId === id) this.activeId = null;
+            this.isDirty = true;
+            this.pushHistory();
+            $(document).trigger('builder:elements:updated');
+            $(document).trigger('builder:element:deselected');
+        },
 
-        init: function() {
-            this.bindScreenTabs();
-            this.bindViewportToggles();
-            this.bindKeyboardShortcuts();
+        selectElement: function(id) {
+            this.activeId = id;
+            $(document).trigger('builder:element:selected', [id]);
         },
 
         getElementById: function(id) {
-            return this.state.elements.find(function(el) { return el.id === id; });
+            return this.elements.find(function(e) { return e.id === id; });
         },
 
-        recordHistory: function() {
-            var snapshot = JSON.stringify({ elements: this.state.elements, config: this.state.config });
-            if (this.undoStack.length >= 25) {
-                this.undoStack.shift();
+        reorderElements: function(newIdOrder) {
+            this.elements.sort(function(a, b) {
+                var indexA = newIdOrder.indexOf(a.id);
+                var indexB = newIdOrder.indexOf(b.id);
+                if (indexA === -1) return 1;
+                if (indexB === -1) return -1;
+                return indexA - indexB;
+            });
+            this.isDirty = true;
+            this.pushHistory();
+            $(document).trigger('builder:elements:updated');
+        },
+
+        pushHistory: function() {
+            if (this.historyIndex < this.history.length - 1) {
+                this.history = this.history.slice(0, this.historyIndex + 1);
             }
-            this.undoStack.push(snapshot);
-            this.redoStack = [];
+            this.history.push(JSON.stringify(this.elements));
+            if (this.history.length > 30) this.history.shift();
+            this.historyIndex = this.history.length - 1;
+            this.updateRevisionButtonsState();
         },
 
         undo: function() {
-            if (!this.undoStack.length) return;
-            var current = JSON.stringify({ elements: this.state.elements, config: this.state.config });
-            this.redoStack.push(current);
-            var prev = JSON.parse(this.undoStack.pop());
-            this.state.elements = prev.elements || [];
-            this.state.config = prev.config || this.state.config;
-            this.refreshWorkspace();
+            if (this.historyIndex > 0) {
+                this.historyIndex--;
+                this.elements = JSON.parse(this.history[this.historyIndex]);
+                this.activeId = null;
+                this.isDirty = true;
+                this.updateRevisionButtonsState();
+                $(document).trigger('builder:elements:updated');
+                $(document).trigger('builder:element:deselected');
+            }
         },
 
         redo: function() {
-            if (!this.redoStack.length) return;
-            var current = JSON.stringify({ elements: this.state.elements, config: this.state.config });
-            this.undoStack.push(current);
-            var next = JSON.parse(this.redoStack.pop());
-            this.state.elements = next.elements || [];
-            this.state.config = next.config || this.state.config;
-            this.refreshWorkspace();
-        },
-
-        refreshWorkspace: function() {
-            if (window.WpPopPopBuilder.Canvas) {
-                window.WpPopPopBuilder.Canvas.renderElements();
-            }
-            if (window.WpPopPopBuilder.Layers) {
-                window.WpPopPopBuilder.Layers.renderList();
-            }
-            if (window.WpPopPopBuilder.Inspector) {
-                if (this.state.activeId) {
-                    var el = this.getElementById(this.state.activeId);
-                    if (el) window.WpPopPopBuilder.Inspector.open(el);
-                    else window.WpPopPopBuilder.Inspector.close();
-                } else {
-                    window.WpPopPopBuilder.Inspector.close();
-                }
+            if (this.historyIndex < this.history.length - 1) {
+                this.historyIndex++;
+                this.elements = JSON.parse(this.history[this.historyIndex]);
+                this.activeId = null;
+                this.isDirty = true;
+                this.updateRevisionButtonsState();
+                $(document).trigger('builder:elements:updated');
+                $(document).trigger('builder:element:deselected');
             }
         },
 
-        bindScreenTabs: function() {
-            var self = this;
-            $(document).on('click', '.wppoppop-screen-tab', function(e) {
-                e.preventDefault();
-                $('.wppoppop-screen-tab').removeClass('active').css({ background: 'transparent', color: '#9ca3af' });
-                $(this).addClass('active').css({ background: '#2563eb', color: '#ffffff' });
-                self.state.currentScreen = parseInt($(this).data('screen'), 10) || 1;
-                self.state.activeId = null;
-                if (window.WpPopPopBuilder.Inspector) {
-                    window.WpPopPopBuilder.Inspector.close();
-                }
-                if (window.WpPopPopBuilder.Canvas) {
-                    window.WpPopPopBuilder.Canvas.renderElements();
-                }
-                if (window.WpPopPopBuilder.Layers) {
-                    window.WpPopPopBuilder.Layers.renderList();
-                }
-            });
-        },
+        updateRevisionButtonsState: function() {
+            var canUndo = this.historyIndex > 0;
+            var canRedo = this.historyIndex < this.history.length - 1;
 
-        bindViewportToggles: function() {
-            var self = this;
-            $(document).on('click', '.wppoppop-viewport-btn', function(e) {
-                e.preventDefault();
-                $('.wppoppop-viewport-btn').removeClass('active').css({ background: 'transparent', color: '#9ca3af' });
-                $(this).addClass('active').css({ background: '#374151', color: '#ffffff' });
-                var mode = $(this).data('mode');
-                self.state.viewport = mode;
-                var $box = $('#wppoppop-canvas-box');
-                if (mode === 'mobile') {
-                    $box.css({ width: '360px', height: '560px' });
-                } else {
-                    var w = (self.state.config.meta && self.state.config.meta.width) || 640;
-                    var h = (self.state.config.meta && self.state.config.meta.height) || 400;
-                    $box.css({ width: w + 'px', height: h + 'px' });
-                }
-            });
-        },
-
-        bindKeyboardShortcuts: function() {
-            var self = this;
-            $(document).on('keydown', function(e) {
-                if ($(e.target).is('input, textarea, select')) return;
-
-                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
-                    e.preventDefault();
-                    if (e.shiftKey) self.redo();
-                    else self.undo();
-                } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y') {
-                    e.preventDefault();
-                    self.redo();
-                } else if (e.key === 'Delete' || e.key === 'Backspace') {
-                    if (self.state.activeId) {
-                        e.preventDefault();
-                        self.deleteElement(self.state.activeId);
-                    }
-                }
-            });
-        },
-
-        deleteElement: function(id) {
-            this.recordHistory();
-            this.state.elements = this.state.elements.filter(function(el) { return el.id !== id; });
-            if (this.state.activeId === id) {
-                this.state.activeId = null;
-                if (window.WpPopPopBuilder.Inspector) window.WpPopPopBuilder.Inspector.close();
-            }
-            if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
-            if (window.WpPopPopBuilder.Layers) window.WpPopPopBuilder.Layers.renderList();
+            $('#wppoppop-btn-undo').prop('disabled', !canUndo).css('opacity', canUndo ? '1' : '0.4');
+            $('#wppoppop-btn-redo').prop('disabled', !canRedo).css('opacity', canRedo ? '1' : '0.4');
         }
     };
 

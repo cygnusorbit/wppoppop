@@ -4,256 +4,256 @@
 
     var Settings = {
         init: function() {
-            this.bindDrawer();
+            this.bindToggle();
             this.bindAccordions();
-            this.bindBoxStyling();
-            this.bindFormInputs();
+            this.bindLiveInputs();
+            this.hydrate(window.wppoppop_initial_config || {});
         },
 
-        bindDrawer: function() {
-            $('#wppoppop-btn-settings').on('click', function(e) {
-                e.preventDefault();
-                $('#wppoppop-settings-drawer').css('display', 'flex');
+        bindToggle: function() {
+            $('#wppoppop-btn-settings').on('click', function() {
+                $('#wppoppop-settings-drawer').toggleClass('open');
             });
-
-            $('#wppoppop-settings-drawer-close').on('click', function(e) {
-                e.preventDefault();
-                $('#wppoppop-settings-drawer').hide();
+            $('#wppoppop-settings-drawer-close').on('click', function() {
+                $('#wppoppop-settings-drawer').removeClass('open');
             });
         },
 
         bindAccordions: function() {
-            $(document).on('click', '.wppoppop-acc-header', function(e) {
-                e.preventDefault();
-                var $btn = $(this);
-                var $body = $btn.next('.wppoppop-acc-body');
-                $btn.toggleClass('active');
-                $body.slideToggle(180);
+            $('.wppoppop-acc-header').on('click', function() {
+                var $body = $(this).next('.wppoppop-acc-body');
+                $body.slideToggle(200);
             });
         },
 
-        bindBoxStyling: function() {
+        bindLiveInputs: function() {
             var self = this;
-            var core = window.WpPopPopBuilder.Core;
+            var Core = window.WpPopPopBuilder.Core;
 
-            $('#set-box-width, #set-box-height').on('input change', function() {
-                var w = parseInt($('#set-box-width').val(), 10) || 640;
-                var h = parseInt($('#set-box-height').val(), 10) || 400;
-                if (core && core.state) {
-                    core.state.config.meta.width = w;
-                    core.state.config.meta.height = h;
-                    if (core.state.viewport === 'desktop') {
-                        $('#wppoppop-canvas-box').css({ width: w + 'px', height: h + 'px' });
-                    }
-                }
+            $('#set-box-width, #set-box-height, #set-bg-mode, #set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
+                self.applyLiveStyles();
+                Core.isDirty = true;
             });
 
             $('#set-bg-mode').on('change', function() {
                 var mode = $(this).val();
-                if (core && core.state) core.state.config.meta.bgMode = mode;
                 if (mode === 'gradient') {
                     $('#set-solid-wrap').hide();
                     $('#set-gradient-wrap').show();
-                    self.applyGradient();
                 } else {
                     $('#set-solid-wrap').show();
                     $('#set-gradient-wrap').hide();
-                    var color = $('#set-bg-color').val() || '#ffffff';
-                    $('#wppoppop-canvas-box').css('background', color);
                 }
             });
 
-            $('#set-bg-color').on('input change', function() {
-                var col = $(this).val();
-                if (core && core.state) core.state.config.meta.bgColor = col;
-                $('#wppoppop-canvas-box').css('background', col);
+            $('#set-custom-css').on('input change', function() {
+                self.applyCustomCss($(this).val());
+                Core.isDirty = true;
             });
 
-            $('#set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
-                self.applyGradient();
+            // Mark dirty on any other settings input change
+            $('#wppoppop-settings-drawer input, #wppoppop-settings-drawer select, #wppoppop-settings-drawer textarea').on('input change', function() {
+                Core.isDirty = true;
             });
         },
 
-        applyGradient: function() {
-            var c1 = $('#set-grad-color1').val() || '#3b82f6';
-            var c2 = $('#set-grad-color2').val() || '#1d4ed8';
-            var deg = parseInt($('#set-grad-angle').val(), 10) || 135;
-            var core = window.WpPopPopBuilder.Core;
-            if (core && core.state) {
-                core.state.config.meta.gradColor1 = c1;
-                core.state.config.meta.gradColor2 = c2;
-                core.state.config.meta.gradAngle = deg;
+        hydrate: function(cfg) {
+            var s = cfg.settings || {};
+
+            // 1. Box & Canvas Dimensions
+            $('#set-box-width').val(s.width || 640);
+            $('#set-box-height').val(s.height || 400);
+            $('#set-bg-mode').val(s.bgMode || 'solid');
+            $('#set-bg-color').val(s.bgColor || '#ffffff');
+            $('#set-grad-color1').val(s.gradColor1 || '#3b82f6');
+            $('#set-grad-color2').val(s.gradColor2 || '#1d4ed8');
+            $('#set-grad-angle').val(s.gradAngle || 135);
+
+            if (s.bgMode === 'gradient') {
+                $('#set-solid-wrap').hide();
+                $('#set-gradient-wrap').show();
+            } else {
+                $('#set-solid-wrap').show();
+                $('#set-gradient-wrap').hide();
             }
-            $('#wppoppop-canvas-box').css('background', 'linear-gradient(' + deg + 'deg, ' + c1 + ', ' + c2 + ')');
+
+            // 2. Display Triggers
+            var trig = s.triggers || cfg.triggers || {};
+            $('#trig-load').prop('checked', trig.on_load !== false);
+            $('#trig-load-delay').val(trig.on_load_delay || 0);
+            $('#trig-exit').prop('checked', !!trig.on_exit);
+            $('#trig-scroll').prop('checked', !!trig.on_scroll);
+            $('#trig-scroll-val').val(trig.scroll_val || 50);
+            $('#trig-adblock').prop('checked', !!trig.on_adblock);
+            $('#trig-backbutton').prop('checked', !!trig.on_backbutton);
+
+            // 3. Math & Logic
+            var math = s.math || {};
+            $('#set-math-formula').val(math.formula || '');
+            $('#set-math-target').val(math.target || '');
+
+            // 4. Side Tab
+            var sideTab = s.sideTab || {};
+            $('#set-sidetab-enable').prop('checked', !!sideTab.enable);
+            $('#set-sidetab-label').val(sideTab.label || '');
+            $('#set-sidetab-pos').val(sideTab.position || 'left');
+
+            // 5. Payments
+            var pay = s.payments || {};
+            $('#set-pay-gateway').val(pay.gateway || 'stripe');
+            $('#set-pay-amount').val(pay.amount || 19.99);
+
+            // 6. Downloads
+            var dl = s.downloads || {};
+            $('#set-dl-enable').prop('checked', !!dl.enable);
+            $('#set-dl-url').val(dl.url || '');
+
+            // 7. Video
+            var vid = s.video || {};
+            $('#set-vid-enable').prop('checked', !!vid.enable);
+            $('#set-vid-time').val(vid.time || 30);
+
+            // 8. Autoresponder
+            var auto = s.autoresponder || {};
+            $('#set-auto-enable').prop('checked', !!auto.enable);
+            $('#set-auto-subject').val(auto.subject || '');
+            $('#set-auto-body').val(auto.body || '');
+
+            // 9. Webhooks
+            var hook = s.webhooks || {};
+            $('#set-webhook-url').val(hook.url || '');
+            $('#set-webhook-secret').val(hook.secret || '');
+
+            // 10. SMS
+            var sms = s.sms || {};
+            $('#set-sms-enable').prop('checked', !!sms.enable);
+            $('#set-sms-phone').val(sms.phone || '');
+
+            // 11. Targeting
+            var targ = s.targeting || {};
+            $('#set-target-auth').val(targ.auth || 'all');
+
+            // 12. Frequency
+            var freq = s.frequency || {};
+            $('#set-freq-mode').val(freq.mode || 'always');
+
+            // 13. WooCommerce
+            var wc = s.woocommerce || {};
+            $('#set-wc-coupon').prop('checked', !!wc.coupon);
+            $('#set-wc-amount').val(wc.amount || 15);
+
+            // 14. Scoped CSS & JS
+            $('#set-custom-css').val(s.customCss || cfg.custom_css || '');
+            $('#set-custom-js').val(s.customJs || cfg.custom_js || '');
+
+            // 15. Quiz Scoring
+            var quiz = s.quiz || {};
+            $('#set-quiz-enable').prop('checked', !!quiz.enable);
+            $('#set-quiz-pass').val(quiz.passScore || 70);
+            $('#set-quiz-confetti').prop('checked', quiz.confetti !== false);
+
+            this.applyLiveStyles();
+            this.applyCustomCss($('#set-custom-css').val());
         },
 
-        bindFormInputs: function() {
-            var core = window.WpPopPopBuilder.Core;
-            if (!core) return;
-            var cfg = core.state.config;
+        applyLiveStyles: function() {
+            var w = parseInt($('#set-box-width').val(), 10) || 640;
+            var h = parseInt($('#set-box-height').val(), 10) || 400;
+            var mode = $('#set-bg-mode').val();
+            var $box = $('#wppoppop-canvas-box');
 
-            $('#trig-load, #trig-load-delay, #trig-exit, #trig-scroll, #trig-scroll-val, #trig-adblock, #trig-backbutton').on('change input', function() {
-                cfg.triggers.onLoad = $('#trig-load').is(':checked');
-                cfg.triggers.onLoadDelay = parseInt($('#trig-load-delay').val(), 10) || 0;
-                cfg.triggers.onExit = $('#trig-exit').is(':checked');
-                cfg.triggers.onScroll = $('#trig-scroll').is(':checked');
-                cfg.triggers.scrollVal = parseInt($('#trig-scroll-val').val(), 10) || 50;
-                cfg.triggers.onAdblock = $('#trig-adblock').is(':checked');
-                cfg.triggers.onBackButton = $('#trig-backbutton').is(':checked');
-            });
+            if (window.WpPopPopBuilder.Core.viewport !== 'mobile') {
+                $box.css({ width: w + 'px', height: h + 'px' });
+            }
 
-            $('#set-math-formula, #set-math-target').on('input', function() {
-                cfg.logic.formula = $('#set-math-formula').val();
-                cfg.logic.targetId = $('#set-math-target').val();
-            });
-
-            $('#set-sidetab-enable, #set-sidetab-label, #set-sidetab-pos').on('change input', function() {
-                cfg.sideTab.enable = $('#set-sidetab-enable').is(':checked');
-                cfg.sideTab.label = $('#set-sidetab-label').val();
-                cfg.sideTab.pos = $('#set-sidetab-pos').val();
-            });
-
-            $('#set-pay-gateway, #set-pay-amount').on('change input', function() {
-                cfg.payment.gateway = $('#set-pay-gateway').val();
-                cfg.payment.amount = parseFloat($('#set-pay-amount').val()) || 0;
-            });
-
-            $('#set-dl-enable, #set-dl-url').on('change input', function() {
-                cfg.downloads.enable = $('#set-dl-enable').is(':checked');
-                cfg.downloads.url = $('#set-dl-url').val();
-            });
-
-            $('#set-vid-enable, #set-vid-time').on('change input', function() {
-                cfg.video.enable = $('#set-vid-enable').is(':checked');
-                cfg.video.time = parseInt($('#set-vid-time').val(), 10) || 0;
-            });
-
-            $('#set-auto-enable, #set-auto-subject, #set-auto-body').on('change input', function() {
-                cfg.autoresponder.enable = $('#set-auto-enable').is(':checked');
-                cfg.autoresponder.subject = $('#set-auto-subject').val();
-                cfg.autoresponder.body = $('#set-auto-body').val();
-            });
-
-            $('#set-webhook-url, #set-webhook-secret').on('input', function() {
-                cfg.marketing.webhookUrl = $('#set-webhook-url').val();
-                cfg.marketing.webhookSecret = $('#set-webhook-secret').val();
-            });
-
-            $('#set-sms-enable, #set-sms-phone').on('change input', function() {
-                cfg.twilio.enable = $('#set-sms-enable').is(':checked');
-                cfg.twilio.phone = $('#set-sms-phone').val();
-            });
-
-            $('#set-target-auth').on('change', function() {
-                cfg.targeting.auth = $('#set-target-auth').val();
-            });
-
-            $('#set-freq-mode').on('change', function() {
-                cfg.frequency.mode = $('#set-freq-mode').val();
-            });
-
-            $('#set-wc-coupon, #set-wc-amount').on('change input', function() {
-                cfg.woocommerce.enableCoupon = $('#set-wc-coupon').is(':checked');
-                cfg.woocommerce.couponAmount = $('#set-wc-amount').val();
-            });
-
-            $('#set-custom-css, #set-custom-js').on('input', function() {
-                cfg.customCode.css = $('#set-custom-css').val();
-                cfg.customCode.js = $('#set-custom-js').val();
-            });
-
-            $('#set-quiz-enable, #set-quiz-pass, #set-quiz-confetti').on('change input', function() {
-                cfg.quiz.enable = $('#set-quiz-enable').is(':checked');
-                cfg.quiz.passScore = parseInt($('#set-quiz-pass').val(), 10) || 0;
-                cfg.quiz.confetti = $('#set-quiz-confetti').is(':checked');
-            });
+            if (mode === 'gradient') {
+                var c1 = $('#set-grad-color1').val() || '#3b82f6';
+                var c2 = $('#set-grad-color2').val() || '#1d4ed8';
+                var deg = $('#set-grad-angle').val() || 135;
+                $box.css('background', 'linear-gradient(' + deg + 'deg, ' + c1 + ', ' + c2 + ')');
+            } else {
+                var solid = $('#set-bg-color').val() || '#ffffff';
+                $box.css('background', solid);
+            }
         },
 
-        populateFromConfig: function(cfg) {
-            if (!cfg) return;
-            if (cfg.meta) {
-                $('#set-box-width').val(cfg.meta.width || 640);
-                $('#set-box-height').val(cfg.meta.height || 400);
-                $('#set-bg-mode').val(cfg.meta.bgMode || 'solid');
-                if (cfg.meta.bgMode === 'gradient') {
-                    $('#set-solid-wrap').hide();
-                    $('#set-gradient-wrap').show();
-                    $('#set-grad-color1').val(cfg.meta.gradColor1 || '#3b82f6');
-                    $('#set-grad-color2').val(cfg.meta.gradColor2 || '#1d4ed8');
-                    $('#set-grad-angle').val(cfg.meta.gradAngle || 135);
-                    this.applyGradient();
-                } else {
-                    $('#set-solid-wrap').show();
-                    $('#set-gradient-wrap').hide();
-                    $('#set-bg-color').val(cfg.meta.bgColor || '#ffffff');
-                    $('#wppoppop-canvas-box').css('background', cfg.meta.bgColor || '#ffffff');
+        applyCustomCss: function(css) {
+            $('#wppoppop-custom-css-preview').remove();
+            if (css && css.trim()) {
+                $('head').append('<style id="wppoppop-custom-css-preview">' + css + '</style>');
+            }
+        },
+
+        getSettings: function() {
+            return {
+                width: parseInt($('#set-box-width').val(), 10) || 640,
+                height: parseInt($('#set-box-height').val(), 10) || 400,
+                bgMode: $('#set-bg-mode').val() || 'solid',
+                bgColor: $('#set-bg-color').val() || '#ffffff',
+                gradColor1: $('#set-grad-color1').val() || '#3b82f6',
+                gradColor2: $('#set-grad-color2').val() || '#1d4ed8',
+                gradAngle: parseInt($('#set-grad-angle').val(), 10) || 135,
+                triggers: {
+                    on_load: $('#trig-load').is(':checked'),
+                    on_load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
+                    on_exit: $('#trig-exit').is(':checked'),
+                    on_scroll: $('#trig-scroll').is(':checked'),
+                    scroll_val: parseInt($('#trig-scroll-val').val(), 10) || 50,
+                    on_adblock: $('#trig-adblock').is(':checked'),
+                    on_backbutton: $('#trig-backbutton').is(':checked')
+                },
+                math: {
+                    formula: $('#set-math-formula').val() || '',
+                    target: $('#set-math-target').val() || ''
+                },
+                sideTab: {
+                    enable: $('#set-sidetab-enable').is(':checked'),
+                    label: $('#set-sidetab-label').val() || '',
+                    position: $('#set-sidetab-pos').val() || 'left'
+                },
+                payments: {
+                    gateway: $('#set-pay-gateway').val() || 'stripe',
+                    amount: parseFloat($('#set-pay-amount').val()) || 19.99
+                },
+                downloads: {
+                    enable: $('#set-dl-enable').is(':checked'),
+                    url: $('#set-dl-url').val() || ''
+                },
+                video: {
+                    enable: $('#set-vid-enable').is(':checked'),
+                    time: parseInt($('#set-vid-time').val(), 10) || 30
+                },
+                autoresponder: {
+                    enable: $('#set-auto-enable').is(':checked'),
+                    subject: $('#set-auto-subject').val() || '',
+                    body: $('#set-auto-body').val() || ''
+                },
+                webhooks: {
+                    url: $('#set-webhook-url').val() || '',
+                    secret: $('#set-webhook-secret').val() || ''
+                },
+                sms: {
+                    enable: $('#set-sms-enable').is(':checked'),
+                    phone: $('#set-sms-phone').val() || ''
+                },
+                targeting: {
+                    auth: $('#set-target-auth').val() || 'all'
+                },
+                frequency: {
+                    mode: $('#set-freq-mode').val() || 'always'
+                },
+                woocommerce: {
+                    coupon: $('#set-wc-coupon').is(':checked'),
+                    amount: parseFloat($('#set-wc-amount').val()) || 15
+                },
+                customCss: $('#set-custom-css').val() || '',
+                customJs: $('#set-custom-js').val() || '',
+                quiz: {
+                    enable: $('#set-quiz-enable').is(':checked'),
+                    passScore: parseInt($('#set-quiz-pass').val(), 10) || 70,
+                    confetti: $('#set-quiz-confetti').is(':checked')
                 }
-                if (window.WpPopPopBuilder.Core && window.WpPopPopBuilder.Core.state.viewport === 'desktop') {
-                    $('#wppoppop-canvas-box').css({ width: (cfg.meta.width || 640) + 'px', height: (cfg.meta.height || 400) + 'px' });
-                }
-            }
-            if (cfg.triggers) {
-                $('#trig-load').prop('checked', !!cfg.triggers.onLoad);
-                $('#trig-load-delay').val(cfg.triggers.onLoadDelay || '');
-                $('#trig-exit').prop('checked', !!cfg.triggers.onExit);
-                $('#trig-scroll').prop('checked', !!cfg.triggers.onScroll);
-                $('#trig-scroll-val').val(cfg.triggers.scrollVal || '');
-                $('#trig-adblock').prop('checked', !!cfg.triggers.onAdblock);
-                $('#trig-backbutton').prop('checked', !!cfg.triggers.onBackButton);
-            }
-            if (cfg.logic) {
-                $('#set-math-formula').val(cfg.logic.formula || '');
-                $('#set-math-target').val(cfg.logic.targetId || '');
-            }
-            if (cfg.sideTab) {
-                $('#set-sidetab-enable').prop('checked', !!cfg.sideTab.enable);
-                $('#set-sidetab-label').val(cfg.sideTab.label || '');
-                $('#set-sidetab-pos').val(cfg.sideTab.pos || 'left');
-            }
-            if (cfg.payment) {
-                $('#set-pay-gateway').val(cfg.payment.gateway || 'stripe');
-                $('#set-pay-amount').val(cfg.payment.amount || '');
-            }
-            if (cfg.downloads) {
-                $('#set-dl-enable').prop('checked', !!cfg.downloads.enable);
-                $('#set-dl-url').val(cfg.downloads.url || '');
-            }
-            if (cfg.video) {
-                $('#set-vid-enable').prop('checked', !!cfg.video.enable);
-                $('#set-vid-time').val(cfg.video.time || '');
-            }
-            if (cfg.autoresponder) {
-                $('#set-auto-enable').prop('checked', !!cfg.autoresponder.enable);
-                $('#set-auto-subject').val(cfg.autoresponder.subject || '');
-                $('#set-auto-body').val(cfg.autoresponder.body || '');
-            }
-            if (cfg.marketing) {
-                $('#set-webhook-url').val(cfg.marketing.webhookUrl || '');
-                $('#set-webhook-secret').val(cfg.marketing.webhookSecret || '');
-            }
-            if (cfg.twilio) {
-                $('#set-sms-enable').prop('checked', !!cfg.twilio.enable);
-                $('#set-sms-phone').val(cfg.twilio.phone || '');
-            }
-            if (cfg.targeting) {
-                $('#set-target-auth').val(cfg.targeting.auth || 'all');
-            }
-            if (cfg.frequency) {
-                $('#set-freq-mode').val(cfg.frequency.mode || 'always');
-            }
-            if (cfg.woocommerce) {
-                $('#set-wc-coupon').prop('checked', !!cfg.woocommerce.enableCoupon);
-                $('#set-wc-amount').val(cfg.woocommerce.couponAmount || '');
-            }
-            if (cfg.customCode) {
-                $('#set-custom-css').val(cfg.customCode.css || '');
-                $('#set-custom-js').val(cfg.customCode.js || '');
-            }
-            if (cfg.quiz) {
-                $('#set-quiz-enable').prop('checked', !!cfg.quiz.enable);
-                $('#set-quiz-pass').val(cfg.quiz.passScore || '');
-                $('#set-quiz-confetti').prop('checked', !!cfg.quiz.confetti);
-            }
+            };
         }
     };
 

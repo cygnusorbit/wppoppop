@@ -3,17 +3,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-floating-layers-panel" id="wppoppop-floating-layers-panel">
-    <div class="wppoppop-layers-header" id="wppoppop-layers-header">
-        <div style="display:flex;align-items:center;gap:6px;">
-            <span class="dashicons dashicons-menu wppoppop-layer-grip"></span>
-            <span class="wppoppop-layers-title">LAYERS</span>
-        </div>
+<div id="wppoppop-floating-layers-panel">
+    <div id="wppoppop-layers-header">
+        <span><span class="dashicons dashicons-admin-page" style="font-size:14px;width:14px;height:14px;vertical-align:text-top;margin-right:4px;"></span> LAYERS</span>
         <span id="wppoppop-layers-count">0</span>
     </div>
-    <div class="wppoppop-layers-body">
-        <div class="wppoppop-layers-list" id="wppoppop-layers-list">
-            <!-- Populated dynamically via builder-layers.js -->
-        </div>
-    </div>
+    <div id="wppoppop-layers-list"></div>
 </div>

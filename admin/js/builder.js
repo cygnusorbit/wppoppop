@@ -2,34 +2,52 @@
     'use strict';
 
     $(document).ready(function() {
-        if (!window.WpPopPopBuilder) return;
-
-        if (window.WpPopPopBuilder.Core) {
-            window.WpPopPopBuilder.Core.init();
+        if (!window.WpPopPopBuilder) {
+            console.error('WpPopPopBuilder subsystem not initialized.');
+            return;
         }
 
-        if (window.WpPopPopBuilder.Canvas) {
-            window.WpPopPopBuilder.Canvas.init();
+        var Core      = window.WpPopPopBuilder.Core;
+        var Canvas    = window.WpPopPopBuilder.Canvas;
+        var Layers    = window.WpPopPopBuilder.Layers;
+        var Inspector = window.WpPopPopBuilder.Inspector;
+        var Settings  = window.WpPopPopBuilder.Settings;
+        var Modals    = window.WpPopPopBuilder.Modals;
+        var IO        = window.WpPopPopBuilder.IO;
+
+        // Initialize Core State Machine
+        if (Core && typeof Core.init === 'function') {
+            Core.init(window.wppoppop_initial_config || {});
         }
 
-        if (window.WpPopPopBuilder.Layers) {
-            window.WpPopPopBuilder.Layers.init();
+        // Initialize Canvas & Tool Palette
+        if (Canvas && typeof Canvas.init === 'function') {
+            Canvas.init();
         }
 
-        if (window.WpPopPopBuilder.Inspector) {
-            window.WpPopPopBuilder.Inspector.init();
+        // Initialize Floating Layers Panel
+        if (Layers && typeof Layers.init === 'function') {
+            Layers.init();
         }
 
-        if (window.WpPopPopBuilder.Settings) {
-            window.WpPopPopBuilder.Settings.init();
+        // Initialize Inspector Drawer
+        if (Inspector && typeof Inspector.init === 'function') {
+            Inspector.init();
         }
 
-        if (window.WpPopPopBuilder.Modals) {
-            window.WpPopPopBuilder.Modals.init();
+        // Initialize Campaign Settings Drawer
+        if (Settings && typeof Settings.init === 'function') {
+            Settings.init();
         }
 
-        if (window.WpPopPopBuilder.IO) {
-            window.WpPopPopBuilder.IO.init();
+        // Initialize Embed & Sandbox Modals
+        if (Modals && typeof Modals.init === 'function') {
+            Modals.init();
+        }
+
+        // Initialize Save & Persistence Pipeline
+        if (IO && typeof IO.init === 'function') {
+            IO.init();
         }
     });
 })(window, jQuery);
