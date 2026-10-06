@@ -1,0 +1,27 @@
+/* ==========================================================================
+   WpPopPop Settings: Monospace Code Editors & Textareas
+   ========================================================================== */
+
+.wppoppop-settings-section textarea.code {
+    font-family: Consolas, Monaco, "Courier New", Courier, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    background: #0f172a;
+    color: #38bdf8;
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+    padding: 12px 14px;
+    width: 100%;
+    max-width: 720px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wppoppop-settings-section textarea.code:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.wppoppop-settings-section textarea.code::placeholder {
+    color: #475569;
+}
