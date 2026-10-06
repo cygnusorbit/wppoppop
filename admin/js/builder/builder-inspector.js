@@ -21,10 +21,22 @@
         },
 
         bindClose: function() {
+            var self = this;
             $('#wppoppop-inspector-close').on('click', function() {
                 window.WpPopPopBuilder.Core.activeId = null;
                 $(document).trigger('builder:element:deselected');
             });
+        },
+
+        open: function(el) {
+            this.loadElement(el);
+            $('.wppoppop-builder-wrap').addClass('panel-open');
+            $('#wppoppop-inspector-drawer').addClass('open');
+        },
+
+        close: function() {
+            $('.wppoppop-builder-wrap').removeClass('panel-open');
+            $('#wppoppop-inspector-drawer').removeClass('open');
         },
 
         bindInputs: function() {
@@ -41,7 +53,6 @@
                 });
             }
 
-            // Basic tab live syncing
             syncLiveProperty('#prop-layer-name', 'label', false);
             syncLiveProperty('#prop-pos-top', 'top', true);
             syncLiveProperty('#prop-pos-left', 'left', true);
@@ -49,7 +60,6 @@
             syncLiveProperty('#prop-size-height', 'height', true);
             syncLiveProperty('#prop-content', 'content', false);
 
-            // Style tab live syncing
             syncLiveProperty('#prop-font-family', 'fontFamily', false);
             syncLiveProperty('#prop-font-size', 'fontSize', true);
             syncLiveProperty('#prop-border-radius', 'borderRadius', true);
@@ -58,7 +68,6 @@
             syncLiveProperty('#prop-opacity', 'opacity', true);
             syncLiveProperty('#prop-anim-effect', 'animEffect', false);
 
-            // Logic tab live syncing
             syncLiveProperty('#prop-action-url', 'actionUrl', false);
             syncLiveProperty('#prop-action-close', 'actionClose', false);
             syncLiveProperty('#prop-action-js', 'actionJs', false);
@@ -73,7 +82,6 @@
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
-            // Live streaming updates from dragging
             $(document).on('builder:element:moving', function(e, data) {
                 if (Core.activeId === data.id) {
                     $('#prop-pos-top').val(data.top);
@@ -81,7 +89,6 @@
                 }
             });
 
-            // Live streaming updates from resizing
             $(document).on('builder:element:resizing', function(e, data) {
                 if (Core.activeId === data.id) {
                     $('#prop-size-width').val(data.width);
@@ -89,20 +96,15 @@
                 }
             });
 
-            // Element selected: show inspector and shift pushing frame
             $(document).on('builder:element:selected', function(e, id) {
                 var el = Core.getElementById(id);
                 if (el) {
-                    self.loadElement(el);
-                    $('.wppoppop-builder-wrap').addClass('panel-open');
-                    $('#wppoppop-inspector-drawer').addClass('open').show();
+                    self.open(el);
                 }
             });
 
-            // Element deselected: hide inspector and return frame
             $(document).on('builder:element:deselected', function() {
-                $('.wppoppop-builder-wrap').removeClass('panel-open');
-                $('#wppoppop-inspector-drawer').removeClass('open').hide();
+                self.close();
             });
         },
 

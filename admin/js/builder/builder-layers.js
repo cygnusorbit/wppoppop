@@ -3,21 +3,25 @@
     window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var Layers = {
+        hasBeenMoved: false,
+
         init: function() {
-            this.makeDraggable();
+            this.makePanelDraggable();
             this.bindEvents();
-            this.render();
+            this.bindWindowResize();
+            this.renderList();
         },
 
-        makeDraggable: function() {
+        makePanelDraggable: function() {
+            var self = this;
             var $panel = $('#wppoppop-floating-layers-panel');
             if (typeof $.fn.draggable === 'function') {
                 $panel.draggable({
                     handle: '#wppoppop-layers-header',
-                    containment: '.wppoppop-builder-wrap',
+                    containment: '#wppoppop-builder-stage',
                     scroll: false,
                     start: function(evt, ui) {
-                        // Clear bottom and right to let top/left coordinates drive movement
+                        self.hasBeenMoved = true;
                         $(this).css({
                             bottom: 'auto',
                             right: 'auto'
@@ -27,12 +31,37 @@
             }
         },
 
+        bindWindowResize: function() {
+            var self = this;
+            var $panel = $('#wppoppop-floating-layers-panel');
+
+            $(window).on('resize', function() {
+                if (!self.hasBeenMoved) {
+                    $panel.css({
+                        top: '16px',
+                        right: '16px',
+                        left: 'auto',
+                        bottom: 'auto'
+                    });
+                } else {
+                    var $stage = $('#wppoppop-builder-stage');
+                    var stageWidth = $stage.width();
+                    var panelLeft = parseInt($panel.css('left'), 10) || 0;
+                    var panelWidth = $panel.outerWidth();
+
+                    if (panelLeft + panelWidth > stageWidth) {
+                        $panel.css('left', Math.max(16, stageWidth - panelWidth - 16) + 'px');
+                    }
+                }
+            });
+        },
+
         bindEvents: function() {
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
             $(document).on('builder:elements:updated builder:screen:change', function() {
-                self.render();
+                self.renderList();
             });
 
             $(document).on('builder:element:selected', function(e, id) {
@@ -44,7 +73,6 @@
                 $('.wppoppop-layer-card').removeClass('active');
             });
 
-            // Sortable layer list for live Z-Index reordering
             if (typeof $.fn.sortable === 'function') {
                 $('#wppoppop-layers-list').sortable({
                     handle: '.wppoppop-layer-grip',
@@ -66,7 +94,7 @@
             }
         },
 
-        render: function() {
+        renderList: function() {
             var Core = window.WpPopPopBuilder.Core;
             var $list = $('#wppoppop-layers-list');
             $list.empty();
@@ -99,16 +127,14 @@
                     Core.selectElement(el.id);
                 });
 
-                // Lock toggle listener
                 $card.find('.layer-lock-btn').on('click', function(e) {
                     e.stopPropagation();
                     var isLocked = !el.locked;
                     Core.updateElement(el.id, { locked: isLocked });
                     Core.pushHistory();
-                    Layers.render();
+                    Layers.renderList();
                 });
 
-                // Delete element listener
                 $card.find('.layer-delete-btn').on('click', function(e) {
                     e.stopPropagation();
                     Core.removeElement(el.id);

@@ -15,7 +15,6 @@ $config_raw = (isset($popup) && !empty($popup->data)) ? $popup->data : '{"elemen
         <?php include WPPOPPOP_PATH . 'templates/builder/drawer-inspector.php'; ?>
     </div>
 
-    <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
     <?php include WPPOPPOP_PATH . 'templates/builder/drawer-settings.php'; ?>
     <?php include WPPOPPOP_PATH . 'templates/builder/modals.php'; ?>
 </div>

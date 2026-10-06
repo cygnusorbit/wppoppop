@@ -13,65 +13,49 @@
         bindToggle: function() {
             var self = this;
 
-            // 1. Header Button Toggle Trigger
             $(document).on('click', '#wppoppop-btn-settings', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 self.toggle();
             });
 
-            // 2. Explicit Close Button Trigger (Supports ID and Class)
             $(document).on('click', '#wppoppop-settings-drawer-close, .wppoppop-drawer-close-btn', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 self.close();
             });
 
-            // 3. Backdrop Scrim Click Dismissal
             $(document).on('click', '#wppoppop-settings-backdrop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 self.close();
             });
 
-            // 4. Keyboard Escape Key Dismissal
             $(document).on('keydown', function(e) {
                 if (e.key === 'Escape' || e.keyCode === 27) {
-                    var $drawer = $('#wppoppop-settings-drawer');
-                    if ($drawer.hasClass('open') || $drawer.hasClass('active')) {
+                    if ($('#wppoppop-settings-drawer').hasClass('open')) {
                         self.close();
                     }
-                }
-            });
-
-            // 5. Click-Outside Guard Dismissal
-            $(document).on('click', function(e) {
-                var $drawer = $('#wppoppop-settings-drawer');
-                if (($drawer.hasClass('open') || $drawer.hasClass('active')) &&
-                    !$(e.target).closest('#wppoppop-settings-drawer').length &&
-                    !$(e.target).closest('#wppoppop-btn-settings').length) {
-                    self.close();
                 }
             });
         },
 
         open: function() {
-            $('#wppoppop-settings-drawer').addClass('open active');
-            $('#wppoppop-settings-backdrop').addClass('open active').show();
+            $('#wppoppop-settings-drawer').addClass('open');
+            $('#wppoppop-settings-backdrop').addClass('open');
             $('#wppoppop-btn-settings').addClass('active');
             $(document).trigger('builder:settings:opened');
         },
 
         close: function() {
-            $('#wppoppop-settings-drawer').removeClass('open active');
-            $('#wppoppop-settings-backdrop').removeClass('open active').hide();
+            $('#wppoppop-settings-drawer').removeClass('open');
+            $('#wppoppop-settings-backdrop').removeClass('open');
             $('#wppoppop-btn-settings').removeClass('active');
             $(document).trigger('builder:settings:closed');
         },
 
         toggle: function() {
-            var $drawer = $('#wppoppop-settings-drawer');
-            if ($drawer.hasClass('open') || $drawer.hasClass('active')) {
+            if ($('#wppoppop-settings-drawer').hasClass('open')) {
                 this.close();
             } else {
                 this.open();
@@ -81,7 +65,9 @@
         bindAccordions: function() {
             $(document).on('click', '.wppoppop-acc-header', function(e) {
                 e.preventDefault();
-                var $body = $(this).next('.wppoppop-acc-body');
+                var $header = $(this);
+                var $body = $header.next('.wppoppop-acc-body');
+                $header.toggleClass('active');
                 $body.slideToggle(200);
             });
         },
@@ -119,7 +105,6 @@
         hydrate: function(cfg) {
             var s = cfg.settings || {};
 
-            // 1. Box & Canvas Dimensions
             $('#set-box-width').val(s.width || 640);
             $('#set-box-height').val(s.height || 400);
             $('#set-bg-mode').val(s.bgMode || 'solid');
@@ -136,7 +121,6 @@
                 $('#set-gradient-wrap').hide();
             }
 
-            // 2. Display Triggers
             var trig = s.triggers || cfg.triggers || {};
             $('#trig-load').prop('checked', trig.on_load !== false);
             $('#trig-load-delay').val(trig.on_load_delay || 0);
@@ -146,66 +130,53 @@
             $('#trig-adblock').prop('checked', !!trig.on_adblock);
             $('#trig-backbutton').prop('checked', !!trig.on_backbutton);
 
-            // 3. Math & Logic
             var math = s.math || {};
             $('#set-math-formula').val(math.formula || '');
             $('#set-math-target').val(math.target || '');
 
-            // 4. Side Tab
             var sideTab = s.sideTab || {};
             $('#set-sidetab-enable').prop('checked', !!sideTab.enable);
             $('#set-sidetab-label').val(sideTab.label || '');
             $('#set-sidetab-pos').val(sideTab.position || 'left');
 
-            // 5. Payments
             var pay = s.payments || {};
             $('#set-pay-gateway').val(pay.gateway || 'stripe');
             $('#set-pay-amount').val(pay.amount || 19.99);
 
-            // 6. Downloads
             var dl = s.downloads || {};
             $('#set-dl-enable').prop('checked', !!dl.enable);
             $('#set-dl-url').val(dl.url || '');
 
-            // 7. Video
             var vid = s.video || {};
             $('#set-vid-enable').prop('checked', !!vid.enable);
             $('#set-vid-time').val(vid.time || 30);
 
-            // 8. Autoresponder
             var auto = s.autoresponder || {};
             $('#set-auto-enable').prop('checked', !!auto.enable);
             $('#set-auto-subject').val(auto.subject || '');
             $('#set-auto-body').val(auto.body || '');
 
-            // 9. Webhooks
             var hook = s.webhooks || {};
             $('#set-webhook-url').val(hook.url || '');
             $('#set-webhook-secret').val(hook.secret || '');
 
-            // 10. SMS
             var sms = s.sms || {};
             $('#set-sms-enable').prop('checked', !!sms.enable);
             $('#set-sms-phone').val(sms.phone || '');
 
-            // 11. Targeting
             var targ = s.targeting || {};
             $('#set-target-auth').val(targ.auth || 'all');
 
-            // 12. Frequency
             var freq = s.frequency || {};
             $('#set-freq-mode').val(freq.mode || 'always');
 
-            // 13. WooCommerce
             var wc = s.woocommerce || {};
             $('#set-wc-coupon').prop('checked', !!wc.coupon);
             $('#set-wc-amount').val(wc.amount || 15);
 
-            // 14. Scoped CSS & JS
             $('#set-custom-css').val(s.customCss || cfg.custom_css || '');
             $('#set-custom-js').val(s.customJs || cfg.custom_js || '');
 
-            // 15. Quiz Scoring
             var quiz = s.quiz || {};
             $('#set-quiz-enable').prop('checked', !!quiz.enable);
             $('#set-quiz-pass').val(quiz.passScore || 70);

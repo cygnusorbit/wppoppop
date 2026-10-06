@@ -7,4 +7,7 @@ if (!defined('ABSPATH')) {
     <div id="wppoppop-canvas-box" style="width:640px;height:400px;background:#ffffff;">
         <div id="wppoppop-canvas-elements-root"></div>
     </div>
+
+    <!-- Floating Draggable Magenta Layers Panel Docked in Top-Right of Checker Area -->
+    <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
 </div>

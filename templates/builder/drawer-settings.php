@@ -4,21 +4,24 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <!-- Settings Drawer Backdrop Scrim -->
-<div id="wppoppop-settings-backdrop" class="wppoppop-drawer-backdrop" style="display:none;"></div>
+<div id="wppoppop-settings-backdrop" class="wppoppop-drawer-backdrop"></div>
 
 <!-- Settings Slide-Out Drawer -->
 <div id="wppoppop-settings-drawer" class="wppoppop-settings-drawer">
-    <div style="background:#0f172a;color:#ffffff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b;min-height:48px;box-sizing:border-box;">
-        <span style="font-weight:700;font-size:13px;letter-spacing:0.3px;display:inline-flex;align-items:center;gap:6px;">
-            <span class="dashicons dashicons-admin-generic" style="font-size:16px;width:16px;height:16px;"></span> Campaign Settings
+    <div class="wppoppop-settings-header">
+        <span class="wppoppop-settings-heading">
+            <span class="dashicons dashicons-admin-generic"></span> Campaign Settings
         </span>
-        <button type="button" id="wppoppop-settings-drawer-close" class="wppoppop-drawer-close-btn" style="background:#374151;border:none;color:#ffffff;width:28px;height:28px;border-radius:4px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background 0.15s ease;" title="Close Settings (Esc)">&times;</button>
+        <button type="button" id="wppoppop-settings-drawer-close" class="wppoppop-drawer-close-btn" title="Close Settings (Esc)">&times;</button>
     </div>
 
-    <div style="flex:1;overflow-y:auto;padding:12px;" class="wppoppop-accordion-group">
+    <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
         <!-- 1. Box & Backdrop -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">1. Canvas Dimensions & Background</button>
+            <button type="button" class="wppoppop-acc-header active">
+                <span>1. Canvas Dimensions & Background</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                     <div>
@@ -60,7 +63,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 2. Display Triggers -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">2. Display Triggers</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>2. Display Triggers</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="trig-load" checked> On Page Load
@@ -90,7 +96,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 3. Conditional Logic & Math -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">3. Math & Expression Logic</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>3. Math & Expression Logic</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label>Math Calculation Formula</label>
                 <input type="text" id="set-math-formula" placeholder="{field_1} * 2.5 + 10">
@@ -101,7 +110,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 4. Sticky Side Tabs -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">4. Sticky Side Tab Launcher</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>4. Sticky Side Tab Launcher</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-sidetab-enable"> Enable Sticky Tab
@@ -119,7 +131,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 5. Payment Gateways -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">5. Instant Payments</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>5. Instant Payments</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label>Gateway</label>
                 <select id="set-pay-gateway">
@@ -133,7 +148,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 6. Secure Downloads -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">6. Lead Magnet Downloads</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>6. Lead Magnet Downloads</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-dl-enable"> Deliver Download on Submit
@@ -145,7 +163,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 7. Video Listeners -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">7. Embedded Video Listeners</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>7. Embedded Video Listeners</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-vid-enable"> Trigger on Video Playback
@@ -157,7 +178,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 8. Subscriber Autoresponder -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">8. Subscriber Autoresponder</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>8. Subscriber Autoresponder</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-auto-enable"> Send User Welcome Email
@@ -171,7 +195,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 9. Webhooks & Integrations -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">9. Marketing & Outgoing Webhooks</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>9. Marketing & Outgoing Webhooks</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label>Outgoing Webhook URL</label>
                 <input type="url" id="set-webhook-url" placeholder="https://api.zapier.com/hooks/catch/...">
@@ -182,7 +209,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 10. Twilio SMS Alerts -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">10. Twilio SMS Alerts</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>10. Twilio SMS Alerts</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-sms-enable"> Send Admin SMS on Lead
@@ -194,7 +224,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 11. Targeting & Attribution -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">11. Audience Targeting & Geo</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>11. Audience Targeting & Geo</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label>User Authentication Status</label>
                 <select id="set-target-auth">
@@ -207,7 +240,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 12. Frequency & Cookies -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">12. Frequency & Cookie Limits</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>12. Frequency & Cookie Limits</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label>Display Frequency</label>
                 <select id="set-freq-mode">
@@ -220,7 +256,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 13. WooCommerce Conversion Suite -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">13. WooCommerce Conversion Suite</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>13. WooCommerce Conversion Suite</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-wc-coupon"> Auto-Generate Personal Coupon
@@ -232,7 +271,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 14. Scoped CSS & JS -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">14. Scoped CSS & JavaScript</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>14. Scoped CSS & JavaScript</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label>Custom Scoped CSS</label>
                 <textarea id="set-custom-css" rows="3" placeholder="#wppoppop-canvas-box { border-radius: 12px; }"></textarea>
@@ -243,7 +285,10 @@ if (!defined('ABSPATH')) {
 
         <!-- 15. Quiz & Lead Scoring -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header">15. Quiz & Lead Scoring</button>
+            <button type="button" class="wppoppop-acc-header">
+                <span>15. Quiz & Lead Scoring</span>
+                <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
+            </button>
             <div class="wppoppop-acc-body" style="display:none;">
                 <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <input type="checkbox" id="set-quiz-enable"> Enable Quiz Scoring
