@@ -97,11 +97,22 @@ class WpPopPop_Admin_Assets {
             ]);
         }
 
-        // 4. Library Assets
+        // 4. Library Assets (Segregated Sub-Modules)
         if ($page === 'wppoppop-library') {
             wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', [], WPPOPPOP_VERSION);
-            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], WPPOPPOP_VERSION, true);
-            wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
+
+            wp_enqueue_script('wppoppop-library-filter-js', WPPOPPOP_URL . 'admin/js/library/library-filter.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-library-preview-js', WPPOPPOP_URL . 'admin/js/library/library-preview.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-library-import-js', WPPOPPOP_URL . 'admin/js/library/library-import.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', [
+                'jquery',
+                'wppoppop-library-filter-js',
+                'wppoppop-library-preview-js',
+                'wppoppop-library-import-js'
+            ], WPPOPPOP_VERSION, true);
+
+            wp_localize_script('wppoppop-library-import-js', 'wppoppop_vars', $shared_payload);
         }
     }
 }
