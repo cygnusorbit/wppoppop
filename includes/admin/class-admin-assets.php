@@ -156,5 +156,17 @@ class WpPopPop_Admin_Assets {
                 'wppoppop-payments-export-js'
             ], WPPOPPOP_VERSION, true);
         }
+
+        // 8. Activity Log Assets (Segregated Sub-Modules)
+        if ($page === 'wppoppop-log') {
+            wp_enqueue_script('wppoppop-log-search-js', WPPOPPOP_URL . 'admin/js/log/log-search.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-log-payload-js', WPPOPPOP_URL . 'admin/js/log/log-payload.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-log-js', WPPOPPOP_URL . 'admin/js/log.js', [
+                'jquery',
+                'wppoppop-log-search-js',
+                'wppoppop-log-payload-js'
+            ], WPPOPPOP_VERSION, true);
+        }
     }
 }
