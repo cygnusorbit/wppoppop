@@ -2,109 +2,120 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-global $wpdb;
-$table_subs  = $wpdb->prefix . 'wppoppop_submissions';
-$table_items = $wpdb->prefix . 'wppoppop_items';
-
-$search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
-$where_sql = '';
-if (!empty($search_query)) {
-    $where_sql = $wpdb->prepare("WHERE s.email LIKE %s OR i.title LIKE %s", '%' . $wpdb->esc_like($search_query) . '%', '%' . $wpdb->esc_like($search_query) . '%');
-}
-
-$submissions = $wpdb->get_results("SELECT s.*, i.title as popup_title 
-    FROM {$table_subs} s LEFT JOIN {$table_items} i ON s.popup_uid = i.uid {$where_sql} ORDER BY s.id DESC LIMIT 100");
-
-$total_subs      = $wpdb->get_var("SELECT COUNT(*) FROM {$table_subs}");
-$total_confirmed = $wpdb->get_var("SELECT COUNT(*) FROM {$table_subs} WHERE status = 'confirmed'");
-$total_views     = $wpdb->get_var("SELECT SUM(impressions) FROM {$table_items}");
-$global_rate     = ($total_views > 0) ? round(($total_confirmed / $total_views) * 100, 2) : 0;
 ?>
-<div class="wrap wppoppop-admin-page">
-    <h1 class="wp-heading-inline">Submissions & Lead Editor</h1>
-    <a href="<?php echo admin_url('admin-ajax.php?action=wppoppop_export_submissions_csv&nonce=' . wp_create_nonce('wppoppop_builder_nonce')); ?>" class="page-title-action">Export to CSV</a>
-    <hr class="wp-header-end">
+<div class="wrap wppoppop-submissions-wrap" style="max-width:1200px;">
+    <!-- Top Action & Search Header -->
+    <?php include WPPOPPOP_PATH . 'templates/submissions/header.php'; ?>
 
-    <div style="display: flex; gap: 20px; margin: 20px 0;">
-        <div class="postbox" style="flex: 1; padding: 20px; text-align: center;">
-            <div style="font-size: 13px; color: #646970; text-transform: uppercase; font-weight: 600;">Total Impressions</div>
-            <div style="font-size: 32px; font-weight: 700; color: #2271b1; margin-top: 5px;"><?php echo number_format((int)$total_views); ?></div>
-        </div>
-        <div class="postbox" style="flex: 1; padding: 20px; text-align: center;">
-            <div style="font-size: 13px; color: #646970; text-transform: uppercase; font-weight: 600;">Captured Leads</div>
-            <div style="font-size: 32px; font-weight: 700; color: #8c8f94; margin-top: 5px;"><?php echo number_format((int)$total_subs); ?></div>
-        </div>
-        <div class="postbox" style="flex: 1; padding: 20px; text-align: center;">
-            <div style="font-size: 13px; color: #646970; text-transform: uppercase; font-weight: 600;">Confirmed Leads</div>
-            <div style="font-size: 32px; font-weight: 700; color: #00a32a; margin-top: 5px;"><?php echo number_format((int)$total_confirmed); ?></div>
-        </div>
-        <div class="postbox" style="flex: 1; padding: 20px; text-align: center;">
-            <div style="font-size: 13px; color: #646970; text-transform: uppercase; font-weight: 600;">Conversion Rate</div>
-            <div style="font-size: 32px; font-weight: 700; color: #d63638; margin-top: 5px;"><?php echo $global_rate; ?>%</div>
-        </div>
-    </div>
+    <!-- Submissions List Table -->
+    <?php include WPPOPPOP_PATH . 'templates/submissions/table.php'; ?>
 
-    <!-- Search Form -->
-    <form method="get" style="margin-bottom: 15px; display: flex; gap: 8px;">
-        <input type="hidden" name="page" value="wppoppop-submissions">
-        <input type="search" name="s" value="<?php echo esc_attr($search_query); ?>" placeholder="Search lead by email..." style="width: 320px;">
-        <button type="submit" class="button">Search Leads</button>
-    </form>
-
-    <table class="wp-list-table widefat fixed striped">
-        <thead>
-            <tr>
-                <th style="width: 50px;">ID</th>
-                <th style="width: 160px;">Popup</th>
-                <th>Lead Email</th>
-                <th style="width: 140px;">Campaign / UTM</th>
-                <th style="width: 70px;">Country</th>
-                <th style="width: 90px;">Status</th>
-                <th>Submitted Data</th>
-                <th style="width: 140px;">Date</th>
-                <th style="width: 180px;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($submissions)) : ?>
-                <tr><td colspan="9">No lead records found.</td></tr>
-            <?php else : ?>
-                <?php foreach ($submissions as $sub) : 
-                    $fields = json_decode($sub->fields_data, true) ?: [];
-                    $campaign = !empty($fields['utm_campaign']) ? esc_html($fields['utm_campaign']) : 'organic';
-                    $source   = !empty($fields['utm_source']) ? esc_html($fields['utm_source']) : 'direct';
-                    ?>
-                    <tr id="sub-row-<?php echo esc_attr($sub->id); ?>">
-                        <td>#<?php echo esc_html($sub->id); ?></td>
-                        <td><strong><?php echo esc_html($sub->popup_title ?: 'Deleted'); ?></strong></td>
-                        <td class="sub-email-cell"><a href="mailto:<?php echo esc_attr($sub->email); ?>"><?php echo esc_html($sub->email); ?></a></td>
-                        <td>
-                            <span class="wppoppop-badge wppoppop-badge-utm"><?php echo $campaign; ?></span>
-                            <span class="wppoppop-badge wppoppop-badge-source"><?php echo $source; ?></span>
-                        </td>
-                        <td><code><?php echo esc_html($sub->country_code ?: 'GL'); ?></code></td>
-                        <td><span style="font-size:11px;font-weight:700;color:#00a32a;"><?php echo ucfirst(esc_html($sub->status)); ?></span></td>
-                        <td>
-                            <?php 
-                            foreach ($fields as $k => $v) {
-                                if (in_array($k, ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'], true)) continue;
-                                if ($k === 'signature') {
-                                    echo "<span style='color:#0284c7;font-weight:700;'>[Signature]</span> ";
-                                } else {
-                                    $v_str = is_array($v) ? implode(', ', $v) : $v;
-                                    echo "<code>" . esc_html($k) . "</code>: " . esc_html($v_str) . " ";
-                                }
-                            }
-                            ?>
-                        </td>
-                        <td><?php echo esc_html($sub->created_at); ?></td>
-                        <td>
-                            <button type="button" class="button button-small btn-view-lead" data-id="<?php echo esc_attr($sub->id); ?>">View/Edit</button>
-                            <button type="button" class="button button-small button-link-delete btn-gdpr-delete" data-id="<?php echo esc_attr($sub->id); ?>">Purge</button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+    <!-- Lead Submission Detail & Print Receipt Modal -->
+    <?php include WPPOPPOP_PATH . 'templates/submissions/modal-editor.php'; ?>
 </div>
+
+<script>
+(function($) {
+    'use strict';
+    $(document).ready(function() {
+        var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) || '';
+        var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) || ajaxurl;
+
+        // 1. Live Keyword Search
+        $('#wppoppop-subs-search').on('input', function() {
+            var term = $(this).val().toLowerCase();
+            $('.wppoppop-sub-row').each(function() {
+                var email = $(this).data('email') || '';
+                var title = $(this).data('title') || '';
+                if (email.indexOf(term) !== -1 || title.indexOf(term) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // 2. CSV Export Trigger
+        $('#wppoppop-btn-export-csv').on('click', function() {
+            window.location.href = ajaxUrl + '?action=wppoppop_export_submissions_csv&nonce=' + nonce;
+        });
+
+        // 3. View/Edit Modal Inspector
+        $('.wppoppop-view-sub-btn').on('click', function() {
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var email = $btn.data('email');
+            var popup = $btn.data('popup');
+            var date = $btn.data('date');
+            var country = $btn.data('country');
+            var fields = $btn.data('fields') || {};
+
+            $('#wppoppop-modal-id').text('#' + id);
+            $('#wppoppop-modal-email').text(email);
+            $('#wppoppop-modal-meta').text(popup + ' • ' + date + ' • Country: ' + country);
+
+            var $fieldsList = $('#wppoppop-modal-fields-list');
+            $fieldsList.empty();
+
+            var $utmList = $('#wppoppop-modal-utm-list');
+            $utmList.empty();
+            var hasUtm = false;
+
+            var hasSig = false;
+
+            $.each(fields, function(key, val) {
+                if (key === 'signature' && val) {
+                    hasSig = true;
+                    $('#wppoppop-modal-sig-img').attr('src', val);
+                } else if (key.indexOf('utm_') === 0) {
+                    hasUtm = true;
+                    $utmList.append('<span style="background:#e2e8f0;padding:2px 8px;border-radius:4px;"><strong>' + key + ':</strong> ' + val + '</span>');
+                } else {
+                    var displayVal = Array.isArray(val) ? val.join(', ') : val;
+                    $fieldsList.append('<div style="background:#f8fafc;padding:8px 12px;border-radius:6px;border:1px solid #e2e8f0;"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">' + key + '</label><div style="font-weight:600;font-size:13px;color:#1e293b;">' + displayVal + '</div></div>');
+                }
+            });
+
+            $('#wppoppop-modal-sig-wrap').toggle(hasSig);
+            $('#wppoppop-modal-utm-wrap').toggle(hasUtm);
+
+            $('#wppoppop-submission-modal').css('display', 'flex');
+        });
+
+        // 4. Modal Dismissal
+        $('#wppoppop-sub-modal-close, #wppoppop-sub-modal-done').on('click', function() {
+            $('#wppoppop-submission-modal').hide();
+        });
+
+        // 5. Print Receipt Action
+        $('#wppoppop-sub-modal-print').on('click', function() {
+            window.print();
+        });
+
+        // 6. GDPR Anonymize Action
+        $('.wppoppop-anon-sub-btn').on('click', function() {
+            if (!confirm('Anonymize this lead record for GDPR compliance?')) return;
+            var id = $(this).data('id');
+            var $row = $(this).closest('tr');
+            $.post(ajaxUrl, { action: 'wppoppop_anonymize_submission', nonce: nonce, id: id }, function(res) {
+                if (res.success) {
+                    $row.find('td:nth-child(2) strong').text('anonymized_' + id + '@privacy.local');
+                    alert('Lead PII scrubbed successfully.');
+                }
+            });
+        });
+
+        // 7. Delete Submission Action
+        $('.wppoppop-del-sub-btn').on('click', function() {
+            if (!confirm('Permanently delete this submission record?')) return;
+            var id = $(this).data('id');
+            var $row = $(this).closest('tr');
+            $.post(ajaxUrl, { action: 'wppoppop_delete_submission', nonce: nonce, id: id }, function(res) {
+                if (res.success) {
+                    $row.fadeOut(200, function() { $(this).remove(); });
+                }
+            });
+        });
+    });
+})(jQuery);
+</script>
