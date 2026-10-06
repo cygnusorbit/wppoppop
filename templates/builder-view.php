@@ -3,25 +3,28 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-builder-wrapper">
-    <!-- Top Workspace Header -->
-    <?php include WPPOPPOP_PATH . 'templates/builder/top-bar.php'; ?>
+<div class="wppoppop-builder-wrap" style="position:fixed;inset:0;background:#0f172a;z-index:99990;display:flex;flex-direction:column;overflow:hidden;">
+    <!-- 1. Top Application Toolbar -->
+    <?php include WPPOPPOP_PATH . 'templates/builder/header.php'; ?>
 
-    <!-- Elements Ribbon Toolbar -->
+    <!-- 2. Horizontal Elements Ribbon Toolbar -->
     <?php include WPPOPPOP_PATH . 'templates/builder/ribbon.php'; ?>
 
-    <!-- Main Workspace Frame (contracts left when properties panel opens) -->
-    <div class="wppoppop-main-frame">
+    <!-- Main Workspace Frame (Supports Pushing-Frame Inspector Docking) -->
+    <div class="wppoppop-main-frame" style="display:flex;flex:1;overflow:hidden;position:relative;">
+        <!-- 3. Visual Stage & Canvas Workspace -->
         <?php include WPPOPPOP_PATH . 'templates/builder/canvas.php'; ?>
-        <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
+
+        <!-- 4. Pushing Frame Layer Inspector Drawer -->
+        <?php include WPPOPPOP_PATH . 'templates/builder/drawer-inspector.php'; ?>
     </div>
 
-    <!-- Pushing Layer Properties Inspector Sidebar -->
-    <?php include WPPOPPOP_PATH . 'templates/builder/panel-properties.php'; ?>
+    <!-- 5. Floating Draggable Layers Panel -->
+    <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
 
-    <!-- Slide-Out Campaign Settings Drawer -->
+    <!-- 6. Slide-Out Campaign Settings Drawer -->
     <?php include WPPOPPOP_PATH . 'templates/builder/drawer-settings.php'; ?>
 
-    <!-- Embed Code & Live Preview Modals -->
+    <!-- 7. Embed Codes & Live Sandbox Preview Modals -->
     <?php include WPPOPPOP_PATH . 'templates/builder/modals.php'; ?>
 </div>

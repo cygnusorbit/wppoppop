@@ -3,64 +3,64 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-ribbon-bar">
-    <div class="wppoppop-ribbon-scroll">
-        <button type="button" class="wppoppop-tool-item" data-type="text" title="Text Layer">
-            <span class="dashicons dashicons-editor-textcolor"></span><span>Text</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="input" title="Email Input">
-            <span class="dashicons dashicons-email-alt"></span><span>Email</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="number" title="Number Input">
-            <span class="dashicons dashicons-calculator"></span><span>Number</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="dropdown" title="Select Dropdown">
-            <span class="dashicons dashicons-menu-alt"></span><span>Select</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="radio" title="Radio Buttons">
-            <span class="dashicons dashicons-marker"></span><span>Radio</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="checkbox" title="Checkbox">
-            <span class="dashicons dashicons-yes"></span><span>Checkbox</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="rating" title="Star Rating">
-            <span class="dashicons dashicons-star-filled"></span><span>Rating</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="date" title="Date Picker">
-            <span class="dashicons dashicons-calendar-alt"></span><span>Date</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="slider" title="Range Slider">
-            <span class="dashicons dashicons-leftright"></span><span>Slider</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="signature" title="Signature Pad">
-            <span class="dashicons dashicons-edit"></span><span>Signature</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="wheel" title="Spin Lucky Wheel">
-            <span class="dashicons dashicons-update"></span><span>Lucky Wheel</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="scratch" title="Scratch Card">
-            <span class="dashicons dashicons-tickets-alt"></span><span>Scratch Card</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="countdown" title="Countdown Timer">
-            <span class="dashicons dashicons-clock"></span><span>Countdown</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="progress" title="Progress Bar">
-            <span class="dashicons dashicons-chart-bar"></span><span>Progress</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="file" title="File Upload">
-            <span class="dashicons dashicons-upload"></span><span>File</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="nextstep" title="Next Screen Button">
-            <span class="dashicons dashicons-arrow-right-alt"></span><span>Next Step</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="button" title="Submit Button">
-            <span class="dashicons dashicons-button"></span><span>Submit</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="pay_btn" title="Payment Button">
-            <span class="dashicons dashicons-cart"></span><span>Payment</span>
-        </button>
-        <button type="button" class="wppoppop-tool-item" data-type="html" title="Custom HTML Block">
-            <span class="dashicons dashicons-html"></span><span>HTML</span>
-        </button>
-    </div>
+<div class="wppoppop-ribbon-bar" style="background:#1e293b;border-bottom:1px solid #334155;height:48px;display:flex;align-items:center;padding:0 12px;gap:6px;overflow-x:auto;z-index:9998;position:relative;">
+    <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-right:6px;white-space:nowrap;">Elements:</span>
+    
+    <button type="button" class="wppoppop-ribbon-tool" data-type="text" title="Text Layer">
+        <span class="dashicons dashicons-editor-textcolor"></span> Text
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="email" title="Email Field">
+        <span class="dashicons dashicons-email"></span> Email
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="number" title="Number Input">
+        <span class="dashicons dashicons-calculator"></span> Number
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="select" title="Dropdown Select">
+        <span class="dashicons dashicons-menu-alt"></span> Dropdown
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="radios" title="Radio Buttons">
+        <span class="dashicons dashicons-marker"></span> Radio
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="checkboxes" title="Checkboxes">
+        <span class="dashicons dashicons-yes"></span> Checkbox
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="rating" title="Star Rating">
+        <span class="dashicons dashicons-star-filled"></span> Rating
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="date" title="Date Picker">
+        <span class="dashicons dashicons-calendar-alt"></span> Date
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="slider" title="Range Slider">
+        <span class="dashicons dashicons-leftright"></span> Slider
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="signature" title="Digital Signature Pad">
+        <span class="dashicons dashicons-edit"></span> Signature
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="wheel" title="Spin Fortune Wheel">
+        <span class="dashicons dashicons-update"></span> Wheel
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="scratch" title="Scratch-Off Card">
+        <span class="dashicons dashicons-tickets-alt"></span> Scratch
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="countdown" title="Urgency Countdown">
+        <span class="dashicons dashicons-clock"></span> Countdown
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="progress" title="Progress Bar">
+        <span class="dashicons dashicons-performance"></span> Progress
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="file" title="File Upload">
+        <span class="dashicons dashicons-upload"></span> Upload
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="step_btn" title="Next Step Button">
+        <span class="dashicons dashicons-arrow-right-alt"></span> Next Step
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="submit" title="Submit Button">
+        <span class="dashicons dashicons-yes-alt"></span> Submit
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="pay" title="Payment Checkout Button">
+        <span class="dashicons dashicons-cart"></span> Pay
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="html" title="Custom HTML Block">
+        <span class="dashicons dashicons-html"></span> HTML
+    </button>
 </div>
