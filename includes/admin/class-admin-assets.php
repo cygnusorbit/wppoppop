@@ -76,11 +76,22 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-builder-core-js', 'wppoppop_vars', $builder_payload);
         }
 
-        // 3. Settings Assets
+        // 3. Settings Assets (Segregated Sub-Modules)
         if ($page === 'wppoppop-settings') {
             wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', [], WPPOPPOP_VERSION);
-            wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', ['jquery'], WPPOPPOP_VERSION, true);
-            wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', [
+
+            wp_enqueue_script('wppoppop-settings-tabs-js', WPPOPPOP_URL . 'admin/js/settings/settings-tabs.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-settings-tools-js', WPPOPPOP_URL . 'admin/js/settings/settings-tools.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', [
+                'jquery',
+                'wppoppop-settings-tabs-js',
+                'wppoppop-settings-save-js',
+                'wppoppop-settings-tools-js'
+            ], WPPOPPOP_VERSION, true);
+
+            wp_localize_script('wppoppop-settings-tabs-js', 'wppoppop_settings_vars', [
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce'    => wp_create_nonce('wppoppop_settings_nonce')
             ]);
