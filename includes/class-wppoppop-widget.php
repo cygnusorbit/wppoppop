@@ -3,60 +3,40 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once WPPOPPOP_PATH . 'includes/widget/class-widget-form.php';
+require_once WPPOPPOP_PATH . 'includes/widget/class-widget-render.php';
+
+/**
+ * Modular WpPopPop Sidebar Widget
+ * Delegates form controls and frontend output to isolated domain handlers.
+ */
 class WpPopPop_Widget extends WP_Widget {
+    protected $form_handler;
+    protected $render_handler;
+
     public function __construct() {
         parent::__construct(
             'wppoppop_widget',
             'WpPopPop Popup Widget',
-            ['description' => 'Display a WpPopPop campaign inline within your sidebars.']
+            [
+                'classname'   => 'widget_wppoppop',
+                'description' => 'Display an embedded popup campaign or click trigger button in any sidebar or widget area.',
+            ]
         );
+
+        $this->form_handler   = new WpPopPop_Widget_Form();
+        $this->render_handler = new WpPopPop_Widget_Render();
     }
 
     public function widget($args, $instance) {
-        $title = !empty($instance['title']) ? apply_filters('widget_title', $instance['title']) : '';
-        $uid   = !empty($instance['uid']) ? sanitize_key($instance['uid']) : '';
-
-        echo $args['before_widget'];
-        if ($title) {
-            echo $args['before_title'] . esc_html($title) . $args['after_title'];
-        }
-
-        if (!empty($uid)) {
-            echo do_shortcode('[wppoppop uid="' . esc_attr($uid) . '"]');
-        }
-
-        echo $args['after_widget'];
+        $this->render_handler->render_widget($this, $args, $instance);
     }
 
     public function form($instance) {
-        global $wpdb;
-        $popups = $wpdb->get_results("SELECT uid, title FROM {$wpdb->prefix}wppoppop_items WHERE status = 'publish' ORDER BY title ASC");
-
-        $title = isset($instance['title']) ? esc_attr($instance['title']) : '';
-        $current_uid = isset($instance['uid']) ? sanitize_key($instance['uid']) : '';
-        ?>
-        <p>
-            <label for="<?php echo esc_attr($this->get_field_id('title')); ?>">Widget Title:</label>
-            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('title')); ?>" name="<?php echo esc_attr($this->get_field_name('title')); ?>" type="text" value="<?php echo $title; ?>">
-        </p>
-        <p>
-            <label for="<?php echo esc_attr($this->get_field_id('uid')); ?>">Select Popup:</label>
-            <select class="widefat" id="<?php echo esc_attr($this->get_field_id('uid')); ?>" name="<?php echo esc_attr($this->get_field_name('uid')); ?>">
-                <option value="">-- Select Popup --</option>
-                <?php foreach ($popups as $popup) : ?>
-                    <option value="<?php echo esc_attr($popup->uid); ?>" <?php selected($current_uid, $popup->uid); ?>>
-                        <?php echo esc_html($popup->title); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </p>
-        <?php
+        $this->form_handler->render_form($this, $instance);
     }
 
     public function update($new_instance, $old_instance) {
-        $instance = [];
-        $instance['title'] = (!empty($new_instance['title'])) ? sanitize_text_field($new_instance['title']) : '';
-        $instance['uid']   = (!empty($new_instance['uid'])) ? sanitize_key($new_instance['uid']) : '';
-        return $instance;
+        return $this->form_handler->sanitize_settings($new_instance, $old_instance);
     }
 }
