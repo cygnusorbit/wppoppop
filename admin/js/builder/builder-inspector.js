@@ -1,133 +1,128 @@
 (function(window, $) {
     'use strict';
-    window.WpPopPop = window.WpPopPop || {};
+    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var Inspector = {
+        activeElement: null,
+
         init: function() {
+            this.bindClose();
             this.bindTabs();
             this.bindInputs();
         },
 
         open: function(el) {
-            $('.wppoppop-builder-wrapper').addClass('panel-open');
-            this.populate(el);
+            this.activeElement = el;
+            $('.wppoppop-builder-wrap').addClass('panel-open');
+            $('#wppoppop-inspector-drawer').show();
+
+            $('#prop-layer-name').val(el.name || '');
+            $('#prop-pos-top').val(el.top);
+            $('#prop-pos-left').val(el.left);
+            $('#prop-size-width').val(el.width);
+            $('#prop-size-height').val(el.height);
+            $('#prop-content').val(el.content);
+
+            $('#prop-font-family').val(el.fontFamily || 'inherit');
+            $('#prop-font-size').val(el.fontSize || 14);
+            $('#prop-color').val(el.color || '#1e293b');
+            $('#prop-bg-color').val(el.bgColor || '#ffffff');
+            $('#prop-border-radius').val(el.borderRadius || 0);
+            $('#prop-opacity').val(el.opacity || 1);
+            $('#prop-anim-effect').val(el.animEffect || 'none');
+
+            $('#prop-action-url').val(el.actionUrl || '');
+            $('#prop-action-blank').prop('checked', !!el.actionBlank);
+            $('#prop-action-close').val(el.actionClose || 'none');
+            $('#prop-action-js').val(el.actionJs || '');
         },
 
         close: function() {
-            $('.wppoppop-builder-wrapper').removeClass('panel-open');
-            $('.wppoppop-canvas-layer').removeClass('wppoppop-layer-selected');
-            window.WpPopPop.State.selectedId = null;
+            this.activeElement = null;
+            $('.wppoppop-builder-wrap').removeClass('panel-open');
+            $('#wppoppop-inspector-drawer').hide();
         },
 
-        populate: function(el) {
-            // Basic Tab
-            $('#wppoppop-prop-name').val(el.name);
-            $('#wppoppop-prop-top').val(el.top);
-            $('#wppoppop-prop-left').val(el.left);
-            $('#wppoppop-prop-width').val(el.width);
-            $('#wppoppop-prop-height').val(el.height);
-            $('#wppoppop-prop-content').val(el.content || '');
-            $('#wppoppop-prop-goto').val(el.goto_screen || 2);
-            $('#wppoppop-prop-click-act').val(el.click_action || 'none');
-
-            // Style Tab
-            $('#wppoppop-prop-font').val(el.font_family || 'inherit');
-            $('#wppoppop-prop-fontsize').val(el.font_size || 16);
-            $('#wppoppop-prop-color').val(el.color || '#1e293b');
-            $('#wppoppop-prop-bgcolor').val(el.bg_color || '#2271b1');
-            $('#wppoppop-prop-radius').val(el.border_radius || 4);
-            $('#wppoppop-prop-anim').val(el.anim || 'none');
-
-            // Logic Tab
-            $('#wppoppop-prop-req').prop('checked', !!el.required);
-            $('#wppoppop-prop-fieldname').val(el.field_name || '');
-            $('#wppoppop-prop-options').val(Array.isArray(el.options) ? el.options.join('\n') : '');
-        },
-
-        syncCoords: function(el) {
-            $('#wppoppop-prop-top').val(el.top);
-            $('#wppoppop-prop-left').val(el.left);
-        },
-
-        syncSize: function(el) {
-            $('#wppoppop-prop-width').val(el.width);
-            $('#wppoppop-prop-height').val(el.height);
-        },
-
-        bindTabs: function() {
+        bindClose: function() {
             var self = this;
-            $('.wppoppop-prop-tab').on('click', function() {
-                var tab = $(this).data('tab');
-                $('.wppoppop-prop-tab').removeClass('active');
-                $(this).addClass('active');
-                $('.wppoppop-prop-section').hide();
-                $('.wppoppop-prop-section[data-section="' + tab + '"]').show();
-            });
-
-            $('#wppoppop-property-close').on('click', function() {
+            $('#wppoppop-inspector-close').on('click', function() {
                 self.close();
             });
         },
 
+        bindTabs: function() {
+            $('.wppoppop-insp-tab').on('click', function() {
+                var tab = $(this).data('tab');
+                $('.wppoppop-insp-tab').removeClass('active');
+                $(this).addClass('active');
+
+                $('.wppoppop-insp-content').hide();
+                $('#insp-tab-' + tab).show();
+            });
+        },
+
+        syncCoords: function(el) {
+            if (this.activeElement && this.activeElement.id === el.id) {
+                $('#prop-pos-top').val(el.top);
+                $('#prop-pos-left').val(el.left);
+                $('#prop-size-width').val(el.width);
+                $('#prop-size-height').val(el.height);
+            }
+        },
+
         bindInputs: function() {
             var self = this;
-            function getActiveEl() {
-                var id = window.WpPopPop.State.selectedId;
-                return window.WpPopPop.State.elements.find(function(item) { return item.id === id; });
-            }
+            var core = window.WpPopPopBuilder.Core;
 
-            $('#wppoppop-prop-name').on('input', function() {
-                var el = getActiveEl();
-                if (el) {
-                    el.name = $(this).val();
-                    window.WpPopPop.Layers.renderList();
+            $('#prop-layer-name').on('input', function() {
+                if (self.activeElement) {
+                    self.activeElement.name = $(this).val();
+                    if (window.WpPopPopBuilder.Layers) window.WpPopPopBuilder.Layers.renderList();
                 }
             });
 
-            $('#wppoppop-prop-top, #wppoppop-prop-left').on('input', function() {
-                var el = getActiveEl();
-                if (el) {
-                    el.top = parseInt($('#wppoppop-prop-top').val(), 10) || 0;
-                    el.left = parseInt($('#wppoppop-prop-left').val(), 10) || 0;
-                    $('#' + el.id).css({ top: el.top + 'px', left: el.left + 'px' });
+            $('#prop-pos-top, #prop-pos-left, #prop-size-width, #prop-size-height').on('input', function() {
+                if (self.activeElement) {
+                    self.activeElement.top = parseInt($('#prop-pos-top').val(), 10) || 0;
+                    self.activeElement.left = parseInt($('#prop-pos-left').val(), 10) || 0;
+                    self.activeElement.width = parseInt($('#prop-size-width').val(), 10) || 50;
+                    self.activeElement.height = parseInt($('#prop-size-height').val(), 10) || 20;
+
+                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
                 }
             });
 
-            $('#wppoppop-prop-width, #wppoppop-prop-height').on('input', function() {
-                var el = getActiveEl();
-                if (el) {
-                    el.width = parseInt($('#wppoppop-prop-width').val(), 10) || 100;
-                    el.height = parseInt($('#wppoppop-prop-height').val(), 10) || 30;
-                    $('#' + el.id).css({ width: el.width + 'px', height: el.height + 'px' });
+            $('#prop-content').on('input', function() {
+                if (self.activeElement) {
+                    self.activeElement.content = $(this).val();
+                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
                 }
             });
 
-            $('#wppoppop-prop-content, #wppoppop-prop-font, #wppoppop-prop-fontsize, #wppoppop-prop-color, #wppoppop-prop-bgcolor, #wppoppop-prop-radius').on('input change', function() {
-                var el = getActiveEl();
-                if (el) {
-                    el.content = $('#wppoppop-prop-content').val();
-                    el.font_family = $('#wppoppop-prop-font').val();
-                    el.font_size = parseInt($('#wppoppop-prop-fontsize').val(), 10) || 16;
-                    el.color = $('#wppoppop-prop-color').val();
-                    el.bg_color = $('#wppoppop-prop-bgcolor').val();
-                    el.border_radius = parseInt($('#wppoppop-prop-radius').val(), 10) || 0;
-                    $('#' + el.id).html(window.WpPopPop.Canvas.getElementHtml(el));
+            $('#prop-font-family, #prop-font-size, #prop-color, #prop-bg-color, #prop-border-radius, #prop-opacity, #prop-anim-effect').on('input change', function() {
+                if (self.activeElement) {
+                    self.activeElement.fontFamily = $('#prop-font-family').val();
+                    self.activeElement.fontSize = parseInt($('#prop-font-size').val(), 10) || 14;
+                    self.activeElement.color = $('#prop-color').val();
+                    self.activeElement.bgColor = $('#prop-bg-color').val();
+                    self.activeElement.borderRadius = parseInt($('#prop-border-radius').val(), 10) || 0;
+                    self.activeElement.opacity = parseFloat($('#prop-opacity').val()) || 1;
+                    self.activeElement.animEffect = $('#prop-anim-effect').val();
+
+                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
                 }
             });
 
-            $('#wppoppop-prop-goto, #wppoppop-prop-click-act, #wppoppop-prop-anim, #wppoppop-prop-req, #wppoppop-prop-fieldname, #wppoppop-prop-options').on('change input', function() {
-                var el = getActiveEl();
-                if (el) {
-                    el.goto_screen = parseInt($('#wppoppop-prop-goto').val(), 10) || 2;
-                    el.click_action = $('#wppoppop-prop-click-act').val();
-                    el.anim = $('#wppoppop-prop-anim').val();
-                    el.required = $('#wppoppop-prop-req').is(':checked');
-                    el.field_name = $('#wppoppop-prop-fieldname').val();
-                    el.options = $('#wppoppop-prop-options').val().split('\n').filter(Boolean);
+            $('#prop-action-url, #prop-action-blank, #prop-action-close, #prop-action-js').on('input change', function() {
+                if (self.activeElement) {
+                    self.activeElement.actionUrl = $('#prop-action-url').val();
+                    self.activeElement.actionBlank = $('#prop-action-blank').is(':checked');
+                    self.activeElement.actionClose = $('#prop-action-close').val();
+                    self.activeElement.actionJs = $('#prop-action-js').val();
                 }
             });
         }
     };
 
-    window.WpPopPop.Inspector = Inspector;
+    window.WpPopPopBuilder.Inspector = Inspector;
 })(window, jQuery);

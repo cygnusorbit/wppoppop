@@ -1,76 +1,79 @@
 (function(window, $) {
     'use strict';
-    window.WpPopPop = window.WpPopPop || {};
+    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var IO = {
-        save: function() {
-            var State = window.WpPopPop.State;
-            var $btn = $('#wppoppop-btn-save');
-            $btn.prop('disabled', true).text('Saving...');
+        init: function() {
+            this.bindSave();
+            this.loadInitialData();
+        },
 
-            var title = $('#wppoppop-cfg-title').val() || 'Untitled Popup';
-            var payload = {
-                meta: State.config.meta,
-                triggers: State.config.triggers,
-                targeting: State.config.targeting,
-                frequency: State.config.frequency,
-                autoresponder: State.config.autoresponder,
-                marketing: State.config.marketing,
-                twilio: State.config.twilio,
-                tabs: State.config.tabs,
-                ribbon: State.config.ribbon,
-                woocommerce: State.config.woocommerce,
-                payments: State.config.payments,
-                downloads: State.config.downloads,
-                quiz: State.config.quiz,
-                sound: State.config.sound,
-                elements: State.elements
+        getVars: function() {
+            return window.wppoppop_vars || {
+                ajax_url: ajaxurl || '',
+                nonce: '',
+                current_uid: ''
             };
+        },
 
-            $.post(window.wppoppop_vars.ajax_url, {
-                action: 'wppoppop_save_popup',
-                nonce: window.wppoppop_vars.nonce,
-                uid: State.uid,
-                title: title,
-                data: JSON.stringify(payload)
-            }).done(function(res) {
-                if (res.success) {
-                    State.uid = res.data.uid;
-                    alert(res.data.message || 'Saved successfully!');
-                    if (window.history && window.history.replaceState) {
-                        var newUrl = window.location.href.split('&uid=')[0] + '&uid=' + State.uid;
-                        window.history.replaceState(null, '', newUrl);
+        bindSave: function() {
+            var self = this;
+            $('#wppoppop-btn-save').on('click', function() {
+                var core = window.WpPopPopBuilder.Core;
+                var $btn = $(this);
+                $btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation:wppoppopSpin 1s infinite linear;"></span> Saving...');
+
+                var vars = self.getVars();
+                var title = $('#wppoppop-builder-title').val().trim() || 'Untitled Popup';
+                var settingsData = window.WpPopPopBuilder.Settings ? window.WpPopPopBuilder.Settings.serialize() : {};
+
+                var payload = {
+                    title: title,
+                    meta: settingsData,
+                    elements: core.state.elements
+                };
+
+                $.post(vars.ajax_url, {
+                    action: 'wppoppop_save_popup',
+                    nonce: vars.nonce,
+                    uid: core.state.uid,
+                    title: title,
+                    data: JSON.stringify(payload)
+                }).done(function(res) {
+                    if (res.success && res.data) {
+                        core.state.uid = res.data.uid;
+                        if (window.history && window.history.replaceState) {
+                            var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + res.data.uid;
+                            window.history.replaceState({ path: newUrl }, '', newUrl);
+                        }
+                        alert('Popup configuration saved successfully!');
+                    } else {
+                        alert('Save Error: ' + (res.data ? res.data.message : 'Unable to save popup.'));
                     }
-                } else {
-                    alert('Save error: ' + (res.data ? res.data.message : 'Unknown'));
-                }
-            }).fail(function() {
-                alert('Network error while saving popup.');
-            }).always(function() {
-                $btn.prop('disabled', false).html('<span class="dashicons dashicons-saved"></span> Save Popup');
+                }).fail(function() {
+                    alert('Network error while saving popup.');
+                }).always(function() {
+                    $btn.prop('disabled', false).html('<span class="dashicons dashicons-saved"></span> Save Popup');
+                });
             });
         },
 
-        load: function(uid) {
-            if (!uid) return;
-            $.get(window.wppoppop_vars.ajax_url, {
-                action: 'wppoppop_load_popup',
-                nonce: window.wppoppop_vars.nonce,
-                uid: uid
-            }).done(function(res) {
-                if (res.success && res.data) {
-                    var data = JSON.parse(res.data.data);
-                    window.WpPopPop.State.elements = data.elements || [];
-                    window.WpPopPop.State.config = Object.assign(window.WpPopPop.State.config, data);
-                    $('#wppoppop-cfg-title').val(res.data.title);
-                    $('#wppoppop-cfg-width').val(data.meta.width);
-                    $('#wppoppop-cfg-height').val(data.meta.height);
-                    window.WpPopPop.Canvas.refresh();
-                    window.WpPopPop.Layers.renderList();
-                }
-            });
+        loadInitialData: function() {
+            var core = window.WpPopPopBuilder.Core;
+            if (window.wppoppop_initial_config) {
+                try {
+                    var parsed = typeof window.wppoppop_initial_config === 'string' ? JSON.parse(window.wppoppop_initial_config) : window.wppoppop_initial_config;
+                    if (parsed.elements && Array.isArray(parsed.elements)) {
+                        core.state.elements = parsed.elements;
+                    }
+                } catch(e) {}
+            }
+
+            core.recordHistory();
+            if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
+            if (window.WpPopPopBuilder.Layers) window.WpPopPopBuilder.Layers.renderList();
         }
     };
 
-    window.WpPopPop.IO = IO;
+    window.WpPopPopBuilder.IO = IO;
 })(window, jQuery);

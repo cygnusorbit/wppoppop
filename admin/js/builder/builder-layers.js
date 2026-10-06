@@ -1,119 +1,130 @@
 (function(window, $) {
     'use strict';
-    window.WpPopPop = window.WpPopPop || {};
+    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var Layers = {
         init: function() {
-            $('#wppoppop-layers-floating-panel').draggable({
-                handle: '.wppoppop-layers-header',
+            this.makePanelDraggable();
+            this.initSortable();
+        },
+
+        makePanelDraggable: function() {
+            $('#wppoppop-floating-layers-panel').draggable({
+                handle: '#wppoppop-layers-header',
                 containment: 'window'
             });
+        },
 
-            this.bindEvents();
+        initSortable: function() {
+            var self = this;
+            $('#wppoppop-layers-list').sortable({
+                handle: '.wppoppop-layer-grip',
+                placeholder: 'wppoppop-layer-drop-placeholder',
+                update: function() {
+                    self.reindexStack();
+                }
+            });
         },
 
         renderList: function() {
             var self = this;
+            var core = window.WpPopPopBuilder.Core;
             var $list = $('#wppoppop-layers-list');
             $list.empty();
 
-            var currentScreenEls = window.WpPopPop.State.elements.filter(function(el) {
-                return el.screen === window.WpPopPop.State.activeScreen;
+            var currentLayers = [];
+            $.each(core.state.elements, function(idx, el) {
+                if (el.screen === core.state.currentScreen) {
+                    currentLayers.push(el);
+                }
             });
 
-            currentScreenEls.sort(function(a, b) { return b.z_index - a.z_index; });
+            $('#wppoppop-layers-count').text(currentLayers.length);
 
-            currentScreenEls.forEach(function(el) {
+            // Stacking order: highest zIndex at top of list
+            currentLayers.sort(function(a, b) {
+                return (b.zIndex || 0) - (a.zIndex || 0);
+            });
+
+            $.each(currentLayers, function(idx, el) {
+                var $item = $('<div class="wppoppop-layer-item"></div>')
+                    .attr('data-id', el.id)
+                    .toggleClass('active', el.id === core.state.activeId);
+
+                var grip = '<span class="dashicons dashicons-menu wppoppop-layer-grip"></span>';
+                var title = '<span class="wppoppop-layer-title">' + (el.name || el.type.toUpperCase() + ' (' + el.id.substring(3, 8) + ')') + '</span>';
+                
                 var lockIcon = el.locked ? 'dashicons-lock' : 'dashicons-unlock';
-                var eyeIcon = el.visible ? 'dashicons-visibility' : 'dashicons-hidden';
+                var lockActive = el.locked ? 'active' : '';
+                var eyeIcon = el.hidden ? 'dashicons-hidden' : 'dashicons-visibility';
+                var eyeActive = el.hidden ? 'active' : '';
 
-                var $item = $('<li class="wppoppop-layer-row" data-id="' + el.id + '">' +
-                    '<span class="dashicons dashicons-menu wppoppop-layer-grip"></span>' +
-                    '<span class="wppoppop-layer-label">' + el.name + '</span>' +
-                    '<div class="wppoppop-layer-actions">' +
-                        '<span class="dashicons ' + lockIcon + ' wppoppop-btn-lock" title="Lock Layer"></span>' +
-                        '<span class="dashicons ' + eyeIcon + ' wppoppop-btn-eye" title="Toggle Visibility"></span>' +
-                        '<span class="dashicons dashicons-trash wppoppop-btn-del" title="Delete Layer"></span>' +
-                    '</div>' +
-                '</li>');
+                var actions = '<div class="wppoppop-layer-actions">' +
+                    '<button type="button" class="wppoppop-layer-action-btn btn-lock ' + lockActive + '" data-id="' + el.id + '"><span class="dashicons ' + lockIcon + '"></span></button>' +
+                    '<button type="button" class="wppoppop-layer-action-btn btn-eye ' + eyeActive + '" data-id="' + el.id + '"><span class="dashicons ' + eyeIcon + '"></span></button>' +
+                    '</div>';
 
-                if (el.id === window.WpPopPop.State.selectedId) {
-                    $item.addClass('active');
-                }
-
+                $item.html(grip + title + actions);
                 $list.append($item);
             });
 
-            if ($list.data('ui-sortable')) $list.sortable('destroy');
-            $list.sortable({
-                handle: '.wppoppop-layer-grip',
-                stop: function() {
-                    self.reorderFromDom();
+            this.bindLayerEvents();
+        },
+
+        bindLayerEvents: function() {
+            var self = this;
+            var core = window.WpPopPopBuilder.Core;
+
+            $('.wppoppop-layer-item').on('click', function(e) {
+                if ($(e.target).closest('.wppoppop-layer-action-btn').length) return;
+                var id = $(this).data('id');
+                if (window.WpPopPopBuilder.Canvas) {
+                    window.WpPopPopBuilder.Canvas.selectElement(id);
                 }
             });
-        },
 
-        highlight: function(id) {
-            $('.wppoppop-layer-row').removeClass('active');
-            $('.wppoppop-layer-row[data-id="' + id + '"]').addClass('active');
-        },
-
-        bindEvents: function() {
-            var self = this;
-
-            $(document).on('click', '.wppoppop-layer-row', function(e) {
-                if ($(e.target).closest('.wppoppop-layer-actions').length) return;
+            $('.btn-lock').on('click', function() {
                 var id = $(this).data('id');
-                window.WpPopPop.Canvas.selectElement(id);
-            });
-
-            $(document).on('click', '.wppoppop-btn-lock', function(e) {
-                e.stopPropagation();
-                var id = $(this).closest('.wppoppop-layer-row').data('id');
-                var el = window.WpPopPop.State.elements.find(function(item) { return item.id === id; });
-                if (!el) return;
-                el.locked = !el.locked;
-                window.WpPopPop.Canvas.refresh();
-                self.renderList();
-            });
-
-            $(document).on('click', '.wppoppop-btn-eye', function(e) {
-                e.stopPropagation();
-                var id = $(this).closest('.wppoppop-layer-row').data('id');
-                var el = window.WpPopPop.State.elements.find(function(item) { return item.id === id; });
-                if (!el) return;
-                el.visible = !el.visible;
-                $('#' + el.id).toggle(el.visible);
-                self.renderList();
-            });
-
-            $(document).on('click', '.wppoppop-btn-del', function(e) {
-                e.stopPropagation();
-                var id = $(this).closest('.wppoppop-layer-row').data('id');
-                window.WpPopPop.History.pushState();
-                window.WpPopPop.State.elements = window.WpPopPop.State.elements.filter(function(item) { return item.id !== id; });
-                $('#' + id).remove();
-                if (window.WpPopPop.State.selectedId === id) {
-                    window.WpPopPop.Inspector.close();
-                }
-                self.renderList();
-            });
-        },
-
-        reorderFromDom: function() {
-            var self = this;
-            var rows = $('#wppoppop-layers-list .wppoppop-layer-row');
-            var total = rows.length;
-            rows.each(function(idx) {
-                var id = $(this).data('id');
-                var el = window.WpPopPop.State.elements.find(function(item) { return item.id === id; });
+                var el = core.getElementById(id);
                 if (el) {
-                    el.z_index = total - idx;
-                    $('#' + el.id).css('zIndex', el.z_index);
+                    el.locked = !el.locked;
+                    self.renderList();
+                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
                 }
             });
+
+            $('.btn-eye').on('click', function() {
+                var id = $(this).data('id');
+                var el = core.getElementById(id);
+                if (el) {
+                    el.hidden = !el.hidden;
+                    self.renderList();
+                    if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
+                }
+            });
+        },
+
+        highlightItem: function(id) {
+            $('.wppoppop-layer-item').removeClass('active');
+            $('.wppoppop-layer-item[data-id="' + id + '"]').addClass('active');
+        },
+
+        reindexStack: function() {
+            var core = window.WpPopPopBuilder.Core;
+            var total = $('#wppoppop-layers-list .wppoppop-layer-item').length;
+
+            $('#wppoppop-layers-list .wppoppop-layer-item').each(function(index) {
+                var id = $(this).data('id');
+                var el = core.getElementById(id);
+                if (el) {
+                    el.zIndex = total - index;
+                }
+            });
+
+            core.recordHistory();
+            if (window.WpPopPopBuilder.Canvas) window.WpPopPopBuilder.Canvas.renderElements();
         }
     };
 
-    window.WpPopPop.Layers = Layers;
+    window.WpPopPopBuilder.Layers = Layers;
 })(window, jQuery);

@@ -1,193 +1,211 @@
 (function(window, $) {
     'use strict';
-    window.WpPopPop = window.WpPopPop || {};
+    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var Canvas = {
         init: function() {
             this.bindRibbonTools();
-            this.bindAlignment();
+            this.bindCanvasClick();
+            this.bindBoxDimensions();
         },
 
         bindRibbonTools: function() {
             var self = this;
-            $('.wppoppop-tool-item').on('click', function() {
+            $('.wppoppop-ribbon-tool').on('click', function() {
                 var type = $(this).data('type');
-                self.addElement(type);
+                self.createElement(type);
             });
         },
 
-        addElement: function(type) {
-            window.WpPopPop.History.pushState();
-            var State = window.WpPopPop.State;
-            var id = 'elem_' + Date.now();
+        createElement: function(type) {
+            var core = window.WpPopPopBuilder.Core;
+            var id = 'el_' + Date.now();
             var newEl = {
                 id: id,
                 type: type,
-                name: type.toUpperCase() + ' ' + (State.elements.length + 1),
-                screen: State.activeScreen,
+                screen: core.state.currentScreen || 1,
+                top: 40,
                 left: 40,
-                top: 40 + (State.elements.length % 5) * 20,
-                width: (type === 'button' || type === 'nextstep' || type === 'pay_btn') ? 140 : 200,
-                height: (type === 'text') ? 36 : 42,
-                z_index: State.elements.length + 1,
-                content: (type === 'text') ? 'Click to edit text' : (type === 'button' ? 'Submit' : ''),
+                width: 240,
+                height: (type === 'button' || type === 'submit' || type === 'step_btn' || type === 'pay') ? 45 : (type === 'wheel' ? 260 : 40),
+                zIndex: core.state.elements.length + 1,
+                content: this.getDefaultContent(type),
+                fontSize: 14,
+                fontFamily: 'inherit',
                 color: '#1e293b',
-                bg_color: (type === 'button') ? '#00a32a' : (type === 'pay_btn' ? '#0284c7' : '#2271b1'),
-                font_family: 'inherit',
-                font_size: 16,
-                border_radius: 4,
-                anim: 'none',
-                required: false,
-                field_name: '',
-                options: (type === 'wheel') ? ['10% OFF', 'FREE SHIP', '5% OFF', 'JACKPOT'] : [],
-                goto_screen: 2,
-                click_action: 'none',
+                bgColor: (type === 'button' || type === 'submit' || type === 'step_btn') ? '#2563eb' : (type === 'pay' ? '#10b981' : '#ffffff'),
+                borderRadius: 4,
+                opacity: 1,
                 locked: false,
-                visible: true
+                hidden: false,
+                actionUrl: '',
+                actionBlank: false,
+                actionClose: 'none',
+                actionJs: '',
+                animEffect: 'none'
             };
 
-            State.elements.push(newEl);
-            this.renderSingle(newEl);
-            window.WpPopPop.Layers.renderList();
+            core.state.elements.push(newEl);
+            core.recordHistory();
+
+            this.renderElements();
+            if (window.WpPopPopBuilder.Layers) window.WpPopPopBuilder.Layers.renderList();
             this.selectElement(id);
         },
 
-        renderSingle: function(el) {
-            if (el.screen !== window.WpPopPop.State.activeScreen) return;
+        getDefaultContent: function(type) {
+            switch(type) {
+                case 'text': return 'Double click or edit text layer...';
+                case 'email': return 'Enter your email address...';
+                case 'number': return '1';
+                case 'select': return 'Option 1, Option 2, Option 3';
+                case 'radios': return 'Choice A, Choice B';
+                case 'checkboxes': return 'I accept terms';
+                case 'step_btn': return 'Next Step &rarr;';
+                case 'submit': return 'Get My Discount';
+                case 'pay': return 'Buy Now ($19.99)';
+                case 'countdown': return '600';
+                case 'progress': return '50';
+                case 'scratch': return 'PROMO50';
+                case 'wheel': return '10% OFF, FREE SHIP, 25% OFF, JACKPOT';
+                default: return '';
+            }
+        },
+
+        renderElements: function() {
             var self = this;
-            var $box = $('#wppoppop-canvas');
-            var innerHtml = self.getElementHtml(el);
+            var core = window.WpPopPopBuilder.Core;
+            var $root = $('#wppoppop-canvas-elements-root');
+            $root.empty();
 
-            var $node = $('<div class="wppoppop-canvas-layer" id="' + el.id + '"></div>')
-                .css({
-                    position: 'absolute',
-                    left: el.left + 'px',
-                    top: el.top + 'px',
-                    width: el.width + 'px',
-                    height: el.height + 'px',
-                    zIndex: el.z_index,
-                    display: el.visible ? 'block' : 'none'
-                })
-                .html(innerHtml);
+            $.each(core.state.elements, function(idx, el) {
+                if (el.screen !== core.state.currentScreen) return;
+                if (el.hidden) return;
 
-            $box.append($node);
+                var $el = $('<div class="wppoppop-canvas-item"></div>')
+                    .attr('id', 'canvas-' + el.id)
+                    .data('id', el.id)
+                    .css({
+                        top: el.top + 'px',
+                        left: el.left + 'px',
+                        width: el.width + 'px',
+                        height: el.height + 'px',
+                        zIndex: el.zIndex,
+                        fontFamily: el.fontFamily,
+                        fontSize: el.fontSize + 'px',
+                        color: el.color,
+                        background: el.bgColor,
+                        borderRadius: el.borderRadius + 'px',
+                        opacity: el.opacity,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: (el.type === 'button' || el.type === 'submit' || el.type === 'step_btn' || el.type === 'pay') ? 'center' : 'flex-start',
+                        padding: '6px 10px'
+                    });
+
+                $el.html(self.getPreviewMarkup(el));
+                $root.append($el);
+
+                self.attachInteractions($el, el);
+            });
+
+            if (core.state.activeId) {
+                this.highlightElement(core.state.activeId);
+            }
+        },
+
+        getPreviewMarkup: function(el) {
+            switch(el.type) {
+                case 'wheel':
+                    return '<div style="width:100%;text-align:center;font-weight:700;color:#c2185b;">&#9678; [Fortune Wheel Preview]</div>';
+                case 'scratch':
+                    return '<div style="width:100%;text-align:center;background:#94a3b8;color:#fff;border-radius:4px;padding:8px 0;">&#9986; Scratch: ' + el.content + '</div>';
+                case 'rating':
+                    return '<span style="color:#f59e0b;font-size:20px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>';
+                case 'countdown':
+                    return '<div style="width:100%;text-align:center;font-weight:800;font-family:monospace;font-size:16px;">10:00</div>';
+                case 'progress':
+                    return '<div style="width:100%;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;"><div style="width:50%;height:100%;background:#2563eb;"></div></div>';
+                default:
+                    return el.content || ('[' + el.type.toUpperCase() + ']');
+            }
+        },
+
+        attachInteractions: function($el, el) {
+            var self = this;
+            var core = window.WpPopPopBuilder.Core;
 
             if (!el.locked) {
-                $node.draggable({
-                    containment: '#wppoppop-canvas',
+                $el.draggable({
+                    containment: '#wppoppop-canvas-box',
                     grid: [10, 10],
                     stop: function(e, ui) {
-                        el.left = ui.position.left;
                         el.top = ui.position.top;
-                        window.WpPopPop.Inspector.syncCoords(el);
+                        el.left = ui.position.left;
+                        core.recordHistory();
+                        if (window.WpPopPopBuilder.Inspector) window.WpPopPopBuilder.Inspector.syncCoords(el);
                     }
                 }).resizable({
-                    containment: '#wppoppop-canvas',
+                    containment: '#wppoppop-canvas-box',
+                    handles: 'se',
                     stop: function(e, ui) {
                         el.width = ui.size.width;
                         el.height = ui.size.height;
-                        window.WpPopPop.Inspector.syncSize(el);
+                        core.recordHistory();
+                        if (window.WpPopPopBuilder.Inspector) window.WpPopPopBuilder.Inspector.syncCoords(el);
                     }
                 });
             }
 
-            $node.on('click', function(e) {
+            $el.on('click', function(e) {
                 e.stopPropagation();
                 self.selectElement(el.id);
             });
         },
 
-        getElementHtml: function(el) {
-            switch(el.type) {
-                case 'text':
-                    return '<div style="font-family:' + el.font_family + ';font-size:' + el.font_size + 'px;color:' + el.color + ';width:100%;height:100%;display:flex;align-items:center;">' + (el.content || 'Text') + '</div>';
-                case 'input':
-                    return '<input type="email" placeholder="' + (el.content || 'Enter email...') + '" style="width:100%;height:100%;pointer-events:none;box-sizing:border-box;padding:0 8px;">';
-                case 'number':
-                    return '<input type="number" value="' + (el.content || '1') + '" style="width:100%;height:100%;pointer-events:none;box-sizing:border-box;padding:0 8px;">';
-                case 'dropdown':
-                    return '<select style="width:100%;height:100%;pointer-events:none;"><option>Select Choice...</option></select>';
-                case 'radio':
-                    return '<div style="display:flex;align-items:center;gap:6px;height:100%;"><input type="radio" checked disabled><label>Choice 1</label></div>';
-                case 'checkbox':
-                    return '<div style="display:flex;align-items:center;gap:6px;height:100%;"><input type="checkbox" checked disabled><label>' + (el.content || 'I Agree') + '</label></div>';
-                case 'rating':
-                    return '<div style="font-size:20px;color:#f59e0b;height:100%;display:flex;align-items:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>';
-                case 'date':
-                    return '<input type="date" style="width:100%;height:100%;pointer-events:none;">';
-                case 'slider':
-                    return '<input type="range" style="width:100%;height:100%;pointer-events:none;">';
-                case 'signature':
-                    return '<div style="width:100%;height:100%;border:1px dashed #94a3b8;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;">Signature Pad</div>';
-                case 'wheel':
-                    return '<div style="width:100%;height:100%;background:#f59e0b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border-radius:50%;">SPIN!</div>';
-                case 'scratch':
-                    return '<div style="width:100%;height:100%;background:#cbd5e1;display:flex;align-items:center;justify-content:center;font-weight:700;">Scratch Foil</div>';
-                case 'countdown':
-                    return '<div style="width:100%;height:100%;background:#1e293b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">14:59</div>';
-                case 'progress':
-                    return '<div style="width:100%;height:100%;background:#e2e8f0;border-radius:4px;"><div style="width:50%;height:100%;background:#2271b1;"></div></div>';
-                case 'file':
-                    return '<input type="file" style="width:100%;height:100%;pointer-events:none;font-size:11px;">';
-                case 'nextstep':
-                    return '<button type="button" style="width:100%;height:100%;background:' + el.bg_color + ';color:#fff;border:none;border-radius:' + el.border_radius + 'px;font-weight:600;">Next Step &rarr;</button>';
-                case 'button':
-                    return '<button type="button" style="width:100%;height:100%;background:' + el.bg_color + ';color:#fff;border:none;border-radius:' + el.border_radius + 'px;font-weight:600;">' + (el.content || 'Submit') + '</button>';
-                case 'pay_btn':
-                    return '<button type="button" style="width:100%;height:100%;background:#0284c7;color:#fff;border:none;border-radius:' + el.border_radius + 'px;font-weight:700;">Pay $10.00</button>';
-                case 'html':
-                    return '<div style="width:100%;height:100%;overflow:hidden;">' + (el.content || '&lt;HTML&gt;') + '</div>';
-                default:
-                    return '<div>' + el.type + '</div>';
-            }
-        },
-
         selectElement: function(id) {
-            window.WpPopPop.State.selectedId = id;
-            $('.wppoppop-canvas-layer').removeClass('wppoppop-layer-selected');
-            $('#' + id).addClass('wppoppop-layer-selected');
+            var core = window.WpPopPopBuilder.Core;
+            core.state.activeId = id;
+            this.highlightElement(id);
 
-            var el = window.WpPopPop.State.elements.find(function(item) { return item.id === id; });
-            if (el) {
-                window.WpPopPop.Inspector.open(el);
-                window.WpPopPop.Layers.highlight(id);
+            var el = core.getElementById(id);
+            if (el && window.WpPopPopBuilder.Inspector) {
+                window.WpPopPopBuilder.Inspector.open(el);
+            }
+            if (window.WpPopPopBuilder.Layers) {
+                window.WpPopPopBuilder.Layers.highlightItem(id);
             }
         },
 
-        refresh: function() {
-            var self = this;
-            $('#wppoppop-canvas').empty();
-            window.WpPopPop.State.elements.forEach(function(el) {
-                self.renderSingle(el);
+        highlightElement: function(id) {
+            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+            $('#canvas-' + id).addClass('wppoppop-selected');
+        },
+
+        filterByScreen: function() {
+            this.renderElements();
+        },
+
+        bindCanvasClick: function() {
+            $('#wppoppop-canvas-box').on('click', function(e) {
+                if (e.target === this) {
+                    $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+                    window.WpPopPopBuilder.Core.state.activeId = null;
+                    if (window.WpPopPopBuilder.Inspector) window.WpPopPopBuilder.Inspector.close();
+                }
             });
         },
 
-        bindAlignment: function() {
-            var self = this;
-            $('.wppoppop-align-btn').on('click', function() {
-                var align = $(this).data('align');
-                var id = window.WpPopPop.State.selectedId;
-                if (!id) return;
-                var el = window.WpPopPop.State.elements.find(function(item) { return item.id === id; });
-                if (!el) return;
-
-                var cWidth = window.WpPopPop.State.activeViewport === 'mobile' ? 360 : window.WpPopPop.State.config.meta.width;
-                var cHeight = window.WpPopPop.State.config.meta.height;
-
-                window.WpPopPop.History.pushState();
-
-                if (align === 'left') el.left = 0;
-                else if (align === 'center-h') el.left = Math.round((cWidth - el.width) / 2);
-                else if (align === 'right') el.left = cWidth - el.width;
-                else if (align === 'top') el.top = 0;
-                else if (align === 'center-v') el.top = Math.round((cHeight - el.height) / 2);
-                else if (align === 'bottom') el.top = cHeight - el.height;
-
-                $('#' + el.id).css({ left: el.left + 'px', top: el.top + 'px' });
-                window.WpPopPop.Inspector.syncCoords(el);
+        bindBoxDimensions: function() {
+            $('#set-box-width, #set-box-height').on('input', function() {
+                var w = $('#set-box-width').val() || 640;
+                var h = $('#set-box-height').val() || 400;
+                if (window.WpPopPopBuilder.Core.state.viewport === 'desktop') {
+                    $('#wppoppop-canvas-box').css({ width: w + 'px', height: h + 'px' });
+                }
             });
         }
     };
 
-    window.WpPopPop.Canvas = Canvas;
+    window.WpPopPopBuilder.Canvas = Canvas;
 })(window, jQuery);
