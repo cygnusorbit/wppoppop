@@ -2,134 +2,103 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-global $wpdb;
-$campaigns = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wppoppop_campaigns ORDER BY id DESC");
-$popups    = $wpdb->get_results("SELECT uid, title, impressions, submissions FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC");
 ?>
-<div class="wrap wppoppop-admin-page">
-    <h1 class="wp-heading-inline">A/B Testing Campaigns</h1>
-    <p>Create split-testing campaigns to serve random popup variations and evaluate which yields higher conversion rates.</p>
+<div class="wrap wppoppop-ab-wrap" style="max-width:1200px;">
+    <!-- Top Action & Notice Header -->
+    <?php include WPPOPPOP_PATH . 'templates/ab/header.php'; ?>
 
-    <div style="display: flex; gap: 20px; margin-top: 20px;">
-        <!-- Left: Create Campaign Box -->
-        <div class="postbox" style="flex: 1; padding: 20px;">
-            <h2>Create A/B Campaign</h2>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="font-weight: 600; display: block; margin-bottom: 5px;">Campaign Name:</label>
-                <input type="text" id="ab-campaign-title" class="widefat" placeholder="e.g. Summer Sale Split Test">
-            </div>
+    <!-- Experiments List Table -->
+    <?php include WPPOPPOP_PATH . 'templates/ab/table.php'; ?>
 
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="font-weight: 600; display: block; margin-bottom: 5px;">Select Variations to Rotate (Choose 2 or more):</label>
-                <?php if (empty($popups)) : ?>
-                    <p>No popups found. Create popups in the builder first.</p>
-                <?php else : ?>
-                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #fff;">
-                        <?php foreach ($popups as $p) : ?>
-                            <label style="display: block; margin-bottom: 6px;">
-                                <input type="checkbox" class="ab-popup-checkbox" value="<?php echo esc_attr($p->uid); ?>">
-                                <?php echo esc_html($p->title); ?> (<code><?php echo esc_html($p->uid); ?></code>)
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <button type="button" id="btn-save-ab" class="button button-primary">Launch Campaign</button>
-        </div>
-
-        <!-- Right: Active Campaigns List -->
-        <div class="postbox" style="flex: 2; padding: 20px;">
-            <h2>Active Experiments</h2>
-            <table class="wp-list-table widefat fixed striped">
-                <thead>
-                    <tr>
-                        <th>Campaign</th>
-                        <th>Shortcode</th>
-                        <th>Variations</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($campaigns)) : ?>
-                        <tr><td colspan="4">No A/B campaigns active.</td></tr>
-                    <?php else : ?>
-                        <?php foreach ($campaigns as $camp) : 
-                            $uids = json_decode($camp->popup_uids, true);
-                            ?>
-                            <tr>
-                                <td><strong><?php echo esc_html($camp->title); ?></strong></td>
-                                <td><code>[wppoppop_ab uid="<?php echo esc_attr($camp->uid); ?>"]</code></td>
-                                <td>
-                                    <?php 
-                                    foreach ($uids as $var_uid) {
-                                        $var_popup = $wpdb->get_row($wpdb->prepare("SELECT title, impressions, submissions FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $var_uid));
-                                        if ($var_popup) {
-                                            $rate = $var_popup->impressions > 0 ? round(($var_popup->submissions / $var_popup->impressions) * 100, 1) : 0;
-                                            echo "<div style='font-size:12px; margin-bottom:4px;'>&bull; <strong>" . esc_html($var_popup->title) . "</strong>: " . $var_popup->submissions . " subs / " . $var_popup->impressions . " views (" . $rate . "%)</div>";
-                                        }
-                                    }
-                                    ?>
-                                </td>
-                                <td>
-                                    <button type="button" class="button button-small button-link-delete btn-delete-camp" data-uid="<?php echo esc_attr($camp->uid); ?>">Delete</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Create Experiment Modal Dialog -->
+    <?php include WPPOPPOP_PATH . 'templates/ab/modal-create.php'; ?>
 </div>
 
 <script>
-jQuery(document).ready(function($) {
-    $('#btn-save-ab').on('click', function() {
-        const title = $('#ab-campaign-title').val().trim();
-        const selected = [];
-        $('.ab-popup-checkbox:checked').each(function() {
-            selected.push($(this).val());
+(function($) {
+    'use strict';
+    $(document).ready(function() {
+        var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) || '';
+        var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) || ajaxurl;
+
+        // 1. Open/Close Modal
+        $('#wppoppop-btn-open-create-ab').on('click', function() {
+            $('#wppoppop-ab-title-input').val('');
+            $('.wppoppop-ab-popup-checkbox').prop('checked', false);
+            $('#wppoppop-create-ab-modal').css('display', 'flex');
         });
 
-        if (!title) {
-            alert('Please specify a campaign name.');
-            return;
-        }
+        $('#wppoppop-create-ab-close, #wppoppop-create-ab-cancel').on('click', function() {
+            $('#wppoppop-create-ab-modal').hide();
+        });
 
-        if (selected.length < 2) {
-            alert('Please select at least 2 popups for the split test.');
-            return;
-        }
+        // 2. Submit Experiment
+        $('#wppoppop-create-ab-submit').on('click', function() {
+            var title = $('#wppoppop-ab-title-input').val().trim();
+            var selectedUids = [];
+            $('.wppoppop-ab-popup-checkbox:checked').each(function() {
+                selectedUids.push($(this).val());
+            });
 
-        $.post(wppoppop_vars.ajax_url, {
-            action: 'wppoppop_save_campaign',
-            nonce: wppoppop_vars.nonce,
-            title: title,
-            popup_uids: selected
-        }, function(res) {
-            if (res.success) {
-                location.reload();
-            } else {
-                alert(res.data.message);
+            if (!title) {
+                alert('Please enter a campaign title.');
+                return;
             }
+
+            if (selectedUids.length < 2) {
+                alert('Please select at least 2 popups for split-testing.');
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Launching...');
+
+            $.post(ajaxUrl, {
+                action: 'wppoppop_save_campaign',
+                nonce: nonce,
+                title: title,
+                popup_uids: selectedUids
+            }).done(function(res) {
+                if (res.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (res.data ? res.data.message : 'Unable to create campaign.'));
+                    $btn.prop('disabled', false).text('Launch Campaign');
+                }
+            }).fail(function() {
+                alert('Network error while saving campaign.');
+                $btn.prop('disabled', false).text('Launch Campaign');
+            });
+        });
+
+        // 3. Copy Shortcode Chip
+        $('.wppoppop-copy-ab-sc-btn').on('click', function() {
+            var sc = $(this).data('shortcode');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(sc);
+            }
+            var orig = $(this).text();
+            $(this).text('Copied!');
+            var $self = $(this);
+            setTimeout(function() { $self.text(orig); }, 1500);
+        });
+
+        // 4. Delete Campaign Action
+        $('.wppoppop-del-ab-btn').on('click', function() {
+            if (!confirm('Are you sure you want to delete this A/B testing campaign?')) return;
+            var uid = $(this).data('uid');
+            var $row = $(this).closest('tr');
+
+            $.post(ajaxUrl, {
+                action: 'wppoppop_delete_campaign',
+                nonce: nonce,
+                uid: uid
+            }).done(function(res) {
+                if (res.success) {
+                    $row.fadeOut(200, function() { $(this).remove(); });
+                }
+            });
         });
     });
-
-    $('.btn-delete-camp').on('click', function() {
-        if (!confirm('Are you sure you want to delete this A/B campaign?')) return;
-        const uid = $(this).data('uid');
-        $.post(wppoppop_vars.ajax_url, {
-            action: 'wppoppop_delete_campaign',
-            nonce: wppoppop_vars.nonce,
-            uid: uid
-        }, function(res) {
-            if (res.success) {
-                location.reload();
-            } else {
-                alert(res.data.message);
-            }
-        });
-    });
-});
+})(jQuery);
 </script>
