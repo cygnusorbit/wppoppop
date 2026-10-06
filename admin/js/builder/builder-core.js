@@ -16,17 +16,35 @@
         init: function(initialConfig) {
             this.config = initialConfig || {};
             this.elements = Array.isArray(initialConfig.elements) ? initialConfig.elements : [];
-            
-            // Initialize Screens Array (Default to Screen 1, Screen 2, Screen 3 if not present)
+
+            var defaultW = (initialConfig.settings && initialConfig.settings.width) ? initialConfig.settings.width : 640;
+            var defaultH = (initialConfig.settings && initialConfig.settings.height) ? initialConfig.settings.height : 400;
+            var defaultBgMode = (initialConfig.settings && initialConfig.settings.bgMode) ? initialConfig.settings.bgMode : 'solid';
+            var defaultBgColor = (initialConfig.settings && initialConfig.settings.bgColor) ? initialConfig.settings.bgColor : '#ffffff';
+            var defaultGradColor1 = (initialConfig.settings && initialConfig.settings.gradColor1) ? initialConfig.settings.gradColor1 : '#3b82f6';
+            var defaultGradColor2 = (initialConfig.settings && initialConfig.settings.gradColor2) ? initialConfig.settings.gradColor2 : '#1d4ed8';
+            var defaultGradAngle = (initialConfig.settings && initialConfig.settings.gradAngle) ? initialConfig.settings.gradAngle : 135;
+
+            // Initialize Per-Screen Dimensions and Background Properties
             if (Array.isArray(initialConfig.screens) && initialConfig.screens.length > 0) {
-                this.screens = initialConfig.screens;
+                this.screens = initialConfig.screens.map(function(sc) {
+                    return {
+                        id: parseInt(sc.id, 10),
+                        title: sc.title || ('Screen ' + sc.id),
+                        width: parseInt(sc.width, 10) || defaultW,
+                        height: parseInt(sc.height, 10) || defaultH,
+                        bgMode: sc.bgMode || defaultBgMode,
+                        bgColor: sc.bgColor || defaultBgColor,
+                        gradColor1: sc.gradColor1 || defaultGradColor1,
+                        gradColor2: sc.gradColor2 || defaultGradColor2,
+                        gradAngle: parseInt(sc.gradAngle, 10) || defaultGradAngle
+                    };
+                });
             } else {
-                var defaultW = (initialConfig.settings && initialConfig.settings.width) ? initialConfig.settings.width : 640;
-                var defaultH = (initialConfig.settings && initialConfig.settings.height) ? initialConfig.settings.height : 400;
                 this.screens = [
-                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH },
-                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH },
-                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH }
+                    { id: 1, title: 'Screen 1', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle },
+                    { id: 2, title: 'Screen 2', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle },
+                    { id: 3, title: 'Screen 3', width: defaultW, height: defaultH, bgMode: defaultBgMode, bgColor: defaultBgColor, gradColor1: defaultGradColor1, gradColor2: defaultGradColor2, gradAngle: defaultGradAngle }
                 ];
             }
 
@@ -99,23 +117,32 @@
         bindTopControls: function() {
             var self = this;
 
-            // Viewport switching
             $('.wppoppop-viewport-btn').on('click', function() {
                 var mode = $(this).data('mode');
                 self.setViewport(mode);
             });
 
-            // Add Screen Button
             $(document).on('click', '#wppoppop-btn-add-screen', function(e) {
                 e.preventDefault();
                 self.addScreen();
             });
 
-            // Screen Tab Click Selection
+            // Clicking any screen tab (Screen 1, 2, etc.) switches screen and slides in Campaign Settings
             $(document).on('click', '.wppoppop-screen-tab', function(e) {
                 if ($(e.target).hasClass('wppoppop-screen-tab-close') || $(e.target).is('input')) return;
                 var sId = parseInt($(this).data('screen'), 10);
                 self.setScreen(sId);
+
+                // Slide in Campaign Settings drawer focused on this screen's dimensions & background
+                if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
+                    window.WpPopPopBuilder.Settings.open();
+                    window.WpPopPopBuilder.Settings.setActiveScreen(sId);
+                    // Unfold Accordion 1
+                    var $accHeader = $('#wppoppop-acc-canvas-dimensions');
+                    var $accBody = $accHeader.next('.wppoppop-acc-body');
+                    $accHeader.addClass('active');
+                    $accBody.slideDown(200);
+                }
             });
 
             // Screen Tab Delete
@@ -125,7 +152,7 @@
                 self.removeScreen(sId);
             });
 
-            // Screen Tab Inline Rename on Double Click
+            // Inline Tab Rename
             $(document).on('dblclick', '.wppoppop-screen-tab-title', function(e) {
                 e.stopPropagation();
                 var $titleSpan = $(this);
@@ -156,12 +183,14 @@
 
             this.screens.forEach(function(sc) {
                 var isActive = (sc.id === self.currentScreen);
+                // Screen 1 is permanently protected from deletion
+                var canDelete = (sc.id !== 1 && self.screens.length > 1);
                 var $tab = $('<div></div>')
                     .addClass('wppoppop-screen-tab' + (isActive ? ' active' : ''))
                     .attr('data-screen', sc.id)
                     .html(
                         '<span class="wppoppop-screen-tab-title" title="Double click to rename">' + sc.title + '</span>' +
-                        (self.screens.length > 1 ? '<span class="dashicons dashicons-no-alt wppoppop-screen-tab-close" title="Delete screen"></span>' : '')
+                        (canDelete ? '<span class="dashicons dashicons-no-alt wppoppop-screen-tab-close" title="Delete screen"></span>' : '')
                     );
                 $list.append($tab);
             });
@@ -178,7 +207,12 @@
                 id: newId,
                 title: 'Screen ' + newId,
                 width: activeSc ? activeSc.width : 640,
-                height: activeSc ? activeSc.height : 400
+                height: activeSc ? activeSc.height : 400,
+                bgMode: activeSc ? activeSc.bgMode : 'solid',
+                bgColor: activeSc ? activeSc.bgColor : '#ffffff',
+                gradColor1: activeSc ? activeSc.gradColor1 : '#3b82f6',
+                gradColor2: activeSc ? activeSc.gradColor2 : '#1d4ed8',
+                gradAngle: activeSc ? activeSc.gradAngle : 135
             };
 
             this.screens.push(newScreen);
@@ -187,10 +221,20 @@
             this.renderScreenTabs();
             this.applyCurrentScreenDimensions();
             this.pushHistory();
+
+            if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
+                window.WpPopPopBuilder.Settings.setActiveScreen(newId);
+            }
+
             $(document).trigger('builder:screen:change', [newId]);
         },
 
         removeScreen: function(sId) {
+            // Screen 1 cannot be deleted
+            if (sId === 1) {
+                alert('Screen 1 is the default primary screen and cannot be deleted.');
+                return;
+            }
             if (this.screens.length <= 1) return;
             if (!confirm('Are you sure you want to delete this screen and its layers?')) return;
 
@@ -205,6 +249,11 @@
             this.renderScreenTabs();
             this.applyCurrentScreenDimensions();
             this.pushHistory();
+
+            if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
+                window.WpPopPopBuilder.Settings.setActiveScreen(this.currentScreen);
+            }
+
             $(document).trigger('builder:screen:change', [this.currentScreen]);
         },
 
@@ -215,6 +264,9 @@
                 this.isDirty = true;
                 this.renderScreenTabs();
                 this.pushHistory();
+                if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
+                    window.WpPopPopBuilder.Settings.renderScreenBullets();
+                }
             }
         },
 
@@ -236,15 +288,20 @@
             var sc = this.getCurrentScreenObj();
             if (!sc) return;
 
+            var $box = $('#wppoppop-canvas-box');
+
             if (this.viewport === 'mobile') {
-                $('#wppoppop-canvas-box').css({ width: '360px', height: (sc.height || 400) + 'px' });
+                $box.css({ width: '360px', height: (sc.height || 400) + 'px' });
             } else {
-                $('#wppoppop-canvas-box').css({ width: (sc.width || 640) + 'px', height: (sc.height || 400) + 'px' });
+                $box.css({ width: (sc.width || 640) + 'px', height: (sc.height || 400) + 'px' });
             }
 
-            // Sync with Settings Drawer Inputs
-            $('#set-box-width').val(sc.width || 640);
-            $('#set-box-height').val(sc.height || 400);
+            // Apply Per-Screen Background Style
+            if (sc.bgMode === 'gradient') {
+                $box.css('background', 'linear-gradient(' + (sc.gradAngle || 135) + 'deg, ' + (sc.gradColor1 || '#3b82f6') + ', ' + (sc.gradColor2 || '#1d4ed8') + ')');
+            } else {
+                $box.css('background', sc.bgColor || '#ffffff');
+            }
         },
 
         updateScreenDimensions: function(newW, newH) {
@@ -254,6 +311,9 @@
                 sc.height = newH;
                 this.isDirty = true;
                 this.applyCurrentScreenDimensions();
+                if (window.WpPopPopBuilder && window.WpPopPopBuilder.Settings) {
+                    window.WpPopPopBuilder.Settings.loadScreenData(sc);
+                }
             }
         },
 

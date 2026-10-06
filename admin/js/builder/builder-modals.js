@@ -58,20 +58,22 @@
 
             var initialScreen = Core.screens[0];
             var $box = $('<div></div>')
+                .attr('id', 'wppoppop-sandbox-box')
                 .css({
                     position: 'relative',
-                    width: (initialScreen.width || set.width) + 'px',
-                    height: (initialScreen.height || set.height) + 'px',
+                    width: (initialScreen.width || set.width || 640) + 'px',
+                    height: (initialScreen.height || set.height || 400) + 'px',
                     borderRadius: '8px',
                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
                     overflow: 'hidden',
-                    transition: 'width 0.25s ease, height 0.25s ease'
+                    transition: 'width 0.25s ease, height 0.25s ease, background 0.25s ease'
                 });
 
-            if (set.bgMode === 'gradient') {
-                $box.css('background', 'linear-gradient(' + set.gradAngle + 'deg, ' + set.gradColor1 + ', ' + set.gradColor2 + ')');
+            // Apply Initial Screen Background
+            if (initialScreen.bgMode === 'gradient') {
+                $box.css('background', 'linear-gradient(' + (initialScreen.gradAngle || 135) + 'deg, ' + (initialScreen.gradColor1 || '#3b82f6') + ', ' + (initialScreen.gradColor2 || '#1d4ed8') + ')');
             } else {
-                $box.css('background', set.bgColor);
+                $box.css('background', initialScreen.bgColor || '#ffffff');
             }
 
             var $closeBtn = $('<button type="button">&times;</button>')
@@ -79,7 +81,7 @@
                     position: 'absolute',
                     top: '10px',
                     right: '10px',
-                    background: 'rgba(0,0,0,0.2)',
+                    background: 'rgba(0,0,0,0.25)',
                     border: 'none',
                     color: '#ffffff',
                     fontSize: '20px',
@@ -90,14 +92,15 @@
                     zIndex: 9999,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    lineHeight: '1'
                 })
                 .on('click', function() {
                     $('#wppoppop-builder-preview-modal').removeClass('open');
                 });
             $box.append($closeBtn);
 
-            // Dynamically Render All Screens into Sandbox
+            // Render all screens inside sandbox
             Core.screens.forEach(function(sc, idx) {
                 var $screen = $('<div></div>')
                     .attr('data-preview-screen', sc.id)
@@ -112,24 +115,76 @@
                     var $elNode = Canvas.buildElementNode(el, elIdx + 10);
                     $elNode.removeClass('active locked').css('cursor', 'default');
 
-                    // Button Action Routing & Conditional Branching
+                    // Interactive Input Elements in Sandbox
+                    if (el.type === 'email' || el.type === 'number' || el.type === 'text') {
+                        $elNode.html('<input type="' + (el.type === 'email' ? 'email' : (el.type === 'number' ? 'number' : 'text')) + '" class="wppoppop-preview-input" data-el-id="' + el.id + '" placeholder="' + (el.content || el.label || '') + '" style="width:100%;height:100%;padding:0 10px;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;background:#ffffff;color:#1e293b;">');
+                    } else if (el.type === 'select') {
+                        $elNode.html('<select class="wppoppop-preview-input" data-el-id="' + el.id + '" style="width:100%;height:100%;padding:0 8px;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;background:#ffffff;color:#1e293b;"><option value="">Select an option...</option><option value="VIP">VIP</option><option value="Standard">Standard</option><option value="Yes">Yes</option><option value="No">No</option></select>');
+                    } else if (el.type === 'radios') {
+                        $elNode.html('<div style="display:flex;align-items:center;gap:12px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;"><label style="display:flex;align-items:center;gap:4px;font-size:inherit;color:inherit;cursor:pointer;"><input type="radio" name="rad_' + el.id + '" value="Choice A" class="wppoppop-preview-input" data-el-id="' + el.id + '" checked> Choice A</label><label style="display:flex;align-items:center;gap:4px;font-size:inherit;color:inherit;cursor:pointer;"><input type="radio" name="rad_' + el.id + '" value="Choice B" class="wppoppop-preview-input" data-el-id="' + el.id + '"> Choice B</label></div>');
+                    } else if (el.type === 'checkboxes') {
+                        $elNode.html('<label style="display:flex;align-items:center;gap:8px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;cursor:pointer;"><input type="checkbox" class="wppoppop-preview-input" data-el-id="' + el.id + '" value="1" checked><span style="font-size:inherit;color:inherit;">' + (el.content || el.label || 'Accept terms') + '</span></label>');
+                    }
+
+                    // Button Action Routing & Conditional Branching Evaluator
                     if (el.type === 'step_btn' || el.type === 'submit' || el.type === 'pay') {
                         $elNode.find('button').on('click', function(evt) {
                             evt.preventDefault();
                             var targetScreenId = null;
 
-                            // 1. Evaluate Conditional Logic
-                            if (el.condVal && el.condTargetScreen) {
-                                var enteredVal = $box.find('input, select, textarea').first().val();
-                                if (enteredVal && enteredVal.toLowerCase().trim() === el.condVal.toLowerCase().trim()) {
-                                    targetScreenId = el.condTargetScreen;
+                            // 1. Evaluate Conditional Logic if Enabled
+                            if (el.condEnable && el.condField) {
+                                var $fieldInput = $box.find('.wppoppop-preview-input[data-el-id="' + el.condField + '"]');
+                                var fieldValue = '';
+
+                                if ($fieldInput.is(':checkbox')) {
+                                    fieldValue = $fieldInput.is(':checked') ? ($fieldInput.val() || '1') : '';
+                                } else if ($fieldInput.is(':radio')) {
+                                    fieldValue = $box.find('.wppoppop-preview-input[data-el-id="' + el.condField + '"]:checked').val() || '';
+                                } else {
+                                    fieldValue = ($fieldInput.val() || '').trim();
+                                }
+
+                                var condOp = el.condOperator || 'equals';
+                                var matchVal = (el.condVal || '').trim();
+                                var isMatch = false;
+
+                                if (condOp === 'equals') {
+                                    isMatch = (fieldValue.toLowerCase() === matchVal.toLowerCase());
+                                } else if (condOp === 'not_equals') {
+                                    isMatch = (fieldValue.toLowerCase() !== matchVal.toLowerCase());
+                                } else if (condOp === 'contains') {
+                                    isMatch = (fieldValue.toLowerCase().indexOf(matchVal.toLowerCase()) !== -1);
+                                } else if (condOp === 'greater_than') {
+                                    isMatch = (parseFloat(fieldValue) > parseFloat(matchVal));
+                                } else if (condOp === 'less_than') {
+                                    isMatch = (parseFloat(fieldValue) < parseFloat(matchVal));
+                                } else if (condOp === 'is_empty') {
+                                    isMatch = (!fieldValue || fieldValue === '');
+                                } else if (condOp === 'is_not_empty') {
+                                    isMatch = (fieldValue && fieldValue !== '');
+                                }
+
+                                if (isMatch) {
+                                    targetScreenId = parseInt(el.condTargetScreen, 10);
+                                } else if (el.condFallbackScreen) {
+                                    if (el.condFallbackScreen === 'close') {
+                                        $('#wppoppop-builder-preview-modal').removeClass('open');
+                                        return;
+                                    } else if (el.condFallbackScreen === 'next_screen') {
+                                        var curIdx = Core.screens.findIndex(function(s) { return s.id === sc.id; });
+                                        var nextSc = Core.screens[curIdx + 1] || Core.screens[0];
+                                        targetScreenId = nextSc.id;
+                                    } else {
+                                        targetScreenId = parseInt(el.condFallbackScreen, 10);
+                                    }
                                 }
                             }
 
-                            // 2. Default Navigation Flow
+                            // 2. Default Navigation Flow if condition not met
                             if (!targetScreenId) {
                                 if (el.actionClose === 'jump_screen' && el.actionTargetScreen) {
-                                    targetScreenId = el.actionTargetScreen;
+                                    targetScreenId = parseInt(el.actionTargetScreen, 10);
                                 } else if (el.actionClose === 'next_screen') {
                                     var currentIdx = Core.screens.findIndex(function(s) { return s.id === sc.id; });
                                     var nextSc = Core.screens[currentIdx + 1] || Core.screens[0];
@@ -137,13 +192,26 @@
                                 } else if (el.actionClose === 'close') {
                                     $('#wppoppop-builder-preview-modal').removeClass('open');
                                     return;
+                                } else if (el.actionClose === 'redirect' && el.actionUrl) {
+                                    if (el.actionBlank) {
+                                        window.open(el.actionUrl, '_blank');
+                                    } else {
+                                        window.location.href = el.actionUrl;
+                                    }
+                                    return;
                                 }
                             }
 
+                            // Perform Screen Transition with Per-Screen Canvas Dimensions & Background
                             if (targetScreenId) {
                                 var targetScObj = Core.screens.find(function(s) { return s.id === targetScreenId; });
                                 if (targetScObj) {
                                     $box.css({ width: targetScObj.width + 'px', height: targetScObj.height + 'px' });
+                                    if (targetScObj.bgMode === 'gradient') {
+                                        $box.css('background', 'linear-gradient(' + (targetScObj.gradAngle || 135) + 'deg, ' + (targetScObj.gradColor1 || '#3b82f6') + ', ' + (targetScObj.gradColor2 || '#1d4ed8') + ')');
+                                    } else {
+                                        $box.css('background', targetScObj.bgColor || '#ffffff');
+                                    }
                                 }
                                 $box.find('[data-preview-screen]').hide();
                                 $box.find('[data-preview-screen="' + targetScreenId + '"]').fadeIn(200);

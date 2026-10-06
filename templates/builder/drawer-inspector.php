@@ -105,6 +105,7 @@ if (!defined('ABSPATH')) {
 
         <!-- Logic Tab -->
         <div class="wppoppop-insp-content" id="insp-tab-logic" style="display:none;">
+            <!-- Primary Action -->
             <div style="margin-bottom:12px;">
                 <label>Action on Click / Submit</label>
                 <select id="prop-action-close">
@@ -118,9 +119,9 @@ if (!defined('ABSPATH')) {
 
             <!-- Target Screen Dropdown for Screen Transitions -->
             <div id="prop-target-screen-wrap" style="margin-bottom:12px;">
-                <label>Target Screen</label>
+                <label>Default Target Screen</label>
                 <select id="prop-target-screen">
-                    <!-- Populated dynamically with available screens -->
+                    <!-- Populated dynamically -->
                 </select>
             </div>
 
@@ -135,24 +136,59 @@ if (!defined('ABSPATH')) {
                 </label>
             </div>
 
-            <!-- Screen 1 Conditional Routing Logic -->
-            <div style="margin-top:14px;padding-top:12px;border-top:1px solid #1e293b;">
-                <label style="font-weight:700;color:#f1f5f9;margin-bottom:6px;display:block;">Conditional Logic Routing</label>
-                <p style="font-size:10px;color:#94a3b8;margin:0 0 8px 0;">Evaluate conditions from Screen 1 before progressing:</p>
-                
-                <div style="margin-bottom:8px;">
-                    <label>If Field Value Matches</label>
-                    <input type="text" id="prop-cond-val" placeholder="e.g. VIP or Yes">
-                </div>
-                <div style="margin-bottom:12px;">
-                    <label>Then Jump to Screen</label>
-                    <select id="prop-cond-target-screen">
-                        <!-- Populated dynamically -->
-                    </select>
+            <!-- Enhanced Conditional Logic Section with Enable/Disable Switch -->
+            <div class="wppoppop-cond-toggle-wrap" style="margin-top:14px;padding:12px;background:#1e293b;border:1px solid #334155;border-radius:6px;">
+                <label style="display:flex;align-items:center;gap:8px;font-weight:700;color:#f8fafc;cursor:pointer;margin-bottom:6px;">
+                    <input type="checkbox" id="prop-cond-enable">
+                    <span>Enable Conditional Logic</span>
+                </label>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">
+                    Branch navigation dynamically based on visitor inputs in elements on this screen.
+                </p>
+
+                <div id="prop-cond-box" style="display:none;border-top:1px solid #334155;padding-top:10px;">
+                    <div style="margin-bottom:10px;">
+                        <label>Evaluate Element</label>
+                        <select id="prop-cond-field">
+                            <!-- Populated with input/form elements active on current screen -->
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label>Condition</label>
+                        <select id="prop-cond-operator">
+                            <option value="equals">Equals (=)</option>
+                            <option value="not_equals">Does not equal (!=)</option>
+                            <option value="contains">Contains text</option>
+                            <option value="greater_than">Greater than (&gt;)</option>
+                            <option value="less_than">Less than (&lt;)</option>
+                            <option value="is_empty">Is Empty</option>
+                            <option value="is_not_empty">Is Not Empty</option>
+                        </select>
+                    </div>
+
+                    <div id="prop-cond-val-wrap" style="margin-bottom:10px;">
+                        <label>Match Value</label>
+                        <input type="text" id="prop-cond-val" placeholder="e.g. VIP, Yes, 5">
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label>If True, Jump to Screen</label>
+                        <select id="prop-cond-target-screen">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom:4px;">
+                        <label>Otherwise (Fallback)</label>
+                        <select id="prop-cond-fallback-screen">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div style="margin-top:12px;">
+            <div style="margin-top:14px;">
                 <label>Custom JavaScript OnClick</label>
                 <textarea id="prop-action-js" rows="3" placeholder="console.log('Action triggered');"></textarea>
             </div>

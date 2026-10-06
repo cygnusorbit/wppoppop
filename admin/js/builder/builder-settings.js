@@ -3,10 +3,13 @@
     window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
     var Settings = {
+        activeSettingsScreen: 1,
+
         init: function() {
             this.bindToggle();
             this.bindAccordions();
             this.bindLiveInputs();
+            this.bindBulletNav();
             this.hydrate(window.wppoppop_initial_config || {});
         },
 
@@ -41,6 +44,7 @@
         },
 
         open: function() {
+            this.renderScreenBullets();
             $('#wppoppop-settings-drawer').addClass('open');
             $('#wppoppop-settings-backdrop').addClass('open');
             $('#wppoppop-btn-settings').addClass('active');
@@ -72,11 +76,91 @@
             });
         },
 
+        bindBulletNav: function() {
+            var self = this;
+
+            $(document).on('click', '.wppoppop-screen-bullet', function(e) {
+                e.preventDefault();
+                var sId = parseInt($(this).data('screen'), 10);
+                self.setActiveScreen(sId);
+            });
+
+            $(document).on('builder:screens:rendered builder:screen:change', function() {
+                self.renderScreenBullets();
+            });
+        },
+
+        renderScreenBullets: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core || !Array.isArray(Core.screens)) return;
+
+            var $container = $('#wppoppop-screen-settings-bullets');
+            $container.empty();
+
+            var self = this;
+            if (!this.activeSettingsScreen) {
+                this.activeSettingsScreen = Core.currentScreen;
+            }
+
+            Core.screens.forEach(function(sc) {
+                var isActive = (sc.id === self.activeSettingsScreen);
+                var $btn = $('<button type="button" class="wppoppop-screen-bullet' + (isActive ? ' active' : '') + '" data-screen="' + sc.id + '">' +
+                    '<span class="bullet-dot"></span> ' + sc.title +
+                '</button>');
+                $container.append($btn);
+            });
+
+            var activeSc = Core.screens.find(function(s) { return s.id === self.activeSettingsScreen; }) || Core.screens[0];
+            if (activeSc) {
+                $('#wppoppop-current-screen-badge').text('Configuring: ' + activeSc.title);
+                this.loadScreenData(activeSc);
+            }
+        },
+
+        setActiveScreen: function(sId) {
+            var Core = window.WpPopPopBuilder.Core;
+            this.activeSettingsScreen = sId;
+
+            // Update bullet visual active states
+            $('.wppoppop-screen-bullet').removeClass('active');
+            $('.wppoppop-screen-bullet[data-screen="' + sId + '"]').addClass('active');
+
+            var sc = Core.screens.find(function(s) { return s.id === sId; });
+            if (sc) {
+                $('#wppoppop-current-screen-badge').text('Configuring: ' + sc.title);
+                this.loadScreenData(sc);
+
+                // Switch workspace to this screen as well
+                if (Core.currentScreen !== sId) {
+                    Core.setScreen(sId);
+                }
+            }
+        },
+
+        loadScreenData: function(sc) {
+            $('#set-box-width').val(sc.width || 640);
+            $('#set-box-height').val(sc.height || 400);
+            $('#set-bg-mode').val(sc.bgMode || 'solid');
+            $('#set-bg-color').val(sc.bgColor || '#ffffff');
+            $('#set-grad-color1').val(sc.gradColor1 || '#3b82f6');
+            $('#set-grad-color2').val(sc.gradColor2 || '#1d4ed8');
+            $('#set-grad-angle').val(sc.gradAngle || 135);
+
+            if (sc.bgMode === 'gradient') {
+                $('#set-solid-wrap').hide();
+                $('#set-gradient-wrap').show();
+            } else {
+                $('#set-solid-wrap').show();
+                $('#set-gradient-wrap').hide();
+            }
+        },
+
         bindLiveInputs: function() {
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
             $('#set-box-width, #set-box-height, #set-bg-mode, #set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
+                self.saveCurrentScreenData();
                 self.applyLiveStyles();
                 if (Core) Core.isDirty = true;
             });
@@ -102,24 +186,51 @@
             });
         },
 
+        saveCurrentScreenData: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core || !Array.isArray(Core.screens)) return;
+
+            var sc = Core.screens.find(function(s) { return s.id === self.activeSettingsScreen; }) || Core.getCurrentScreenObj();
+            if (sc) {
+                sc.width = parseInt($('#set-box-width').val(), 10) || 640;
+                sc.height = parseInt($('#set-box-height').val(), 10) || 400;
+                sc.bgMode = $('#set-bg-mode').val() || 'solid';
+                sc.bgColor = $('#set-bg-color').val() || '#ffffff';
+                sc.gradColor1 = $('#set-grad-color1').val() || '#3b82f6';
+                sc.gradColor2 = $('#set-grad-color2').val() || '#1d4ed8';
+                sc.gradAngle = parseInt($('#set-grad-angle').val(), 10) || 135;
+            }
+        },
+
+        applyLiveStyles: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core) return;
+
+            var sc = Core.getCurrentScreenObj();
+            if (!sc) return;
+
+            var $box = $('#wppoppop-canvas-box');
+
+            if (Core.viewport !== 'mobile') {
+                $box.css({ width: (sc.width || 640) + 'px', height: (sc.height || 400) + 'px' });
+            }
+
+            if (sc.bgMode === 'gradient') {
+                $box.css('background', 'linear-gradient(' + (sc.gradAngle || 135) + 'deg, ' + (sc.gradColor1 || '#3b82f6') + ', ' + (sc.gradColor2 || '#1d4ed8') + ')');
+            } else {
+                $box.css('background', sc.bgColor || '#ffffff');
+            }
+        },
+
+        applyCustomCss: function(css) {
+            $('#wppoppop-custom-css-preview').remove();
+            if (css && css.trim()) {
+                $('head').append('<style id="wppoppop-custom-css-preview">' + css + '</style>');
+            }
+        },
+
         hydrate: function(cfg) {
             var s = cfg.settings || {};
-
-            $('#set-box-width').val(s.width || 640);
-            $('#set-box-height').val(s.height || 400);
-            $('#set-bg-mode').val(s.bgMode || 'solid');
-            $('#set-bg-color').val(s.bgColor || '#ffffff');
-            $('#set-grad-color1').val(s.gradColor1 || '#3b82f6');
-            $('#set-grad-color2').val(s.gradColor2 || '#1d4ed8');
-            $('#set-grad-angle').val(s.gradAngle || 135);
-
-            if (s.bgMode === 'gradient') {
-                $('#set-solid-wrap').hide();
-                $('#set-gradient-wrap').show();
-            } else {
-                $('#set-solid-wrap').show();
-                $('#set-gradient-wrap').hide();
-            }
 
             var trig = s.triggers || cfg.triggers || {};
             $('#trig-load').prop('checked', trig.on_load !== false);
@@ -182,47 +293,23 @@
             $('#set-quiz-pass').val(quiz.passScore || 70);
             $('#set-quiz-confetti').prop('checked', quiz.confetti !== false);
 
+            this.renderScreenBullets();
             this.applyLiveStyles();
             this.applyCustomCss($('#set-custom-css').val());
         },
 
-        applyLiveStyles: function() {
-            var w = parseInt($('#set-box-width').val(), 10) || 640;
-            var h = parseInt($('#set-box-height').val(), 10) || 400;
-            var mode = $('#set-bg-mode').val();
-            var $box = $('#wppoppop-canvas-box');
-
-            if (window.WpPopPopBuilder && window.WpPopPopBuilder.Core && window.WpPopPopBuilder.Core.viewport !== 'mobile') {
-                $box.css({ width: w + 'px', height: h + 'px' });
-            }
-
-            if (mode === 'gradient') {
-                var c1 = $('#set-grad-color1').val() || '#3b82f6';
-                var c2 = $('#set-grad-color2').val() || '#1d4ed8';
-                var deg = $('#set-grad-angle').val() || 135;
-                $box.css('background', 'linear-gradient(' + deg + 'deg, ' + c1 + ', ' + c2 + ')');
-            } else {
-                var solid = $('#set-bg-color').val() || '#ffffff';
-                $box.css('background', solid);
-            }
-        },
-
-        applyCustomCss: function(css) {
-            $('#wppoppop-custom-css-preview').remove();
-            if (css && css.trim()) {
-                $('head').append('<style id="wppoppop-custom-css-preview">' + css + '</style>');
-            }
-        },
-
         getSettings: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            var currentSc = Core ? Core.getCurrentScreenObj() : null;
+
             return {
-                width: parseInt($('#set-box-width').val(), 10) || 640,
-                height: parseInt($('#set-box-height').val(), 10) || 400,
-                bgMode: $('#set-bg-mode').val() || 'solid',
-                bgColor: $('#set-bg-color').val() || '#ffffff',
-                gradColor1: $('#set-grad-color1').val() || '#3b82f6',
-                gradColor2: $('#set-grad-color2').val() || '#1d4ed8',
-                gradAngle: parseInt($('#set-grad-angle').val(), 10) || 135,
+                width: currentSc ? currentSc.width : (parseInt($('#set-box-width').val(), 10) || 640),
+                height: currentSc ? currentSc.height : (parseInt($('#set-box-height').val(), 10) || 400),
+                bgMode: currentSc ? currentSc.bgMode : ($('#set-bg-mode').val() || 'solid'),
+                bgColor: currentSc ? currentSc.bgColor : ($('#set-bg-color').val() || '#ffffff'),
+                gradColor1: currentSc ? currentSc.gradColor1 : ($('#set-grad-color1').val() || '#3b82f6'),
+                gradColor2: currentSc ? currentSc.gradColor2 : ($('#set-grad-color2').val() || '#1d4ed8'),
+                gradAngle: currentSc ? currentSc.gradAngle : (parseInt($('#set-grad-angle').val(), 10) || 135),
                 triggers: {
                     on_load: $('#trig-load').is(':checked'),
                     on_load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,

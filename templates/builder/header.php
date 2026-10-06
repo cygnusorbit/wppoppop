@@ -26,11 +26,11 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <!-- Dynamic Addable & Renameable Screen Sequence Tabs -->
+    <!-- Dynamic Screen Sequence Tabs -->
     <div class="wppoppop-hdr-center">
         <div class="wppoppop-screen-tabs-wrapper">
             <div class="wppoppop-screen-tabs" id="wppoppop-screen-tabs-list">
-                <!-- Rendered dynamically by Core.renderScreenTabs() -->
+                <!-- Rendered dynamically with Screen 1 deletion lock -->
             </div>
             <button type="button" id="wppoppop-btn-add-screen" class="wppoppop-add-screen-btn" title="Add New Screen">
                 <span class="dashicons dashicons-plus"></span>

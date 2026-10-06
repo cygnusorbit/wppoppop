@@ -29,6 +29,7 @@
 
         open: function(el) {
             this.populateScreenDropdowns();
+            this.populateConditionalFields();
             this.loadElement(el);
             $('.wppoppop-builder-wrap').addClass('panel-open');
             $('#wppoppop-inspector-drawer').addClass('open');
@@ -43,12 +44,37 @@
             var Core = window.WpPopPopBuilder.Core;
             var $target = $('#prop-target-screen').empty();
             var $condTarget = $('#prop-cond-target-screen').empty();
+            var $condFallback = $('#prop-cond-fallback-screen').empty();
+
+            $condFallback.append('<option value="next_screen">Proceed to Next Screen</option>');
+            $condFallback.append('<option value="close">Close Popup</option>');
 
             Core.screens.forEach(function(sc) {
                 var opt = '<option value="' + sc.id + '">' + sc.title + '</option>';
                 $target.append(opt);
                 $condTarget.append(opt);
+                $condFallback.append(opt);
             });
+        },
+
+        populateConditionalFields: function() {
+            var Core = window.WpPopPopBuilder.Core;
+            var $fieldSelect = $('#prop-cond-field').empty();
+
+            // Candidate elements used on the current active screen
+            var inputTypes = ['email', 'number', 'text', 'select', 'radios', 'checkboxes', 'rating', 'slider', 'date'];
+            var screenElements = Core.elements.filter(function(e) {
+                return e.screen === Core.currentScreen && inputTypes.indexOf(e.type) !== -1;
+            });
+
+            if (screenElements.length === 0) {
+                $fieldSelect.append('<option value="">(No input elements on Screen ' + Core.currentScreen + ')</option>');
+            } else {
+                screenElements.forEach(function(el) {
+                    var label = el.label || el.content || el.type;
+                    $fieldSelect.append('<option value="' + el.id + '">[' + el.type.toUpperCase() + '] ' + label + '</option>');
+                });
+            }
         },
 
         bindInputs: function() {
@@ -82,8 +108,6 @@
 
             syncLiveProperty('#prop-action-close', 'actionClose', false);
             syncLiveProperty('#prop-target-screen', 'actionTargetScreen', true);
-            syncLiveProperty('#prop-cond-val', 'condVal', false);
-            syncLiveProperty('#prop-cond-target-screen', 'condTargetScreen', true);
             syncLiveProperty('#prop-action-url', 'actionUrl', false);
             syncLiveProperty('#prop-action-js', 'actionJs', false);
 
@@ -92,12 +116,42 @@
                 Core.updateElement(Core.activeId, { actionBlank: $(this).is(':checked') });
             });
 
+            // Conditional Logic Controls
+            $('#prop-cond-enable').on('change', function() {
+                if (!Core.activeId) return;
+                var enabled = $(this).is(':checked');
+                Core.updateElement(Core.activeId, { condEnable: enabled });
+                $('#prop-cond-box').slideToggle(150, function() {
+                    $(this).toggle(enabled);
+                });
+            });
+
+            syncLiveProperty('#prop-cond-field', 'condField', false);
+            syncLiveProperty('#prop-cond-operator', 'condOperator', false);
+            syncLiveProperty('#prop-cond-val', 'condVal', false);
+            syncLiveProperty('#prop-cond-target-screen', 'condTargetScreen', true);
+            syncLiveProperty('#prop-cond-fallback-screen', 'condFallbackScreen', false);
+
+            $('#prop-cond-operator').on('change', function() {
+                var op = $(this).val();
+                if (op === 'is_empty' || op === 'is_not_empty') {
+                    $('#prop-cond-val-wrap').hide();
+                } else {
+                    $('#prop-cond-val-wrap').show();
+                }
+            });
+
             $('#prop-action-close').on('change', function() {
                 var act = $(this).val();
                 if (act === 'jump_screen' || act === 'next_screen') {
                     $('#prop-target-screen-wrap').show();
                 } else {
                     $('#prop-target-screen-wrap').hide();
+                }
+                if (act === 'redirect') {
+                    $('#prop-action-url-wrap').show();
+                } else {
+                    $('#prop-action-url-wrap').hide();
                 }
             });
         },
@@ -131,8 +185,11 @@
                 self.close();
             });
 
-            $(document).on('builder:screens:rendered', function() {
-                self.populateScreenDropdowns();
+            $(document).on('builder:screens:rendered builder:elements:updated', function() {
+                if ($('#wppoppop-inspector-drawer').hasClass('open') && Core.activeId) {
+                    self.populateScreenDropdowns();
+                    self.populateConditionalFields();
+                }
             });
         },
 
@@ -150,19 +207,37 @@
             $('#prop-bg-color').val(el.bgColor || 'transparent');
             $('#prop-opacity').val(el.opacity !== undefined ? el.opacity : 1);
             $('#prop-anim-effect').val(el.animEffect || 'none');
-            
+
             $('#prop-action-close').val(el.actionClose || 'none');
             $('#prop-target-screen').val(el.actionTargetScreen || 2);
-            $('#prop-cond-val').val(el.condVal || '');
-            $('#prop-cond-target-screen').val(el.condTargetScreen || 2);
             $('#prop-action-url').val(el.actionUrl || '');
             $('#prop-action-blank').prop('checked', !!el.actionBlank);
             $('#prop-action-js').val(el.actionJs || '');
+
+            // Load Conditional Logic State
+            var condEnabled = !!el.condEnable;
+            $('#prop-cond-enable').prop('checked', condEnabled);
+            $('#prop-cond-box').toggle(condEnabled);
+
+            if (el.condField) $('#prop-cond-field').val(el.condField);
+            $('#prop-cond-operator').val(el.condOperator || 'equals');
+            $('#prop-cond-val').val(el.condVal || '');
+            if (el.condTargetScreen) $('#prop-cond-target-screen').val(el.condTargetScreen);
+            if (el.condFallbackScreen) $('#prop-cond-fallback-screen').val(el.condFallbackScreen);
+
+            var op = el.condOperator || 'equals';
+            $('#prop-cond-val-wrap').toggle(op !== 'is_empty' && op !== 'is_not_empty');
 
             if (el.actionClose === 'jump_screen' || el.actionClose === 'next_screen') {
                 $('#prop-target-screen-wrap').show();
             } else {
                 $('#prop-target-screen-wrap').hide();
+            }
+
+            if (el.actionClose === 'redirect') {
+                $('#prop-action-url-wrap').show();
+            } else {
+                $('#prop-action-url-wrap').hide();
             }
         }
     };

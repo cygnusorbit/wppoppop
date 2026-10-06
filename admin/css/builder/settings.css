@@ -1,9 +1,54 @@
-/* WpPopPop Settings Drawer Subsystem: Anti-Collision Overrides */
+/* ==========================================================================
+   WpPopPop Visual Builder: Slide-Out Campaign Settings Drawer & Screen Bullets
+   ========================================================================== */
+
 #wppoppop-settings-drawer {
-    left: auto !important;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-#wppoppop-settings-drawer:not(.open):not(.active) {
-    right: -440px !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+
+#wppoppop-settings-drawer.open {
+    transform: translateX(0) !important;
+}
+
+/* Screen Bullets Navigation */
+.wppoppop-screen-bullets-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.wppoppop-screen-bullet {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+}
+
+.wppoppop-screen-bullet:hover {
+    background: #334155;
+    color: #ffffff;
+    border-color: #475569;
+}
+
+.wppoppop-screen-bullet.active {
+    background: #2563eb !important;
+    border-color: #60a5fa !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.45);
+}
+
+.wppoppop-screen-bullet .bullet-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
 }

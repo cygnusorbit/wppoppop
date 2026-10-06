@@ -16,13 +16,25 @@ if (!defined('ABSPATH')) {
     </div>
 
     <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
-        <!-- 1. Box & Backdrop -->
+        <!-- 1. Box & Canvas Dimensions per Screen with Bullet Navigation -->
         <div class="wppoppop-acc-item">
-            <button type="button" class="wppoppop-acc-header active">
+            <button type="button" class="wppoppop-acc-header active" id="wppoppop-acc-canvas-dimensions">
                 <span>1. Canvas Dimensions & Background</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body">
+                <!-- Screen Bullet Selector Bar -->
+                <div class="wppoppop-screen-bullets-bar" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;">Select Screen to Configure:</label>
+                    <div id="wppoppop-screen-settings-bullets" class="wppoppop-screen-bullets-nav" style="display:flex;flex-wrap:wrap;gap:6px;">
+                        <!-- Rendered dynamically: Bullet button for each screen -->
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <span id="wppoppop-current-screen-badge" style="font-size:11px;font-weight:700;color:#60a5fa;background:#1e3a8a;padding:2px 8px;border-radius:10px;">Configuring: Screen 1</span>
+                </div>
+
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                     <div>
                         <label>Width (px)</label>
