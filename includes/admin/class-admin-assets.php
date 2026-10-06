@@ -142,5 +142,19 @@ class WpPopPop_Admin_Assets {
 
             wp_localize_script('wppoppop-ab-actions-js', 'wppoppop_vars', $shared_payload);
         }
+
+        // 7. Payments Assets (Segregated Sub-Modules)
+        if ($page === 'wppoppop-payments') {
+            wp_enqueue_script('wppoppop-payments-search-js', WPPOPPOP_URL . 'admin/js/payments/payments-search.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-payments-modal-js', WPPOPPOP_URL . 'admin/js/payments/payments-modal.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-payments-export-js', WPPOPPOP_URL . 'admin/js/payments/payments-export.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-payments-js', WPPOPPOP_URL . 'admin/js/payments.js', [
+                'jquery',
+                'wppoppop-payments-search-js',
+                'wppoppop-payments-modal-js',
+                'wppoppop-payments-export-js'
+            ], WPPOPPOP_VERSION, true);
+        }
     }
 }
