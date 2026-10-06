@@ -1,0 +1,189 @@
+/* ==========================================================================
+   WpPopPop Builder: Layout, Header, Viewport & Canvas Stage
+   ========================================================================== */
+
+.wppoppop-builder-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 32px);
+    margin-left: -20px;
+    background: #0f172a;
+    color: #f8fafc;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Workspace Header Toolbar */
+.wppoppop-builder-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    padding: 0 16px;
+    background: #111827;
+    border-bottom: 1px solid #1f2937;
+    z-index: 50;
+}
+
+.wppoppop-header-left,
+.wppoppop-header-center,
+.wppoppop-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wppoppop-brand-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #f9fafb;
+    letter-spacing: -0.2px;
+}
+
+.wppoppop-hdr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 4px;
+    color: #e5e7eb;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.wppoppop-hdr-btn:hover {
+    background: #374151;
+    color: #ffffff;
+}
+
+.wppoppop-hdr-btn.active {
+    background: #2563eb;
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+.wppoppop-hdr-btn.wppoppop-btn-primary {
+    background: #d6336c;
+    border-color: #c2185b;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.wppoppop-hdr-btn.wppoppop-btn-primary:hover {
+    background: #c2185b;
+}
+
+/* Screen Navigation Tabs */
+.wppoppop-screens-nav {
+    display: flex;
+    background: #1f2937;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.wppoppop-screen-tab {
+    padding: 4px 10px;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.wppoppop-screen-tab.active {
+    background: #374151;
+    color: #f9fafb;
+}
+
+/* Alignment & History Tools */
+.wppoppop-align-tools {
+    display: flex;
+    align-items: center;
+    background: #1f2937;
+    border-radius: 4px;
+    padding: 2px 6px;
+    gap: 4px;
+}
+
+.wppoppop-align-btn {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    padding: 4px 6px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.wppoppop-align-btn:hover {
+    background: #374151;
+    color: #ffffff;
+}
+
+.wppoppop-v-sep {
+    display: inline-block;
+    width: 1px;
+    height: 16px;
+    background: #374151;
+    margin: 0 4px;
+}
+
+/* Main Workspace Frame */
+.wppoppop-main-frame {
+    position: relative;
+    flex: 1;
+    display: flex;
+    width: 100%;
+    height: calc(100% - 96px);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+/* Canvas Viewport & Checkerboard Stage */
+.wppoppop-canvas-viewport {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0b0f19;
+    background-image: 
+        linear-gradient(45deg, #131b2e 25%, transparent 25%), 
+        linear-gradient(-45deg, #131b2e 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #131b2e 75%), 
+        linear-gradient(-45deg, transparent 75%, #131b2e 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.wppoppop-canvas-centerer {
+    padding: 60px;
+}
+
+.wppoppop-canvas-box {
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    outline: 1px dashed rgba(255, 255, 255, 0.15);
+    transition: width 0.2s ease, height 0.2s ease;
+}
+
+.wppoppop-canvas-layer {
+    box-sizing: border-box;
+    cursor: move;
+}
+
+.wppoppop-canvas-layer.wppoppop-layer-selected {
+    outline: 2px solid #38bdf8 !important;
+    outline-offset: 1px;
+}

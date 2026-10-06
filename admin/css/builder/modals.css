@@ -1,0 +1,75 @@
+/* ==========================================================================
+   WpPopPop Builder: Embed Code & Live Preview Modals
+   ========================================================================== */
+
+.wppoppop-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wppoppop-modal-dialog {
+    background: #ffffff;
+    border-radius: 8px;
+    width: 540px;
+    max-width: 90vw;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.wppoppop-preview-dialog {
+    width: 900px;
+    max-width: 95vw;
+}
+
+.wppoppop-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.wppoppop-modal-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.wppoppop-modal-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.wppoppop-modal-close:hover {
+    color: #ffffff;
+}
+
+.wppoppop-modal-body {
+    padding: 20px;
+}
+
+.wppoppop-modal-body label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 4px;
+}
+
+.wppoppop-modal-body input,
+.wppoppop-modal-body textarea {
+    font-family: monospace;
+    font-size: 12px;
+    background: #f8fafc;
+}

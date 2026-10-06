@@ -1,0 +1,112 @@
+/* ==========================================================================
+   WpPopPop Builder: Floating Magenta LAYERS Panel
+   ========================================================================== */
+
+.wppoppop-floating-layers-panel {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    width: 220px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    z-index: 60;
+    overflow: hidden;
+}
+
+.wppoppop-layers-header {
+    background: #c2185b; /* Distinct Magenta Header */
+    color: #ffffff;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    user-select: none;
+}
+
+.wppoppop-layers-header:active {
+    cursor: grabbing;
+}
+
+.wppoppop-layers-header .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.wppoppop-layers-body {
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 6px;
+}
+
+.wppoppop-layers-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wppoppop-layer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.wppoppop-layer-row:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
+.wppoppop-layer-row.active {
+    background: #1e3a8a;
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+.wppoppop-layer-grip {
+    color: #64748b;
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    margin-right: 6px;
+    cursor: move;
+}
+
+.wppoppop-layer-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wppoppop-layer-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wppoppop-layer-actions .dashicons {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.wppoppop-layer-actions .dashicons:hover {
+    color: #f43f5e;
+}

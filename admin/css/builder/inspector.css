@@ -1,0 +1,118 @@
+/* ==========================================================================
+   WpPopPop Builder: Docked Pushing Layer Properties Inspector
+   ========================================================================== */
+
+.wppoppop-property-panel {
+    position: absolute;
+    top: 96px;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    background: #ffffff;
+    color: #1e293b;
+    border-left: 1px solid #cbd5e1;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 55;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Frame Pushing State */
+.wppoppop-builder-wrapper.panel-open .wppoppop-main-frame {
+    width: calc(100% - 320px);
+}
+
+.wppoppop-builder-wrapper.panel-open .wppoppop-property-panel {
+    transform: translateX(0);
+}
+
+/* Header Tab Bar & Square Red Close Button */
+.wppoppop-prop-header {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.wppoppop-prop-close-btn {
+    width: 44px;
+    height: 44px;
+    background: #fee2e2;
+    border: none;
+    border-right: 1px solid #fecaca;
+    color: #991b1b; /* Distinct Red Close Icon */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.wppoppop-prop-close-btn:hover {
+    background: #fca5a5;
+    color: #7f1d1d;
+}
+
+.wppoppop-prop-tabs {
+    flex: 1;
+    display: flex;
+    height: 100%;
+}
+
+.wppoppop-prop-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.wppoppop-prop-tab.active {
+    color: #d6336c;
+    border-bottom-color: #d6336c;
+    background: #ffffff;
+}
+
+.wppoppop-prop-body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.wppoppop-prop-section label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+
+.wppoppop-prop-section input[type="text"],
+.wppoppop-prop-section input[type="number"],
+.wppoppop-prop-section select,
+.wppoppop-prop-section textarea {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+.wppoppop-prop-section input[type="color"] {
+    width: 100%;
+    height: 32px;
+    padding: 2px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+}
