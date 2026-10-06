@@ -1,5 +1,6 @@
 /* ==========================================================================
-   WpPopPop Visual Builder: Slide-Out Campaign Settings Drawer & Screen Sub-Tabs
+   WpPopPop Visual Builder: Slide-Out Campaign Settings Drawer
+   Slide Buttons, Simple Color Pickers & Screen Bullets
    ========================================================================== */
 
 #wppoppop-settings-drawer {
@@ -85,4 +86,147 @@
 .wppoppop-screen-subtab.active {
     background: #2563eb !important;
     color: #ffffff !important;
+}
+
+/* ==========================================================================
+   Slide Button (Toggle Switch) Component
+   ========================================================================== */
+.wppoppop-slide-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 8px;
+}
+
+.wppoppop-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.wppoppop-switch input[type="checkbox"] {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+.wppoppop-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #334155;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 20px;
+    border: 1px solid #475569;
+}
+
+.wppoppop-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #cbd5e1;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.wppoppop-switch input[type="checkbox"]:checked + .wppoppop-slider {
+    background-color: #2563eb;
+    border-color: #3b82f6;
+}
+
+.wppoppop-switch input[type="checkbox"]:checked + .wppoppop-slider:before {
+    transform: translateX(16px);
+    background-color: #ffffff;
+}
+
+.wppoppop-switch input[type="checkbox"]:disabled + .wppoppop-slider {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background-color: #1e293b;
+}
+
+.wppoppop-slide-toggle.disabled,
+.wppoppop-slide-toggle:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.wppoppop-switch-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+/* ==========================================================================
+   Simple Color Picker Component
+   ========================================================================== */
+.wppoppop-color-picker-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 3px 6px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.wppoppop-color-picker-wrap:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.wppoppop-color-swatch-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 28px !important;
+    height: 26px !important;
+    padding: 0 !important;
+    border: 1px solid #475569 !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0;
+}
+
+.wppoppop-color-swatch-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.wppoppop-color-swatch-input::-webkit-color-swatch {
+    border: none;
+    border-radius: 3px;
+}
+
+.wppoppop-color-swatch-input::-moz-color-swatch {
+    border: none;
+    border-radius: 3px;
+}
+
+.wppoppop-color-hex-input {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-family: monospace, -apple-system, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 2px 4px !important;
+    box-shadow: none !important;
+    outline: none !important;
 }

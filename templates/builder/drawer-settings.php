@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     </div>
 
     <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
-        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename & Logic Tab -->
+        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename, Color Pickers & Logic Tab -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header active" id="wppoppop-acc-canvas-dimensions">
                 <span>1. Canvas Dimensions & Background</span>
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
                 <div class="wppoppop-screen-bullets-bar" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;">Select Screen to Configure:</label>
                     <div id="wppoppop-screen-settings-bullets" class="wppoppop-screen-bullets-nav" style="display:flex;flex-wrap:wrap;gap:6px;">
-                        <!-- Rendered dynamically: Bullet button for each screen -->
+                        <!-- Rendered dynamically -->
                     </div>
                 </div>
 
@@ -37,9 +37,8 @@ if (!defined('ABSPATH')) {
                     <button type="button" class="wppoppop-screen-subtab" data-subtab="logic" style="flex:1;background:transparent;color:#94a3b8;border:none;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;text-align:center;">Logic</button>
                 </div>
 
-                <!-- SUBTAB PANE 1: Dimensions, Rename & Background -->
+                <!-- SUBTAB PANE 1: Dimensions, Rename & Simple Color Pickers -->
                 <div id="wppoppop-subtab-pane-canvas">
-                    <!-- Screen Rename Field -->
                     <div style="margin-bottom:12px;background:#1e293b;padding:10px;border-radius:6px;border:1px solid #334155;">
                         <label style="display:block;font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:4px;text-transform:uppercase;">Screen Name (Rename)</label>
                         <input type="text" id="set-screen-title" placeholder="e.g. Screen 1, Offer Step, Thank You" style="width:100%;font-weight:600;">
@@ -55,6 +54,7 @@ if (!defined('ABSPATH')) {
                             <input type="number" id="set-box-height" value="400">
                         </div>
                     </div>
+
                     <div style="margin-bottom:10px;">
                         <label>Background Style</label>
                         <select id="set-bg-mode">
@@ -62,19 +62,32 @@ if (!defined('ABSPATH')) {
                             <option value="gradient">Linear Gradient</option>
                         </select>
                     </div>
+
+                    <!-- Solid Background with Simple Color Picker -->
                     <div id="set-solid-wrap" style="margin-bottom:10px;">
                         <label>Background Color</label>
-                        <input type="text" id="set-bg-color" value="#ffffff">
+                        <div class="wppoppop-color-picker-wrap">
+                            <input type="color" class="wppoppop-color-swatch-input" data-target="#set-bg-color" value="#ffffff" title="Choose color">
+                            <input type="text" id="set-bg-color" class="wppoppop-color-hex-input" value="#ffffff" placeholder="#ffffff">
+                        </div>
                     </div>
+
+                    <!-- Linear Gradient with Simple Color Pickers -->
                     <div id="set-gradient-wrap" style="display:none;margin-bottom:10px;">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
                             <div>
                                 <label>Gradient Start</label>
-                                <input type="text" id="set-grad-color1" value="#3b82f6">
+                                <div class="wppoppop-color-picker-wrap">
+                                    <input type="color" class="wppoppop-color-swatch-input" data-target="#set-grad-color1" value="#3b82f6" title="Choose start color">
+                                    <input type="text" id="set-grad-color1" class="wppoppop-color-hex-input" value="#3b82f6" placeholder="#3b82f6">
+                                </div>
                             </div>
                             <div>
                                 <label>Gradient End</label>
-                                <input type="text" id="set-grad-color2" value="#1d4ed8">
+                                <div class="wppoppop-color-picker-wrap">
+                                    <input type="color" class="wppoppop-color-swatch-input" data-target="#set-grad-color2" value="#1d4ed8" title="Choose end color">
+                                    <input type="text" id="set-grad-color2" class="wppoppop-color-hex-input" value="#1d4ed8" placeholder="#1d4ed8">
+                                </div>
                             </div>
                         </div>
                         <label>Angle (deg)</label>
@@ -82,14 +95,25 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <!-- SUBTAB PANE 2: Screen Conditional Logic -->
+                <!-- SUBTAB PANE 2: Screen Conditional Logic with Empty Canvas Guard -->
                 <div id="wppoppop-subtab-pane-logic" style="display:none;">
                     <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:12px;margin-bottom:10px;">
-                        <label style="display:flex;align-items:center;gap:8px;font-weight:700;color:#f8fafc;cursor:pointer;margin-bottom:6px;">
-                            <input type="checkbox" id="set-screen-cond-enable">
-                            <span>Enable Conditional Logic for this Screen</span>
+                        <!-- Slide Button for Screen Logic -->
+                        <label class="wppoppop-slide-toggle" id="wppoppop-logic-toggle-label">
+                            <span class="wppoppop-switch">
+                                <input type="checkbox" id="set-screen-cond-enable">
+                                <span class="wppoppop-slider"></span>
+                            </span>
+                            <span class="wppoppop-switch-label">Enable Conditional Logic for this Screen</span>
                         </label>
-                        <p style="font-size:11px;color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">
+
+                        <!-- Empty Canvas Notice Badge -->
+                        <div id="set-screen-empty-notice" style="display:none;align-items:center;gap:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:8px 10px;border-radius:4px;font-size:11px;line-height:1.4;margin-top:6px;">
+                            <span class="dashicons dashicons-warning" style="font-size:16px;width:16px;height:16px;color:#ef4444;flex-shrink:0;"></span>
+                            <span>Cannot enable logic: This screen has no elements. Add form elements to the canvas first.</span>
+                        </div>
+
+                        <p style="font-size:11px;color:#94a3b8;margin:6px 0 10px 0;line-height:1.4;">
                             Evaluate inputs from elements on this screen to branch visitors to specific destination screens.
                         </p>
 
@@ -97,7 +121,7 @@ if (!defined('ABSPATH')) {
                             <div style="margin-bottom:10px;">
                                 <label>Evaluate Form Element</label>
                                 <select id="set-screen-cond-field">
-                                    <!-- Populated dynamically with active elements on this screen -->
+                                    <!-- Populated dynamically -->
                                 </select>
                             </div>
 
@@ -122,14 +146,14 @@ if (!defined('ABSPATH')) {
                             <div style="margin-bottom:10px;">
                                 <label>If Condition Matches &rarr; Jump to Screen</label>
                                 <select id="set-screen-cond-target">
-                                    <!-- Populated dynamically with other screens -->
+                                    <!-- Populated dynamically -->
                                 </select>
                             </div>
 
                             <div>
                                 <label>Otherwise (Default Fallback)</label>
                                 <select id="set-screen-cond-fallback">
-                                    <!-- Populated dynamically: Next Screen, Close, etc. -->
+                                    <!-- Populated dynamically -->
                                 </select>
                             </div>
                         </div>
@@ -138,35 +162,59 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 2. Display Triggers -->
+        <!-- 2. Display Triggers (Slide Buttons) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>2. Display Triggers</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="trig-load" checked> On Page Load
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="trig-load" checked>
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">On Page Load</span>
                 </label>
-                <div style="margin-bottom:10px;margin-left:20px;">
+                <div style="margin-bottom:10px;margin-left:46px;">
                     <label>Delay (seconds)</label>
                     <input type="number" id="trig-load-delay" value="0" min="0">
                 </div>
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="trig-exit"> Exit Intent (Mouse leaves window)
+
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="trig-exit">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Exit Intent (Mouse leaves window)</span>
                 </label>
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="trig-scroll"> On Scroll Percentage
+
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="trig-scroll">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">On Scroll Percentage</span>
                 </label>
-                <div style="margin-bottom:10px;margin-left:20px;">
+                <div style="margin-bottom:10px;margin-left:46px;">
                     <label>Scroll %</label>
                     <input type="number" id="trig-scroll-val" value="50" min="1" max="100">
                 </div>
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="trig-adblock"> AdBlock Detector Trigger
+
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="trig-adblock">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">AdBlock Detector Trigger</span>
                 </label>
-                <label style="display:flex;align-items:center;gap:6px;">
-                    <input type="checkbox" id="trig-backbutton"> Browser Back-Button Trap
+
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="trig-backbutton">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Browser Back-Button Trap</span>
                 </label>
             </div>
         </div>
@@ -185,24 +233,30 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 4. Sticky Side Tabs -->
+        <!-- 4. Sticky Side Tabs (Slide Button) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>4. Sticky Side Tab Launcher</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-sidetab-enable"> Enable Sticky Tab
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-sidetab-enable">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Enable Sticky Tab</span>
                 </label>
-                <label>Tab Label</label>
-                <input type="text" id="set-sidetab-label" placeholder="Special Offer">
-                <label style="margin-top:8px;">Position</label>
-                <select id="set-sidetab-pos">
-                    <option value="left">Left Edge</option>
-                    <option value="right">Right Edge</option>
-                    <option value="bottom">Bottom Bar</option>
-                </select>
+                <div style="margin-top:8px;">
+                    <label>Tab Label</label>
+                    <input type="text" id="set-sidetab-label" placeholder="Special Offer">
+                    <label style="margin-top:8px;">Position</label>
+                    <select id="set-sidetab-pos">
+                        <option value="left">Left Edge</option>
+                        <option value="right">Right Edge</option>
+                        <option value="bottom">Bottom Bar</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -223,50 +277,68 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 6. Secure Downloads -->
+        <!-- 6. Secure Downloads (Slide Button) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>6. Lead Magnet Downloads</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-dl-enable"> Deliver Download on Submit
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-dl-enable">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Deliver Download on Submit</span>
                 </label>
-                <label>Direct File URL</label>
-                <input type="url" id="set-dl-url" placeholder="https://example.com/ebook.pdf">
+                <div style="margin-top:8px;">
+                    <label>Direct File URL</label>
+                    <input type="url" id="set-dl-url" placeholder="https://example.com/ebook.pdf">
+                </div>
             </div>
         </div>
 
-        <!-- 7. Video Listeners -->
+        <!-- 7. Video Listeners (Slide Button) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>7. Embedded Video Listeners</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-vid-enable"> Trigger on Video Playback
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-vid-enable">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Trigger on Video Playback</span>
                 </label>
-                <label>Trigger after (seconds)</label>
-                <input type="number" id="set-vid-time" value="30">
+                <div style="margin-top:8px;">
+                    <label>Trigger after (seconds)</label>
+                    <input type="number" id="set-vid-time" value="30">
+                </div>
             </div>
         </div>
 
-        <!-- 8. Subscriber Autoresponder -->
+        <!-- 8. Subscriber Autoresponder (Slide Button) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>8. Subscriber Autoresponder</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-auto-enable"> Send User Welcome Email
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-auto-enable">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Send User Welcome Email</span>
                 </label>
-                <label>Email Subject</label>
-                <input type="text" id="set-auto-subject" placeholder="Welcome! Here is your download">
-                <label style="margin-top:8px;">Email Body</label>
-                <textarea id="set-auto-body" rows="4" placeholder="Hello {email}, thanks for subscribing!"></textarea>
+                <div style="margin-top:8px;">
+                    <label>Email Subject</label>
+                    <input type="text" id="set-auto-subject" placeholder="Welcome! Here is your download">
+                    <label style="margin-top:8px;">Email Body</label>
+                    <textarea id="set-auto-body" rows="4" placeholder="Hello {email}, thanks for subscribing!"></textarea>
+                </div>
             </div>
         </div>
 
@@ -284,18 +356,24 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 10. Twilio SMS Alerts -->
+        <!-- 10. Twilio SMS Alerts (Slide Button) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>10. Twilio SMS Alerts</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-sms-enable"> Send Admin SMS on Lead
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-sms-enable">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Send Admin SMS on Lead</span>
                 </label>
-                <label>Destination Phone</label>
-                <input type="tel" id="set-sms-phone" placeholder="+1234567890">
+                <div style="margin-top:8px;">
+                    <label>Destination Phone</label>
+                    <input type="tel" id="set-sms-phone" placeholder="+1234567890">
+                </div>
             </div>
         </div>
 
@@ -331,18 +409,24 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 13. WooCommerce Conversion Suite -->
+        <!-- 13. WooCommerce Conversion Suite (Slide Button) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>13. WooCommerce Conversion Suite</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-wc-coupon"> Auto-Generate Personal Coupon
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-wc-coupon">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Auto-Generate Personal Coupon</span>
                 </label>
-                <label>Coupon Value (%)</label>
-                <input type="number" id="set-wc-amount" value="15">
+                <div style="margin-top:8px;">
+                    <label>Coupon Value (%)</label>
+                    <input type="number" id="set-wc-amount" value="15">
+                </div>
             </div>
         </div>
 
@@ -360,21 +444,33 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 15. Quiz & Lead Scoring -->
+        <!-- 15. Quiz & Lead Scoring (Slide Buttons) -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>15. Quiz & Lead Scoring</span>
                 <span class="dashicons dashicons-arrow-down-alt2 wppoppop-acc-caret"></span>
             </button>
             <div class="wppoppop-acc-body" style="display:none;">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                    <input type="checkbox" id="set-quiz-enable"> Enable Quiz Scoring
+                <label class="wppoppop-slide-toggle">
+                    <span class="wppoppop-switch">
+                        <input type="checkbox" id="set-quiz-enable">
+                        <span class="wppoppop-slider"></span>
+                    </span>
+                    <span class="wppoppop-switch-label">Enable Quiz Scoring</span>
                 </label>
-                <label>Pass Score Threshold</label>
-                <input type="number" id="set-quiz-pass" value="70">
-                <label style="display:flex;align-items:center;gap:6px;margin-top:8px;">
-                    <input type="checkbox" id="set-quiz-confetti" checked> Trigger Confetti on Pass
-                </label>
+                <div style="margin-top:8px;">
+                    <label>Pass Score Threshold</label>
+                    <input type="number" id="set-quiz-pass" value="70">
+                </div>
+                <div style="margin-top:8px;">
+                    <label class="wppoppop-slide-toggle">
+                        <span class="wppoppop-switch">
+                            <input type="checkbox" id="set-quiz-confetti" checked>
+                            <span class="wppoppop-slider"></span>
+                        </span>
+                        <span class="wppoppop-switch-label">Trigger Confetti on Pass</span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>

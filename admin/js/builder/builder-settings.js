@@ -11,6 +11,7 @@
             this.bindSubtabs();
             this.bindLiveInputs();
             this.bindBulletNav();
+            this.bindElementsListener();
             this.hydrate(window.wppoppop_initial_config || {});
         },
 
@@ -89,6 +90,7 @@
                 if (subtab === 'logic') {
                     $('#wppoppop-subtab-pane-canvas').hide();
                     $('#wppoppop-subtab-pane-logic').show();
+                    self.checkScreenEmptyState(self.activeSettingsScreen);
                     self.populateScreenLogicFields(self.activeSettingsScreen);
                     self.populateScreenTargetDropdowns();
                 } else {
@@ -109,6 +111,14 @@
 
             $(document).on('builder:screens:rendered builder:screen:change', function() {
                 self.renderScreenBullets();
+            });
+        },
+
+        bindElementsListener: function() {
+            var self = this;
+            $(document).on('builder:elements:updated', function() {
+                self.checkScreenEmptyState(self.activeSettingsScreen);
+                self.populateScreenLogicFields(self.activeSettingsScreen);
             });
         },
 
@@ -154,18 +164,58 @@
             }
         },
 
+        checkScreenEmptyState: function(sId) {
+            var Core = window.WpPopPopBuilder.Core;
+            if (!Core || !Array.isArray(Core.elements)) return false;
+
+            var screenElements = Core.elements.filter(function(e) {
+                return e.screen === sId;
+            });
+
+            var isEmpty = (screenElements.length === 0);
+
+            if (isEmpty) {
+                $('#set-screen-cond-enable')
+                    .prop('checked', false)
+                    .prop('disabled', true);
+                $('#wppoppop-logic-toggle-label').addClass('disabled');
+                $('#set-screen-cond-box').hide();
+                $('#set-screen-empty-notice').show();
+
+                var sc = Core.screens.find(function(s) { return s.id === sId; });
+                if (sc && sc.logic) {
+                    sc.logic.enable = false;
+                }
+            } else {
+                $('#set-screen-empty-notice').hide();
+                $('#set-screen-cond-enable').prop('disabled', false);
+                $('#wppoppop-logic-toggle-label').removeClass('disabled');
+            }
+
+            return isEmpty;
+        },
+
         loadScreenData: function(sc) {
             var self = this;
-            // Load Screen Name
             $('#set-screen-title').val(sc.title || ('Screen ' + sc.id));
 
-            // Load Canvas Dimensions & Background
             $('#set-box-width').val(sc.width || 640);
             $('#set-box-height').val(sc.height || 400);
             $('#set-bg-mode').val(sc.bgMode || 'solid');
-            $('#set-bg-color').val(sc.bgColor || '#ffffff');
-            $('#set-grad-color1').val(sc.gradColor1 || '#3b82f6');
-            $('#set-grad-color2').val(sc.gradColor2 || '#1d4ed8');
+
+            var bgColor = sc.bgColor || '#ffffff';
+            var gradColor1 = sc.gradColor1 || '#3b82f6';
+            var gradColor2 = sc.gradColor2 || '#1d4ed8';
+
+            $('#set-bg-color').val(bgColor);
+            $('.wppoppop-color-swatch-input[data-target="#set-bg-color"]').val(bgColor.indexOf('#') === 0 ? bgColor : '#ffffff');
+
+            $('#set-grad-color1').val(gradColor1);
+            $('.wppoppop-color-swatch-input[data-target="#set-grad-color1"]').val(gradColor1.indexOf('#') === 0 ? gradColor1 : '#3b82f6');
+
+            $('#set-grad-color2').val(gradColor2);
+            $('.wppoppop-color-swatch-input[data-target="#set-grad-color2"]').val(gradColor2.indexOf('#') === 0 ? gradColor2 : '#1d4ed8');
+
             $('#set-grad-angle').val(sc.gradAngle || 135);
 
             if (sc.bgMode === 'gradient') {
@@ -176,9 +226,12 @@
                 $('#set-gradient-wrap').hide();
             }
 
-            // Load Screen-Level Conditional Logic
+            // Check if canvas is empty before loading logic
+            var isEmpty = this.checkScreenEmptyState(sc.id);
+
             var log = sc.logic || {};
-            var isCondEnabled = !!log.enable;
+            var isCondEnabled = !isEmpty && !!log.enable;
+
             $('#set-screen-cond-enable').prop('checked', isCondEnabled);
             $('#set-screen-cond-box').toggle(isCondEnabled);
 
@@ -201,7 +254,7 @@
 
             var $fieldSelect = $('#set-screen-cond-field').empty();
             var inputTypes = ['email', 'number', 'text', 'select', 'radios', 'checkboxes', 'rating', 'slider', 'date'];
-            
+
             var screenElements = Core.elements.filter(function(e) {
                 return e.screen === screenId && inputTypes.indexOf(e.type) !== -1;
             });
@@ -226,7 +279,6 @@
             $fallback.append('<option value="next_screen">Proceed to Next Screen</option>');
             $fallback.append('<option value="close">Close Popup</option>');
 
-            var self = this;
             Core.screens.forEach(function(sc) {
                 var opt = '<option value="' + sc.id + '">' + sc.title + '</option>';
                 $target.append(opt);
@@ -238,7 +290,27 @@
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
-            // Screen Rename input listener
+            // Simple Color Swatch Input -> Syncs to companion text input
+            $(document).on('input change', '.wppoppop-color-swatch-input', function() {
+                var targetSelector = $(this).data('target');
+                var hexVal = $(this).val();
+                if (targetSelector && $(targetSelector).length) {
+                    $(targetSelector).val(hexVal).trigger('input');
+                }
+            });
+
+            // Hex Text Input -> Syncs back to color swatch
+            $(document).on('input change', '.wppoppop-color-hex-input', function() {
+                var hexVal = $(this).val().trim();
+                var $swatch = $(this).siblings('.wppoppop-color-swatch-input');
+                if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(hexVal)) {
+                    if (hexVal.length === 4) {
+                        hexVal = '#' + hexVal[1] + hexVal[1] + hexVal[2] + hexVal[2] + hexVal[3] + hexVal[3];
+                    }
+                    $swatch.val(hexVal);
+                }
+            });
+
             $('#set-screen-title').on('input change', function() {
                 var newTitle = $(this).val().trim() || ('Screen ' + self.activeSettingsScreen);
                 if (Core) {
@@ -246,7 +318,6 @@
                 }
             });
 
-            // Dimensions & Background listeners
             $('#set-box-width, #set-box-height, #set-bg-mode, #set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
                 self.saveCurrentScreenData();
                 self.applyLiveStyles();
@@ -264,9 +335,12 @@
                 }
             });
 
-            // Screen-Level Logic Listeners
             $('#set-screen-cond-enable').on('change', function() {
                 var isEnabled = $(this).is(':checked');
+                if (self.checkScreenEmptyState(self.activeSettingsScreen)) {
+                    $(this).prop('checked', false);
+                    return;
+                }
                 $('#set-screen-cond-box').slideToggle(150, function() {
                     $(this).toggle(isEnabled);
                 });
@@ -311,9 +385,8 @@
                 sc.gradColor2 = $('#set-grad-color2').val() || '#1d4ed8';
                 sc.gradAngle = parseInt($('#set-grad-angle').val(), 10) || 135;
 
-                // Save screen logic
                 sc.logic = {
-                    enable: $('#set-screen-cond-enable').is(':checked'),
+                    enable: $('#set-screen-cond-enable').is(':checked') && !self.checkScreenEmptyState(sc.id),
                     field: $('#set-screen-cond-field').val() || '',
                     operator: $('#set-screen-cond-operator').val() || 'equals',
                     val: $('#set-screen-cond-val').val() || '',
