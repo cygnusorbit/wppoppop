@@ -49,7 +49,6 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
 
-            // Segregated Builder Subsystems
             wp_enqueue_script('wppoppop-builder-core-js', WPPOPPOP_URL . 'admin/js/builder/builder-core.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-canvas-js', WPPOPPOP_URL . 'admin/js/builder/builder-canvas.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-layers-js', WPPOPPOP_URL . 'admin/js/builder/builder-layers.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
@@ -58,7 +57,6 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-builder-modals-js', WPPOPPOP_URL . 'admin/js/builder/builder-modals.js', ['jquery', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-io-js', WPPOPPOP_URL . 'admin/js/builder/builder-io.js', ['jquery', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
 
-            // Master Coordinator
             wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', [
                 'jquery',
                 'wppoppop-builder-core-js',
@@ -113,6 +111,22 @@ class WpPopPop_Admin_Assets {
             ], WPPOPPOP_VERSION, true);
 
             wp_localize_script('wppoppop-library-import-js', 'wppoppop_vars', $shared_payload);
+        }
+
+        // 5. Submissions Assets (Segregated Sub-Modules)
+        if ($page === 'wppoppop-submissions') {
+            wp_enqueue_script('wppoppop-submissions-search-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-search.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-submissions-actions-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-actions.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-submissions-modal-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-modal.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-submissions-js', WPPOPPOP_URL . 'admin/js/submissions.js', [
+                'jquery',
+                'wppoppop-submissions-search-js',
+                'wppoppop-submissions-actions-js',
+                'wppoppop-submissions-modal-js'
+            ], WPPOPPOP_VERSION, true);
+
+            wp_localize_script('wppoppop-submissions-actions-js', 'wppoppop_vars', $shared_payload);
         }
     }
 }
