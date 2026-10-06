@@ -18,15 +18,28 @@ class WpPopPop_Admin_Assets {
 
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),
-            'nonce'       => wp_create_nonce('wppoppop_admin_nonce'),
+            'nonce'       => wp_create_nonce('wppoppop_builder_nonce'),
             'current_uid' => $current_uid
         ];
 
-        // 1. Dashboard Assets
+        // 1. Dashboard Assets (Segregated Sub-Modules)
         if ($page === 'wppoppop' || $hook === 'toplevel_page_wppoppop') {
             wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], WPPOPPOP_VERSION);
-            wp_enqueue_script('wppoppop-dashboard-js', WPPOPPOP_URL . 'admin/js/dashboard.js', ['jquery'], WPPOPPOP_VERSION, true);
-            wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
+
+            wp_enqueue_script('wppoppop-dashboard-actions-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-actions.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-import-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-import.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-embed-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-embed.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-dashboard-search-js', WPPOPPOP_URL . 'admin/js/dashboard/dashboard-search.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-dashboard-js', WPPOPPOP_URL . 'admin/js/dashboard.js', [
+                'jquery',
+                'wppoppop-dashboard-actions-js',
+                'wppoppop-dashboard-import-js',
+                'wppoppop-dashboard-embed-js',
+                'wppoppop-dashboard-search-js'
+            ], WPPOPPOP_VERSION, true);
+
+            wp_localize_script('wppoppop-dashboard-actions-js', 'wppoppop_vars', $shared_payload);
         }
 
         // 2. Visual Builder Assets (Segregated Sub-Modules)
