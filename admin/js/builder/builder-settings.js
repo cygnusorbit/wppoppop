@@ -11,16 +11,76 @@
         },
 
         bindToggle: function() {
-            $('#wppoppop-btn-settings').on('click', function() {
-                $('#wppoppop-settings-drawer').toggleClass('open');
+            var self = this;
+
+            // 1. Header Button Toggle Trigger
+            $(document).on('click', '#wppoppop-btn-settings', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.toggle();
             });
-            $('#wppoppop-settings-drawer-close').on('click', function() {
-                $('#wppoppop-settings-drawer').removeClass('open');
+
+            // 2. Explicit Close Button Trigger (Supports ID and Class)
+            $(document).on('click', '#wppoppop-settings-drawer-close, .wppoppop-drawer-close-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.close();
+            });
+
+            // 3. Backdrop Scrim Click Dismissal
+            $(document).on('click', '#wppoppop-settings-backdrop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.close();
+            });
+
+            // 4. Keyboard Escape Key Dismissal
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    var $drawer = $('#wppoppop-settings-drawer');
+                    if ($drawer.hasClass('open') || $drawer.hasClass('active')) {
+                        self.close();
+                    }
+                }
+            });
+
+            // 5. Click-Outside Guard Dismissal
+            $(document).on('click', function(e) {
+                var $drawer = $('#wppoppop-settings-drawer');
+                if (($drawer.hasClass('open') || $drawer.hasClass('active')) &&
+                    !$(e.target).closest('#wppoppop-settings-drawer').length &&
+                    !$(e.target).closest('#wppoppop-btn-settings').length) {
+                    self.close();
+                }
             });
         },
 
+        open: function() {
+            $('#wppoppop-settings-drawer').addClass('open active');
+            $('#wppoppop-settings-backdrop').addClass('open active').show();
+            $('#wppoppop-btn-settings').addClass('active');
+            $(document).trigger('builder:settings:opened');
+        },
+
+        close: function() {
+            $('#wppoppop-settings-drawer').removeClass('open active');
+            $('#wppoppop-settings-backdrop').removeClass('open active').hide();
+            $('#wppoppop-btn-settings').removeClass('active');
+            $(document).trigger('builder:settings:closed');
+        },
+
+        toggle: function() {
+            var $drawer = $('#wppoppop-settings-drawer');
+            if ($drawer.hasClass('open') || $drawer.hasClass('active')) {
+                this.close();
+            } else {
+                this.open();
+            }
+        },
+
         bindAccordions: function() {
-            $('.wppoppop-acc-header').on('click', function() {
+            $(document).on('click', '.wppoppop-acc-header', function(e) {
+                e.preventDefault();
                 var $body = $(this).next('.wppoppop-acc-body');
                 $body.slideToggle(200);
             });
@@ -32,7 +92,7 @@
 
             $('#set-box-width, #set-box-height, #set-bg-mode, #set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
                 self.applyLiveStyles();
-                Core.isDirty = true;
+                if (Core) Core.isDirty = true;
             });
 
             $('#set-bg-mode').on('change', function() {
@@ -48,12 +108,11 @@
 
             $('#set-custom-css').on('input change', function() {
                 self.applyCustomCss($(this).val());
-                Core.isDirty = true;
+                if (Core) Core.isDirty = true;
             });
 
-            // Mark dirty on any other settings input change
             $('#wppoppop-settings-drawer input, #wppoppop-settings-drawer select, #wppoppop-settings-drawer textarea').on('input change', function() {
-                Core.isDirty = true;
+                if (Core) Core.isDirty = true;
             });
         },
 
@@ -162,7 +221,7 @@
             var mode = $('#set-bg-mode').val();
             var $box = $('#wppoppop-canvas-box');
 
-            if (window.WpPopPopBuilder.Core.viewport !== 'mobile') {
+            if (window.WpPopPopBuilder && window.WpPopPopBuilder.Core && window.WpPopPopBuilder.Core.viewport !== 'mobile') {
                 $box.css({ width: w + 'px', height: h + 'px' });
             }
 
