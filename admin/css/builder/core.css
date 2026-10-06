@@ -1,0 +1,175 @@
+/* ==========================================================================
+   WpPopPop Visual Builder: Core Workspace, Viewports & Frame Mechanics
+   ========================================================================== */
+
+.wppoppop-builder-wrap {
+    position: fixed;
+    inset: 0;
+    background: #0f172a;
+    z-index: 99990;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Top Control Bar */
+.wppoppop-builder-header {
+    background: #111827;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    color: #ffffff;
+    border-bottom: 1px solid #1f2937;
+    z-index: 9999;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Screen Sequence Tabs */
+.wppoppop-screen-tabs {
+    display: flex;
+    gap: 4px;
+    background: #1f2937;
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid #374151;
+}
+
+.wppoppop-screen-tab {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.wppoppop-screen-tab.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Viewport Toggle Switcher */
+.wppoppop-viewport-toggles {
+    display: flex;
+    background: #1f2937;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    overflow: hidden;
+}
+
+.wppoppop-viewport-btn {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wppoppop-viewport-btn.active {
+    background: #374151;
+    color: #ffffff;
+}
+
+/* Main Workspace & Pushing Frame */
+.wppoppop-main-frame {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wppoppop-builder-workspace {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+    background-image: 
+        linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    padding: 60px 40px;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Canvas Stage Box */
+#wppoppop-canvas-box {
+    position: relative;
+    width: 640px;
+    height: 400px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    transition: width 0.25s ease, height 0.25s ease;
+}
+
+#wppoppop-canvas-elements-root {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Canvas Element Layers Selection & Dragging */
+.wppoppop-canvas-item {
+    position: absolute;
+    cursor: move;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.wppoppop-canvas-item.wppoppop-selected {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+    z-index: 99999 !important;
+}
+
+.wppoppop-canvas-item.wppoppop-locked {
+    cursor: not-allowed !important;
+}
+
+/* Resizable Handles */
+.ui-resizable-handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #2563eb;
+    border: 1px solid #ffffff;
+    border-radius: 2px;
+    z-index: 100;
+}
+
+.ui-resizable-se {
+    bottom: -4px;
+    right: -4px;
+    cursor: se-resize;
+}
+
+/* Pushing-Frame Docking Trigger */
+.panel-open .wppoppop-builder-workspace {
+    flex: 1;
+}
+
+.panel-open #wppoppop-inspector-drawer {
+    display: flex !important;
+}

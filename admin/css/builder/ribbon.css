@@ -1,67 +1,65 @@
 /* ==========================================================================
-   WpPopPop Builder: Horizontal Elements Ribbon Bar
+   WpPopPop Visual Builder: Horizontal Elements Ribbon Toolbar
    ========================================================================== */
 
 .wppoppop-ribbon-bar {
-    height: 44px;
     background: #1e293b;
     border-bottom: 1px solid #334155;
+    height: 48px;
     display: flex;
     align-items: center;
     padding: 0 12px;
-    z-index: 40;
-    overflow: hidden;
-}
-
-.wppoppop-ribbon-scroll {
-    display: flex;
-    align-items: center;
     gap: 6px;
     overflow-x: auto;
-    white-space: nowrap;
-    width: 100%;
-    padding-bottom: 2px;
+    z-index: 9998;
+    position: relative;
+    box-sizing: border-box;
 }
 
-.wppoppop-ribbon-scroll::-webkit-scrollbar {
-    height: 3px;
+.wppoppop-ribbon-bar::-webkit-scrollbar {
+    height: 4px;
 }
 
-.wppoppop-ribbon-scroll::-webkit-scrollbar-thumb {
+.wppoppop-ribbon-bar::-webkit-scrollbar-thumb {
     background: #475569;
     border-radius: 2px;
 }
 
-.wppoppop-tool-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
+.wppoppop-ribbon-tool {
     background: #0f172a;
     border: 1px solid #334155;
-    border-radius: 4px;
-    color: #cbd5e1;
+    color: #e2e8f0;
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 5px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     cursor: pointer;
-    flex-shrink: 0;
+    white-space: nowrap;
     transition: all 0.15s ease;
+    user-select: none;
 }
 
-.wppoppop-tool-item .dashicons {
+.wppoppop-ribbon-tool .dashicons {
     font-size: 14px;
     width: 14px;
     height: 14px;
-    color: #38bdf8;
+    color: #94a3b8;
 }
 
-.wppoppop-tool-item:hover {
+.wppoppop-ribbon-tool:hover {
     background: #334155;
     color: #ffffff;
     border-color: #64748b;
     transform: translateY(-1px);
 }
 
-.wppoppop-tool-item:active {
+.wppoppop-ribbon-tool:hover .dashicons {
+    color: #38bdf8;
+}
+
+.wppoppop-ribbon-tool:active {
     transform: translateY(0);
 }

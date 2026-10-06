@@ -1,11 +1,11 @@
 /* ==========================================================================
-   WpPopPop Builder Master Stylesheet Aggregator
+   WpPopPop Admin Visual Builder Stylesheet Aggregator
    Decomposed Domain Subsystems
    ========================================================================== */
 
-@import url("builder/layout.css");
+@import url("builder/core.css");
 @import url("builder/ribbon.css");
 @import url("builder/layers.css");
 @import url("builder/inspector.css");
-@import url("builder/drawer.css");
+@import url("builder/settings.css");
 @import url("builder/modals.css");

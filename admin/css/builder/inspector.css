@@ -1,118 +1,133 @@
 /* ==========================================================================
-   WpPopPop Builder: Docked Pushing Layer Properties Inspector
+   WpPopPop Visual Builder: Pushing-Frame Layer Properties Inspector Drawer
    ========================================================================== */
 
-.wppoppop-property-panel {
-    position: absolute;
-    top: 96px;
-    right: 0;
-    bottom: 0;
-    width: 320px;
+#wppoppop-inspector-drawer {
+    width: 340px;
     background: #ffffff;
-    color: #1e293b;
-    border-left: 1px solid #cbd5e1;
-    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 55;
-    display: flex;
+    border-left: 1px solid #e2e8f0;
+    display: none;
     flex-direction: column;
-}
-
-/* Frame Pushing State */
-.wppoppop-builder-wrapper.panel-open .wppoppop-main-frame {
-    width: calc(100% - 320px);
-}
-
-.wppoppop-builder-wrapper.panel-open .wppoppop-property-panel {
-    transform: translateX(0);
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.06);
+    z-index: 9995;
+    box-sizing: border-box;
+    height: 100%;
 }
 
 /* Header Tab Bar & Square Red Close Button */
-.wppoppop-prop-header {
+.wppoppop-insp-header {
     display: flex;
     align-items: center;
-    height: 44px;
-    background: #f1f5f9;
-    border-bottom: 1px solid #e2e8f0;
+    background: #0f172a;
+    color: #ffffff;
+    height: 42px;
 }
 
-.wppoppop-prop-close-btn {
-    width: 44px;
-    height: 44px;
-    background: #fee2e2;
+#wppoppop-inspector-close {
+    width: 42px;
+    height: 42px;
+    background: #991b1b;
     border: none;
-    border-right: 1px solid #fecaca;
-    color: #991b1b; /* Distinct Red Close Icon */
+    color: #ffffff;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
     transition: background 0.15s ease;
 }
 
-.wppoppop-prop-close-btn:hover {
-    background: #fca5a5;
-    color: #7f1d1d;
+#wppoppop-inspector-close:hover {
+    background: #7f1d1d;
 }
 
-.wppoppop-prop-tabs {
-    flex: 1;
-    display: flex;
-    height: 100%;
-}
-
-.wppoppop-prop-tab {
+.wppoppop-insp-tab {
     flex: 1;
     background: transparent;
     border: none;
-    border-bottom: 2px solid transparent;
+    color: #94a3b8;
+    font-weight: 700;
     font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
     cursor: pointer;
+    height: 100%;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.wppoppop-insp-tab:hover {
+    color: #ffffff;
+}
+
+.wppoppop-insp-tab.active {
+    color: #ffffff;
+    background: #1e293b;
+}
+
+/* Segmented Buttons with Magenta Highlight */
+.wppoppop-seg-group {
+    display: flex;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.wppoppop-seg-btn {
+    flex: 1;
+    background: #ffffff;
+    border: none;
+    border-right: 1px solid #cbd5e1;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    text-align: center;
     transition: all 0.15s ease;
 }
 
-.wppoppop-prop-tab.active {
-    color: #d6336c;
-    border-bottom-color: #d6336c;
-    background: #ffffff;
+.wppoppop-seg-btn:last-child {
+    border-right: none;
 }
 
-.wppoppop-prop-body {
-    flex: 1;
-    padding: 16px;
-    overflow-y: auto;
+.wppoppop-seg-btn:hover {
+    background: #f8fafc;
 }
 
-.wppoppop-prop-section label {
+.wppoppop-seg-btn.active {
+    background: #d6336c;
+    color: #ffffff;
+}
+
+/* Inspector Form Elements */
+.wppoppop-insp-content label {
     display: block;
     font-size: 11px;
     font-weight: 700;
     color: #475569;
-    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     margin-bottom: 4px;
 }
 
-.wppoppop-prop-section input[type="text"],
-.wppoppop-prop-section input[type="number"],
-.wppoppop-prop-section select,
-.wppoppop-prop-section textarea {
-    width: 100%;
-    padding: 6px 10px;
+.wppoppop-insp-content input[type="text"],
+.wppoppop-insp-content input[type="number"],
+.wppoppop-insp-content input[type="url"],
+.wppoppop-insp-content select,
+.wppoppop-insp-content textarea {
     border: 1px solid #cbd5e1;
     border-radius: 4px;
+    padding: 6px 10px;
     font-size: 12px;
     color: #1e293b;
+    outline: none;
     box-sizing: border-box;
+    width: 100%;
 }
 
-.wppoppop-prop-section input[type="color"] {
-    width: 100%;
-    height: 32px;
-    padding: 2px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    cursor: pointer;
+.wppoppop-insp-content input:focus,
+.wppoppop-insp-content select:focus,
+.wppoppop-insp-content textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }

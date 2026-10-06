@@ -1,75 +1,48 @@
 /* ==========================================================================
-   WpPopPop Builder: Embed Code & Live Preview Modals
+   WpPopPop Visual Builder: Embed Snippets & Live Sandbox Preview Modals
    ========================================================================== */
 
 .wppoppop-modal-backdrop {
+    display: none;
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(4px);
-    z-index: 10000;
-    display: flex;
+    z-index: 999999;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
-.wppoppop-modal-dialog {
+/* Embed Modal Box */
+#wppoppop-builder-embed-modal > div {
     background: #ffffff;
     border-radius: 8px;
-    width: 540px;
-    max-width: 90vw;
+    width: 520px;
+    max-width: 92vw;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
     overflow: hidden;
 }
 
-.wppoppop-preview-dialog {
-    width: 900px;
+/* Sandbox Preview Modal Box */
+#wppoppop-builder-preview-modal > div {
+    background: #ffffff;
+    border-radius: 8px;
+    width: 720px;
     max-width: 95vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-.wppoppop-modal-header {
+#wppoppop-preview-sandbox-root {
+    flex: 1;
+    overflow: auto;
+    padding: 30px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 14px 18px;
-    background: #0f172a;
-    color: #ffffff;
-}
-
-.wppoppop-modal-header h3 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.wppoppop-modal-close {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    font-size: 22px;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.wppoppop-modal-close:hover {
-    color: #ffffff;
-}
-
-.wppoppop-modal-body {
-    padding: 20px;
-}
-
-.wppoppop-modal-body label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    color: #475569;
-    margin-bottom: 4px;
-}
-
-.wppoppop-modal-body input,
-.wppoppop-modal-body textarea {
-    font-family: monospace;
-    font-size: 12px;
-    background: #f8fafc;
+    justify-content: center;
+    background: #f1f5f9;
 }
