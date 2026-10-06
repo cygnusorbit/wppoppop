@@ -20,8 +20,14 @@ define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 define('WPPOPPOP_BASENAME', plugin_basename(__FILE__));
 
-// Load Database Installer and Register Activation
-require_once WPPOPPOP_PATH . 'includes/class-wppoppop-installer.php';
+// Load Dynamic Autoloader
+require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoloader.php';
+WpPopPop_Autoloader::register();
+
+// Load Global Helper Utilities
+require_once WPPOPPOP_PATH . 'includes/helpers.php';
+
+// Register Database Installer & Activation Routine
 register_activation_hook(__FILE__, ['WpPopPop_Installer', 'activate']);
 
 /**
@@ -38,23 +44,7 @@ final class WpPopPop {
     }
 
     private function __construct() {
-        $this->load_dependencies();
         $this->init_components();
-    }
-
-    private function load_dependencies() {
-        require_once WPPOPPOP_PATH . 'includes/helpers.php';
-        require_once WPPOPPOP_PATH . 'includes/class-wppoppop-admin.php';
-        require_once WPPOPPOP_PATH . 'includes/class-wppoppop-ajax.php';
-        require_once WPPOPPOP_PATH . 'includes/class-wppoppop-front.php';
-        require_once WPPOPPOP_PATH . 'includes/class-wppoppop-rest.php';
-
-        if (file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php')) {
-            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-addons.php';
-        }
-        if (file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-widget.php')) {
-            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-widget.php';
-        }
     }
 
     private function init_components() {
