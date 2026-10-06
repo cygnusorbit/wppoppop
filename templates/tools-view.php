@@ -8,7 +8,7 @@ if (!current_user_can('manage_options')) {
 }
 
 global $wpdb;
-$notice_msg = '';
+$notice_msg  = '';
 $notice_type = 'success';
 
 // Handle Tools Actions
@@ -26,52 +26,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('wppoppop_tools
         $notice_msg = 'All popup impressions, leads, and confirmation counters have been reset to 0.';
     }
 
-    // 3. Bulk JSON Export
-    if (isset($_POST['wppoppop_bulk_export'])) {
-        $items = $wpdb->get_results("SELECT uid, title, data, status FROM {$wpdb->prefix}wppoppop_items", ARRAY_A);
-        $campaigns = $wpdb->get_results("SELECT uid, title, popup_uids, status FROM {$wpdb->prefix}wppoppop_campaigns", ARRAY_A);
-        
-        $backup_payload = [
-            'generator' => 'WpPopPop ' . WPPOPPOP_VERSION,
-            'exported'  => current_time('mysql'),
-            'items'     => $items,
-            'campaigns' => $campaigns
-        ];
-
-        $json_out = wp_json_encode($backup_payload, JSON_PRETTY_PRINT);
-        $filename = 'wppoppop-bulk-backup-' . date('Y-m-d') . '.json';
-
-        header('Content-Type: application/json; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($json_out));
-        echo $json_out;
-        exit;
-    }
-
-    // 4. Bulk JSON Import
+    // 3. Bulk JSON Import (Synchronous Postback Fallback)
     if (isset($_POST['wppoppop_bulk_import']) && !empty($_FILES['wppoppop_bulk_import_file']['tmp_name'])) {
         $raw_json = file_get_contents($_FILES['wppoppop_bulk_import_file']['tmp_name']);
-        $decoded = json_decode($raw_json, true);
+        $decoded  = json_decode($raw_json, true);
 
-        if (!empty($decoded['items']) && is_array($decoded['items'])) {
-            $imported_count = 0;
-            foreach ($decoded['items'] as $item) {
-                $new_uid = wp_generate_uuid4();
-                $wpdb->insert(
-                    $wpdb->prefix . 'wppoppop_items',
-                    [
-                        'uid'    => $new_uid,
-                        'title'  => sanitize_text_field($item['title']) . ' (Restored)',
-                        'data'   => is_array($item['data']) ? wp_json_encode($item['data']) : $item['data'],
-                        'status' => 'publish'
-                    ],
-                    ['%s', '%s', '%s', '%s']
-                );
-                $imported_count++;
+        if ($decoded && is_array($decoded) && (!empty($decoded['items']) || !empty($decoded['campaigns']))) {
+            $items_table     = $wpdb->prefix . 'wppoppop_items';
+            $campaigns_table = $wpdb->prefix . 'wppoppop_campaigns';
+
+            $imported_items     = 0;
+            $imported_campaigns = 0;
+            $uid_map            = [];
+
+            if (!empty($decoded['items']) && is_array($decoded['items'])) {
+                foreach ($decoded['items'] as $item) {
+                    $old_uid = isset($item['uid']) ? sanitize_key($item['uid']) : '';
+                    $new_uid = wp_generate_uuid4();
+                    if ($old_uid) {
+                        $uid_map[$old_uid] = $new_uid;
+                    }
+
+                    $title = isset($item['title']) ? sanitize_text_field($item['title']) . ' (Restored)' : 'Restored Popup';
+                    $data  = isset($item['data']) ? (is_array($item['data']) ? wp_json_encode($item['data']) : $item['data']) : '{}';
+
+                    $wpdb->insert(
+                        $items_table,
+                        [
+                            'uid'           => $new_uid,
+                            'title'         => $title,
+                            'data'          => $data,
+                            'status'        => 'publish',
+                            'impressions'   => 0,
+                            'submissions'   => 0,
+                            'confirmations' => 0
+                        ],
+                        ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
+                    );
+                    $imported_items++;
+                }
             }
-            $notice_msg = "Successfully restored {$imported_count} popup campaigns from backup archive!";
+
+            if (!empty($decoded['campaigns']) && is_array($decoded['campaigns'])) {
+                foreach ($decoded['campaigns'] as $camp) {
+                    $camp_uid = wp_generate_uuid4();
+                    $title    = isset($camp['title']) ? sanitize_text_field($camp['title']) . ' (Restored)' : 'Restored A/B Test';
+
+                    $raw_uids = isset($camp['popup_uids']) ? (is_array($camp['popup_uids']) ? $camp['popup_uids'] : json_decode($camp['popup_uids'], true)) : [];
+                    $remapped_uids = [];
+
+                    if (is_array($raw_uids)) {
+                        foreach ($raw_uids as $var_uid) {
+                            $remapped_uids[] = isset($uid_map[$var_uid]) ? $uid_map[$var_uid] : sanitize_key($var_uid);
+                        }
+                    }
+
+                    $wpdb->insert(
+                        $campaigns_table,
+                        [
+                            'uid'        => $camp_uid,
+                            'title'      => $title,
+                            'popup_uids' => wp_json_encode($remapped_uids),
+                            'status'     => 'active'
+                        ],
+                        ['%s', '%s', '%s', '%s']
+                    );
+                    $imported_campaigns++;
+                }
+            }
+
+            $notice_msg = sprintf('Successfully restored %d popups and %d A/B campaigns from backup archive!', $imported_items, $imported_campaigns);
         } else {
-            $notice_msg = 'Invalid backup archive format. Please select a valid WpPopPop bulk JSON export file.';
+            $notice_msg  = 'Invalid backup archive format. Please select a valid WpPopPop bulk JSON export file.';
             $notice_type = 'error';
         }
     }
