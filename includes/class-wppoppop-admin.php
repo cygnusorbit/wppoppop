@@ -54,7 +54,7 @@ class WpPopPop_Admin {
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
-            wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-builder-js', WPPOPPOP_URL . 'admin/js/builder.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'jquery-ui-sortable', 'jquery-ui-droppable'], WPPOPPOP_VERSION, true);
 
             $current_uid = isset($_GET['uid']) ? sanitize_key($_GET['uid']) : '';
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', [

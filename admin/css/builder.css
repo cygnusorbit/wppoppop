@@ -134,8 +134,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: grab;
     transition: all 0.15s ease;
+    user-select: none;
+}
+.ribbon-btn:active {
+    cursor: grabbing;
 }
 .ribbon-btn:hover {
     background: #2563eb;
@@ -155,8 +159,6 @@
     padding: 40px;
     background: #090d16;
 }
-
-/* Checkerboard Transparency Pattern */
 .wppoppop-stage {
     position: relative;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
@@ -170,9 +172,14 @@
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     border-radius: 4px;
     overflow: hidden;
+    transition: outline 0.15s ease;
+}
+.wppoppop-stage.stage-drop-hover {
+    outline: 2px dashed #38bdf8 !important;
+    outline-offset: 4px;
 }
 
-/* Canvas Element */
+/* Canvas Elements */
 .canvas-element {
     position: absolute !important;
     cursor: move;
@@ -202,12 +209,12 @@
     border-radius: 2px;
 }
 
-/* 5. Floating Layers Panel */
+/* 5. Floating Layers Panel with Drag & Drop Stacking */
 .wppoppop-floating-layers {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 240px;
+    width: 260px;
     background: #1e293b;
     border: 1px solid #334155;
     border-radius: 6px;
@@ -226,16 +233,18 @@
     font-size: 11px;
     letter-spacing: 1px;
     cursor: move;
+    user-select: none;
 }
 .layers-drag-handle {
     cursor: move;
 }
 .layers-list {
-    max-height: 260px;
+    max-height: 290px;
     overflow-y: auto;
     list-style: none;
     margin: 0;
     padding: 6px;
+    min-height: 48px;
 }
 .layers-list li {
     background: #0f172a;
@@ -248,7 +257,13 @@
     align-items: center;
     font-size: 11px;
     color: #e2e8f0;
-    cursor: pointer;
+    cursor: default;
+    transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    user-select: none;
+}
+.layers-list li:hover {
+    background: #1e293b;
+    border-color: #475569;
 }
 .layers-list li.selected {
     border-color: #38bdf8;
@@ -256,26 +271,83 @@
     color: #38bdf8;
     font-weight: 600;
 }
+
+/* Drag Grip & Active Drag States */
+.layer-drag-grip {
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    color: #64748b;
+    margin-right: 6px;
+    padding: 0 2px;
+    flex-shrink: 0;
+}
+.layer-drag-grip .dashicons {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+}
+.layer-drag-grip:hover {
+    color: #38bdf8;
+}
+.layer-drag-grip:active,
+.layers-list li.is-dragging .layer-drag-grip {
+    cursor: grabbing;
+}
+.layers-list li.is-dragging {
+    opacity: 0.35;
+    background: #020617;
+    border: 1px dashed #38bdf8;
+}
+.layers-list li.drag-over-top {
+    border-top: 2px solid #38bdf8 !important;
+}
+.layers-list li.drag-over-bottom {
+    border-bottom: 2px solid #38bdf8 !important;
+}
+.layer-sortable-placeholder {
+    height: 32px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px dashed #38bdf8;
+    border-radius: 3px;
+    margin-bottom: 4px;
+    visibility: visible !important;
+}
+
 .layers-list .layer-title {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: pointer;
+    margin-right: 4px;
 }
 .layers-list .layer-actions {
     display: flex;
-    gap: 2px;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
 }
 .layers-list .layer-actions button {
-    background: none;
-    border: none;
+    background: #1e293b;
+    border: 1px solid #334155;
     color: #94a3b8;
     cursor: pointer;
-    padding: 1px 3px;
+    padding: 2px 4px;
     font-size: 11px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 .layers-list .layer-actions button:hover {
     color: #38bdf8;
+    border-color: #38bdf8;
+}
+.layers-list .layer-actions button.active-action {
+    color: #e11d48;
+    border-color: #f43f5e;
 }
 .layers-footer-hint {
     padding: 6px 10px;

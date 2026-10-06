@@ -48,7 +48,10 @@ jQuery(document).ready(function($) {
                 'background-position': 'center'
             });
         } else {
-            stage.css('background-color', bgColor);
+            stage.css({
+                'background-color': bgColor,
+                'background-image': 'none'
+            });
         }
     }
     $('#stage-width, #stage-height, #box-border-radius, #box-bg-color, #box-bg-image').on('input change', updateStageStyles);
@@ -76,10 +79,9 @@ jQuery(document).ready(function($) {
         refreshLayers();
     });
 
-    // 4. Ribbon Elements Factory (All 27+ Types)
-    $('.ribbon-btn').on('click', function() {
-        const type = $(this).data('type');
-        zIndexCounter++;
+    // 4. Element Factory Creation Helper
+    function createNewElement(type, posX, posY) {
+        zIndexCounter += 5;
         const elementId = 'elem_' + Date.now();
 
         let w = 180, h = 40, content = 'New ' + type, fieldName = '';
@@ -135,12 +137,15 @@ jQuery(document).ready(function($) {
             locked: 0
         };
 
+        const leftPos = (posX !== undefined) ? posX : 60;
+        const topPos  = (posY !== undefined) ? posY : 60;
+
         const elem = $('<div class="canvas-element"></div>')
             .attr('id', elementId)
             .data(initialData)
             .css({
-                top: 60,
-                left: 60,
+                top: topPos,
+                left: leftPos,
                 width: w,
                 height: h,
                 'z-index': zIndexCounter,
@@ -155,6 +160,35 @@ jQuery(document).ready(function($) {
         makeInteractive(elem);
         refreshLayers();
         selectElement(elem);
+    }
+
+    // Ribbon Click Handler
+    $('.ribbon-btn').on('click', function() {
+        createNewElement($(this).data('type'));
+    });
+
+    // Ribbon Drag & Drop onto Stage
+    $('.ribbon-btn').attr('draggable', 'true').on('dragstart', function(e) {
+        e.originalEvent.dataTransfer.setData('text/plain', $(this).data('type'));
+        e.originalEvent.dataTransfer.effectAllowed = 'copy';
+    });
+
+    stage.on('dragover', function(e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'copy';
+        $(this).addClass('stage-drop-hover');
+    }).on('dragleave', function() {
+        $(this).removeClass('stage-drop-hover');
+    }).on('drop', function(e) {
+        e.preventDefault();
+        $(this).removeClass('stage-drop-hover');
+        const type = e.originalEvent.dataTransfer.getData('text/plain');
+        if (type) {
+            const offset = stage.offset();
+            const posX = Math.max(10, Math.round(e.originalEvent.pageX - offset.left - 50));
+            const posY = Math.max(10, Math.round(e.originalEvent.pageY - offset.top - 20));
+            createNewElement(type, posX, posY);
+        }
     });
 
     function renderElementMarkup(type, d) {
@@ -225,6 +259,7 @@ jQuery(document).ready(function($) {
     function deselectElement() {
         $('.canvas-element').removeClass('selected');
         activeElement = null;
+        $('#wppoppop-layers-list li').removeClass('selected');
     }
     stage.on('click', deselectElement);
 
@@ -306,7 +341,7 @@ jQuery(document).ready(function($) {
 
     $('#prop-duplicate-element').on('click', function() {
         if (!activeElement) return;
-        zIndexCounter++;
+        zIndexCounter += 5;
         const clone = activeElement.clone();
         const cloneId = 'elem_' + Date.now();
         clone.attr('id', cloneId)
@@ -333,81 +368,204 @@ jQuery(document).ready(function($) {
         refreshLayers();
     });
 
-    // 6. Floating Layers Management
+    // 6. Floating Layers Management with Native HTML5 + jQuery UI Sortable Drag & Drop
     $('#wppoppop-floating-layers').draggable({
         handle: '.layers-header',
         containment: '.wppoppop-canvas-viewport'
     });
 
+    function recomputeZIndicesFromList() {
+        const items = $('#wppoppop-layers-list li[data-target]');
+        const total = items.length;
+        items.each(function(index) {
+            const targetId = $(this).data('target');
+            const el = $('#' + targetId);
+            if (el.length) {
+                // Top item in list has highest z-index
+                const calculatedZ = (total - index) * 10;
+                el.css('z-index', calculatedZ).data('z_index', calculatedZ);
+            }
+        });
+    }
+
+    let draggedItem = null;
+
     function refreshLayers() {
         const list = $('#wppoppop-layers-list').empty();
-        const elems = stage.find('.canvas-element').filter(function() {
+        let elems = stage.find('.canvas-element').filter(function() {
             return ($(this).data('screen') || 1) === currentScreen;
-        });
+        }).toArray();
 
         if (elems.length === 0) {
             list.html('<li style="color:#64748b;justify-content:center;">No layers on this screen.</li>');
             return;
         }
 
-        elems.each(function() {
-            const el = $(this);
+        // Sort descending by z-index so highest appears on top
+        elems.sort(function(a, b) {
+            const zA = parseInt($(a).css('z-index'), 10) || parseInt($(a).data('z_index'), 10) || 1;
+            const zB = parseInt($(b).css('z-index'), 10) || parseInt($(b).data('z_index'), 10) || 1;
+            return zB - zA;
+        });
+
+        elems.forEach(function(domEl) {
+            const el = $(domEl);
             const id = el.attr('id');
             const d = el.data();
             const name = d.layer_name || d.content || d.type.toUpperCase();
             const isLocked = d.locked == 1;
+            const isHidden = el.is(':hidden');
+            const isSelected = activeElement && activeElement.attr('id') === id;
 
-            const li = $('<li data-target="' + id + '"></li>');
-            li.html('<span class="layer-title">[' + d.type + '] ' + name + '</span>' +
-                    '<div class="layer-actions">' +
-                    '<button type="button" class="btn-layer-eye" title="Toggle Visibility"><span class="dashicons dashicons-visibility"></span></button>' +
-                    '<button type="button" class="btn-layer-lock" title="Lock Dragging"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
-                    '<button type="button" class="btn-layer-up" title="Bring Forward">&uarr;</button>' +
-                    '<button type="button" class="btn-layer-down" title="Send Backward">&darr;</button>' +
-                    '</div>');
-            list.prepend(li);
+            const li = $('<li data-target="' + id + '" class="layer-item' + (isSelected ? ' selected' : '') + '" draggable="true"></li>');
+            li.html(
+                '<span class="layer-drag-grip" title="Drag to reorder layer"><span class="dashicons dashicons-menu"></span></span>' +
+                '<span class="layer-title" title="[' + d.type + '] ' + name + '">[' + d.type + '] ' + name + '</span>' +
+                '<div class="layer-actions">' +
+                    '<button type="button" class="btn-layer-up" title="Move Layer Up (Bring Forward)">&uarr;</button>' +
+                    '<button type="button" class="btn-layer-down" title="Move Layer Down (Send Backward)">&darr;</button>' +
+                    '<button type="button" class="btn-layer-lock ' + (isLocked ? 'active-action' : '') + '" title="Lock Dragging"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
+                    '<button type="button" class="btn-layer-eye ' + (isHidden ? 'active-action' : '') + '" title="Toggle Visibility"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
+                '</div>'
+            );
+            list.append(li);
         });
 
-        list.find('li .layer-title').on('click', function() {
-            const target = $('#' + $(this).closest('li').data('target'));
-            if (target.length) selectElement(target);
-        });
-
-        list.find('.btn-layer-eye').on('click', function(e) {
-            e.stopPropagation();
-            const target = $('#' + $(this).closest('li').data('target'));
-            target.toggle();
-            $(this).find('.dashicons').toggleClass('dashicons-visibility dashicons-hidden');
-        });
-
-        list.find('.btn-layer-lock').on('click', function(e) {
-            e.stopPropagation();
-            const target = $('#' + $(this).closest('li').data('target'));
-            const locked = target.data('locked') == 1 ? 0 : 1;
-            target.data('locked', locked);
-            target.toggleClass('locked', locked === 1);
-            $(this).find('.dashicons').toggleClass('dashicons-lock dashicons-unlock');
-        });
-
-        list.find('.btn-layer-up').on('click', function(e) {
-            e.stopPropagation();
-            const target = $('#' + $(this).closest('li').data('target'));
-            let z = parseInt(target.css('z-index'), 10) || 1;
-            target.css('z-index', z + 1).data('z_index', z + 1);
-        });
-
-        list.find('.btn-layer-down').on('click', function(e) {
-            e.stopPropagation();
-            const target = $('#' + $(this).closest('li').data('target'));
-            let z = parseInt(target.css('z-index'), 10) || 1;
-            if (z > 1) target.css('z-index', z - 1).data('z_index', z - 1);
-        });
+        // Initialize jQuery UI sortable if loaded
+        if ($.fn.sortable) {
+            if (list.hasClass('ui-sortable')) {
+                list.sortable('destroy');
+            }
+            list.sortable({
+                items: 'li[data-target]',
+                handle: '.layer-drag-grip, .layer-title',
+                axis: 'y',
+                cursor: 'grabbing',
+                placeholder: 'layer-sortable-placeholder',
+                forcePlaceholderSize: true,
+                opacity: 0.85,
+                start: function(e, ui) {
+                    ui.placeholder.height(ui.item.outerHeight());
+                },
+                update: function() {
+                    recomputeZIndicesFromList();
+                }
+            });
+        }
     }
+
+    // HTML5 Drag and Drop Reordering Handlers (Universal Fallback & Precision)
+    $('#wppoppop-layers-list').on('dragstart', 'li.layer-item', function(e) {
+        draggedItem = this;
+        $(this).addClass('is-dragging');
+        e.originalEvent.dataTransfer.effectAllowed = 'move';
+        e.originalEvent.dataTransfer.setData('text/html', this.outerHTML);
+    });
+
+    $('#wppoppop-layers-list').on('dragover', 'li.layer-item', function(e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'move';
+        if (this === draggedItem) return;
+
+        const rect = this.getBoundingClientRect();
+        const midY = rect.top + (rect.height / 2);
+        if (e.originalEvent.clientY < midY) {
+            $(this).addClass('drag-over-top').removeClass('drag-over-bottom');
+        } else {
+            $(this).addClass('drag-over-bottom').removeClass('drag-over-top');
+        }
+    });
+
+    $('#wppoppop-layers-list').on('dragleave', 'li.layer-item', function() {
+        $(this).removeClass('drag-over-top drag-over-bottom');
+    });
+
+    $('#wppoppop-layers-list').on('drop', 'li.layer-item', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!draggedItem || this === draggedItem) return;
+
+        const isBefore = $(this).hasClass('drag-over-top');
+        $(this).removeClass('drag-over-top drag-over-bottom');
+
+        if (isBefore) {
+            $(draggedItem).insertBefore(this);
+        } else {
+            $(draggedItem).insertAfter(this);
+        }
+
+        recomputeZIndicesFromList();
+        const targetId = $(draggedItem).data('target');
+        const targetEl = $('#' + targetId);
+        if (targetEl.length) selectElement(targetEl);
+    });
+
+    $('#wppoppop-layers-list').on('dragend', 'li.layer-item', function() {
+        $(this).removeClass('is-dragging');
+        $('#wppoppop-layers-list li').removeClass('drag-over-top drag-over-bottom');
+        draggedItem = null;
+    });
 
     function highlightLayer(id) {
         $('#wppoppop-layers-list li').removeClass('selected');
         $('#wppoppop-layers-list li[data-target="' + id + '"]').addClass('selected');
     }
+
+    // Layer Title Click to Select
+    $('#wppoppop-layers-list').on('click', '.layer-title', function(e) {
+        e.stopPropagation();
+        const target = $('#' + $(this).closest('li').data('target'));
+        if (target.length) selectElement(target);
+    });
+
+    // Move Layer UP Button (Higher z-index / Forward)
+    $('#wppoppop-layers-list').on('click', '.btn-layer-up', function(e) {
+        e.stopPropagation();
+        const li = $(this).closest('li');
+        const prevLi = li.prev('li[data-target]');
+        if (prevLi.length) {
+            li.insertBefore(prevLi);
+            recomputeZIndicesFromList();
+            const target = $('#' + li.data('target'));
+            if (target.length) selectElement(target);
+        }
+    });
+
+    // Move Layer DOWN Button (Lower z-index / Backward)
+    $('#wppoppop-layers-list').on('click', '.btn-layer-down', function(e) {
+        e.stopPropagation();
+        const li = $(this).closest('li');
+        const nextLi = li.next('li[data-target]');
+        if (nextLi.length) {
+            li.insertAfter(nextLi);
+            recomputeZIndicesFromList();
+            const target = $('#' + li.data('target'));
+            if (target.length) selectElement(target);
+        }
+    });
+
+    // Toggle Eye Visibility
+    $('#wppoppop-layers-list').on('click', '.btn-layer-eye', function(e) {
+        e.stopPropagation();
+        const li = $(this).closest('li');
+        const target = $('#' + li.data('target'));
+        target.toggle();
+        const isHidden = target.is(':hidden');
+        $(this).toggleClass('active-action', isHidden);
+        $(this).find('.dashicons').toggleClass('dashicons-visibility', !isHidden).toggleClass('dashicons-hidden', isHidden);
+    });
+
+    // Toggle Drag Lock
+    $('#wppoppop-layers-list').on('click', '.btn-layer-lock', function(e) {
+        e.stopPropagation();
+        const li = $(this).closest('li');
+        const target = $('#' + li.data('target'));
+        const locked = target.data('locked') == 1 ? 0 : 1;
+        target.data('locked', locked);
+        target.toggleClass('locked', locked === 1);
+        $(this).toggleClass('active-action', locked === 1);
+        $(this).find('.dashicons').toggleClass('dashicons-lock', locked === 1).toggleClass('dashicons-unlock', locked === 0);
+    });
 
     // 7. Embed Snippets Modal
     $('#wppoppop-btn-embed').on('click', function() {
@@ -492,7 +650,7 @@ jQuery(document).ready(function($) {
                 left: parseInt(el.css('left'), 10) || 0,
                 width: el.outerWidth(),
                 height: el.outerHeight(),
-                z_index: d.z_index || 1,
+                z_index: parseInt(el.css('z-index'), 10) || d.z_index || 1,
                 locked: d.locked || 0
             });
         });
@@ -687,7 +845,7 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // Default "License Agreement / Yes-No" Starter Canvas
+    // Default Starter Canvas
     function initStarterElements() {
         if (stage.find('.canvas-element').length > 0) return;
         updateStageStyles();

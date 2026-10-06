@@ -86,8 +86,6 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
             <button type="button" class="ribbon-btn" data-type="file" title="File Upload"><span class="dashicons dashicons-upload"></span></button>
             <button type="button" class="ribbon-btn" data-type="rating" title="Star Rating"><span class="dashicons dashicons-star-filled"></span></button>
             <button type="button" class="ribbon-btn" data-type="button" title="Submit Button"><span class="dashicons dashicons-share-alt2"></span></button>
-
-            <!-- Gamified & Conversion Elements -->
             <button type="button" class="ribbon-btn" data-type="wheel" title="Lucky Wheel"><span class="dashicons dashicons-chart-pie"></span></button>
             <button type="button" class="ribbon-btn" data-type="scratch" title="Scratch Card"><span class="dashicons dashicons-tickets-alt"></span></button>
             <button type="button" class="ribbon-btn" data-type="progress" title="Progress Bar"><span class="dashicons dashicons-ellipsis"></span></button>
@@ -100,21 +98,20 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         </div>
     </div>
 
-    <!-- 4. Canvas Viewport with Transparency Grid -->
+    <!-- 4. Canvas Viewport with Transparency Checkerboard & Floating Layers -->
     <main class="wppoppop-canvas-viewport">
-        <!-- Stage / Popup Window -->
         <div class="wppoppop-stage" id="wppoppop-stage" style="width: 620px; height: 380px;">
             <!-- Canvas elements render here -->
         </div>
 
-        <!-- 5. Floating Layers Panel on Canvas Right -->
+        <!-- 5. Floating Magenta "LAYERS" Panel -->
         <aside class="wppoppop-floating-layers" id="wppoppop-floating-layers">
             <div class="layers-header">
                 <span class="layers-title">LAYERS</span>
                 <span class="dashicons dashicons-move layers-drag-handle" title="Move Layers Box"></span>
             </div>
             <ul id="wppoppop-layers-list" class="layers-list">
-                <!-- Dynamically populated layers list -->
+                <!-- Dynamically populated sortable list -->
             </ul>
             <div class="layers-footer-hint">
                 1. Click any button on elements toolbar to add new layer. 2. Sort layers to change z-index.
@@ -125,7 +122,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
     <!-- Overlay Backdrop for Slide-out Drawers -->
     <div id="wppoppop-drawer-backdrop" class="wppoppop-drawer-backdrop"></div>
 
-    <!-- 6. Slide-out Campaign Settings Drawer -->
+    <!-- 6. Slide-out Campaign Settings Drawer (Left) -->
     <aside id="wppoppop-settings-drawer" class="wppoppop-slide-drawer">
         <div class="drawer-header">
             <h3><span class="dashicons dashicons-admin-generic"></span> Campaign Settings</h3>
@@ -396,7 +393,7 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
         </div>
     </aside>
 
-    <!-- 7. Slide-out Layer Inspector Drawer -->
+    <!-- 7. Slide-out Layer Inspector Drawer (Right) -->
     <aside id="wppoppop-inspector-drawer" class="wppoppop-slide-drawer">
         <div class="drawer-header">
             <h3><span class="dashicons dashicons-art"></span> Layer Properties</h3>
@@ -508,5 +505,4 @@ $custom_fonts     = array_filter(array_map('trim', explode("\n", $custom_fonts_r
             </div>
         </div>
     </div>
-
 </div>
