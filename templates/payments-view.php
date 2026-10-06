@@ -2,62 +2,110 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-global $wpdb;
-$table_tx = $wpdb->prefix . 'wppoppop_transactions';
-$table_items = $wpdb->prefix . 'wppoppop_items';
 
-$transactions = $wpdb->get_results("SELECT t.*, i.title as popup_title 
-    FROM {$table_tx} t LEFT JOIN {$table_items} i ON t.popup_uid = i.uid ORDER BY t.id DESC LIMIT 100");
+// 1. Calculate Financial Metrics
+$total_revenue   = 0.0;
+$completed_count = 0;
+$stripe_count    = 0;
+$paypal_count    = 0;
 
-$total_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$table_tx} WHERE status = 'completed'");
-$total_orders  = $wpdb->get_var("SELECT COUNT(*) FROM {$table_tx} WHERE status = 'completed'");
+foreach ($transactions as $t) {
+    if ($t->status === 'completed') {
+        $total_revenue += floatval($t->amount);
+        $completed_count++;
+    }
+    if (strtolower($t->gateway) === 'stripe') {
+        $stripe_count++;
+    } elseif (strtolower($t->gateway) === 'paypal') {
+        $paypal_count++;
+    }
+}
+
+$avg_order_val = $completed_count > 0 ? ($total_revenue / $completed_count) : 0.0;
 ?>
-<div class="wrap wppoppop-admin-page">
-    <h1 class="wp-heading-inline">Payments & Transactions</h1>
-    <p>Track payments captured via payment popups.</p>
-    <hr class="wp-header-end">
+<div class="wrap wppoppop-payments-wrap" style="max-width:1200px;">
+    <!-- Top Action & Search Header -->
+    <?php include WPPOPPOP_PATH . 'templates/payments/header.php'; ?>
 
-    <div style="display: flex; gap: 20px; margin: 20px 0;">
-        <div class="postbox" style="flex: 1; padding: 20px; text-align: center;">
-            <div style="font-size: 13px; color: #646970; text-transform: uppercase; font-weight: 600;">Total Revenue</div>
-            <div style="font-size: 32px; font-weight: 700; color: #00a32a; margin-top: 5px;">$<?php echo number_format((float)$total_revenue, 2); ?></div>
-        </div>
-        <div class="postbox" style="flex: 1; padding: 20px; text-align: center;">
-            <div style="font-size: 13px; color: #646970; text-transform: uppercase; font-weight: 600;">Successful Payments</div>
-            <div style="font-size: 32px; font-weight: 700; color: #2271b1; margin-top: 5px;"><?php echo number_format((int)$total_orders); ?></div>
-        </div>
-    </div>
+    <!-- KPI Totals Summary Cards -->
+    <?php include WPPOPPOP_PATH . 'templates/payments/kpi-summary.php'; ?>
 
-    <table class="wp-list-table widefat fixed striped">
-        <thead>
-            <tr>
-                <th style="width: 80px;">ID</th>
-                <th>Transaction ID</th>
-                <th>Popup Campaign</th>
-                <th>Customer Email</th>
-                <th>Amount</th>
-                <th>Gateway</th>
-                <th>Status</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($transactions)) : ?>
-                <tr><td colspan="8">No payments logged yet.</td></tr>
-            <?php else : ?>
-                <?php foreach ($transactions as $tx) : ?>
-                    <tr>
-                        <td>#<?php echo esc_html($tx->id); ?></td>
-                        <td><code><?php echo esc_html($tx->transaction_id); ?></code></td>
-                        <td><strong><?php echo esc_html($tx->popup_title ?? 'Deleted'); ?></strong></td>
-                        <td><?php echo esc_html($tx->email); ?></td>
-                        <td><strong>$<?php echo number_format($tx->amount, 2) . ' ' . esc_html($tx->currency); ?></strong></td>
-                        <td><?php echo esc_html($tx->gateway); ?></td>
-                        <td><span style="color: #00a32a; font-weight: 600;"><?php echo esc_html(strtoupper($tx->status)); ?></span></td>
-                        <td><?php echo esc_html($tx->created_at); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+    <!-- Transactions List Table -->
+    <?php include WPPOPPOP_PATH . 'templates/payments/table.php'; ?>
+
+    <!-- Transaction Receipt Modal Dialog -->
+    <?php include WPPOPPOP_PATH . 'templates/payments/modal-receipt.php'; ?>
 </div>
+
+<script>
+(function($) {
+    'use strict';
+    $(document).ready(function() {
+        // 1. Live Keyword Search
+        $('#wppoppop-payments-search').on('input', function() {
+            var term = $(this).val().toLowerCase();
+            $('.wppoppop-tx-row').each(function() {
+                var email = $(this).data('email') || '';
+                var txid  = $(this).data('txid') || '';
+                if (email.indexOf(term) !== -1 || txid.indexOf(term) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // 2. Receipt Modal Inspector
+        $('.wppoppop-view-receipt-btn').on('click', function() {
+            var $btn = $(this);
+            $('#wppoppop-rcpt-txid').text($btn.data('txid'));
+            $('#wppoppop-rcpt-email').text($btn.data('email'));
+            $('#wppoppop-rcpt-popup').text($btn.data('popup'));
+            $('#wppoppop-rcpt-date').text($btn.data('date'));
+            $('#wppoppop-rcpt-gateway').text($btn.data('gateway'));
+            $('#wppoppop-rcpt-status').text($btn.data('status'));
+            var formatted = '$' + $btn.data('amount') + ' ' + $btn.data('currency');
+            $('#wppoppop-rcpt-amount').text(formatted);
+            $('#wppoppop-rcpt-total').text(formatted);
+
+            $('#wppoppop-receipt-modal').css('display', 'flex');
+        });
+
+        // 3. Modal Dismissal
+        $('#wppoppop-receipt-close, #wppoppop-rcpt-done').on('click', function() {
+            $('#wppoppop-receipt-modal').hide();
+        });
+
+        // 4. Print Receipt
+        $('#wppoppop-rcpt-print').on('click', function() {
+            window.print();
+        });
+
+        // 5. Export Sales CSV
+        $('#wppoppop-btn-export-sales-csv').on('click', function() {
+            var csv = ['Transaction ID,Customer Email,Popup Campaign,Amount,Currency,Gateway,Status,Date'];
+            $('.wppoppop-tx-row:visible').each(function() {
+                var cols = [
+                    $(this).find('td:nth-child(2)').text().trim(),
+                    $(this).find('td:nth-child(3)').text().trim(),
+                    $(this).find('td:nth-child(4) strong').text().trim(),
+                    $(this).find('td:nth-child(5)').text().replace('$', '').trim(),
+                    'USD',
+                    $(this).find('td:nth-child(6)').text().trim(),
+                    $(this).find('td:nth-child(7)').text().trim(),
+                    $(this).find('td:nth-child(8)').text().trim()
+                ];
+                csv.push('"' + cols.join('","') + '"');
+            });
+
+            var blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'wppoppop-sales-export.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+})(jQuery);
+</script>
