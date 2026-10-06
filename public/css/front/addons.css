@@ -1,101 +1,93 @@
 /* ==========================================================================
-   WpPopPop Frontend: Sticky Side Tabs, Floating Ribbons & Content Lockers
+   WpPopPop Frontend: Sticky Announcement Ribbons, Side Tabs & Content Locker
    ========================================================================== */
 
-/* Sticky Side Tabs */
-.wppoppop-side-tab {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 999990;
-    padding: 12px 14px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 700;
-    border-radius: 6px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-    transition: transform 0.2s ease;
-    user-select: none;
-}
-
-.wppoppop-side-tab:hover {
-    transform: translateY(-50%) scale(1.05);
-}
-
-.wppoppop-side-tab-left {
-    left: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    writing-mode: vertical-rl;
-    transform: translateY(-50%) rotate(180deg);
-}
-
-.wppoppop-side-tab-right {
-    right: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    writing-mode: vertical-rl;
-}
-
-/* Sticky Floating Ribbons */
-.wppoppop-ribbon-bar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: 999995;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-}
-
+/* 1. Sticky Announcement Ribbons */
 .wppoppop-ribbon-top {
-    top: 0;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 999990 !important;
+    border-radius: 0 !important;
 }
 
 .wppoppop-ribbon-bottom {
-    bottom: 0;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 999990 !important;
+    border-radius: 0 !important;
 }
 
-/* Inline Content Locker */
-.wppoppop-locker-wrap {
-    position: relative;
-    margin: 24px 0;
-    overflow: hidden;
-    border-radius: 6px;
-}
-
-.wppoppop-locker-blurred {
-    filter: blur(6px);
+/* 2. Pinned Sticky Side Tabs */
+.wppoppop-sidetab {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #c2185b;
+    color: #ffffff;
+    padding: 12px 14px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    z-index: 99998;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     user-select: none;
+    transition: transform 0.2s ease, background 0.2s ease;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+.wppoppop-sidetab-left {
+    left: 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.wppoppop-sidetab-right {
+    right: 0;
+    border-radius: 8px 0 0 8px;
+}
+
+.wppoppop-sidetab:hover {
+    background: #ad1457;
+}
+
+/* 3. Inline Content Locker */
+.wppoppop-locked-wrap {
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.wppoppop-locked-content {
+    filter: blur(6px);
     pointer-events: none;
+    user-select: none;
+    opacity: 0.5;
+    transition: filter 0.4s ease, opacity 0.4s ease;
+}
+
+.wppoppop-locked-content.wppoppop-unlocked {
+    filter: none !important;
+    pointer-events: auto !important;
+    user-select: auto !important;
+    opacity: 1 !important;
 }
 
 .wppoppop-locker-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.75);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(2px);
     z-index: 10;
-}
-
-.wppoppop-locker-btn {
-    background: #2563eb;
-    color: #ffffff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-    transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.wppoppop-locker-btn:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
+    text-align: center;
+    padding: 24px;
 }

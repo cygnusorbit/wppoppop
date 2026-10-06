@@ -3,8 +3,7 @@
    Decomposed Domain Subsystems
    ========================================================================== */
 
-@import url("front/core.css");
-@import url("front/elements.css");
+@import url("front/modal.css");
 @import url("front/animations.css");
-@import url("front/gamification.css");
+@import url("front/elements.css");
 @import url("front/addons.css");

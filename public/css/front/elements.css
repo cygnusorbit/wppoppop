@@ -1,103 +1,145 @@
 /* ==========================================================================
-   WpPopPop Frontend: 19 Canvas Element Layers & Form Controls
+   WpPopPop Frontend: Interactive Form Elements & Tooltip Bubbles
    ========================================================================== */
 
-.wppoppop-layer-item {
-    box-sizing: border-box;
-}
-
-/* Form Input Controls */
-.wppoppop-field-email,
-.wppoppop-field-number,
-.wppoppop-field-date {
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    font-size: 14px;
-    color: #1e293b;
-    outline: none;
-    background: #ffffff;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.wppoppop-field-email:focus,
-.wppoppop-field-number:focus,
-.wppoppop-field-date:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-}
-
-.wppoppop-field-select {
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    padding: 0 10px;
-    font-size: 14px;
-    color: #1e293b;
-    background: #ffffff;
-    outline: none;
-}
-
-/* Radio & Checkbox */
-.wppoppop-field-radios input,
-.wppoppop-field-checkboxes input {
-    accent-color: #2563eb;
-    cursor: pointer;
-}
-
-.wppoppop-field-radios label,
-.wppoppop-field-checkboxes label {
-    font-size: 14px;
-    color: #1e293b;
-    cursor: pointer;
+/* 1. Lucky Wheel */
+.wppoppop-wheel-wrap {
+    position: relative;
+    display: inline-block;
     user-select: none;
 }
 
-/* Star Rating */
-.wppoppop-field-rating {
+.wppoppop-wheel-pointer {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 20px solid #ef4444;
+    z-index: 10;
+}
+
+/* 2. Scratch-Off Card */
+.wppoppop-scratch-wrap {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
     user-select: none;
-    transition: transform 0.15s ease;
 }
 
-.wppoppop-field-rating:hover {
-    transform: scale(1.05);
-}
-
-/* Action Buttons */
-.wppoppop-submit-trigger,
-.wppoppop-pay-trigger,
-.wppoppop-next-screen-btn {
-    border: none;
-    cursor: pointer;
-    transition: filter 0.15s ease, transform 0.1s ease;
-}
-
-.wppoppop-submit-trigger:hover,
-.wppoppop-pay-trigger:hover,
-.wppoppop-next-screen-btn:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-}
-
-.wppoppop-submit-trigger:active,
-.wppoppop-pay-trigger:active,
-.wppoppop-next-screen-btn:active {
-    transform: translateY(0);
-}
-
-/* Signature Pad */
-.wppoppop-sig-canvas {
+.wppoppop-scratch-canvas {
+    position: absolute;
+    inset: 0;
     cursor: crosshair;
-    touch-action: none;
+    z-index: 5;
 }
 
-.wppoppop-sig-clear-btn {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 3px;
-    padding: 2px 6px;
-    color: #475569;
+/* 3. Countdown Timer */
+.wppoppop-countdown-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.wppoppop-countdown-box {
+    background: #0f172a;
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 6px 10px;
+    text-align: center;
+    min-width: 44px;
+}
+
+.wppoppop-countdown-num {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.1;
+    font-family: monospace;
+}
+
+.wppoppop-countdown-lbl {
+    font-size: 9px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* 4. Star Rating */
+.wppoppop-rating-stars {
+    display: inline-flex;
+    gap: 4px;
     cursor: pointer;
 }
 
-.wppoppop-sig-clear-btn:hover {
+.wppoppop-rating-star {
+    font-size: 22px;
+    color: #cbd5e1;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.wppoppop-rating-star.active,
+.wppoppop-rating-star:hover {
+    color: #f59e0b;
+}
+
+/* 5. Range Slider */
+.wppoppop-range-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
     background: #e2e8f0;
+    outline: none;
+}
+
+.wppoppop-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 6. Digital Signature Pad */
+.wppoppop-signature-canvas {
+    border: 1px dashed #cbd5e1;
+    background: #ffffff;
+    border-radius: 4px;
+    cursor: crosshair;
+}
+
+/* 7. Validation Error Tooltip Bubbles */
+.wppoppop-error-bubble {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    z-index: 10000;
+    pointer-events: none;
+    animation: wppoppopShake 0.4s ease;
+}
+
+.wppoppop-error-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #ef4444 transparent transparent transparent;
 }
