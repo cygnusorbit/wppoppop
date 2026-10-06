@@ -20,7 +20,23 @@ class WpPopPop_Front_Display {
 
     public function enqueue_frontend_assets() {
         wp_enqueue_style('wppoppop-front-css', WPPOPPOP_URL . 'public/css/wppoppop-front.css', [], WPPOPPOP_VERSION);
-        wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/wppoppop-front.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+        // Segregated Frontend Runtime Subsystems
+        wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], WPPOPPOP_VERSION, true);
+        wp_enqueue_script('wppoppop-front-display-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery'], WPPOPPOP_VERSION, true);
+        wp_enqueue_script('wppoppop-front-gamification-js', WPPOPPOP_URL . 'public/js/front/front-gamification.js', ['jquery'], WPPOPPOP_VERSION, true);
+        wp_enqueue_script('wppoppop-front-logic-js', WPPOPPOP_URL . 'public/js/front/front-logic.js', ['jquery'], WPPOPPOP_VERSION, true);
+        wp_enqueue_script('wppoppop-front-submit-js', WPPOPPOP_URL . 'public/js/front/front-submit.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+        // Master Coordinator
+        wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/wppoppop-front.js', [
+            'jquery',
+            'wppoppop-front-triggers-js',
+            'wppoppop-front-display-js',
+            'wppoppop-front-gamification-js',
+            'wppoppop-front-logic-js',
+            'wppoppop-front-submit-js'
+        ], WPPOPPOP_VERSION, true);
 
         $current_user_data = [
             'logged_in' => is_user_logged_in(),
@@ -63,7 +79,6 @@ class WpPopPop_Front_Display {
                 $preview_config['triggers']['on_load'] = true;
                 $preview_config['triggers']['on_load_delay'] = 0;
                 ?>
-                <!-- Admin Live Site Preview Banner -->
                 <div id="wppoppop-preview-bar" style="position:fixed;top:0;left:0;right:0;height:40px;background:#1e293b;color:#f8fafc;z-index:999999;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
                     <div>
                         <strong>WpPopPop Preview:</strong> <?php echo esc_html($preview_row['title']); ?> &bull; <code><?php echo esc_html($preview_uid); ?></code>
