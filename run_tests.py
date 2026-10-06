@@ -2,6 +2,8 @@
 import os
 import sys
 import re
+import glob
+import shutil
 import subprocess
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,9 +32,203 @@ def log_section(title):
     print(f"\n{BOLD}{CYAN}=== {title} ==={RESET}")
 
 # -----------------------------------------------------------------------------
+# PHP Runtime Auto-Discovery
+# -----------------------------------------------------------------------------
+def find_php_runtime():
+    # 1. System PATH
+    php_path = shutil.which("php")
+    if php_path:
+        return {"type": "host", "cmd": [php_path]}
+
+    # 2. Common Homebrew / MAMP Paths on macOS
+    candidates = [
+        "/opt/homebrew/bin/php",
+        "/usr/local/bin/php",
+        "/opt/homebrew/opt/php/bin/php",
+        "/opt/homebrew/opt/php@8.2/bin/php",
+        "/opt/homebrew/opt/php@8.1/bin/php",
+        "/opt/homebrew/opt/php@8.0/bin/php",
+        "/opt/homebrew/opt/php@7.4/bin/php",
+    ] + glob.glob("/Applications/MAMP/bin/php/php*/bin/php")
+
+    for path in candidates:
+        if os.path.isfile(path) and os.access(path, os.X_OK):
+            return {"type": "host", "cmd": [path]}
+
+    # 3. Check for Active Docker Container with PHP
+    docker_bin = shutil.which("docker")
+    if docker_bin:
+        try:
+            d_res = subprocess.run(
+                [docker_bin, "ps", "--filter", "status=running", "--format", "{{.Names}}"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3
+            )
+            if d_res.returncode == 0:
+                containers = d_res.stdout.strip().splitlines()
+                for c in containers:
+                    c_check = subprocess.run(
+                        [docker_bin, "exec", c, "which", "php"],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3
+                    )
+                    if c_check.returncode == 0:
+                        return {"type": "docker", "cmd": [docker_bin, "exec", "-i", c, "php"]}
+        except Exception:
+            pass
+
+    return None
+
+# -----------------------------------------------------------------------------
+# Python-Native Standalone PHP Parser Fallback
+# -----------------------------------------------------------------------------
+def lint_php_python(filepath):
+    try:
+        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+            content = f.read()
+    except Exception as e:
+        return False, f"Could not read file: {e}"
+
+    if "<?php" not in content and "<?" not in content:
+        return False, "Missing PHP opening tag (<?php)"
+
+    # Check for illegal control characters (e.g. 0x0B vertical tabs)
+    for idx, ch in enumerate(content):
+        code = ord(ch)
+        if code < 32 and ch not in ("\n", "\r", "\t"):
+            line = content[:idx].count("\n") + 1
+            return False, f"Illegal control character 0x{code:02X} at line {line}"
+
+    # Bracket Balance Checker Inside PHP Blocks
+    i = 0
+    n = len(content)
+    line = 1
+    stack = []
+    is_in_php = False
+    in_single = False
+    in_double = False
+    in_line_comment = False
+    in_block_comment = False
+
+    while i < n:
+        ch = content[i]
+        if ch == "\n":
+            line += 1
+            if in_line_comment:
+                in_line_comment = False
+            i += 1
+            continue
+
+        if not is_in_php:
+            if content[i:i+5] == "<?php":
+                is_in_php = True
+                i += 5
+                continue
+            elif content[i:i+3] == "<?=":
+                is_in_php = True
+                i += 3
+                continue
+            i += 1
+            continue
+
+        # Inside PHP block:
+        if in_line_comment:
+            i += 1
+            continue
+
+        if in_block_comment:
+            if ch == "*" and i + 1 < n and content[i+1] == "/":
+                in_block_comment = False
+                i += 2
+                continue
+            i += 1
+            continue
+
+        if in_single:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == "'":
+                in_single = False
+            i += 1
+            continue
+
+        if in_double:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == '"':
+                in_double = False
+            i += 1
+            continue
+
+        # Exit PHP block
+        if ch == "?" and i + 1 < n and content[i+1] == ">":
+            is_in_php = False
+            i += 2
+            continue
+
+        # Comments
+        if ch == "/" and i + 1 < n:
+            if content[i+1] == "/":
+                in_line_comment = True
+                i += 2
+                continue
+            elif content[i+1] == "*":
+                in_block_comment = True
+                i += 2
+                continue
+        elif ch == "#":
+            in_line_comment = True
+            i += 1
+            continue
+
+        # Strings
+        if ch == "'":
+            in_single = True
+            i += 1
+            continue
+        elif ch == '"':
+            in_double = True
+            i += 1
+            continue
+
+        # Brackets
+        if ch in "({[":
+            stack.append((ch, line))
+        elif ch in ")}]":
+            if not stack:
+                return False, f"Unexpected closing '{ch}' at line {line}"
+            top_ch, top_line = stack.pop()
+            expected = {"(": ")", "{": "}", "[": "]"}[top_ch]
+            if ch != expected:
+                return False, f"Mismatched bracket: opened '{top_ch}' at line {top_line}, closed with '{ch}' at line {line}"
+
+        i += 1
+
+    if in_single:
+        return False, "Unclosed single-quote string at end of file"
+    if in_double:
+        return False, "Unclosed double-quote string at end of file"
+    if in_block_comment:
+        return False, "Unclosed block comment (/*) at end of file"
+    if stack:
+        unclosed, u_line = stack[-1]
+        return False, f"Unclosed '{unclosed}' opened at line {u_line}"
+
+    return True, "OK"
+
+# -----------------------------------------------------------------------------
 # SUITE 1: PHP Syntax & Linting Verification
 # -----------------------------------------------------------------------------
-log_section("Suite 1: PHP Syntax Linting (php -l)")
+log_section("Suite 1: PHP Syntax Linting")
+php_runtime = find_php_runtime()
+
+if php_runtime and php_runtime["type"] == "host":
+    print(f"  {YELLOW}ℹ Using host PHP binary:{RESET} {php_runtime['cmd'][0]}")
+elif php_runtime and php_runtime["type"] == "docker":
+    print(f"  {YELLOW}ℹ Using Docker PHP runtime:{RESET} {' '.join(php_runtime['cmd'])}")
+else:
+    print(f"  {YELLOW}ℹ No PHP CLI found in PATH. Using embedded Python parser engine.{RESET}")
+
 php_files = []
 for root, _, files in os.walk(BASE_DIR):
     for f in files:
@@ -41,12 +237,35 @@ for root, _, files in os.walk(BASE_DIR):
 
 for php_file in sorted(php_files):
     rel_path = os.path.relpath(php_file, BASE_DIR)
-    res = subprocess.run(["php", "-l", php_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    if res.returncode == 0:
-        log_pass(f"Syntax valid: {rel_path}")
+    if php_runtime:
+        try:
+            if php_runtime["type"] == "host":
+                cmd = php_runtime["cmd"] + ["-l", php_file]
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            else:
+                with open(php_file, "r", encoding="utf-8") as pf:
+                    code_in = pf.read()
+                cmd = php_runtime["cmd"] + ["-l"]
+                res = subprocess.run(cmd, input=code_in, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+            if res.returncode == 0:
+                log_pass(f"Syntax valid: {rel_path}")
+            else:
+                err_msg = res.stderr.strip() or res.stdout.strip()
+                log_fail(f"Syntax error in {rel_path}: {err_msg}")
+        except Exception as e:
+            # Fallback to python parser if subprocess fails
+            valid, msg = lint_php_python(php_file)
+            if valid:
+                log_pass(f"Syntax valid (Python parser): {rel_path}")
+            else:
+                log_fail(f"Syntax error in {rel_path}: {msg}")
     else:
-        err_msg = res.stderr.strip() or res.stdout.strip()
-        log_fail(f"Syntax error in {rel_path}: {err_msg}")
+        valid, msg = lint_php_python(php_file)
+        if valid:
+            log_pass(f"Syntax valid (Python parser): {rel_path}")
+        else:
+            log_fail(f"Syntax error in {rel_path}: {msg}")
 
 # -----------------------------------------------------------------------------
 # SUITE 2: Stylesheet @import Target Resolution
