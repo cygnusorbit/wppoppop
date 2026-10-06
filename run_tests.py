@@ -31,31 +31,23 @@ def log_fail(msg):
 def log_section(title):
     print(f"\n{BOLD}{CYAN}=== {title} ==={RESET}")
 
-# -----------------------------------------------------------------------------
-# PHP Runtime Auto-Discovery
-# -----------------------------------------------------------------------------
 def find_php_runtime():
-    # 1. System PATH
     php_path = shutil.which("php")
     if php_path:
         return {"type": "host", "cmd": [php_path]}
 
-    # 2. Common Homebrew / MAMP Paths on macOS
     candidates = [
         "/opt/homebrew/bin/php",
         "/usr/local/bin/php",
         "/opt/homebrew/opt/php/bin/php",
         "/opt/homebrew/opt/php@8.2/bin/php",
         "/opt/homebrew/opt/php@8.1/bin/php",
-        "/opt/homebrew/opt/php@8.0/bin/php",
-        "/opt/homebrew/opt/php@7.4/bin/php",
     ] + glob.glob("/Applications/MAMP/bin/php/php*/bin/php")
 
     for path in candidates:
         if os.path.isfile(path) and os.access(path, os.X_OK):
             return {"type": "host", "cmd": [path]}
 
-    # 3. Check for Active Docker Container with PHP
     docker_bin = shutil.which("docker")
     if docker_bin:
         try:
@@ -77,9 +69,6 @@ def find_php_runtime():
 
     return None
 
-# -----------------------------------------------------------------------------
-# Python-Native Standalone PHP Parser Fallback
-# -----------------------------------------------------------------------------
 def lint_php_python(filepath):
     try:
         with open(filepath, "r", encoding="utf-8", errors="replace") as f:
@@ -90,14 +79,12 @@ def lint_php_python(filepath):
     if "<?php" not in content and "<?" not in content:
         return False, "Missing PHP opening tag (<?php)"
 
-    # Check for illegal control characters (e.g. 0x0B vertical tabs)
     for idx, ch in enumerate(content):
         code = ord(ch)
         if code < 32 and ch not in ("\n", "\r", "\t"):
             line = content[:idx].count("\n") + 1
             return False, f"Illegal control character 0x{code:02X} at line {line}"
 
-    # Bracket Balance Checker Inside PHP Blocks
     i = 0
     n = len(content)
     line = 1
@@ -129,7 +116,6 @@ def lint_php_python(filepath):
             i += 1
             continue
 
-        # Inside PHP block:
         if in_line_comment:
             i += 1
             continue
@@ -160,13 +146,11 @@ def lint_php_python(filepath):
             i += 1
             continue
 
-        # Exit PHP block
         if ch == "?" and i + 1 < n and content[i+1] == ">":
             is_in_php = False
             i += 2
             continue
 
-        # Comments
         if ch == "/" and i + 1 < n:
             if content[i+1] == "/":
                 in_line_comment = True
@@ -181,7 +165,6 @@ def lint_php_python(filepath):
             i += 1
             continue
 
-        # Strings
         if ch == "'":
             in_single = True
             i += 1
@@ -191,7 +174,6 @@ def lint_php_python(filepath):
             i += 1
             continue
 
-        # Brackets
         if ch in "({[":
             stack.append((ch, line))
         elif ch in ")}]":
@@ -204,12 +186,8 @@ def lint_php_python(filepath):
 
         i += 1
 
-    if in_single:
-        return False, "Unclosed single-quote string at end of file"
-    if in_double:
-        return False, "Unclosed double-quote string at end of file"
-    if in_block_comment:
-        return False, "Unclosed block comment (/*) at end of file"
+    if in_single or in_double or in_block_comment:
+        return False, "Unclosed string or block comment at EOF"
     if stack:
         unclosed, u_line = stack[-1]
         return False, f"Unclosed '{unclosed}' opened at line {u_line}"
@@ -217,17 +195,10 @@ def lint_php_python(filepath):
     return True, "OK"
 
 # -----------------------------------------------------------------------------
-# SUITE 1: PHP Syntax & Linting Verification
+# SUITE 1: PHP Syntax Linting
 # -----------------------------------------------------------------------------
 log_section("Suite 1: PHP Syntax Linting")
 php_runtime = find_php_runtime()
-
-if php_runtime and php_runtime["type"] == "host":
-    print(f"  {YELLOW}ℹ Using host PHP binary:{RESET} {php_runtime['cmd'][0]}")
-elif php_runtime and php_runtime["type"] == "docker":
-    print(f"  {YELLOW}ℹ Using Docker PHP runtime:{RESET} {' '.join(php_runtime['cmd'])}")
-else:
-    print(f"  {YELLOW}ℹ No PHP CLI found in PATH. Using embedded Python parser engine.{RESET}")
 
 php_files = []
 for root, _, files in os.walk(BASE_DIR):
@@ -253,8 +224,7 @@ for php_file in sorted(php_files):
             else:
                 err_msg = res.stderr.strip() or res.stdout.strip()
                 log_fail(f"Syntax error in {rel_path}: {err_msg}")
-        except Exception as e:
-            # Fallback to python parser if subprocess fails
+        except Exception:
             valid, msg = lint_php_python(php_file)
             if valid:
                 log_pass(f"Syntax valid (Python parser): {rel_path}")
@@ -334,7 +304,7 @@ for php_file in php_files:
             log_fail(f"Autoload target missing for {cname} -> expected: {os.path.relpath(expected, BASE_DIR)}")
 
 # -----------------------------------------------------------------------------
-# SUITE 4: All 19 Canvas Elements Verification
+# SUITE 4: 19 Canvas Elements Factory Integrity
 # -----------------------------------------------------------------------------
 log_section("Suite 4: 19 Canvas Elements Factory Integrity")
 ribbon_file = os.path.join(BASE_DIR, "templates", "builder", "ribbon.php")
@@ -356,7 +326,7 @@ else:
     log_fail("templates/builder/ribbon.php not found!")
 
 # -----------------------------------------------------------------------------
-# SUITE 5: 15-Accordion Settings Drawer Verification
+# SUITE 5: 15 Campaign Settings Accordions Integrity
 # -----------------------------------------------------------------------------
 log_section("Suite 5: 15 Campaign Settings Accordions Integrity")
 settings_drawer_file = os.path.join(BASE_DIR, "templates", "builder", "drawer-settings.php")
@@ -388,6 +358,51 @@ if os.path.exists(settings_drawer_file):
             log_fail(f"Settings accordion missing: [{acc}]")
 else:
     log_fail("templates/builder/drawer-settings.php not found!")
+
+# -----------------------------------------------------------------------------
+# SUITE 6: Modular JavaScript Assets Resolution
+# -----------------------------------------------------------------------------
+log_section("Suite 6: Modular JavaScript Assets Integrity")
+js_modules_to_verify = [
+    "admin/js/builder/builder-core.js",
+    "admin/js/builder/builder-canvas.js",
+    "admin/js/builder/builder-layers.js",
+    "admin/js/builder/builder-inspector.js",
+    "admin/js/builder/builder-settings.js",
+    "admin/js/builder/builder-modals.js",
+    "admin/js/builder/builder-io.js",
+    "admin/js/dashboard/dashboard-actions.js",
+    "admin/js/dashboard/dashboard-import.js",
+    "admin/js/dashboard/dashboard-embed.js",
+    "admin/js/dashboard/dashboard-search.js",
+    "admin/js/settings/settings-tabs.js",
+    "admin/js/settings/settings-save.js",
+    "admin/js/settings/settings-tools.js",
+    "admin/js/library/library-filter.js",
+    "admin/js/library/library-preview.js",
+    "admin/js/library/library-import.js",
+    "admin/js/submissions/submissions-search.js",
+    "admin/js/submissions/submissions-actions.js",
+    "admin/js/submissions/submissions-modal.js",
+    "admin/js/ab/ab-modal.js",
+    "admin/js/ab/ab-actions.js",
+    "admin/js/payments/payments-search.js",
+    "admin/js/payments/payments-modal.js",
+    "admin/js/payments/payments-export.js",
+    "admin/js/log/log-search.js",
+    "admin/js/log/log-payload.js",
+    "public/js/front/front-triggers.js",
+    "public/js/front/front-modal.js",
+    "public/js/front/front-elements.js",
+    "public/js/front/front-form.js"
+]
+
+for js_rel in js_modules_to_verify:
+    full_path = os.path.join(BASE_DIR, js_rel)
+    if os.path.isfile(full_path):
+        log_pass(f"Modular script resolved: {js_rel}")
+    else:
+        log_fail(f"Modular script missing: {js_rel}")
 
 # -----------------------------------------------------------------------------
 # FINAL SUMMARY REPORT

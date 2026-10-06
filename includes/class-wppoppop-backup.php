@@ -29,8 +29,8 @@ class WpPopPop_Backup {
 
     private static function get_target_tables() {
         global $wpdb;
-        $prefix =$wpdb->prefix . 'wppoppop_';
-        $results =$wpdb->get_col("SHOW TABLES LIKE '{$prefix}%'");
+        $prefix = $wpdb->prefix . 'wppoppop_';
+        $results = $wpdb->get_col("SHOW TABLES LIKE '{$prefix}%'");
         return !empty($results) ? $results : [$wpdb->prefix . 'wppoppop_items'];
     }
 
@@ -41,7 +41,8 @@ class WpPopPop_Backup {
         check_admin_referer('wppoppop_export_db_nonce');
 
         global $wpdb;
-        $tables = self::get_target_tables();$backup = [
+        $tables = self::get_target_tables();
+        $backup = [
             'generator'  => 'WpPopPop Database Backup Engine',
             'version'    => get_option('wppoppop_db_version', '1.0.0'),
             'created_at' => current_time('mysql'),
@@ -52,9 +53,10 @@ class WpPopPop_Backup {
             ]
         ];
 
-        foreach ($tables as $table) {$short_name = str_replace($wpdb->prefix, '',$table);
-            $rows =$wpdb->get_results("SELECT * FROM `{$table}`", ARRAY_A);
-            $backup['tables'][$short_name] =$rows ?: [];
+        foreach ($tables as $table) {
+            $short_name = str_replace($wpdb->prefix, '', $table);
+            $rows = $wpdb->get_results("SELECT * FROM `{$table}`", ARRAY_A);
+            $backup['tables'][$short_name] = $rows ?: [];
         }
 
         $filename = 'wppoppop-backup-' . gmdate('Y-m-d-His') . '.json';
@@ -83,7 +85,7 @@ class WpPopPop_Backup {
         $content = file_get_contents($_FILES['backup_file']['tmp_name']);
         $data = json_decode($content, true);
 
-        if (!$data || !isset($data['tables']) ert{}ert{} !is_array($data['tables'])) {
+        if (!$data || !isset($data['tables']) || !is_array($data['tables'])) {
             wp_redirect(add_query_arg('error', 'invalid_format', $redirect_url));
             exit;
         }
@@ -92,16 +94,19 @@ class WpPopPop_Backup {
 
         // Restore Options
         if (!empty($data['options']) && is_array($data['options'])) {
-            foreach ($data['options'] as $key =>$val) {
+            foreach ($data['options'] as $key => $val) {
                 if (strpos($key, 'wppoppop_') === 0) {
-                    update_option($key,$val);
+                    update_option($key, $val);
                 }
             }
         }
 
         // Restore Tables
-        foreach ($data['tables'] as $short_name =>$rows) {
-            if (strpos($short_name, 'wppoppop_') !== 0) {                 continue;             }$table_name = $wpdb->prefix .$short_name;
+        foreach ($data['tables'] as $short_name => $rows) {
+            if (strpos($short_name, 'wppoppop_') !== 0) {
+                continue;
+            }
+            $table_name = $wpdb->prefix . $short_name;
             $table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name));
             if (!$table_exists) {
                 continue;
