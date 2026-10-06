@@ -3,104 +3,120 @@
     window.WpPopPopFront = window.WpPopPopFront || {};
 
     var Triggers = {
-        init: function(popupEl, config, showCallback) {
-            var triggers = config.triggers || {};
-            var uid = $(popupEl).data('uid');
-            var hasTriggered = false;
+        init: function() {
+            this.bindClickTriggers();
+            this.bindExitIntent();
+            this.bindMobileBack();
+            this.bindScrollDepth();
+            this.bindInactivity();
+            this.bindVideoListeners();
+            this.checkAdBlock();
+        },
 
-            function triggerOnce() {
-                if (!hasTriggered) {
-                    hasTriggered = true;
-                    showCallback();
-                }
-            }
-
-            // 1. Page Load with Delay
-            if (triggers.on_load) {
-                var delay = (parseInt(triggers.on_load_delay, 10) || 0) * 1000;
-                setTimeout(triggerOnce, delay);
-            }
-
-            // 2. Desktop Cursor Exit Intent
-            if (triggers.on_exit) {
-                $(document).one('mouseleave.wppoppop_' + uid, function(e) {
-                    if (e.clientY <= 10) {
-                        triggerOnce();
-                    }
-                });
-            }
-
-            // 3. Mobile Back-Button Exit Interceptor (HTML5 History API)
-            if (triggers.on_backbutton) {
-                try {
-                    window.history.pushState({ wppoppop_intercept: uid }, '');
-                    $(window).one('popstate.wppoppop_' + uid, function(e) {
-                        triggerOnce();
-                    });
-                } catch(err) {}
-            }
-
-            // 4. Scroll Depth Percentage
-            if (triggers.on_scroll) {
-                var targetPct = parseInt(triggers.scroll_val, 10) || 50;
-                $(window).on('scroll.wppoppop_' + uid, function() {
-                    var sTop = $(window).scrollTop();
-                    var docH = $(document).height() - $(window).height();
-                    if (docH > 0) {
-                        var curPct = (sTop / docH) * 100;
-                        if (curPct >= targetPct) {
-                            $(window).off('scroll.wppoppop_' + uid);
-                            triggerOnce();
-                        }
-                    }
-                });
-            }
-
-            // 5. Idle Inactivity Timeout
-            if (triggers.on_idle) {
-                var idleSecs = (parseInt(triggers.idle_val, 10) || 30) * 1000;
-                var idleTimer = null;
-                function resetIdle() {
-                    clearTimeout(idleTimer);
-                    idleTimer = setTimeout(triggerOnce, idleSecs);
-                }
-                $(document).on('mousemove.wppoppop_' + uid + ' keydown.wppoppop_' + uid + ' scroll.wppoppop_' + uid, resetIdle);
-                resetIdle();
-            }
-
-            // 6. AdBlock Detector
-            if (triggers.on_adblock) {
-                var testAd = document.createElement('div');
-                testAd.innerHTML = '&nbsp;';
-                testAd.className = 'adsbox pub_300x250 pub_300x250m pub_728x90 text-ad textAd text_ad text_ads';
-                testAd.style.cssText = 'position:absolute;top:-999px;left:-999px;width:1px;height:1px;';
-                document.body.appendChild(testAd);
-                setTimeout(function() {
-                    if (testAd.offsetHeight === 0 || testAd.clientHeight === 0 || window.getComputedStyle(testAd).display === 'none') {
-                        triggerOnce();
-                    }
-                    testAd.remove();
-                }, 100);
-            }
-
-            // 7. HTML5 & YouTube Video Event Listeners
-            var videoCfg = config.video || {};
-            if (videoCfg.enable) {
-                $('video').on('ended', triggerOnce);
-                if (videoCfg.on_time && videoCfg.timestamp) {
-                    $('video').on('timeupdate', function() {
-                        if (this.currentTime >= parseFloat(videoCfg.timestamp)) {
-                            triggerOnce();
-                        }
-                    });
-                }
-            }
-
-            // Manual Click Trigger (.wppoppop-open-btn[data-target-uid="UID"])
-            $(document).on('click', '.wppoppop-open-btn[data-target-uid="' + uid + '"]', function(e) {
+        bindClickTriggers: function() {
+            $(document).on('click', '.wppoppop-open-btn, [data-target-uid]', function(e) {
                 e.preventDefault();
-                showCallback();
+                var uid = $(this).data('target-uid') || $(this).attr('data-target-uid');
+                if (uid && window.WpPopPopFront.Modal) {
+                    window.WpPopPopFront.Modal.open(uid);
+                }
             });
+        },
+
+        bindExitIntent: function() {
+            var triggered = {};
+            $(document).on('mouseleave', function(e) {
+                if (e.clientY <= 10) {
+                    $('.wppoppop-popup-wrap[data-trigger-exit="1"]').each(function() {
+                        var uid = $(this).data('uid');
+                        if (!triggered[uid] && window.WpPopPopFront.Modal) {
+                            triggered[uid] = true;
+                            window.WpPopPopFront.Modal.open(uid);
+                        }
+                    });
+                }
+            });
+        },
+
+        bindMobileBack: function() {
+            if (window.history && window.history.pushState) {
+                window.history.pushState({ wppoppop: true }, '');
+                $(window).on('popstate', function() {
+                    $('.wppoppop-popup-wrap[data-trigger-back="1"]').each(function() {
+                        var uid = $(this).data('uid');
+                        if (window.WpPopPopFront.Modal && !window.WpPopPopFront.Modal.isSuppressed(uid)) {
+                            window.WpPopPopFront.Modal.open(uid);
+                        }
+                    });
+                });
+            }
+        },
+
+        bindScrollDepth: function() {
+            var triggered = {};
+            $(window).on('scroll', function() {
+                var scrollTop = $(window).scrollTop();
+                var docHeight = $(document).height() - $(window).height();
+                var scrollPct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+                $('.wppoppop-popup-wrap[data-trigger-scroll]').each(function() {
+                    var uid = $(this).data('uid');
+                    var targetPct = parseFloat($(this).data('trigger-scroll')) || 50;
+                    if (!triggered[uid] && scrollPct >= targetPct && window.WpPopPopFront.Modal) {
+                        triggered[uid] = true;
+                        window.WpPopPopFront.Modal.open(uid);
+                    }
+                });
+            });
+        },
+
+        bindInactivity: function() {
+            var idleTime = 0;
+            var interval = setInterval(function() {
+                idleTime += 1;
+                $('.wppoppop-popup-wrap[data-trigger-idle]').each(function() {
+                    var uid = $(this).data('uid');
+                    var targetSec = parseInt($(this).data('trigger-idle'), 10) || 15;
+                    if (idleTime >= targetSec && window.WpPopPopFront.Modal) {
+                        window.WpPopPopFront.Modal.open(uid);
+                    }
+                });
+            }, 1000);
+
+            $(document).on('mousemove keydown scroll', function() {
+                idleTime = 0;
+            });
+        },
+
+        bindVideoListeners: function() {
+            $('video').on('ended', function() {
+                $('.wppoppop-popup-wrap[data-trigger-video-end="1"]').each(function() {
+                    var uid = $(this).data('uid');
+                    if (window.WpPopPopFront.Modal) {
+                        window.WpPopPopFront.Modal.open(uid);
+                    }
+                });
+            });
+        },
+
+        checkAdBlock: function() {
+            var bait = document.createElement('div');
+            bait.className = 'pub_300x250 pub_300x250m pub_728x90 text-ad ad-text';
+            bait.style.cssText = 'width: 1px !important; height: 1px !important; position: absolute !important; left: -10000px !important;';
+            document.body.appendChild(bait);
+
+            setTimeout(function() {
+                var isBlocked = (bait.offsetParent === null || bait.offsetHeight === 0 || bait.offsetLeft === 0);
+                bait.remove();
+                if (isBlocked) {
+                    $('.wppoppop-popup-wrap[data-trigger-adblock="1"]').each(function() {
+                        var uid = $(this).data('uid');
+                        if (window.WpPopPopFront.Modal) {
+                            window.WpPopPopFront.Modal.open(uid);
+                        }
+                    });
+                }
+            }, 200);
         }
     };
 
