@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     </div>
 
     <div class="wppoppop-settings-scroll-body wppoppop-accordion-group">
-        <!-- 1. Box & Canvas Dimensions per Screen with Screen Rename, Color Pickers & Logic Tab -->
+        <!-- 1. Box & Canvas Dimensions per Screen with 50%/50% Color Picker Row -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header active" id="wppoppop-acc-canvas-dimensions">
                 <span>1. Canvas Dimensions & Background</span>
@@ -37,7 +37,7 @@ if (!defined('ABSPATH')) {
                     <button type="button" class="wppoppop-screen-subtab" data-subtab="logic" style="flex:1;background:transparent;color:#94a3b8;border:none;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;text-align:center;">Logic</button>
                 </div>
 
-                <!-- SUBTAB PANE 1: Dimensions, Rename & Simple Color Pickers -->
+                <!-- SUBTAB PANE 1: Dimensions, Rename & 50%/50% Color Pickers -->
                 <div id="wppoppop-subtab-pane-canvas">
                     <div style="margin-bottom:12px;background:#1e293b;padding:10px;border-radius:6px;border:1px solid #334155;">
                         <label style="display:block;font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:4px;text-transform:uppercase;">Screen Name (Rename)</label>
@@ -63,33 +63,39 @@ if (!defined('ABSPATH')) {
                         </select>
                     </div>
 
-                    <!-- Solid Background with Simple Color Picker -->
+                    <!-- Solid Background with 50% Color Picker Wrap & 50% Hex Input on Same Row -->
                     <div id="set-solid-wrap" style="margin-bottom:10px;">
-                        <label>Background Color</label>
-                        <div class="wppoppop-color-picker-wrap">
-                            <input type="color" class="wppoppop-color-swatch-input" data-target="#set-bg-color" value="#ffffff" title="Choose color">
+                        <label style="display:block;margin-bottom:4px;">Background Color</label>
+                        <div class="wppoppop-color-picker-row">
+                            <div class="wppoppop-color-picker-wrap">
+                                <input type="color" class="wppoppop-color-swatch-input" data-target="#set-bg-color" value="#ffffff" title="Choose color">
+                            </div>
                             <input type="text" id="set-bg-color" class="wppoppop-color-hex-input" value="#ffffff" placeholder="#ffffff">
                         </div>
                     </div>
 
-                    <!-- Linear Gradient with Simple Color Pickers -->
+                    <!-- Linear Gradient with 50% Color Picker Wrap & 50% Hex Input on Same Row -->
                     <div id="set-gradient-wrap" style="display:none;margin-bottom:10px;">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
-                            <div>
-                                <label>Gradient Start</label>
+                        <div style="margin-bottom:8px;">
+                            <label style="display:block;margin-bottom:4px;">Gradient Start</label>
+                            <div class="wppoppop-color-picker-row">
                                 <div class="wppoppop-color-picker-wrap">
                                     <input type="color" class="wppoppop-color-swatch-input" data-target="#set-grad-color1" value="#3b82f6" title="Choose start color">
-                                    <input type="text" id="set-grad-color1" class="wppoppop-color-hex-input" value="#3b82f6" placeholder="#3b82f6">
                                 </div>
-                            </div>
-                            <div>
-                                <label>Gradient End</label>
-                                <div class="wppoppop-color-picker-wrap">
-                                    <input type="color" class="wppoppop-color-swatch-input" data-target="#set-grad-color2" value="#1d4ed8" title="Choose end color">
-                                    <input type="text" id="set-grad-color2" class="wppoppop-color-hex-input" value="#1d4ed8" placeholder="#1d4ed8">
-                                </div>
+                                <input type="text" id="set-grad-color1" class="wppoppop-color-hex-input" value="#3b82f6" placeholder="#3b82f6">
                             </div>
                         </div>
+
+                        <div style="margin-bottom:8px;">
+                            <label style="display:block;margin-bottom:4px;">Gradient End</label>
+                            <div class="wppoppop-color-picker-row">
+                                <div class="wppoppop-color-picker-wrap">
+                                    <input type="color" class="wppoppop-color-swatch-input" data-target="#set-grad-color2" value="#1d4ed8" title="Choose end color">
+                                </div>
+                                <input type="text" id="set-grad-color2" class="wppoppop-color-hex-input" value="#1d4ed8" placeholder="#1d4ed8">
+                            </div>
+                        </div>
+
                         <label>Angle (deg)</label>
                         <input type="number" id="set-grad-angle" value="135">
                     </div>
@@ -98,7 +104,6 @@ if (!defined('ABSPATH')) {
                 <!-- SUBTAB PANE 2: Screen Conditional Logic with Empty Canvas Guard -->
                 <div id="wppoppop-subtab-pane-logic" style="display:none;">
                     <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:12px;margin-bottom:10px;">
-                        <!-- Slide Button for Screen Logic -->
                         <label class="wppoppop-slide-toggle" id="wppoppop-logic-toggle-label">
                             <span class="wppoppop-switch">
                                 <input type="checkbox" id="set-screen-cond-enable">
@@ -107,7 +112,6 @@ if (!defined('ABSPATH')) {
                             <span class="wppoppop-switch-label">Enable Conditional Logic for this Screen</span>
                         </label>
 
-                        <!-- Empty Canvas Notice Badge -->
                         <div id="set-screen-empty-notice" style="display:none;align-items:center;gap:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:8px 10px;border-radius:4px;font-size:11px;line-height:1.4;margin-top:6px;">
                             <span class="dashicons dashicons-warning" style="font-size:16px;width:16px;height:16px;color:#ef4444;flex-shrink:0;"></span>
                             <span>Cannot enable logic: This screen has no elements. Add form elements to the canvas first.</span>
@@ -162,7 +166,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 2. Display Triggers (Slide Buttons) -->
+        <!-- 2. Display Triggers -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>2. Display Triggers</span>
@@ -233,7 +237,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 4. Sticky Side Tabs (Slide Button) -->
+        <!-- 4. Sticky Side Tabs -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>4. Sticky Side Tab Launcher</span>
@@ -277,7 +281,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 6. Secure Downloads (Slide Button) -->
+        <!-- 6. Secure Downloads -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>6. Lead Magnet Downloads</span>
@@ -298,7 +302,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 7. Video Listeners (Slide Button) -->
+        <!-- 7. Video Listeners -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>7. Embedded Video Listeners</span>
@@ -319,7 +323,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 8. Subscriber Autoresponder (Slide Button) -->
+        <!-- 8. Subscriber Autoresponder -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>8. Subscriber Autoresponder</span>
@@ -356,7 +360,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 10. Twilio SMS Alerts (Slide Button) -->
+        <!-- 10. Twilio SMS Alerts -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>10. Twilio SMS Alerts</span>
@@ -409,7 +413,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 13. WooCommerce Conversion Suite (Slide Button) -->
+        <!-- 13. WooCommerce Conversion Suite -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>13. WooCommerce Conversion Suite</span>
@@ -444,7 +448,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- 15. Quiz & Lead Scoring (Slide Buttons) -->
+        <!-- 15. Quiz & Lead Scoring -->
         <div class="wppoppop-acc-item">
             <button type="button" class="wppoppop-acc-header">
                 <span>15. Quiz & Lead Scoring</span>

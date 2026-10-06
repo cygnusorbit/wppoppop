@@ -1,6 +1,6 @@
 /* ==========================================================================
    WpPopPop Visual Builder: Slide-Out Campaign Settings Drawer
-   Slide Buttons, Simple Color Pickers & Screen Bullets
+   Slide Buttons, Simple Color Pickers (50%/50% Columns) & Screen Bullets
    ========================================================================== */
 
 #wppoppop-settings-drawer {
@@ -170,63 +170,85 @@
 }
 
 /* ==========================================================================
-   Simple Color Picker Component
+   Color Picker Row: 50% Color Picker Wrap & 50% Hex Input on Same Row
    ========================================================================== */
+.wppoppop-color-picker-row {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
 .wppoppop-color-picker-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 4px;
-    padding: 3px 6px;
-    box-sizing: border-box;
-    transition: border-color 0.15s ease;
+    width: 50% !important;
+    flex: 0 0 calc(50% - 4px) !important;
+    max-width: calc(50% - 4px) !important;
+    display: flex !important;
+    align-items: center !important;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 4px !important;
+    padding: 3px !important;
+    height: 34px !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.15s ease !important;
 }
 
 .wppoppop-color-picker-wrap:focus-within {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 1px #3b82f6 !important;
 }
 
 .wppoppop-color-swatch-input {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 28px !important;
-    height: 26px !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 26px !important;
     padding: 0 !important;
-    border: 1px solid #475569 !important;
-    border-radius: 4px !important;
+    border: none !important;
+    border-radius: 3px !important;
     cursor: pointer !important;
     background: transparent !important;
     box-sizing: border-box !important;
-    flex-shrink: 0;
+    display: block !important;
 }
 
 .wppoppop-color-swatch-input::-webkit-color-swatch-wrapper {
-    padding: 0;
+    padding: 0 !important;
 }
 
 .wppoppop-color-swatch-input::-webkit-color-swatch {
-    border: none;
-    border-radius: 3px;
+    border: 1px solid #475569 !important;
+    border-radius: 2px !important;
 }
 
 .wppoppop-color-swatch-input::-moz-color-swatch {
-    border: none;
-    border-radius: 3px;
+    border: 1px solid #475569 !important;
+    border-radius: 2px !important;
 }
 
 .wppoppop-color-hex-input {
-    flex: 1;
-    background: transparent !important;
-    border: none !important;
+    width: 50% !important;
+    flex: 0 0 calc(50% - 4px) !important;
+    max-width: calc(50% - 4px) !important;
+    height: 34px !important;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 4px !important;
     color: #ffffff !important;
     font-family: monospace, -apple-system, sans-serif !important;
     font-size: 12px !important;
     font-weight: 600 !important;
-    padding: 2px 4px !important;
-    box-shadow: none !important;
+    padding: 6px 10px !important;
+    box-sizing: border-box !important;
     outline: none !important;
+    transition: border-color 0.15s ease !important;
+}
+
+.wppoppop-color-hex-input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 1px #3b82f6 !important;
 }

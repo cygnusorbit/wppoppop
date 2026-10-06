@@ -226,7 +226,6 @@
                 $('#set-gradient-wrap').hide();
             }
 
-            // Check if canvas is empty before loading logic
             var isEmpty = this.checkScreenEmptyState(sc.id);
 
             var log = sc.logic || {};
@@ -290,7 +289,7 @@
             var self = this;
             var Core = window.WpPopPopBuilder.Core;
 
-            // Simple Color Swatch Input -> Syncs to companion text input
+            // Swatch input -> Syncs directly to companion hex text input
             $(document).on('input change', '.wppoppop-color-swatch-input', function() {
                 var targetSelector = $(this).data('target');
                 var hexVal = $(this).val();
@@ -299,10 +298,16 @@
                 }
             });
 
-            // Hex Text Input -> Syncs back to color swatch
+            // Hex input -> Syncs directly back to color swatch
             $(document).on('input change', '.wppoppop-color-hex-input', function() {
                 var hexVal = $(this).val().trim();
-                var $swatch = $(this).siblings('.wppoppop-color-swatch-input');
+                var inputId = $(this).attr('id');
+                var $swatch = $('.wppoppop-color-swatch-input[data-target="#' + inputId + '"]');
+
+                if (!$swatch.length) {
+                    $swatch = $(this).closest('.wppoppop-color-picker-row').find('.wppoppop-color-swatch-input');
+                }
+
                 if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(hexVal)) {
                     if (hexVal.length === 4) {
                         hexVal = '#' + hexVal[1] + hexVal[1] + hexVal[2] + hexVal[2] + hexVal[3] + hexVal[3];
