@@ -2,138 +2,225 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+// Pre-configured Starter Template Catalog
+$templates = [
+    [
+        'id'          => 'flash-sale-coupon',
+        'category'    => 'ecommerce',
+        'cat_label'   => 'E-Commerce',
+        'title'       => 'Flash Sale 20% OFF Coupon',
+        'description' => 'High-converting discount offer featuring headline, coupon tag, email capture, and urgency countdown.',
+        'icon'        => 'dashicons-tag',
+        'bg_preview'  => 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+        'config'      => [
+            'meta'     => ['width' => 640, 'height' => 400, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => ['on_load' => true, 'on_load_delay' => 2, 'on_exit' => true],
+            'elements' => [
+                ['id' => 'el_1', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 40, 'width' => 560, 'height' => 40, 'z_index' => 1, 'content' => 'FLASH SALE: 20% OFF TODAY', 'color' => '#1e293b', 'font_size' => 24, 'font_family' => 'inherit'],
+                ['id' => 'el_2', 'type' => 'countdown', 'screen' => 1, 'left' => 220, 'top' => 100, 'width' => 200, 'height' => 40, 'z_index' => 2, 'content' => 900],
+                ['id' => 'el_3', 'type' => 'input', 'screen' => 1, 'left' => 120, 'top' => 170, 'width' => 400, 'height' => 45, 'z_index' => 3, 'content' => 'Enter your email for instant code...'],
+                ['id' => 'el_4', 'type' => 'button', 'screen' => 1, 'left' => 220, 'top' => 240, 'width' => 200, 'height' => 45, 'z_index' => 4, 'content' => 'CLAIM 20% OFF', 'bg_color' => '#ec4899']
+            ]
+        ]
+    ],
+    [
+        'id'          => 'lucky-prize-wheel',
+        'category'    => 'gamified',
+        'cat_label'   => 'Gamified',
+        'title'       => 'Spin-to-Win Fortune Wheel',
+        'description' => 'Interactive HTML5 spin wheel offering prizes, confetti shower, and dynamic prize coupon token capture.',
+        'icon'        => 'dashicons-update',
+        'bg_preview'  => 'linear-gradient(135deg, #f59e0b, #ef4444)',
+        'config'      => [
+            'meta'     => ['width' => 640, 'height' => 450, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => ['on_load' => true, 'on_load_delay' => 0],
+            'elements' => [
+                ['id' => 'el_w1', 'type' => 'wheel', 'screen' => 1, 'left' => 60, 'top' => 80, 'width' => 240, 'height' => 280, 'z_index' => 1, 'options' => ['10% OFF', 'FREE SHIP', '25% OFF', 'JACKPOT']],
+                ['id' => 'el_w2', 'type' => 'text', 'screen' => 1, 'left' => 320, 'top' => 90, 'width' => 280, 'height' => 60, 'z_index' => 2, 'content' => 'Spin the Lucky Wheel to win exclusive discounts!', 'color' => '#1e293b', 'font_size' => 20],
+                ['id' => 'el_w3', 'type' => 'input', 'screen' => 1, 'left' => 320, 'top' => 170, 'width' => 280, 'height' => 45, 'z_index' => 3, 'content' => 'Enter email to receive prize...'],
+                ['id' => 'el_w4', 'type' => 'button', 'screen' => 1, 'left' => 320, 'top' => 230, 'width' => 280, 'height' => 45, 'z_index' => 4, 'content' => 'CLAIM MY PRIZE', 'bg_color' => '#f59e0b']
+            ]
+        ]
+    ],
+    [
+        'id'          => 'scratch-win-promo',
+        'category'    => 'gamified',
+        'cat_label'   => 'Gamified',
+        'title'       => 'Scratch & Win Mystery Card',
+        'description' => 'Metallic canvas scratch foil hiding a secret discount code with instant audio success chimes.',
+        'icon'        => 'dashicons-tickets-alt',
+        'bg_preview'  => 'linear-gradient(135deg, #64748b, #334155)',
+        'config'      => [
+            'meta'     => ['width' => 640, 'height' => 400, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => ['on_exit' => true],
+            'elements' => [
+                ['id' => 'el_sc1', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 40, 'width' => 560, 'height' => 40, 'z_index' => 1, 'content' => 'Scratch the card to reveal your secret code!', 'color' => '#1e293b', 'font_size' => 20],
+                ['id' => 'el_sc2', 'type' => 'scratch', 'screen' => 1, 'left' => 180, 'top' => 110, 'width' => 280, 'height' => 100, 'z_index' => 2, 'content' => 'MYSTERY50'],
+                ['id' => 'el_sc3', 'type' => 'input', 'screen' => 1, 'left' => 180, 'top' => 230, 'width' => 280, 'height' => 45, 'z_index' => 3, 'content' => 'Your email...'],
+                ['id' => 'el_sc4', 'type' => 'button', 'screen' => 1, 'left' => 180, 'top' => 290, 'width' => 280, 'height' => 45, 'z_index' => 4, 'content' => 'UNLOCK CODE', 'bg_color' => '#2563eb']
+            ]
+        ]
+    ],
+    [
+        'id'          => 'newsletter-minimal',
+        'category'    => 'lead-gen',
+        'cat_label'   => 'Lead Generation',
+        'title'       => 'Clean Newsletter Opt-In',
+        'description' => 'Elegant, distraction-free email opt-in template tailored for blogs, SaaS companies, and content creators.',
+        'icon'        => 'dashicons-email-alt',
+        'bg_preview'  => 'linear-gradient(135deg, #2563eb, #1e40af)',
+        'config'      => [
+            'meta'     => ['width' => 580, 'height' => 360, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => ['on_scroll' => true, 'scroll_val' => 40],
+            'elements' => [
+                ['id' => 'el_nl1', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 40, 'width' => 500, 'height' => 36, 'z_index' => 1, 'content' => 'Stay Ahead with Weekly Insights', 'color' => '#1e293b', 'font_size' => 22],
+                ['id' => 'el_nl2', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 85, 'width' => 500, 'height' => 45, 'z_index' => 2, 'content' => 'Join 25,000+ founders receiving curated growth playbooks every Tuesday.', 'color' => '#64748b', 'font_size' => 14],
+                ['id' => 'el_nl3', 'type' => 'input', 'screen' => 1, 'left' => 60, 'top' => 160, 'width' => 460, 'height' => 45, 'z_index' => 3, 'content' => 'Enter your work email address...'],
+                ['id' => 'el_nl4', 'type' => 'button', 'screen' => 1, 'left' => 180, 'top' => 230, 'width' => 220, 'height' => 45, 'z_index' => 4, 'content' => 'Subscribe Free', 'bg_color' => '#2563eb']
+            ]
+        ]
+    ],
+    [
+        'id'          => 'survey-feedback',
+        'category'    => 'feedback',
+        'cat_label'   => 'Surveys & Feedback',
+        'title'       => '5-Star Feedback & Rating Survey',
+        'description' => 'Collect user satisfaction scores, star ratings, and optional commentary before visitors leave.',
+        'icon'        => 'dashicons-star-filled',
+        'bg_preview'  => 'linear-gradient(135deg, #10b981, #047857)',
+        'config'      => [
+            'meta'     => ['width' => 600, 'height' => 380, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => ['on_exit' => true],
+            'elements' => [
+                ['id' => 'el_fb1', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 30, 'width' => 520, 'height' => 36, 'z_index' => 1, 'content' => 'How would you rate your experience?', 'color' => '#1e293b', 'font_size' => 22],
+                ['id' => 'el_fb2', 'type' => 'rating', 'screen' => 1, 'left' => 210, 'top' => 80, 'width' => 180, 'height' => 40, 'z_index' => 2],
+                ['id' => 'el_fb3', 'type' => 'dropdown', 'screen' => 1, 'left' => 100, 'top' => 140, 'width' => 400, 'height' => 40, 'z_index' => 3, 'options' => ['Very Satisfied', 'Neutral', 'Needs Improvement']],
+                ['id' => 'el_fb4', 'type' => 'input', 'screen' => 1, 'left' => 100, 'top' => 200, 'width' => 400, 'height' => 45, 'z_index' => 4, 'content' => 'Optional: Your email address...'],
+                ['id' => 'el_fb5', 'type' => 'button', 'screen' => 1, 'left' => 200, 'top' => 270, 'width' => 200, 'height' => 45, 'z_index' => 5, 'content' => 'Submit Feedback', 'bg_color' => '#10b981']
+            ]
+        ]
+    ],
+    [
+        'id'          => 'urgency-countdown',
+        'category'    => 'ecommerce',
+        'cat_label'   => 'E-Commerce',
+        'title'       => 'Urgency Countdown Timer Banner',
+        'description' => 'Drive instant purchase decisions with a live 15-minute countdown and single-use checkout code.',
+        'icon'        => 'dashicons-clock',
+        'bg_preview'  => 'linear-gradient(135deg, #1e293b, #0f172a)',
+        'config'      => [
+            'meta'     => ['width' => 640, 'height' => 380, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => ['on_load' => true, 'on_load_delay' => 1],
+            'elements' => [
+                ['id' => 'el_uc1', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 40, 'width' => 560, 'height' => 40, 'z_index' => 1, 'content' => 'Your Exclusive Offer Expires In:', 'color' => '#1e293b', 'font_size' => 22],
+                ['id' => 'el_uc2', 'type' => 'countdown', 'screen' => 1, 'left' => 200, 'top' => 100, 'width' => 240, 'height' => 50, 'z_index' => 2, 'content' => 600],
+                ['id' => 'el_uc3', 'type' => 'text', 'screen' => 1, 'left' => 40, 'top' => 170, 'width' => 560, 'height' => 30, 'z_index' => 3, 'content' => 'Use code RUSH25 at checkout for 25% off all orders.', 'color' => '#475569', 'font_size' => 15],
+                ['id' => 'el_uc4', 'type' => 'button', 'screen' => 1, 'left' => 200, 'top' => 230, 'width' => 240, 'height' => 45, 'z_index' => 4, 'content' => 'Shop Now &rarr;', 'bg_color' => '#0284c7']
+            ]
+        ]
+    ]
+];
 ?>
-<div class="wrap wppoppop-library-wrap">
-    <div class="library-header-bar">
-        <h1>Popups Library</h1>
-        <p class="description">Browse curated high-converting templates. Click any design to preview or import directly into your campaigns.</p>
-    </div>
+<div class="wrap wppoppop-library-wrap" style="max-width:1200px;">
+    <!-- Catalog Header Toolbar & Category Filters -->
+    <?php include WPPOPPOP_PATH . 'templates/library/header.php'; ?>
 
-    <!-- Category Filter Navigation -->
-    <div class="library-filter-bar">
-        <button type="button" class="lib-filter-btn active" data-cat="all">All Templates</button>
-        <button type="button" class="lib-filter-btn" data-cat="leadgen">Lead Generation</button>
-        <button type="button" class="lib-filter-btn" data-cat="ecommerce">E-Commerce & Coupons</button>
-        <button type="button" class="lib-filter-btn" data-cat="gamified">Gamified & Interactive</button>
-        <button type="button" class="lib-filter-btn" data-cat="feedback">Surveys & Feedback</button>
-        <button type="button" class="lib-filter-btn" data-cat="notification">Notification Bars</button>
-    </div>
+    <!-- Responsive Template Cards Grid -->
+    <?php include WPPOPPOP_PATH . 'templates/library/grid.php'; ?>
 
-    <!-- Templates Grid -->
-    <div class="library-grid" id="wppoppop-lib-grid">
-        <!-- Template Card 1 -->
-        <div class="lib-card" data-cat="leadgen" data-template="minimal_newsletter">
-            <div class="lib-card-preview" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
-                <div class="mock-popup" style="background: #ffffff; color: #111;">
-                    <div class="mock-title">Join Newsletter</div>
-                    <div class="mock-input"></div>
-                    <div class="mock-btn" style="background:#2271b1;">Subscribe</div>
-                </div>
-            </div>
-            <div class="lib-card-footer">
-                <div class="lib-card-info">
-                    <h3>Minimalist Newsletter</h3>
-                    <span class="lib-badge">Lead Generation</span>
-                </div>
-                <div class="lib-card-actions">
-                    <button type="button" class="button button-primary btn-import-tpl" data-tpl="minimal_newsletter">Import & Edit</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Template Card 2 -->
-        <div class="lib-card" data-cat="ecommerce" data-template="discount_coupon">
-            <div class="lib-card-preview" style="background: linear-gradient(135deg, #be185d, #831843);">
-                <div class="mock-popup" style="background: #ffffff; color: #111;">
-                    <div class="mock-title" style="color:#d63638;">SAVE 20% NOW</div>
-                    <div class="mock-coupon">SAVE20</div>
-                    <div class="mock-btn" style="background:#00a32a;">Claim Coupon</div>
-                </div>
-            </div>
-            <div class="lib-card-footer">
-                <div class="lib-card-info">
-                    <h3>Flash Sale Coupon</h3>
-                    <span class="lib-badge">E-Commerce</span>
-                </div>
-                <div class="lib-card-actions">
-                    <button type="button" class="button button-primary btn-import-tpl" data-tpl="discount_coupon">Import & Edit</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Template Card 3 -->
-        <div class="lib-card" data-cat="gamified" data-template="spin_wheel">
-            <div class="lib-card-preview" style="background: linear-gradient(135deg, #4338ca, #312e81);">
-                <div class="mock-wheel-circle"></div>
-            </div>
-            <div class="lib-card-footer">
-                <div class="lib-card-info">
-                    <h3>Lucky Prize Wheel</h3>
-                    <span class="lib-badge">Gamified</span>
-                </div>
-                <div class="lib-card-actions">
-                    <button type="button" class="button button-primary btn-import-tpl" data-tpl="spin_wheel">Import & Edit</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Template Card 4 -->
-        <div class="lib-card" data-cat="feedback" data-template="star_review">
-            <div class="lib-card-preview" style="background: linear-gradient(135deg, #065f46, #064e3b);">
-                <div class="mock-popup" style="background: #ffffff; color: #111;">
-                    <div class="mock-title">Rate Experience</div>
-                    <div style="color:#f59e0b; font-size:18px; text-align:center;">★★★★★</div>
-                    <div class="mock-btn" style="background:#2271b1; margin-top:8px;">Send Feedback</div>
-                </div>
-            </div>
-            <div class="lib-card-footer">
-                <div class="lib-card-info">
-                    <h3>5-Star Customer Review</h3>
-                    <span class="lib-badge">Feedback</span>
-                </div>
-                <div class="lib-card-actions">
-                    <button type="button" class="button button-primary btn-import-tpl" data-tpl="star_review">Import & Edit</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Template Card 5 -->
-        <div class="lib-card" data-cat="ecommerce" data-template="calculator_quote">
-            <div class="lib-card-preview" style="background: linear-gradient(135deg, #0369a1, #0c4a6e);">
-                <div class="mock-popup" style="background: #ffffff; color: #111;">
-                    <div class="mock-title">Instant Price Quote</div>
-                    <div style="font-size:11px; text-align:center; color:#059669; font-weight:700;">Formula: Qty x $25</div>
-                    <div class="mock-btn" style="background:#0284c7; margin-top:8px;">Order Now</div>
-                </div>
-            </div>
-            <div class="lib-card-footer">
-                <div class="lib-card-info">
-                    <h3>Dynamic Pricing Estimator</h3>
-                    <span class="lib-badge">Calculators</span>
-                </div>
-                <div class="lib-card-actions">
-                    <button type="button" class="button button-primary btn-import-tpl" data-tpl="calculator_quote">Import & Edit</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Template Card 6 -->
-        <div class="lib-card" data-cat="notification" data-template="cookie_banner">
-            <div class="lib-card-preview" style="background: linear-gradient(135deg, #374151, #1f2937);">
-                <div class="mock-popup" style="background: #ffffff; color: #111; height: 75px;">
-                    <div style="font-size:10px; color:#475569;">We respect your privacy on our platform.</div>
-                    <div class="mock-btn" style="background:#059669; margin-top:6px; height:20px; line-height:20px;">Accept All</div>
-                </div>
-            </div>
-            <div class="lib-card-footer">
-                <div class="lib-card-info">
-                    <h3>GDPR Consent Bar</h3>
-                    <span class="lib-badge">Notifications</span>
-                </div>
-                <div class="lib-card-actions">
-                    <button type="button" class="button button-primary btn-import-tpl" data-tpl="cookie_banner">Import & Edit</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Template Inspection & Preview Modal -->
+    <?php include WPPOPPOP_PATH . 'templates/library/modal-preview.php'; ?>
 </div>
+
+<script>
+(function($) {
+    'use strict';
+    $(document).ready(function() {
+        var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) || '';
+        var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) || ajaxurl;
+        var activeConfigToImport = null;
+
+        // 1. Category Filter Switching
+        $('.wppoppop-cat-btn').on('click', function() {
+            $('.wppoppop-cat-btn').removeClass('active').css({ background: '', color: '', borderColor: '' });
+            $(this).addClass('active').css({ background: '#2563eb', color: '#fff', borderColor: '#1d4ed8' });
+
+            var cat = $(this).data('cat');
+            if (cat === 'all') {
+                $('.wppoppop-tpl-card').show();
+            } else {
+                $('.wppoppop-tpl-card').each(function() {
+                    $(this).toggle($(this).data('category') === cat);
+                });
+            }
+        });
+
+        // 2. Keyword Live Search Filtering
+        $('#wppoppop-lib-search').on('input', function() {
+            var term = $(this).val().toLowerCase();
+            $('.wppoppop-tpl-card').each(function() {
+                var title = $(this).data('title') || '';
+                var desc  = $(this).data('desc') || '';
+                if (title.indexOf(term) !== -1 || desc.indexOf(term) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // 3. Template Inspection & Modal Preview
+        $('.wppoppop-tpl-preview-btn').on('click', function() {
+            var $btn = $(this);
+            $('#wppoppop-lib-modal-title').text($btn.data('title'));
+            $('#wppoppop-lib-modal-desc').text($btn.data('desc'));
+            $('#wppoppop-lib-modal-dims').text($btn.data('width') + ' x ' + $btn.data('height') + ' px');
+            $('#wppoppop-lib-modal-elements').text($btn.data('elements') + ' Layers');
+            activeConfigToImport = $btn.data('config');
+
+            $('#wppoppop-lib-preview-modal').css('display', 'flex');
+        });
+
+        $('#wppoppop-lib-modal-close, #wppoppop-lib-modal-cancel').on('click', function() {
+            $('#wppoppop-lib-preview-modal').hide();
+            activeConfigToImport = null;
+        });
+
+        // 4. Modal Action Import
+        $('#wppoppop-lib-modal-import-action').on('click', function() {
+            if (activeConfigToImport) {
+                executeImport(activeConfigToImport, $('#wppoppop-lib-modal-title').text(), $(this));
+            }
+        });
+
+        // 5. Direct 1-Click Import Trigger from Card
+        $('.wppoppop-tpl-import-btn').on('click', function() {
+            var config = $(this).data('config');
+            var title = $(this).data('title');
+            executeImport(config, title, $(this));
+        });
+
+        function executeImport(configData, title, $btn) {
+            $btn.prop('disabled', true).text('Importing...');
+            var rawJson = typeof configData === 'string' ? configData : JSON.stringify(configData);
+
+            $.post(ajaxUrl, {
+                action: 'wppoppop_import_popup',
+                nonce: nonce,
+                import_data: rawJson
+            }).done(function(res) {
+                if (res.success) {
+                    window.location.href = 'admin.php?page=wppoppop-builder';
+                } else {
+                    alert('Import Error: ' + (res.data ? res.data.message : 'Unable to import template.'));
+                    $btn.prop('disabled', false).text('Import & Edit');
+                }
+            }).fail(function() {
+                alert('Network failure occurred during template import.');
+                $btn.prop('disabled', false).text('Import & Edit');
+            });
+        }
+    });
+})(jQuery);
+</script>
