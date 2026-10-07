@@ -4,65 +4,97 @@
 
     var IO = {
         init: function() {
-            this.bindSave();
+            this.bindEvents();
         },
 
-        bindSave: function() {
-            $('#wppoppop-btn-save').on('click', function() {
+        bindEvents: function() {
+            var self = this;
+
+            $(document).on('click', '#wppoppop-btn-save', function(e) {
+                e.preventDefault();
+                self.save();
+            });
+
+            // Keyboard shortcut: Cmd/Ctrl + S
+            $(document).on('keydown', function(e) {
+                if ((e.metaKey || e.ctrlKey) && (e.key === 's' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    self.save();
+                }
+            });
+
+            // Prevent accidental navigation when changes are unsaved
+            window.addEventListener('beforeunload', function(e) {
                 var Core = window.WpPopPopBuilder.Core;
-                var Settings = window.WpPopPopBuilder.Settings;
-                var $btn = $(this);
+                if (Core && Core.isDirty) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved changes in your popup campaign.';
+                }
+            });
+        },
 
-                $btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="font-size:14px;width:14px;height:14px;animation:spin 1s linear infinite;"></span> Saving...');
+        save: function(successCb, errorCb) {
+            var Core = window.WpPopPopBuilder.Core;
+            var Settings = window.WpPopPopBuilder.Settings;
+            var $btn = $('#wppoppop-btn-save');
+            var originalHtml = $btn.html();
 
-                var title = $('#wppoppop-builder-title').val().trim() || 'Untitled Popup Campaign';
-                var currentSettings = Settings.getSettings();
+            $btn.prop('disabled', true).html('<span class="dashicons dashicons-update dashicons-spin" style="margin-right:4px;"></span> Saving...');
 
-                var payloadConfig = {
-                    elements: Core.elements,
-                    screens: Core.screens,
-                    settings: currentSettings,
-                    triggers: currentSettings.triggers,
-                    custom_css: currentSettings.customCss,
-                    custom_js: currentSettings.customJs,
-                    box: {
-                        width: currentSettings.width,
-                        height: currentSettings.height,
-                        bg_mode: currentSettings.bgMode,
-                        bg_color: currentSettings.bgColor
-                    }
-                };
+            var settingsData = (Settings && typeof Settings.getSettings === 'function') ? Settings.getSettings() : {};
+            var title = $('#wppoppop-builder-title').val() || 'Untitled Popup Campaign';
 
-                var uid = (window.wppoppop_vars && window.wppoppop_vars.current_uid) || '';
-                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) || '';
-                var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) || '';
+            var payload = {
+                screens: Core.screens || [{ id: 1, name: 'Screen 1', width: 640, height: 400 }],
+                elements: Core.elements || [],
+                settings: settingsData
+            };
 
-                $.post(ajaxUrl, {
-                    action: 'wppoppop_save_popup',
-                    nonce: nonce,
-                    uid: uid,
-                    title: title,
-                    data: JSON.stringify(payloadConfig)
-                }).done(function(res) {
-                    if (res.success) {
+            var postData = {
+                action: 'wppoppop_save_popup',
+                nonce: (window.wppoppop_vars && (window.wppoppop_vars.builder_nonce || window.wppoppop_vars.nonce)) || '',
+                uid: Core.uid || (window.wppoppop_vars && window.wppoppop_vars.uid) || '',
+                title: title,
+                data: JSON.stringify(payload)
+            };
+
+            $.ajax({
+                url: (window.wppoppop_vars && window.wppoppop_vars.ajax_url) || ajaxurl,
+                type: 'POST',
+                data: postData,
+                dataType: 'json',
+                success: function(res) {
+                    $btn.prop('disabled', false).html(originalHtml);
+                    if (res && res.success) {
                         Core.isDirty = false;
-                        $btn.html('<span class="dashicons dashicons-yes" style="font-size:14px;width:14px;height:14px;"></span> Saved!');
-                        if (res.data && res.data.uid) {
-                            window.wppoppop_vars.current_uid = res.data.uid;
-                            var currentUrl = new URL(window.location.href);
-                            currentUrl.searchParams.set('uid', res.data.uid);
-                            window.history.replaceState({ path: currentUrl.toString() }, '', currentUrl.toString());
+                        var savedUid = (res.data && res.data.uid) ? res.data.uid : Core.uid;
+                        if (savedUid) {
+                            Core.uid = savedUid;
+                            if (window.wppoppop_vars) window.wppoppop_vars.uid = savedUid;
+                            var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + encodeURIComponent(savedUid);
+                            window.history.replaceState({ path: newUrl }, '', newUrl);
+                        }
+
+                        if (typeof successCb === 'function') {
+                            successCb(savedUid);
                         }
                     } else {
-                        alert(res.data && res.data.message ? res.data.message : 'Save error');
+                        var msg = (res && res.data && res.data.message) ? res.data.message : 'Save operation failed.';
+                        if (typeof errorCb === 'function') {
+                            errorCb(msg);
+                        } else {
+                            alert('Error: ' + msg);
+                        }
                     }
-                }).fail(function() {
-                    alert('Network communication error with server.');
-                }).always(function() {
-                    setTimeout(function() {
-                        $btn.prop('disabled', false).html('<span class="dashicons dashicons-saved" style="font-size:14px;width:14px;height:14px;"></span> Save Popup');
-                    }, 1400);
-                });
+                },
+                error: function(xhr, status, error) {
+                    $btn.prop('disabled', false).html(originalHtml);
+                    if (typeof errorCb === 'function') {
+                        errorCb(error);
+                    } else {
+                        alert('AJAX Communication Failed: ' + error);
+                    }
+                }
             });
         }
     };

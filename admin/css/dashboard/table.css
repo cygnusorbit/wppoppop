@@ -68,12 +68,13 @@
     font-size: 12px;
 }
 
-/* Table Design */
+/* Table Design & Column Sizing (Referring to WordPress Pages Table edit.php?post_type=page) */
 .wppoppop-campaigns-table {
     border: 1px solid #c3c4c7 !important;
     box-shadow: 0 1px 1px rgba(0,0,0,0.04) !important;
     background: #ffffff !important;
     width: 100% !important;
+    table-layout: fixed !important;
 }
 
 .wppoppop-campaigns-table thead th,
@@ -88,6 +89,56 @@
     font-size: 13px;
     vertical-align: top;
     padding: 8px 10px;
+}
+
+/* Checkbox Column */
+.wppoppop-campaigns-table .check-column,
+.wppoppop-campaigns-table .col-cb {
+    width: 38px !important;
+    max-width: 38px !important;
+    padding: 8px 10px;
+    vertical-align: middle;
+}
+
+/* Primary Column: Campaign Title claims all remaining fluid space like WordPress Pages Table */
+.wppoppop-campaigns-table .column-title,
+.wppoppop-campaigns-table .col-title {
+    width: auto !important;
+    min-width: 280px !important;
+}
+
+.wppoppop-campaigns-table .column-shortcode,
+.wppoppop-campaigns-table .col-shortcode {
+    width: 150px !important;
+}
+
+.wppoppop-campaigns-table .column-status,
+.wppoppop-campaigns-table .col-status {
+    width: 95px !important;
+}
+
+.wppoppop-campaigns-table .column-impressions,
+.wppoppop-campaigns-table .col-impressions {
+    width: 80px !important;
+    text-align: right;
+}
+
+.wppoppop-campaigns-table .column-submissions,
+.wppoppop-campaigns-table .col-submissions {
+    width: 80px !important;
+    text-align: right;
+}
+
+.wppoppop-campaigns-table .column-cr,
+.wppoppop-campaigns-table .col-cr {
+    width: 75px !important;
+    text-align: right;
+}
+
+.wppoppop-campaigns-table .column-actions,
+.wppoppop-campaigns-table .col-actions {
+    width: 180px !important;
+    text-align: right;
 }
 
 .wppoppop-campaigns-table .column-title strong a.row-title {

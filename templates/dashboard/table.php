@@ -112,41 +112,41 @@ if (!empty($popups)) {
         </div>
     </div>
 
-    <!-- Native WordPress List Table -->
-    <table class="wp-list-table widefat fixed striped table-view-list posts wppoppop-campaigns-table" id="wppoppop-dashboard-table">
+    <!-- Native WordPress List Table (Refer to WordPress Pages Table layout) -->
+    <table class="wp-list-table widefat fixed striped table-view-list pages posts wppoppop-campaigns-table" id="wppoppop-dashboard-table">
         <thead>
             <tr>
-                <td id="cb" class="manage-column column-cb check-column col-cb">
+                <td id="cb" class="manage-column column-cb check-column col-cb" style="width:38px;">
                     <label class="screen-reader-text" for="cb-select-all">Select All</label>
                     <input id="cb-select-all" type="checkbox">
                 </td>
-                <th scope="col" class="manage-column column-title column-primary sortable asc wppoppop-sortable-th col-title" data-sort="title">
+                <th scope="col" id="title" class="manage-column column-title column-primary sortable asc wppoppop-sortable-th col-title" data-sort="title" style="width:auto;">
                     <a href="#">
                         <span>Campaign Title</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-shortcode col-shortcode" style="width:190px;">Shortcode</th>
-                <th scope="col" class="manage-column column-status col-status" style="width:110px;">Status</th>
-                <th scope="col" class="manage-column column-impressions sortable desc wppoppop-sortable-th col-impressions num" data-sort="impressions" style="width:100px;text-align:right;">
+                <th scope="col" class="manage-column column-shortcode col-shortcode" style="width:150px;">Shortcode</th>
+                <th scope="col" class="manage-column column-status col-status" style="width:95px;">Status</th>
+                <th scope="col" class="manage-column column-impressions sortable desc wppoppop-sortable-th col-impressions num" data-sort="impressions" style="width:80px;text-align:right;">
                     <a href="#">
                         <span>Views</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-submissions sortable desc wppoppop-sortable-th col-submissions num" data-sort="submissions" style="width:100px;text-align:right;">
+                <th scope="col" class="manage-column column-submissions sortable desc wppoppop-sortable-th col-submissions num" data-sort="submissions" style="width:80px;text-align:right;">
                     <a href="#">
                         <span>Leads</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-cr sortable desc wppoppop-sortable-th col-cr num" data-sort="cr" style="width:90px;text-align:right;">
+                <th scope="col" class="manage-column column-cr sortable desc wppoppop-sortable-th col-cr num" data-sort="cr" style="width:75px;text-align:right;">
                     <a href="#">
                         <span>CR %</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-actions col-actions" style="width:210px;text-align:right;">Actions</th>
+                <th scope="col" class="manage-column column-actions col-actions" style="width:180px;text-align:right;">Actions</th>
             </tr>
         </thead>
         <tbody id="wppoppop-table-tbody">
@@ -164,13 +164,13 @@ if (!empty($popups)) {
                     data-impressions="<?php echo esc_attr((int)$p->impressions); ?>"
                     data-submissions="<?php echo esc_attr((int)$p->submissions); ?>"
                     data-cr="<?php echo esc_attr($cr); ?>">
-                    <th scope="row" class="check-column col-cb">
+                    <th scope="row" class="check-column col-cb" style="width:38px;">
                         <label class="screen-reader-text" for="cb-select-<?php echo esc_attr($p->uid); ?>">Select <?php echo esc_html($p->title); ?></label>
                         <input id="cb-select-<?php echo esc_attr($p->uid); ?>" type="checkbox" class="wppoppop-row-checkbox" value="<?php echo esc_attr($p->uid); ?>">
                     </th>
-                    <td class="column-title column-primary col-title page-title">
+                    <td class="column-title column-primary col-title page-title has-row-actions">
                         <strong>
-                            <a class="row-title" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>">
+                            <a class="row-title" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" style="color:#2271b1;text-decoration:none;font-weight:600;">
                                 <?php echo esc_html($p->title); ?>
                             </a>
                             <span class="post-state wppoppop-post-state" style="<?php echo $is_draft ? '' : 'display:none;'; ?>"> — Draft</span>
@@ -183,26 +183,26 @@ if (!empty($popups)) {
                             <span class="trash"><a href="#" class="submitdelete wppoppop-delete-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Delete</a></span>
                         </div>
                     </td>
-                    <td class="column-shortcode col-shortcode">
+                    <td class="column-shortcode col-shortcode" style="width:150px;">
                         <code class="wppoppop-shortcode-chip" data-copy="[wppoppop uid=&quot;<?php echo esc_attr($p->uid); ?>&quot;]" title="Click to copy shortcode">
                             [wppoppop uid="<?php echo esc_html(substr($p->uid, 0, 8)); ?>..."]
                         </code>
                     </td>
-                    <td class="column-status col-status">
+                    <td class="column-status col-status" style="width:95px;">
                         <span class="wppoppop-status-badge <?php echo ($p->status === 'publish') ? 'badge-active' : 'badge-inactive'; ?>">
                             <?php echo esc_html(ucfirst($p->status)); ?>
                         </span>
                     </td>
-                    <td class="column-impressions col-impressions num" style="text-align:right;">
+                    <td class="column-impressions col-impressions num" style="width:80px;text-align:right;">
                         <?php echo number_format_i18n($p->impressions); ?>
                     </td>
-                    <td class="column-submissions col-submissions num" style="text-align:right;">
+                    <td class="column-submissions col-submissions num" style="width:80px;text-align:right;">
                         <?php echo number_format_i18n($p->submissions); ?>
                     </td>
-                    <td class="column-cr col-cr num" style="text-align:right;font-weight:600;color:<?php echo ($cr > 0) ? '#007017' : '#646970'; ?>;">
+                    <td class="column-cr col-cr num" style="width:75px;text-align:right;font-weight:600;color:<?php echo ($cr > 0) ? '#007017' : '#646970'; ?>;">
                         <?php echo esc_html($cr); ?>%
                     </td>
-                    <td class="column-actions col-actions" style="text-align:right;">
+                    <td class="column-actions col-actions" style="width:180px;text-align:right;">
                         <div class="wppoppop-row-action-buttons">
                             <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" class="button button-small" title="Edit Popup">Edit</a>
                             <button type="button" class="button button-small wppoppop-embed-btn" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr($p->title); ?>" title="Get Embed Code">Embed</button>
@@ -223,37 +223,37 @@ if (!empty($popups)) {
         </tbody>
         <tfoot>
             <tr>
-                <td class="manage-column column-cb check-column col-cb">
+                <td class="manage-column column-cb check-column col-cb" style="width:38px;">
                     <label class="screen-reader-text" for="cb-select-all-2">Select All</label>
                     <input id="cb-select-all-2" type="checkbox">
                 </td>
-                <th scope="col" class="manage-column column-title column-primary sortable asc wppoppop-sortable-th col-title" data-sort="title">
+                <th scope="col" class="manage-column column-title column-primary sortable asc wppoppop-sortable-th col-title" data-sort="title" style="width:auto;">
                     <a href="#">
                         <span>Campaign Title</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-shortcode col-shortcode">Shortcode</th>
-                <th scope="col" class="manage-column column-status col-status">Status</th>
-                <th scope="col" class="manage-column column-impressions sortable desc wppoppop-sortable-th col-impressions num" data-sort="impressions" style="text-align:right;">
+                <th scope="col" class="manage-column column-shortcode col-shortcode" style="width:150px;">Shortcode</th>
+                <th scope="col" class="manage-column column-status col-status" style="width:95px;">Status</th>
+                <th scope="col" class="manage-column column-impressions sortable desc wppoppop-sortable-th col-impressions num" data-sort="impressions" style="width:80px;text-align:right;">
                     <a href="#">
                         <span>Views</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-submissions sortable desc wppoppop-sortable-th col-submissions num" data-sort="submissions" style="text-align:right;">
+                <th scope="col" class="manage-column column-submissions sortable desc wppoppop-sortable-th col-submissions num" data-sort="submissions" style="width:80px;text-align:right;">
                     <a href="#">
                         <span>Leads</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-cr sortable desc wppoppop-sortable-th col-cr num" data-sort="cr" style="text-align:right;">
+                <th scope="col" class="manage-column column-cr sortable desc wppoppop-sortable-th col-cr num" data-sort="cr" style="width:75px;text-align:right;">
                     <a href="#">
                         <span>CR %</span>
                         <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
                     </a>
                 </th>
-                <th scope="col" class="manage-column column-actions col-actions" style="text-align:right;">Actions</th>
+                <th scope="col" class="manage-column column-actions col-actions" style="width:180px;text-align:right;">Actions</th>
             </tr>
         </tfoot>
     </table>

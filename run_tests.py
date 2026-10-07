@@ -418,3 +418,70 @@ if failures > 0:
 else:
     print(f"\n{GREEN}{BOLD}All WpPopPop system verification tests passed successfully!{RESET}\n")
     sys.exit(0)
+
+
+def test_suite_6_live_preview():
+    print("\n" + "=" * 60)
+    print("SUITE 6: Live Preview & Homepage Interceptor Integrity Test")
+    print("=" * 60)
+    failures = []
+
+    # 1. Check Admin Assets localization for home_url
+    admin_assets_file = os.path.join(BASE_DIR, "includes", "admin", "class-admin-assets.php")
+    if os.path.exists(admin_assets_file):
+        with open(admin_assets_file, "r", encoding="utf-8") as f:
+            admin_src = f.read()
+        if "'home_url'" not in admin_src and '"home_url"' not in admin_src:
+            failures.append("class-admin-assets.php missing home_url localization in wppoppop_vars")
+        else:
+            print("  [PASS] Admin Assets localizes home_url for builder redirect")
+    else:
+        failures.append("Missing includes/admin/class-admin-assets.php")
+
+    # 2. Check Builder Modals launchLivePreview & IO.save integration
+    builder_modals_file = os.path.join(BASE_DIR, "admin", "js", "builder", "builder-modals.js")
+    if os.path.exists(builder_modals_file):
+        with open(builder_modals_file, "r", encoding="utf-8") as f:
+            modal_src = f.read()
+        if "launchLivePreview" not in modal_src or "wppoppop_preview" not in modal_src:
+            failures.append("builder-modals.js missing launchLivePreview or wppoppop_preview redirect")
+        else:
+            print("  [PASS] builder-modals.js implements launchLivePreview() with auto-save & redirect")
+    else:
+        failures.append("Missing admin/js/builder/builder-modals.js")
+
+    # 3. Check Front Renderer preview query interception and studio dock
+    front_renderer_file = os.path.join(BASE_DIR, "includes", "front", "class-front-renderer.php")
+    if os.path.exists(front_renderer_file):
+        with open(front_renderer_file, "r", encoding="utf-8") as f:
+            renderer_src = f.read()
+        if "wppoppop_preview" not in renderer_src:
+            failures.append("class-front-renderer.php does not intercept wppoppop_preview query parameter")
+        elif "wppoppop-live-preview-dock" not in renderer_src:
+            failures.append("class-front-renderer.php missing #wppoppop-live-preview-dock interactive toolbar")
+        elif "manage_options" not in renderer_src:
+            failures.append("class-front-renderer.php missing admin capability check (manage_options)")
+        else:
+            print("  [PASS] class-front-renderer.php intercepts wppoppop_preview with admin auth & studio dock")
+    else:
+        failures.append("Missing includes/front/class-front-renderer.php")
+
+    # 4. Check Front Assets enqueue on preview
+    front_assets_file = os.path.join(BASE_DIR, "includes", "front", "class-front-assets.php")
+    if os.path.exists(front_assets_file):
+        with open(front_assets_file, "r", encoding="utf-8") as f:
+            front_assets_src = f.read()
+        if "wppoppop_preview" not in front_assets_src or "is_preview" not in front_assets_src:
+            failures.append("class-front-assets.php does not localize is_preview or guard preview enqueues")
+        else:
+            print("  [PASS] class-front-assets.php enqueues runtime assets on wppoppop_preview")
+    else:
+        failures.append("Missing includes/front/class-front-assets.php")
+
+    if failures:
+        for fail in failures:
+            print(f"  [FAIL] {fail}")
+        return False
+
+    print("  --> ALL LIVE PREVIEW INTEGRITY CHECKS PASSED!")
+    return True
