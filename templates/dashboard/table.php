@@ -9,9 +9,73 @@ if (!class_exists('WP_List_Table')) {
 require_once WPPOPPOP_PATH . 'includes/admin/class-wppoppop-list-table.php';
 
 $list_table = new WpPopPop_List_Table();
-$list_table->prepare_items(isset($popups) ? $popups : null);
+$list_table->prepare_items();
 ?>
 <div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
+    <?php if (!empty($_GET['trashed'])) : 
+        $trashed_count = intval($_GET['trashed']);
+        $trashed_uid   = !empty($_GET['trashed_uid']) ? sanitize_text_field($_GET['trashed_uid']) : '';
+        $undo_url      = '';
+        if ($trashed_count === 1 && $trashed_uid) {
+            $undo_url = wp_nonce_url(
+                admin_url('admin.php?page=wppoppop&action=untrash&uid=' . rawurlencode($trashed_uid)),
+                'wppoppop_untrash_' . $trashed_uid
+            );
+        }
+    ?>
+        <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
+            <p>
+                <?php 
+                printf(
+                    _n('%d campaign moved to the Trash.', '%d campaigns moved to the Trash.', $trashed_count, 'wppoppop'),
+                    number_format_i18n($trashed_count)
+                ); 
+                if ($undo_url) : ?>
+                    <a href="<?php echo esc_url($undo_url); ?>"><?php esc_html_e('Undo', 'wppoppop'); ?></a>
+                <?php endif; ?>
+            </p>
+        </div>
+    <?php elseif (!empty($_GET['untrashed'])) : 
+        $untrashed_count = intval($_GET['untrashed']);
+    ?>
+        <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
+            <p>
+                <?php 
+                printf(
+                    _n('%d campaign restored from the Trash.', '%d campaigns restored from the Trash.', $untrashed_count, 'wppoppop'),
+                    number_format_i18n($untrashed_count)
+                ); 
+                ?>
+            </p>
+        </div>
+    <?php elseif (!empty($_GET['deleted'])) : 
+        $deleted_count = intval($_GET['deleted']);
+    ?>
+        <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
+            <p>
+                <?php 
+                printf(
+                    _n('%d campaign permanently deleted.', '%d campaigns permanently deleted.', $deleted_count, 'wppoppop'),
+                    number_format_i18n($deleted_count)
+                ); 
+                ?>
+            </p>
+        </div>
+    <?php elseif (!empty($_GET['updated'])) : 
+        $updated_count = intval($_GET['updated']);
+    ?>
+        <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
+            <p>
+                <?php 
+                printf(
+                    _n('%d campaign status updated.', '%d campaigns status updated.', $updated_count, 'wppoppop'),
+                    number_format_i18n($updated_count)
+                ); 
+                ?>
+            </p>
+        </div>
+    <?php endif; ?>
+
     <?php wp_nonce_field('wppoppop_admin_nonce', 'wppoppop_admin_nonce_field'); ?>
     <script>
         window.wppoppop_vars = window.wppoppop_vars || {};
@@ -21,6 +85,10 @@ $list_table->prepare_items(isset($popups) ? $popups : null);
 
     <form id="wppoppop-campaigns-table-form" method="get">
         <input type="hidden" name="page" value="wppoppop" />
+        <?php if (!empty($_GET['status'])) : ?>
+            <input type="hidden" name="status" value="<?php echo esc_attr(sanitize_key($_GET['status'])); ?>" />
+        <?php endif; ?>
+        <?php wp_nonce_field('bulk-popups'); ?>
         <?php
         $list_table->views();
         $list_table->search_box(__('Search Campaigns', 'wppoppop'), 'wppoppop-search-input');
@@ -28,7 +96,7 @@ $list_table->prepare_items(isset($popups) ? $popups : null);
         ?>
     </form>
 
-    <!-- WordPress Standard Quick Edit Template (Aligned to 7 Core Columns) -->
+    <!-- WordPress Standard Quick Edit Template -->
     <table style="display:none;">
         <tbody id="wppoppop-quick-edit-template-root">
             <tr id="wppoppop-inline-edit" class="inline-edit-row inline-edit-row-post quick-edit-row quick-edit-row-post">

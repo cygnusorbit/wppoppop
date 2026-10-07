@@ -4,41 +4,41 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="wppoppop-settings-section">
-    <h3>General & Mailing Settings</h3>
+    <h3><?php esc_html_e('General & Mailing Settings', 'wppoppop'); ?></h3>
     <table class="form-table">
         <tr>
-            <th scope="row"><label for="sender_name">Sender Name</label></th>
+            <th scope="row"><label for="sender_name"><?php esc_html_e('Sender Name', 'wppoppop'); ?></label></th>
             <td>
-                <input type="text" name="sender_name" id="sender_name" class="regular-text" value="<?php echo esc_attr($settings['sender_name'] ?? 'WpPopPop'); ?>">
-                <p class="description">Default display name used in automated subscriber autoresponder emails.</p>
+                <input type="text" name="wppoppop_settings[sender_name]" id="sender_name" class="regular-text" value="<?php echo esc_attr($settings['sender_name'] ?? 'WpPopPop'); ?>">
+                <p class="description"><?php esc_html_e('Default display name used in automated subscriber autoresponder emails.', 'wppoppop'); ?></p>
             </td>
         </tr>
         <tr>
-            <th scope="row"><label for="sender_email">Sender Email</label></th>
+            <th scope="row"><label for="sender_email"><?php esc_html_e('Sender Email', 'wppoppop'); ?></label></th>
             <td>
-                <input type="email" name="sender_email" id="sender_email" class="regular-text" value="<?php echo esc_attr($settings['sender_email'] ?? get_option('admin_email')); ?>">
-                <p class="description">Email address from which notifications and confirmation links originate.</p>
+                <input type="email" name="wppoppop_settings[sender_email]" id="sender_email" class="regular-text" value="<?php echo esc_attr($settings['sender_email'] ?? get_option('admin_email')); ?>">
+                <p class="description"><?php esc_html_e('Email address from which notifications and confirmation links originate.', 'wppoppop'); ?></p>
             </td>
         </tr>
         <tr>
-            <th scope="row"><label for="csv_separator">CSV Delimiter</label></th>
+            <th scope="row"><label for="csv_separator"><?php esc_html_e('CSV Delimiter', 'wppoppop'); ?></label></th>
             <td>
-                <select name="csv_separator" id="csv_separator">
-                    <option value="," <?php selected($settings['csv_separator'] ?? ',', ','); ?>>Comma (,)</option>
-                    <option value=";" <?php selected($settings['csv_separator'] ?? ',', ';'); ?>>Semicolon (;)</option>
-                    <option value="tab" <?php selected($settings['csv_separator'] ?? ',', 'tab'); ?>>Tab</option>
+                <select name="wppoppop_settings[csv_separator]" id="csv_separator">
+                    <option value="," <?php selected($settings['csv_separator'] ?? ',', ','); ?>><?php esc_html_e('Comma (,)', 'wppoppop'); ?></option>
+                    <option value=";" <?php selected($settings['csv_separator'] ?? ',', ';'); ?>><?php esc_html_e('Semicolon (;)', 'wppoppop'); ?></option>
+                    <option value="tab" <?php selected($settings['csv_separator'] ?? ',', 'tab'); ?>><?php esc_html_e('Tab', 'wppoppop'); ?></option>
                 </select>
-                <p class="description">Column delimiter for exported leads CSV spreadsheets.</p>
+                <p class="description"><?php esc_html_e('Column delimiter for exported leads CSV spreadsheets.', 'wppoppop'); ?></p>
             </td>
         </tr>
         <tr>
-            <th scope="row"><label for="user_uploads">File Uploads Storage</label></th>
+            <th scope="row"><label for="user_uploads"><?php esc_html_e('File Uploads Storage', 'wppoppop'); ?></label></th>
             <td>
-                <select name="user_uploads" id="user_uploads">
-                    <option value="keep" <?php selected($settings['user_uploads'] ?? 'keep', 'keep'); ?>>Retain Uploads Permanently</option>
-                    <option value="delete" <?php selected($settings['user_uploads'] ?? 'keep', 'delete'); ?>>Purge When Lead Record is Deleted</option>
+                <select name="wppoppop_settings[user_uploads]" id="user_uploads">
+                    <option value="keep" <?php selected($settings['user_uploads'] ?? 'keep', 'keep'); ?>><?php esc_html_e('Retain Uploads Permanently', 'wppoppop'); ?></option>
+                    <option value="delete" <?php selected($settings['user_uploads'] ?? 'keep', 'delete'); ?>><?php esc_html_e('Purge When Lead Record is Deleted', 'wppoppop'); ?></option>
                 </select>
-                <p class="description">Lifecycle policy for files submitted through form upload layers.</p>
+                <p class="description"><?php esc_html_e('Lifecycle policy for files submitted through form upload layers.', 'wppoppop'); ?></p>
             </td>
         </tr>
     </table>
