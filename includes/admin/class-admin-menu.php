@@ -5,14 +5,16 @@ if (!defined('ABSPATH')) {
 
 class WpPopPop_Admin_Menu {
     protected $pages;
+    protected $dashboard_hook = '';
 
     public function __construct(WpPopPop_Admin_Pages $pages) {
         $this->pages = $pages;
         add_action('admin_menu', [$this, 'register_menus']);
+        add_filter('set-screen-option', [$this, 'set_screen_option'], 10, 3);
     }
 
     public function register_menus() {
-        add_menu_page(
+        $this->dashboard_hook = add_menu_page(
             'WpPopPop',
             'WpPopPop',
             'manage_options',
@@ -33,5 +35,24 @@ class WpPopPop_Admin_Menu {
         add_submenu_page('wppoppop', 'Popups Library', 'Popups Library', 'manage_options', 'wppoppop-library', [$this->pages, 'render_library']);
         add_submenu_page('wppoppop', 'Settings', 'Settings', 'manage_options', 'wppoppop-settings', [$this->pages, 'render_settings']);
         add_submenu_page('wppoppop', 'Tools & Export', 'Tools & Export', 'manage_options', 'wppoppop-tools', [$this->pages, 'render_tools']);
+
+        if (!empty($this->dashboard_hook)) {
+            add_action("load-{$this->dashboard_hook}", [$this, 'load_dashboard_screen_options']);
+        }
+    }
+
+    public function load_dashboard_screen_options() {
+        add_screen_option('per_page', [
+            'label'   => __('Campaigns per page', 'wppoppop'),
+            'default' => 25,
+            'option'  => 'wppoppop_campaigns_per_page',
+        ]);
+    }
+
+    public function set_screen_option($status, $option, $value) {
+        if ('wppoppop_campaigns_per_page' === $option) {
+            return (int) $value;
+        }
+        return $status;
     }
 }
