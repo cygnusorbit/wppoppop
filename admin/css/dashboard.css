@@ -24,3 +24,20 @@
     border-radius: 4px;
     font-size: 12px;
 }
+
+/* Quick Edit Inline Styles */
+.wppoppop-inline-edit-active td {
+    padding: 14px 16px !important;
+    background: #f8fafc;
+    border-top: 1px solid #cbd5e1 !important;
+    border-bottom: 2px solid #0284c7 !important;
+}
+
+@keyframes wppoppopPulseUpdate {
+    0% { background-color: #fef08a; }
+    100% { background-color: transparent; }
+}
+
+.wppoppop-row-updated {
+    animation: wppoppopPulseUpdate 1.5s ease-out;
+}

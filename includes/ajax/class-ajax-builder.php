@@ -9,6 +9,7 @@ class WpPopPop_Ajax_Builder {
         add_action('wp_ajax_wppoppop_load_popup', [$this, 'load_popup']);
         add_action('wp_ajax_wppoppop_duplicate_popup', [$this, 'duplicate_popup']);
         add_action('wp_ajax_wppoppop_delete_popup', [$this, 'delete_popup']);
+        add_action('wp_ajax_wppoppop_quick_edit', [$this, 'quick_edit']);
         add_action('wp_ajax_wppoppop_bulk_delete', [$this, 'bulk_delete']);
         add_action('wp_ajax_wppoppop_bulk_status', [$this, 'bulk_status']);
         add_action('wp_ajax_wppoppop_bulk_duplicate', [$this, 'bulk_duplicate']);
@@ -27,7 +28,15 @@ class WpPopPop_Ajax_Builder {
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized action.']);
         }
-        $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
+        $nonce = '';
+        if (!empty($_REQUEST['nonce'])) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST['nonce']));
+        } elseif (!empty($_REQUEST['_ajax_nonce'])) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST['_ajax_nonce']));
+        } elseif (!empty($_REQUEST['_wpnonce'])) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST['_wpnonce']));
+        }
+
         if (!wp_verify_nonce($nonce, 'wppoppop_builder_nonce') && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
             wp_send_json_error(['message' => 'Security check failed. Please refresh the page.']);
         }
@@ -101,19 +110,79 @@ class WpPopPop_Ajax_Builder {
     public function delete_popup() {
         $this->verify_security();
         global $wpdb;
-        $uid = isset($_POST['uid']) ? sanitize_key($_POST['uid']) : '';
+        $uid = isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '';
+        if (empty($uid) && isset($_GET['uid'])) {
+            $uid = sanitize_text_field(wp_unslash($_GET['uid']));
+        }
+
         if (empty($uid)) {
             wp_send_json_error(['message' => 'Missing campaign identifier.']);
         }
 
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $deleted = $wpdb->delete($table_name, ['uid' => $uid], ['%s']);
+        $deleted = $wpdb->delete($table_name, ['uid' => $uid]);
 
         if ($deleted === false) {
-            wp_send_json_error(['message' => 'Database error while removing popup.']);
+            wp_send_json_error(['message' => 'Database error while removing popup: ' . $wpdb->last_error]);
         }
 
         wp_send_json_success(['message' => 'Popup campaign deleted successfully.', 'uid' => $uid]);
+    }
+
+    public function quick_edit() {
+        $this->verify_security();
+        global $wpdb;
+        $uid    = isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '';
+        $title  = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
+        $status = isset($_POST['status']) && in_array($_POST['status'], ['publish', 'draft'], true) ? sanitize_key($_POST['status']) : 'publish';
+
+        if (empty($uid)) {
+            wp_send_json_error(['message' => 'Missing campaign UID.']);
+        }
+
+        if (empty($title)) {
+            wp_send_json_error(['message' => 'Title cannot be blank.']);
+        }
+
+        $table_name = $wpdb->prefix . 'wppoppop_items';
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name} WHERE uid = %s", $uid), ARRAY_A);
+        if (!$row) {
+            wp_send_json_error(['message' => 'Campaign not found.']);
+        }
+
+        // Synchronize title inside JSON configuration data if valid
+        $data = $row['data'];
+        $decoded = json_decode($data, true);
+        if (is_array($decoded)) {
+            if (!isset($decoded['meta'])) {
+                $decoded['meta'] = [];
+            }
+            $decoded['meta']['title'] = $title;
+            $data = wp_json_encode($decoded);
+        }
+
+        $updated = $wpdb->update(
+            $table_name,
+            [
+                'title'  => $title,
+                'status' => $status,
+                'data'   => $data,
+            ],
+            ['uid' => $uid],
+            ['%s', '%s', '%s'],
+            ['%s']
+        );
+
+        if ($updated === false) {
+            wp_send_json_error(['message' => 'Failed to update campaign in database.']);
+        }
+
+        wp_send_json_success([
+            'message' => 'Campaign updated successfully.',
+            'uid'     => $uid,
+            'title'   => $title,
+            'status'  => $status,
+        ]);
     }
 
     public function bulk_delete() {
@@ -125,7 +194,7 @@ class WpPopPop_Ajax_Builder {
 
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $sanitized_uids = array_map('sanitize_key', $uids);
+        $sanitized_uids = array_map('sanitize_text_field', array_map('wp_unslash', $uids));
         $placeholders = implode(',', array_fill(0, count($sanitized_uids), '%s'));
 
         $deleted = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE uid IN ($placeholders)", $sanitized_uids));
@@ -147,7 +216,7 @@ class WpPopPop_Ajax_Builder {
 
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $sanitized_uids = array_map('sanitize_key', $uids);
+        $sanitized_uids = array_map('sanitize_text_field', array_map('wp_unslash', $uids));
         $placeholders = implode(',', array_fill(0, count($sanitized_uids), '%s'));
 
         $query = $wpdb->prepare("UPDATE {$table_name} SET status = %s WHERE uid IN ($placeholders)", array_merge([$status], $sanitized_uids));
@@ -169,7 +238,7 @@ class WpPopPop_Ajax_Builder {
 
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $sanitized_uids = array_map('sanitize_key', $uids);
+        $sanitized_uids = array_map('sanitize_text_field', array_map('wp_unslash', $uids));
         $placeholders = implode(',', array_fill(0, count($sanitized_uids), '%s'));
 
         $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_name} WHERE uid IN ($placeholders)", $sanitized_uids), ARRAY_A);
@@ -211,7 +280,7 @@ class WpPopPop_Ajax_Builder {
 
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $sanitized_uids = array_map('sanitize_key', $uids);
+        $sanitized_uids = array_map('sanitize_text_field', array_map('wp_unslash', $uids));
         $placeholders = implode(',', array_fill(0, count($sanitized_uids), '%s'));
 
         $items = $wpdb->get_results($wpdb->prepare("SELECT uid, title, data, status FROM {$table_name} WHERE uid IN ($placeholders)", $sanitized_uids), ARRAY_A);

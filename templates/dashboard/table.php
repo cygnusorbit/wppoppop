@@ -42,7 +42,7 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <!-- Campaigns List Table (Action Column Removed, Row Actions Kept Under Title) -->
+    <!-- Campaigns List Table (Actions Column Removed, Row Actions Kept Under Title) -->
     <table class="wp-list-table widefat fixed striped posts wppoppop-campaigns-table" id="wppoppop-dashboard-table" style="border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;box-shadow:none;">
         <thead>
             <tr style="background:#f8fafc;">
@@ -74,6 +74,7 @@ if (!defined('ABSPATH')) {
                         </strong>
                         <div class="row-actions" style="margin-top:4px;font-size:12px;">
                             <span class="edit"><a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>">Edit</a> | </span>
+                            <span class="inline hide-if-no-js"><button type="button" class="button-link editinline wppoppop-quick-edit-btn" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr($p->title); ?>" data-status="<?php echo esc_attr($p->status); ?>">Quick&nbsp;Edit</button> | </span>
                             <span class="embed"><a href="#" class="wppoppop-embed-btn" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr($p->title); ?>">Get Embed Code</a> | </span>
                             <span class="duplicate"><a href="#" class="wppoppop-duplicate-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Duplicate</a> | </span>
                             <span class="export"><a href="#" class="wppoppop-export-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Export JSON</a> | </span>
@@ -125,6 +126,52 @@ if (!defined('ABSPATH')) {
                 <th class="col-cr" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
             </tr>
         </tfoot>
+    </table>
+
+    <!-- Hidden Native WordPress Inline Edit Row Template -->
+    <table style="display:none;">
+        <tbody>
+            <tr id="wppoppop-inline-edit-template" class="inline-edit-row quick-edit-row" style="display:none;">
+                <td colspan="7" class="colspanchange" style="padding:16px 14px;background:#f8fafc;">
+                    <div class="inline-edit-wrapper" style="display:flex;flex-wrap:wrap;gap:20px;">
+                        <fieldset class="inline-edit-col-left" style="flex:1;min-width:240px;border:none;margin:0;padding:0;">
+                            <legend class="inline-edit-legend" style="font-weight:700;font-size:13px;color:#1e293b;margin-bottom:8px;text-transform:uppercase;">Quick Edit</legend>
+                            <div class="inline-edit-col">
+                                <label style="display:block;margin-bottom:8px;">
+                                    <span class="title" style="display:inline-block;width:90px;font-weight:600;font-size:12px;color:#475569;">Title</span>
+                                    <span class="input-text-wrap" style="display:inline-block;width:calc(100% - 100px);">
+                                        <input type="text" class="ptitle wppoppop-qe-title" value="" style="width:100%;height:32px;border:1px solid #cbd5e1;border-radius:4px;padding:0 8px;font-size:13px;">
+                                    </span>
+                                </label>
+                                <label style="display:block;margin-bottom:8px;">
+                                    <span class="title" style="display:inline-block;width:90px;font-weight:600;font-size:12px;color:#475569;">UID</span>
+                                    <span class="input-text-wrap" style="display:inline-block;width:calc(100% - 100px);">
+                                        <input type="text" class="wppoppop-qe-uid" value="" readonly style="width:100%;height:32px;border:1px solid #e2e8f0;background:#f1f5f9;color:#64748b;border-radius:4px;padding:0 8px;font-size:12px;">
+                                    </span>
+                                </label>
+                            </div>
+                        </fieldset>
+                        <fieldset class="inline-edit-col-right" style="flex:1;min-width:240px;border:none;margin:0;padding:0;">
+                            <div class="inline-edit-col" style="margin-top:22px;">
+                                <label style="display:block;margin-bottom:8px;">
+                                    <span class="title" style="display:inline-block;width:90px;font-weight:600;font-size:12px;color:#475569;">Status</span>
+                                    <select class="wppoppop-qe-status" style="width:160px;height:32px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px;">
+                                        <option value="publish">Published</option>
+                                        <option value="draft">Draft</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </fieldset>
+                        <div class="inline-edit-save" style="width:100%;display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid #e2e8f0;margin-top:4px;">
+                            <button type="button" class="button cancel wppoppop-qe-cancel">Cancel</button>
+                            <button type="button" class="button button-primary save wppoppop-qe-save">Update</button>
+                            <span class="spinner" style="float:none;margin:0;"></span>
+                            <span class="error" style="display:none;color:#b91c1c;font-size:12px;margin-left:8px;"></span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
     </table>
 
     <!-- Pagination & Summary Footer -->

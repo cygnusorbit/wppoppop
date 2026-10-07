@@ -16,7 +16,7 @@ class WpPopPop_Admin_Assets {
         $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
         $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
 
-        // Shared general config
+        // Shared general configuration
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),
             'nonce'       => wp_create_nonce('wppoppop_admin_nonce'),
@@ -44,6 +44,7 @@ class WpPopPop_Admin_Assets {
 
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
             wp_localize_script('wppoppop-dashboard-actions-js', 'wppoppop_vars', $shared_payload);
+            wp_localize_script('wppoppop-dashboard-table-js', 'wppoppop_vars', $shared_payload);
         }
 
         // 2. Visual Builder Assets

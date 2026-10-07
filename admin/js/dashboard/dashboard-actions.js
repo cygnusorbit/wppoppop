@@ -14,12 +14,12 @@
         },
 
         bindDuplicate: function() {
-            $(document).on('click', '.wppoppop-duplicate-btn', function(e) {
+            $(document).off('click', '.wppoppop-duplicate-btn').on('click', '.wppoppop-duplicate-btn', function(e) {
                 e.preventDefault();
                 var uid = $(this).attr('data-uid');
                 if (!uid) return;
 
-                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (window.ajaxurl || '/wp-admin/admin-ajax.php');
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
                 $.ajax({
@@ -46,20 +46,35 @@
         },
 
         bindDelete: function() {
-            $(document).on('click', '.wppoppop-delete-btn', function(e) {
+            $(document).off('click', '.wppoppop-delete-btn').on('click', '.wppoppop-delete-btn', function(e) {
                 e.preventDefault();
-                var uid = $(this).attr('data-uid');
-                if (!uid || !window.confirm('Are you sure you want to permanently delete this popup campaign?')) {
+                e.stopPropagation();
+
+                var $btn =$(this);
+                var uid = $btn.attr('data-uid');
+                if (!uid) {
+                    var $row =$btn.closest('tr.wppoppop-table-row');
+                    uid = $row.attr('data-uid');
+                }
+
+                if (!uid) {
+                    alert('Error: Could not identify popup UID.');
                     return;
                 }
 
-                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
+                if (!window.confirm('Are you sure you want to permanently delete this popup campaign?')) {
+                    return;
+                }
+
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (window.ajaxurl || '/wp-admin/admin-ajax.php');
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                var $targetRow =$(this).closest('tr.wppoppop-table-row');
+                var $targetRow =$btn.closest('tr.wppoppop-table-row');
                 if (!$targetRow.length) {
                     $targetRow =$('#wppoppop-table-tbody .wppoppop-table-row[data-uid="' + uid + '"]');
                 }
+
+                $btn.css('opacity', '0.5');
 
                 $.ajax({
                     url: ajaxUrl,
@@ -73,28 +88,40 @@
                     success: function(res) {
                         if (res && res.success) {
                             $targetRow.fadeOut(300, function() {$(this).remove();
-                                if (window.WpPopPopDashboardTable) {
+                                if (window.WpPopPopDashboardTable && typeof window.WpPopPopDashboardTable.reindex === 'function') {
                                     window.WpPopPopDashboardTable.reindex();
                                 }
                             });
                         } else {
-                            alert((res.data && res.data.message) ? res.data.message : 'Failed to delete popup.');
+                            $btn.css('opacity', '1');
+                            var msg = (res && res.data && res.data.message) ? res.data.message : 'Failed to delete popup.';
+                            alert(msg);
                         }
                     },
                     error: function(xhr, status, error) {
-                        alert('Communication error while deleting popup: ' + (error || status));
+                        $btn.css('opacity', '1');
+                        var errMsg = 'Communication error while deleting popup: ' + (error || status);
+                        if (xhr.responseText) {
+                            try {
+                                var parsed = JSON.parse(xhr.responseText);
+                                if (parsed && parsed.data && parsed.data.message) {
+                                    errMsg = parsed.data.message;
+                                }
+                            } catch(err) {}
+                        }
+                        alert(errMsg);
                     }
                 });
             });
         },
 
         bindExport: function() {
-            $(document).on('click', '.wppoppop-export-btn', function(e) {
+            $(document).off('click', '.wppoppop-export-btn').on('click', '.wppoppop-export-btn', function(e) {
                 e.preventDefault();
                 var uid = $(this).attr('data-uid');
                 if (!uid) return;
 
-                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (window.ajaxurl || '/wp-admin/admin-ajax.php');
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
                 $.ajax({
@@ -122,7 +149,7 @@
         },
 
         bindCopyShortcode: function() {
-            $(document).on('click', '.wppoppop-shortcode-chip', function() {
+            $(document).off('click', '.wppoppop-shortcode-chip').on('click', '.wppoppop-shortcode-chip', function() {
                 var copyText = $(this).attr('data-copy');
                 var $elem =$(this);
                 var origText = $elem.text();
@@ -138,4 +165,10 @@
             });
         }
     };
+
+    $(document).ready(function() {
+        if (window.WpPopPopDashboardActions) {
+            window.WpPopPopDashboardActions.init();
+        }
+    });
 })(jQuery);
