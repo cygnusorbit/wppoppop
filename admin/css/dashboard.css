@@ -1,14 +1,26 @@
-/* ==========================================================================
-   WpPopPop Dashboard Styles: Aggregator
-   ========================================================================== */
-
-@import url("dashboard/kpi.css");
-@import url("dashboard/table.css");
-@import url("dashboard/actions-menu.css");
-@import url("dashboard/modals.css");
-
+/**
+ * WpPopPop Dashboard Styles
+ */
 .wppoppop-dashboard-wrap {
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.wppoppop-table-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.wppoppop-campaigns-table tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+.wppoppop-page-btn, .wppoppop-page-num-btn {
+    min-width: 32px;
+    height: 32px;
+    line-height: 30px;
+    padding: 0 8px;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 12px;
 }

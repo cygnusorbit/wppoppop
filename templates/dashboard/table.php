@@ -2,337 +2,142 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
-$all_count     = !empty($popups) ? count($popups) : 0;
-$pub_count     = 0;
-$draft_count   = 0;
-$high_cr_count = 0;
-
-if (!empty($popups)) {
-    foreach ($popups as $p) {
-        if ($p->status === 'publish') {
-            $pub_count++;
-        } else {
-            $draft_count++;
-        }
-        $cr_val = ($p->impressions > 0) ? round(($p->submissions / $p->impressions) * 100, 1) : 0;
-        if ($cr_val >= 10.0) {
-            $high_cr_count++;
-        }
-    }
-}
 ?>
-<div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
-    <!-- WordPress Standard Subsubsub Filter Views -->
-    <ul class="subsubsub" style="margin-bottom:8px;">
-        <li class="all">
-            <a href="#" class="wppoppop-status-pill current" data-status="all">
-                All <span class="count">(<span class="wppoppop-count-all"><?php echo $all_count; ?></span>)</span>
-            </a> |
-        </li>
-        <li class="publish">
-            <a href="#" class="wppoppop-status-pill" data-status="publish">
-                Published <span class="count">(<span class="wppoppop-count-publish"><?php echo $pub_count; ?></span>)</span>
-            </a> |
-        </li>
-        <li class="draft">
-            <a href="#" class="wppoppop-status-pill" data-status="draft">
-                Drafts <span class="count">(<span class="wppoppop-count-draft"><?php echo $draft_count; ?></span>)</span>
-            </a> |
-        </li>
-        <li class="high-cr">
-            <a href="#" class="wppoppop-status-pill" data-status="high-cr">
-                High Converting (&ge;10%) <span class="count">(<span class="wppoppop-count-high-cr"><?php echo $high_cr_count; ?></span>)</span>
-            </a>
-        </li>
-    </ul>
+<div class="wppoppop-table-container" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-top:20px;">
+    <!-- Table Controls Bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <!-- Left Controls: Search & Bulk Actions -->
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div style="position:relative;">
+                <span class="dashicons dashicons-search" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:16px;width:16px;height:16px;"></span>
+                <input type="search" id="wppoppop-search-input" placeholder="Search campaigns by name or UID..." style="padding-left:28px;height:34px;border-radius:6px;border:1px solid #cbd5e1;min-width:260px;font-size:13px;">
+            </div>
 
-    <!-- WordPress Standard Search Box -->
-    <p class="search-box">
-        <label class="screen-reader-text" for="wppoppop-search-input">Search Campaigns:</label>
-        <input type="search" id="wppoppop-search-input" placeholder="Search campaigns..." style="height:30px;">
-    </p>
-
-    <!-- Top Tablenav Bar -->
-    <div class="tablenav top" style="clear:both;">
-        <div class="alignleft actions bulkactions">
-            <label for="wppoppop-bulk-action-selector-top" class="screen-reader-text">Select bulk action</label>
-            <select name="action" id="wppoppop-bulk-action-selector-top" class="wppoppop-bulk-action-selector">
-                <option value="">Bulk Actions</option>
-                <option value="publish">Set Status: Published</option>
-                <option value="draft">Set Status: Draft</option>
-                <option value="duplicate">Duplicate Selected</option>
-                <option value="export">Export Selected (JSON)</option>
-                <option value="delete">Delete Selected</option>
-            </select>
-            <button type="button" class="button action wppoppop-bulk-action-apply" disabled>Apply</button>
-            <span class="wppoppop-selected-count-badge" style="display:none;font-size:11px;font-weight:600;padding:2px 8px;background:#f0f0f1;color:#50575e;border-radius:10px;margin-left:4px;">0 selected</span>
-        </div>
-
-        <div class="alignleft actions">
-            <label for="wppoppop-per-page-select" style="font-size:12px;color:#646970;margin-right:2px;">Per Page:</label>
-            <select id="wppoppop-per-page-select" style="height:30px;font-size:12px;">
-                <option value="10">10</option>
-                <option value="25" selected>25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="all">All</option>
-            </select>
-
-            <!-- Column Visibility Toggle Dropdown -->
-            <div class="wppoppop-column-toggle-wrapper" style="display:inline-block;position:relative;margin-left:6px;">
-                <button type="button" class="button wppoppop-column-toggle-btn" style="height:30px;line-height:28px;">
-                    <span class="dashicons dashicons-columns" style="font-size:16px;width:16px;height:16px;vertical-align:text-bottom;"></span>
-                    <span>Columns</span>
-                    <span class="dashicons dashicons-arrow-down-alt2" style="font-size:12px;width:12px;height:12px;vertical-align:middle;"></span>
-                </button>
-                <div class="wppoppop-column-dropdown" style="display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#ffffff;border:1px solid #c3c4c7;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,0.1);padding:10px 14px;min-width:180px;z-index:1000;text-align:left;">
-                    <div style="font-size:11px;font-weight:700;color:#646970;text-transform:uppercase;margin-bottom:6px;border-bottom:1px solid #f0f0f1;padding-bottom:4px;">Visible Columns</div>
-                    <label style="display:block;font-size:12px;color:#2c3338;padding:3px 0;cursor:pointer;"><input type="checkbox" class="wppoppop-col-toggle-cb" data-col="col-shortcode" checked> Shortcode</label>
-                    <label style="display:block;font-size:12px;color:#2c3338;padding:3px 0;cursor:pointer;"><input type="checkbox" class="wppoppop-col-toggle-cb" data-col="col-status" checked> Status</label>
-                    <label style="display:block;font-size:12px;color:#2c3338;padding:3px 0;cursor:pointer;"><input type="checkbox" class="wppoppop-col-toggle-cb" data-col="col-impressions" checked> Views</label>
-                    <label style="display:block;font-size:12px;color:#2c3338;padding:3px 0;cursor:pointer;"><input type="checkbox" class="wppoppop-col-toggle-cb" data-col="col-submissions" checked> Leads</label>
-                    <label style="display:block;font-size:12px;color:#2c3338;padding:3px 0;cursor:pointer;"><input type="checkbox" class="wppoppop-col-toggle-cb" data-col="col-cr" checked> Conversion Rate</label>
-                    <label style="display:block;font-size:12px;color:#2c3338;padding:3px 0;cursor:pointer;"><input type="checkbox" class="wppoppop-col-toggle-cb" data-col="col-actions" checked> Actions</label>
-                </div>
+            <div class="wppoppop-bulk-actions-wrap" style="display:flex;align-items:center;gap:6px;">
+                <select id="wppoppop-bulk-action-selector" style="height:34px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px;">
+                    <option value="">Bulk Actions</option>
+                    <option value="publish">Set Status: Published</option>
+                    <option value="draft">Set Status: Draft</option>
+                    <option value="duplicate">Duplicate Selected</option>
+                    <option value="export">Export Selected (JSON)</option>
+                    <option value="delete">Delete Selected</option>
+                </select>
+                <button type="button" id="wppoppop-bulk-action-apply" class="button" disabled style="height:34px;line-height:32px;">Apply</button>
+                <span id="wppoppop-selected-count-badge" style="display:none;font-size:11px;font-weight:600;padding:3px 8px;background:#f1f5f9;color:#475569;border-radius:12px;">0 selected</span>
             </div>
         </div>
 
-        <div class="tablenav-pages">
-            <span class="displaying-num"><span class="wppoppop-total-items-text">0</span> items</span>
-            <span class="pagination-links">
-                <button type="button" class="first-page button wppoppop-btn-first" title="First Page">&laquo;</button>
-                <button type="button" class="prev-page button wppoppop-btn-prev" title="Previous Page">&lsaquo;</button>
-                <span class="paging-input">
-                    <span class="wppoppop-current-page-text">1</span> of <span class="total-pages wppoppop-total-pages-text">1</span>
-                </span>
-                <button type="button" class="next-page button wppoppop-btn-next" title="Next Page">&rsaquo;</button>
-                <button type="button" class="last-page button wppoppop-btn-last" title="Last Page">&raquo;</button>
-            </span>
+        <!-- Right Controls: Items Per Page Selector (Column Toggle Removed) -->
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+                <label for="wppoppop-per-page-select" style="font-size:12px;color:#64748b;font-weight:500;">Per Page:</label>
+                <select id="wppoppop-per-page-select" style="height:34px;border-radius:6px;border:1px solid #cbd5e1;font-size:12px;">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="all">All</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- Native WordPress List Table (Refer to WordPress Pages Table layout) -->
-    <table class="wp-list-table widefat fixed striped table-view-list pages posts wppoppop-campaigns-table" id="wppoppop-dashboard-table">
+    <!-- Campaigns List Table (Action Column Removed, Row Actions Kept Under Title) -->
+    <table class="wp-list-table widefat fixed striped posts wppoppop-campaigns-table" id="wppoppop-dashboard-table" style="border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;box-shadow:none;">
         <thead>
-            <tr>
-                <td id="cb" class="manage-column column-cb check-column col-cb" style="width:38px;">
-                    <label class="screen-reader-text" for="cb-select-all">Select All</label>
-                    <input id="cb-select-all" type="checkbox">
+            <tr style="background:#f8fafc;">
+                <td id="cb" class="manage-column column-cb check-column col-cb" style="width:38px;padding:10px 12px;">
+                    <input id="cb-select-all" type="checkbox" title="Select All">
                 </td>
-                <th scope="col" id="title" class="manage-column column-title column-primary sortable asc wppoppop-sortable-th col-title" data-sort="title" style="width:auto;">
-                    <a href="#">
-                        <span>Campaign Title</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-shortcode col-shortcode" style="width:150px;">Shortcode</th>
-                <th scope="col" class="manage-column column-status col-status" style="width:95px;">Status</th>
-                <th scope="col" class="manage-column column-impressions sortable desc wppoppop-sortable-th col-impressions num" data-sort="impressions" style="width:80px;text-align:right;">
-                    <a href="#">
-                        <span>Views</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-submissions sortable desc wppoppop-sortable-th col-submissions num" data-sort="submissions" style="width:80px;text-align:right;">
-                    <a href="#">
-                        <span>Leads</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-cr sortable desc wppoppop-sortable-th col-cr num" data-sort="cr" style="width:75px;text-align:right;">
-                    <a href="#">
-                        <span>CR %</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-actions col-actions" style="width:180px;text-align:right;">Actions</th>
+                <th class="col-title" style="font-weight:600;padding:10px 14px;color:#334155;">Campaign Title</th>
+                <th class="col-shortcode" style="font-weight:600;width:220px;padding:10px 14px;color:#334155;">Shortcode</th>
+                <th class="col-status" style="font-weight:600;width:110px;padding:10px 14px;color:#334155;">Status</th>
+                <th class="col-impressions" style="font-weight:600;width:110px;text-align:right;padding:10px 14px;color:#334155;">Views</th>
+                <th class="col-submissions" style="font-weight:600;width:110px;text-align:right;padding:10px 14px;color:#334155;">Leads</th>
+                <th class="col-cr" style="font-weight:600;width:100px;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
             </tr>
         </thead>
         <tbody id="wppoppop-table-tbody">
             <?php if (!empty($popups)) : ?>
                 <?php foreach ($popups as $p) :
                     $cr = ($p->impressions > 0) ? round(($p->submissions / $p->impressions) * 100, 1) : 0;
-                    $is_draft = ($p->status !== 'publish');
                 ?>
-                <tr class="wppoppop-table-row <?php echo $is_draft ? 'status-draft' : 'status-publish'; ?>" 
-                    id="wppoppop-row-<?php echo esc_attr($p->uid); ?>"
-                    data-uid="<?php echo esc_attr($p->uid); ?>" 
-                    data-title="<?php echo esc_attr(strtolower($p->title)); ?>"
-                    data-raw-title="<?php echo esc_attr($p->title); ?>"
-                    data-status="<?php echo esc_attr($p->status); ?>"
-                    data-impressions="<?php echo esc_attr((int)$p->impressions); ?>"
-                    data-submissions="<?php echo esc_attr((int)$p->submissions); ?>"
-                    data-cr="<?php echo esc_attr($cr); ?>">
-                    <th scope="row" class="check-column col-cb" style="width:38px;">
-                        <label class="screen-reader-text" for="cb-select-<?php echo esc_attr($p->uid); ?>">Select <?php echo esc_html($p->title); ?></label>
-                        <input id="cb-select-<?php echo esc_attr($p->uid); ?>" type="checkbox" class="wppoppop-row-checkbox" value="<?php echo esc_attr($p->uid); ?>">
+                <tr class="wppoppop-table-row" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr(strtolower($p->title)); ?>">
+                    <th scope="row" class="check-column col-cb" style="padding:12px;">
+                        <input type="checkbox" class="wppoppop-row-checkbox" value="<?php echo esc_attr($p->uid); ?>">
                     </th>
-                    <td class="column-title column-primary col-title page-title has-row-actions">
+                    <td class="col-title" style="padding:12px 14px;">
                         <strong>
-                            <a class="row-title" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" style="color:#2271b1;text-decoration:none;font-weight:600;">
+                            <a class="row-title" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" style="color:#0f172a;text-decoration:none;font-weight:600;">
                                 <?php echo esc_html($p->title); ?>
                             </a>
-                            <span class="post-state wppoppop-post-state" style="<?php echo $is_draft ? '' : 'display:none;'; ?>"> — Draft</span>
                         </strong>
-                        <div class="row-actions">
+                        <div class="row-actions" style="margin-top:4px;font-size:12px;">
                             <span class="edit"><a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>">Edit</a> | </span>
-                            <span class="inline hide-if-no-js"><button type="button" class="button-link editinline wppoppop-quick-edit-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Quick&nbsp;Edit</button> | </span>
+                            <span class="embed"><a href="#" class="wppoppop-embed-btn" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr($p->title); ?>">Get Embed Code</a> | </span>
                             <span class="duplicate"><a href="#" class="wppoppop-duplicate-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Duplicate</a> | </span>
                             <span class="export"><a href="#" class="wppoppop-export-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Export JSON</a> | </span>
-                            <span class="trash"><a href="#" class="submitdelete wppoppop-delete-btn" data-uid="<?php echo esc_attr($p->uid); ?>">Delete</a></span>
+                            <span class="trash"><a href="#" class="wppoppop-delete-btn" data-uid="<?php echo esc_attr($p->uid); ?>" style="color:#b91c1c;">Delete</a></span>
                         </div>
                     </td>
-                    <td class="column-shortcode col-shortcode" style="width:150px;">
-                        <code class="wppoppop-shortcode-chip" data-copy="[wppoppop uid=&quot;<?php echo esc_attr($p->uid); ?>&quot;]" title="Click to copy shortcode">
+                    <td class="col-shortcode" style="padding:12px 14px;">
+                        <code class="wppoppop-shortcode-chip" data-copy="[wppoppop uid=&quot;<?php echo esc_attr($p->uid); ?>&quot;]" title="Click to copy shortcode" style="cursor:pointer;background:#f1f5f9;padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;font-size:11px;display:inline-block;">
                             [wppoppop uid="<?php echo esc_html(substr($p->uid, 0, 8)); ?>..."]
                         </code>
                     </td>
-                    <td class="column-status col-status" style="width:95px;">
-                        <span class="wppoppop-status-badge <?php echo ($p->status === 'publish') ? 'badge-active' : 'badge-inactive'; ?>">
+                    <td class="col-status" style="padding:12px 14px;">
+                        <span class="wppoppop-badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:<?php echo ($p->status === 'publish') ? '#dcfce7;color:#15803d;' : '#f1f5f9;color:#64748b;'; ?>">
                             <?php echo esc_html(ucfirst($p->status)); ?>
                         </span>
                     </td>
-                    <td class="column-impressions col-impressions num" style="width:80px;text-align:right;">
+                    <td class="col-impressions" style="text-align:right;font-weight:500;padding:12px 14px;color:#334155;">
                         <?php echo number_format_i18n($p->impressions); ?>
                     </td>
-                    <td class="column-submissions col-submissions num" style="width:80px;text-align:right;">
+                    <td class="col-submissions" style="text-align:right;font-weight:500;padding:12px 14px;color:#334155;">
                         <?php echo number_format_i18n($p->submissions); ?>
                     </td>
-                    <td class="column-cr col-cr num" style="width:75px;text-align:right;font-weight:600;color:<?php echo ($cr > 0) ? '#007017' : '#646970'; ?>;">
+                    <td class="col-cr" style="text-align:right;font-weight:600;padding:12px 14px;color:<?php echo ($cr > 0) ? '#059669;' : '#64748b;'; ?>">
                         <?php echo esc_html($cr); ?>%
-                    </td>
-                    <td class="column-actions col-actions" style="width:180px;text-align:right;">
-                        <div class="wppoppop-row-action-buttons">
-                            <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" class="button button-small" title="Edit Popup">Edit</a>
-                            <button type="button" class="button button-small wppoppop-embed-btn" data-uid="<?php echo esc_attr($p->uid); ?>" data-title="<?php echo esc_attr($p->title); ?>" title="Get Embed Code">Embed</button>
-                            <button type="button" class="button button-small wppoppop-duplicate-btn" data-uid="<?php echo esc_attr($p->uid); ?>" title="Duplicate Campaign">Copy</button>
-                            <button type="button" class="button button-small wppoppop-export-btn" data-uid="<?php echo esc_attr($p->uid); ?>" title="Export JSON">Export</button>
-                            <button type="button" class="button button-small wppoppop-delete-btn" data-uid="<?php echo esc_attr($p->uid); ?>" style="color:#b32d2e;" title="Delete Campaign">&times;</button>
-                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             <?php else : ?>
-                <tr class="no-items">
-                    <td colspan="8" class="colspanchange" style="text-align:center;padding:32px 10px;">
-                        No popup campaigns found. Click <strong>Create Popup</strong> above to launch your first campaign.
+                <tr class="wppoppop-no-items-row">
+                    <td colspan="7" style="text-align:center;padding:48px 20px;color:#64748b;">
+                        <span class="dashicons dashicons-format-aside" style="font-size:36px;width:36px;height:36px;color:#94a3b8;margin-bottom:10px;"></span>
+                        <h3 style="margin:0 0 8px 0;font-size:16px;color:#1e293b;">No popups created yet</h3>
+                        <p style="margin:0 0 16px 0;font-size:13px;">Create your first high-converting popup campaign to start capturing leads.</p>
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder')); ?>" class="button button-primary">Create Your First Popup</a>
                     </td>
                 </tr>
             <?php endif; ?>
         </tbody>
         <tfoot>
-            <tr>
-                <td class="manage-column column-cb check-column col-cb" style="width:38px;">
-                    <label class="screen-reader-text" for="cb-select-all-2">Select All</label>
-                    <input id="cb-select-all-2" type="checkbox">
+            <tr style="background:#f8fafc;">
+                <td class="manage-column column-cb check-column col-cb" style="width:38px;padding:10px 12px;">
+                    <input id="cb-select-all-2" type="checkbox" title="Select All">
                 </td>
-                <th scope="col" class="manage-column column-title column-primary sortable asc wppoppop-sortable-th col-title" data-sort="title" style="width:auto;">
-                    <a href="#">
-                        <span>Campaign Title</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-shortcode col-shortcode" style="width:150px;">Shortcode</th>
-                <th scope="col" class="manage-column column-status col-status" style="width:95px;">Status</th>
-                <th scope="col" class="manage-column column-impressions sortable desc wppoppop-sortable-th col-impressions num" data-sort="impressions" style="width:80px;text-align:right;">
-                    <a href="#">
-                        <span>Views</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-submissions sortable desc wppoppop-sortable-th col-submissions num" data-sort="submissions" style="width:80px;text-align:right;">
-                    <a href="#">
-                        <span>Leads</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-cr sortable desc wppoppop-sortable-th col-cr num" data-sort="cr" style="width:75px;text-align:right;">
-                    <a href="#">
-                        <span>CR %</span>
-                        <span class="sorting-indicators"><span class="sorting-indicator asc" aria-hidden="true"></span><span class="sorting-indicator desc" aria-hidden="true"></span></span>
-                    </a>
-                </th>
-                <th scope="col" class="manage-column column-actions col-actions" style="width:180px;text-align:right;">Actions</th>
+                <th class="col-title" style="font-weight:600;padding:10px 14px;color:#334155;">Campaign Title</th>
+                <th class="col-shortcode" style="font-weight:600;padding:10px 14px;color:#334155;">Shortcode</th>
+                <th class="col-status" style="font-weight:600;padding:10px 14px;color:#334155;">Status</th>
+                <th class="col-impressions" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">Views</th>
+                <th class="col-submissions" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">Leads</th>
+                <th class="col-cr" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
             </tr>
         </tfoot>
     </table>
 
-    <!-- Bottom Tablenav Bar -->
-    <div class="tablenav bottom">
-        <div class="alignleft actions bulkactions">
-            <label for="wppoppop-bulk-action-selector-bottom" class="screen-reader-text">Select bulk action</label>
-            <select name="action2" id="wppoppop-bulk-action-selector-bottom" class="wppoppop-bulk-action-selector">
-                <option value="">Bulk Actions</option>
-                <option value="publish">Set Status: Published</option>
-                <option value="draft">Set Status: Draft</option>
-                <option value="duplicate">Duplicate Selected</option>
-                <option value="export">Export Selected (JSON)</option>
-                <option value="delete">Delete Selected</option>
-            </select>
-            <button type="button" class="button action wppoppop-bulk-action-apply" disabled>Apply</button>
+    <!-- Pagination & Summary Footer -->
+    <div class="wppoppop-pagination-wrap" id="wppoppop-pagination-bar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:16px 4px 4px;margin-top:10px;border-top:1px solid #f1f5f9;">
+        <div class="wppoppop-pagination-info" style="font-size:13px;color:#64748b;">
+            Showing <span id="wppoppop-page-start" style="font-weight:600;color:#1e293b;">0</span> to <span id="wppoppop-page-end" style="font-weight:600;color:#1e293b;">0</span> of <span id="wppoppop-total-items" style="font-weight:600;color:#1e293b;">0</span> campaigns
         </div>
-
-        <div class="tablenav-pages">
-            <span class="displaying-num"><span class="wppoppop-total-items-text">0</span> items</span>
-            <span class="pagination-links">
-                <button type="button" class="first-page button wppoppop-btn-first" title="First Page">&laquo;</button>
-                <button type="button" class="prev-page button wppoppop-btn-prev" title="Previous Page">&lsaquo;</button>
-                <span class="paging-input">
-                    <span class="wppoppop-current-page-text">1</span> of <span class="total-pages wppoppop-total-pages-text">1</span>
-                </span>
-                <button type="button" class="next-page button wppoppop-btn-next" title="Next Page">&rsaquo;</button>
-                <button type="button" class="last-page button wppoppop-btn-last" title="Last Page">&raquo;</button>
-            </span>
+        <div class="wppoppop-pagination-nav" style="display:flex;align-items:center;gap:4px;">
+            <button type="button" class="button wppoppop-page-btn" id="wppoppop-btn-first" title="First Page">&laquo;</button>
+            <button type="button" class="button wppoppop-page-btn" id="wppoppop-btn-prev" title="Previous Page">&lsaquo;</button>
+            <div id="wppoppop-page-numbers" style="display:flex;align-items:center;gap:4px;"></div>
+            <button type="button" class="button wppoppop-page-btn" id="wppoppop-btn-next" title="Next Page">&rsaquo;</button>
+            <button type="button" class="button wppoppop-page-btn" id="wppoppop-btn-last" title="Last Page">&raquo;</button>
         </div>
     </div>
-
-    <!-- WordPress Standard Quick Edit Template -->
-    <table style="display:none;">
-        <tbody id="wppoppop-quick-edit-template-root">
-            <tr id="wppoppop-inline-edit" class="inline-edit-row inline-edit-row-post quick-edit-row quick-edit-row-post">
-                <td colspan="8" class="colspanchange">
-                    <fieldset class="inline-edit-col-left">
-                        <legend class="inline-edit-legend">Quick Edit</legend>
-                        <div class="inline-edit-col">
-                            <label>
-                                <span class="title">Title</span>
-                                <span class="input-text-wrap">
-                                    <input type="text" name="popup_title" class="ptitle wppoppop-qe-input-title" value="">
-                                </span>
-                            </label>
-                            <label>
-                                <span class="title">UID</span>
-                                <span class="input-text-wrap">
-                                    <input type="text" name="popup_uid" class="puid wppoppop-qe-input-uid" value="" readonly style="background:#f0f0f1;color:#646970;font-family:monospace;">
-                                </span>
-                            </label>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="inline-edit-col-right">
-                        <legend class="inline-edit-legend">Status</legend>
-                        <div class="inline-edit-col">
-                            <label class="inline-edit-status">
-                                <span class="title">Status</span>
-                                <select name="popup_status" class="wppoppop-qe-input-status">
-                                    <option value="publish">Published</option>
-                                    <option value="draft">Draft</option>
-                                </select>
-                            </label>
-                        </div>
-                    </fieldset>
-
-                    <div class="submit inline-edit-save">
-                        <button type="button" class="button cancel alignleft wppoppop-qe-btn-cancel">Cancel</button>
-                        <button type="button" class="button button-primary save alignright wppoppop-qe-btn-save">Update</button>
-                        <span class="spinner wppoppop-qe-spinner alignright" style="float:right;margin-top:4px;"></span>
-                        <div class="notice notice-error notice-alt wppoppop-qe-error-notice" style="display:none;clear:both;margin-top:8px;">
-                            <p class="wppoppop-qe-error-message" style="margin:0;"></p>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </div>
