@@ -7,7 +7,7 @@
 
     window.WpPopPopDashboardTable = {
         currentPage: 1,
-        perPage: 25,
+        perPage: 10,
         totalItems: 0,
         activeSearchQuery: '',
 
@@ -438,7 +438,8 @@
                 }
 
                 $error.hide();
-                $spinner.addClass('is-active').css('visibility', 'visible');$saveBtn.prop('disabled', true);
+                $spinner.addClass('is-active').css('visibility', 'visible');
+                $saveBtn.prop('disabled', true);
 
                 var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (window.ajaxurl || '/wp-admin/admin-ajax.php');
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
@@ -455,35 +456,41 @@
                         status: newStatus
                     },
                     success: function(res) {
-                        $spinner.removeClass('is-active').css('visibility', 'hidden');$saveBtn.prop('disabled', false);
+                        $spinner.removeClass('is-active').css('visibility', 'hidden');
+                        $saveBtn.prop('disabled', false);
 
                         if (res && res.success) {
-                            var $targetRow =$('#wppoppop-table-tbody .wppoppop-table-row[data-uid="' + uid + '"]');
+                            var $targetRow = $('#wppoppop-table-tbody .wppoppop-table-row[data-uid="' + uid + '"]');
                             if ($targetRow.length) {
-                                $targetRow.find('.row-title').text(newTitle);$targetRow.attr('data-title', newTitle.toLowerCase());
+                                $targetRow.find('.row-title').text(newTitle);
+                                $targetRow.attr('data-title', newTitle.toLowerCase());
 
-                                var $badge =$targetRow.find('.wppoppop-badge');
+                                var $badge = $targetRow.find('.wppoppop-badge');
                                 if (newStatus === 'publish') {
                                     $badge.css({ 'background': '#dcfce7', 'color': '#15803d' }).text('Publish');
                                 } else {
                                     $badge.css({ 'background': '#f1f5f9', 'color': '#64748b' }).text('Draft');
                                 }
 
-                                var $qeBtn = $targetRow.find('.wppoppop-quick-edit-btn');$qeBtn.attr('data-title', newTitle).attr('data-status', newStatus);
+                                var $qeBtn = $targetRow.find('.wppoppop-quick-edit-btn');
+                                $qeBtn.attr('data-title', newTitle).attr('data-status', newStatus);
 
-                                $editRow.remove();$targetRow.fadeIn(200);
+                                $editRow.remove();
+                                $targetRow.fadeIn(200);
 
                                 $targetRow.addClass('wppoppop-row-updated');
                                 setTimeout(function() {
                                     $targetRow.removeClass('wppoppop-row-updated');
                                 }, 1500);
                             }
-                        } else {$error.show().text((res && res.data && res.data.message) ? res.data.message : 'Quick Edit failed.');
+                        } else {
+                            $error.show().text((res && res.data && res.data.message) ? res.data.message : 'Quick Edit failed.');
                         }
                     },
                     error: function(xhr, status, error) {
                         $spinner.removeClass('is-active').css('visibility', 'hidden');
-                        $saveBtn.prop('disabled', false);$error.show().text('Network error updating campaign: ' + (error || status));
+                        $saveBtn.prop('disabled', false);
+                        $error.show().text('Network error updating campaign: ' + (error || status));
                     }
                 });
             });
@@ -500,9 +507,10 @@
         },
 
         closeQuickEdit: function() {
-            var $active =$('.wppoppop-inline-edit-active');
+            var $active = $('.wppoppop-inline-edit-active');
             if ($active.length) {
-                var uid = $active.attr('data-target-uid');$active.remove();
+                var uid = $active.attr('data-target-uid');
+                $active.remove();
                 if (uid) {
                     $('#wppoppop-table-tbody .wppoppop-table-row[data-uid="' + uid + '"]').show();
                 }

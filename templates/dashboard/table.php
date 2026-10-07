@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-table-container" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-top:20px;">
+<div class="wppoppop-table-container" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-top:20px;width:100%;box-sizing:border-box;">
     <!-- Table Controls Bar -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <!-- Left Controls: Search & Bulk Actions -->
@@ -27,13 +27,13 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- Right Controls: Items Per Page Selector (Column Toggle Removed) -->
+        <!-- Right Controls: Items Per Page Selector (Default: 10) -->
         <div style="display:flex;align-items:center;gap:12px;">
             <div style="display:flex;align-items:center;gap:6px;">
                 <label for="wppoppop-per-page-select" style="font-size:12px;color:#64748b;font-weight:500;">Per Page:</label>
                 <select id="wppoppop-per-page-select" style="height:34px;border-radius:6px;border:1px solid #cbd5e1;font-size:12px;">
-                    <option value="10">10</option>
-                    <option value="25" selected>25</option>
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
                     <option value="all">All</option>
@@ -42,19 +42,19 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <!-- Campaigns List Table (Actions Column Removed, Row Actions Kept Under Title) -->
-    <table class="wp-list-table widefat fixed striped posts wppoppop-campaigns-table" id="wppoppop-dashboard-table" style="border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;box-shadow:none;">
+    <!-- Campaigns List Table (WordPress Pages-style Primary Title Column Layout) -->
+    <table class="wp-list-table widefat fixed striped table-view-list pages wppoppop-campaigns-table" id="wppoppop-dashboard-table" style="border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;box-shadow:none;width:100%;table-layout:fixed;">
         <thead>
             <tr style="background:#f8fafc;">
                 <td id="cb" class="manage-column column-cb check-column col-cb" style="width:38px;padding:10px 12px;">
                     <input id="cb-select-all" type="checkbox" title="Select All">
                 </td>
-                <th class="col-title" style="font-weight:600;padding:10px 14px;color:#334155;">Campaign Title</th>
-                <th class="col-shortcode" style="font-weight:600;width:220px;padding:10px 14px;color:#334155;">Shortcode</th>
-                <th class="col-status" style="font-weight:600;width:110px;padding:10px 14px;color:#334155;">Status</th>
-                <th class="col-impressions" style="font-weight:600;width:110px;text-align:right;padding:10px 14px;color:#334155;">Views</th>
-                <th class="col-submissions" style="font-weight:600;width:110px;text-align:right;padding:10px 14px;color:#334155;">Leads</th>
-                <th class="col-cr" style="font-weight:600;width:100px;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
+                <th scope="col" id="title" class="manage-column column-title column-primary page-title col-title" style="font-weight:600;padding:10px 14px;color:#334155;">Campaign Title</th>
+                <th scope="col" class="manage-column column-shortcode col-shortcode" style="font-weight:600;width:180px;padding:10px 14px;color:#334155;">Shortcode</th>
+                <th scope="col" class="manage-column column-status col-status" style="font-weight:600;width:100px;padding:10px 14px;color:#334155;">Status</th>
+                <th scope="col" class="manage-column column-impressions col-impressions num" style="font-weight:600;width:95px;text-align:right;padding:10px 14px;color:#334155;">Views</th>
+                <th scope="col" class="manage-column column-submissions col-submissions num" style="font-weight:600;width:95px;text-align:right;padding:10px 14px;color:#334155;">Leads</th>
+                <th scope="col" class="manage-column column-cr col-cr num" style="font-weight:600;width:90px;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
             </tr>
         </thead>
         <tbody id="wppoppop-table-tbody">
@@ -66,9 +66,9 @@ if (!defined('ABSPATH')) {
                     <th scope="row" class="check-column col-cb" style="padding:12px;">
                         <input type="checkbox" class="wppoppop-row-checkbox" value="<?php echo esc_attr($p->uid); ?>">
                     </th>
-                    <td class="col-title" style="padding:12px 14px;">
+                    <td class="column-title column-primary page-title col-title" style="padding:12px 14px;">
                         <strong>
-                            <a class="row-title" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" style="color:#0f172a;text-decoration:none;font-weight:600;">
+                            <a class="row-title" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . $p->uid)); ?>" style="color:#0f172a;text-decoration:none;font-weight:600;font-size:14px;">
                                 <?php echo esc_html($p->title); ?>
                             </a>
                         </strong>
@@ -81,23 +81,23 @@ if (!defined('ABSPATH')) {
                             <span class="trash"><a href="#" class="wppoppop-delete-btn" data-uid="<?php echo esc_attr($p->uid); ?>" style="color:#b91c1c;">Delete</a></span>
                         </div>
                     </td>
-                    <td class="col-shortcode" style="padding:12px 14px;">
+                    <td class="column-shortcode col-shortcode" style="padding:12px 14px;">
                         <code class="wppoppop-shortcode-chip" data-copy="[wppoppop uid=&quot;<?php echo esc_attr($p->uid); ?>&quot;]" title="Click to copy shortcode" style="cursor:pointer;background:#f1f5f9;padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;font-size:11px;display:inline-block;">
                             [wppoppop uid="<?php echo esc_html(substr($p->uid, 0, 8)); ?>..."]
                         </code>
                     </td>
-                    <td class="col-status" style="padding:12px 14px;">
+                    <td class="column-status col-status" style="padding:12px 14px;">
                         <span class="wppoppop-badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:<?php echo ($p->status === 'publish') ? '#dcfce7;color:#15803d;' : '#f1f5f9;color:#64748b;'; ?>">
                             <?php echo esc_html(ucfirst($p->status)); ?>
                         </span>
                     </td>
-                    <td class="col-impressions" style="text-align:right;font-weight:500;padding:12px 14px;color:#334155;">
+                    <td class="column-impressions col-impressions num" style="text-align:right;font-weight:500;padding:12px 14px;color:#334155;">
                         <?php echo number_format_i18n($p->impressions); ?>
                     </td>
-                    <td class="col-submissions" style="text-align:right;font-weight:500;padding:12px 14px;color:#334155;">
+                    <td class="column-submissions col-submissions num" style="text-align:right;font-weight:500;padding:12px 14px;color:#334155;">
                         <?php echo number_format_i18n($p->submissions); ?>
                     </td>
-                    <td class="col-cr" style="text-align:right;font-weight:600;padding:12px 14px;color:<?php echo ($cr > 0) ? '#059669;' : '#64748b;'; ?>">
+                    <td class="column-cr col-cr num" style="text-align:right;font-weight:600;padding:12px 14px;color:<?php echo ($cr > 0) ? '#059669;' : '#64748b;'; ?>">
                         <?php echo esc_html($cr); ?>%
                     </td>
                 </tr>
@@ -118,17 +118,17 @@ if (!defined('ABSPATH')) {
                 <td class="manage-column column-cb check-column col-cb" style="width:38px;padding:10px 12px;">
                     <input id="cb-select-all-2" type="checkbox" title="Select All">
                 </td>
-                <th class="col-title" style="font-weight:600;padding:10px 14px;color:#334155;">Campaign Title</th>
-                <th class="col-shortcode" style="font-weight:600;padding:10px 14px;color:#334155;">Shortcode</th>
-                <th class="col-status" style="font-weight:600;padding:10px 14px;color:#334155;">Status</th>
-                <th class="col-impressions" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">Views</th>
-                <th class="col-submissions" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">Leads</th>
-                <th class="col-cr" style="font-weight:600;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
+                <th scope="col" class="manage-column column-title column-primary page-title col-title" style="font-weight:600;padding:10px 14px;color:#334155;">Campaign Title</th>
+                <th scope="col" class="manage-column column-shortcode col-shortcode" style="font-weight:600;width:180px;padding:10px 14px;color:#334155;">Shortcode</th>
+                <th scope="col" class="manage-column column-status col-status" style="font-weight:600;width:100px;padding:10px 14px;color:#334155;">Status</th>
+                <th scope="col" class="manage-column column-impressions col-impressions num" style="font-weight:600;width:95px;text-align:right;padding:10px 14px;color:#334155;">Views</th>
+                <th scope="col" class="manage-column column-submissions col-submissions num" style="font-weight:600;width:95px;text-align:right;padding:10px 14px;color:#334155;">Leads</th>
+                <th scope="col" class="manage-column column-cr col-cr num" style="font-weight:600;width:90px;text-align:right;padding:10px 14px;color:#334155;">CR %</th>
             </tr>
         </tfoot>
     </table>
 
-    <!-- Hidden Native WordPress Inline Edit Row Template -->
+    <!-- Native WordPress Quick Edit Template -->
     <table style="display:none;">
         <tbody>
             <tr id="wppoppop-inline-edit-template" class="inline-edit-row quick-edit-row" style="display:none;">

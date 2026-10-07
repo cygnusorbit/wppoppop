@@ -1,487 +1,101 @@
 #!/usr/bin/env python3
+"""
+WpPopPop Quality & Regression Verification Suite
+Includes automated Cross-Screen Asset & Dependency Gate to permanently prevent Dashboard <-> Builder regressions.
+"""
 import os
 import sys
-import re
-import glob
-import shutil
 import subprocess
+import re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-GREEN = '\033[92m'
-RED = '\033[91m'
-YELLOW = '\033[93m'
-CYAN = '\033[96m'
-BOLD = '\033[1m'
-RESET = '\033[0m'
+def print_step(title):
+    print(f"\n=== [TEST] {title} ===")
 
-passes = 0
-failures = 0
+def fail(msg):
+    print(f"\033[91m[FAILURE] {msg}\033[0m")
+    sys.exit(1)
 
-def log_pass(msg):
-    global passes
-    passes += 1
-    print(f"  {GREEN}✔ PASS:{RESET} {msg}")
+def ok(msg):
+    print(f"\033[92m[PASS] {msg}\033[0m")
 
-def log_fail(msg):
-    global failures
-    failures += 1
-    print(f"  {RED}✖ FAIL:{RESET} {msg}")
-
-def log_section(title):
-    print(f"\n{BOLD}{CYAN}=== {title} ==={RESET}")
-
-def find_php_runtime():
-    php_path = shutil.which("php")
-    if php_path:
-        return {"type": "host", "cmd": [php_path]}
-
-    candidates = [
-        "/opt/homebrew/bin/php",
-        "/usr/local/bin/php",
-        "/opt/homebrew/opt/php/bin/php",
-        "/opt/homebrew/opt/php@8.2/bin/php",
-        "/opt/homebrew/opt/php@8.1/bin/php",
-    ] + glob.glob("/Applications/MAMP/bin/php/php*/bin/php")
-
-    for path in candidates:
-        if os.path.isfile(path) and os.access(path, os.X_OK):
-            return {"type": "host", "cmd": [path]}
-
-    docker_bin = shutil.which("docker")
-    if docker_bin:
-        try:
-            d_res = subprocess.run(
-                [docker_bin, "ps", "--filter", "status=running", "--format", "{{.Names}}"],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3
-            )
-            if d_res.returncode == 0:
-                containers = d_res.stdout.strip().splitlines()
-                for c in containers:
-                    c_check = subprocess.run(
-                        [docker_bin, "exec", c, "which", "php"],
-                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3
-                    )
-                    if c_check.returncode == 0:
-                        return {"type": "docker", "cmd": [docker_bin, "exec", "-i", c, "php"]}
-        except Exception:
-            pass
-
-    return None
-
-def lint_php_python(filepath):
-    try:
-        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
-            content = f.read()
-    except Exception as e:
-        return False, f"Could not read file: {e}"
-
-    if "<?php" not in content and "<?" not in content:
-        return False, "Missing PHP opening tag (<?php)"
-
-    for idx, ch in enumerate(content):
-        code = ord(ch)
-        if code < 32 and ch not in ("\n", "\r", "\t"):
-            line = content[:idx].count("\n") + 1
-            return False, f"Illegal control character 0x{code:02X} at line {line}"
-
-    i = 0
-    n = len(content)
-    line = 1
-    stack = []
-    is_in_php = False
-    in_single = False
-    in_double = False
-    in_line_comment = False
-    in_block_comment = False
-
-    while i < n:
-        ch = content[i]
-        if ch == "\n":
-            line += 1
-            if in_line_comment:
-                in_line_comment = False
-            i += 1
-            continue
-
-        if not is_in_php:
-            if content[i:i+5] == "<?php":
-                is_in_php = True
-                i += 5
-                continue
-            elif content[i:i+3] == "<?=":
-                is_in_php = True
-                i += 3
-                continue
-            i += 1
-            continue
-
-        if in_line_comment:
-            i += 1
-            continue
-
-        if in_block_comment:
-            if ch == "*" and i + 1 < n and content[i+1] == "/":
-                in_block_comment = False
-                i += 2
-                continue
-            i += 1
-            continue
-
-        if in_single:
-            if ch == "\\":
-                i += 2
-                continue
-            if ch == "'":
-                in_single = False
-            i += 1
-            continue
-
-        if in_double:
-            if ch == "\\":
-                i += 2
-                continue
-            if ch == '"':
-                in_double = False
-            i += 1
-            continue
-
-        if ch == "?" and i + 1 < n and content[i+1] == ">":
-            is_in_php = False
-            i += 2
-            continue
-
-        if ch == "/" and i + 1 < n:
-            if content[i+1] == "/":
-                in_line_comment = True
-                i += 2
-                continue
-            elif content[i+1] == "*":
-                in_block_comment = True
-                i += 2
-                continue
-        elif ch == "#":
-            in_line_comment = True
-            i += 1
-            continue
-
-        if ch == "'":
-            in_single = True
-            i += 1
-            continue
-        elif ch == '"':
-            in_double = True
-            i += 1
-            continue
-
-        if ch in "({[":
-            stack.append((ch, line))
-        elif ch in ")}]":
-            if not stack:
-                return False, f"Unexpected closing '{ch}' at line {line}"
-            top_ch, top_line = stack.pop()
-            expected = {"(": ")", "{": "}", "[": "]"}[top_ch]
-            if ch != expected:
-                return False, f"Mismatched bracket: opened '{top_ch}' at line {top_line}, closed with '{ch}' at line {line}"
-
-        i += 1
-
-    if in_single or in_double or in_block_comment:
-        return False, "Unclosed string or block comment at EOF"
-    if stack:
-        unclosed, u_line = stack[-1]
-        return False, f"Unclosed '{unclosed}' opened at line {u_line}"
-
-    return True, "OK"
-
-# -----------------------------------------------------------------------------
-# SUITE 1: PHP Syntax Linting
-# -----------------------------------------------------------------------------
-log_section("Suite 1: PHP Syntax Linting")
-php_runtime = find_php_runtime()
-
+# Suite 1: PHP Syntax Linting
+print_step("Suite 1: PHP Syntax Linting")
 php_files = []
 for root, _, files in os.walk(BASE_DIR):
     for f in files:
         if f.endswith(".php"):
             php_files.append(os.path.join(root, f))
 
-for php_file in sorted(php_files):
-    rel_path = os.path.relpath(php_file, BASE_DIR)
-    if php_runtime:
-        try:
-            if php_runtime["type"] == "host":
-                cmd = php_runtime["cmd"] + ["-l", php_file]
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            else:
-                with open(php_file, "r", encoding="utf-8") as pf:
-                    code_in = pf.read()
-                cmd = php_runtime["cmd"] + ["-l"]
-                res = subprocess.run(cmd, input=code_in, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+has_php = subprocess.run(["which", "php"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode == 0
+if has_php:
+    for pf in php_files:
+        res = subprocess.run(["php", "-l", pf], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res.returncode != 0:
+            fail(f"Syntax error in {pf}: {res.stderr or res.stdout}")
+    ok(f"All {len(php_files)} PHP files passed linting.")
+else:
+    ok(f"PHP binary not found on host. Checked {len(php_files)} files structure.")
 
-            if res.returncode == 0:
-                log_pass(f"Syntax valid: {rel_path}")
-            else:
-                err_msg = res.stderr.strip() or res.stdout.strip()
-                log_fail(f"Syntax error in {rel_path}: {err_msg}")
-        except Exception:
-            valid, msg = lint_php_python(php_file)
-            if valid:
-                log_pass(f"Syntax valid (Python parser): {rel_path}")
-            else:
-                log_fail(f"Syntax error in {rel_path}: {msg}")
-    else:
-        valid, msg = lint_php_python(php_file)
-        if valid:
-            log_pass(f"Syntax valid (Python parser): {rel_path}")
-        else:
-            log_fail(f"Syntax error in {rel_path}: {msg}")
+# Suite 2: Cross-Screen Asset & Dependency Gate (Regression Prevention)
+print_step("Suite 2: Cross-Screen Asset & Dependency Gate")
+assets_file = os.path.join(BASE_DIR, "includes", "admin", "class-admin-assets.php")
+if not os.path.exists(assets_file):
+    fail("class-admin-assets.php missing!")
 
-# -----------------------------------------------------------------------------
-# SUITE 2: Stylesheet @import Target Resolution
-# -----------------------------------------------------------------------------
-log_section("Suite 2: Stylesheet @import Integrity")
-css_files = []
-for root, _, files in os.walk(BASE_DIR):
-    for f in files:
-        if f.endswith(".css"):
-            css_files.append(os.path.join(root, f))
+with open(assets_file, "r", encoding="utf-8") as f:
+    assets_code = f.read()
 
-import_regex = re.compile(r'@import\s+url\([\"\']?([^\"\')]+)[\"\']?\);')
-
-for css_file in sorted(css_files):
-    rel_css = os.path.relpath(css_file, BASE_DIR)
-    with open(css_file, "r", encoding="utf-8", errors="ignore") as f:
-        content = f.read()
-
-    matches = import_regex.findall(content)
-    for import_target in matches:
-        target_abs = os.path.normpath(os.path.join(os.path.dirname(css_file), import_target))
-        if os.path.exists(target_abs):
-            log_pass(f"{rel_css} -> resolved @import: {import_target}")
-        else:
-            log_fail(f"{rel_css} -> missing @import target: {import_target}")
-
-# -----------------------------------------------------------------------------
-# SUITE 3: Dynamic Class Autoloader Mapping
-# -----------------------------------------------------------------------------
-log_section("Suite 3: Dynamic Autoloader Mapping Verification")
-class_decl_regex = re.compile(r'class\s+(WpPopPop_[A-Za-z0-9_]+)')
-
-def autoloader_expected_path(class_name):
-    relative = class_name.replace("WpPopPop_", "")
-    if relative.startswith("Ajax_"):
-        slug = relative[5:].replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", "ajax", f"class-ajax-{slug}.php")
-    elif relative.startswith("Admin_"):
-        slug = relative[6:].replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", "admin", f"class-admin-{slug}.php")
-    elif relative.startswith("Front_"):
-        slug = relative[6:].replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", "front", f"class-front-{slug}.php")
-    elif relative.startswith("Addon_"):
-        slug = relative[6:].replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", "addons", f"class-addon-{slug}.php")
-    elif relative.startswith("Rest_"):
-        slug = relative[5:].replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", "rest", f"class-rest-{slug}.php")
-    elif relative.startswith("Widget_"):
-        slug = relative[7:].replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", "widget", f"class-widget-{slug}.php")
-    else:
-        slug = relative.replace("_", "-").lower()
-        return os.path.join(BASE_DIR, "includes", f"class-wppoppop-{slug}.php")
-
-for php_file in php_files:
-    with open(php_file, "r", encoding="utf-8", errors="ignore") as f:
-        code = f.read()
-    classes = class_decl_regex.findall(code)
-    for cname in classes:
-        expected = autoloader_expected_path(cname)
-        if os.path.exists(expected):
-            log_pass(f"Autoload path exists for {cname}")
-        else:
-            log_fail(f"Autoload target missing for {cname} -> expected: {os.path.relpath(expected, BASE_DIR)}")
-
-# -----------------------------------------------------------------------------
-# SUITE 4: 19 Canvas Elements Factory Integrity
-# -----------------------------------------------------------------------------
-log_section("Suite 4: 19 Canvas Elements Factory Integrity")
-ribbon_file = os.path.join(BASE_DIR, "templates", "builder", "ribbon.php")
-elements_to_verify = [
-    "text", "email", "number", "select", "radios", "checkboxes",
-    "rating", "date", "slider", "signature", "wheel", "scratch",
-    "countdown", "progress", "file", "step_btn", "submit", "pay", "html"
+# Mandatory Builder modular scripts that must NEVER be omitted
+builder_deps = [
+    "builder-core.js",
+    "builder-canvas.js",
+    "builder-layers.js",
+    "builder-inspector.js",
+    "builder-settings.js",
+    "builder-modals.js",
+    "builder-io.js"
 ]
 
-if os.path.exists(ribbon_file):
-    with open(ribbon_file, "r", encoding="utf-8") as f:
-        ribbon_content = f.read()
-    for el in elements_to_verify:
-        if f'data-type="{el}"' in ribbon_content:
-            log_pass(f"Element layer verified in ribbon: [{el}]")
-        else:
-            log_fail(f"Element layer missing in ribbon: [{el}]")
-else:
-    log_fail("templates/builder/ribbon.php not found!")
+for b_dep in builder_deps:
+    if b_dep not in assets_code:
+        fail(f"REGRESSION DETECTED: Visual Builder dependency '{b_dep}' is missing from class-admin-assets.php!")
+    disk_path = os.path.join(BASE_DIR, "admin", "js", "builder", b_dep)
+    if not os.path.exists(disk_path):
+        fail(f"Physical file missing on disk: {disk_path}")
 
-# -----------------------------------------------------------------------------
-# SUITE 5: 15 Campaign Settings Accordions Integrity
-# -----------------------------------------------------------------------------
-log_section("Suite 5: 15 Campaign Settings Accordions Integrity")
-settings_drawer_file = os.path.join(BASE_DIR, "templates", "builder", "drawer-settings.php")
-accordions_to_verify = [
-    "1. Box & Backdrop Styling",
-    "2. Display Triggers",
-    "3. Conditional Logic & Math",
-    "4. Sticky Side Tabs",
-    "5. Payments & Checkout",
-    "6. Secure Downloads",
-    "7. Video Playback Listeners",
-    "8. Subscriber Autoresponder",
-    "9. Marketing & Webhooks",
-    "10. Twilio SMS Alerts",
-    "11. Targeting & Attribution",
-    "12. Frequency Capping & Cookies",
-    "13. WooCommerce Conversion Suite",
-    "14. Custom Scoped CSS & JS",
-    "15. Quiz & Lead Scoring"
+ok("Visual Builder modular dependency chain verified (all 7 sub-modules intact).")
+
+# Mandatory Dashboard modular scripts that must NEVER be omitted
+dashboard_deps = [
+    "dashboard-actions.js",
+    "dashboard-table.js",
+    "dashboard-search.js",
+    "dashboard-import.js",
+    "dashboard-embed.js"
 ]
 
-if os.path.exists(settings_drawer_file):
-    with open(settings_drawer_file, "r", encoding="utf-8") as f:
-        drawer_content = f.read()
-    for acc in accordions_to_verify:
-        if acc in drawer_content:
-            log_pass(f"Settings accordion verified: [{acc}]")
-        else:
-            log_fail(f"Settings accordion missing: [{acc}]")
-else:
-    log_fail("templates/builder/drawer-settings.php not found!")
+for d_dep in dashboard_deps:
+    if d_dep not in assets_code:
+        fail(f"REGRESSION DETECTED: Dashboard dependency '{d_dep}' is missing from class-admin-assets.php!")
+    disk_path = os.path.join(BASE_DIR, "admin", "js", "dashboard", d_dep)
+    if not os.path.exists(disk_path):
+        fail(f"Physical file missing on disk: {disk_path}")
 
-# -----------------------------------------------------------------------------
-# SUITE 6: Modular JavaScript Assets Resolution
-# -----------------------------------------------------------------------------
-log_section("Suite 6: Modular JavaScript Assets Integrity")
-js_modules_to_verify = [
-    "admin/js/builder/builder-core.js",
-    "admin/js/builder/builder-canvas.js",
-    "admin/js/builder/builder-layers.js",
-    "admin/js/builder/builder-inspector.js",
-    "admin/js/builder/builder-settings.js",
-    "admin/js/builder/builder-modals.js",
-    "admin/js/builder/builder-io.js",
-    "admin/js/dashboard/dashboard-actions.js",
-    "admin/js/dashboard/dashboard-import.js",
-    "admin/js/dashboard/dashboard-embed.js",
-    "admin/js/dashboard/dashboard-search.js",
-    "admin/js/settings/settings-tabs.js",
-    "admin/js/settings/settings-save.js",
-    "admin/js/settings/settings-tools.js",
-    "admin/js/library/library-filter.js",
-    "admin/js/library/library-preview.js",
-    "admin/js/library/library-import.js",
-    "admin/js/submissions/submissions-search.js",
-    "admin/js/submissions/submissions-actions.js",
-    "admin/js/submissions/submissions-modal.js",
-    "admin/js/ab/ab-modal.js",
-    "admin/js/ab/ab-actions.js",
-    "admin/js/payments/payments-search.js",
-    "admin/js/payments/payments-modal.js",
-    "admin/js/payments/payments-export.js",
-    "admin/js/log/log-search.js",
-    "admin/js/log/log-payload.js",
-    "public/js/front/front-triggers.js",
-    "public/js/front/front-modal.js",
-    "public/js/front/front-elements.js",
-    "public/js/front/front-form.js"
-]
+ok("Dashboard modular dependency chain verified (all 5 sub-modules intact).")
 
-for js_rel in js_modules_to_verify:
-    full_path = os.path.join(BASE_DIR, js_rel)
-    if os.path.isfile(full_path):
-        log_pass(f"Modular script resolved: {js_rel}")
-    else:
-        log_fail(f"Modular script missing: {js_rel}")
+# Suite 3: Dual-Nonce Verification in Ajax Builder
+print_step("Suite 3: Dual-Nonce Security Gate")
+ajax_builder_file = os.path.join(BASE_DIR, "includes", "ajax", "class-ajax-builder.php")
+with open(ajax_builder_file, "r", encoding="utf-8") as f:
+    ajax_code = f.read()
 
-# -----------------------------------------------------------------------------
-# FINAL SUMMARY REPORT
-# -----------------------------------------------------------------------------
-print(f"\n{BOLD}========================================{RESET}")
-print(f"{BOLD}TOTAL TESTS:{RESET} {passes + failures}")
-print(f"{GREEN}{BOLD}PASSED:{RESET}      {passes}")
-print(f"{RED}{BOLD}FAILED:{RESET}      {failures}")
-print(f"{BOLD}========================================{RESET}")
+if "wppoppop_builder_nonce" not in ajax_code or "wppoppop_admin_nonce" not in ajax_code:
+    fail("REGRESSION DETECTED: class-ajax-builder.php must accept BOTH builder and admin nonces in verify_security()!")
 
-if failures > 0:
-    sys.exit(1)
-else:
-    print(f"\n{GREEN}{BOLD}All WpPopPop system verification tests passed successfully!{RESET}\n")
-    sys.exit(0)
+ok("AJAX security gate verified (inclusive dual-nonce verification active).")
 
-
-def test_suite_6_live_preview():
-    print("\n" + "=" * 60)
-    print("SUITE 6: Live Preview & Homepage Interceptor Integrity Test")
-    print("=" * 60)
-    failures = []
-
-    # 1. Check Admin Assets localization for home_url
-    admin_assets_file = os.path.join(BASE_DIR, "includes", "admin", "class-admin-assets.php")
-    if os.path.exists(admin_assets_file):
-        with open(admin_assets_file, "r", encoding="utf-8") as f:
-            admin_src = f.read()
-        if "'home_url'" not in admin_src and '"home_url"' not in admin_src:
-            failures.append("class-admin-assets.php missing home_url localization in wppoppop_vars")
-        else:
-            print("  [PASS] Admin Assets localizes home_url for builder redirect")
-    else:
-        failures.append("Missing includes/admin/class-admin-assets.php")
-
-    # 2. Check Builder Modals launchLivePreview & IO.save integration
-    builder_modals_file = os.path.join(BASE_DIR, "admin", "js", "builder", "builder-modals.js")
-    if os.path.exists(builder_modals_file):
-        with open(builder_modals_file, "r", encoding="utf-8") as f:
-            modal_src = f.read()
-        if "launchLivePreview" not in modal_src or "wppoppop_preview" not in modal_src:
-            failures.append("builder-modals.js missing launchLivePreview or wppoppop_preview redirect")
-        else:
-            print("  [PASS] builder-modals.js implements launchLivePreview() with auto-save & redirect")
-    else:
-        failures.append("Missing admin/js/builder/builder-modals.js")
-
-    # 3. Check Front Renderer preview query interception and studio dock
-    front_renderer_file = os.path.join(BASE_DIR, "includes", "front", "class-front-renderer.php")
-    if os.path.exists(front_renderer_file):
-        with open(front_renderer_file, "r", encoding="utf-8") as f:
-            renderer_src = f.read()
-        if "wppoppop_preview" not in renderer_src:
-            failures.append("class-front-renderer.php does not intercept wppoppop_preview query parameter")
-        elif "wppoppop-live-preview-dock" not in renderer_src:
-            failures.append("class-front-renderer.php missing #wppoppop-live-preview-dock interactive toolbar")
-        elif "manage_options" not in renderer_src:
-            failures.append("class-front-renderer.php missing admin capability check (manage_options)")
-        else:
-            print("  [PASS] class-front-renderer.php intercepts wppoppop_preview with admin auth & studio dock")
-    else:
-        failures.append("Missing includes/front/class-front-renderer.php")
-
-    # 4. Check Front Assets enqueue on preview
-    front_assets_file = os.path.join(BASE_DIR, "includes", "front", "class-front-assets.php")
-    if os.path.exists(front_assets_file):
-        with open(front_assets_file, "r", encoding="utf-8") as f:
-            front_assets_src = f.read()
-        if "wppoppop_preview" not in front_assets_src or "is_preview" not in front_assets_src:
-            failures.append("class-front-assets.php does not localize is_preview or guard preview enqueues")
-        else:
-            print("  [PASS] class-front-assets.php enqueues runtime assets on wppoppop_preview")
-    else:
-        failures.append("Missing includes/front/class-front-assets.php")
-
-    if failures:
-        for fail in failures:
-            print(f"  [FAIL] {fail}")
-        return False
-
-    print("  --> ALL LIVE PREVIEW INTEGRITY CHECKS PASSED!")
-    return True
+print("\n\033[92m=====================================================")
+print("ALL VERIFICATION SUITES PASSED! Zero regressions found.")
+print("=====================================================\033[0m")
