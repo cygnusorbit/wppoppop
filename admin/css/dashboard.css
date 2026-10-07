@@ -24,8 +24,7 @@
 /* Primary Campaign Title Column - Mirrored from native WordPress Pages layout */
 .wppoppop-campaigns-table .column-title,
 .wppoppop-campaigns-table .col-title {
-    width: auto !important;
-    min-width: 260px;
+    width: 260px !important;
 }
 
 .wppoppop-campaigns-table tbody tr:hover {
