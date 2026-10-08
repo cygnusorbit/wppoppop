@@ -26,6 +26,12 @@ body.folded .wppoppop-builder-wrap {
     left: 36px;
 }
 
+@media screen and (max-width: 962px) {
+    .wppoppop-builder-wrap {
+        top: 32px;
+        left: 30px;
+    }
+}
 @media screen and (max-width: 782px) {
     .wppoppop-builder-wrap {
         top: 46px;
