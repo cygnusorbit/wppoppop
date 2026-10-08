@@ -1,0 +1,150 @@
+/* ==========================================================================
+   WpPopPop Visual Builder: Live Workspace Preview Engine & CSS Keyframes
+   Compatible with Chrome, Safari, Firefox, Edge & Modern Rendering Engines
+   ========================================================================== */
+
+.is-preview-mode .wppoppop-layer-resizer,
+.is-preview-mode #wppoppop-canvas-corner-handle,
+.is-preview-mode #wppoppop-floating-layers-panel {
+    display: none !important;
+}
+
+.is-preview-mode .wppoppop-canvas-layer {
+    cursor: default !important;
+}
+
+.is-preview-mode .wppoppop-canvas-layer.selected {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Floating Control Badge (Text Only, No Icons) */
+.wppoppop-preview-floating-bar {
+    position: absolute;
+    top: -46px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 999999;
+    pointer-events: auto !important;
+}
+
+.wppoppop-preview-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    user-select: none;
+}
+
+.wppoppop-preview-ctrl-btn {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f1f5f9;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    line-height: 1.4;
+}
+
+.wppoppop-preview-ctrl-btn:hover {
+    background: #2563eb;
+    border-color: #3b82f6;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.wppoppop-preview-ctrl-btn:active {
+    transform: translateY(0);
+}
+
+/* Embedded Universal Animation Keyframes */
+@keyframes anim-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.anim-fadeIn, .animate__fadeIn { animation-name: anim-fadeIn; }
+
+@keyframes anim-fadeInDown {
+    from { opacity: 0; transform: translate3d(0, -30px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.anim-fadeInDown, .animate__fadeInDown { animation-name: anim-fadeInDown; }
+
+@keyframes anim-fadeInUp {
+    from { opacity: 0; transform: translate3d(0, 30px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.anim-fadeInUp, .animate__fadeInUp { animation-name: anim-fadeInUp; }
+
+@keyframes anim-fadeInLeft {
+    from { opacity: 0; transform: translate3d(-30px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.anim-fadeInLeft, .animate__fadeInLeft { animation-name: anim-fadeInLeft; }
+
+@keyframes anim-fadeInRight {
+    from { opacity: 0; transform: translate3d(30px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.anim-fadeInRight, .animate__fadeInRight { animation-name: anim-fadeInRight; }
+
+@keyframes anim-zoomIn {
+    from { opacity: 0; transform: scale3d(0.8, 0.8, 0.8); }
+    50% { opacity: 1; }
+    to { transform: scale3d(1, 1, 1); }
+}
+.anim-zoomIn, .animate__zoomIn { animation-name: anim-zoomIn; }
+
+@keyframes anim-bounceIn {
+    from, 20%, 40%, 60%, 80%, to { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+    0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+    20% { transform: scale3d(1.1, 1.1, 1.1); }
+    40% { transform: scale3d(0.9, 0.9, 0.9); }
+    60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+    80% { transform: scale3d(0.97, 0.97, 0.97); }
+    to { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+.anim-bounceIn, .animate__bounceIn { animation-name: anim-bounceIn; }
+
+@keyframes anim-slideInDown {
+    from { transform: translate3d(0, -100%, 0); visibility: visible; }
+    to { transform: translate3d(0, 0, 0); }
+}
+.anim-slideInDown, .animate__slideInDown { animation-name: anim-slideInDown; }
+
+@keyframes anim-slideInUp {
+    from { transform: translate3d(0, 100%, 0); visibility: visible; }
+    to { transform: translate3d(0, 0, 0); }
+}
+.anim-slideInUp, .animate__slideInUp { animation-name: anim-slideInUp; }
+
+@keyframes anim-fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.anim-fadeOut, .animate__fadeOut { animation-name: anim-fadeOut; }
+
+@keyframes anim-zoomOut {
+    from { opacity: 1; }
+    50% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+    to { opacity: 0; }
+}
+.anim-zoomOut, .animate__zoomOut { animation-name: anim-zoomOut; }

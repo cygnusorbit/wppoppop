@@ -433,11 +433,7 @@ body.folded .wppoppop-builder-wrap {
     border-radius: 4px;
 }
 
-@media screen and (min-width: 993px) {
-    .panel-open .wppoppop-builder-workspace {
-        margin-right: 360px;
-    }
-}
+
 
 @media screen and (max-width: 992px) {
     .panel-open .wppoppop-builder-workspace {
