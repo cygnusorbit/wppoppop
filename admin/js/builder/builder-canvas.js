@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Canvas Stage Engine
- * Live Workspace Preview Mode, Animate.css Execution & Interactive Simulation Suite
+ * Live Workspace Preview Mode, Animate.css Execution, Shape SVG Engine & Overflow Physics
  */
 (function($) {
     'use strict';
@@ -128,31 +128,39 @@
         },
 
         buildElementNode: function(el) {
+            var isShape = (el.type === 'shape');
+            var isOverflowable = (el.type === 'image' || el.type === 'shape');
+
             var $div = $('<div>')
                 .addClass('wppoppop-canvas-item')
                 .attr('id', 'el-' + el.id)
                 .attr('data-id', el.id)
                 .css({
-                    top: (el.top || 20) + 'px',
-                    left: (el.left || 20) + 'px',
+                    top: (el.top !== undefined ? el.top : 20) + 'px',
+                    left: (el.left !== undefined ? el.left : 20) + 'px',
                     width: (el.width || 180) + 'px',
                     height: (el.height || 42) + 'px',
                     zIndex: el.zIndex || 10,
-                    borderRadius: (el.borderRadius || 4) + 'px',
-                    borderWidth: (el.borderWidth || 0) + 'px',
-                    borderStyle: (el.borderWidth > 0 ? 'solid' : 'none'),
-                    borderColor: el.borderColor || 'transparent',
+                    borderRadius: (isShape ? 0 : (el.borderRadius || 4)) + 'px',
+                    borderWidth: (isShape ? 0 : (el.borderWidth || 0)) + 'px',
+                    borderStyle: (!isShape && el.borderWidth > 0 ? 'solid' : 'none'),
+                    borderColor: (isShape ? 'transparent' : (el.borderColor || 'transparent')),
                     boxShadow: (el.boxShadow && el.boxShadow !== 'none') ? el.boxShadow : 'none',
                     opacity: el.opacity !== undefined ? el.opacity : 1,
-                    display: el.hidden ? 'none' : 'block'
+                    display: el.hidden ? 'none' : 'block',
+                    overflow: isOverflowable ? 'visible' : 'hidden'
                 });
 
-            if (el.fontFamily && el.fontFamily !== 'inherit') $div.css('fontFamily', el.fontFamily);
-            if (el.fontSize) $div.css('fontSize', el.fontSize + 'px');
-            if (el.fontWeight) $div.css('fontWeight', el.fontWeight);
-            if (el.textAlign) $div.css('textAlign', el.textAlign);
-            if (el.color) $div.css('color', el.color);
-            if (el.bgColor) $div.css('backgroundColor', el.bgColor);
+            if (!isShape) {
+                if (el.fontFamily && el.fontFamily !== 'inherit') $div.css('fontFamily', el.fontFamily);
+                if (el.fontSize) $div.css('fontSize', el.fontSize + 'px');
+                if (el.fontWeight) $div.css('fontWeight', el.fontWeight);
+                if (el.textAlign) $div.css('textAlign', el.textAlign);
+                if (el.color) $div.css('color', el.color);
+                if (el.bgColor) $div.css('backgroundColor', el.bgColor);
+            } else {
+                $div.css('backgroundColor', 'transparent');
+            }
 
             $div.html(this.getInnerMarkup(el));
 
@@ -162,6 +170,59 @@
             }
 
             return $div;
+        },
+
+        renderShapeSvg: function(preset, fill, stroke, strokeWidth, rotate) {
+            preset = preset || 'circle';
+            fill = fill || '#3b82f6';
+            stroke = stroke || 'transparent';
+            strokeWidth = strokeWidth !== undefined ? strokeWidth : 0;
+            rotate = rotate || 0;
+
+            var transformCss = rotate ? 'transform:rotate(' + rotate + 'deg);-webkit-transform:rotate(' + rotate + 'deg);' : '';
+            var svgStyle = 'width:100%;height:100%;display:block;overflow:visible;' + transformCss;
+            var sw = parseInt(strokeWidth, 10) || 0;
+            var strokeAttr = (sw > 0 && stroke !== 'transparent') ? 'stroke="' + stroke + '" stroke-width="' + sw + '" vector-effect="non-scaling-stroke"' : '';
+            var path = '';
+
+            switch(preset) {
+                case 'square':
+                    path = '<rect x="4" y="4" width="92" height="92" fill="' + fill + '" ' + strokeAttr + '/>';
+                    break;
+                case 'rounded_square':
+                    path = '<rect x="4" y="4" width="92" height="92" rx="16" ry="16" fill="' + fill + '" ' + strokeAttr + '/>';
+                    break;
+                case 'star':
+                    path = '<polygon points="50,4 64,34 97,38 73,61 80,94 50,78 20,94 27,61 3,38 36,34" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'triangle':
+                    path = '<polygon points="50,6 96,92 4,92" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'diamond':
+                    path = '<polygon points="50,4 96,50 50,96 4,50" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'heart':
+                    path = '<path d="M50 88 C20 70 4 50 4 30 C4 14 16 4 30 4 C40 4 47 11 50 17 C53 11 60 4 70 4 C84 4 96 14 96 30 C96 50 80 70 50 88 Z" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'hexagon':
+                    path = '<polygon points="25,6 75,6 96,50 75,94 25,94 4,50" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'octagon':
+                    path = '<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'shield':
+                    path = '<path d="M50 4 L92 18 L92 54 C92 76 50 96 50 96 C50 96 8 76 8 54 L8 18 Z" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'cross':
+                    path = '<polygon points="36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36" fill="' + fill + '" ' + strokeAttr + ' stroke-linejoin="round"/>';
+                    break;
+                case 'circle':
+                default:
+                    path = '<ellipse cx="50" cy="50" rx="46" ry="46" fill="' + fill + '" ' + strokeAttr + '/>';
+                    break;
+            }
+
+            return '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="' + svgStyle + '">' + path + '</svg>';
         },
 
         getInnerMarkup: function(el) {
@@ -181,6 +242,14 @@
                         return '<div style="width:100%;height:100%;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;font-weight:600;"><span class="dashicons dashicons-format-image" style="font-size:24px;width:24px;height:24px;margin-bottom:2px;"></span><span>Select Image in Settings</span></div>';
                     }
                     return '<img src="' + imgUrl + '" alt="' + (el.altText || '') + '" style="width:100%;height:100%;object-fit:' + fit + ';border-radius:inherit;display:block;pointer-events:none;">';
+
+                case 'shape':
+                    var preset = el.shapePreset || el.content || 'circle';
+                    var fill = el.bgColor || '#3b82f6';
+                    var stroke = el.borderColor || 'transparent';
+                    var strokeWidth = (el.borderWidth !== undefined) ? el.borderWidth : 0;
+                    var rotate = el.rotation || 0;
+                    return this.renderShapeSvg(preset, fill, stroke, strokeWidth, rotate);
 
                 case 'email':
                     var phEmail = el.content || 'Enter your email...';
@@ -278,8 +347,12 @@
                 return;
             }
 
+            // Allow image & shape elements to overflow on workspace
+            var isOverflowable = (el.type === 'image' || el.type === 'shape');
+            var containmentTarget = isOverflowable ? '.wppoppop-builder-workspace' : '#wppoppop-canvas-elements-root';
+
             $node.draggable({
-                containment: '#wppoppop-canvas-elements-root',
+                containment: containmentTarget,
                 grid: [10, 10],
                 drag: function(event, ui) {
                     el.top = ui.position.top;
@@ -299,7 +372,7 @@
             });
 
             $node.resizable({
-                containment: '#wppoppop-canvas-elements-root',
+                containment: containmentTarget,
                 handles: 'e, s, se',
                 resize: function(event, ui) {
                     el.width = ui.size.width;
@@ -340,18 +413,18 @@
                 name: type.toUpperCase() + ' ' + (elements.length + 1),
                 top: 50 + (elements.length * 15) % 150,
                 left: 50 + (elements.length * 15) % 200,
-                width: (type === 'image') ? 220 : ((type === 'text' || type === 'html') ? 260 : (type === 'wheel' ? 180 : 200)),
-                height: (type === 'image') ? 140 : ((type === 'text') ? 50 : (type === 'signature' || type === 'wheel' ? 120 : 42)),
+                width: (type === 'image') ? 220 : ((type === 'shape') ? 120 : ((type === 'text' || type === 'html') ? 260 : (type === 'wheel' ? 180 : 200))),
+                height: (type === 'image') ? 140 : ((type === 'shape') ? 120 : ((type === 'text') ? 50 : (type === 'signature' || type === 'wheel' ? 120 : 42))),
                 zIndex: nextZ,
                 borderRadius: 4,
-                borderWidth: (type === 'email' || type === 'number' || type === 'select' || type === 'date') ? 1 : 0,
-                borderColor: '#cbd5e1',
+                borderWidth: (type === 'shape' ? 0 : ((type === 'email' || type === 'number' || type === 'select' || type === 'date') ? 1 : 0)),
+                borderColor: (type === 'shape' ? '#1d4ed8' : '#cbd5e1'),
                 opacity: 1,
                 fontSize: 14,
                 fontWeight: '400',
                 textAlign: 'left',
                 color: (type === 'step_btn' || type === 'submit' || type === 'pay') ? '#ffffff' : '#0f172a',
-                bgColor: (type === 'step_btn') ? '#2563eb' : (type === 'submit' ? '#c2185b' : (type === 'pay' ? '#059669' : '#ffffff')),
+                bgColor: (type === 'shape') ? '#3b82f6' : ((type === 'step_btn') ? '#2563eb' : (type === 'submit' ? '#c2185b' : (type === 'pay' ? '#059669' : '#ffffff'))),
                 content: this.getDefaultContent(type),
                 field_name: type + '_' + (elements.length + 1),
                 goto_canvas: 2,
@@ -359,7 +432,9 @@
                 locked: false,
                 hidden: false,
                 objectFit: 'cover',
-                altText: 'Popup Image'
+                altText: 'Popup Image',
+                shapePreset: 'circle',
+                rotation: 0
             };
 
             elements.push(newEl);
@@ -383,6 +458,7 @@
             switch(type) {
                 case 'text': return 'Click to edit your text headline...';
                 case 'image': return '';
+                case 'shape': return 'circle';
                 case 'email': return 'Enter your email...';
                 case 'number': return '1';
                 case 'select': return 'First Option, Second Option, Third Option';
@@ -736,7 +812,7 @@
                     }
                     var m = Math.floor(secs / 60);
                     var s = secs % 60;
-                    $display.text((m < 10 ? '0' + m : m) + ' : ' + (s < 10 ? '0' + s : s));
+                    $display.text((m < 10 ? '0' : '') + m + ' : ' + (s < 10 ? '0' : '') + s);
                 }, 1000);
 
                 $timer.data('timer-id', tid);

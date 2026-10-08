@@ -1,6 +1,6 @@
 /**
- * WpPopPop Visual Builder: Layer Properties Inspector Engine (Restored v3.0.53 + Animate.css + WP Media Picker)
- * Full Dynamic 20-Element Contextual Settings, Native Media Upload & Logic Sync
+ * WpPopPop Visual Builder: Layer Properties Inspector Engine (Restored v3.0.53 + Animate.css + WP Media Picker + Preset Shapes)
+ * Full Dynamic 21-Element Contextual Settings, Native Media Upload & Logic Sync
  */
 (function($) {
     'use strict';
@@ -43,6 +43,7 @@
             if (t === 'progressbar') return 'progress';
             if (t === 'upload') return 'file';
             if (t === 'payment') return 'pay';
+            if (t === 'shape') return 'shape';
             return t;
         },
 
@@ -64,12 +65,12 @@
             // 2. Populate Standard Coordinates & Bounds
             var safeIdSuffix = String(el.id || id).slice(-4);
             $('#prop-layer-name').val(el.name || (type.toUpperCase() + ' ' + safeIdSuffix));
-            $('#prop-pos-top').val(el.top || 0);
-            $('#prop-pos-left').val(el.left || 0);
+            $('#prop-pos-top').val(el.top !== undefined ? el.top : 0);
+            $('#prop-pos-left').val(el.left !== undefined ? el.left : 0);
             $('#prop-size-width').val(el.width || 200);
             $('#prop-size-height').val(el.height || 42);
 
-            // 3. Show & Populate Contextual Element Panel (All 20 Elements)
+            // 3. Show & Populate Contextual Element Panel (All 21 Elements)
             $('.element-panel').hide();
             var $activePanel = $('#panel-elem-' + type);
             if ($activePanel.length) {
@@ -93,6 +94,13 @@
                         $('#prop-image-preview').attr('src', '').hide();
                         $('#prop-image-placeholder').show();
                     }
+                    break;
+                case 'shape':
+                    $('#prop-shape-preset').val(el.shapePreset || el.content || 'circle');
+                    $('#prop-shape-fill').val(el.bgColor || '#3b82f6');
+                    $('#prop-shape-stroke').val(el.borderColor || '#1d4ed8');
+                    $('#prop-shape-stroke-width').val(el.borderWidth !== undefined ? el.borderWidth : 0);
+                    $('#prop-shape-rotate').val(el.rotation || 0);
                     break;
                 case 'email':
                     $('#prop-email-placeholder').val(el.content || 'Enter your email...');
@@ -255,7 +263,7 @@
                 return elements.find(function(e) { return e && String(e.id) === String(activeId); });
             };
 
-            // Standard Coordinates & Bounds Sync
+            // Standard Coordinates & Bounds Sync (Allow negative numbers for overflow)
             $('#prop-layer-name').on('input', function() {
                 var el = getActiveEl();
                 if (el) {
@@ -267,8 +275,10 @@
             $('#prop-pos-top, #prop-pos-left, #prop-size-width, #prop-size-height').on('input change', function() {
                 var el = getActiveEl();
                 if (!el) return;
-                el.top = parseInt($('#prop-pos-top').val(), 10) || 0;
-                el.left = parseInt($('#prop-pos-left').val(), 10) || 0;
+                var tVal = parseInt($('#prop-pos-top').val(), 10);
+                var lVal = parseInt($('#prop-pos-left').val(), 10);
+                el.top = isNaN(tVal) ? 0 : tVal;
+                el.left = isNaN(lVal) ? 0 : lVal;
                 el.width = parseInt($('#prop-size-width').val(), 10) || 100;
                 el.height = parseInt($('#prop-size-height').val(), 10) || 40;
 
@@ -280,7 +290,21 @@
                 });
             });
 
-            // Native WordPress Media Library Uploader Hook
+            // Preset Shape Settings Sync
+            $('#prop-shape-preset, #prop-shape-fill, #prop-shape-stroke, #prop-shape-stroke-width, #prop-shape-rotate').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'shape') {
+                    el.shapePreset = $('#prop-shape-preset').val();
+                    el.content = el.shapePreset;
+                    el.bgColor = $('#prop-shape-fill').val();
+                    el.borderColor = $('#prop-shape-stroke').val();
+                    el.borderWidth = parseInt($('#prop-shape-stroke-width').val(), 10) || 0;
+                    el.rotation = parseInt($('#prop-shape-rotate').val(), 10) || 0;
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // Image Upload & Properties Sync
             $('#prop-image-upload-btn').on('click', function(e) {
                 e.preventDefault();
                 var el = getActiveEl();
@@ -545,7 +569,7 @@
 
             $('#prop-step-label, #prop-step-canvas').on('input change', function() {
                 var el = getActiveEl();
-                if (el) {
+                if (el && el.type === 'step_btn') {
                     el.content = $('#prop-step-label').val();
                     var cNum = parseInt($('#prop-step-canvas').val(), 10) || 2;
                     el.goto_canvas = cNum;
@@ -556,7 +580,7 @@
 
             $('#prop-submit-label, #prop-submit-action').on('input change', function() {
                 var el = getActiveEl();
-                if (el) {
+                if (el && el.type === 'submit') {
                     el.content = $('#prop-submit-label').val();
                     el.submitAction = $('#prop-submit-action').val();
                     window.WpPopPopBuilderCanvas.renderCanvas();
@@ -565,7 +589,7 @@
 
             $('#prop-pay-label, #prop-pay-amount, #prop-pay-currency, #prop-pay-gateway').on('input change', function() {
                 var el = getActiveEl();
-                if (el) {
+                if (el && el.type === 'pay') {
                     el.content = $('#prop-pay-label').val();
                     el.payAmount = parseFloat($('#prop-pay-amount').val()) || 0;
                     el.payCurrency = $('#prop-pay-currency').val();
@@ -576,7 +600,7 @@
 
             $('#prop-html-code').on('input change', function() {
                 var el = getActiveEl();
-                if (el) {
+                if (el && el.type === 'html') {
                     el.content = $('#prop-html-code').val();
                     window.WpPopPopBuilderCanvas.renderCanvas();
                 }

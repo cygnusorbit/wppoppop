@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="wppoppop-builder-workspace">
-    <!-- Floating Workspace Preview Control Bar (Active during Preview Mode) -->
+    <!-- Floating Workspace Preview Control Bar -->
     <div id="wppoppop-workspace-preview-bar" class="wppoppop-workspace-preview-bar">
         <span class="wppoppop-preview-badge">
             <span class="dashicons dashicons-visibility"></span> LIVE PREVIEW MODE
@@ -20,11 +20,11 @@ if (!defined('ABSPATH')) {
     <!-- Floating Draggable Magenta LAYERS Panel (Movable across workspace) -->
     <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
 
-    <!-- Visual Canvas Box Stage -->
-    <div id="wppoppop-canvas-box">
-        <div id="wppoppop-canvas-elements-root"></div>
+    <!-- Visual Canvas Box Stage (overflow: visible allows image & shape overflow) -->
+    <div id="wppoppop-canvas-box" style="position:relative;width:640px;height:400px;background:#ffffff;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);transition:none;cursor:default;overflow:visible !important;">
+        <div id="wppoppop-canvas-elements-root" style="width:100%;height:100%;position:relative;border-radius:inherit;overflow:visible !important;"></div>
         
-        <!-- On-Canvas Submission Feedback Overlay (Active during Preview Simulation) -->
+        <!-- On-Canvas Submission Feedback Overlay -->
         <div id="wppoppop-stage-status-overlay" class="wppoppop-stage-status-overlay">
             <span class="dashicons dashicons-yes-alt wppoppop-status-icon"></span>
             <h4 class="wppoppop-status-heading">Submission Successful!</h4>

@@ -35,7 +35,7 @@ class WpPopPop_Front_Renderer {
              style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);">
 
             <div class="wppoppop-box"
-                 style="position:relative;width:<?php echo esc_attr($width); ?>px;max-width:92vw;min-height:<?php echo esc_attr($height); ?>px;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:hidden;<?php echo esc_attr($box_bg); ?>">
+                 style="position:relative;width:<?php echo esc_attr($width); ?>px;max-width:92vw;min-height:<?php echo esc_attr($height); ?>px;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:visible !important;<?php echo esc_attr($box_bg); ?>">
 
                 <!-- Close Button -->
                 <?php if (!$is_inline): ?>
@@ -103,6 +103,59 @@ class WpPopPop_Front_Renderer {
         <?php
     }
 
+    private function render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate) {
+        $preset = !empty($preset) ? sanitize_key($preset) : 'circle';
+        $fill = !empty($fill) ? esc_attr($fill) : '#3b82f6';
+        $stroke = !empty($stroke) ? esc_attr($stroke) : 'transparent';
+        $stroke_width = intval($stroke_width);
+        $rotate = intval($rotate);
+
+        $rot_css = $rotate ? sprintf('transform:rotate(%ddeg);-webkit-transform:rotate(%ddeg);', $rotate, $rotate) : '';
+        $svg_style = sprintf('width:100%;height:100%;display:block;overflow:visible;%s', $rot_css);
+        $s_attr = ($stroke_width > 0 && $stroke !== 'transparent') 
+            ? sprintf('stroke="%s" stroke-width="%d" vector-effect="non-scaling-stroke"', $stroke, $stroke_width) 
+            : '';
+
+        switch ($preset) {
+            case 'square':
+                $path = sprintf('<rect x="4" y="4" width="92" height="92" fill="%s" %s />', $fill, $s_attr);
+                break;
+            case 'rounded_square':
+                $path = sprintf('<rect x="4" y="4" width="92" height="92" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
+                break;
+            case 'star':
+                $path = sprintf('<polygon points="50,4 64,34 97,38 73,61 80,94 50,78 20,94 27,61 3,38 36,34" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'triangle':
+                $path = sprintf('<polygon points="50,6 96,92 4,92" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'diamond':
+                $path = sprintf('<polygon points="50,4 96,50 50,96 4,50" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'heart':
+                $path = sprintf('<path d="M50 88 C20 70 4 50 4 30 C4 14 16 4 30 4 C40 4 47 11 50 17 C53 11 60 4 70 4 C84 4 96 14 96 30 C96 50 80 70 50 88 Z" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'hexagon':
+                $path = sprintf('<polygon points="25,6 75,6 96,50 75,94 25,94 4,50" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'octagon':
+                $path = sprintf('<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'shield':
+                $path = sprintf('<path d="M50 4 L92 18 L92 54 C92 76 50 96 50 96 C50 96 8 76 8 54 L8 18 Z" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'cross':
+                $path = sprintf('<polygon points="36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'circle':
+            default:
+                $path = sprintf('<ellipse cx="50" cy="50" rx="46" ry="46" fill="%s" %s />', $fill, $s_attr);
+                break;
+        }
+
+        return sprintf('<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="%s">%s</svg>', esc_attr($svg_style), $path);
+    }
+
     private function render_canvas_element(array $el) {
         $type   = $el['type'] ?? 'text';
         $top    = intval($el['top'] ?? 20);
@@ -115,7 +168,7 @@ class WpPopPop_Front_Renderer {
         $content = $el['content'] ?? '';
 
         $style = [
-            "position:absolute",
+            'position:absolute',
             "top:{$top}px",
             "left:{$left}px",
             "width:{$width}px",
@@ -123,13 +176,13 @@ class WpPopPop_Front_Renderer {
             "z-index:{$zIndex}",
             "border-radius:{$bRad}px",
             "opacity:{$opac}",
-            "box-sizing:border-box"
+            'box-sizing:border-box'
         ];
 
-        if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit') $style[] = "font-family:" . esc_attr($el['fontFamily']);
-        if (!empty($el['fontSize'])) $style[] = "font-size:" . intval($el['fontSize']) . "px";
-        if (!empty($el['color'])) $style[] = "color:" . esc_attr($el['color']);
-        if (!empty($el['bgColor'])) $style[] = "background-color:" . esc_attr($el['bgColor']);
+        if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit') $style[] = 'font-family:' . esc_attr($el['fontFamily']);
+        if (!empty($el['fontSize'])) $style[] = 'font-size:' . intval($el['fontSize']) . 'px';
+        if (!empty($el['color'])) $style[] = 'color:' . esc_attr($el['color']);
+        if (!empty($el['bgColor']) && $type !== 'shape') $style[] = 'background-color:' . esc_attr($el['bgColor']);
 
         $style_attr = esc_attr(implode(';', $style));
         $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
@@ -146,6 +199,26 @@ class WpPopPop_Front_Renderer {
                     return '';
                 }
                 return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;"><img src="' . $img_url . '" alt="' . $alt . '" style="width:100%;height:100%;object-fit:' . $fit . ';border-radius:inherit;display:block;"></div>';
+
+            case 'shape':
+                $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'circle');
+                $fill = esc_attr($el['bgColor'] ?? '#3b82f6');
+                $stroke = esc_attr($el['borderColor'] ?? 'transparent');
+                $stroke_width = intval($el['borderWidth'] ?? 0);
+                $rotate = intval($el['rotation'] ?? 0);
+                $svg = $this->render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate);
+                $shape_style = [
+                    'position:absolute',
+                    "top:{$top}px",
+                    "left:{$left}px",
+                    "width:{$width}px",
+                    "height:{$height}px",
+                    "z-index:{$zIndex}",
+                    "opacity:{$opac}",
+                    'box-sizing:border-box'
+                ];
+                $shape_style_attr = esc_attr(implode(';', $shape_style));
+                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $shape_style_attr . '">' . $svg . '</div>';
 
             case 'email':
                 $ph = !empty($content) ? esc_attr($content) : 'Enter your email...';
@@ -221,7 +294,7 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">' . $content . '</div>';
 
             default:
-                return '<div class="wppoppop-layer-item" style="' . $style_attr . '">' . esc_html($content) . '</div>';
+                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '">' . esc_html($content) . '</div>';
         }
     }
 }

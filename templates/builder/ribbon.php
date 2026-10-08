@@ -10,6 +10,9 @@ if (!defined('ABSPATH')) {
     <button type="button" class="wppoppop-ribbon-tool" data-type="image" title="Image Layer">
         <span class="dashicons dashicons-format-image"></span> Image
     </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="shape" title="Shape Layer (Circle, Star, etc.)">
+        <span class="dashicons dashicons-shapes"></span> Shape
+    </button>
     <button type="button" class="wppoppop-ribbon-tool" data-type="email" title="Email Field">
         <span class="dashicons dashicons-email"></span> Email
     </button>

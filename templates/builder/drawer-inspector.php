@@ -52,7 +52,7 @@ if (!defined('ABSPATH')) {
 
             <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
 
-            <!-- Contextual Element Setting Panels (All 20 Elements) -->
+            <!-- Contextual Element Setting Panels (All 21 Elements) -->
             <div id="wppoppop-element-specific-settings">
                 <!-- 1. TEXT -->
                 <div class="element-panel" id="panel-elem-text" style="display:none;">
@@ -96,7 +96,47 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
 
-                <!-- 3. EMAIL -->
+                <!-- 3. SHAPE (Preset Shapes: Circle, Square, Star, etc.) -->
+                <div class="element-panel" id="panel-elem-shape" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRESET SHAPE</label>
+                    <select id="prop-shape-preset" class="widefat" style="font-size:12px;margin-bottom:10px;">
+                        <option value="circle">Circle / Oval</option>
+                        <option value="square">Square / Rectangle</option>
+                        <option value="rounded_square">Rounded Rectangle</option>
+                        <option value="star">Star (5-Point)</option>
+                        <option value="triangle">Triangle</option>
+                        <option value="diamond">Diamond / Rhombus</option>
+                        <option value="heart">Heart</option>
+                        <option value="hexagon">Hexagon</option>
+                        <option value="octagon">Octagon</option>
+                        <option value="shield">Shield</option>
+                        <option value="cross">Cross / Plus</option>
+                    </select>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;font-weight:700;">FILL COLOR</label>
+                            <input type="color" id="prop-shape-fill" value="#3b82f6" class="widefat" style="height:32px;padding:2px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;font-weight:700;">STROKE COLOR</label>
+                            <input type="color" id="prop-shape-stroke" value="#1d4ed8" class="widefat" style="height:32px;padding:2px;">
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;font-weight:700;">STROKE (PX)</label>
+                            <input type="number" id="prop-shape-stroke-width" value="0" min="0" max="20" class="widefat" style="font-size:12px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;font-weight:700;">ROTATION (&deg;)</label>
+                            <input type="number" id="prop-shape-rotate" value="0" min="0" max="360" class="widefat" style="font-size:12px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. EMAIL -->
                 <div class="element-panel" id="panel-elem-email" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                     <input type="text" id="prop-email-placeholder" class="widefat" placeholder="Enter your email..." style="font-size:12px;margin-bottom:8px;">
@@ -107,7 +147,7 @@ if (!defined('ABSPATH')) {
                     </label>
                 </div>
 
-                <!-- 4. NUMBER -->
+                <!-- 5. NUMBER -->
                 <div class="element-panel" id="panel-elem-number" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT VALUE / PLACEHOLDER</label>
                     <input type="number" id="prop-number-val" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -129,7 +169,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-number-fieldname" value="quantity" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 5. SELECT / DROPDOWN -->
+                <!-- 6. SELECT / DROPDOWN -->
                 <div class="element-panel" id="panel-elem-select" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DROPDOWN OPTIONS (COMMA SEPARATED)</label>
                     <textarea id="prop-select-options" rows="3" class="widefat" placeholder="Option 1, Option 2, Option 3" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -137,7 +177,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-select-fieldname" value="dropdown_field" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 6. RADIOS -->
+                <!-- 7. RADIOS -->
                 <div class="element-panel" id="panel-elem-radios" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RADIO CHOICES (COMMA SEPARATED)</label>
                     <textarea id="prop-radios-options" rows="3" class="widefat" placeholder="Choice A, Choice B, Choice C" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -145,7 +185,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-radios-fieldname" value="radio_choice" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 7. CHECKBOXES -->
+                <!-- 8. CHECKBOXES -->
                 <div class="element-panel" id="panel-elem-checkboxes" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CHECKBOX LABEL TEXT</label>
                     <input type="text" id="prop-checkbox-label" class="widefat" value="I agree to the terms and conditions" style="font-size:12px;margin-bottom:8px;">
@@ -156,7 +196,7 @@ if (!defined('ABSPATH')) {
                     </label>
                 </div>
 
-                <!-- 8. RATING -->
+                <!-- 9. RATING -->
                 <div class="element-panel" id="panel-elem-rating" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT STAR RATING (1-5)</label>
                     <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -166,7 +206,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-rating-fieldname" value="rating" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 9. DATE -->
+                <!-- 10. DATE -->
                 <div class="element-panel" id="panel-elem-date" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
                     <input type="text" id="prop-date-fieldname" value="appointment_date" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -175,7 +215,7 @@ if (!defined('ABSPATH')) {
                     </label>
                 </div>
 
-                <!-- 10. SLIDER -->
+                <!-- 11. SLIDER -->
                 <div class="element-panel" id="panel-elem-slider" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
                         <div>
@@ -195,7 +235,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 11. SIGNATURE -->
+                <!-- 12. SIGNATURE -->
                 <div class="element-panel" id="panel-elem-signature" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PEN INK COLOR</label>
                     <input type="color" id="prop-sig-color" value="#0f172a" class="widefat" style="height:32px;margin-bottom:8px;">
@@ -205,7 +245,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-sig-fieldname" value="digital_signature" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 12. WHEEL -->
+                <!-- 13. WHEEL -->
                 <div class="element-panel" id="panel-elem-wheel" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRIZE SLICES (COMMA SEPARATED)</label>
                     <textarea id="prop-wheel-slices" rows="4" class="widefat" placeholder="10% OFF, FREE SHIPPING, 25% OFF, JACKPOT" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -215,7 +255,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-wheel-win-msg" value="Congratulations! You won {prize}!" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 13. SCRATCH -->
+                <!-- 14. SCRATCH -->
                 <div class="element-panel" id="panel-elem-scratch" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SECRET WINNING / REVEAL TEXT</label>
                     <input type="text" id="prop-scratch-prize" value="YOU WON 25% OFF! USE CODE: WIN25" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -225,7 +265,7 @@ if (!defined('ABSPATH')) {
                     <input type="number" id="prop-scratch-pct" min="10" max="90" value="45" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 14. COUNTDOWN -->
+                <!-- 15. COUNTDOWN -->
                 <div class="element-panel" id="panel-elem-countdown" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DURATION (SECONDS)</label>
                     <input type="number" id="prop-countdown-seconds" value="900" class="widefat" placeholder="e.g. 900 for 15 minutes" style="font-size:12px;margin-bottom:8px;">
@@ -237,7 +277,7 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
 
-                <!-- 15. PROGRESS -->
+                <!-- 16. PROGRESS -->
                 <div class="element-panel" id="panel-elem-progress" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PROGRESS PERCENTAGE (0-100%)</label>
                     <input type="number" id="prop-progress-val" min="0" max="100" value="65" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -245,7 +285,7 @@ if (!defined('ABSPATH')) {
                     <input type="color" id="prop-progress-color" value="#2563eb" class="widefat" style="height:32px;">
                 </div>
 
-                <!-- 16. FILE UPLOAD -->
+                <!-- 17. FILE UPLOAD -->
                 <div class="element-panel" id="panel-elem-file" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ALLOWED FILE EXTENSIONS</label>
                     <input type="text" id="prop-file-exts" value=".jpg, .jpeg, .png, .pdf" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -255,7 +295,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-file-fieldname" value="attachment" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 17. NEXT CANVAS BUTTON (step_btn) -->
+                <!-- 18. NEXT CANVAS BUTTON (step_btn) -->
                 <div class="element-panel" id="panel-elem-step_btn" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-step-label" value="Next Canvas &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -263,7 +303,7 @@ if (!defined('ABSPATH')) {
                     <input type="number" id="prop-step-canvas" min="1" max="10" value="2" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 18. SUBMIT BUTTON -->
+                <!-- 19. SUBMIT BUTTON -->
                 <div class="element-panel" id="panel-elem-submit" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-submit-label" value="Submit Form" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -275,7 +315,7 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
 
-                <!-- 19. PAY BUTTON -->
+                <!-- 20. PAY BUTTON -->
                 <div class="element-panel" id="panel-elem-pay" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-pay-label" value="Checkout Now" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -302,7 +342,7 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
 
-                <!-- 20. HTML -->
+                <!-- 21. HTML -->
                 <div class="element-panel" id="panel-elem-html" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RAW HTML / EMBED CODE</label>
                     <textarea id="prop-html-code" rows="5" class="widefat code" placeholder="<div>Custom HTML or &lt;iframe&gt;...</div>" style="font-size:11px;font-family:monospace;"></textarea>
