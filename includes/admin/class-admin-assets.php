@@ -16,7 +16,6 @@ class WpPopPop_Admin_Assets {
         $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
         $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
 
-        // Shared general configuration
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),
             'nonce'       => wp_create_nonce('wppoppop_admin_nonce'),
@@ -43,9 +42,11 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 2. Visual Builder Assets (Enqueuing all 7 Decomposed Sub-Modules & UI Libraries)
+        // 2. Visual Builder Assets (Enqueuing Animate.css + Sub-Modules)
         if ($page === 'wppoppop-builder') {
-            wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
+            wp_enqueue_style('animate-css', WPPOPPOP_URL . 'admin/css/vendor/animate.min.css', [], '4.1.1');
+            wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', ['animate-css'], WPPOPPOP_VERSION);
+            
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
@@ -94,7 +95,7 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 5. Tools & Portability Assets
+        // 5. Tools Assets
         if ($page === 'wppoppop-tools') {
             wp_enqueue_script('wppoppop-tools-system-js', WPPOPPOP_URL . 'admin/js/tools/tools-system.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-tools-database-js', WPPOPPOP_URL . 'admin/js/tools/tools-database.js', ['jquery'], WPPOPPOP_VERSION, true);

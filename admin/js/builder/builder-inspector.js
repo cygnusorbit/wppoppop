@@ -1,5 +1,5 @@
 /**
- * WpPopPop Visual Builder: Layer Properties Inspector Engine (Restored v3.0.53)
+ * WpPopPop Visual Builder: Layer Properties Inspector Engine (Restored v3.0.53 + Animate.css)
  * Full Dynamic 19-Element Contextual Settings, Style Suite & Logic Sync
  */
 (function($) {
@@ -59,7 +59,7 @@
             // 1. Header Type Badge
             $('#insp-element-type-badge').text(type.toUpperCase());
 
-            // 2. Populate Standard Coordinates & Bounds (Exception-Proof String Safety)
+            // 2. Populate Standard Coordinates & Bounds
             var safeIdSuffix = String(el.id || id).slice(-4);
             $('#prop-layer-name').val(el.name || (type.toUpperCase() + ' ' + safeIdSuffix));
             $('#prop-pos-top').val(el.top || 0);
@@ -179,6 +179,7 @@
             $('#prop-border-width').val(el.borderWidth !== undefined ? el.borderWidth : 1);
             $('#prop-opacity').val(el.opacity !== undefined ? el.opacity : 1);
 
+            // Animate.css Effect Value
             $('#prop-anim-effect').val(el.animEffect || 'none');
             $('#prop-box-shadow').val(el.boxShadow || 'none');
 
@@ -196,7 +197,7 @@
             $('.wppoppop-insp-content').hide();
             $('#insp-tab-basic').show();
 
-            // Direct Display Activation (Overrides any Stale CSS Cache)
+            // Direct Display Activation
             $('#wppoppop-inspector-drawer')
                 .addClass('open')
                 .css({
@@ -239,7 +240,6 @@
                 return elements.find(function(e) { return e && String(e.id) === String(activeId); });
             };
 
-            // Standard Coordinates & Bounds Sync
             $('#prop-layer-name').on('input', function() {
                 var el = getActiveEl();
                 if (el) {
@@ -264,7 +264,6 @@
                 });
             });
 
-            // Contextual Inputs Live Sync
             $('#prop-text-content, #prop-text-tag').on('input change', function() {
                 var el = getActiveEl();
                 if (el) {
@@ -462,7 +461,7 @@
                 }
             });
 
-            // Style Tab Live Sync
+            // Style Tab Live Sync with Animate.css Class Triggering
             $('#prop-font-family, #prop-font-size, #prop-color, #prop-font-weight, #prop-text-align, #prop-bg-color, #prop-border-color, #prop-border-radius, #prop-border-width, #prop-opacity, #prop-anim-effect, #prop-box-shadow').on('input change', function() {
                 var el = getActiveEl();
                 if (!el) return;
@@ -480,6 +479,18 @@
                 el.boxShadow = $('#prop-box-shadow').val();
 
                 window.WpPopPopBuilderCanvas.renderCanvas();
+
+                // Live preview the selected Animate.css animation on the canvas element
+                if (el.animEffect && el.animEffect !== 'none') {
+                    var $node = $('#el-' + el.id);
+                    $node.removeClass(function(index, className) {
+                        return (className.match(/(^|\s)animate__\S+/g) || []).join(' ');
+                    });
+                    $node.addClass('animate__animated animate__' + el.animEffect);
+                    setTimeout(function() {
+                        $node.removeClass('animate__animated animate__' + el.animEffect);
+                    }, 1200);
+                }
             });
 
             // Logic Tab Live Sync

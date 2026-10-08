@@ -311,7 +311,7 @@ body.folded .wppoppop-builder-wrap {
 /* Desktop Workspace Contraction when Inspector Opens */
 @media screen and (min-width: 993px) {
     .panel-open .wppoppop-builder-workspace {
-        margin-right: 360px;
+       
     }
 }
 

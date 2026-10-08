@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <!-- Hardware-Accelerated Slide-In Layer Settings Inspector Panel -->
-<div id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:360px;background:#ffffff;border-left:1px solid #e2e8f0;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,0.15);z-index:99995;overflow:hidden;box-sizing:border-box;">
+<div id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer">
     <!-- Inspector Header Tabs -->
     <div style="display:flex;align-items:center;background:#0f172a;color:#ffffff;height:42px;flex-shrink:0;">
         <button type="button" id="wppoppop-inspector-close" style="width:42px;height:42px;background:#991b1b;border:none;color:#ffffff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;" title="Close Inspector">&times;</button>
@@ -355,16 +355,46 @@ if (!defined('ABSPATH')) {
             </div>
 
             <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ENTRANCE ANIMATION</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                    <label style="font-size:11px;font-weight:700;color:#475569;">ENTRANCE ANIMATION</label>
+                    <a href="https://animate.style/" target="_blank" rel="noopener" style="font-size:10px;font-weight:700;color:#2563eb;text-decoration:none;">Animate.css &rarr;</a>
+                </div>
                 <select id="prop-anim-effect" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <option value="none">None</option>
-                    <option value="fade">Fade In</option>
-                    <option value="slideDown">Slide Down</option>
-                    <option value="slideUp">Slide Up</option>
-                    <option value="bounceIn">Bounce In</option>
-                    <option value="zoomIn">Zoom In</option>
-                    <option value="pulse">Pulse</option>
+                    <optgroup label="Attention Seekers">
+                        <option value="bounce">bounce</option>
+                        <option value="flash">flash</option>
+                        <option value="pulse">pulse</option>
+                        <option value="rubberBand">rubberBand</option>
+                        <option value="shakeX">shakeX</option>
+                        <option value="shakeY">shakeY</option>
+                        <option value="tada">tada</option>
+                        <option value="wobble">wobble</option>
+                        <option value="heartBeat">heartBeat</option>
+                    </optgroup>
+                    <optgroup label="Fading Entrances">
+                        <option value="fadeIn">fadeIn</option>
+                        <option value="fadeInDown">fadeInDown</option>
+                        <option value="fadeInLeft">fadeInLeft</option>
+                        <option value="fadeInRight">fadeInRight</option>
+                        <option value="fadeInUp">fadeInUp</option>
+                    </optgroup>
+                    <optgroup label="Zooming Entrances">
+                        <option value="zoomIn">zoomIn</option>
+                        <option value="zoomInDown">zoomInDown</option>
+                        <option value="zoomInLeft">zoomInLeft</option>
+                        <option value="zoomInRight">zoomInRight</option>
+                        <option value="zoomInUp">zoomInUp</option>
+                    </optgroup>
+                    <optgroup label="Bouncing Entrances">
+                        <option value="bounceIn">bounceIn</option>
+                        <option value="bounceInDown">bounceInDown</option>
+                        <option value="bounceInLeft">bounceInLeft</option>
+                        <option value="bounceInRight">bounceInRight</option>
+                        <option value="bounceInUp">bounceInUp</option>
+                    </optgroup>
                 </select>
+
                 <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BOX SHADOW</label>
                 <select id="prop-box-shadow" class="widefat" style="font-size:12px;">
                     <option value="none">None</option>
