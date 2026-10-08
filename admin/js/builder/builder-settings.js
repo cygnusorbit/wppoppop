@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Campaign Settings Drawer Engine
- * Dedicated Per-Canvas Settings (Name, Size, Color, Logic Tab) & Bullets Selector
+ * Dedicated Per-Canvas Settings (Name, Size, Color, Animation, Logic Tab) & Bullets Selector
  */
 (function($) {
     'use strict';
@@ -132,6 +132,10 @@
                 grad_color1: '#3b82f6',
                 grad_color2: '#1d4ed8',
                 grad_angle: 135,
+                anim_appearance: 'fade',
+                anim_duration: 1000,
+                anim_delay: 0,
+                anim_disappearance: 'fade',
                 logic_enabled: false,
                 logic_field: '',
                 logic_operator: 'equals',
@@ -159,7 +163,18 @@
             $('#set-canvas-grad-color2').val(meta.grad_color2 || '#1d4ed8');
             $('#set-canvas-grad-angle').val(meta.grad_angle || 135);
 
-            // 4. Sync Canvas Logic Tab & Conditional Logic
+            // 4. Sync Canvas Animation Settings (Matching Screenshot)
+            var animApp = meta.anim_appearance || 'fade';
+            var animDur = meta.anim_duration !== undefined ? meta.anim_duration : 1000;
+            var animDel = meta.anim_delay !== undefined ? meta.anim_delay : 0;
+            var animDis = meta.anim_disappearance || 'fade';
+
+            $('#set-canvas-anim-appearance').val(animApp);
+            $('#set-canvas-anim-duration').val(animDur);
+            $('#set-canvas-anim-delay').val(animDel);
+            $('#set-canvas-anim-disappearance').val(animDis);
+
+            // 5. Sync Canvas Logic Tab & Conditional Logic
             this.checkConditionalLogicEligibility();
             this.populateLogicFieldOptions();
 
@@ -181,7 +196,6 @@
 
             $('#set-canvas-element-count-badge').text(count + (count === 1 ? ' Element' : ' Elements'));
 
-            // Condition: Must have at least 1 element on this canvas
             var $toggle = $('#set-canvas-logic-enable');
             var $notice = $('#set-canvas-logic-disabled-notice');
             var $rulesPanel = $('#set-canvas-logic-rules-panel');
@@ -209,7 +223,6 @@
             var addedTokens = [];
             var cur = core.state.currentCanvas || 1;
 
-            // Collect elements across canvases to evaluate rules
             Object.keys(core.state.canvases).forEach(function(cNum) {
                 var els = core.state.canvases[cNum] || [];
                 els.forEach(function(el) {
@@ -291,6 +304,16 @@
                 meta.grad_angle = parseInt($('#set-canvas-grad-angle').val(), 10) || 135;
                 self.applyActiveCanvasBackground();
             });
+
+            // Canvas Animation Setting Sync (Appearance, Duration, Delay, Disappearance)
+            $('#set-canvas-anim-appearance, #set-canvas-anim-duration, #set-canvas-anim-delay, #set-canvas-anim-disappearance').on('input change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                meta.anim_appearance = $('#set-canvas-anim-appearance').val();
+                meta.anim_duration = parseInt($('#set-canvas-anim-duration').val(), 10) || 1000;
+                meta.anim_delay = parseInt($('#set-canvas-anim-delay').val(), 10) || 0;
+                meta.anim_disappearance = $('#set-canvas-anim-disappearance').val();
+            });
         },
 
         applyActiveCanvasBackground: function() {
@@ -338,9 +361,7 @@
             });
         },
 
-        bindLiveStyle: function() {
-            // Live background synchronizer for campaign settings
-        },
+        bindLiveStyle: function() {},
 
         getSettings: function() {
             return {

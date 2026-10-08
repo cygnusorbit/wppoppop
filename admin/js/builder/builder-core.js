@@ -12,8 +12,8 @@
             set currentScreen(v) { this.currentCanvas = parseInt(v, 10) || 1; },
             canvases: { 1: [], 2: [] },
             canvasMeta: {
-                1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, logic_enabled: false },
-                2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, logic_enabled: false }
+                1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fade', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fade', logic_enabled: false },
+                2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fade', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fade', logic_enabled: false }
             },
             get screens() { return this.canvases; },
             set screens(v) { this.canvases = v || { 1: [], 2: [] }; },
@@ -156,6 +156,10 @@
                 grad_color1: '#3b82f6',
                 grad_color2: '#1d4ed8',
                 grad_angle: 135,
+                anim_appearance: 'fade',
+                anim_duration: 1000,
+                anim_delay: 0,
+                anim_disappearance: 'fade',
                 logic_enabled: false
             };
 
@@ -185,6 +189,10 @@
                     grad_color1: '#3b82f6',
                     grad_color2: '#1d4ed8',
                     grad_angle: 135,
+                    anim_appearance: 'fade',
+                    anim_duration: 1000,
+                    anim_delay: 0,
+                    anim_disappearance: 'fade',
                     logic_enabled: false
                 };
             }

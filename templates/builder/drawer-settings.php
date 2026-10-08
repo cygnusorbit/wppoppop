@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     <div style="flex:1;overflow-y:auto;padding:16px;">
         <div class="wppoppop-accordion-group">
             
-            <!-- 1. Dedicated Per-Canvas Settings with Canvas Bullets & Logic Tab -->
+            <!-- 1. Dedicated Per-Canvas Settings with Bullets, Color, Animation & Logic -->
             <div class="wppoppop-acc-item">
                 <button type="button" class="wppoppop-acc-header active">
                     <span>1. Canvas Settings (<strong id="set-current-canvas-badge">Canvas 1</strong>)</span>
@@ -37,7 +37,7 @@ if (!defined('ABSPATH')) {
                         <button type="button" class="wppoppop-csubtab" data-tab="logic">Canvas Logic</button>
                     </div>
 
-                    <!-- SUBTAB 1: GENERAL, SIZE & COLOR -->
+                    <!-- SUBTAB 1: GENERAL, SIZE, COLOR & ANIMATION -->
                     <div class="wppoppop-csubcontent active" id="csub-tab-general">
                         <div style="margin-bottom:12px;">
                             <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS NAME</label>
@@ -84,6 +84,62 @@ if (!defined('ABSPATH')) {
                                 <input type="number" id="set-canvas-grad-angle" value="135" min="0" max="360" class="widefat" style="font-size:12px;">
                             </div>
                         </div>
+
+                        <!-- ANIMATION SECTION -->
+                        <div class="wppoppop-anim-setting-wrap" style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;">
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                                <span style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">ANIMATION</span>
+                                <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#64748b;cursor:help;" title="Configure appearance entrance and disappearance exit animations for this canvas."></span>
+                            </div>
+
+                            <!-- Appearance Dropdown -->
+                            <div style="margin-bottom:10px;">
+                                <select id="set-canvas-anim-appearance" class="widefat" style="font-size:12px;height:34px;">
+                                    <option value="none">None</option>
+                                    <option value="fade" selected>Fade</option>
+                                    <option value="slideDown">Slide Down</option>
+                                    <option value="slideUp">Slide Up</option>
+                                    <option value="slideLeft">Slide Left</option>
+                                    <option value="slideRight">Slide Right</option>
+                                    <option value="zoomIn">Zoom In</option>
+                                    <option value="bounceIn">Bounce In</option>
+                                </select>
+                                <span class="wppoppop-anim-sublabel">Appearance</span>
+                            </div>
+
+                            <!-- Duration & Start delay Inputs Row -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                                <div>
+                                    <div class="wppoppop-input-suffix-wrap">
+                                        <input type="number" id="set-canvas-anim-duration" value="1000" min="0" step="50" class="widefat">
+                                        <span class="wppoppop-input-suffix">ms</span>
+                                    </div>
+                                    <span class="wppoppop-anim-sublabel">Duration</span>
+                                </div>
+                                <div>
+                                    <div class="wppoppop-input-suffix-wrap">
+                                        <input type="number" id="set-canvas-anim-delay" value="0" min="0" step="50" class="widefat">
+                                        <span class="wppoppop-input-suffix">ms</span>
+                                    </div>
+                                    <span class="wppoppop-anim-sublabel">Start delay</span>
+                                </div>
+                            </div>
+
+                            <!-- Disappearance Dropdown -->
+                            <div style="margin-bottom:4px;">
+                                <select id="set-canvas-anim-disappearance" class="widefat" style="font-size:12px;height:34px;">
+                                    <option value="none">None</option>
+                                    <option value="fade" selected>Fade</option>
+                                    <option value="slideDown">Slide Down</option>
+                                    <option value="slideUp">Slide Up</option>
+                                    <option value="slideLeft">Slide Left</option>
+                                    <option value="slideRight">Slide Right</option>
+                                    <option value="zoomOut">Zoom Out</option>
+                                </select>
+                                <span class="wppoppop-anim-sublabel">Disappearance</span>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- SUBTAB 2: DEDICATED CANVAS LOGIC (CONDITIONAL LOGIC) -->

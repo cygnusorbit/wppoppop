@@ -19,12 +19,12 @@ class WpPopPop_Front_Renderer {
             ? "background:linear-gradient({$grad_ang}deg, {$grad_c1}, {$grad_c2});"
             : "background:{$bg_color};";
 
-        // Normalization: Support modern 'canvases' with fallback to legacy 'screens'
         $canvases = $config['canvases'] ?? $config['screens'] ?? [];
         if (empty($canvases) || !is_array($canvases)) {
             $canvases = [1 => []];
         }
 
+        $canvas_meta = $config['canvasMeta'] ?? $config['canvas_meta'] ?? [];
         $encoded_config = esc_attr(wp_json_encode($config));
         $overlay_style = $is_inline ? 'display:block;position:relative;' : 'display:none;position:fixed;inset:0;z-index:999999;';
         ?>
@@ -32,7 +32,7 @@ class WpPopPop_Front_Renderer {
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
              data-config="<?php echo $encoded_config; ?>"
-             style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);backdrop-filter:blur(3px);">
+             style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);">
 
             <div class="wppoppop-box"
                  style="position:relative;width:<?php echo esc_attr($width); ?>px;max-width:92vw;min-height:<?php echo esc_attr($height); ?>px;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:hidden;<?php echo esc_attr($box_bg); ?>">
@@ -48,16 +48,45 @@ class WpPopPop_Front_Renderer {
                     <p class="wppoppop-status-message" style="font-size:15px;font-weight:700;color:#1e293b;margin:0;"></p>
                 </div>
 
-                <!-- Sequence Canvases (Dual-Compatible Classes & Attributes) -->
+                <!-- Sequence Canvases (With Dedicated Animation & Sizing Attributes) -->
                 <?php foreach ($canvases as $index => $elements): 
                     $canvas_num = intval($index) ?: 1;
                     $is_active = ($canvas_num === 1);
                     $display_style = $is_active ? 'display:block;' : 'display:none;';
+
+                    $cm = $canvas_meta[$canvas_num] ?? [];
+                    $c_width = intval($cm['width'] ?? $width);
+                    $c_height = intval($cm['height'] ?? $height);
+                    $c_anim_app = esc_attr($cm['anim_appearance'] ?? 'fade');
+                    $c_anim_dur = intval($cm['anim_duration'] ?? 1000);
+                    $c_anim_del = intval($cm['anim_delay'] ?? 0);
+                    $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
+
+                    // Canvas Background Override
+                    $c_bg_mode = $cm['bg_mode'] ?? 'solid';
+                    $c_bg_color = $cm['bg_color'] ?? '';
+                    $c_bg_style = '';
+                    if (!empty($c_bg_color)) {
+                        if ($c_bg_mode === 'gradient') {
+                            $g1 = esc_attr($cm['grad_color1'] ?? '#3b82f6');
+                            $g2 = esc_attr($cm['grad_color2'] ?? '#1d4ed8');
+                            $ga = intval($cm['grad_angle'] ?? 135);
+                            $c_bg_style = "background:linear-gradient({$ga}deg, {$g1}, {$g2});";
+                        } else {
+                            $c_bg_style = "background:" . esc_attr($c_bg_color) . ";";
+                        }
+                    }
                 ?>
                     <div class="wppoppop-canvas-container wppoppop-screen-container <?php echo $is_active ? 'wppoppop-canvas-active wppoppop-screen-active' : ''; ?>"
                          data-canvas-index="<?php echo esc_attr($canvas_num); ?>"
                          data-screen-index="<?php echo esc_attr($canvas_num); ?>"
-                         style="<?php echo esc_attr($display_style); ?>width:100%;min-height:<?php echo esc_attr($height); ?>px;position:relative;">
+                         data-width="<?php echo esc_attr($c_width); ?>"
+                         data-height="<?php echo esc_attr($c_height); ?>"
+                         data-anim-appearance="<?php echo $c_anim_app; ?>"
+                         data-anim-duration="<?php echo $c_anim_dur; ?>"
+                         data-anim-delay="<?php echo $c_anim_del; ?>"
+                         data-anim-disappearance="<?php echo $c_anim_dis; ?>"
+                         style="<?php echo esc_attr($display_style . $c_bg_style); ?>width:100%;min-height:<?php echo esc_attr($c_height); ?>px;position:relative;">
 
                         <?php 
                         if (is_array($elements)) {
@@ -106,7 +135,6 @@ class WpPopPop_Front_Renderer {
         $style_attr = esc_attr(implode(';', $style));
         $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
 
-        // Preserving all 19 Interactive Elements with Dual Bindings
         switch ($type) {
             case 'text':
                 return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
@@ -169,7 +197,6 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;border:1px dashed #cbd5e1;"><input type="file" name="uploaded_file" style="font-size:11px;width:95%;"></div>';
 
             case 'step_btn':
-                // Dual Target Binding: goto_canvas with fallback to goto_screen
                 $target_canvas = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : (!empty($el['goto_screen']) ? intval($el['goto_screen']) : 2);
                 $btn_text = !empty($content) ? esc_html($content) : 'Next Canvas &rarr;';
                 return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="' . esc_attr($target_canvas) . '" data-goto-screen="' . esc_attr($target_canvas) . '" data-goto="' . esc_attr($target_canvas) . '" style="width:100%;height:100%;background:#2563eb;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';

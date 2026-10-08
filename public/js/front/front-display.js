@@ -78,7 +78,6 @@
                 self.show($popup, config);
             });
 
-            // Multi-Canvas Step Switcher (Dual compatible button classes and targets)
             $popup.on('click', '.wppoppop-next-canvas-btn, .wppoppop-next-screen-btn, .wppoppop-next-step', function(e) {
                 e.preventDefault();
                 var targetCanvas = parseInt($(this).data('goto-canvas') || $(this).data('goto-screen') || $(this).data('goto'), 10) || 2;
@@ -89,23 +88,51 @@
         switchCanvas: function($popup, canvasNum) {
             canvasNum = parseInt(canvasNum, 10) || 1;
 
-            // Hide all canvas containers
-            $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container')
-                .hide()
-                .removeClass('wppoppop-canvas-active wppoppop-screen-active');
-
-            // Select active canvas container
+            var $current = $popup.find('.wppoppop-canvas-container.wppoppop-canvas-active, .wppoppop-screen-container.wppoppop-screen-active');
             var $target = $popup.find('.wppoppop-canvas-container[data-canvas-index="' + canvasNum + '"], .wppoppop-screen-container[data-screen-index="' + canvasNum + '"]');
-            if ($target.length) {
-                $target.fadeIn(200).addClass('wppoppop-canvas-active wppoppop-screen-active');
-            } else {
-                $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container')
-                    .first()
-                    .fadeIn(200)
-                    .addClass('wppoppop-canvas-active wppoppop-screen-active');
+
+            if (!$target.length) {
+                $target = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container').first();
             }
 
-            // Update Progress Bar if present
+            // Read Target Canvas Dimensions
+            var tWidth = parseInt($target.data('width'), 10);
+            var tHeight = parseInt($target.data('height'), 10);
+            if (tWidth && tHeight) {
+                $popup.find('.wppoppop-box').css({
+                    width: tWidth + 'px',
+                    minHeight: tHeight + 'px'
+                });
+            }
+
+            // Read Target Canvas Animation Settings
+            var appearance = ($target.data('anim-appearance') || 'fade').toString().toLowerCase();
+            var duration = parseInt($target.data('anim-duration'), 10);
+            if (isNaN(duration)) duration = 1000;
+            var delay = parseInt($target.data('anim-delay'), 10);
+            if (isNaN(delay)) delay = 0;
+
+            // Hide Current Container
+            $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container')
+                .hide()
+                .removeClass('wppoppop-canvas-active wppoppop-screen-active anim-fade anim-slideDown anim-slideUp anim-zoomIn anim-bounceIn');
+
+            // Apply Target Appearance Animation with Timing
+            setTimeout(function() {
+                $target.css({
+                    animationDuration: (duration / 1000) + 's',
+                    animationFillMode: 'both'
+                });
+
+                if (appearance === 'none') {
+                    $target.show().addClass('wppoppop-canvas-active wppoppop-screen-active');
+                } else {
+                    var animClass = 'anim-' + appearance;
+                    $target.show().addClass('wppoppop-canvas-active wppoppop-screen-active ' + animClass);
+                }
+            }, delay);
+
+            // Update Progress Bar
             var totalCanvases = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container').length || 1;
             var pct = Math.min(100, Math.round((canvasNum / totalCanvases) * 100));
             $popup.find('.wppoppop-progress-fill').css('width', pct + '%');
