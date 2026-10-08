@@ -153,6 +153,19 @@ $settings = isset($config['settings']) && is_array($config['settings']) ? $confi
         $text_align    = sanitize_text_field($el['textAlign'] ?? 'left');
         $padding       = intval($el['padding'] ?? 0);
         $box_shadow    = sanitize_text_field($el['boxShadow'] ?? 'none');
+        $line_height    = null;
+        if (isset($el['lineHeight']) && $el['lineHeight'] !== '') {
+            $line_height = floatval($el['lineHeight']);
+        } elseif (isset($el['line_height']) && $el['line_height'] !== '') {
+            $line_height = floatval($el['line_height']);
+        }
+
+        $letter_spacing = null;
+        if (isset($el['letterSpacing']) && $el['letterSpacing'] !== '') {
+            $letter_spacing = floatval($el['letterSpacing']);
+        } elseif (isset($el['letter_spacing']) && $el['letter_spacing'] !== '') {
+            $letter_spacing = floatval($el['letter_spacing']);
+        }
 
         $anim_effect = sanitize_text_field($el['animEffect'] ?? 'none');
         $anim_class  = ($anim_effect !== 'none' && !empty($anim_effect)) ? 'animate__animated animate__' . $anim_effect : '';
@@ -184,6 +197,12 @@ $settings = isset($config['settings']) && is_array($config['settings']) ? $confi
         if ($padding > 0) {
             $wrapper_styles[] = "padding:{$padding}px";
         }
+        if ($line_height !== null) {
+            $wrapper_styles[] = "line-height:{$line_height}";
+        }
+        if ($letter_spacing !== null) {
+            $wrapper_styles[] = "letter-spacing:{$letter_spacing}px";
+        }
         if (!empty($color)) {
             $wrapper_styles[] = "color:" . esc_attr($color);
         }
@@ -206,18 +225,25 @@ $settings = isset($config['settings']) && is_array($config['settings']) ? $confi
         $field_name = sanitize_key($el['fieldName'] ?? ($el['field_name'] ?? $type));
         $required   = !empty($el['required']);
         $justify_val = ($text_align === 'center') ? 'center' : (($text_align === 'right') ? 'flex-end' : 'flex-start');
+        $lh_inline = ($line_height !== null) ? "line-height:{$line_height};" : "line-height:inherit;";
+        $ls_inline = ($letter_spacing !== null) ? "letter-spacing:{$letter_spacing}px;" : "letter-spacing:inherit;";
+        $typo_inline = $lh_inline . $ls_inline;
 
         $html = '<div id="el-' . $id . '" class="wppoppop-front-element ' . esc_attr($anim_class) . '" style="' . esc_attr($style_attr) . '">';
 
         switch ($type) {
             case 'title':
                 $tag = in_array($el['htmlTag'] ?? 'h2', ['h1', 'h2', 'h3', 'h4'], true) ? $el['htmlTag'] : 'h2';
-                $html .= '<' . $tag . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;font-weight:inherit;color:inherit;line-height:1.2;">' . esc_html($content ?: 'Catchy Campaign Title') . '</' . $tag . '>';
+                $html .= '<' . $tag . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;font-weight:inherit;color:inherit;' . $typo_inline . '">' . esc_html($content ?: 'Catchy Campaign Title') . '</' . $tag . '>';
                 break;
 
             case 'text':
                 $tag = in_array($el['htmlTag'] ?? 'p', ['p', 'h1', 'h2', 'h3', 'span', 'div'], true) ? $el['htmlTag'] : 'p';
-                $html .= '<' . $tag . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;color:inherit;line-height:1.4;">' . wp_kses_post($content) . '</' . $tag . '>';
+                $html .= '<' . $tag . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;color:inherit;' . $typo_inline . '">' . wp_kses_post($content) . '</' . $tag . '>';
+                break;
+
+            case 'paragraph':
+                $html .= '<p style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;color:inherit;' . $typo_inline . '">' . wp_kses_post($content ?: 'Paragraph text content...') . '</p>';
                 break;
 
             case 'image':

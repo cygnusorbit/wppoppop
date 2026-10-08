@@ -25,8 +25,8 @@
 .wppoppop-front-element h4 {
     margin: 0;
     padding: 0;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    line-height: inherit;
+    letter-spacing: inherit;
     word-break: break-word;
     overflow-wrap: break-word;
     font-family: inherit;
@@ -517,4 +517,20 @@ button::-moz-focus-inner {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+}
+
+/* Typography Cadence Inheritance: Ensure Letter-Spacing & Line-Height Cascade to Inputs and Buttons */
+.wppoppop-front-element p,
+.wppoppop-front-element span,
+.wppoppop-front-element div,
+.wppoppop-front-element input[type="text"],
+.wppoppop-front-element input[type="email"],
+.wppoppop-front-element input[type="number"],
+.wppoppop-front-element select,
+.wppoppop-front-element button,
+.wppoppop-submit-btn,
+.wppoppop-link-btn,
+.wppoppop-next-canvas-btn {
+    letter-spacing: inherit;
+    line-height: inherit;
 }

@@ -468,6 +468,18 @@ if (function_exists('wp_enqueue_media')) {
                         </select>
                     </div>
                 </div>
+
+                <!-- LINE HEIGHT & LETTER SPACING -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                    <div>
+                        <label style="font-size:10px;font-weight:600;color:#64748b;display:block;margin-bottom:2px;">LINE HEIGHT</label>
+                        <input type="number" id="prop-line-height" step="0.1" min="0.5" max="4" value="1.4" class="widefat" style="font-size:12px;" placeholder="1.4">
+                    </div>
+                    <div>
+                        <label style="font-size:10px;font-weight:600;color:#64748b;display:block;margin-bottom:2px;">LETTER SPACING (PX)</label>
+                        <input type="number" id="prop-letter-spacing" step="0.5" min="-5" max="30" value="0" class="widefat" style="font-size:12px;" placeholder="0">
+                    </div>
+                </div>
                 <div>
                     <label style="font-size:10px;color:#64748b;">PADDING (PX)</label>
                     <input type="number" id="prop-padding" value="0" min="0" max="60" class="widefat" style="font-size:12px;">

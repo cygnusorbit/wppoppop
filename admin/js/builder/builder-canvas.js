@@ -146,6 +146,11 @@
             if (el.fontSize) $div.css('fontSize', el.fontSize + 'px');
             if (el.fontWeight) $div.css('fontWeight', el.fontWeight);
             if (el.textAlign) $div.css('textAlign', el.textAlign);
+            var elLh = (el.lineHeight !== undefined && el.lineHeight !== '') ? el.lineHeight : (el.line_height !== undefined && el.line_height !== '' ? el.line_height : '');
+            var elLs = (el.letterSpacing !== undefined && el.letterSpacing !== '') ? el.letterSpacing : (el.letter_spacing !== undefined && el.letter_spacing !== '' ? el.letter_spacing : '');
+            if (elLh !== '') $div.css('lineHeight', elLh);
+            if (elLs !== '') $div.css('letterSpacing', elLs + 'px');
+
             if (el.padding) $div.css('padding', el.padding + 'px');
             if (el.color) $div.css('color', el.color);
             if (el.bgColor) $div.css('backgroundColor', el.bgColor);
@@ -188,7 +193,13 @@
             var justifyVal = el.textAlign === 'center' ? 'center' : (el.textAlign === 'right' ? 'flex-end' : 'flex-start');
             var type = (el.type || 'text').toString().toLowerCase().trim();
 
-            switch (type) {
+            
+            var elLh = (el.lineHeight !== undefined && el.lineHeight !== '') ? el.lineHeight : (el.line_height !== undefined && el.line_height !== '' ? el.line_height : '');
+            var elLs = (el.letterSpacing !== undefined && el.letterSpacing !== '') ? el.letterSpacing : (el.letter_spacing !== undefined && el.letter_spacing !== '' ? el.letter_spacing : '');
+            var lineStyle = (elLh !== '') ? 'line-height:' + elLh + ';' : '';
+            var letterStyle = (elLs !== '') ? 'letter-spacing:' + elLs + 'px;' : '';
+            var typoStyles = lineStyle + letterStyle;
+switch (type) {
                 case 'title':
                     var titleTag = el.htmlTag || 'h2';
                     return '<' + titleTag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Catchy Campaign Title') + '</' + titleTag + '>';
@@ -333,7 +344,7 @@
                     return '<div style="width:100%;height:100%;position:relative;background:#ffffff;border-radius:inherit;"><canvas class="wppoppop-preview-sig-canvas" width="' + (el.width || 200) + '" height="' + (el.height || 80) + '" style="width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;touch-action:none;cursor:crosshair;"></canvas><button type="button" class="wppoppop-preview-sig-clear button" style="position:absolute;bottom:4px;right:4px;font-size:9px;padding:1px 6px;height:20px;background:#e2e8f0;border:none;cursor:pointer;">' + (el.clearLabel || 'Clear') + '</button></div>';
 
                 case 'wheel':
-                    return '<div class="wppoppop-preview-wheel-wrap" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;"><canvas class="wppoppop-preview-wheel-canvas" width="160" height="160" style="border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,0.2);"></canvas><button type="button" class="button wppoppop-preview-wheel-btn" style="margin-top:6px;background:#4338ca;color:#fff;border:none;font-weight:700;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;">' + (el.btnText || 'SPIN TO WIN!') + '</button></div>';
+                    return '<div class="wppoppop-preview-wheel-wrap" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;"><canvas class="wppoppop-preview-wheel-canvas" width="160" height="160" style="border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,0.2);"></canvas><button type="button" class="button wppoppop-preview-wheel-btn" style="margin-top:6px;background:#4338ca;color:#fff;border:none;font-weight:700;' + typoStyles + 'font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;">' + (el.btnText || 'SPIN TO WIN!') + '</button></div>';
 
                 case 'scratch':
                     return '<div class="wppoppop-preview-scratch-wrap" style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:inherit;user-select:none;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#fef08a;color:#854d0e;font-weight:700;font-size:13px;padding:8px;text-align:center;box-sizing:border-box;">' + (el.content || 'YOU WON 25% OFF!') + '</div><canvas class="wppoppop-preview-scratch-canvas" width="' + (el.width || 200) + '" height="' + (el.height || 60) + '" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;"></canvas></div>';
@@ -360,21 +371,21 @@
 
                 case 'submit':
                     var submitBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #c2185b;color:#c2185b;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#c2185b;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-submit-btn" style="width:100%;height:100%;' + submitBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;">' + (el.content || 'Submit Form') + '</button>';
+                    return '<button type="button" class="wppoppop-preview-submit-btn" style="width:100%;height:100%;' + submitBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;' + typoStyles + '">' + (el.content || 'Submit Form') + '</button>';
 
                 case 'link_btn':
                     var linkBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #2563eb;color:#2563eb;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#2563eb;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-link-btn" data-url="' + (el.linkUrl || '#') + '" data-blank="' + (el.linkBlank ? '1' : '0') + '" style="width:100%;height:100%;' + linkBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;">' + (el.content || 'Learn More &rarr;') + '</button>';
+                    return '<button type="button" class="wppoppop-preview-link-btn" data-url="' + (el.linkUrl || '#') + '" data-blank="' + (el.linkBlank ? '1' : '0') + '" style="width:100%;height:100%;' + linkBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;' + typoStyles + '">' + (el.content || 'Learn More &rarr;') + '</button>';
 
                 case 'pay':
                     var cur = el.payCurrency || 'USD';
                     var amt = el.payAmount !== undefined ? el.payAmount : 19.99;
                     var payBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #059669;color:#059669;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#059669;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-pay-btn" style="width:100%;height:100%;' + payBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;">' + (el.content || ('Checkout Now (' + cur + ' ' + amt + ')')) + '</button>';
+                    return '<button type="button" class="wppoppop-preview-pay-btn" style="width:100%;height:100%;' + payBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;' + typoStyles + '">' + (el.content || ('Checkout Now (' + cur + ' ' + amt + ')')) + '</button>';
 
                 case 'close_icon':
                     var iconGlyph = el.closeIconStyle === 'dashicon' ? '<span class="dashicons dashicons-no-alt" style="font-size:inherit;width:auto;height:auto;line-height:1;"></span>' : '&times;';
-                    return '<button type="button" class="wppoppop-preview-close-btn" data-close-action="' + (el.closeAction || 'close') + '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;font-size:inherit;font-weight:700;line-height:1;cursor:pointer;padding:0;">' + iconGlyph + '</button>';
+                    return '<button type="button" class="wppoppop-preview-close-btn" data-close-action="' + (el.closeAction || 'close') + '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;font-size:inherit;font-weight:700;' + typoStyles + 'line-height:1;cursor:pointer;padding:0;">' + iconGlyph + '</button>';
 
                 case 'html':
                     return '<div style="width:100%;height:100%;overflow:hidden;padding:4px;font-size:11px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">' + (el.content || '<strong>Custom HTML</strong>') + '</div>';

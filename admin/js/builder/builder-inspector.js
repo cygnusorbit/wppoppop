@@ -309,7 +309,49 @@
 
         bindInputs: function() {
             var self = this;
-            var getActiveEl = function() {
+            
+            // Dedicated Live Binding for Line Height & Letter Spacing
+            $('#prop-line-height, #prop-letter-spacing').off('input.lhls change.lhls').on('input.lhls change.lhls', function() {
+                var el = getActiveEl();
+                if (!el) return;
+
+                var lhRaw = $('#prop-line-height').val();
+                var lsRaw = $('#prop-letter-spacing').val();
+
+                var numLh = (lhRaw !== '' && !isNaN(lhRaw)) ? parseFloat(lhRaw) : '';
+                var numLs = (lsRaw !== '' && !isNaN(lsRaw)) ? parseFloat(lsRaw) : 0;
+
+                el.lineHeight = numLh;
+                el.line_height = numLh;
+                el.letterSpacing = numLs;
+                el.letter_spacing = numLs;
+
+                // 1. Instant live DOM application to wrapper and inner text/inputs
+                var $node = $('#el-' + el.id);
+                if ($node.length) {
+                    if (numLh !== '') {
+                        $node.css('lineHeight', numLh);
+                        $node.find('h1, h2, h3, h4, p, span, input, button, textarea, div').css('lineHeight', numLh);
+                    } else {
+                        $node.css('lineHeight', '');
+                        $node.find('h1, h2, h3, h4, p, span, input, button, textarea, div').css('lineHeight', '');
+                    }
+
+                    var lsCss = numLs + 'px';
+                    $node.css('letterSpacing', lsCss);
+                    $node.find('h1, h2, h3, h4, p, span, input, button, textarea, div').css('letterSpacing', lsCss);
+                }
+
+                // 2. Synchronize canvas markup
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+
+                if (window.WpPopPopBuilderCore) {
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            });
+var getActiveEl = function() {
                 var activeId = window.WpPopPopBuilderCore ? window.WpPopPopBuilderCore.state.activeId : null;
                 if (!activeId) return null;
                 var elements = window.WpPopPopBuilderCanvas.getActiveElements();
