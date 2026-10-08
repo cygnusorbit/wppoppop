@@ -126,11 +126,11 @@ if (!defined('ABSPATH')) {
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
                         <div>
-                            <label style="font-size:10px;color:#64748b;font-weight:700;">STROKE (PX)</label>
+                            <label style="font-size:10px;color:#64748b;">STROKE (PX)</label>
                             <input type="number" id="prop-shape-stroke-width" value="0" min="0" max="20" class="widefat" style="font-size:12px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;font-weight:700;">ROTATION (&deg;)</label>
+                            <label style="font-size:10px;color:#64748b;">ROTATION (&deg;)</label>
                             <input type="number" id="prop-shape-rotate" value="0" min="0" max="360" class="widefat" style="font-size:12px;">
                         </div>
                     </div>
@@ -369,11 +369,14 @@ if (!defined('ABSPATH')) {
                         <input type="number" id="prop-font-size" value="14" class="widefat" style="font-size:12px;">
                     </div>
                     <div>
-                        <label style="font-size:10px;color:#64748b;">TEXT COLOR</label>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                            <label style="font-size:10px;color:#64748b;margin:0;">TEXT COLOR</label>
+                            <button type="button" id="prop-text-transparent-btn" class="wppoppop-checker-btn" title="Set transparent (color: transparent;)" aria-label="Set transparent text color" style="width:18px;height:18px;border-radius:3px;border:1px solid #cbd5e1;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg,#94a3b8 25%,transparent 25%),linear-gradient(-45deg,#94a3b8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#94a3b8 75%),linear-gradient(-45deg,transparent 75%,#94a3b8 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0px;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05);"></button>
+                        </div>
                         <input type="color" id="prop-color" value="#0f172a" class="widefat" style="height:32px;padding:2px;">
                     </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
                     <div>
                         <label style="font-size:10px;color:#64748b;">FONT WEIGHT</label>
                         <select id="prop-font-weight" class="widefat" style="font-size:12px;">
@@ -392,27 +395,49 @@ if (!defined('ABSPATH')) {
                         </select>
                     </div>
                 </div>
+                <div>
+                    <label style="font-size:10px;color:#64748b;">PADDING (PX)</label>
+                    <input type="number" id="prop-padding" value="0" min="0" max="60" class="widefat" style="font-size:12px;">
+                </div>
             </div>
 
             <div style="margin-bottom:14px;">
                 <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BACKGROUND & BORDERS</label>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
                     <div>
-                        <label style="font-size:10px;color:#64748b;">BG COLOR</label>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                            <label style="font-size:10px;color:#64748b;margin:0;">BG COLOR</label>
+                            <button type="button" id="prop-bg-transparent-btn" class="wppoppop-checker-btn" title="Set transparent (background-color: transparent;)" aria-label="Set transparent background" style="width:18px;height:18px;border-radius:3px;border:1px solid #cbd5e1;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg,#94a3b8 25%,transparent 25%),linear-gradient(-45deg,#94a3b8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#94a3b8 75%),linear-gradient(-45deg,transparent 75%,#94a3b8 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0px;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05);"></button>
+                        </div>
                         <input type="color" id="prop-bg-color" value="#ffffff" class="widefat" style="height:32px;padding:2px;">
                     </div>
                     <div>
-                        <label style="font-size:10px;color:#64748b;">BORDER COLOR</label>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                            <label style="font-size:10px;color:#64748b;margin:0;">BORDER COLOR</label>
+                            <button type="button" id="prop-border-transparent-btn" class="wppoppop-checker-btn" title="Set transparent (border-color: transparent;)" aria-label="Set transparent border" style="width:18px;height:18px;border-radius:3px;border:1px solid #cbd5e1;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg,#94a3b8 25%,transparent 25%),linear-gradient(-45deg,#94a3b8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#94a3b8 75%),linear-gradient(-45deg,transparent 75%,#94a3b8 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0px;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05);"></button>
+                        </div>
                         <input type="color" id="prop-border-color" value="#cbd5e1" class="widefat" style="height:32px;padding:2px;">
                     </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">BORDER STYLE</label>
+                        <select id="prop-border-style" class="widefat" style="font-size:12px;">
+                            <option value="solid">Solid</option>
+                            <option value="dashed">Dashed</option>
+                            <option value="dotted">Dotted</option>
+                            <option value="double">Double</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
                     <div>
                         <label style="font-size:10px;color:#64748b;">RADIUS (PX)</label>
                         <input type="number" id="prop-border-radius" value="4" class="widefat" style="font-size:12px;">
                     </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
                     <div>
-                        <label style="font-size:10px;color:#64748b;">BORDER WIDTH</label>
+                        <label style="font-size:10px;color:#64748b;">BORDER WIDTH (PX)</label>
                         <input type="number" id="prop-border-width" value="1" min="0" max="10" class="widefat" style="font-size:12px;">
                     </div>
                     <div>
@@ -424,7 +449,10 @@ if (!defined('ABSPATH')) {
 
             <div style="margin-bottom:12px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                    <label style="font-size:11px;font-weight:700;color:#475569;">ENTRANCE ANIMATION</label>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <label style="font-size:11px;font-weight:700;color:#475569;margin:0;">ENTRANCE ANIMATION</label>
+                        <button type="button" id="prop-anim-replay-btn" title="Replay Animation on Canvas" style="background:#2563eb;color:#fff;border:none;border-radius:3px;font-size:9px;font-weight:700;padding:1px 5px;cursor:pointer;line-height:1.4;">&#9654; Play</button>
+                    </div>
                     <a href="https://animate.style/" target="_blank" rel="noopener" style="font-size:10px;font-weight:700;color:#2563eb;text-decoration:none;">Animate.css &rarr;</a>
                 </div>
                 <select id="prop-anim-effect" class="widefat" style="font-size:12px;margin-bottom:8px;">
