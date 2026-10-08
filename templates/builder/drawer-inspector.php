@@ -8,12 +8,12 @@ if (function_exists('wp_enqueue_media')) {
 ?>
 <!-- Hardware-Accelerated Slide-In Layer Settings Inspector Panel -->
 <div id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer">
-    <!-- Inspector Header Tabs -->
-    <div style="display:flex;align-items:center;background:#0f172a;color:#ffffff;height:42px;flex-shrink:0;">
+        <!-- Inspector Header Tabs -->
+    <div class="wppoppop-insp-header" style="display:flex;align-items:center;background:#0f172a;color:#ffffff;height:42px;border-bottom:1px solid #1e293b;position:relative;">
         <button type="button" id="wppoppop-inspector-close" style="width:42px;height:42px;background:#991b1b;border:none;color:#ffffff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;" title="Close Inspector">&times;</button>
-        <button type="button" class="wppoppop-insp-tab active" data-tab="basic" style="flex:1;background:transparent;border:none;color:#ffffff;font-weight:700;font-size:12px;cursor:pointer;height:100%;">Basic</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="style" style="flex:1;background:transparent;border:none;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer;height:100%;">Style</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="logic" style="flex:1;background:transparent;border:none;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer;height:100%;">Logic</button>
+        <button type="button" class="wppoppop-insp-tab active" data-tab="basic">Basic</button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="style">Style</button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="logic">Logic</button>
     </div>
 
     <!-- Active Element Type Indicator -->

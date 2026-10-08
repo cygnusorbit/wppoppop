@@ -152,7 +152,28 @@ class WpPopPop_Ajax_Builder {
         $this->verify_security();
         $json_raw = isset($_POST['import_data']) ? wp_unslash($_POST['import_data']) : '';
         $data = json_decode($json_raw, true);
-        if (!$data || !isset($data['meta'])) {
+        
+        if (isset($data['canvasMeta']) && is_array($data['canvasMeta'])) {
+            foreach ($data['canvasMeta'] as $cKey => $cVal) {
+                if (is_array($cVal)) {
+                    if (isset($cVal['anim_appearance'])) $data['canvasMeta'][$cKey]['anim_appearance'] = sanitize_text_field($cVal['anim_appearance']);
+                    if (isset($cVal['anim_duration'])) $data['canvasMeta'][$cKey]['anim_duration'] = intval($cVal['anim_duration']);
+                    if (isset($cVal['anim_delay'])) $data['canvasMeta'][$cKey]['anim_delay'] = intval($cVal['anim_delay']);
+                    if (isset($cVal['anim_disappearance'])) $data['canvasMeta'][$cKey]['anim_disappearance'] = sanitize_text_field($cVal['anim_disappearance']);
+                }
+            }
+        }
+        if (isset($data['canvas_meta']) && is_array($data['canvas_meta'])) {
+            foreach ($data['canvas_meta'] as $cKey => $cVal) {
+                if (is_array($cVal)) {
+                    if (isset($cVal['anim_appearance'])) $data['canvas_meta'][$cKey]['anim_appearance'] = sanitize_text_field($cVal['anim_appearance']);
+                    if (isset($cVal['anim_duration'])) $data['canvas_meta'][$cKey]['anim_duration'] = intval($cVal['anim_duration']);
+                    if (isset($cVal['anim_delay'])) $data['canvas_meta'][$cKey]['anim_delay'] = intval($cVal['anim_delay']);
+                    if (isset($cVal['anim_disappearance'])) $data['canvas_meta'][$cKey]['anim_disappearance'] = sanitize_text_field($cVal['anim_disappearance']);
+                }
+            }
+        }
+if (!$data || !isset($data['meta'])) {
             wp_send_json_error(['message' => 'Invalid JSON definition.']);
         }
 

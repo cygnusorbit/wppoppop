@@ -15,15 +15,21 @@
         },
 
         bindTabs: function() {
-            $('.wppoppop-insp-tab').on('click', function(e) {
+            var self = this;
+            $('.wppoppop-insp-tab').off('click.inspTab').on('click.inspTab', function(e) {
                 e.preventDefault();
                 var tab = $(this).data('tab');
-                $('.wppoppop-insp-tab').removeClass('active');
-                $(this).addClass('active');
-
-                $('.wppoppop-insp-content').hide();
-                $('#insp-tab-' + tab).show();
+                self.switchTab(tab);
             });
+        },
+
+        switchTab: function(tab) {
+            tab = tab || 'basic';
+            $('.wppoppop-insp-tab').removeClass('active');
+            $('.wppoppop-insp-tab[data-tab="' + tab + '"]').addClass('active');
+
+            $('.wppoppop-insp-content').hide();
+            $('#insp-tab-' + tab).show();
         },
 
         bindClose: function() {

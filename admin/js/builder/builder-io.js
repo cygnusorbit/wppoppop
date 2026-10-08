@@ -47,7 +47,32 @@
                 var core = window.WpPopPopBuilderCore;
                 var settings = window.WpPopPopBuilderSettings ? window.WpPopPopBuilderSettings.getSettings() : {};
 
-                var payload = {
+                
+        // Pre-export active canvas animation synchronization
+        if (core && core.state) {
+            var curCanvas = core.state.currentCanvas || 1;
+            if (!core.state.canvasMeta) core.state.canvasMeta = {};
+            if (!core.state.canvasMeta[curCanvas]) core.state.canvasMeta[curCanvas] = {};
+            var curCanvasMeta = core.state.canvasMeta[curCanvas];
+
+            var liveAnimApp = $('#set-canvas-anim-appearance, #set-anim-appearance').val();
+            if (liveAnimApp) curCanvasMeta.anim_appearance = liveAnimApp;
+
+            var liveAnimDur = $('#set-canvas-anim-duration, #set-anim-duration').val();
+            if (liveAnimDur !== undefined && liveAnimDur !== '' && !isNaN(liveAnimDur)) {
+                curCanvasMeta.anim_duration = parseInt(liveAnimDur, 10);
+            }
+
+            var liveAnimDel = $('#set-canvas-anim-delay, #set-anim-delay').val();
+            if (liveAnimDel !== undefined && liveAnimDel !== '' && !isNaN(liveAnimDel)) {
+                curCanvasMeta.anim_delay = parseInt(liveAnimDel, 10);
+            }
+
+            var liveAnimDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
+            if (liveAnimDis) curCanvasMeta.anim_disappearance = liveAnimDis;
+        }
+
+        var payload = {
                     canvases: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
                     screens: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
                     canvasMeta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},

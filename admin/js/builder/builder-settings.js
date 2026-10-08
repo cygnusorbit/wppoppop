@@ -145,9 +145,16 @@
             $('#set-canvas-grad-color2').val(meta.grad_color2 || '#1d4ed8');
             $('#set-canvas-grad-angle').val(meta.grad_angle || 135);
 
-            $('#set-anim-appearance').val(meta.anim_appearance || 'fade');
-            $('#set-anim-duration').val(meta.anim_duration !== undefined ? meta.anim_duration : 1000);
-            $('#set-anim-delay').val(meta.anim_delay !== undefined ? meta.anim_delay : 0);
+            // 4. Sync Canvas Animation Settings
+            var animApp = meta.anim_appearance || 'fade';
+            var animDur = (meta.anim_duration !== undefined && meta.anim_duration !== '') ? parseInt(meta.anim_duration, 10) : 1000;
+            var animDel = (meta.anim_delay !== undefined && meta.anim_delay !== '') ? parseInt(meta.anim_delay, 10) : 0;
+            var animDis = meta.anim_disappearance || 'fade';
+
+            $('#set-canvas-anim-appearance, #set-anim-appearance').val(animApp);
+            $('#set-canvas-anim-duration, #set-anim-duration').val(animDur);
+            $('#set-canvas-anim-delay, #set-anim-delay').val(animDel);
+            $('#set-canvas-anim-disappearance, #set-anim-disappearance').val(animDis);
 
             if (typeof this.renderCanvasBullets === 'function') {
                 this.renderCanvasBullets();
@@ -338,6 +345,45 @@
                     core.pushHistory();
                 }
             });
+            // Canvas Animation Settings Sync (Appearance, Duration, Delay, Disappearance)
+            $('#set-canvas-anim-appearance, #set-anim-appearance').off('change.canvasAnim').on('change.canvasAnim', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                core.state.canvasMeta[cur].anim_appearance = $(this).val();
+                core.pushHistory();
+            });
+
+            $('#set-canvas-anim-duration, #set-anim-duration').off('input.canvasAnim change.canvasAnim').on('input.canvasAnim change.canvasAnim', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                var val = parseInt($(this).val(), 10);
+                core.state.canvasMeta[cur].anim_duration = isNaN(val) ? 1000 : val;
+                core.pushHistory();
+            });
+
+            $('#set-canvas-anim-delay, #set-anim-delay').off('input.canvasAnim change.canvasAnim').on('input.canvasAnim change.canvasAnim', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                var val = parseInt($(this).val(), 10);
+                core.state.canvasMeta[cur].anim_delay = isNaN(val) ? 0 : val;
+                core.pushHistory();
+            });
+
+            $('#set-canvas-anim-disappearance, #set-anim-disappearance').off('change.canvasAnim').on('change.canvasAnim', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                core.state.canvasMeta[cur].anim_disappearance = $(this).val();
+                core.pushHistory();
+            });
+
         },
 
         applyActiveCanvasBackground: function() {
@@ -401,6 +447,12 @@
 
         getSettings: function() {
             return {
+                animation: {
+                    appearance: $('#set-canvas-anim-appearance, #set-anim-appearance').val() || 'fade',
+                    duration: parseInt($('#set-canvas-anim-duration, #set-anim-duration').val(), 10) || 1000,
+                    delay: parseInt($('#set-canvas-anim-delay, #set-anim-delay').val(), 10) || 0,
+                    disappearance: $('#set-canvas-anim-disappearance, #set-anim-disappearance').val() || 'fade'
+                },
                 box: {
                     width: parseInt($('#set-canvas-width').val(), 10) || 640,
                     height: parseInt($('#set-canvas-height').val(), 10) || 400
@@ -476,7 +528,22 @@
 
         setSettings: function(settings) {
             if (!settings) return;
-            if (settings.triggers) {
+            
+            if (settings.animation) {
+                if (settings.animation.appearance) {
+                    $('#set-canvas-anim-appearance, #set-anim-appearance').val(settings.animation.appearance);
+                }
+                if (settings.animation.duration !== undefined) {
+                    $('#set-canvas-anim-duration, #set-anim-duration').val(settings.animation.duration);
+                }
+                if (settings.animation.delay !== undefined) {
+                    $('#set-canvas-anim-delay, #set-anim-delay').val(settings.animation.delay);
+                }
+                if (settings.animation.disappearance) {
+                    $('#set-canvas-anim-disappearance, #set-anim-disappearance').val(settings.animation.disappearance);
+                }
+            }
+if (settings.triggers) {
                 $('#trig-load').prop('checked', !!settings.triggers.load);
                 $('#trig-load-delay').val(settings.triggers.load_delay || '');
                 $('#trig-exit').prop('checked', !!settings.triggers.exit);

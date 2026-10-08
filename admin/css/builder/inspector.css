@@ -55,25 +55,54 @@
     background: #7f1d1d;
 }
 
+/* ==========================================================================
+   WpPopPop Layer Properties Inspector Header Tabs
+   ========================================================================== */
+.wppoppop-insp-header {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    color: #ffffff;
+    height: 42px;
+    border-bottom: 1px solid #1e293b;
+    position: relative;
+    user-select: none;
+}
+
 .wppoppop-insp-tab {
     flex: 1;
-    background: transparent;
-    border: none;
-    color: #94a3b8;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    color: #94a3b8 !important;
     font-weight: 700;
     font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     cursor: pointer;
-    height: 100%;
-    transition: color 0.15s ease, background 0.15s ease;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none !important;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .wppoppop-insp-tab:hover {
-    color: #ffffff;
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.04) !important;
 }
 
+/* Prominent Layer Property Tab Highlight */
 .wppoppop-insp-tab.active {
-    color: #ffffff;
-    background: #1e293b;
+    color: #38bdf8 !important;
+    background: #1e293b !important;
+    border-bottom: 3px solid #38bdf8 !important;
+    box-shadow: inset 0 -2px 8px rgba(56, 189, 248, 0.25) !important;
 }
 
 .element-panel {
