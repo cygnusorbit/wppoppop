@@ -127,3 +127,15 @@
 .wppoppop-status-overlay.wppoppop-visible {
     display: flex !important;
 }
+
+/* Transparent Canvas Support: Eliminate solid fills and dark box shadows */
+.wppoppop-modal-box.wppoppop-canvas-transparent {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.wppoppop-canvas-container.wppoppop-canvas-transparent,
+.wppoppop-screen-container.wppoppop-canvas-transparent {
+    background: transparent !important;
+    box-shadow: none !important;
+}

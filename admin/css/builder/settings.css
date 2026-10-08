@@ -311,3 +311,38 @@ body.folded .wppoppop-settings-drawer {
         max-width: 100vw !important;
     }
 }
+
+/* ==========================================================================
+   WpPopPop Checkerboard Transparency Button Swatch
+   ========================================================================== */
+.wppoppop-checker-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid #64748b;
+    background-color: #ffffff;
+    background-image: 
+        linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+        linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+        linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    vertical-align: middle;
+}
+
+.wppoppop-checker-btn:hover {
+    border-color: #38bdf8;
+    transform: scale(1.08);
+}
+
+.wppoppop-checker-btn.active {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 2px #38bdf8, 0 0 8px rgba(56, 189, 248, 0.7) !important;
+}

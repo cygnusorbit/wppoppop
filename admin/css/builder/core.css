@@ -574,3 +574,17 @@ body.wppoppop-resizing-canvas {
 .is-preview-mode .wppoppop-field-rating {
     cursor: pointer !important;
 }
+
+/* Transparent Canvas State: Dotted boundary outline as workspace guide in edit mode, no dark box-shadow */
+#wppoppop-canvas-box.wppoppop-canvas-transparent {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: 2px dotted rgba(56, 189, 248, 0.75) !important;
+    outline-offset: -1px;
+}
+
+/* Live Preview Mode: Hide dotted guide outline cleanly */
+.wppoppop-builder-workspace.is-preview-mode #wppoppop-canvas-box.wppoppop-canvas-transparent {
+    outline: none !important;
+    box-shadow: none !important;
+}

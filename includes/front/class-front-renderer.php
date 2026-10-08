@@ -30,7 +30,10 @@ class WpPopPop_Front_Renderer {
             ? $config['canvasMeta']
             : (isset($config['canvas_meta']) && is_array($config['canvas_meta']) ? $config['canvas_meta'] : []);
 
-        $settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
+        
+        $c1_meta = isset($canvas_meta[1]) && is_array($canvas_meta[1]) ? $canvas_meta[1] : [];
+        $c1_is_transparent = (isset($c1_meta['bg_color']) && $c1_meta['bg_color'] === 'transparent') || (isset($box['bg_color']) && $box['bg_color'] === 'transparent');
+$settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
         $box_settings = isset($settings['box']) && is_array($settings['box']) ? $settings['box'] : [];
 
         $triggers = isset($settings['triggers']) && is_array($settings['triggers']) ? $settings['triggers'] : [];

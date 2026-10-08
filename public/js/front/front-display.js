@@ -142,55 +142,62 @@
         },
 
         switchCanvas: function($popup, canvasNum) {
-            var self = this;
-            canvasNum = parseInt(canvasNum, 10) || 1;
+        var $containers = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container');
+        var $target = $popup.find('.wppoppop-canvas-container[data-canvas-index="' + canvasNum + '"], .wppoppop-screen-container[data-screen-index="' + canvasNum + '"]');
+        if (!$target.length) return this;
 
-            var $current = $popup.find('.wppoppop-canvas-container.wppoppop-canvas-active, .wppoppop-screen-container.wppoppop-screen-active');
-            var $target = $popup.find('.wppoppop-canvas-container[data-canvas-index="' + canvasNum + '"], .wppoppop-screen-container[data-screen-index="' + canvasNum + '"]');
+        var $box = $popup.find('.wppoppop-modal-box');
+        var $current = $containers.filter('.is-active');
 
-            if (!$target.length) {
-                $target = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container').first();
-            }
+        // Play disappearance animation on outgoing canvas if defined
+        var curDis = $current.data('anim-disappearance');
+        if (curDis && curDis !== 'none') {
+            $current.addClass('animate__animated animate__' + curDis);
+        }
 
-            var disappearance = ($current.data('anim-disappearance') || 'fadeOut').toString().trim();
-            var exitDuration = 350;
+        $containers.removeClass('is-active').hide();
+        $target.addClass('is-active').css('display', 'block');
 
-            var performSwitch = function() {
-                $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container')
-                    .hide()
-                    .removeClass('wppoppop-canvas-active wppoppop-screen-active')
-                    .removeClass(function(i, c) { return (c.match(/(^|\s)animate__\S+/g) || []).join(' '); });
+        // Dynamic Dimension Adaptation
+        var targetW = parseInt($target.data('width'), 10);
+        var targetH = parseInt($target.data('height'), 10);
+        if (targetW && targetH) {
+            $box.css({ width: targetW + 'px', height: targetH + 'px' });
+        }
 
-                var tWidth = parseInt($target.data('width'), 10);
-                var tHeight = parseInt($target.data('height'), 10);
-                if (tWidth && tHeight) {
-                    $popup.find('.wppoppop-box').css({
-                        width: tWidth + 'px',
-                        minHeight: tHeight + 'px'
-                    });
-                }
+        // Dynamic Background & Shadow Adaptation
+        var bgColor = $target.data('bg-color') || $target.attr('data-bg-color');
+        var bgMode = $target.data('bg-mode') || $target.attr('data-bg-mode') || 'solid';
+        var grad1 = $target.data('grad-color1') || $target.attr('data-grad-color1') || '#3b82f6';
+        var grad2 = $target.data('grad-color2') || $target.attr('data-grad-color2') || '#1d4ed8';
+        var gradAngle = $target.data('grad-angle') || $target.attr('data-grad-angle') || 135;
 
-                self.triggerCanvasAnimation($target);
-
-                var totalCanvases = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container').length || 1;
-                var pct = Math.min(100, Math.round((canvasNum / totalCanvases) * 100));
-                $popup.find('.wppoppop-progress-fill').css('width', pct + '%');
-            };
-
-            if (disappearance !== 'none' && $current.length) {
-                var exitClass = disappearance;
-                if (exitClass.indexOf('animate__') !== 0) {
-                    if (exitClass === 'fade') exitClass = 'fadeOut';
-                    if (exitClass === 'slideDown') exitClass = 'slideOutDown';
-                    if (exitClass === 'slideUp') exitClass = 'slideOutUp';
-                    exitClass = 'animate__' + exitClass;
-                }
-                $current.addClass('animate__animated ' + exitClass);
-                setTimeout(performSwitch, exitDuration);
+        if (bgColor === 'transparent') {
+            $box.addClass('wppoppop-canvas-transparent');
+            $box.css({ background: 'transparent', 'box-shadow': 'none' });
+        } else {
+            $box.removeClass('wppoppop-canvas-transparent');
+            if (bgMode === 'gradient') {
+                $box.css({
+                    background: 'linear-gradient(' + gradAngle + 'deg, ' + grad1 + ', ' + grad2 + ')',
+                    'box-shadow': ''
+                });
             } else {
-                performSwitch();
+                $box.css({
+                    background: bgColor || '#ffffff',
+                    'box-shadow': ''
+                });
             }
-        },
+        }
+
+        // Play entrance animation on incoming canvas
+        var appAnim = $target.data('anim-appearance');
+        if (appAnim && appAnim !== 'none') {
+            $target.addClass('animate__animated animate__' + appAnim);
+        }
+
+        return this;
+    },
 
         switchScreen: function($popup, screenNum) {
             this.switchCanvas($popup, screenNum);

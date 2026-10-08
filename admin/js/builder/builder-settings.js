@@ -121,69 +121,40 @@
         syncCurrentCanvasSettings: function() {
             var core = window.WpPopPopBuilderCore;
             if (!core) return;
-
             var cur = core.state.currentCanvas || 1;
-            var meta = core.state.canvasMeta[cur] || {
-                name: 'Canvas ' + cur,
-                width: 640,
-                height: 400,
-                bg_mode: 'solid',
-                bg_color: '#ffffff',
-                grad_color1: '#3b82f6',
-                grad_color2: '#1d4ed8',
-                grad_angle: 135,
-                anim_appearance: 'fade',
-                anim_duration: 1000,
-                anim_delay: 0,
-                anim_disappearance: 'fade',
-                logic_enabled: false,
-                logic_field: '',
-                logic_operator: 'equals',
-                logic_value: '',
-                logic_action: 'show'
-            };
+            var meta = core.state.canvasMeta[cur] || {};
 
-            // 1. Update Title Badge & Bullets
-            $('#set-current-canvas-badge').text(meta.name || ('Canvas ' + cur));
-            $('.wppoppop-canvas-bullet').removeClass('active');
-            $('.wppoppop-canvas-bullet[data-canvas="' + cur + '"]').addClass('active');
-
-            // 2. Sync General & Dimensions
             $('#set-canvas-name').val(meta.name || ('Canvas ' + cur));
             $('#set-canvas-width').val(meta.width || 640);
             $('#set-canvas-height').val(meta.height || 400);
 
-            // 3. Sync Canvas-Specific Background Color
-            var bgMode = meta.bg_mode || 'solid';
-            $('#set-canvas-bg-mode').val(bgMode);
-            $('#set-canvas-solid-wrap').toggle(bgMode === 'solid');
-            $('#set-canvas-gradient-wrap').toggle(bgMode === 'gradient');
-            $('#set-canvas-bg-color').val(meta.bg_color || '#ffffff');
+            var isTransparent = (meta.bg_color === 'transparent');
+            $('#set-canvas-bg-transparent-btn')
+                .toggleClass('active', isTransparent)
+                .attr('aria-pressed', isTransparent ? 'true' : 'false');
+
+            if (isTransparent) {
+                $('#set-canvas-bg-mode').val(meta._prev_bg_mode || 'solid');
+                $('#set-canvas-bg-color').val(meta._prev_bg_color && meta._prev_bg_color !== 'transparent' ? meta._prev_bg_color : '#ffffff');
+            } else {
+                $('#set-canvas-bg-mode').val(meta.bg_mode || 'solid');
+                $('#set-canvas-bg-color').val(meta.bg_color || '#ffffff');
+            }
+
             $('#set-canvas-grad-color1').val(meta.grad_color1 || '#3b82f6');
             $('#set-canvas-grad-color2').val(meta.grad_color2 || '#1d4ed8');
             $('#set-canvas-grad-angle').val(meta.grad_angle || 135);
 
-            // 4. Sync Canvas Animation Settings (Matching Screenshot)
-            var animApp = meta.anim_appearance || 'fade';
-            var animDur = meta.anim_duration !== undefined ? meta.anim_duration : 1000;
-            var animDel = meta.anim_delay !== undefined ? meta.anim_delay : 0;
-            var animDis = meta.anim_disappearance || 'fade';
+            $('#set-anim-appearance').val(meta.anim_appearance || 'fade');
+            $('#set-anim-duration').val(meta.anim_duration !== undefined ? meta.anim_duration : 1000);
+            $('#set-anim-delay').val(meta.anim_delay !== undefined ? meta.anim_delay : 0);
 
-            $('#set-canvas-anim-appearance').val(animApp);
-            $('#set-canvas-anim-duration').val(animDur);
-            $('#set-canvas-anim-delay').val(animDel);
-            $('#set-canvas-anim-disappearance').val(animDis);
-
-            // 5. Sync Canvas Logic Tab & Conditional Logic
-            this.checkConditionalLogicEligibility();
-            this.populateLogicFieldOptions();
-
-            $('#set-canvas-logic-enable').prop('checked', !!meta.logic_enabled);
-            $('#set-canvas-logic-rules-panel').toggle(!!meta.logic_enabled && !$('#set-canvas-logic-enable').prop('disabled'));
-            if (meta.logic_field) $('#set-canvas-logic-field').val(meta.logic_field);
-            if (meta.logic_operator) $('#set-canvas-logic-operator').val(meta.logic_operator);
-            $('#set-canvas-logic-val').val(meta.logic_value || '');
-            if (meta.logic_action) $('#set-canvas-logic-action').val(meta.logic_action);
+            if (typeof this.renderCanvasBullets === 'function') {
+                this.renderCanvasBullets();
+            }
+            if (typeof this.syncQuizLogicBadge === 'function') {
+                this.syncQuizLogicBadge();
+            }
         },
 
         checkConditionalLogicEligibility: function() {
@@ -242,77 +213,130 @@
 
         bindCanvasMetaInputs: function() {
             var self = this;
-            var getMeta = function() {
+
+            // Two-Way Toggle for Canvas Transparency
+            $('#set-canvas-bg-transparent-btn').off('click.canvasTransparent').on('click.canvasTransparent', function(e) {
+                e.preventDefault();
                 var core = window.WpPopPopBuilderCore;
-                if (!core) return null;
+                if (!core) return;
                 var cur = core.state.currentCanvas || 1;
-                if (!core.state.canvasMeta[cur]) {
-                    core.state.canvasMeta[cur] = { name: 'Canvas ' + cur, width: 640, height: 400 };
+                var meta = core.state.canvasMeta[cur] || {};
+
+                if (meta.bg_color === 'transparent') {
+                    // DISABLE TRANSPARENT: Restore previous color or default solid
+                    var restoredColor = meta._prev_bg_color || '#ffffff';
+                    if (restoredColor === 'transparent') restoredColor = '#ffffff';
+                    meta.bg_color = restoredColor;
+                    meta.bg_mode = meta._prev_bg_mode || 'solid';
+
+                    $('#set-canvas-bg-color').val(restoredColor);
+                    $('#set-canvas-bg-mode').val(meta.bg_mode);
+                    $('#set-canvas-bg-transparent-btn').removeClass('active').attr('aria-pressed', 'false');
+                } else {
+                    // ENABLE TRANSPARENT: Cache previous color & mode
+                    meta._prev_bg_color = meta.bg_color || $('#set-canvas-bg-color').val() || '#ffffff';
+                    meta._prev_bg_mode = meta.bg_mode || $('#set-canvas-bg-mode').val() || 'solid';
+                    meta.bg_color = 'transparent';
+
+                    $('#set-canvas-bg-transparent-btn').addClass('active').attr('aria-pressed', 'true');
                 }
-                return core.state.canvasMeta[cur];
-            };
 
-            // Canvas Name Sync
-            $('#set-canvas-name').on('input change', function() {
-                var meta = getMeta();
-                if (!meta) return;
-                var val = $(this).val();
-                meta.name = val;
-
-                $('#set-current-canvas-badge').text(val || 'Canvas');
-                var cur = window.WpPopPopBuilderCore.state.currentCanvas;
-                $('.wppoppop-canvas-tab[data-canvas="' + cur + '"]').text(val || ('Canvas ' + cur));
-                self.renderCanvasBullets();
+                self.applyActiveCanvasBackground();
+                core.pushHistory();
             });
 
-            // Canvas Width / Height Sync
-            $('#set-canvas-width, #set-canvas-height').on('input change', function() {
-                var meta = getMeta();
-                if (!meta) return;
-                var w = parseInt($('#set-canvas-width').val(), 10) || 640;
-                var h = parseInt($('#set-canvas-height').val(), 10) || 400;
+            $('#set-canvas-name').off('input.canvasName').on('input.canvasName', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                var meta = core.state.canvasMeta[cur];
+                if (meta) {
+                    meta.name = $(this).val();
+                    core.renderCanvasTabs();
+                    $('#wppoppop-stage-canvas-badge').text(meta.name.toUpperCase());
+                }
+            });
 
-                meta.width = w;
-                meta.height = h;
-
-                $('#quick-box-width').val(w);
-                $('#quick-box-height').val(h);
-
-                if (window.WpPopPopBuilderCore.state.viewport === 'desktop') {
+            $('#set-canvas-width, #set-canvas-height').off('input.canvasDim change.canvasDim').on('input.canvasDim change.canvasDim', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                var meta = core.state.canvasMeta[cur];
+                if (meta && core.state.viewport === 'desktop') {
+                    var w = Math.max(200, Math.min(1600, parseInt($('#set-canvas-width').val(), 10) || 640));
+                    var h = Math.max(150, Math.min(1200, parseInt($('#set-canvas-height').val(), 10) || 400));
+                    meta.width = w;
+                    meta.height = h;
                     $('#wppoppop-canvas-box').css({ width: w + 'px', height: h + 'px' });
+                    $('#quick-box-width').val(w);
+                    $('#quick-box-height').val(h);
+                    core.pushHistory();
                 }
             });
 
-            // Canvas Background Mode & Colors Sync
-            $('#set-canvas-bg-mode').on('change', function() {
-                var meta = getMeta();
-                if (!meta) return;
+            $('#set-canvas-bg-mode').off('change.canvasBgMode').on('change.canvasBgMode', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                var meta = core.state.canvasMeta[cur];
                 var mode = $(this).val();
-                meta.bg_mode = mode;
-
-                $('#set-canvas-solid-wrap').toggle(mode === 'solid');
-                $('#set-canvas-gradient-wrap').toggle(mode === 'gradient');
-                self.applyActiveCanvasBackground();
+                if (meta) {
+                    meta.bg_mode = mode;
+                    if (meta.bg_color === 'transparent') {
+                        meta.bg_color = meta._prev_bg_color || '#ffffff';
+                        if (meta.bg_color === 'transparent') meta.bg_color = '#ffffff';
+                        $('#set-canvas-bg-color').val(meta.bg_color);
+                        $('#set-canvas-bg-transparent-btn').removeClass('active').attr('aria-pressed', 'false');
+                    }
+                    self.applyActiveCanvasBackground();
+                    core.pushHistory();
+                }
             });
 
-            $('#set-canvas-bg-color, #set-canvas-grad-color1, #set-canvas-grad-color2, #set-canvas-grad-angle').on('input change', function() {
-                var meta = getMeta();
-                if (!meta) return;
-                meta.bg_color = $('#set-canvas-bg-color').val();
-                meta.grad_color1 = $('#set-canvas-grad-color1').val();
-                meta.grad_color2 = $('#set-canvas-grad-color2').val();
-                meta.grad_angle = parseInt($('#set-canvas-grad-angle').val(), 10) || 135;
-                self.applyActiveCanvasBackground();
+            $('#set-canvas-bg-color').off('input.canvasBg change.canvasBg').on('input.canvasBg change.canvasBg', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                var meta = core.state.canvasMeta[cur];
+                if (meta) {
+                    meta.bg_color = $(this).val();
+                    meta._prev_bg_color = meta.bg_color;
+                    meta.bg_mode = 'solid';
+                    $('#set-canvas-bg-mode').val('solid');
+                    $('#set-canvas-bg-transparent-btn').removeClass('active').attr('aria-pressed', 'false');
+                    self.applyActiveCanvasBackground();
+                    core.pushHistory();
+                }
             });
 
-            // Canvas Animation Setting Sync (Appearance, Duration, Delay, Disappearance)
-            $('#set-canvas-anim-appearance, #set-canvas-anim-duration, #set-canvas-anim-delay, #set-canvas-anim-disappearance').on('input change', function() {
-                var meta = getMeta();
-                if (!meta) return;
-                meta.anim_appearance = $('#set-canvas-anim-appearance').val();
-                meta.anim_duration = parseInt($('#set-canvas-anim-duration').val(), 10) || 1000;
-                meta.anim_delay = parseInt($('#set-canvas-anim-delay').val(), 10) || 0;
-                meta.anim_disappearance = $('#set-canvas-anim-disappearance').val();
+            $('#set-canvas-grad-color1, #set-canvas-grad-color2, #set-canvas-grad-angle').off('input.canvasGrad change.canvasGrad').on('input.canvasGrad change.canvasGrad', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                var meta = core.state.canvasMeta[cur];
+                if (meta) {
+                    meta.grad_color1 = $('#set-canvas-grad-color1').val();
+                    meta.grad_color2 = $('#set-canvas-grad-color2').val();
+                    meta.grad_angle = parseInt($('#set-canvas-grad-angle').val(), 10) || 135;
+                    meta.bg_mode = 'gradient';
+                    $('#set-canvas-bg-mode').val('gradient');
+                    $('#set-canvas-bg-transparent-btn').removeClass('active').attr('aria-pressed', 'false');
+                    self.applyActiveCanvasBackground();
+                    core.pushHistory();
+                }
+            });
+
+            $('#set-anim-appearance, #set-anim-duration, #set-anim-delay').off('change.canvasAnim input.canvasAnim').on('change.canvasAnim input.canvasAnim', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                var meta = core.state.canvasMeta[cur];
+                if (meta) {
+                    meta.anim_appearance = $('#set-anim-appearance').val();
+                    meta.anim_duration = parseInt($('#set-anim-duration').val(), 10) || 1000;
+                    meta.anim_delay = parseInt($('#set-anim-delay').val(), 10) || 0;
+                    core.pushHistory();
+                }
             });
         },
 
@@ -323,15 +347,27 @@
             var meta = core.state.canvasMeta[cur] || {};
             var $box = $('#wppoppop-canvas-box');
 
-            var mode = meta.bg_mode || 'solid';
-            if (mode === 'gradient') {
-                var c1 = meta.grad_color1 || '#3b82f6';
-                var c2 = meta.grad_color2 || '#1d4ed8';
-                var ang = meta.grad_angle || 135;
-                $box.css({ background: 'linear-gradient(' + ang + 'deg, ' + c1 + ', ' + c2 + ')' });
+            if (meta.bg_color === 'transparent') {
+                $box.addClass('wppoppop-canvas-transparent');
+                $box.css({ background: 'transparent' });
+                $('#set-canvas-bg-transparent-btn').addClass('active').attr('aria-pressed', 'true');
+                $('#set-canvas-solid-wrap').show();
+                $('#set-canvas-grad-wrap').hide();
             } else {
-                var bg = meta.bg_color || '#ffffff';
-                $box.css({ background: bg });
+                $box.removeClass('wppoppop-canvas-transparent');
+                $('#set-canvas-bg-transparent-btn').removeClass('active').attr('aria-pressed', 'false');
+                if (meta.bg_mode === 'gradient') {
+                    $('#set-canvas-solid-wrap').hide();
+                    $('#set-canvas-grad-wrap').show();
+                    var col1 = meta.grad_color1 || '#3b82f6';
+                    var col2 = meta.grad_color2 || '#1d4ed8';
+                    var angle = meta.grad_angle || 135;
+                    $box.css({ background: 'linear-gradient(' + angle + 'deg, ' + col1 + ', ' + col2 + ')' });
+                } else {
+                    $('#set-canvas-solid-wrap').show();
+                    $('#set-canvas-grad-wrap').hide();
+                    $box.css({ background: meta.bg_color || '#ffffff' });
+                }
             }
         },
 

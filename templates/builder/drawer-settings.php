@@ -59,7 +59,10 @@ if (!defined('ABSPATH')) {
                         </div>
 
                         <div style="margin-bottom:12px;">
-                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS BACKGROUND FILL</label>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                        <label style="font-size:11px;font-weight:700;color:#475569;margin:0;">CANVAS BACKGROUND FILL</label>
+                        <button type="button" id="set-canvas-bg-transparent-btn" class="wppoppop-checker-btn" title="Toggle Transparent Background (Click to Enable / Disable)" aria-label="Toggle Transparent Background" aria-pressed="false" style="width:18px;height:18px;border-radius:3px;border:1px solid #64748b;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);background-size:8px 8px;background-position:0 0, 0 4px, 4px -4px, -4px 0px;transition:all 0.15s ease;"></button>
+                    </div>
                             <select id="set-canvas-bg-mode" class="widefat" style="margin-bottom:8px;font-size:12px;">
                                 <option value="solid">Solid Background Color</option>
                                 <option value="gradient">Linear Gradient</option>
