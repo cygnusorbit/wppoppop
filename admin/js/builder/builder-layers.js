@@ -1,192 +1,372 @@
 /**
- * WpPopPop Visual Builder: Floating Draggable Magenta LAYERS Panel Engine
- * Responsive Minimization, Draggable Bounds & Sortable Layers
+ * WpPopPop Visual Builder: Floating Magenta Layers Panel Controller
+ * Full 26-Element Stacking, Deep Duplication, Lock/Visibility Toggles & Drag Sorting
  */
 (function($) {
     'use strict';
 
     window.WpPopPopBuilderLayers = {
         init: function() {
-            this.bindPanelDragging();
-            this.bindSortable();
-            this.bindLayerActions();
-            this.bindCollapseToggle();
-            this.renderLayers();
+            this.bindPanelInteractions();
+            this.bindEvents();
         },
 
-        bindCollapseToggle: function() {
-            $(document).on('click', '#wppoppop-layers-toggle-collapse', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $('#wppoppop-floating-layers-panel').toggleClass('collapsed');
-            });
-        },
-
-        bindPanelDragging: function() {
+        bindPanelInteractions: function() {
             var $panel = $('#wppoppop-floating-layers-panel');
-            if ($panel.data('ui-draggable')) {
-                $panel.draggable('destroy');
-            }
+            if (!$panel.length) return;
+
+            // Make panel draggable within checkerboard workspace
             $panel.draggable({
-                handle: '#wppoppop-layers-header',
+                handle: '.wppoppop-layers-panel-header',
                 containment: '.wppoppop-builder-workspace',
-                cursor: 'grab',
-                start: function(e, ui) {
-                    var pos = $(this).position();
-                    $(this).css({
-                        right: 'auto',
-                        bottom: 'auto',
-                        left: pos.left + 'px',
-                        top: pos.top + 'px',
-                        zIndex: 100000 /* Retain layer priority over canvas corner handle */
-                    });
+                scroll: false,
+                stop: function() {
+                    // Retain coordinates in session if moved
                 }
             });
-        },
 
-        bindSortable: function() {
-            var self = this;
-            $('#wppoppop-layers-list').sortable({
-                handle: '.wppoppop-layer-grip',
-                axis: 'y',
-                placeholder: 'wppoppop-layer-drop-placeholder',
-                update: function() {
-                    self.reorderFromList();
-                }
+            // Toggle collapse body
+            $panel.off('click.toggleCollapse', '.wppoppop-layers-collapse-btn').on('click.toggleCollapse', '.wppoppop-layers-collapse-btn', function(e) {
+                e.stopPropagation();
+                var $body = $panel.find('.wppoppop-layers-panel-body');
+                $body.slideToggle(150);
+                $(this).toggleClass('collapsed');
             });
         },
 
         renderLayers: function() {
-            var core = window.WpPopPopBuilderCore;
+            var self = this;
             var $list = $('#wppoppop-layers-list');
+            if (!$list.length) return;
+
             $list.empty();
 
-            if (!core || !core.state.canvases) return;
-            var cur = core.state.currentCanvas || 1;
-            var elements = (core.state.canvases[cur] || []).slice().reverse();
+            if (!window.WpPopPopBuilderCanvas) return;
+            var elements = window.WpPopPopBuilderCanvas.getActiveElements();
 
-            $('#wppoppop-layers-count').text(elements.length);
-
-            if (elements.length === 0) {
-                $list.html('<div style="text-align:center;padding:14px 8px;font-size:11px;color:#94a3b8;font-style:italic;">No layers on this canvas</div>');
+            if (!elements || elements.length === 0) {
+                $list.html('<div style="padding:14px 10px;text-align:center;color:#94a3b8;font-size:11px;font-style:italic;">No layers on this canvas. Click an element in the Ribbon Bar to add one.</div>');
                 return;
             }
 
-            elements.forEach(function(el) {
-                var elId = el.id;
-                var $row = $('<div>')
-                    .addClass('wppoppop-layer-item')
-                    .attr('data-id', elId)
-                    .html(
-                        '<span class="wppoppop-layer-grip dashicons dashicons-menu"></span>' +
-                        '<span class="wppoppop-layer-title">' + (el.name || (el.type ? el.type.toUpperCase() : 'LAYER')) + '</span>' +
-                        '<div class="wppoppop-layer-actions">' +
-                            '<button type="button" class="wppoppop-layer-action-btn btn-lock ' + (el.locked ? 'active' : '') + '" title="Lock"><span class="dashicons dashicons-lock"></span></button>' +
-                            '<button type="button" class="wppoppop-layer-action-btn btn-vis ' + (el.hidden ? 'active' : '') + '" title="Visibility"><span class="dashicons dashicons-visibility"></span></button>' +
-                            '<button type="button" class="wppoppop-layer-action-btn btn-del" title="Delete"><span class="dashicons dashicons-trash"></span></button>' +
-                        '</div>'
-                    );
+            var activeId = window.WpPopPopBuilderCore ? window.WpPopPopBuilderCore.state.activeId : null;
 
-                if (core.state.activeId !== null && String(core.state.activeId) === String(elId)) {
-                    $row.addClass('active');
+            // Sort elements by zIndex descending so top-most layer appears at top of list
+            var sortedElements = elements.slice().sort(function(a, b) {
+                return (b.zIndex || 10) - (a.zIndex || 10);
+            });
+
+            sortedElements.forEach(function(el) {
+                var isSelected = activeId !== null && String(activeId) === String(el.id);
+                var isLocked = !!el.locked;
+                var isHidden = !!el.hidden;
+
+                var iconClass = self.getLayerIcon(el.type || 'text');
+                var layerTitle = el.name || ((el.type || 'Element').toUpperCase());
+
+                var $item = $('<div>')
+                    .addClass('wppoppop-layer-item')
+                    .attr('id', 'layer-item-' + el.id)
+                    .attr('data-id', el.id)
+                    .toggleClass('active', isSelected)
+                    .toggleClass('is-locked', isLocked)
+                    .toggleClass('is-hidden', isHidden);
+
+                var itemHtml = 
+                    '<div class="wppoppop-layer-drag-grip" title="Drag to reorder layer depth"><span class="dashicons dashicons-menu"></span></div>' +
+                    '<div class="wppoppop-layer-icon"><span class="dashicons ' + iconClass + '"></span></div>' +
+                    '<div class="wppoppop-layer-title" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
+                    '<div class="wppoppop-layer-actions">' +
+                        '<button type="button" class="wppoppop-layer-btn-duplicate" title="Duplicate Layer" data-id="' + el.id + '"><span class="dashicons dashicons-admin-page"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-btn-lock" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-btn-vis" title="' + (isHidden ? 'Show Layer' : 'Hide Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-btn-del" title="Delete Layer" data-id="' + el.id + '"><span class="dashicons dashicons-trash"></span></button>' +
+                    '</div>';
+
+                $item.html(itemHtml);
+                $list.append($item);
+            });
+
+            this.bindSortable();
+        },
+
+        getLayerIcon: function(type) {
+            var t = (type || 'text').toString().toLowerCase().trim();
+            switch (t) {
+                // Core Typography
+                case 'title':       return 'dashicons-heading';
+                case 'text':        return 'dashicons-editor-textcolor';
+
+                // Media & Shapes
+                case 'image':       return 'dashicons-format-image';
+                case 'video':       return 'dashicons-video-alt3';
+                case 'shape':       return 'dashicons-marker';
+
+                // Form Inputs
+                case 'textfield':   return 'dashicons-forms';
+                case 'email':       return 'dashicons-email';
+                case 'number':      return 'dashicons-calculator';
+                case 'select':      return 'dashicons-menu-alt';
+                case 'radios':      return 'dashicons-marker';
+                case 'checkboxes':  return 'dashicons-yes';
+                case 'rating':      return 'dashicons-star-filled';
+                case 'date':        return 'dashicons-calendar-alt';
+                case 'slider':      return 'dashicons-leftright';
+                case 'signature':   return 'dashicons-edit';
+
+                // Gamification & Urgency
+                case 'wheel':       return 'dashicons-update';
+                case 'scratch':     return 'dashicons-tickets-alt';
+                case 'countdown':   return 'dashicons-clock';
+                case 'progress':    return 'dashicons-performance';
+                case 'file':        return 'dashicons-upload';
+
+                // Action Buttons & Triggers
+                case 'submit':      return 'dashicons-yes-alt';
+                case 'link_btn':    return 'dashicons-admin-links';
+                case 'step_btn':    return 'dashicons-arrow-right-alt';
+                case 'pay':         return 'dashicons-cart';
+                case 'close_icon':  return 'dashicons-no-alt';
+
+                // Custom HTML
+                case 'html':        return 'dashicons-html';
+
+                default:            return 'dashicons-admin-generic';
+            }
+        },
+
+        bindSortable: function() {
+            var self = this;
+            var $list = $('#wppoppop-layers-list');
+            if (!$list.length) return;
+
+            $list.sortable({
+                handle: '.wppoppop-layer-drag-grip',
+                axis: 'y',
+                containment: 'parent',
+                tolerance: 'pointer',
+                opacity: 0.85,
+                stop: function() {
+                    self.syncZIndexesFromList();
                 }
-                $list.append($row);
             });
         },
 
-        highlightLayer: function(id) {
-            $('.wppoppop-layer-item').removeClass('active');
-            $('.wppoppop-layer-item').filter(function() {
-                return String($(this).attr('data-id')) === String(id);
-            }).addClass('active');
+        syncZIndexesFromList: function() {
+            var $items = $('#wppoppop-layers-list').find('.wppoppop-layer-item');
+            var total = $items.length;
+            if (!total) return;
+
+            var elements = window.WpPopPopBuilderCanvas.getActiveElements();
+
+            $items.each(function(index) {
+                var id = $(this).attr('data-id');
+                // Top-most in list receives highest z-index
+                var newZ = (total - index) * 5 + 10;
+
+                var el = elements.find(function(e) { return String(e.id) === String(id); });
+                if (el) {
+                    el.zIndex = newZ;
+                    $('#el-' + id).css('z-index', newZ);
+                }
+            });
+
+            if (window.WpPopPopBuilderCore) {
+                window.WpPopPopBuilderCore.pushHistory();
+            }
         },
 
-        bindLayerActions: function() {
+        bindEvents: function() {
             var self = this;
 
-            $(document).on('click', '.wppoppop-layer-item', function(e) {
-                if ($(e.target).closest('.wppoppop-layer-action-btn').length > 0) return;
-                e.stopPropagation();
+            // 1. Layer item selection
+            $(document).off('click.layerSelect', '.wppoppop-layer-item').on('click.layerSelect', '.wppoppop-layer-item', function(e) {
+                if ($(e.target).closest('button, .wppoppop-layer-drag-grip').length) return;
                 var id = $(this).attr('data-id');
                 if (window.WpPopPopBuilderCanvas) {
                     window.WpPopPopBuilderCanvas.selectElement(id);
                 }
             });
 
-            $(document).on('click', '.btn-lock', function(e) {
+            // 2. Lock / Unlock button
+            $(document).off('click.layerLock', '.wppoppop-layer-btn-lock').on('click.layerLock', '.wppoppop-layer-btn-lock', function(e) {
                 e.stopPropagation();
-                var id = $(this).closest('.wppoppop-layer-item').attr('data-id');
+                var id = $(this).attr('data-id');
                 self.toggleLock(id);
             });
 
-            $(document).on('click', '.btn-vis', function(e) {
+            // 3. Visibility button
+            $(document).off('click.layerVis', '.wppoppop-layer-btn-vis').on('click.layerVis', '.wppoppop-layer-btn-vis', function(e) {
                 e.stopPropagation();
-                var id = $(this).closest('.wppoppop-layer-item').attr('data-id');
+                var id = $(this).attr('data-id');
                 self.toggleVisibility(id);
             });
 
-            $(document).on('click', '.btn-del', function(e) {
+            // 4. Duplicate button
+            $(document).off('click.layerDup', '.wppoppop-layer-btn-duplicate').on('click.layerDup', '.wppoppop-layer-btn-duplicate', function(e) {
                 e.stopPropagation();
-                var id = $(this).closest('.wppoppop-layer-item').attr('data-id');
+                var id = $(this).attr('data-id');
+                self.duplicateLayer(id);
+            });
+
+            // 5. Delete button
+            $(document).off('click.layerDel', '.wppoppop-layer-btn-del').on('click.layerDel', '.wppoppop-layer-btn-del', function(e) {
+                e.stopPropagation();
+                var id = $(this).attr('data-id');
                 self.deleteLayer(id);
             });
+        },
+
+        highlightLayer: function(id) {
+            $('.wppoppop-layer-item').removeClass('active');
+            var $item = $('#layer-item-' + id);
+            if ($item.length) {
+                $item.addClass('active');
+                // Scroll into view within the panel list
+                var $container = $('#wppoppop-layers-list');
+                if ($container.length) {
+                    var itemTop = $item.position().top;
+                    if (itemTop < 0 || itemTop > $container.height() - 30) {
+                        $container.scrollTop($container.scrollTop() + itemTop - 10);
+                    }
+                }
+            }
         },
 
         toggleLock: function(id) {
             var elements = window.WpPopPopBuilderCanvas.getActiveElements();
             var el = elements.find(function(e) { return String(e.id) === String(id); });
-            if (el) {
-                el.locked = !el.locked;
-                this.renderLayers();
-                window.WpPopPopBuilderCanvas.renderCanvas();
+            if (!el) return;
+
+            el.locked = !el.locked;
+
+            var $node = $('#el-' + id);
+            var $item = $('#layer-item-' + id);
+
+            if (el.locked) {
+                $node.addClass('wppoppop-locked');
+                $item.addClass('is-locked');
+                $item.find('.wppoppop-layer-btn-lock').attr('title', 'Unlock Layer')
+                    .find('.dashicons').removeClass('dashicons-unlock').addClass('dashicons-lock');
+
+                try {
+                    $node.draggable('disable');
+                    $node.resizable('disable');
+                } catch(err) {}
+            } else {
+                $node.removeClass('wppoppop-locked');
+                $item.removeClass('is-locked');
+                $item.find('.wppoppop-layer-btn-lock').attr('title', 'Lock Layer')
+                    .find('.dashicons').removeClass('dashicons-lock').addClass('dashicons-unlock');
+
+                try {
+                    $node.draggable('enable');
+                    $node.resizable('enable');
+                } catch(err) {}
+            }
+
+            if (window.WpPopPopBuilderCore) {
+                window.WpPopPopBuilderCore.pushHistory();
             }
         },
 
         toggleVisibility: function(id) {
             var elements = window.WpPopPopBuilderCanvas.getActiveElements();
             var el = elements.find(function(e) { return String(e.id) === String(id); });
-            if (el) {
-                el.hidden = !el.hidden;
-                $('#el-' + id).toggle(!el.hidden);
-                this.renderLayers();
+            if (!el) return;
+
+            el.hidden = !el.hidden;
+
+            var $node = $('#el-' + id);
+            var $item = $('#layer-item-' + id);
+
+            if (el.hidden) {
+                $node.css('display', 'none');
+                $item.addClass('is-hidden');
+                $item.find('.wppoppop-layer-btn-vis').attr('title', 'Show Layer')
+                    .find('.dashicons').removeClass('dashicons-visibility').addClass('dashicons-hidden');
+            } else {
+                $node.css('display', 'block');
+                $item.removeClass('is-hidden');
+                $item.find('.wppoppop-layer-btn-vis').attr('title', 'Hide Layer')
+                    .find('.dashicons').removeClass('dashicons-hidden').addClass('dashicons-visibility');
+            }
+
+            if (window.WpPopPopBuilderCore) {
+                window.WpPopPopBuilderCore.pushHistory();
+            }
+        },
+
+        duplicateLayer: function(id) {
+            var elements = window.WpPopPopBuilderCanvas.getActiveElements();
+            var el = elements.find(function(e) { return String(e.id) === String(id); });
+            if (!el) return;
+
+            // Deep clone all element properties
+            var clone = JSON.parse(JSON.stringify(el));
+
+            // Generate fresh unique identifier and name
+            var newId = 'layer_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
+            clone.id = newId;
+            clone.name = (el.name || el.type.toUpperCase()) + ' (Copy)';
+
+            // Offset position by +15px
+            clone.top = (parseInt(el.top, 10) || 0) + 15;
+            clone.left = (parseInt(el.left, 10) || 0) + 15;
+
+            // Assign highest zIndex
+            var maxZ = elements.reduce(function(max, item) {
+                return Math.max(max, parseInt(item.zIndex, 10) || 10);
+            }, 10);
+            clone.zIndex = maxZ + 5;
+
+            // Insert into active canvas model
+            elements.push(clone);
+
+            // Render stage and layers
+            window.WpPopPopBuilderCanvas.renderCanvas();
+            this.renderLayers();
+
+            // Select new duplicate and open inspector
+            window.WpPopPopBuilderCanvas.selectElement(newId);
+
+            if (window.WpPopPopBuilderCore) {
+                window.WpPopPopBuilderCore.pushHistory();
             }
         },
 
         deleteLayer: function(id) {
             var elements = window.WpPopPopBuilderCanvas.getActiveElements();
             var idx = elements.findIndex(function(e) { return String(e.id) === String(id); });
-            if (idx > -1) {
-                elements.splice(idx, 1);
-                if (window.WpPopPopBuilderCore.state.activeId !== null && String(window.WpPopPopBuilderCore.state.activeId) === String(id)) {
-                    window.WpPopPopBuilderCanvas.deselect();
-                }
-                this.renderLayers();
-                window.WpPopPopBuilderCanvas.renderCanvas();
+            if (idx === -1) return;
+
+            elements.splice(idx, 1);
+
+            // If active element was deleted, deselect
+            if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state.activeId === id) {
+                window.WpPopPopBuilderCanvas.deselect();
+            }
+
+            window.WpPopPopBuilderCanvas.renderCanvas();
+            this.renderLayers();
+
+            if (window.WpPopPopBuilderCore) {
                 window.WpPopPopBuilderCore.pushHistory();
             }
         },
 
-        reorderFromList: function() {
-            var core = window.WpPopPopBuilderCore;
-            var cur = core.state.currentCanvas || 1;
-            var elements = core.state.canvases[cur] || [];
-            var idOrder = [];
-
-            $('#wppoppop-layers-list .wppoppop-layer-item').each(function() {
-                idOrder.push(String($(this).attr('data-id')));
-            });
-
-            idOrder.reverse();
-            elements.sort(function(a, b) {
-                return idOrder.indexOf(String(a.id)) - idOrder.indexOf(String(b.id));
-            });
-
-            elements.forEach(function(el, idx) {
-                el.zIndex = 10 + idx;
-            });
-
-            window.WpPopPopBuilderCanvas.renderCanvas();
-            core.pushHistory();
+        escapeHtml: function(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
     };
+
+    // Backward-compatible alias
+    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
+    window.WpPopPopBuilder.Layers = window.WpPopPopBuilderLayers;
 })(jQuery);

@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Layer Properties Inspector Engine
- * Full 21-Element Contextual Settings, Native WordPress Media Uploader & Style Suite
+ * Two-Way Data Binding for all 26 Ribbon Elements
  */
 (function($) {
     'use strict';
@@ -39,12 +39,12 @@
             var el = elements.find(function(e) { return e.id === id; });
             if (!el) return;
 
-            var type = el.type || 'text';
+            var type = (el.type || 'text').toLowerCase();
 
             // 1. Header Type Badge
             $('#insp-element-type-badge').text(type.toUpperCase());
 
-            // 2. Switch Contextual Element Panel in Basic Tab (All 21 Elements)
+            // 2. Switch Contextual Element Panel in Basic Tab
             $('#wppoppop-element-specific-settings .element-panel').hide();
             $('#panel-elem-' + type).show();
 
@@ -57,6 +57,11 @@
 
             // 4. Contextual Element Data Population
             switch (type) {
+                case 'title':
+                    $('#prop-title-content').val(el.content || 'Catchy Campaign Title');
+                    $('#prop-title-tag').val(el.htmlTag || 'h2');
+                    break;
+
                 case 'text':
                     $('#prop-text-content').val(el.content || '');
                     $('#prop-text-tag').val(el.htmlTag || 'p');
@@ -79,12 +84,39 @@
                     }
                     break;
 
+                case 'video':
+                    $('#prop-video-url').val(el.videoUrl || el.content || '');
+                    $('#prop-video-autoplay').prop('checked', !!el.videoAutoplay);
+                    $('#prop-video-controls').prop('checked', el.videoControls !== false);
+                    break;
+
                 case 'shape':
                     $('#prop-shape-preset').val(el.shapePreset || 'circle');
-                    $('#prop-shape-fill').val(el.shapeFill || '#3b82f6');
-                    $('#prop-shape-stroke').val(el.shapeStroke || '#1d4ed8');
+
+                    var shapeFill = el.shapeFill !== undefined ? el.shapeFill : '#3b82f6';
+                    if (shapeFill === 'transparent') {
+                        $('#prop-shape-fill-transparent-btn').addClass('active');
+                    } else {
+                        $('#prop-shape-fill-transparent-btn').removeClass('active');
+                        $('#prop-shape-fill').val(shapeFill);
+                    }
+
+                    var shapeStroke = el.shapeStroke !== undefined ? el.shapeStroke : '#1d4ed8';
+                    if (shapeStroke === 'transparent') {
+                        $('#prop-shape-stroke-transparent-btn').addClass('active');
+                    } else {
+                        $('#prop-shape-stroke-transparent-btn').removeClass('active');
+                        $('#prop-shape-stroke').val(shapeStroke);
+                    }
+
                     $('#prop-shape-stroke-width').val(el.shapeStrokeWidth !== undefined ? el.shapeStrokeWidth : 0);
                     $('#prop-shape-rotate').val(el.shapeRotate !== undefined ? el.shapeRotate : 0);
+                    break;
+
+                case 'textfield':
+                    $('#prop-textfield-placeholder').val(el.content || 'Enter text here...');
+                    $('#prop-textfield-fieldname').val(el.fieldName || el.field_name || 'text_field');
+                    $('#prop-textfield-required').prop('checked', !!el.required);
                     break;
 
                 case 'email':
@@ -169,22 +201,33 @@
                     $('#prop-file-fieldname').val(el.fieldName || el.field_name || 'attachment');
                     break;
 
+                case 'submit':
+                    $('#prop-submit-label').val(el.content || 'Submit Form');
+                    $('#prop-submit-action').val(el.submitAction || 'default');
+                    break;
+
+                case 'link_btn':
+                    $('#prop-link-label').val(el.content || 'Learn More &rarr;');
+                    $('#prop-link-url').val(el.linkUrl || el.actionUrl || 'https://example.com');
+                    $('#prop-link-blank').prop('checked', el.linkBlank !== false);
+                    break;
+
                 case 'step_btn':
                     var targetCanvas = el.goto_canvas || el.goto_screen || 2;
                     $('#prop-step-label').val(el.content || 'Next Canvas &rarr;');
                     $('#prop-step-canvas').val(targetCanvas);
                     break;
 
-                case 'submit':
-                    $('#prop-submit-label').val(el.content || 'Submit Form');
-                    $('#prop-submit-action').val(el.submitAction || 'default');
-                    break;
-
                 case 'pay':
                     $('#prop-pay-label').val(el.content || 'Checkout Now');
-                    $('#prop-pay-amount').val(el.payAmount || 19.99);
+                    $('#prop-pay-amount').val(el.payAmount !== undefined ? el.payAmount : 19.99);
                     $('#prop-pay-currency').val(el.payCurrency || 'USD');
                     $('#prop-pay-gateway').val(el.payGateway || 'stripe');
+                    break;
+
+                case 'close_icon':
+                    $('#prop-close-icon-style').val(el.closeIconStyle || 'times');
+                    $('#prop-close-icon-action').val(el.closeAction || 'close');
                     break;
 
                 case 'html':
@@ -194,9 +237,9 @@
 
             // 5. Populate Style Tab - Typography
             $('#prop-font-family').val(el.fontFamily || 'inherit');
-            $('#prop-font-size').val(el.fontSize || 14);
-            $('#prop-font-weight').val(el.fontWeight || '400');
-            $('#prop-text-align').val(el.textAlign || 'left');
+            $('#prop-font-size').val(el.fontSize || (type === 'title' ? 24 : 14));
+            $('#prop-font-weight').val(el.fontWeight || (type === 'title' ? '700' : '400'));
+            $('#prop-text-align').val(el.textAlign || (type === 'title' ? 'center' : 'left'));
             $('#prop-padding').val(el.padding !== undefined ? el.padding : 0);
 
             // Text Color transparency sync
@@ -209,7 +252,7 @@
             }
 
             // Background Color transparency sync
-            var currentBg = el.bgColor || '#ffffff';
+            var currentBg = el.bgColor || (type === 'close_icon' ? 'transparent' : '#ffffff');
             if (currentBg === 'transparent') {
                 $('#prop-bg-transparent-btn').addClass('active');
             } else {
@@ -228,7 +271,7 @@
 
             $('#prop-border-style').val(el.borderStyle || 'solid');
             $('#prop-border-radius').val(el.borderRadius !== undefined ? el.borderRadius : 4);
-            $('#prop-border-width').val(el.borderWidth !== undefined ? el.borderWidth : 1);
+            $('#prop-border-width').val(el.borderWidth !== undefined ? el.borderWidth : (type === 'close_icon' ? 0 : 1));
             $('#prop-opacity').val(el.opacity !== undefined ? el.opacity : 1);
             $('#prop-anim-effect').val(el.animEffect || 'none');
             $('#prop-box-shadow').val(el.boxShadow || 'none');
@@ -236,9 +279,9 @@
             // 6. Populate Logic Tab
             var tokenName = el.fieldName || el.field_name || type;
             $('#prop-display-token').val('{' + tokenName + '}');
-            $('#prop-action-url').val(el.actionUrl || '');
+            $('#prop-action-url').val(el.actionUrl || el.linkUrl || '');
             $('#prop-action-blank').prop('checked', !!el.actionBlank);
-            $('#prop-action-close').val(el.actionClose || 'none');
+            $('#prop-action-close').val(el.actionClose || el.closeAction || 'none');
             $('#prop-action-js').val(el.actionJs || '');
 
             // Open Inspector Frame
@@ -296,14 +339,34 @@
                 });
             });
 
-            // Native WordPress Media Library Uploader Button
+            // 1. Title Live Sync
+            $('#prop-title-content, #prop-title-tag').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'title') {
+                    el.content = $('#prop-title-content').val();
+                    el.htmlTag = $('#prop-title-tag').val();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // 2. Text Live Sync
+            $('#prop-text-content, #prop-text-tag').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'text') {
+                    el.content = $('#prop-text-content').val();
+                    el.htmlTag = $('#prop-text-tag').val();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // 3. Image Live Sync & WordPress Media
             $('#prop-image-upload-btn').off('click').on('click', function(e) {
                 e.preventDefault();
                 var el = getActiveEl();
                 if (!el) return;
 
                 if (typeof wp === 'undefined' || !wp.media) {
-                    alert('WordPress Media Library is not available. Please verify wp_enqueue_media() is active or enter an Image URL manually.');
+                    alert('WordPress Media Library is unavailable. Please enter an Image URL manually.');
                     return;
                 }
 
@@ -338,18 +401,13 @@
                     $('#prop-image-preview').attr('src', url).show();
                     $('#prop-image-placeholder').hide();
 
-                    if (window.WpPopPopBuilderCanvas) {
-                        window.WpPopPopBuilderCanvas.renderCanvas();
-                    }
-                    if (window.WpPopPopBuilderCore) {
-                        window.WpPopPopBuilderCore.pushHistory();
-                    }
+                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                    if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
                 });
 
                 wpMediaFrame.open();
             });
 
-            // Remove Image Button
             $('#prop-image-remove-btn').off('click').on('click', function(e) {
                 e.preventDefault();
                 var el = getActiveEl();
@@ -364,15 +422,10 @@
                 $('#prop-image-preview').attr('src', '').hide();
                 $('#prop-image-placeholder').show();
 
-                if (window.WpPopPopBuilderCanvas) {
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
-                if (window.WpPopPopBuilderCore) {
-                    window.WpPopPopBuilderCore.pushHistory();
-                }
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
             });
 
-            // Image URL, Alt & Object Fit Live Sync
             $('#prop-image-url').on('input change', function() {
                 var el = getActiveEl();
                 if (!el || el.type !== 'image') return;
@@ -388,52 +441,100 @@
                     $('#prop-image-placeholder').show();
                 }
 
-                if (window.WpPopPopBuilderCanvas) {
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
             });
 
             $('#prop-image-alt').on('input change', function() {
                 var el = getActiveEl();
                 if (!el || el.type !== 'image') return;
                 el.imageAlt = $(this).val();
-                if (window.WpPopPopBuilderCanvas) {
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
             });
 
             $('#prop-image-fit').on('change', function() {
                 var el = getActiveEl();
                 if (!el || el.type !== 'image') return;
                 el.imageFit = $(this).val();
-                if (window.WpPopPopBuilderCanvas) {
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
             });
 
-            // Shape Live Sync
-            $('#prop-shape-preset, #prop-shape-fill, #prop-shape-stroke, #prop-shape-stroke-width, #prop-shape-rotate').on('input change', function() {
+            // 4. Video Live Sync
+            $('#prop-video-url, #prop-video-autoplay, #prop-video-controls').on('input change', function() {
+                var el = getActiveEl();
+                if (!el || el.type !== 'video') return;
+                el.videoUrl = $('#prop-video-url').val();
+                el.content = el.videoUrl;
+                el.videoAutoplay = $('#prop-video-autoplay').is(':checked');
+                el.videoControls = $('#prop-video-controls').is(':checked');
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+            });
+
+            // 5. Shape Live Sync
+            $('#prop-shape-preset').on('change', function() {
                 var el = getActiveEl();
                 if (!el || el.type !== 'shape') return;
-                el.shapePreset = $('#prop-shape-preset').val();
-                el.shapeFill = $('#prop-shape-fill').val();
-                el.shapeStroke = $('#prop-shape-stroke').val();
+                el.shapePreset = $(this).val();
+                window.WpPopPopBuilderCanvas.renderCanvas();
+                if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
+            });
+
+            $('#prop-shape-fill-transparent-btn').off('click').on('click', function(e) {
+                e.preventDefault();
+                var el = getActiveEl();
+                if (!el || el.type !== 'shape') return;
+                el.shapeFill = 'transparent';
+                $('#prop-shape-fill-transparent-btn').addClass('active');
+                window.WpPopPopBuilderCanvas.renderCanvas();
+                if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
+            });
+
+            $('#prop-shape-stroke-transparent-btn').off('click').on('click', function(e) {
+                e.preventDefault();
+                var el = getActiveEl();
+                if (!el || el.type !== 'shape') return;
+                el.shapeStroke = 'transparent';
+                $('#prop-shape-stroke-transparent-btn').addClass('active');
+                window.WpPopPopBuilderCanvas.renderCanvas();
+                if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
+            });
+
+            $('#prop-shape-fill').on('input change', function() {
+                var el = getActiveEl();
+                if (!el || el.type !== 'shape') return;
+                el.shapeFill = $(this).val();
+                $('#prop-shape-fill-transparent-btn').removeClass('active');
+                window.WpPopPopBuilderCanvas.renderCanvas();
+            });
+
+            $('#prop-shape-stroke').on('input change', function() {
+                var el = getActiveEl();
+                if (!el || el.type !== 'shape') return;
+                el.shapeStroke = $(this).val();
+                $('#prop-shape-stroke-transparent-btn').removeClass('active');
+                window.WpPopPopBuilderCanvas.renderCanvas();
+            });
+
+            $('#prop-shape-stroke-width, #prop-shape-rotate').on('input change', function() {
+                var el = getActiveEl();
+                if (!el || el.type !== 'shape') return;
                 el.shapeStrokeWidth = parseInt($('#prop-shape-stroke-width').val(), 10) || 0;
                 el.shapeRotate = parseInt($('#prop-shape-rotate').val(), 10) || 0;
                 window.WpPopPopBuilderCanvas.renderCanvas();
             });
 
-            // Text Live Sync
-            $('#prop-text-content, #prop-text-tag').on('input change', function() {
+            // 6. Text Field Live Sync
+            $('#prop-textfield-placeholder, #prop-textfield-fieldname, #prop-textfield-required').on('input change', function() {
                 var el = getActiveEl();
-                if (el && el.type === 'text') {
-                    el.content = $('#prop-text-content').val();
-                    el.htmlTag = $('#prop-text-tag').val();
+                if (el && el.type === 'textfield') {
+                    el.content = $('#prop-textfield-placeholder').val();
+                    el.fieldName = $('#prop-textfield-fieldname').val();
+                    el.required = $('#prop-textfield-required').is(':checked');
+                    $('#prop-display-token').val('{' + el.fieldName + '}');
                     window.WpPopPopBuilderCanvas.renderCanvas();
                 }
             });
 
-            // Form Elements Live Sync
+            // 7. Form Elements Live Sync
             $('#prop-email-placeholder, #prop-email-fieldname, #prop-email-required').on('input change', function() {
                 var el = getActiveEl();
                 if (el && el.type === 'email') {
@@ -583,6 +684,28 @@
                 }
             });
 
+            // 8. Submit Button Live Sync
+            $('#prop-submit-label, #prop-submit-action').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'submit') {
+                    el.content = $('#prop-submit-label').val();
+                    el.submitAction = $('#prop-submit-action').val();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // 9. Link Button Live Sync
+            $('#prop-link-label, #prop-link-url, #prop-link-blank').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'link_btn') {
+                    el.content = $('#prop-link-label').val();
+                    el.linkUrl = $('#prop-link-url').val();
+                    el.linkBlank = $('#prop-link-blank').is(':checked');
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // 10. Next Canvas Button Live Sync
             $('#prop-step-label, #prop-step-canvas').on('input change', function() {
                 var el = getActiveEl();
                 if (el && el.type === 'step_btn') {
@@ -594,15 +717,7 @@
                 }
             });
 
-            $('#prop-submit-label, #prop-submit-action').on('input change', function() {
-                var el = getActiveEl();
-                if (el && el.type === 'submit') {
-                    el.content = $('#prop-submit-label').val();
-                    el.submitAction = $('#prop-submit-action').val();
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
-            });
-
+            // 11. Pay Button Live Sync
             $('#prop-pay-label, #prop-pay-amount, #prop-pay-currency, #prop-pay-gateway').on('input change', function() {
                 var el = getActiveEl();
                 if (el && el.type === 'pay') {
@@ -614,6 +729,17 @@
                 }
             });
 
+            // 12. Close Icon Live Sync
+            $('#prop-close-icon-style, #prop-close-icon-action').on('change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'close_icon') {
+                    el.closeIconStyle = $('#prop-close-icon-style').val();
+                    el.closeAction = $('#prop-close-icon-action').val();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // 13. HTML Live Sync
             $('#prop-html-code').on('input change', function() {
                 var el = getActiveEl();
                 if (el && el.type === 'html') {
@@ -622,7 +748,7 @@
                 }
             });
 
-            // Checker Buttons: Transparent Fills & Borders
+            // Transparent Swatches
             $('#prop-text-transparent-btn').off('click').on('click', function(e) {
                 e.preventDefault();
                 var el = getActiveEl();
@@ -667,7 +793,7 @@
                 if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
             });
 
-            // Live Animation Replay Preview
+            // Animation Playback
             $('#prop-anim-replay-btn').off('click').on('click', function(e) {
                 e.preventDefault();
                 var el = getActiveEl();
@@ -726,7 +852,6 @@
         }
     };
 
-    // Backward-compatible alias
     window.WpPopPopBuilder = window.WpPopPopBuilder || {};
     window.WpPopPopBuilder.Inspector = window.WpPopPopBuilderInspector;
 })(jQuery);

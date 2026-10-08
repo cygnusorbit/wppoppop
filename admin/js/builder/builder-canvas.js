@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Canvas Stage Engine
- * Direct-Pointer Corner Drag Resizing, Live Workspace Preview & 21-Element Interactive Simulation Suite
+ * Direct-Pointer Resizing, Live Preview & Full 26-Element Stage Rendering
  */
 (function($) {
     'use strict';
@@ -190,6 +190,10 @@
             var type = (el.type || 'text').toString().toLowerCase().trim();
 
             switch (type) {
+                case 'title':
+                    var titleTag = el.htmlTag || 'h2';
+                    return '<' + titleTag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Catchy Campaign Title') + '</' + titleTag + '>';
+
                 case 'text':
                     var tag = el.htmlTag || 'p';
                     return '<' + tag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Headline or Text') + '</' + tag + '>';
@@ -202,6 +206,31 @@
                         return '<div style="width:100%;height:100%;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;font-weight:600;pointer-events:none;padding:4px;"><span class="dashicons dashicons-format-image" style="font-size:24px;width:24px;height:24px;margin-bottom:4px;display:inline-block;line-height:1;"></span><span>No Image Selected</span></div>';
                     }
                     return '<img src="' + imgUrl + '" alt="' + imgAlt + '" style="width:100%;height:100%;object-fit:' + imgFit + ';display:block;border-radius:inherit;pointer-events:none;">';
+
+                case 'video':
+                    var rawUrl = (el.videoUrl || el.content || '').trim();
+                    if (!rawUrl) {
+                        return '<div style="width:100%;height:100%;background:#1e293b;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffffff;font-size:11px;font-weight:700;"><span class="dashicons dashicons-video-alt3" style="font-size:32px;width:32px;height:32px;margin-bottom:6px;"></span><span>Video Player Placeholder</span></div>';
+                    }
+
+                    var embedUrl = rawUrl;
+                    var isYt = rawUrl.indexOf('youtube.com') > -1 || rawUrl.indexOf('youtu.be') > -1;
+                    var isVim = rawUrl.indexOf('vimeo.com') > -1;
+
+                    if (isYt) {
+                        var ytId = '';
+                        var m = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+                        if (m && m[1]) ytId = m[1];
+                        embedUrl = 'https://www.youtube.com/embed/' + (ytId || 'dQw4w9WgXcQ') + (el.videoAutoplay ? '?autoplay=1&mute=1' : '');
+                        return '<iframe src="' + embedUrl + '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+                    } else if (isVim) {
+                        var vimId = rawUrl.split('/').pop().split('?')[0];
+                        embedUrl = 'https://player.vimeo.com/video/' + vimId + (el.videoAutoplay ? '?autoplay=1&muted=1' : '');
+                        return '<iframe src="' + embedUrl + '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+                    } else {
+                        // Native HTML5 MP4 Video
+                        return '<video src="' + rawUrl + '" ' + (el.videoControls !== false ? 'controls' : '') + ' ' + (el.videoAutoplay ? 'autoplay muted' : '') + ' style="width:100%;height:100%;object-fit:cover;border-radius:inherit;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '"></video>';
+                    }
 
                 case 'shape':
                     var preset = el.shapePreset || 'circle';
@@ -256,6 +285,9 @@
                     }
 
                     return '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;display:block;transform:rotate(' + rot + 'deg);pointer-events:none;overflow:visible;">' + svgContent + '</svg>';
+
+                case 'textfield':
+                    return '<input type="text" placeholder="' + (el.content || 'Enter text here...') + '" ' + (el.required ? 'required' : '') + ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
 
                 case 'email':
                     return '<input type="email" placeholder="' + (el.content || 'Enter your email...') + '" ' + (el.required ? 'required' : '') + ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
@@ -329,13 +361,21 @@
 
                 case 'submit':
                     var submitBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #c2185b;color:#c2185b;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#c2185b;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-submit-btn" style="width:100%;height:100%;' + submitBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;">' + (el.content || 'Submit Form') + '</button>';
+                    return '<button type="button" class="wppoppop-preview-submit-btn" style="width:100%;height:100%;' + submitBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;">' + (el.content || 'Submit Form') + '</button>';
+
+                case 'link_btn':
+                    var linkBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #2563eb;color:#2563eb;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#2563eb;color:#fff;border:none;');
+                    return '<button type="button" class="wppoppop-preview-link-btn" data-url="' + (el.linkUrl || '#') + '" data-blank="' + (el.linkBlank ? '1' : '0') + '" style="width:100%;height:100%;' + linkBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;">' + (el.content || 'Learn More &rarr;') + '</button>';
 
                 case 'pay':
                     var cur = el.payCurrency || 'USD';
                     var amt = el.payAmount !== undefined ? el.payAmount : 19.99;
                     var payBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #059669;color:#059669;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#059669;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-pay-btn" style="width:100%;height:100%;' + payBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;">' + (el.content || ('Checkout Now (' + cur + ' ' + amt + ')')) + '</button>';
+                    return '<button type="button" class="wppoppop-preview-pay-btn" style="width:100%;height:100%;' + payBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;">' + (el.content || ('Checkout Now (' + cur + ' ' + amt + ')')) + '</button>';
+
+                case 'close_icon':
+                    var iconGlyph = el.closeIconStyle === 'dashicon' ? '<span class="dashicons dashicons-no-alt" style="font-size:inherit;width:auto;height:auto;line-height:1;"></span>' : '&times;';
+                    return '<button type="button" class="wppoppop-preview-close-btn" data-close-action="' + (el.closeAction || 'close') + '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;font-size:inherit;font-weight:700;line-height:1;cursor:pointer;padding:0;">' + iconGlyph + '</button>';
 
                 case 'html':
                     return '<div style="width:100%;height:100%;overflow:hidden;padding:4px;font-size:11px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">' + (el.content || '<strong>Custom HTML</strong>') + '</div>';
@@ -416,15 +456,89 @@
 
             var defaultWidth = 200;
             var defaultHeight = 42;
+            var defaultContent = '';
+            var defaultBorderRadius = 4;
+            var defaultBorderWidth = 1;
+            var defaultBg = '#ffffff';
+            var defaultColor = '#0f172a';
+            var defaultFontSize = 14;
+            var defaultFontWeight = '400';
+            var defaultTextAlign = 'left';
 
-            if (type === 'text' || type === 'html') {
-                defaultWidth = 240;
-                defaultHeight = 70;
-            } else if (type === 'image' || type === 'shape') {
-                defaultWidth = 200;
-                defaultHeight = 140;
-            } else if (type === 'signature' || type === 'wheel') {
-                defaultHeight = 120;
+            switch (type) {
+                case 'title':
+                    defaultWidth = 280;
+                    defaultHeight = 48;
+                    defaultFontSize = 24;
+                    defaultFontWeight = '700';
+                    defaultTextAlign = 'center';
+                    defaultContent = 'Catchy Campaign Title';
+                    break;
+                case 'text':
+                    defaultWidth = 240;
+                    defaultHeight = 60;
+                    defaultContent = 'Add your description or subheadline text here.';
+                    break;
+                case 'image':
+                    defaultWidth = 200;
+                    defaultHeight = 140;
+                    defaultBorderRadius = 0;
+                    defaultBorderWidth = 0;
+                    break;
+                case 'video':
+                    defaultWidth = 320;
+                    defaultHeight = 180;
+                    defaultBorderRadius = 6;
+                    defaultBorderWidth = 0;
+                    defaultContent = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+                    break;
+                case 'shape':
+                    defaultWidth = 160;
+                    defaultHeight = 160;
+                    defaultBorderRadius = 0;
+                    defaultBorderWidth = 0;
+                    break;
+                case 'textfield':
+                    defaultWidth = 220;
+                    defaultHeight = 42;
+                    defaultContent = 'Enter text here...';
+                    break;
+                case 'close_icon':
+                    defaultWidth = 34;
+                    defaultHeight = 34;
+                    defaultBorderRadius = 17;
+                    defaultBorderWidth = 0;
+                    defaultBg = 'transparent';
+                    defaultColor = '#64748b';
+                    defaultFontSize = 22;
+                    defaultContent = '×';
+                    break;
+                case 'submit':
+                    defaultWidth = 200;
+                    defaultHeight = 44;
+                    defaultBg = '#c2185b';
+                    defaultColor = '#ffffff';
+                    defaultBorderRadius = 6;
+                    defaultFontWeight = '700';
+                    defaultContent = 'Submit Form';
+                    break;
+                case 'link_btn':
+                    defaultWidth = 200;
+                    defaultHeight = 44;
+                    defaultBg = '#2563eb';
+                    defaultColor = '#ffffff';
+                    defaultBorderRadius = 6;
+                    defaultFontWeight = '700';
+                    defaultContent = 'Learn More &rarr;';
+                    break;
+                case 'html':
+                    defaultWidth = 240;
+                    defaultHeight = 70;
+                    break;
+                case 'signature':
+                case 'wheel':
+                    defaultHeight = 120;
+                    break;
             }
 
             var newEl = {
@@ -436,31 +550,38 @@
                 width: defaultWidth,
                 height: defaultHeight,
                 zIndex: nextZ,
-                borderRadius: (type === 'image' || type === 'shape' ? 0 : 4),
+                borderRadius: defaultBorderRadius,
                 borderStyle: 'solid',
-                borderWidth: (type === 'image' || type === 'shape' ? 0 : 1),
-                fontWeight: '400',
-                textAlign: 'left',
+                borderWidth: defaultBorderWidth,
+                bgColor: defaultBg,
+                color: defaultColor,
+                fontSize: defaultFontSize,
+                fontWeight: defaultFontWeight,
+                textAlign: defaultTextAlign,
                 padding: 0,
                 opacity: 1,
-                content: '',
+                content: defaultContent,
                 imageUrl: '',
                 imageAlt: '',
                 imageFit: 'cover',
+                videoUrl: type === 'video' ? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' : '',
+                videoAutoplay: false,
+                videoControls: true,
                 shapePreset: 'circle',
                 shapeFill: '#3b82f6',
                 shapeStroke: '#1d4ed8',
                 shapeStrokeWidth: 2,
                 shapeRotate: 0,
+                linkUrl: 'https://example.com',
+                linkBlank: true,
+                closeIconStyle: 'times',
+                closeAction: 'close',
+                submitAction: 'default',
                 goto_canvas: 2,
                 goto_screen: 2,
                 locked: false,
                 hidden: false
             };
-
-            if (type === 'step_btn') {
-                newEl.content = 'Next Canvas &rarr;';
-            }
 
             elements.push(newEl);
             if (window.WpPopPopBuilderCore) {
@@ -665,7 +786,34 @@
                 self.handlePreviewSubmit($(this));
             });
 
-            // 3. Star Rating Interactivity
+            // 3. Link Button
+            $('.wppoppop-preview-link-btn').off('click.previewLink').on('click.previewLink', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var blank = $(this).data('blank') == '1';
+                if (!url || url === '#') {
+                    alert('Preview: Link destination triggered (URL: empty)');
+                    return;
+                }
+                if (blank) {
+                    window.open(url, '_blank');
+                } else {
+                    window.location.href = url;
+                }
+            });
+
+            // 4. Close Icon
+            $('.wppoppop-preview-close-btn').off('click.previewClose').on('click.previewClose', function(e) {
+                e.preventDefault();
+                var act = $(this).data('close-action') || 'close';
+                self.playChime('click');
+                $('#wppoppop-canvas-box').fadeOut(250, function() {
+                    alert('Preview: Popup closed via Close Icon (Action: ' + act + ')');
+                    $('#wppoppop-canvas-box').fadeIn(200);
+                });
+            });
+
+            // 5. Star Rating Interactivity
             $('.wppoppop-preview-star').off('click.previewStar').on('click.previewStar', function(e) {
                 e.stopPropagation();
                 var ratingVal = parseInt($(this).data('val'), 10) || 5;
@@ -677,7 +825,7 @@
                 self.playChime('click');
             });
 
-            // 4. Digital Signature Drawing
+            // 6. Digital Signature Drawing
             $('.wppoppop-preview-sig-canvas').each(function() {
                 var sigCanvas = this;
                 var ctx = sigCanvas.getContext('2d');
@@ -712,7 +860,7 @@
                 }
             });
 
-            // 5. Lucky Wheel Interactive Simulation
+            // 7. Lucky Wheel Interactive Simulation
             $('.wppoppop-preview-wheel-wrap').each(function() {
                 var $wrap = $(this);
                 var canvas = $wrap.find('.wppoppop-preview-wheel-canvas')[0];
@@ -765,7 +913,7 @@
                 });
             });
 
-            // 6. Scratch Card Interactive Simulation
+            // 8. Scratch Card Interactive Simulation
             $('.wppoppop-preview-scratch-wrap').each(function() {
                 var $wrap = $(this);
                 var canvas = $wrap.find('.wppoppop-preview-scratch-canvas')[0];
@@ -815,7 +963,7 @@
                 }
             });
 
-            // 7. Live Countdown Ticker
+            // 9. Live Countdown Ticker
             $('.wppoppop-preview-countdown').each(function() {
                 var $timer = $(this);
                 var secs = parseInt($timer.data('secs'), 10) || 900;
@@ -871,11 +1019,9 @@
         handlePreviewSubmit: function($btn) {
             var self = this;
             var $box = $('#wppoppop-canvas-box');
-            var hasEmail = false;
             var valid = true;
 
             $box.find('input[type="email"]').each(function() {
-                hasEmail = true;
                 var val = $(this).val();
                 if ($(this).prop('required') && (!val || val.indexOf('@') === -1)) {
                     valid = false;
@@ -885,8 +1031,18 @@
                 }
             });
 
+            $box.find('input[type="text"]').each(function() {
+                var val = $(this).val();
+                if ($(this).prop('required') && !val.trim()) {
+                    valid = false;
+                    $(this).css('borderColor', '#ef4444');
+                } else {
+                    $(this).css('borderColor', '#cbd5e1');
+                }
+            });
+
             if (!valid) {
-                alert('Please enter a valid email address.');
+                alert('Please fill out all required fields.');
                 return;
             }
 
@@ -974,7 +1130,6 @@
         }
     };
 
-    // Backward-compatible alias
     window.WpPopPopBuilder = window.WpPopPopBuilder || {};
     window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
 })(jQuery);

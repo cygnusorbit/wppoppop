@@ -3,298 +3,442 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * WpPopPop Public Frontend Markup Renderer
+ * Full 26-Element Stage Parity, SVG Geometry, Video Players & Dual Canvas Normalization
+ */
 class WpPopPop_Front_Renderer {
 
+    /**
+     * Render the complete popup HTML structure
+     *
+     * @param string $uid
+     * @param array  $config
+     * @param bool   $is_inline
+     * @return string
+     */
     public function render_popup_markup($uid, array $config, $is_inline = false) {
-        $box = $config['box'] ?? [];
-        $width = intval($box['width'] ?? 640);
-        $height = intval($box['height'] ?? 400);
-        $bg_mode = $box['bg_mode'] ?? 'solid';
-        $bg_color = $box['bg_color'] ?? '#ffffff';
-        $grad_c1 = $box['grad_color1'] ?? '#3b82f6';
-        $grad_c2 = $box['grad_color2'] ?? '#1d4ed8';
-        $grad_ang = intval($box['grad_angle'] ?? 135);
+        $canvases = isset($config['canvases']) && is_array($config['canvases'])
+            ? $config['canvases']
+            : (isset($config['screens']) && is_array($config['screens']) ? $config['screens'] : []);
 
-        $box_bg = ($bg_mode === 'gradient')
-            ? "background:linear-gradient({$grad_ang}deg, {$grad_c1}, {$grad_c2});"
-            : "background:{$bg_color};";
-
-        $canvases = $config['canvases'] ?? $config['screens'] ?? [];
-        if (empty($canvases) || !is_array($canvases)) {
+        if (empty($canvases)) {
             $canvases = [1 => []];
         }
 
-        $canvas_meta = $config['canvasMeta'] ?? $config['canvas_meta'] ?? [];
-        $encoded_config = esc_attr(wp_json_encode($config));
-        $overlay_style = $is_inline ? 'display:block;position:relative;' : 'display:none;position:fixed;inset:0;z-index:999999;';
+        $canvas_meta = isset($config['canvasMeta']) && is_array($config['canvasMeta'])
+            ? $config['canvasMeta']
+            : (isset($config['canvas_meta']) && is_array($config['canvas_meta']) ? $config['canvas_meta'] : []);
+
+        $settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
+        $box_settings = isset($settings['box']) && is_array($settings['box']) ? $settings['box'] : [];
+
+        $triggers = isset($settings['triggers']) && is_array($settings['triggers']) ? $settings['triggers'] : [];
+        $freq_mode = isset($settings['frequency']['mode']) ? sanitize_text_field($settings['frequency']['mode']) : 'always';
+        $freq_days = isset($settings['frequency']['days']) ? intval($settings['frequency']['days']) : 7;
+
+        $load_trigger = !empty($triggers['load']) ? '1' : '0';
+        $load_delay   = isset($triggers['load_delay']) ? floatval($triggers['load_delay']) : 0;
+        $exit_trigger = !empty($triggers['exit']) ? '1' : '0';
+        $scroll_trig  = !empty($triggers['scroll']) ? (floatval($triggers['scroll_val'] ?? 50)) : '0';
+        $adblock_trig = !empty($triggers['adblock']) ? '1' : '0';
+        $back_trig    = !empty($triggers['backbutton']) ? '1' : '0';
+
+        ob_start();
         ?>
-        <div class="wppoppop-overlay <?php echo $is_inline ? 'wppoppop-inline-container' : ''; ?>"
-             id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
+        <div id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
+             class="wppoppop-popup-wrap <?php echo $is_inline ? 'wppoppop-inline-wrap' : ''; ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
-             data-config="<?php echo $encoded_config; ?>"
-             style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);">
+             data-trigger-load="<?php echo esc_attr($load_trigger); ?>"
+             data-trigger-delay="<?php echo esc_attr($load_delay); ?>"
+             data-trigger-exit="<?php echo esc_attr($exit_trigger); ?>"
+             data-trigger-scroll="<?php echo esc_attr($scroll_trig); ?>"
+             data-trigger-adblock="<?php echo esc_attr($adblock_trig); ?>"
+             data-trigger-back="<?php echo esc_attr($back_trig); ?>"
+             data-freq-mode="<?php echo esc_attr($freq_mode); ?>"
+             data-freq-days="<?php echo esc_attr($freq_days); ?>"
+             style="<?php echo $is_inline ? '' : 'display:none;'; ?>">
 
-            <div class="wppoppop-box"
-                 style="position:relative;width:<?php echo esc_attr($width); ?>px;max-width:92vw;min-height:<?php echo esc_attr($height); ?>px;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:visible !important;<?php echo esc_attr($box_bg); ?>">
+            <?php if (!$is_inline) : ?>
+                <div class="wppoppop-overlay" style="position:fixed;inset:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(3px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+            <?php endif; ?>
 
-                <!-- Close Button -->
-                <?php if (!$is_inline): ?>
-                    <button type="button" class="wppoppop-close-btn" aria-label="Close" style="position:absolute;top:10px;right:10px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>
-                <?php endif; ?>
+            <?php
+            $is_first = true;
+            foreach ($canvases as $c_idx => $elements) :
+                $c_num = intval($c_idx);
+                $meta  = isset($canvas_meta[$c_num]) && is_array($canvas_meta[$c_num]) ? $canvas_meta[$c_num] : [];
 
-                <!-- Submission Status Overlay -->
-                <div class="wppoppop-status-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.95);z-index:999999;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center;">
-                    <span class="dashicons dashicons-yes-alt" style="font-size:42px;width:42px;height:42px;color:#10b981;margin-bottom:8px;"></span>
-                    <p class="wppoppop-status-message" style="font-size:15px;font-weight:700;color:#1e293b;margin:0;"></p>
-                </div>
+                $width  = isset($meta['width']) ? intval($meta['width']) : (isset($box_settings['width']) ? intval($box_settings['width']) : 640);
+                $height = isset($meta['height']) ? intval($meta['height']) : (isset($box_settings['height']) ? intval($box_settings['height']) : 400);
 
-                <!-- Sequence Canvases (With Dedicated Animation & Sizing Attributes) -->
-                <?php foreach ($canvases as $index => $elements): 
-                    $canvas_num = intval($index) ?: 1;
-                    $is_active = ($canvas_num === 1);
-                    $display_style = $is_active ? 'display:block;' : 'display:none;';
+                $bg_mode   = isset($meta['bg_mode']) ? $meta['bg_mode'] : (isset($box_settings['bg_mode']) ? $box_settings['bg_mode'] : 'solid');
+                $bg_color  = isset($meta['bg_color']) ? $meta['bg_color'] : (isset($box_settings['bg_color']) ? $box_settings['bg_color'] : '#ffffff');
+                $grad_c1   = isset($meta['grad_color1']) ? $meta['grad_color1'] : (isset($box_settings['grad_color1']) ? $box_settings['grad_color1'] : '#3b82f6');
+                $grad_c2   = isset($meta['grad_color2']) ? $meta['grad_color2'] : (isset($box_settings['grad_color2']) ? $box_settings['grad_color2'] : '#1d4ed8');
+                $grad_ang  = isset($meta['grad_angle']) ? intval($meta['grad_angle']) : (isset($box_settings['grad_angle']) ? intval($box_settings['grad_angle']) : 135);
 
-                    $cm = $canvas_meta[$canvas_num] ?? [];
-                    $c_width = intval($cm['width'] ?? $width);
-                    $c_height = intval($cm['height'] ?? $height);
-                    $c_anim_app = esc_attr($cm['anim_appearance'] ?? 'fade');
-                    $c_anim_dur = intval($cm['anim_duration'] ?? 1000);
-                    $c_anim_del = intval($cm['anim_delay'] ?? 0);
-                    $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
+                $bg_css = ($bg_mode === 'gradient')
+                    ? "background:linear-gradient({$grad_ang}deg, {$grad_c1}, {$grad_c2});"
+                    : "background:{$bg_color};";
 
-                    $c_bg_mode = $cm['bg_mode'] ?? 'solid';
-                    $c_bg_color = $cm['bg_color'] ?? '';
-                    $c_bg_style = '';
-                    if (!empty($c_bg_color)) {
-                        if ($c_bg_mode === 'gradient') {
-                            $g1 = esc_attr($cm['grad_color1'] ?? '#3b82f6');
-                            $g2 = esc_attr($cm['grad_color2'] ?? '#1d4ed8');
-                            $ga = intval($cm['grad_angle'] ?? 135);
-                            $c_bg_style = "background:linear-gradient({$ga}deg, {$g1}, {$g2});";
-                        } else {
-                            $c_bg_style = "background:" . esc_attr($c_bg_color) . ";";
-                        }
-                    }
+                $anim_appearance = isset($meta['anim_appearance']) ? sanitize_text_field($meta['anim_appearance']) : 'fadeIn';
+                $anim_duration   = isset($meta['anim_duration']) ? intval($meta['anim_duration']) : 1000;
+                $anim_delay      = isset($meta['anim_delay']) ? intval($meta['anim_delay']) : 0;
+                $anim_exit       = isset($meta['anim_disappearance']) ? sanitize_text_field($meta['anim_disappearance']) : 'fadeOut';
                 ?>
-                    <div class="wppoppop-canvas-container wppoppop-screen-container <?php echo $is_active ? 'wppoppop-canvas-active wppoppop-screen-active' : ''; ?>"
-                         data-canvas-index="<?php echo esc_attr($canvas_num); ?>"
-                         data-screen-index="<?php echo esc_attr($canvas_num); ?>"
-                         data-width="<?php echo esc_attr($c_width); ?>"
-                         data-height="<?php echo esc_attr($c_height); ?>"
-                         data-anim-appearance="<?php echo $c_anim_app; ?>"
-                         data-anim-duration="<?php echo $c_anim_dur; ?>"
-                         data-anim-delay="<?php echo $c_anim_del; ?>"
-                         data-anim-disappearance="<?php echo $c_anim_dis; ?>"
-                         style="<?php echo esc_attr($display_style . $c_bg_style); ?>width:100%;min-height:<?php echo esc_attr($c_height); ?>px;position:relative;">
+                <div class="wppoppop-canvas-container wppoppop-screen-container wppoppop-screen"
+                     data-canvas-index="<?php echo esc_attr($c_num); ?>"
+                     data-screen-index="<?php echo esc_attr($c_num); ?>"
+                     data-screen="<?php echo esc_attr($c_num); ?>"
+                     data-anim-appearance="<?php echo esc_attr($anim_appearance); ?>"
+                     data-anim-duration="<?php echo esc_attr($anim_duration); ?>"
+                     data-anim-delay="<?php echo esc_attr($anim_delay); ?>"
+                     data-anim-disappearance="<?php echo esc_attr($anim_exit); ?>"
+                     style="<?php echo $is_first ? 'display:block;' : 'display:none;'; ?>position:relative;width:<?php echo esc_attr($width); ?>px;max-width:100%;height:<?php echo esc_attr($height); ?>px;<?php echo $bg_css; ?>border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);overflow:hidden;box-sizing:border-box;">
 
-                        <?php 
+                    <form class="wppoppop-form" style="width:100%;height:100%;position:relative;margin:0;padding:0;">
+                        <?php
                         if (is_array($elements)) {
                             foreach ($elements as $el) {
-                                if (is_array($el) && empty($el['hidden'])) {
+                                if (is_array($el)) {
                                     echo $this->render_canvas_element($el);
                                 }
                             }
                         }
                         ?>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+                    </form>
+                </div>
+                <?php
+                $is_first = false;
+            endforeach;
+            ?>
+
+            <?php if (!$is_inline) : ?>
+                </div>
+            <?php endif; ?>
         </div>
         <?php
+        return ob_get_clean();
     }
 
-    private function render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate) {
-        $preset = !empty($preset) ? sanitize_key($preset) : 'circle';
-        $fill = !empty($fill) ? esc_attr($fill) : '#3b82f6';
-        $stroke = !empty($stroke) ? esc_attr($stroke) : 'transparent';
-        $stroke_width = intval($stroke_width);
-        $rotate = intval($rotate);
-
-        $rot_css = $rotate ? sprintf('transform:rotate(%ddeg);-webkit-transform:rotate(%ddeg);', $rotate, $rotate) : '';
-        $svg_style = sprintf('width:100%;height:100%;display:block;overflow:visible;%s', $rot_css);
-        $s_attr = ($stroke_width > 0 && $stroke !== 'transparent') 
-            ? sprintf('stroke="%s" stroke-width="%d" vector-effect="non-scaling-stroke"', $stroke, $stroke_width) 
-            : '';
-
-        switch ($preset) {
-            case 'square':
-                $path = sprintf('<rect x="4" y="4" width="92" height="92" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'rounded_square':
-                $path = sprintf('<rect x="4" y="4" width="92" height="92" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'star':
-                $path = sprintf('<polygon points="50,4 64,34 97,38 73,61 80,94 50,78 20,94 27,61 3,38 36,34" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'triangle':
-                $path = sprintf('<polygon points="50,6 96,92 4,92" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'diamond':
-                $path = sprintf('<polygon points="50,4 96,50 50,96 4,50" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'heart':
-                $path = sprintf('<path d="M50 88 C20 70 4 50 4 30 C4 14 16 4 30 4 C40 4 47 11 50 17 C53 11 60 4 70 4 C84 4 96 14 96 30 C96 50 80 70 50 88 Z" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'hexagon':
-                $path = sprintf('<polygon points="25,6 75,6 96,50 75,94 25,94 4,50" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'octagon':
-                $path = sprintf('<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'shield':
-                $path = sprintf('<path d="M50 4 L92 18 L92 54 C92 76 50 96 50 96 C50 96 8 76 8 54 L8 18 Z" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'cross':
-                $path = sprintf('<polygon points="36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'circle':
-            default:
-                $path = sprintf('<ellipse cx="50" cy="50" rx="46" ry="46" fill="%s" %s />', $fill, $s_attr);
-                break;
-        }
-
-        return sprintf('<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="%s">%s</svg>', esc_attr($svg_style), $path);
-    }
-
+    /**
+     * Render individual layer element markup with full 26-element stage parity
+     *
+     * @param array $el
+     * @return string
+     */
     private function render_canvas_element(array $el) {
-        $type   = $el['type'] ?? 'text';
+        $id     = esc_attr($el['id'] ?? ('el_' . wp_generate_password(6, false)));
+        $type   = strtolower(trim($el['type'] ?? 'text'));
         $top    = intval($el['top'] ?? 20);
         $left   = intval($el['left'] ?? 20);
-        $width  = intval($el['width'] ?? 200);
-        $height = intval($el['height'] ?? 40);
-        $zIndex = intval($el['zIndex'] ?? 10);
-        $bRad   = intval($el['borderRadius'] ?? 4);
-        $opac   = floatval($el['opacity'] ?? 1);
-        $content = $el['content'] ?? '';
+        $width  = intval($el['width'] ?? 180);
+        $height = intval($el['height'] ?? 42);
+        $z_index = intval($el['zIndex'] ?? ($el['z_index'] ?? 10));
 
-        $style = [
-            'position:absolute',
+        $opacity = isset($el['opacity']) ? floatval($el['opacity']) : 1.0;
+        $border_radius = intval($el['borderRadius'] ?? 4);
+        $border_width  = intval($el['borderWidth'] ?? 0);
+        $border_style  = sanitize_text_field($el['borderStyle'] ?? 'solid');
+        $border_color  = sanitize_text_field($el['borderColor'] ?? '#cbd5e1');
+        $bg_color      = sanitize_text_field($el['bgColor'] ?? 'transparent');
+        $color         = sanitize_text_field($el['color'] ?? 'inherit');
+        $font_family   = sanitize_text_field($el['fontFamily'] ?? 'inherit');
+        $font_size     = isset($el['fontSize']) ? intval($el['fontSize']) : 14;
+        $font_weight   = sanitize_text_field($el['fontWeight'] ?? '400');
+        $text_align    = sanitize_text_field($el['textAlign'] ?? 'left');
+        $padding       = intval($el['padding'] ?? 0);
+        $box_shadow    = sanitize_text_field($el['boxShadow'] ?? 'none');
+
+        $anim_effect = sanitize_text_field($el['animEffect'] ?? 'none');
+        $anim_class  = ($anim_effect !== 'none' && !empty($anim_effect)) ? 'animate__animated animate__' . $anim_effect : '';
+
+        $wrapper_styles = [
+            "position:absolute",
             "top:{$top}px",
             "left:{$left}px",
             "width:{$width}px",
             "height:{$height}px",
-            "z-index:{$zIndex}",
-            "border-radius:{$bRad}px",
-            "opacity:{$opac}",
-            'box-sizing:border-box'
+            "z-index:{$z_index}",
+            "opacity:{$opacity}",
+            "border-radius:{$border_radius}px",
+            "box-sizing:border-box"
         ];
 
-        if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit') $style[] = 'font-family:' . esc_attr($el['fontFamily']);
-        if (!empty($el['fontSize'])) $style[] = 'font-size:' . intval($el['fontSize']) . 'px';
-        if (!empty($el['color'])) $style[] = 'color:' . esc_attr($el['color']);
-        if (!empty($el['bgColor']) && $type !== 'shape') $style[] = 'background-color:' . esc_attr($el['bgColor']);
+        if ($font_family !== 'inherit' && !empty($font_family)) {
+            $wrapper_styles[] = "font-family:" . esc_attr($font_family);
+        }
+        if ($font_size > 0) {
+            $wrapper_styles[] = "font-size:{$font_size}px";
+        }
+        if (!empty($font_weight)) {
+            $wrapper_styles[] = "font-weight:" . esc_attr($font_weight);
+        }
+        if (!empty($text_align)) {
+            $wrapper_styles[] = "text-align:" . esc_attr($text_align);
+        }
+        if ($padding > 0) {
+            $wrapper_styles[] = "padding:{$padding}px";
+        }
+        if (!empty($color)) {
+            $wrapper_styles[] = "color:" . esc_attr($color);
+        }
+        if (!empty($bg_color)) {
+            $wrapper_styles[] = "background-color:" . esc_attr($bg_color);
+        }
+        if ($box_shadow !== 'none' && !empty($box_shadow)) {
+            $wrapper_styles[] = "box-shadow:" . esc_attr($box_shadow);
+        }
 
-        $style_attr = esc_attr(implode(';', $style));
-        $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
+        // Shape borders are rendered internally via SVG
+        if ($type !== 'shape' && $border_width > 0 && $border_style !== 'none') {
+            $wrapper_styles[] = "border:{$border_width}px {$border_style} " . esc_attr($border_color);
+        } elseif ($border_color === 'transparent') {
+            $wrapper_styles[] = "border-color:transparent";
+        }
+
+        $style_attr = implode(';', $wrapper_styles) . ';';
+        $content    = $el['content'] ?? '';
+        $field_name = sanitize_key($el['fieldName'] ?? ($el['field_name'] ?? $type));
+        $required   = !empty($el['required']);
+        $justify_val = ($text_align === 'center') ? 'center' : (($text_align === 'right') ? 'flex-end' : 'flex-start');
+
+        $html = '<div id="el-' . $id . '" class="wppoppop-front-element ' . esc_attr($anim_class) . '" style="' . esc_attr($style_attr) . '">';
 
         switch ($type) {
+            case 'title':
+                $tag = in_array($el['htmlTag'] ?? 'h2', ['h1', 'h2', 'h3', 'h4'], true) ? $el['htmlTag'] : 'h2';
+                $html .= '<' . $tag . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;font-weight:inherit;color:inherit;line-height:1.2;">' . esc_html($content ?: 'Catchy Campaign Title') . '</' . $tag . '>';
+                break;
+
             case 'text':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
+                $tag = in_array($el['htmlTag'] ?? 'p', ['p', 'h1', 'h2', 'h3', 'span', 'div'], true) ? $el['htmlTag'] : 'p';
+                $html .= '<' . $tag . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';margin:0;padding:0 8px;font-size:inherit;color:inherit;line-height:1.4;">' . wp_kses_post($content) . '</' . $tag . '>';
+                break;
 
             case 'image':
-                $img_url = !empty($content) ? esc_url($content) : esc_url($el['imgUrl'] ?? '');
-                $alt = esc_attr($el['altText'] ?? 'Popup Image');
-                $fit = esc_attr($el['objectFit'] ?? 'cover');
-                if (empty($img_url)) {
-                    return '';
+                $img_url = esc_url($el['imageUrl'] ?? ($content ?: ''));
+                $img_alt = esc_attr($el['imageAlt'] ?? '');
+                $img_fit = esc_attr($el['imageFit'] ?? 'cover');
+                if (!empty($img_url)) {
+                    $html .= '<img src="' . $img_url . '" alt="' . $img_alt . '" style="width:100%;height:100%;object-fit:' . $img_fit . ';display:block;border-radius:inherit;">';
                 }
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;"><img src="' . $img_url . '" alt="' . $alt . '" style="width:100%;height:100%;object-fit:' . $fit . ';border-radius:inherit;display:block;"></div>';
+                break;
+
+            case 'video':
+                $raw_url = trim($el['videoUrl'] ?? ($content ?: ''));
+                $autoplay = !empty($el['videoAutoplay']);
+                $controls = ($el['videoControls'] ?? true) !== false;
+
+                if (!empty($raw_url)) {
+                    if (strpos($raw_url, 'youtube.com') !== false || strpos($raw_url, 'youtu.be') !== false) {
+                        preg_match('/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/', $raw_url, $matches);
+                        $yt_id = $matches[1] ?? '';
+                        $embed_url = 'https://www.youtube.com/embed/' . $yt_id . ($autoplay ? '?autoplay=1&mute=1' : '');
+                        $html .= '<iframe src="' . esc_url($embed_url) . '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+                    } elseif (strpos($raw_url, 'vimeo.com') !== false) {
+                        $parts = explode('/', parse_url($raw_url, PHP_URL_PATH));
+                        $vimeo_id = end($parts);
+                        $embed_url = 'https://player.vimeo.com/video/' . $vimeo_id . ($autoplay ? '?autoplay=1&muted=1' : '');
+                        $html .= '<iframe src="' . esc_url($embed_url) . '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+                    } else {
+                        $html .= '<video src="' . esc_url($raw_url) . '" ' . ($controls ? 'controls' : '') . ' ' . ($autoplay ? 'autoplay muted' : '') . ' playsinline style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></video>';
+                    }
+                }
+                break;
 
             case 'shape':
-                $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'circle');
-                $fill = esc_attr($el['bgColor'] ?? '#3b82f6');
-                $stroke = esc_attr($el['borderColor'] ?? 'transparent');
-                $stroke_width = intval($el['borderWidth'] ?? 0);
-                $rotate = intval($el['rotation'] ?? 0);
-                $svg = $this->render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate);
-                $shape_style = [
-                    'position:absolute',
-                    "top:{$top}px",
-                    "left:{$left}px",
-                    "width:{$width}px",
-                    "height:{$height}px",
-                    "z-index:{$zIndex}",
-                    "opacity:{$opac}",
-                    'box-sizing:border-box'
-                ];
-                $shape_style_attr = esc_attr(implode(';', $shape_style));
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $shape_style_attr . '">' . $svg . '</div>';
+                $preset = sanitize_key($el['shapePreset'] ?? 'circle');
+                $fill   = ($el['shapeFill'] ?? '') === 'transparent' ? 'none' : esc_attr($el['shapeFill'] ?? '#3b82f6');
+                $stroke = ($el['shapeStroke'] ?? '') === 'transparent' ? 'none' : esc_attr($el['shapeStroke'] ?? '#1d4ed8');
+                $stroke_w = intval($el['shapeStrokeWidth'] ?? 0);
+                $rot    = intval($el['shapeRotate'] ?? 0);
+
+                $stroke_attr = ($stroke !== 'none' && $stroke_w > 0)
+                    ? 'stroke="' . $stroke . '" stroke-width="' . $stroke_w . '" stroke-linejoin="round" vector-effect="non-scaling-stroke"'
+                    : 'stroke="none"';
+                $fill_attr = 'fill="' . $fill . '"';
+
+                $svg_inner = '';
+                switch ($preset) {
+                    case 'circle':
+                        $svg_inner = '<ellipse cx="50" cy="50" rx="46" ry="46" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'square':
+                        $svg_inner = '<rect x="4" y="4" width="92" height="92" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'rounded_square':
+                        $svg_inner = '<rect x="4" y="4" width="92" height="92" rx="16" ry="16" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'star':
+                        $svg_inner = '<polygon points="50,4 64,34 97,36 71,58 80,90 50,71 20,90 29,58 3,36 36,34" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'triangle':
+                        $svg_inner = '<polygon points="50,6 94,92 6,92" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'diamond':
+                        $svg_inner = '<polygon points="50,5 95,50 50,95 5,50" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'heart':
+                        $svg_inner = '<path d="M 50,32 C 50,32 44,14 26,14 C 11,14 4,28 4,44 C 4,68 40,88 50,94 C 60,88 96,68 96,44 C 96,28 89,14 74,14 C 56,14 50,32 50,32 Z" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'hexagon':
+                        $svg_inner = '<polygon points="50,4 92,26 92,74 50,96 8,74 8,26" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'octagon':
+                        $svg_inner = '<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'shield':
+                        $svg_inner = '<path d="M 50,4 L 92,18 L 92,54 C 92,78 50,96 50,96 C 50,96 8,78 8,54 L 8,18 Z" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    case 'cross':
+                        $svg_inner = '<polygon points="35,4 65,4 65,35 96,35 96,65 65,65 65,96 35,96 35,65 4,65 4,35 35,35" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                    default:
+                        $svg_inner = '<rect x="4" y="4" width="92" height="92" ' . $fill_attr . ' ' . $stroke_attr . ' />';
+                        break;
+                }
+
+                $html .= '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;display:block;transform:rotate(' . $rot . 'deg);overflow:visible;">' . $svg_inner . '</svg>';
+                break;
+
+            case 'textfield':
+                $html .= '<input type="text" name="' . esc_attr($field_name) . '" placeholder="' . esc_attr($content ?: 'Enter text here...') . '" ' . ($required ? 'required' : '') . ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;color:inherit;box-sizing:border-box;">';
+                break;
 
             case 'email':
-                $ph = !empty($content) ? esc_attr($content) : 'Enter your email...';
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><input type="email" name="email" class="wppoppop-field-email" placeholder="' . $ph . '" required style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
+                $html .= '<input type="email" name="' . esc_attr($field_name ?: 'email') . '" placeholder="' . esc_attr($content ?: 'Enter your email...') . '" ' . ($required ? 'required' : '') . ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;color:inherit;box-sizing:border-box;">';
+                break;
 
             case 'number':
-                $ph = !empty($content) ? esc_attr($content) : 'Enter number...';
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><input type="number" name="number_field" placeholder="' . $ph . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
+                $min  = isset($el['min']) ? floatval($el['min']) : 0;
+                $max  = isset($el['max']) ? floatval($el['max']) : 100;
+                $step = isset($el['step']) ? floatval($el['step']) : 1;
+                $html .= '<input type="number" name="' . esc_attr($field_name ?: 'quantity') . '" min="' . esc_attr($min) . '" max="' . esc_attr($max) . '" step="' . esc_attr($step) . '" value="' . esc_attr($content ?: '1') . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;color:inherit;box-sizing:border-box;">';
+                break;
 
             case 'select':
-                $opts = array_map('trim', explode(',', $content ?: 'Option 1, Option 2'));
-                $html = '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><select name="dropdown_field" style="width:100%;height:100%;padding:0 8px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
-                foreach ($opts as $o) {
-                    $html .= '<option value="' . esc_attr($o) . '">' . esc_html($o) . '</option>';
+                $options = !empty($el['options']) && is_array($el['options']) ? $el['options'] : explode(',', $content ?: 'Option 1, Option 2');
+                $html .= '<select name="' . esc_attr($field_name ?: 'dropdown') . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;color:inherit;box-sizing:border-box;">';
+                foreach ($options as $opt) {
+                    $opt_clean = trim($opt);
+                    $html .= '<option value="' . esc_attr($opt_clean) . '">' . esc_html($opt_clean) . '</option>';
                 }
-                $html .= '</select></div>';
-                return $html;
+                $html .= '</select>';
+                break;
 
             case 'radios':
-                $items = array_map('trim', explode(',', $content ?: 'Choice A, Choice B'));
-                $html = '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;gap:12px;font-size:12px;">';
-                foreach ($items as $idx => $it) {
-                    $html .= '<label style="cursor:pointer;"><input type="radio" name="radio_choice" value="' . esc_attr($it) . '" ' . ($idx === 0 ? 'checked' : '') . '> ' . esc_html($it) . '</label>';
+                $r_opts = !empty($el['options']) && is_array($el['options']) ? $el['options'] : explode(',', $content ?: 'Choice A, Choice B');
+                $html .= '<div style="display:flex;gap:12px;align-items:center;justify-content:' . esc_attr($justify_val) . ';height:100%;padding:0 8px;font-size:inherit;box-sizing:border-box;">';
+                foreach ($r_opts as $idx => $r_val) {
+                    $r_clean = trim($r_val);
+                    $html .= '<label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;"><input type="radio" name="' . esc_attr($field_name ?: 'radio_choice') . '" value="' . esc_attr($r_clean) . '" ' . ($idx === 0 ? 'checked' : '') . '> ' . esc_html($r_clean) . '</label>';
                 }
                 $html .= '</div>';
-                return $html;
+                break;
 
             case 'checkboxes':
-                $label = !empty($content) ? esc_html($content) : 'I agree to the terms';
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;gap:6px;font-size:12px;"><label style="cursor:pointer;"><input type="checkbox" name="agreement" value="1" checked> <span>' . $label . '</span></label></div>';
+                $html .= '<div style="display:flex;align-items:center;justify-content:' . esc_attr($justify_val) . ';gap:6px;height:100%;padding:0 8px;font-size:inherit;box-sizing:border-box;"><label style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><input type="checkbox" name="' . esc_attr($field_name ?: 'terms') . '" value="1" ' . (!empty($el['checked']) ? 'checked' : '') . '> <span>' . esc_html($content ?: 'I agree to the terms') . '</span></label></div>';
+                break;
 
             case 'rating':
-                return '<div class="wppoppop-layer-item wppoppop-field-rating ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;color:#f59e0b;font-size:20px;cursor:pointer;"><input type="hidden" name="rating" value="5">★ ★ ★ ★ ★</div>';
+                $star_count = intval($content ?: 5);
+                $star_color = esc_attr($el['ratingColor'] ?? '#f59e0b');
+                $html .= '<div class="wppoppop-field-rating" style="display:flex;gap:4px;align-items:center;justify-content:' . esc_attr($justify_val) . ';height:100%;color:' . $star_color . ';font-size:20px;cursor:pointer;">';
+                for ($s = 1; $s <= 5; $s++) {
+                    $star_active = ($s <= $star_count) ? '' : 'color:#cbd5e1;';
+                    $html .= '<span class="wppoppop-rating-star" data-val="' . $s . '" style="cursor:pointer;' . $star_active . '">★</span>';
+                }
+                $html .= '<input type="hidden" name="' . esc_attr($field_name ?: 'rating') . '" value="' . $star_count . '"></div>';
+                break;
 
             case 'date':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><input type="date" name="date_picker" style="width:100%;height:100%;padding:0 8px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
+                $html .= '<input type="date" name="' . esc_attr($field_name ?: 'date') . '" value="' . esc_attr($content) . '" ' . ($required ? 'required' : '') . ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;font-size:inherit;color:inherit;box-sizing:border-box;">';
+                break;
 
             case 'slider':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;padding:0 8px;"><input type="range" name="range_slider" min="1" max="100" style="width:100%;"></div>';
+                $s_min = intval($el['min'] ?? 0);
+                $s_max = intval($el['max'] ?? 100);
+                $s_val = intval($content ?: 50);
+                $html .= '<div style="padding:0 10px;height:100%;display:flex;align-items:center;box-sizing:border-box;"><input type="range" name="' . esc_attr($field_name ?: 'range_val') . '" min="' . $s_min . '" max="' . $s_max . '" value="' . $s_val . '" style="width:100%;"></div>';
+                break;
 
             case 'signature':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';position:relative;"><canvas class="wppoppop-sig-canvas" width="' . $width . '" height="' . $height . '" style="width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;"></canvas><input type="hidden" name="signature" class="wppoppop-sig-input"><button type="button" class="wppoppop-sig-clear-btn" style="position:absolute;bottom:2px;right:2px;font-size:9px;background:#e2e8f0;border:none;border-radius:2px;cursor:pointer;padding:1px 4px;">Clear</button></div>';
+                $pen_color = esc_attr($el['penColor'] ?? '#0f172a');
+                $html .= '<div class="wppoppop-sig-wrap" style="width:100%;height:100%;position:relative;background:#fff;border-radius:inherit;"><canvas class="wppoppop-sig-canvas" width="' . $width . '" height="' . $height . '" data-pen-color="' . $pen_color . '" style="width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;cursor:crosshair;"></canvas><button type="button" class="wppoppop-sig-clear button" style="position:absolute;bottom:4px;right:4px;font-size:9px;padding:1px 6px;height:20px;background:#e2e8f0;border:none;cursor:pointer;">' . esc_html($el['clearLabel'] ?? 'Clear') . '</button><input type="hidden" name="' . esc_attr($field_name ?: 'digital_signature') . '"></div>';
+                break;
 
             case 'wheel':
-                return '<div class="wppoppop-layer-item wppoppop-wheel-wrapper ' . $anim_class . '" style="' . $style_attr . ';text-align:center;"><canvas class="wppoppop-wheel-canvas" width="180" height="180" style="width:180px;height:180px;border-radius:50%;margin-bottom:6px;"></canvas><input type="hidden" name="prize"><br><button type="button" class="wppoppop-wheel-spin-btn button" style="background:#4338ca;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-weight:700;cursor:pointer;font-size:11px;">SPIN PRIZE WHEEL</button></div>';
+                $slices = esc_attr($content ?: '10% OFF, FREE SHIPPING, 25% OFF, JACKPOT');
+                $btn_text = esc_html($el['btnText'] ?? 'SPIN TO WIN!');
+                $html .= '<div class="wppoppop-wheel-container" data-slices="' . $slices . '" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;"><canvas class="wppoppop-wheel-canvas" width="160" height="160" style="border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,0.2);"></canvas><button type="button" class="wppoppop-wheel-btn button" style="margin-top:6px;background:#4338ca;color:#fff;border:none;font-weight:700;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;">' . $btn_text . '</button></div>';
+                break;
 
             case 'scratch':
-                return '<div class="wppoppop-layer-item wppoppop-scratch-wrapper ' . $anim_class . '" style="' . $style_attr . ';position:relative;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#fef08a;color:#854d0e;font-weight:700;font-size:13px;border-radius:inherit;">' . esc_html($content ?: 'YOU WON 25% OFF!') . '</div><canvas class="wppoppop-scratch-canvas" width="' . $width . '" height="' . $height . '" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;border-radius:inherit;"></canvas></div>';
+                $prize_text = esc_html($content ?: 'YOU WON 25% OFF!');
+                $foil_color = esc_attr($el['foilColor'] ?? '#94a3b8');
+                $html .= '<div class="wppoppop-scratch-container" style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:inherit;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#fef08a;color:#854d0e;font-weight:700;font-size:13px;padding:8px;text-align:center;box-sizing:border-box;">' . $prize_text . '</div><canvas class="wppoppop-scratch-canvas" width="' . $width . '" height="' . $height . '" data-foil="' . $foil_color . '" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;"></canvas></div>';
+                break;
 
             case 'countdown':
-                return '<div class="wppoppop-layer-item wppoppop-countdown-timer ' . $anim_class . '" data-seconds="900" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;background:#1e293b;color:#f8fafc;font-family:monospace;font-weight:700;font-size:16px;"><span class="cd-mins">15</span>&nbsp;:&nbsp;<span class="cd-secs">00</span></div>';
+                $secs = intval($el['countdownSeconds'] ?? 900);
+                $mins = floor($secs / 60);
+                $rem_secs = $secs % 60;
+                $display = sprintf('%02d : %02d', $mins, $rem_secs);
+                $html .= '<div class="wppoppop-countdown" data-secs="' . $secs . '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;font-size:16px;background:#1e293b;color:#f8fafc;border-radius:inherit;"><span class="cd-display">' . esc_html($display) . '</span></div>';
+                break;
 
             case 'progress':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';background:#e2e8f0;overflow:hidden;"><div class="wppoppop-progress-fill" style="width:50%;height:100%;background:#2563eb;transition:width 0.3s ease;"></div></div>';
+                $pct = intval($content ?: 65);
+                $bar_color = esc_attr($el['progressColor'] ?? '#2563eb');
+                $html .= '<div style="width:100%;height:100%;background:#e2e8f0;border-radius:inherit;overflow:hidden;position:relative;"><div style="width:' . $pct . '%;height:100%;background:' . $bar_color . ';transition:width 0.3s ease;"></div></div>';
+                break;
 
             case 'file':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;border:1px dashed #cbd5e1;"><input type="file" name="uploaded_file" style="font-size:11px;width:95%;"></div>';
-
-            case 'step_btn':
-                $target_canvas = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : (!empty($el['goto_screen']) ? intval($el['goto_screen']) : 2);
-                $btn_text = !empty($content) ? esc_html($content) : 'Next Canvas &rarr;';
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="' . esc_attr($target_canvas) . '" data-goto-screen="' . esc_attr($target_canvas) . '" data-goto="' . esc_attr($target_canvas) . '" style="width:100%;height:100%;background:#2563eb;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
+                $exts = esc_attr($el['fileExts'] ?? '.jpg,.jpeg,.png,.pdf');
+                $html .= '<div style="width:100%;height:100%;border:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;border-radius:inherit;padding:4px;box-sizing:border-box;"><input type="file" name="' . esc_attr($field_name ?: 'attachment') . '" accept="' . $exts . '" style="width:100%;font-size:11px;"></div>';
+                break;
 
             case 'submit':
-                $btn_text = !empty($content) ? esc_html($content) : 'Submit Form';
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-submit-trigger" style="width:100%;height:100%;background:#c2185b;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
+                $action = esc_attr($el['submitAction'] ?? 'default');
+                $html .= '<button type="submit" class="wppoppop-submit-btn wppoppop-next-step" data-action="' . $action . '" style="width:100%;height:100%;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;border:none;border-radius:inherit;cursor:pointer;">' . esc_html($content ?: 'Submit Form') . '</button>';
+                break;
+
+            case 'link_btn':
+                $url = esc_url($el['linkUrl'] ?? ($el['actionUrl'] ?? '#'));
+                $target = (!empty($el['linkBlank'])) ? '_blank' : '_self';
+                $html .= '<a href="' . $url . '" target="' . $target . '" rel="noopener" class="wppoppop-link-btn" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;text-decoration:none;border-radius:inherit;box-sizing:border-box;">' . esc_html($content ?: 'Learn More →') . '</a>';
+                break;
+
+            case 'step_btn':
+                $target_c = intval($el['goto_canvas'] ?? ($el['goto_screen'] ?? 2));
+                $html .= '<button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="' . $target_c . '" data-goto-screen="' . $target_c . '" style="width:100%;height:100%;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;border:none;border-radius:inherit;cursor:pointer;">' . esc_html($content ?: ('Canvas ' . $target_c . ' →')) . '</button>';
+                break;
 
             case 'pay':
-                $btn_text = !empty($content) ? esc_html($content) : 'Pay Now';
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-pay-trigger" data-amount="19.99" data-currency="USD" style="width:100%;height:100%;background:#059669;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
+                $amount = esc_attr($el['payAmount'] ?? '19.99');
+                $curr   = esc_attr($el['payCurrency'] ?? 'USD');
+                $gw     = esc_attr($el['payGateway'] ?? 'stripe');
+                $html .= '<button type="button" class="wppoppop-pay-btn" data-gateway="' . $gw . '" data-amount="' . $amount . '" data-currency="' . $curr . '" style="width:100%;height:100%;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;border:none;border-radius:inherit;cursor:pointer;">' . esc_html($content ?: 'Checkout Now') . '</button>';
+                break;
+
+            case 'close_icon':
+                $act = esc_attr($el['closeAction'] ?? 'close');
+                $style = ($el['closeIconStyle'] ?? 'times') === 'dashicon' ? '<span class="dashicons dashicons-no-alt" style="font-size:inherit;width:auto;height:auto;line-height:1;"></span>' : '&times;';
+                $html .= '<button type="button" class="wppoppop-close-btn" data-close-action="' . $act . '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;font-size:inherit;font-weight:700;line-height:1;cursor:pointer;padding:0;">' . $style . '</button>';
+                break;
 
             case 'html':
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">' . $content . '</div>';
+                $html .= '<div style="width:100%;height:100%;overflow:hidden;box-sizing:border-box;">' . $content . '</div>';
+                break;
 
             default:
-                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '">' . esc_html($content) . '</div>';
+                $html .= '<div style="padding:6px;font-size:inherit;color:inherit;">' . esc_html($content) . '</div>';
+                break;
         }
+
+        $html .= '</div>';
+        return $html;
     }
 }

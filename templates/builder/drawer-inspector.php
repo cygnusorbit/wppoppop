@@ -55,9 +55,22 @@ if (function_exists('wp_enqueue_media')) {
 
             <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
 
-            <!-- Contextual Element Setting Panels (All 21 Elements) -->
+            <!-- Contextual Element Setting Panels -->
             <div id="wppoppop-element-specific-settings">
-                <!-- 1. TEXT -->
+                <!-- 1. TITLE -->
+                <div class="element-panel" id="panel-elem-title" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TITLE HEADING TEXT</label>
+                    <input type="text" id="prop-title-content" class="widefat" value="Catchy Campaign Title" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">HEADING TAG</label>
+                    <select id="prop-title-tag" class="widefat" style="font-size:12px;">
+                        <option value="h1">Heading 1 (&lt;h1&gt;)</option>
+                        <option value="h2" selected>Heading 2 (&lt;h2&gt;)</option>
+                        <option value="h3">Heading 3 (&lt;h3&gt;)</option>
+                        <option value="h4">Heading 4 (&lt;h4&gt;)</option>
+                    </select>
+                </div>
+
+                <!-- 2. TEXT -->
                 <div class="element-panel" id="panel-elem-text" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TEXT CONTENT / HTML</label>
                     <textarea id="prop-text-content" rows="3" class="widefat" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -71,7 +84,7 @@ if (function_exists('wp_enqueue_media')) {
                     </select>
                 </div>
 
-                <!-- 2. IMAGE (Native WordPress Media Uploader) -->
+                <!-- 3. IMAGE (WordPress Media Uploader) -->
                 <div class="element-panel" id="panel-elem-image" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE PREVIEW & SELECTION</label>
                     <div id="prop-image-preview-wrap" style="width:100%;height:120px;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden;position:relative;">
@@ -99,7 +112,21 @@ if (function_exists('wp_enqueue_media')) {
                     </select>
                 </div>
 
-                <!-- 3. SHAPE (Preset Shapes: Circle, Square, Star, etc.) -->
+                <!-- 4. VIDEO (YouTube / Vimeo / MP4) -->
+                <div class="element-panel" id="panel-elem-video" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">VIDEO URL (YOUTUBE / VIMEO / MP4)</label>
+                    <input type="url" id="prop-video-url" class="widefat" placeholder="https://www.youtube.com/watch?v=..." style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-video-autoplay" value="1"> Autoplay Video (Muted)
+                        </label>
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-video-controls" value="1" checked> Show Video Player Controls
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 5. SHAPE (11 SVG Presets) -->
                 <div class="element-panel" id="panel-elem-shape" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRESET SHAPE</label>
                     <select id="prop-shape-preset" class="widefat" style="font-size:12px;margin-bottom:10px;">
@@ -118,28 +145,45 @@ if (function_exists('wp_enqueue_media')) {
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                         <div>
-                            <label style="font-size:10px;color:#64748b;font-weight:700;">FILL COLOR</label>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                                <label style="font-size:10px;color:#64748b;font-weight:700;margin:0;">FILL COLOR</label>
+                                <button type="button" id="prop-shape-fill-transparent-btn" class="wppoppop-checker-btn" title="Set transparent (fill: transparent;)" aria-label="Set transparent shape fill" style="width:18px;height:18px;border-radius:3px;border:1px solid #cbd5e1;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg,#94a3b8 25%,transparent 25%),linear-gradient(-45deg,#94a3b8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#94a3b8 75%),linear-gradient(-45deg,transparent 75%,#94a3b8 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0px;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05);"></button>
+                            </div>
                             <input type="color" id="prop-shape-fill" value="#3b82f6" class="widefat" style="height:32px;padding:2px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;font-weight:700;">STROKE COLOR</label>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                                <label style="font-size:10px;color:#64748b;font-weight:700;margin:0;">STROKE COLOR</label>
+                                <button type="button" id="prop-shape-stroke-transparent-btn" class="wppoppop-checker-btn" title="Set transparent (stroke: transparent;)" aria-label="Set transparent shape stroke" style="width:18px;height:18px;border-radius:3px;border:1px solid #cbd5e1;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg,#94a3b8 25%,transparent 25%),linear-gradient(-45deg,#94a3b8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#94a3b8 75%),linear-gradient(-45deg,transparent 75%,#94a3b8 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0px;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05);"></button>
+                            </div>
                             <input type="color" id="prop-shape-stroke" value="#1d4ed8" class="widefat" style="height:32px;padding:2px;">
                         </div>
                     </div>
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
                         <div>
-                            <label style="font-size:10px;color:#64748b;">STROKE (PX)</label>
+                            <label style="font-size:10px;color:#64748b;font-weight:700;">STROKE (PX)</label>
                             <input type="number" id="prop-shape-stroke-width" value="0" min="0" max="20" class="widefat" style="font-size:12px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;">ROTATION (&deg;)</label>
+                            <label style="font-size:10px;color:#64748b;font-weight:700;">ROTATION (&deg;)</label>
                             <input type="number" id="prop-shape-rotate" value="0" min="0" max="360" class="widefat" style="font-size:12px;">
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. EMAIL -->
+                <!-- 6. TEXT FIELD -->
+                <div class="element-panel" id="panel-elem-textfield" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                    <input type="text" id="prop-textfield-placeholder" class="widefat" placeholder="Enter text here..." style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-textfield-fieldname" value="text_field" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-textfield-required" value="1"> Required Field
+                    </label>
+                </div>
+
+                <!-- 7. EMAIL -->
                 <div class="element-panel" id="panel-elem-email" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                     <input type="text" id="prop-email-placeholder" class="widefat" placeholder="Enter your email..." style="font-size:12px;margin-bottom:8px;">
@@ -150,7 +194,7 @@ if (function_exists('wp_enqueue_media')) {
                     </label>
                 </div>
 
-                <!-- 5. NUMBER -->
+                <!-- 8. NUMBER -->
                 <div class="element-panel" id="panel-elem-number" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT VALUE / PLACEHOLDER</label>
                     <input type="number" id="prop-number-val" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -172,7 +216,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-number-fieldname" value="quantity" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 6. SELECT / DROPDOWN -->
+                <!-- 9. SELECT / DROPDOWN -->
                 <div class="element-panel" id="panel-elem-select" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DROPDOWN OPTIONS (COMMA SEPARATED)</label>
                     <textarea id="prop-select-options" rows="3" class="widefat" placeholder="Option 1, Option 2, Option 3" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -180,7 +224,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-select-fieldname" value="dropdown_field" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 7. RADIOS -->
+                <!-- 10. RADIOS -->
                 <div class="element-panel" id="panel-elem-radios" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RADIO CHOICES (COMMA SEPARATED)</label>
                     <textarea id="prop-radios-options" rows="3" class="widefat" placeholder="Choice A, Choice B, Choice C" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -188,7 +232,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-radios-fieldname" value="radio_choice" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 8. CHECKBOXES -->
+                <!-- 11. CHECKBOXES -->
                 <div class="element-panel" id="panel-elem-checkboxes" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CHECKBOX LABEL TEXT</label>
                     <input type="text" id="prop-checkbox-label" class="widefat" value="I agree to the terms and conditions" style="font-size:12px;margin-bottom:8px;">
@@ -199,7 +243,7 @@ if (function_exists('wp_enqueue_media')) {
                     </label>
                 </div>
 
-                <!-- 9. RATING -->
+                <!-- 12. RATING -->
                 <div class="element-panel" id="panel-elem-rating" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT STAR RATING (1-5)</label>
                     <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -209,7 +253,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-rating-fieldname" value="rating" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 10. DATE -->
+                <!-- 13. DATE -->
                 <div class="element-panel" id="panel-elem-date" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
                     <input type="text" id="prop-date-fieldname" value="appointment_date" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -218,7 +262,7 @@ if (function_exists('wp_enqueue_media')) {
                     </label>
                 </div>
 
-                <!-- 11. SLIDER -->
+                <!-- 14. SLIDER -->
                 <div class="element-panel" id="panel-elem-slider" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
                         <div>
@@ -238,7 +282,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 12. SIGNATURE -->
+                <!-- 15. SIGNATURE -->
                 <div class="element-panel" id="panel-elem-signature" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PEN INK COLOR</label>
                     <input type="color" id="prop-sig-color" value="#0f172a" class="widefat" style="height:32px;margin-bottom:8px;">
@@ -248,7 +292,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-sig-fieldname" value="digital_signature" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 13. WHEEL -->
+                <!-- 16. WHEEL -->
                 <div class="element-panel" id="panel-elem-wheel" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRIZE SLICES (COMMA SEPARATED)</label>
                     <textarea id="prop-wheel-slices" rows="4" class="widefat" placeholder="10% OFF, FREE SHIPPING, 25% OFF, JACKPOT" style="font-size:12px;margin-bottom:8px;"></textarea>
@@ -258,7 +302,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-wheel-win-msg" value="Congratulations! You won {prize}!" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 14. SCRATCH -->
+                <!-- 17. SCRATCH -->
                 <div class="element-panel" id="panel-elem-scratch" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SECRET WINNING / REVEAL TEXT</label>
                     <input type="text" id="prop-scratch-prize" value="YOU WON 25% OFF! USE CODE: WIN25" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -268,7 +312,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="number" id="prop-scratch-pct" min="10" max="90" value="45" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 15. COUNTDOWN -->
+                <!-- 18. COUNTDOWN -->
                 <div class="element-panel" id="panel-elem-countdown" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DURATION (SECONDS)</label>
                     <input type="number" id="prop-countdown-seconds" value="900" class="widefat" placeholder="e.g. 900 for 15 minutes" style="font-size:12px;margin-bottom:8px;">
@@ -280,7 +324,7 @@ if (function_exists('wp_enqueue_media')) {
                     </select>
                 </div>
 
-                <!-- 16. PROGRESS -->
+                <!-- 19. PROGRESS -->
                 <div class="element-panel" id="panel-elem-progress" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PROGRESS PERCENTAGE (0-100%)</label>
                     <input type="number" id="prop-progress-val" min="0" max="100" value="65" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -288,7 +332,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="color" id="prop-progress-color" value="#2563eb" class="widefat" style="height:32px;">
                 </div>
 
-                <!-- 17. FILE UPLOAD -->
+                <!-- 20. FILE UPLOAD -->
                 <div class="element-panel" id="panel-elem-file" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ALLOWED FILE EXTENSIONS</label>
                     <input type="text" id="prop-file-exts" value=".jpg, .jpeg, .png, .pdf" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -298,15 +342,7 @@ if (function_exists('wp_enqueue_media')) {
                     <input type="text" id="prop-file-fieldname" value="attachment" class="widefat" style="font-size:12px;">
                 </div>
 
-                <!-- 18. NEXT CANVAS BUTTON (step_btn) -->
-                <div class="element-panel" id="panel-elem-step_btn" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
-                    <input type="text" id="prop-step-label" value="Next Canvas &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET CANVAS NUMBER</label>
-                    <input type="number" id="prop-step-canvas" min="1" max="10" value="2" class="widefat" style="font-size:12px;">
-                </div>
-
-                <!-- 19. SUBMIT BUTTON -->
+                <!-- 21. SUBMIT BUTTON -->
                 <div class="element-panel" id="panel-elem-submit" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-submit-label" value="Submit Form" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -318,7 +354,26 @@ if (function_exists('wp_enqueue_media')) {
                     </select>
                 </div>
 
-                <!-- 20. PAY BUTTON -->
+                <!-- 22. LINK BUTTON -->
+                <div class="element-panel" id="panel-elem-link_btn" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-link-label" value="Learn More &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET LINK URL</label>
+                    <input type="url" id="prop-link-url" placeholder="https://..." value="https://example.com" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-link-blank" value="1" checked> Open link in new browser tab
+                    </label>
+                </div>
+
+                <!-- 23. NEXT CANVAS BUTTON (step_btn) -->
+                <div class="element-panel" id="panel-elem-step_btn" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-step-label" value="Next Canvas &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET CANVAS NUMBER</label>
+                    <input type="number" id="prop-step-canvas" min="1" max="10" value="2" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 24. PAY BUTTON -->
                 <div class="element-panel" id="panel-elem-pay" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-pay-label" value="Checkout Now" class="widefat" style="font-size:12px;margin-bottom:8px;">
@@ -345,7 +400,22 @@ if (function_exists('wp_enqueue_media')) {
                     </select>
                 </div>
 
-                <!-- 21. HTML -->
+                <!-- 25. CLOSE ICON -->
+                <div class="element-panel" id="panel-elem-close_icon" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ICON GLYPH / STYLE</label>
+                    <select id="prop-close-icon-style" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                        <option value="times">Classic &times; (Times Cross)</option>
+                        <option value="dashicon">Dashicon Dismiss (Square / Circle)</option>
+                    </select>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE ACTION BEHAVIOR</label>
+                    <select id="prop-close-icon-action" class="widefat" style="font-size:12px;">
+                        <option value="close">Close popup immediately</option>
+                        <option value="close_period">Close and hide for current session</option>
+                        <option value="close_forever">Close and hide permanently</option>
+                    </select>
+                </div>
+
+                <!-- 26. HTML -->
                 <div class="element-panel" id="panel-elem-html" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RAW HTML / EMBED CODE</label>
                     <textarea id="prop-html-code" rows="5" class="widefat code" placeholder="<div>Custom HTML or &lt;iframe&gt;...</div>" style="font-size:11px;font-family:monospace;"></textarea>
