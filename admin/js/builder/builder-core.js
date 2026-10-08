@@ -12,8 +12,8 @@
             set currentScreen(v) { this.currentCanvas = parseInt(v, 10) || 1; },
             canvases: { 1: [], 2: [] },
             canvasMeta: {
-                1: { name: 'Canvas 1', width: 640, height: 400 },
-                2: { name: 'Canvas 2', width: 640, height: 400 }
+                1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, logic_enabled: false },
+                2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, logic_enabled: false }
             },
             get screens() { return this.canvases; },
             set screens(v) { this.canvases = v || { 1: [], 2: [] }; },
@@ -33,12 +33,10 @@
         },
 
         bindWindowResize: function() {
-            var self = this;
             var resizeTimer = null;
             $(window).on('resize', function() {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(function() {
-                    // Re-calculate draggable bounds safely if layers panel exists
                     if (window.WpPopPopBuilderLayers && $('#wppoppop-floating-layers-panel').length) {
                         window.WpPopPopBuilderLayers.bindPanelDragging();
                     }
@@ -83,17 +81,19 @@
 
             var $addBtn = $('<button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="Add Canvas">+</button>');
             $container.append($addBtn);
-
-            $('#wppoppop-stage-delete-canvas-btn').toggle(canDelete);
         },
 
         bindCanvasTabs: function() {
             var self = this;
 
+            // Clicking top Canvas button switches canvas AND opens Campaign Settings drawer
             $(document).on('click', '.wppoppop-canvas-tab, .wppoppop-screen-tab', function(e) {
                 e.preventDefault();
                 var targetCanvas = $(this).data('canvas') || $(this).data('screen') || 1;
                 self.switchCanvas(targetCanvas);
+                if (window.WpPopPopBuilderSettings) {
+                    window.WpPopPopBuilderSettings.openDrawer();
+                }
             });
 
             $(document).on('click', '.wppoppop-tab-delete-canvas', function(e) {
@@ -106,11 +106,9 @@
             $(document).on('click', '#wppoppop-add-canvas-btn', function(e) {
                 e.preventDefault();
                 self.addNewCanvas();
-            });
-
-            $(document).on('click', '#wppoppop-stage-delete-canvas-btn', function(e) {
-                e.preventDefault();
-                self.deleteCanvas(self.state.currentCanvas);
+                if (window.WpPopPopBuilderSettings) {
+                    window.WpPopPopBuilderSettings.openDrawer();
+                }
             });
         },
 
@@ -138,6 +136,9 @@
 
             this.renderCanvasTabs();
             this.switchCanvas(nextActive);
+            if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.renderCanvasBullets();
+            }
             this.pushHistory();
         },
 
@@ -149,11 +150,20 @@
             this.state.canvasMeta[nextNum] = {
                 name: 'Canvas ' + nextNum,
                 width: 640,
-                height: 400
+                height: 400,
+                bg_mode: 'solid',
+                bg_color: '#ffffff',
+                grad_color1: '#3b82f6',
+                grad_color2: '#1d4ed8',
+                grad_angle: 135,
+                logic_enabled: false
             };
 
             this.renderCanvasTabs();
             this.switchCanvas(nextNum);
+            if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.renderCanvasBullets();
+            }
             this.pushHistory();
         },
 
@@ -169,28 +179,37 @@
                 this.state.canvasMeta[canvasNum] = {
                     name: 'Canvas ' + canvasNum,
                     width: 640,
-                    height: 400
+                    height: 400,
+                    bg_mode: 'solid',
+                    bg_color: '#ffffff',
+                    grad_color1: '#3b82f6',
+                    grad_color2: '#1d4ed8',
+                    grad_angle: 135,
+                    logic_enabled: false
                 };
             }
 
             var meta = this.state.canvasMeta[canvasNum];
 
+            // 1. Update Tab Highlights
             $('.wppoppop-canvas-tab-wrapper').removeClass('active');
             $('.wppoppop-canvas-tab-wrapper:has([data-canvas="' + canvasNum + '"])').addClass('active');
 
-            $('#wppoppop-stage-canvas-badge').text((meta.name || ('Canvas ' + canvasNum)).toUpperCase());
-
+            // 2. Restore Dedicated Dimensions for this Canvas
             if (this.state.viewport === 'desktop') {
                 var w = meta.width || 640;
                 var h = meta.height || 400;
                 $('#wppoppop-canvas-box').css({ width: w + 'px', height: h + 'px' });
-                $('#quick-box-width, #set-box-width, #set-canvas-width').val(w);
-                $('#quick-box-height, #set-box-height, #set-canvas-height').val(h);
+                $('#quick-box-width, #set-canvas-width').val(w);
+                $('#quick-box-height, #set-canvas-height').val(h);
             }
 
+            // 3. Restore Dedicated Background Fill for this Canvas
             if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.applyActiveCanvasBackground();
                 window.WpPopPopBuilderSettings.syncCurrentCanvasSettings();
             }
+
             if (window.WpPopPopBuilderCanvas) {
                 window.WpPopPopBuilderCanvas.renderCanvas();
             }

@@ -5,24 +5,22 @@
 
 #wppoppop-floating-layers-panel,
 .wppoppop-floating-layers-panel {
-    position: absolute !important;
-    top: 16px !important;
-    right: 16px !important;
-    bottom: auto !important;
-    left: auto !important;
-    width: 240px !important;
-    max-width: calc(100vw - 32px) !important;
-    height: auto !important;
-    max-height: calc(100vh - 180px) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    background: #ffffff !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
-    z-index: 99990 !important;
-    overflow: hidden !important;
-    border: 1px solid #e2e8f0 !important;
-    box-sizing: border-box !important;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 240px;
+    max-width: calc(100vw - 32px);
+    height: auto;
+    max-height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 100000 !important; /* Higher than wppoppop-canvas-corner-handle (z-index: 9995) */
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
     touch-action: none;
     transition: width 0.2s ease, max-height 0.2s ease;
 }
@@ -36,13 +34,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: move;
+    cursor: grab;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     flex-shrink: 0;
     height: 36px;
     box-sizing: border-box;
+}
+
+#wppoppop-layers-header:active {
+    cursor: grabbing;
 }
 
 .wppoppop-layers-title-wrap {
@@ -204,12 +206,11 @@
     border-radius: 1px;
 }
 
-/* Tablet & Mobile Placement */
 @media screen and (max-width: 782px) {
     #wppoppop-floating-layers-panel,
     .wppoppop-floating-layers-panel {
-        top: 10px !important;
-        right: 10px !important;
-        width: 200px !important;
+        top: 10px;
+        right: 10px;
+        width: 200px;
     }
 }

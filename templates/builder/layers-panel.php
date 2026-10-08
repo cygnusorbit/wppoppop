@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div id="wppoppop-floating-layers-panel" class="wppoppop-floating-layers-panel">
+<div id="wppoppop-floating-layers-panel" class="wppoppop-floating-layers-panel" style="z-index:100000;">
     <div id="wppoppop-layers-header">
         <span class="wppoppop-layers-title-wrap">
             <span class="dashicons dashicons-menu"></span> LAYERS

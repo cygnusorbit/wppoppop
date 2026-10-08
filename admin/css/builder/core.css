@@ -36,9 +36,7 @@ body.folded .wppoppop-builder-wrap {
     }
 }
 
-/* --------------------------------------------------------------------------
-   Top Control Header & Responsive Groups
-   -------------------------------------------------------------------------- */
+/* Top Control Header & Responsive Groups */
 .wppoppop-builder-header {
     background: #111827;
     min-height: 52px;
@@ -263,9 +261,7 @@ body.folded .wppoppop-builder-wrap {
     background: #ad1457 !important;
 }
 
-/* --------------------------------------------------------------------------
-   Workspace Frame & Stage Resizing
-   -------------------------------------------------------------------------- */
+/* Workspace Frame & Stage Resizing */
 .wppoppop-main-frame {
     display: flex;
     flex: 1;
@@ -312,14 +308,13 @@ body.folded .wppoppop-builder-wrap {
     border-radius: 4px;
 }
 
-/* Smart Desktop Workspace Contraction (Docked Pushing Frame) */
+/* Desktop Workspace Contraction when Inspector Opens */
 @media screen and (min-width: 993px) {
     .panel-open .wppoppop-builder-workspace {
         margin-right: 360px;
     }
 }
 
-/* Tablet & Mobile Workspace: Overlays Drawer Instead of Crushing Workspace */
 @media screen and (max-width: 992px) {
     .panel-open .wppoppop-builder-workspace {
         margin-right: 0 !important;
@@ -372,7 +367,7 @@ body.folded .wppoppop-builder-wrap {
 .wppoppop-canvas-item.wppoppop-selected {
     outline: 2px solid #2563eb;
     outline-offset: 1px;
-    z-index: 99999 !important;
+    z-index: 9990 !important;
 }
 
 .wppoppop-canvas-item.wppoppop-locked {
@@ -387,7 +382,7 @@ body.folded .wppoppop-builder-wrap {
     background: #2563eb;
     border: 1.5px solid #ffffff;
     border-radius: 2px;
-    z-index: 99999 !important;
+    z-index: 9992 !important;
     pointer-events: auto !important;
     touch-action: none;
 }
@@ -412,12 +407,13 @@ body.folded .wppoppop-builder-wrap {
     cursor: s-resize;
 }
 
-/* Dedicated Corner Drag Handle */
+/* Dedicated Corner Drag Handle (Stacked beneath floating layer panel) */
 #wppoppop-canvas-corner-handle {
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    z-index: 9995 !important; /* Kept strictly below layer panel (z-index: 100000) */
 }
 
 /* Body state during corner dragging across all browsers */
@@ -428,9 +424,7 @@ body.wppoppop-resizing-canvas {
     cursor: se-resize !important;
 }
 
-/* --------------------------------------------------------------------------
-   Responsive Breakpoints for Smaller Screens & Mobile
-   -------------------------------------------------------------------------- */
+/* Responsive Breakpoints */
 @media screen and (max-width: 1200px) {
     .wppoppop-quick-dimensions-wrap {
         display: none !important;

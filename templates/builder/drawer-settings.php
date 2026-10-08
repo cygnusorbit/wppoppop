@@ -4,51 +4,145 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <!-- Slide-Out Backdrop -->
-<div id="wppoppop-settings-backdrop" class="wppoppop-settings-backdrop" style="position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(2px);z-index:99998;opacity:0;pointer-events:none;transition:opacity 0.25s ease;"></div>
+<div id="wppoppop-settings-backdrop" class="wppoppop-settings-backdrop"></div>
 
 <!-- Hardware-Accelerated Slide-In Campaign Settings Drawer -->
 <div id="wppoppop-settings-drawer" class="wppoppop-settings-drawer">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#0f172a;color:#ffffff;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#0f172a;color:#ffffff;flex-shrink:0;">
         <h3 style="margin:0;font-size:15px;font-weight:700;">Campaign Settings</h3>
         <button type="button" id="wppoppop-settings-drawer-close" style="background:transparent;border:none;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1;">&times;</button>
     </div>
 
     <div style="flex:1;overflow-y:auto;padding:16px;">
         <div class="wppoppop-accordion-group">
-            <!-- 1. Dedicated Canvas Settings (Name & Dimensions) -->
+            
+            <!-- 1. Dedicated Per-Canvas Settings with Canvas Bullets & Logic Tab -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header active">1. Canvas Settings (<span id="set-current-canvas-badge">Canvas 1</span>)</button>
+                <button type="button" class="wppoppop-acc-header active">
+                    <span>1. Canvas Settings (<strong id="set-current-canvas-badge">Canvas 1</strong>)</span>
+                </button>
                 <div class="wppoppop-acc-body" style="display:block;">
-                    <label for="set-canvas-name" style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS NAME</label>
-                    <input type="text" id="set-canvas-name" value="Canvas 1" class="widefat" placeholder="e.g. Lead Opt-in, Thank You..." style="margin-bottom:12px;font-size:12px;">
-
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS SIZE (WIDTH × HEIGHT PX)</label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-                        <div>
-                            <label style="font-size:10px;color:#64748b;">Width (px)</label>
-                            <input type="number" id="set-canvas-width" value="640" min="200" max="1400" class="widefat" style="font-size:12px;">
-                        </div>
-                        <div>
-                            <label style="font-size:10px;color:#64748b;">Height (px)</label>
-                            <input type="number" id="set-canvas-height" value="400" min="150" max="1000" class="widefat" style="font-size:12px;">
+                    
+                    <!-- Canvas Selection Bullets Strip -->
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:6px;text-transform:uppercase;">SELECT CANVAS TO CONFIGURE</label>
+                        <div class="wppoppop-canvas-bullets-bar" id="wppoppop-canvas-bullets-container">
+                            <!-- Dynamically populated canvas bullets with status dots -->
                         </div>
                     </div>
 
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BACKGROUND FILL MODE</label>
-                    <select id="set-bg-mode" class="widefat" style="margin-bottom:8px;">
-                        <option value="solid">Solid Background Color</option>
-                        <option value="gradient">Linear Gradient</option>
-                    </select>
-                    <div id="set-solid-wrap">
-                        <input type="color" id="set-bg-color" value="#ffffff" class="widefat" style="height:32px;">
+                    <!-- Canvas Settings Sub-Tabs (General & Color vs Logic) -->
+                    <div class="wppoppop-canvas-subtabs">
+                        <button type="button" class="wppoppop-csubtab active" data-tab="general">General & Color</button>
+                        <button type="button" class="wppoppop-csubtab" data-tab="logic">Canvas Logic</button>
                     </div>
-                    <div id="set-gradient-wrap" style="display:none;">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
-                            <input type="color" id="set-grad-color1" value="#3b82f6" class="widefat" style="height:32px;">
-                            <input type="color" id="set-grad-color2" value="#1d4ed8" class="widefat" style="height:32px;">
+
+                    <!-- SUBTAB 1: GENERAL, SIZE & COLOR -->
+                    <div class="wppoppop-csubcontent active" id="csub-tab-general">
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS NAME</label>
+                            <input type="text" id="set-canvas-name" value="Canvas 1" class="widefat" placeholder="e.g. Lead Opt-in, Thank You..." style="font-size:12px;">
                         </div>
-                        <input type="number" id="set-grad-angle" value="135" min="0" max="360" placeholder="Angle (0-360°)" class="widefat">
+
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS SIZE (WIDTH &times; HEIGHT PX)</label>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                <div>
+                                    <label style="font-size:10px;color:#64748b;">Width (px)</label>
+                                    <input type="number" id="set-canvas-width" value="640" min="200" max="1600" class="widefat" style="font-size:12px;">
+                                </div>
+                                <div>
+                                    <label style="font-size:10px;color:#64748b;">Height (px)</label>
+                                    <input type="number" id="set-canvas-height" value="400" min="150" max="1200" class="widefat" style="font-size:12px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CANVAS BACKGROUND FILL</label>
+                            <select id="set-canvas-bg-mode" class="widefat" style="margin-bottom:8px;font-size:12px;">
+                                <option value="solid">Solid Background Color</option>
+                                <option value="gradient">Linear Gradient</option>
+                            </select>
+                            
+                            <div id="set-canvas-solid-wrap">
+                                <input type="color" id="set-canvas-bg-color" value="#ffffff" class="widefat" style="height:34px;padding:2px;">
+                            </div>
+
+                            <div id="set-canvas-gradient-wrap" style="display:none;">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+                                    <div>
+                                        <label style="font-size:10px;color:#64748b;">Color 1</label>
+                                        <input type="color" id="set-canvas-grad-color1" value="#3b82f6" class="widefat" style="height:32px;padding:2px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:10px;color:#64748b;">Color 2</label>
+                                        <input type="color" id="set-canvas-grad-color2" value="#1d4ed8" class="widefat" style="height:32px;padding:2px;">
+                                    </div>
+                                </div>
+                                <label style="font-size:10px;color:#64748b;">Gradient Angle (0-360&deg;)</label>
+                                <input type="number" id="set-canvas-grad-angle" value="135" min="0" max="360" class="widefat" style="font-size:12px;">
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- SUBTAB 2: DEDICATED CANVAS LOGIC (CONDITIONAL LOGIC) -->
+                    <div class="wppoppop-csubcontent" id="csub-tab-logic" style="display:none;">
+                        <!-- Elements Count Badge -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;margin-bottom:12px;">
+                            <span style="font-size:11px;font-weight:700;color:#475569;">Canvas Elements:</span>
+                            <span id="set-canvas-element-count-badge" style="background:#2563eb;color:#ffffff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">0 Elements</span>
+                        </div>
+
+                        <!-- Empty Canvas Warning Banner -->
+                        <div id="set-canvas-logic-disabled-notice" class="wppoppop-logic-notice" style="display:none;">
+                            <span class="dashicons dashicons-info" style="color:#f59e0b;font-size:16px;width:16px;height:16px;margin-top:1px;"></span>
+                            <span style="font-size:11px;line-height:1.4;color:#92400e;">
+                                <strong>Conditional Logic Locked:</strong> Add at least one element to this canvas to enable conditional triggers or sequential rules.
+                            </span>
+                        </div>
+
+                        <!-- Conditional Logic Checkbox -->
+                        <div style="margin-bottom:12px;">
+                            <label style="font-size:12px;font-weight:700;color:#1e293b;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                                <input type="checkbox" id="set-canvas-logic-enable" value="1"> Enable Conditional Logic
+                            </label>
+                            <p style="margin:4px 0 0 20px;font-size:11px;color:#64748b;line-height:1.4;">
+                                Control whether this canvas is displayed or skipped based on user input from prior steps.
+                            </p>
+                        </div>
+
+                        <!-- Conditional Rules Builder Panel -->
+                        <div id="set-canvas-logic-rules-panel" style="display:none;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;padding:12px;margin-top:10px;">
+                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CONDITION: TRIGGER FIELD</label>
+                            <select id="set-canvas-logic-field" class="widefat" style="margin-bottom:8px;font-size:12px;">
+                                <!-- Dynamically populated with elements/tokens -->
+                            </select>
+
+                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">OPERATOR</label>
+                            <select id="set-canvas-logic-operator" class="widefat" style="margin-bottom:8px;font-size:12px;">
+                                <option value="equals">Equals (Exact Match)</option>
+                                <option value="not_equals">Does Not Equal</option>
+                                <option value="contains">Contains Value</option>
+                                <option value="greater_than">Greater Than (&gt;)</option>
+                                <option value="less_than">Less Than (&lt;)</option>
+                                <option value="is_filled">Is Filled / Not Empty</option>
+                            </select>
+
+                            <div id="set-canvas-logic-val-wrap" style="margin-bottom:8px;">
+                                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">EXPECTED VALUE</label>
+                                <input type="text" id="set-canvas-logic-val" class="widefat" placeholder="e.g. Yes, 100, promo" style="font-size:12px;">
+                            </div>
+
+                            <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION IF TRUE</label>
+                            <select id="set-canvas-logic-action" class="widefat" style="font-size:12px;">
+                                <option value="show">Display This Canvas</option>
+                                <option value="skip">Skip to Next Canvas</option>
+                                <option value="redirect">Redirect Visitor</option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -68,7 +162,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 3. Conditional Logic & Math -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">3. Conditional Logic & Math</button>
+                <button type="button" class="wppoppop-acc-header">3. Conditional Logic &amp; Math</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Real-Time Math Calculation Formula</label>
                     <input type="text" id="set-math-formula" placeholder="{qty} * 25" class="widefat" style="margin-bottom:6px;">
@@ -91,7 +185,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 5. Payments & Checkout -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">5. Payments & Checkout</button>
+                <button type="button" class="wppoppop-acc-header">5. Payments &amp; Checkout</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Gateway</label>
                     <select id="set-pay-gateway" class="widefat" style="margin-bottom:6px;">
@@ -132,7 +226,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 9. Marketing & Webhooks -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">9. Marketing & Webhooks</button>
+                <button type="button" class="wppoppop-acc-header">9. Marketing &amp; Webhooks</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Webhook URL (POST)</label>
                     <input type="url" id="set-webhook-url" placeholder="https://..." class="widefat" style="margin-bottom:6px;">
@@ -151,7 +245,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 11. Targeting & Attribution -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">11. Targeting & Attribution</button>
+                <button type="button" class="wppoppop-acc-header">11. Targeting &amp; Attribution</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Visitor Authentication</label>
                     <select id="set-target-auth" class="widefat" style="margin-bottom:6px;">
@@ -164,7 +258,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 12. Frequency Capping & Cookies -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">12. Frequency Capping & Cookies</button>
+                <button type="button" class="wppoppop-acc-header">12. Frequency Capping &amp; Cookies</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Show Frequency</label>
                     <select id="set-freq-mode" class="widefat">
@@ -186,7 +280,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 14. Custom Scoped CSS & JavaScript -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">14. Custom Scoped CSS & JS</button>
+                <button type="button" class="wppoppop-acc-header">14. Custom Scoped CSS &amp; JS</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <textarea id="set-custom-css" rows="3" placeholder=".wppoppop-box { ... }" class="widefat code" style="margin-bottom:6px;"></textarea>
                     <textarea id="set-custom-js" rows="3" placeholder="console.log('Ready');" class="widefat code"></textarea>
@@ -195,7 +289,7 @@ if (!defined('ABSPATH')) {
 
             <!-- 15. Quiz & Lead Scoring -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">15. Quiz & Lead Scoring</button>
+                <button type="button" class="wppoppop-acc-header">15. Quiz &amp; Lead Scoring</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label><input type="checkbox" id="set-quiz-enable" value="1"> Enable Lead Scoring</label>
                     <input type="number" id="set-quiz-pass" placeholder="Pass Threshold Score" class="widefat" style="margin:6px 0;">
@@ -212,6 +306,7 @@ if (!defined('ABSPATH')) {
                     <label><input type="checkbox" id="set-quiz-confetti" value="1"> Trigger Particle Confetti on Pass</label>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

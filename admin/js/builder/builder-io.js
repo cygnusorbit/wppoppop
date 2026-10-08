@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: I/O Persistence Engine
- * Handles Save/Load Routines, Per-Canvas Metadata & history.replaceState Sync
+ * Handles Save/Load Routines, Per-Canvas Metadata (Name, Size, Color, Logic) & URL Syncing
  */
 (function($) {
     'use strict';
@@ -99,15 +99,17 @@
             var core = window.WpPopPopBuilderCore;
             var uid = this.getUid();
             if (!uid) {
-                // New Popup Baseline: strictly Canvas 1 & Canvas 2
                 if (core) {
                     core.state.canvases = { 1: [], 2: [] };
                     core.state.canvasMeta = {
-                        1: { name: 'Canvas 1', width: 640, height: 400 },
-                        2: { name: 'Canvas 2', width: 640, height: 400 }
+                        1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, logic_enabled: false },
+                        2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, logic_enabled: false }
                     };
                     core.renderCanvasTabs();
                     core.switchCanvas(1);
+                    if (window.WpPopPopBuilderSettings) {
+                        window.WpPopPopBuilderSettings.renderCanvasBullets();
+                    }
                 }
                 return;
             }
@@ -147,13 +149,18 @@
 
                             core.state.canvasMeta = cfg.canvasMeta || cfg.canvas_meta || {};
 
-                            // Ensure metadata exists for all canvases
                             Object.keys(core.state.canvases).forEach(function(k) {
                                 if (!core.state.canvasMeta[k]) {
                                     core.state.canvasMeta[k] = {
                                         name: 'Canvas ' + k,
                                         width: (cfg.settings && cfg.settings.box && cfg.settings.box.width) || 640,
-                                        height: (cfg.settings && cfg.settings.box && cfg.settings.box.height) || 400
+                                        height: (cfg.settings && cfg.settings.box && cfg.settings.box.height) || 400,
+                                        bg_mode: (cfg.settings && cfg.settings.box && cfg.settings.box.bg_mode) || 'solid',
+                                        bg_color: (cfg.settings && cfg.settings.box && cfg.settings.box.bg_color) || '#ffffff',
+                                        grad_color1: (cfg.settings && cfg.settings.box && cfg.settings.box.grad_color1) || '#3b82f6',
+                                        grad_color2: (cfg.settings && cfg.settings.box && cfg.settings.box.grad_color2) || '#1d4ed8',
+                                        grad_angle: (cfg.settings && cfg.settings.box && cfg.settings.box.grad_angle) || 135,
+                                        logic_enabled: false
                                     };
                                 }
                             });
@@ -172,6 +179,10 @@
 
                         if (core) {
                             core.switchCanvas(1);
+                        }
+
+                        if (window.WpPopPopBuilderSettings) {
+                            window.WpPopPopBuilderSettings.renderCanvasBullets();
                         }
                     }
                 }

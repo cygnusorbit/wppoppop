@@ -30,8 +30,16 @@
             $panel.draggable({
                 handle: '#wppoppop-layers-header',
                 containment: '.wppoppop-builder-workspace',
+                cursor: 'grab',
                 start: function(e, ui) {
-                    $(this).css({ bottom: 'auto', right: 'auto', height: 'auto' });
+                    var pos = $(this).position();
+                    $(this).css({
+                        right: 'auto',
+                        bottom: 'auto',
+                        left: pos.left + 'px',
+                        top: pos.top + 'px',
+                        zIndex: 100000 /* Retain layer priority over canvas corner handle */
+                    });
                 }
             });
         },

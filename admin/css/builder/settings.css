@@ -41,6 +41,126 @@ body.folded .wppoppop-settings-drawer {
     pointer-events: auto !important;
 }
 
+/* Canvas Bullets Strip */
+.wppoppop-canvas-bullets-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    background: #f1f5f9;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.wppoppop-canvas-bullet {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.wppoppop-canvas-bullet .wppoppop-bullet-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #94a3b8;
+    display: inline-block;
+}
+
+.wppoppop-canvas-bullet:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #1e293b;
+}
+
+.wppoppop-canvas-bullet.active {
+    background: #2563eb;
+    border-color: #1d4ed8;
+    color: #ffffff;
+}
+
+.wppoppop-canvas-bullet.active .wppoppop-bullet-dot {
+    background: #ffffff;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.wppoppop-bullet-add-btn {
+    background: #374151;
+    color: #10b981;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.wppoppop-bullet-add-btn:hover {
+    background: #475569;
+    color: #34d399;
+}
+
+/* Canvas Settings Subtabs (General & Color vs Logic) */
+.wppoppop-canvas-subtabs {
+    display: flex;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 12px;
+    gap: 4px;
+}
+
+.wppoppop-csubtab {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    margin-bottom: -2px;
+    transition: all 0.15s ease;
+}
+
+.wppoppop-csubtab:hover {
+    color: #1e293b;
+}
+
+.wppoppop-csubtab.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.wppoppop-logic-notice {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
 .wppoppop-accordion-group {
     display: flex;
     flex-direction: column;
@@ -106,7 +226,6 @@ body.folded .wppoppop-settings-drawer {
     margin-bottom: 4px;
 }
 
-/* Tablet Breakpoint */
 @media screen and (max-width: 782px) {
     .wppoppop-settings-drawer {
         top: 46px !important;
@@ -116,7 +235,6 @@ body.folded .wppoppop-settings-drawer {
     }
 }
 
-/* Mobile Breakpoint */
 @media screen and (max-width: 480px) {
     .wppoppop-settings-drawer {
         width: 100% !important;

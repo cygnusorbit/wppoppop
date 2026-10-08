@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Canvas Stage Engine
- * Unified Pointer Capture Resizing, 19 Elements & Cross-Browser Stability
+ * Full 19-Element Visual Renderer, Drag Bounds & Conditional Logic Triggers
  */
 (function($) {
     'use strict';
@@ -18,7 +18,6 @@
             var handleEl = document.getElementById('wppoppop-canvas-corner-handle');
             if (!handleEl) return;
 
-            // Unified Pointer Events API with Pointer Capture (Chrome, Safari, Firefox, Edge)
             var onPointerDown = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -67,7 +66,6 @@
                     window.removeEventListener('pointerup', onPointerUp);
                     window.removeEventListener('pointercancel', onPointerUp);
 
-                    // Mouse event fallbacks
                     window.removeEventListener('mousemove', onPointerMove);
                     window.removeEventListener('mouseup', onPointerUp);
 
@@ -83,7 +81,6 @@
                 window.addEventListener('pointerup', onPointerUp);
                 window.addEventListener('pointercancel', onPointerUp);
 
-                // Mouse event fallback listener for older engines
                 window.addEventListener('mousemove', onPointerMove, { passive: false });
                 window.addEventListener('mouseup', onPointerUp);
             };
@@ -350,6 +347,11 @@
                 window.WpPopPopBuilderInspector.open(id);
             }
 
+            // Update conditional logic availability immediately
+            if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.checkConditionalLogicEligibility();
+            }
+
             window.WpPopPopBuilderCore.pushHistory();
         },
 
@@ -391,15 +393,14 @@
                 self.selectElement(id);
             });
 
+            // Clicking blank canvas stage ONLY deselects active layer (Does NOT open Settings drawer)
             $('#wppoppop-canvas-box').on('click', function(e) {
-                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-canvas-corner-handle, #wppoppop-canvas-stage-bar').length === 0) {
+                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-canvas-corner-handle').length === 0) {
                     self.deselect();
-                    if (window.WpPopPopBuilderSettings) {
-                        window.WpPopPopBuilderSettings.openDrawer();
-                    }
                 }
             });
 
+            // Clicking empty workspace area
             $('.wppoppop-builder-workspace').on('click', function(e) {
                 if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel, #wppoppop-canvas-corner-handle, .wppoppop-ribbon-bar, .wppoppop-builder-header, #wppoppop-settings-drawer, #wppoppop-canvas-box').length === 0) {
                     self.deselect();

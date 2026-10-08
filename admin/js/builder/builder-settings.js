@@ -1,5 +1,6 @@
 /**
  * WpPopPop Visual Builder: Campaign Settings Drawer Engine
+ * Dedicated Per-Canvas Settings (Name, Size, Color, Logic Tab) & Bullets Selector
  */
 (function($) {
     'use strict';
@@ -8,13 +9,17 @@
         init: function() {
             this.bindDrawer();
             this.bindAccordions();
+            this.bindCanvasSubtabs();
+            this.bindCanvasBullets();
             this.bindCanvasMetaInputs();
+            this.bindCanvasLogicInputs();
             this.bindLiveStyle();
         },
 
         openDrawer: function() {
             $('#wppoppop-settings-drawer').addClass('open');
             $('#wppoppop-settings-backdrop').addClass('open');
+            this.renderCanvasBullets();
             this.syncCurrentCanvasSettings();
         },
 
@@ -50,112 +55,298 @@
             });
         },
 
+        bindCanvasSubtabs: function() {
+            $('.wppoppop-csubtab').on('click', function(e) {
+                e.preventDefault();
+                var tab = $(this).data('tab');
+                $('.wppoppop-csubtab').removeClass('active');
+                $(this).addClass('active');
+
+                $('.wppoppop-csubcontent').hide();
+                $('#csub-tab-' + tab).show();
+            });
+        },
+
+        renderCanvasBullets: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core) return;
+
+            var $container = $('#wppoppop-canvas-bullets-container');
+            $container.empty();
+
+            var canvasKeys = Object.keys(core.state.canvases).map(Number).sort(function(a, b) { return a - b; });
+            if (canvasKeys.length === 0) canvasKeys = [1, 2];
+
+            canvasKeys.forEach(function(cNum) {
+                var meta = core.state.canvasMeta[cNum] || { name: 'Canvas ' + cNum };
+                var name = meta.name || ('Canvas ' + cNum);
+                var isActive = (cNum === core.state.currentCanvas);
+
+                var $btn = $('<button type="button" class="wppoppop-canvas-bullet"></button>')
+                    .attr('data-canvas', cNum)
+                    .toggleClass('active', isActive)
+                    .html('<span class="wppoppop-bullet-dot"></span> ' + name);
+
+                $container.append($btn);
+            });
+
+            var $addBullet = $('<button type="button" id="wppoppop-settings-add-canvas-bullet" class="wppoppop-bullet-add-btn" title="Add Canvas">+</button>');
+            $container.append($addBullet);
+        },
+
+        bindCanvasBullets: function() {
+            var self = this;
+
+            $(document).on('click', '.wppoppop-canvas-bullet', function(e) {
+                e.preventDefault();
+                var cNum = parseInt($(this).data('canvas'), 10) || 1;
+                var core = window.WpPopPopBuilderCore;
+                if (core) {
+                    core.switchCanvas(cNum);
+                }
+                self.syncCurrentCanvasSettings();
+            });
+
+            $(document).on('click', '#wppoppop-settings-add-canvas-bullet', function(e) {
+                e.preventDefault();
+                var core = window.WpPopPopBuilderCore;
+                if (core) {
+                    core.addNewCanvas();
+                }
+                self.renderCanvasBullets();
+                self.syncCurrentCanvasSettings();
+            });
+        },
+
         syncCurrentCanvasSettings: function() {
             var core = window.WpPopPopBuilderCore;
             if (!core) return;
-            var cur = core.state.currentCanvas || 1;
-            var meta = core.state.canvasMeta[cur] || { name: 'Canvas ' + cur, width: 640, height: 400 };
 
+            var cur = core.state.currentCanvas || 1;
+            var meta = core.state.canvasMeta[cur] || {
+                name: 'Canvas ' + cur,
+                width: 640,
+                height: 400,
+                bg_mode: 'solid',
+                bg_color: '#ffffff',
+                grad_color1: '#3b82f6',
+                grad_color2: '#1d4ed8',
+                grad_angle: 135,
+                logic_enabled: false,
+                logic_field: '',
+                logic_operator: 'equals',
+                logic_value: '',
+                logic_action: 'show'
+            };
+
+            // 1. Update Title Badge & Bullets
             $('#set-current-canvas-badge').text(meta.name || ('Canvas ' + cur));
+            $('.wppoppop-canvas-bullet').removeClass('active');
+            $('.wppoppop-canvas-bullet[data-canvas="' + cur + '"]').addClass('active');
+
+            // 2. Sync General & Dimensions
             $('#set-canvas-name').val(meta.name || ('Canvas ' + cur));
             $('#set-canvas-width').val(meta.width || 640);
             $('#set-canvas-height').val(meta.height || 400);
-            $('#quick-box-width').val(meta.width || 640);
-            $('#quick-box-height').val(meta.height || 400);
+
+            // 3. Sync Canvas-Specific Background Color
+            var bgMode = meta.bg_mode || 'solid';
+            $('#set-canvas-bg-mode').val(bgMode);
+            $('#set-canvas-solid-wrap').toggle(bgMode === 'solid');
+            $('#set-canvas-gradient-wrap').toggle(bgMode === 'gradient');
+            $('#set-canvas-bg-color').val(meta.bg_color || '#ffffff');
+            $('#set-canvas-grad-color1').val(meta.grad_color1 || '#3b82f6');
+            $('#set-canvas-grad-color2').val(meta.grad_color2 || '#1d4ed8');
+            $('#set-canvas-grad-angle').val(meta.grad_angle || 135);
+
+            // 4. Sync Canvas Logic Tab & Conditional Logic
+            this.checkConditionalLogicEligibility();
+            this.populateLogicFieldOptions();
+
+            $('#set-canvas-logic-enable').prop('checked', !!meta.logic_enabled);
+            $('#set-canvas-logic-rules-panel').toggle(!!meta.logic_enabled && !$('#set-canvas-logic-enable').prop('disabled'));
+            if (meta.logic_field) $('#set-canvas-logic-field').val(meta.logic_field);
+            if (meta.logic_operator) $('#set-canvas-logic-operator').val(meta.logic_operator);
+            $('#set-canvas-logic-val').val(meta.logic_value || '');
+            if (meta.logic_action) $('#set-canvas-logic-action').val(meta.logic_action);
+        },
+
+        checkConditionalLogicEligibility: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core) return;
+
+            var cur = core.state.currentCanvas || 1;
+            var elements = (core.state.canvases && core.state.canvases[cur]) ? core.state.canvases[cur] : [];
+            var count = elements.length;
+
+            $('#set-canvas-element-count-badge').text(count + (count === 1 ? ' Element' : ' Elements'));
+
+            // Condition: Must have at least 1 element on this canvas
+            var $toggle = $('#set-canvas-logic-enable');
+            var $notice = $('#set-canvas-logic-disabled-notice');
+            var $rulesPanel = $('#set-canvas-logic-rules-panel');
+
+            if (count === 0) {
+                $toggle.prop('disabled', true).prop('checked', false);
+                $notice.show();
+                $rulesPanel.hide();
+                if (core.state.canvasMeta[cur]) {
+                    core.state.canvasMeta[cur].logic_enabled = false;
+                }
+            } else {
+                $toggle.prop('disabled', false);
+                $notice.hide();
+            }
+        },
+
+        populateLogicFieldOptions: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core) return;
+
+            var $select = $('#set-canvas-logic-field');
+            $select.empty();
+
+            var addedTokens = [];
+            var cur = core.state.currentCanvas || 1;
+
+            // Collect elements across canvases to evaluate rules
+            Object.keys(core.state.canvases).forEach(function(cNum) {
+                var els = core.state.canvases[cNum] || [];
+                els.forEach(function(el) {
+                    var token = el.field_name || el.type;
+                    if (addedTokens.indexOf(token) === -1) {
+                        addedTokens.push(token);
+                        var optLabel = (el.name || el.type.toUpperCase()) + ' (Canvas ' + cNum + ' &bull; {' + token + '})';
+                        $select.append($('<option></option>').val(token).html(optLabel));
+                    }
+                });
+            });
+
+            if (addedTokens.length === 0) {
+                $select.append('<option value="">No form fields found</option>');
+            }
         },
 
         bindCanvasMetaInputs: function() {
-            // Live synchronizing Canvas Name
-            $('#set-canvas-name').on('input change', function() {
+            var self = this;
+            var getMeta = function() {
                 var core = window.WpPopPopBuilderCore;
-                if (!core) return;
+                if (!core) return null;
                 var cur = core.state.currentCanvas || 1;
-                var val = $(this).val();
-
                 if (!core.state.canvasMeta[cur]) {
-                    core.state.canvasMeta[cur] = { width: 640, height: 400 };
+                    core.state.canvasMeta[cur] = { name: 'Canvas ' + cur, width: 640, height: 400 };
                 }
-                core.state.canvasMeta[cur].name = val;
-                $('#set-current-canvas-badge').text(val || ('Canvas ' + cur));
+                return core.state.canvasMeta[cur];
+            };
 
-                // Update the tab button text immediately
-                $('.wppoppop-canvas-tab[data-canvas="' + cur + '"], .wppoppop-screen-tab[data-screen="' + cur + '"]')
-                    .text(val || ('Canvas ' + cur));
+            // Canvas Name Sync
+            $('#set-canvas-name').on('input change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                var val = $(this).val();
+                meta.name = val;
+
+                $('#set-current-canvas-badge').text(val || 'Canvas');
+                var cur = window.WpPopPopBuilderCore.state.currentCanvas;
+                $('.wppoppop-canvas-tab[data-canvas="' + cur + '"]').text(val || ('Canvas ' + cur));
+                self.renderCanvasBullets();
             });
 
-            // Live synchronizing Canvas Dimensions
-            $('#set-canvas-width, #set-canvas-height, #quick-box-width, #quick-box-height').on('input change', function() {
-                var core = window.WpPopPopBuilderCore;
-                if (!core) return;
-                var cur = core.state.currentCanvas || 1;
+            // Canvas Width / Height Sync
+            $('#set-canvas-width, #set-canvas-height').on('input change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                var w = parseInt($('#set-canvas-width').val(), 10) || 640;
+                var h = parseInt($('#set-canvas-height').val(), 10) || 400;
 
-                var isQuick = $(this).attr('id').indexOf('quick') !== -1;
-                var w = parseInt((isQuick ? $('#quick-box-width') : $('#set-canvas-width')).val(), 10) || 640;
-                var h = parseInt((isQuick ? $('#quick-box-height') : $('#set-canvas-height')).val(), 10) || 400;
+                meta.width = w;
+                meta.height = h;
 
-                if (!core.state.canvasMeta[cur]) {
-                    core.state.canvasMeta[cur] = { name: 'Canvas ' + cur };
-                }
-                core.state.canvasMeta[cur].width = w;
-                core.state.canvasMeta[cur].height = h;
+                $('#quick-box-width').val(w);
+                $('#quick-box-height').val(h);
 
-                $('#set-canvas-width, #quick-box-width').val(w);
-                $('#set-canvas-height, #quick-box-height').val(h);
-
-                if (core.state.viewport === 'desktop') {
+                if (window.WpPopPopBuilderCore.state.viewport === 'desktop') {
                     $('#wppoppop-canvas-box').css({ width: w + 'px', height: h + 'px' });
                 }
+            });
+
+            // Canvas Background Mode & Colors Sync
+            $('#set-canvas-bg-mode').on('change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                var mode = $(this).val();
+                meta.bg_mode = mode;
+
+                $('#set-canvas-solid-wrap').toggle(mode === 'solid');
+                $('#set-canvas-gradient-wrap').toggle(mode === 'gradient');
+                self.applyActiveCanvasBackground();
+            });
+
+            $('#set-canvas-bg-color, #set-canvas-grad-color1, #set-canvas-grad-color2, #set-canvas-grad-angle').on('input change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                meta.bg_color = $('#set-canvas-bg-color').val();
+                meta.grad_color1 = $('#set-canvas-grad-color1').val();
+                meta.grad_color2 = $('#set-canvas-grad-color2').val();
+                meta.grad_angle = parseInt($('#set-canvas-grad-angle').val(), 10) || 135;
+                self.applyActiveCanvasBackground();
+            });
+        },
+
+        applyActiveCanvasBackground: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core) return;
+            var cur = core.state.currentCanvas || 1;
+            var meta = core.state.canvasMeta[cur] || {};
+            var $box = $('#wppoppop-canvas-box');
+
+            var mode = meta.bg_mode || 'solid';
+            if (mode === 'gradient') {
+                var c1 = meta.grad_color1 || '#3b82f6';
+                var c2 = meta.grad_color2 || '#1d4ed8';
+                var ang = meta.grad_angle || 135;
+                $box.css({ background: 'linear-gradient(' + ang + 'deg, ' + c1 + ', ' + c2 + ')' });
+            } else {
+                var bg = meta.bg_color || '#ffffff';
+                $box.css({ background: bg });
+            }
+        },
+
+        bindCanvasLogicInputs: function() {
+            var getMeta = function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return null;
+                var cur = core.state.currentCanvas || 1;
+                return core.state.canvasMeta[cur];
+            };
+
+            $('#set-canvas-logic-enable').on('change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                var isEnabled = $(this).is(':checked');
+                meta.logic_enabled = isEnabled;
+                $('#set-canvas-logic-rules-panel').slideToggle(150, isEnabled);
+            });
+
+            $('#set-canvas-logic-field, #set-canvas-logic-operator, #set-canvas-logic-val, #set-canvas-logic-action').on('input change', function() {
+                var meta = getMeta();
+                if (!meta) return;
+                meta.logic_field = $('#set-canvas-logic-field').val();
+                meta.logic_operator = $('#set-canvas-logic-operator').val();
+                meta.logic_value = $('#set-canvas-logic-val').val();
+                meta.logic_action = $('#set-canvas-logic-action').val();
             });
         },
 
         bindLiveStyle: function() {
-            $('#set-bg-mode').on('change', function() {
-                var mode = $(this).val();
-                $('#set-solid-wrap').toggle(mode === 'solid');
-                $('#set-gradient-wrap').toggle(mode === 'gradient');
-                applyBackground();
-            });
-
-            $('#set-bg-color, #set-grad-color1, #set-grad-color2, #set-grad-angle').on('input change', function() {
-                applyBackground();
-            });
-
-            function applyBackground() {
-                var mode = $('#set-bg-mode').val();
-                var $box = $('#wppoppop-canvas-box');
-                if (mode === 'gradient') {
-                    var c1 = $('#set-grad-color1').val() || '#3b82f6';
-                    var c2 = $('#set-grad-color2').val() || '#1d4ed8';
-                    var ang = $('#set-grad-angle').val() || 135;
-                    $box.css({ background: 'linear-gradient(' + ang + 'deg, ' + c1 + ', ' + c2 + ')' });
-                } else {
-                    var bg = $('#set-bg-color').val() || '#ffffff';
-                    $box.css({ background: bg });
-                }
-            }
-
-            // Sync Quiz scoring inputs
-            $('#set-quiz-pass-canvas, #set-quiz-pass-screen').on('input change', function() {
-                var v = $(this).val();
-                $('#set-quiz-pass-canvas, #set-quiz-pass-screen').val(v);
-            });
-
-            $('#set-quiz-fail-canvas, #set-quiz-fail-screen').on('input change', function() {
-                var v = $(this).val();
-                $('#set-quiz-fail-canvas, #set-quiz-fail-screen').val(v);
-            });
+            // Live background synchronizer for campaign settings
         },
 
         getSettings: function() {
             return {
                 box: {
                     width: parseInt($('#set-canvas-width').val(), 10) || 640,
-                    height: parseInt($('#set-canvas-height').val(), 10) || 400,
-                    bg_mode: $('#set-bg-mode').val() || 'solid',
-                    bg_color: $('#set-bg-color').val() || '#ffffff',
-                    grad_color1: $('#set-grad-color1').val() || '#3b82f6',
-                    grad_color2: $('#set-grad-color2').val() || '#1d4ed8',
-                    grad_angle: parseInt($('#set-grad-angle').val(), 10) || 135
+                    height: parseInt($('#set-canvas-height').val(), 10) || 400
                 },
                 triggers: {
                     load: $('#trig-load').is(':checked'),
@@ -228,13 +419,6 @@
 
         setSettings: function(settings) {
             if (!settings) return;
-            if (settings.box) {
-                $('#set-bg-mode').val(settings.box.bg_mode || 'solid').trigger('change');
-                $('#set-bg-color').val(settings.box.bg_color || '#ffffff');
-                $('#set-grad-color1').val(settings.box.grad_color1 || '#3b82f6');
-                $('#set-grad-color2').val(settings.box.grad_color2 || '#1d4ed8');
-                $('#set-grad-angle').val(settings.box.grad_angle || 135);
-            }
             if (settings.triggers) {
                 $('#trig-load').prop('checked', !!settings.triggers.load);
                 $('#trig-load-delay').val(settings.triggers.load_delay || '');
