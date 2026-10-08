@@ -4,16 +4,16 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="wppoppop-builder-header">
-    <!-- Left Section: Navigation, Settings, Title -->
+    <!-- Group 1: Navigation, Settings & Campaign Title -->
     <div class="wppoppop-hdr-group wppoppop-hdr-left">
         <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popups Dashboard">Dashboard</a>
         <button type="button" id="wppoppop-btn-settings" class="button button-secondary" title="Campaign Settings">Settings</button>
         <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
     </div>
 
-    <!-- Center Section: Canvas Label (Outside Workspace) & Sequence Tabs -->
+    <!-- Group 2: Canvas Label, Sequence Tabs, Dimensions & Viewport Switcher -->
     <div class="wppoppop-hdr-group wppoppop-hdr-center">
-        <span class="wppoppop-hdr-canvas-label" style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;user-select:none;">Canvas:</span>
+        <span class="wppoppop-hdr-canvas-label"></span>
         <div class="wppoppop-canvas-tabs wppoppop-screen-tabs" id="wppoppop-canvas-tabs-container">
             <div class="wppoppop-canvas-tab-wrapper active">
                 <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
@@ -33,6 +33,7 @@ if (!defined('ABSPATH')) {
             <input type="number" id="quick-box-height" value="400" min="150" max="1000">
         </div>
 
+        <!-- Viewport Switcher -->
         <div class="wppoppop-viewport-toggles">
             <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>
@@ -43,7 +44,7 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <!-- Right Section: Preview, Embed, Save Actions -->
+    <!-- Group 3: Preview, Embed & Save Actions -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
         <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">Preview</button>
         <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>

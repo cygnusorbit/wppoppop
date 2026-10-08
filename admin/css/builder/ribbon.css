@@ -1,24 +1,26 @@
 /* ==========================================================================
    WpPopPop Visual Builder: Horizontal Elements Ribbon Toolbar
+   Multi-Row Responsive Engine (1, 2, and 3 Rows based on screen size)
    Compatible with Chrome, Safari, Firefox, Edge, Touch & Trackpads
    ========================================================================== */
 
 .wppoppop-ribbon-bar {
     background: #1e293b;
     border-bottom: 1px solid #334155;
-    height: 48px;
+    height: auto;
+    min-height: 48px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    padding: 0 12px;
+    padding: 6px 12px;
     gap: 6px;
-    overflow-x: auto;
     z-index: 9998;
     position: relative;
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: #475569 #1e293b;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    transition: all 0.2s ease;
 }
 
 .wppoppop-ribbon-bar::-webkit-scrollbar {
@@ -32,6 +34,22 @@
 .wppoppop-ribbon-bar::-webkit-scrollbar-thumb {
     background: #475569;
     border-radius: 2px;
+}
+
+.wppoppop-ribbon-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 4px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    flex-shrink: 0;
 }
 
 .wppoppop-ribbon-tool {
@@ -52,6 +70,7 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .wppoppop-ribbon-tool .dashicons {
@@ -76,9 +95,46 @@
     transform: translateY(0);
 }
 
-@media screen and (max-width: 782px) {
+/* --------------------------------------------------------------------------
+   ELEMENT RIBBON RESPONSIVE TIERS: 1, 2, AND 3 ROWS
+   -------------------------------------------------------------------------- */
+
+/* TIER 1: Wide Desktop (>= 1440px) -> 1 Row */
+@media screen and (min-width: 1440px) {
     .wppoppop-ribbon-bar {
-        height: 44px;
-        padding: 0 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        min-height: 48px;
+        padding: 0 14px;
+        gap: 6px;
+    }
+}
+
+/* TIER 2: Desktop & Laptop (992px - 1439px) -> 2 Rows (~10 tools per row) */
+@media screen and (min-width: 992px) and (max-width: 1439px) {
+    .wppoppop-ribbon-bar {
+        flex-wrap: wrap;
+        min-height: 84px;
+        padding: 8px 12px;
+        gap: 6px;
+    }
+}
+
+/* TIER 3: Tablet & Mobile (<= 991px) -> 3 Rows (~6-7 tools per row) */
+@media screen and (max-width: 991px) {
+    .wppoppop-ribbon-bar {
+        flex-wrap: wrap;
+        min-height: 118px;
+        padding: 8px 10px;
+        gap: 5px;
+    }
+    .wppoppop-ribbon-tool {
+        font-size: 10.5px;
+        padding: 4px 8px;
+    }
+    .wppoppop-ribbon-tool .dashicons {
+        font-size: 13px;
+        width: 13px;
+        height: 13px;
     }
 }

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   WpPopPop Visual Builder: Core Workspace & Cross-Browser Responsive Engine
+   WpPopPop Visual Builder: Core Workspace & Multi-Row Responsive Engine
    Compatible with Chrome, Safari, Firefox, Edge, iPadOS, iOS, Android
    ========================================================================== */
 
@@ -34,39 +34,33 @@ body.folded .wppoppop-builder-wrap {
     }
 }
 
-/* Top Control Header & Responsive Groups */
+/* --------------------------------------------------------------------------
+   Top Control Header: Dynamic Multi-Row Layout Engine
+   -------------------------------------------------------------------------- */
 .wppoppop-builder-header {
     background: #111827;
+    height: auto;
     min-height: 52px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    padding: 0 14px;
+    padding: 8px 14px;
     color: #ffffff;
     border-bottom: 1px solid #1f2937;
     z-index: 9999;
     position: relative;
     box-sizing: border-box;
     flex-shrink: 0;
-    gap: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-
-.wppoppop-builder-header::-webkit-scrollbar {
-    display: none;
+    gap: 8px 12px;
+    transition: all 0.2s ease;
 }
 
 .wppoppop-hdr-group {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0;
-}
-
-.wppoppop-hdr-left {
-    flex-shrink: 1;
+    box-sizing: border-box;
 }
 
 .wppoppop-hdr-group .button {
@@ -75,6 +69,7 @@ body.folded .wppoppop-builder-wrap {
     border-color: #374151;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     height: 32px;
     padding: 0 10px;
@@ -108,9 +103,8 @@ body.folded .wppoppop-builder-wrap {
     font-size: 13px;
     border-radius: 4px;
     padding: 4px 10px;
-    width: 180px;
+    width: 170px;
     min-width: 110px;
-    max-width: 220px;
     height: 32px;
     box-sizing: border-box;
     transition: border-color 0.15s ease;
@@ -119,6 +113,18 @@ body.folded .wppoppop-builder-wrap {
 #wppoppop-builder-title:focus {
     border-color: #2563eb;
     outline: none;
+}
+
+.wppoppop-hdr-canvas-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 2px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 /* Canvas Sequence Tabs */
@@ -218,7 +224,7 @@ body.folded .wppoppop-builder-wrap {
 }
 
 .wppoppop-quick-dimensions-wrap input {
-    width: 50px;
+    width: 48px;
     height: 24px;
     background: #111827;
     border: 1px solid #374151;
@@ -267,7 +273,111 @@ body.folded .wppoppop-builder-wrap {
     background: #ad1457 !important;
 }
 
-/* Workspace Frame & Stage Resizing */
+/* --------------------------------------------------------------------------
+   HEADER RESPONSIVE TIERS: 1, 2, AND 3 ROWS
+   -------------------------------------------------------------------------- */
+
+/* TIER 1: Wide Desktop (>= 1280px) -> 1 Row */
+@media screen and (min-width: 1280px) {
+    .wppoppop-builder-header {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        padding: 0 16px;
+        min-height: 52px;
+    }
+    .wppoppop-hdr-left {
+        order: 1;
+        flex: 0 0 auto;
+    }
+    .wppoppop-hdr-center {
+        order: 2;
+        flex: 0 0 auto;
+    }
+    .wppoppop-hdr-right {
+        order: 3;
+        flex: 0 0 auto;
+    }
+}
+
+/* TIER 2: Medium Desktop / Laptop (861px - 1279px) -> 2 Rows */
+@media screen and (min-width: 861px) and (max-width: 1279px) {
+    .wppoppop-builder-header {
+        flex-wrap: wrap;
+        padding: 8px 14px;
+        gap: 8px 14px;
+    }
+    /* Row 1: Left + Right */
+    .wppoppop-hdr-left {
+        order: 1;
+        flex: 1 1 auto;
+        justify-content: flex-start;
+    }
+    .wppoppop-hdr-right {
+        order: 2;
+        flex: 0 0 auto;
+        justify-content: flex-end;
+    }
+    /* Row 2: Center (Full Width across bottom) */
+    .wppoppop-hdr-center {
+        order: 3;
+        width: 100%;
+        flex: 1 0 100%;
+        justify-content: center;
+        padding-top: 6px;
+        border-top: 1px solid rgba(55, 65, 81, 0.4);
+    }
+    #wppoppop-builder-title {
+        width: 190px;
+    }
+}
+
+/* TIER 3: Tablet & Mobile (<= 860px) -> 3 Rows */
+@media screen and (max-width: 860px) {
+    .wppoppop-builder-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+    /* Row 1: Dashboard, Settings, Title */
+    .wppoppop-hdr-left {
+        order: 1;
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    #wppoppop-builder-title {
+        flex: 1 1 120px;
+        min-width: 110px;
+    }
+    /* Row 2: Canvas Steps + Viewport (Centered) */
+    .wppoppop-hdr-center {
+        order: 2;
+        width: 100%;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-top: 1px solid rgba(55, 65, 81, 0.4);
+        border-bottom: 1px solid rgba(55, 65, 81, 0.4);
+    }
+    .wppoppop-quick-dimensions-wrap {
+        display: none !important;
+    }
+    /* Row 3: Preview, Embed, Save Popup */
+    .wppoppop-hdr-right {
+        order: 3;
+        width: 100%;
+        justify-content: space-between;
+        gap: 6px;
+    }
+    .wppoppop-hdr-right .button {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Workspace Frame & Stage Resizing
+   -------------------------------------------------------------------------- */
 .wppoppop-main-frame {
     display: flex;
     flex: 1;
@@ -292,7 +402,7 @@ body.folded .wppoppop-builder-wrap {
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     padding: 60px 40px;
-    min-height: calc(100vh - 100px);
+    min-height: 0; /* Allows flexible container contraction */
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: #475569 #0f172a;
@@ -540,9 +650,7 @@ body.wppoppop-resizing-canvas {
     color: #64748b;
 }
 
-/* --------------------------------------------------------------------------
-   LIVE WORKSPACE PREVIEW MODE ACTIVE RULES
-   -------------------------------------------------------------------------- */
+/* Live Preview Mode State Rules */
 .is-preview-mode #wppoppop-workspace-preview-bar {
     display: flex !important;
 }
@@ -559,7 +667,6 @@ body.wppoppop-resizing-canvas {
     outline: none !important;
 }
 
-/* Restore interactive events on all elements in preview mode */
 .is-preview-mode .wppoppop-canvas-item * {
     pointer-events: auto !important;
     user-select: auto !important;
@@ -571,53 +678,6 @@ body.wppoppop-resizing-canvas {
     overflow: hidden;
 }
 
-/* Star rating hover in preview mode */
 .is-preview-mode .wppoppop-field-rating {
     cursor: pointer !important;
-}
-
-/* Responsive Breakpoints */
-@media screen and (max-width: 1200px) {
-    .wppoppop-quick-dimensions-wrap {
-        display: none !important;
-    }
-}
-
-@media screen and (max-width: 992px) {
-    .wppoppop-builder-header {
-        padding: 0 10px;
-        gap: 6px;
-    }
-    #wppoppop-builder-title {
-        width: 130px;
-    }
-}
-
-@media screen and (max-width: 782px) {
-    .wppoppop-builder-header {
-        height: auto;
-        min-height: 48px;
-        padding: 6px 10px;
-        gap: 8px;
-    }
-
-    .wppoppop-btn-label {
-        display: none !important;
-    }
-
-    .wppoppop-save-text {
-        font-size: 11px;
-    }
-
-    .wppoppop-builder-workspace {
-        padding: 24px 12px;
-        min-height: calc(100vh - 150px);
-    }
-}
-
-@media screen and (max-width: 480px) {
-    #wppoppop-builder-title {
-        width: 100px;
-        font-size: 12px;
-    }
 }

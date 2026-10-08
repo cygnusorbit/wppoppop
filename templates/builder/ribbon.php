@@ -3,8 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-ribbon-bar" style="background:#1e293b;border-bottom:1px solid #334155;height:48px;display:flex;align-items:center;padding:0 12px;gap:6px;overflow-x:auto;z-index:9998;position:relative;">
-    <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-right:6px;white-space:nowrap;">Elements:</span>
+<div class="wppoppop-ribbon-bar">
+    <span class="wppoppop-ribbon-label">Elements:</span>
     
     <button type="button" class="wppoppop-ribbon-tool" data-type="text" title="Text Layer">
         <span class="dashicons dashicons-editor-textcolor"></span> Text
