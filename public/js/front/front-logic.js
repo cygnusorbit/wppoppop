@@ -35,8 +35,6 @@
 
         bindInputs: function($popup, config) {
             var self = this;
-
-            // Form inputs binding
             $popup.find('input, select, textarea').on('input change', function() {
                 var name = $(this).attr('name');
                 if (name) {
@@ -45,7 +43,6 @@
                 self.evaluateAll($popup, config);
             });
 
-            // Star Rating binding
             $popup.find('.wppoppop-field-rating').on('click', function(e) {
                 var stars = 5;
                 $(this).find('input[name="rating"]').val(stars);
@@ -77,7 +74,6 @@
             if (!quiz.enable) return;
 
             var score = 0;
-            // Accumulate radio points
             $popup.find('input[type="radio"]:checked').each(function() {
                 var val = $(this).val();
                 if (val && val.indexOf(':') !== -1) {
@@ -87,12 +83,16 @@
 
             this.setToken($popup, 'quiz_score', score);
 
-            // Hook next screen routing to pass/fail threshold
-            var passThreshold = parseInt(quiz.pass_score, 10) || 40;
-            var passScreen = parseInt(quiz.pass_screen, 10) || 2;
-            var failScreen = parseInt(quiz.fail_screen, 10) || 3;
+            // Routing: Support pass_canvas/fail_canvas with fallback to legacy pass_screen/fail_screen
+            var passThreshold = parseInt(quiz.pass_score || quiz.pass_threshold, 10) || 40;
+            var passCanvas = parseInt(quiz.pass_canvas || quiz.pass_screen, 10) || 2;
+            var failCanvas = parseInt(quiz.fail_canvas || quiz.fail_screen, 10) || 3;
+            var target = (score >= passThreshold) ? passCanvas : failCanvas;
 
-            $popup.find('.wppoppop-next-screen-btn').attr('data-goto', (score >= passThreshold) ? passScreen : failScreen);
+            $popup.find('.wppoppop-next-canvas-btn, .wppoppop-next-screen-btn, .wppoppop-next-step')
+                .attr('data-goto-canvas', target)
+                .attr('data-goto-screen', target)
+                .attr('data-goto', target);
         }
     };
 

@@ -1,93 +1,66 @@
 /* ==========================================================================
-   WpPopPop Frontend: Sticky Announcement Ribbons, Side Tabs & Content Locker
+   WpPopPop Public Frontend: Addons (Sticky Ribbons, Side Tabs, Content Locker)
+   Compatible with Chrome, Safari, Firefox, Edge
    ========================================================================== */
 
-/* 1. Sticky Announcement Ribbons */
-.wppoppop-ribbon-top {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 999990 !important;
-    border-radius: 0 !important;
-}
-
-.wppoppop-ribbon-bottom {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 999990 !important;
-    border-radius: 0 !important;
-}
-
-/* 2. Pinned Sticky Side Tabs */
-.wppoppop-sidetab {
+/* Pinned Sticky Side Tabs */
+.wppoppop-side-tab {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
     background: #c2185b;
     color: #ffffff;
-    padding: 12px 14px;
-    font-weight: 700;
     font-size: 13px;
+    font-weight: 700;
+    padding: 10px 14px;
     cursor: pointer;
-    z-index: 99998;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 99990;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     user-select: none;
-    transition: transform 0.2s ease, background 0.2s ease;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    transition: background 0.15s ease;
 }
 
-.wppoppop-sidetab-left {
+.wppoppop-side-tab.pos-left {
     left: 0;
-    border-radius: 0 8px 8px 0;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    writing-mode: vertical-rl;
 }
 
-.wppoppop-sidetab-right {
+.wppoppop-side-tab.pos-right {
     right: 0;
-    border-radius: 8px 0 0 8px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    writing-mode: vertical-rl;
 }
 
-.wppoppop-sidetab:hover {
-    background: #ad1457;
-}
-
-/* 3. Inline Content Locker */
-.wppoppop-locked-wrap {
+/* Inline Content Locker */
+.wppoppop-locker-wrap {
     position: relative;
     overflow: hidden;
     margin: 20px 0;
 }
 
-.wppoppop-locked-content {
+.wppoppop-locker-blurred {
     filter: blur(6px);
+    -webkit-filter: blur(6px);
     pointer-events: none;
     user-select: none;
-    opacity: 0.5;
-    transition: filter 0.4s ease, opacity 0.4s ease;
-}
-
-.wppoppop-locked-content.wppoppop-unlocked {
-    filter: none !important;
-    pointer-events: auto !important;
-    user-select: auto !important;
-    opacity: 1 !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 .wppoppop-locker-overlay {
     position: absolute;
     inset: 0;
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(2px);
     z-index: 10;
-    text-align: center;
-    padding: 24px;
 }

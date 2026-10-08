@@ -3,264 +3,407 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div id="wppoppop-inspector-drawer">
-    <div class="wppoppop-insp-header">
-        <button type="button" id="wppoppop-inspector-close" title="Close Properties">&times;</button>
-        <button type="button" class="wppoppop-insp-tab active" data-tab="basic">Basic</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="style">Style</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="logic">Logic</button>
+<!-- Hardware-Accelerated Slide-In Layer Settings Inspector Panel -->
+<div id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:360px;background:#ffffff;border-left:1px solid #e2e8f0;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,0.15);z-index:99995;overflow:hidden;box-sizing:border-box;">
+    <!-- Inspector Header Tabs -->
+    <div style="display:flex;align-items:center;background:#0f172a;color:#ffffff;height:42px;flex-shrink:0;">
+        <button type="button" id="wppoppop-inspector-close" style="width:42px;height:42px;background:#991b1b;border:none;color:#ffffff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;" title="Close Inspector">&times;</button>
+        <button type="button" class="wppoppop-insp-tab active" data-tab="basic" style="flex:1;background:transparent;border:none;color:#ffffff;font-weight:700;font-size:12px;cursor:pointer;height:100%;">Basic</button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="style" style="flex:1;background:transparent;border:none;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer;height:100%;">Style</button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="logic" style="flex:1;background:transparent;border:none;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer;height:100%;">Logic</button>
     </div>
 
+    <!-- Active Element Type Indicator -->
+    <div style="background:#1e293b;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #334155;flex-shrink:0;">
+        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Selected Element:</span>
+        <span id="insp-element-type-badge" style="background:#2563eb;color:#ffffff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;">TEXT</span>
+    </div>
+
+    <!-- Inspector Body -->
     <div style="flex:1;overflow-y:auto;padding:16px;">
-        <!-- Basic Tab -->
-        <div class="wppoppop-insp-content" id="insp-tab-basic">
-            <!-- Layer Actions: Duplicate & Delete -->
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;">
-                <button type="button" id="wppoppop-insp-btn-duplicate" class="wppoppop-insp-action-btn" title="Duplicate Layer (Cmd/Ctrl+D)" style="flex:1;background:#1e293b;border:1px solid #334155;color:#94a3b8;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;">
-                    <span class="dashicons dashicons-admin-page" style="font-size:14px;width:14px;height:14px;"></span> Duplicate
-                </button>
-                <button type="button" id="wppoppop-insp-btn-delete" class="wppoppop-insp-action-btn" title="Delete Layer (Delete/Backspace)" style="flex:1;background:#1e293b;border:1px solid rgba(239,68,68,0.4);color:#fca5a5;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;">
-                    <span class="dashicons dashicons-trash" style="font-size:14px;width:14px;height:14px;color:#ef4444;"></span> Delete
-                </button>
-            </div>
-
-            <!-- Alignment Toolbar -->
-            <div style="margin-bottom:12px;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:8px;">
-                <label style="display:block;font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Align to Canvas</label>
-                <div class="wppoppop-align-btn-group" style="display:grid;grid-template-columns:repeat(6, 1fr);gap:4px;">
-                    <button type="button" class="wppoppop-align-btn" data-align="left" title="Align Left">
-                        <span class="dashicons dashicons-align-left" style="font-size:14px;width:14px;height:14px;"></span>
-                    </button>
-                    <button type="button" class="wppoppop-align-btn" data-align="center_h" title="Center Horizontally">
-                        <span class="dashicons dashicons-align-center" style="font-size:14px;width:14px;height:14px;"></span>
-                    </button>
-                    <button type="button" class="wppoppop-align-btn" data-align="right" title="Align Right">
-                        <span class="dashicons dashicons-align-right" style="font-size:14px;width:14px;height:14px;"></span>
-                    </button>
-                    <button type="button" class="wppoppop-align-btn" data-align="top" title="Align Top">
-                        <span class="dashicons dashicons-arrow-up-alt2" style="font-size:14px;width:14px;height:14px;"></span>
-                    </button>
-                    <button type="button" class="wppoppop-align-btn" data-align="center_v" title="Middle Vertically">
-                        <span class="dashicons dashicons-minus" style="font-size:14px;width:14px;height:14px;"></span>
-                    </button>
-                    <button type="button" class="wppoppop-align-btn" data-align="bottom" title="Align Bottom">
-                        <span class="dashicons dashicons-arrow-down-alt2" style="font-size:14px;width:14px;height:14px;"></span>
-                    </button>
-                </div>
-            </div>
-
+        <!-- TAB: BASIC -->
+        <div class="wppoppop-insp-content active" id="insp-tab-basic" style="display:block;">
             <div style="margin-bottom:12px;">
-                <label>Layer Label</label>
-                <input type="text" id="prop-layer-name">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">LAYER NAME</label>
+                <input type="text" id="prop-layer-name" class="widefat" style="font-size:12px;">
             </div>
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
                 <div>
-                    <label>Top (px)</label>
-                    <input type="number" id="prop-pos-top">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TOP (PX)</label>
+                    <input type="number" id="prop-pos-top" class="widefat" style="font-size:12px;">
                 </div>
                 <div>
-                    <label>Left (px)</label>
-                    <input type="number" id="prop-pos-left">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">LEFT (PX)</label>
+                    <input type="number" id="prop-pos-left" class="widefat" style="font-size:12px;">
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
                 <div>
-                    <label>Width (px)</label>
-                    <input type="number" id="prop-size-width">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">WIDTH (PX)</label>
+                    <input type="number" id="prop-size-width" class="widefat" style="font-size:12px;">
                 </div>
                 <div>
-                    <label>Height (px)</label>
-                    <input type="number" id="prop-size-height">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">HEIGHT (PX)</label>
+                    <input type="number" id="prop-size-height" class="widefat" style="font-size:12px;">
                 </div>
             </div>
 
-            <div style="margin-bottom:12px;">
-                <label>Content / Value</label>
-                <textarea id="prop-content" rows="3"></textarea>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
+
+            <!-- Contextual Element Setting Panels (All 19 Elements from v3.0.53) -->
+            <div id="wppoppop-element-specific-settings">
+                <!-- 1. TEXT -->
+                <div class="element-panel" id="panel-elem-text" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TEXT CONTENT / HTML</label>
+                    <textarea id="prop-text-content" rows="3" class="widefat" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">HTML TAG</label>
+                    <select id="prop-text-tag" class="widefat" style="font-size:12px;">
+                        <option value="p">Paragraph (&lt;p&gt;)</option>
+                        <option value="h1">Heading 1 (&lt;h1&gt;)</option>
+                        <option value="h2">Heading 2 (&lt;h2&gt;)</option>
+                        <option value="h3">Heading 3 (&lt;h3&gt;)</option>
+                        <option value="span">Inline Span (&lt;span&gt;)</option>
+                    </select>
+                </div>
+
+                <!-- 2. EMAIL -->
+                <div class="element-panel" id="panel-elem-email" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                    <input type="text" id="prop-email-placeholder" class="widefat" placeholder="Enter your email..." style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-email-fieldname" value="email" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-email-required" value="1" checked> Required Field
+                    </label>
+                </div>
+
+                <!-- 3. NUMBER -->
+                <div class="element-panel" id="panel-elem-number" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT VALUE / PLACEHOLDER</label>
+                    <input type="number" id="prop-number-val" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MIN</label>
+                            <input type="number" id="prop-number-min" value="0" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MAX</label>
+                            <input type="number" id="prop-number-max" value="100" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">STEP</label>
+                            <input type="number" id="prop-number-step" value="1" class="widefat" style="font-size:11px;">
+                        </div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-number-fieldname" value="quantity" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 4. SELECT / DROPDOWN -->
+                <div class="element-panel" id="panel-elem-select" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DROPDOWN OPTIONS (COMMA SEPARATED)</label>
+                    <textarea id="prop-select-options" rows="3" class="widefat" placeholder="Option 1, Option 2, Option 3" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-select-fieldname" value="dropdown_field" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 5. RADIOS -->
+                <div class="element-panel" id="panel-elem-radios" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RADIO CHOICES (COMMA SEPARATED)</label>
+                    <textarea id="prop-radios-options" rows="3" class="widefat" placeholder="Choice A, Choice B, Choice C" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-radios-fieldname" value="radio_choice" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 6. CHECKBOXES -->
+                <div class="element-panel" id="panel-elem-checkboxes" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CHECKBOX LABEL TEXT</label>
+                    <input type="text" id="prop-checkbox-label" class="widefat" value="I agree to the terms and conditions" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-checkbox-fieldname" value="terms_agreement" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-checkbox-checked" value="1" checked> Checked by default
+                    </label>
+                </div>
+
+                <!-- 7. RATING -->
+                <div class="element-panel" id="panel-elem-rating" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT STAR RATING (1-5)</label>
+                    <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">STAR COLOR</label>
+                    <input type="color" id="prop-rating-color" value="#f59e0b" class="widefat" style="height:32px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-rating-fieldname" value="rating" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 8. DATE -->
+                <div class="element-panel" id="panel-elem-date" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-date-fieldname" value="appointment_date" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-date-required" value="1"> Required Date
+                    </label>
+                </div>
+
+                <!-- 9. SLIDER -->
+                <div class="element-panel" id="panel-elem-slider" style="display:none;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MIN</label>
+                            <input type="number" id="prop-slider-min" value="0" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MAX</label>
+                            <input type="number" id="prop-slider-max" value="100" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">DEFAULT</label>
+                            <input type="number" id="prop-slider-val" value="50" class="widefat" style="font-size:11px;">
+                        </div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 10. SIGNATURE -->
+                <div class="element-panel" id="panel-elem-signature" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PEN INK COLOR</label>
+                    <input type="color" id="prop-sig-color" value="#0f172a" class="widefat" style="height:32px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLEAR BUTTON LABEL</label>
+                    <input type="text" id="prop-sig-clear-label" value="Clear Signature" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME</label>
+                    <input type="text" id="prop-sig-fieldname" value="digital_signature" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 11. WHEEL (LUCKY FORTUNE WHEEL) -->
+                <div class="element-panel" id="panel-elem-wheel" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRIZE SLICES (COMMA SEPARATED)</label>
+                    <textarea id="prop-wheel-slices" rows="4" class="widefat" placeholder="10% OFF, FREE SHIPPING, 25% OFF, JACKPOT" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SPIN BUTTON LABEL</label>
+                    <input type="text" id="prop-wheel-btn-text" value="SPIN TO WIN!" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">WIN MESSAGE</label>
+                    <input type="text" id="prop-wheel-win-msg" value="Congratulations! You won {prize}!" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 12. SCRATCH (SCRATCH CARD) -->
+                <div class="element-panel" id="panel-elem-scratch" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SECRET WINNING / REVEAL TEXT</label>
+                    <input type="text" id="prop-scratch-prize" value="YOU WON 25% OFF! USE CODE: WIN25" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FOIL COVER COLOR</label>
+                    <input type="color" id="prop-scratch-foil" value="#94a3b8" class="widefat" style="height:32px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PERCENT UNCOVERED TO REVEAL (10-90%)</label>
+                    <input type="number" id="prop-scratch-pct" min="10" max="90" value="45" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 13. COUNTDOWN -->
+                <div class="element-panel" id="panel-elem-countdown" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DURATION (SECONDS)</label>
+                    <input type="number" id="prop-countdown-seconds" value="900" class="widefat" placeholder="e.g. 900 for 15 minutes" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON EXPIRE</label>
+                    <select id="prop-countdown-expire" class="widefat" style="font-size:12px;">
+                        <option value="none">Stay at 00:00</option>
+                        <option value="close">Close Popup</option>
+                        <option value="redirect">Redirect URL</option>
+                    </select>
+                </div>
+
+                <!-- 14. PROGRESS -->
+                <div class="element-panel" id="panel-elem-progress" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PROGRESS PERCENTAGE (0-100%)</label>
+                    <input type="number" id="prop-progress-val" min="0" max="100" value="65" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BAR FILL COLOR</label>
+                    <input type="color" id="prop-progress-color" value="#2563eb" class="widefat" style="height:32px;">
+                </div>
+
+                <!-- 15. FILE UPLOAD -->
+                <div class="element-panel" id="panel-elem-file" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ALLOWED FILE EXTENSIONS</label>
+                    <input type="text" id="prop-file-exts" value=".jpg, .jpeg, .png, .pdf" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">MAX FILE SIZE (MB)</label>
+                    <input type="number" id="prop-file-max-mb" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME</label>
+                    <input type="text" id="prop-file-fieldname" value="attachment" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 16. NEXT CANVAS BUTTON (step_btn) -->
+                <div class="element-panel" id="panel-elem-step_btn" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-step-label" value="Next Canvas &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET CANVAS NUMBER</label>
+                    <input type="number" id="prop-step-canvas" min="1" max="10" value="2" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- 17. SUBMIT BUTTON -->
+                <div class="element-panel" id="panel-elem-submit" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-submit-label" value="Submit Form" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON SUBMIT</label>
+                    <select id="prop-submit-action" class="widefat" style="font-size:12px;">
+                        <option value="default">Save Lead & Close</option>
+                        <option value="next_canvas">Save Lead & Advance to Next Canvas</option>
+                        <option value="redirect">Save Lead & Redirect URL</option>
+                    </select>
+                </div>
+
+                <!-- 18. PAY BUTTON -->
+                <div class="element-panel" id="panel-elem-pay" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-pay-label" value="Checkout Now" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">AMOUNT</label>
+                            <input type="number" step="0.01" id="prop-pay-amount" value="19.99" class="widefat" style="font-size:12px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">CURRENCY</label>
+                            <select id="prop-pay-currency" class="widefat" style="font-size:12px;">
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="AUD">AUD ($)</option>
+                                <option value="CAD">CAD ($)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PAYMENT GATEWAY</label>
+                    <select id="prop-pay-gateway" class="widefat" style="font-size:12px;">
+                        <option value="stripe">Stripe</option>
+                        <option value="paypal">PayPal</option>
+                    </select>
+                </div>
+
+                <!-- 19. HTML -->
+                <div class="element-panel" id="panel-elem-html" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RAW HTML / EMBED CODE</label>
+                    <textarea id="prop-html-code" rows="5" class="widefat code" placeholder="<div>Custom HTML or &lt;iframe&gt;...</div>" style="font-size:11px;font-family:monospace;"></textarea>
+                </div>
             </div>
         </div>
 
-        <!-- Style Tab with 50%/50% Color Pickers & Live Animate.style Previews -->
+        <!-- TAB: STYLE -->
         <div class="wppoppop-insp-content" id="insp-tab-style" style="display:none;">
-            <div style="margin-bottom:12px;">
-                <label>Font Family</label>
-                <select id="prop-font-family">
-                    <option value="inherit">Inherit System</option>
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="'Helvetica Neue', sans-serif">Helvetica</option>
-                    <option value="'Roboto', sans-serif">Roboto</option>
-                    <option value="'Open Sans', sans-serif">Open Sans</option>
-                    <option value="'Inter', sans-serif">Inter</option>
-                    <option value="Georgia, serif">Georgia</option>
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TYPOGRAPHY & FONT</label>
+                <select id="prop-font-family" class="widefat" style="font-size:12px;margin-bottom:6px;">
+                    <option value="inherit">Theme Default Font</option>
+                    <option value="Inter">Inter</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Open Sans">Open Sans</option>
+                    <option value="Playfair Display">Playfair Display</option>
                 </select>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-                <div>
-                    <label>Font Size (px)</label>
-                    <input type="number" id="prop-font-size" value="14">
-                </div>
-                <div>
-                    <label>Radius (px)</label>
-                    <input type="number" id="prop-border-radius" value="0">
-                </div>
-            </div>
-
-            <!-- Text Color: 50% Color Swatch + 50% Hex Input on Same Row -->
-            <div style="margin-bottom:12px;">
-                <label style="display:block;margin-bottom:4px;">Text Color</label>
-                <div class="wppoppop-color-picker-row">
-                    <div class="wppoppop-color-picker-wrap">
-                        <input type="color" class="wppoppop-color-swatch-input" data-target="#prop-color" value="#1e293b" title="Pick text color">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">FONT SIZE (PX)</label>
+                        <input type="number" id="prop-font-size" value="14" class="widefat" style="font-size:12px;">
                     </div>
-                    <input type="text" id="prop-color" class="wppoppop-color-hex-input" value="#1e293b" placeholder="#1e293b">
-                </div>
-            </div>
-
-            <!-- Background Color: 50% Color Swatch + 50% Hex Input on Same Row -->
-            <div style="margin-bottom:12px;">
-                <label style="display:block;margin-bottom:4px;">Background Color</label>
-                <div class="wppoppop-color-picker-row">
-                    <div class="wppoppop-color-picker-wrap">
-                        <input type="color" class="wppoppop-color-swatch-input" data-target="#prop-bg-color" value="#ffffff" title="Pick background color">
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">TEXT COLOR</label>
+                        <input type="color" id="prop-color" value="#0f172a" class="widefat" style="height:32px;padding:2px;">
                     </div>
-                    <input type="text" id="prop-bg-color" class="wppoppop-color-hex-input" value="#ffffff" placeholder="#ffffff">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">FONT WEIGHT</label>
+                        <select id="prop-font-weight" class="widefat" style="font-size:12px;">
+                            <option value="400">Normal (400)</option>
+                            <option value="600">Semi-Bold (600)</option>
+                            <option value="700">Bold (700)</option>
+                            <option value="800">Extra Bold (800)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">TEXT ALIGN</label>
+                        <select id="prop-text-align" class="widefat" style="font-size:12px;">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BACKGROUND & BORDERS</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">BG COLOR</label>
+                        <input type="color" id="prop-bg-color" value="#ffffff" class="widefat" style="height:32px;padding:2px;">
+                    </div>
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">BORDER COLOR</label>
+                        <input type="color" id="prop-border-color" value="#cbd5e1" class="widefat" style="height:32px;padding:2px;">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;">
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">RADIUS (PX)</label>
+                        <input type="number" id="prop-border-radius" value="4" class="widefat" style="font-size:12px;">
+                    </div>
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">BORDER WIDTH</label>
+                        <input type="number" id="prop-border-width" value="1" min="0" max="10" class="widefat" style="font-size:12px;">
+                    </div>
+                    <div>
+                        <label style="font-size:10px;color:#64748b;">OPACITY</label>
+                        <input type="number" id="prop-opacity" step="0.1" min="0.1" max="1" value="1" class="widefat" style="font-size:12px;">
+                    </div>
                 </div>
             </div>
 
             <div style="margin-bottom:12px;">
-                <label>Opacity (0 to 1)</label>
-                <input type="number" id="prop-opacity" step="0.1" min="0" max="1" value="1">
-            </div>
-
-            <!-- Element Animation Effect with Replay Action -->
-            <div style="margin-bottom:12px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                    <label style="margin:0;">Animation Effect (Animate.style)</label>
-                    <button type="button" id="wppoppop-insp-btn-replay-anim" title="Replay Animation on Canvas" style="background:transparent;border:none;color:#38bdf8;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:3px;padding:0;">
-                        <span class="dashicons dashicons-controls-play" style="font-size:13px;width:13px;height:13px;"></span> Replay
-                    </button>
-                </div>
-                <select id="prop-anim-effect">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ENTRANCE ANIMATION</label>
+                <select id="prop-anim-effect" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <option value="none">None</option>
-                    <optgroup label="Attention Seekers">
-                        <option value="animate__bounce">Bounce</option>
-                        <option value="animate__flash">Flash</option>
-                        <option value="animate__pulse">Pulse</option>
-                        <option value="animate__rubberBand">Rubber Band</option>
-                        <option value="animate__shakeX">Shake X</option>
-                        <option value="animate__shakeY">Shake Y</option>
-                        <option value="animate__headShake">Head Shake</option>
-                        <option value="animate__swing">Swing</option>
-                        <option value="animate__tada">Tada</option>
-                        <option value="animate__wobble">Wobble</option>
-                        <option value="animate__jello">Jello</option>
-                        <option value="animate__heartBeat">HeartBeat</option>
-                    </optgroup>
-                    <optgroup label="Entrances">
-                        <option value="animate__fadeIn">Fade In</option>
-                        <option value="animate__fadeInDown">Fade In Down</option>
-                        <option value="animate__fadeInUp">Fade In Up</option>
-                        <option value="animate__fadeInLeft">Fade In Left</option>
-                        <option value="animate__fadeInRight">Fade In Right</option>
-                        <option value="animate__bounceIn">Bounce In</option>
-                        <option value="animate__zoomIn">Zoom In</option>
-                        <option value="animate__slideInUp">Slide In Up</option>
-                        <option value="animate__slideInDown">Slide In Down</option>
-                        <option value="animate__flipInX">Flip In X</option>
-                        <option value="animate__flipInY">Flip In Y</option>
-                    </optgroup>
+                    <option value="fade">Fade In</option>
+                    <option value="slideDown">Slide Down</option>
+                    <option value="slideUp">Slide Up</option>
+                    <option value="bounceIn">Bounce In</option>
+                    <option value="zoomIn">Zoom In</option>
+                    <option value="pulse">Pulse</option>
+                </select>
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BOX SHADOW</label>
+                <select id="prop-box-shadow" class="widefat" style="font-size:12px;">
+                    <option value="none">None</option>
+                    <option value="0 1px 3px rgba(0,0,0,0.1)">Subtle Shadow</option>
+                    <option value="0 4px 6px -1px rgba(0,0,0,0.15)">Medium Shadow</option>
+                    <option value="0 10px 15px -3px rgba(0,0,0,0.2)">Prominent Shadow</option>
                 </select>
             </div>
         </div>
 
-        <!-- Logic Tab -->
+        <!-- TAB: LOGIC -->
         <div class="wppoppop-insp-content" id="insp-tab-logic" style="display:none;">
-            <div style="margin-bottom:12px;">
-                <label>Action on Click / Submit</label>
-                <select id="prop-action-close">
-                    <option value="none">Do Nothing</option>
-                    <option value="next_screen">Proceed to Next Screen</option>
-                    <option value="jump_screen">Jump to Specific Screen</option>
-                    <option value="close">Close Popup</option>
-                    <option value="redirect">Redirect to URL</option>
-                </select>
+            <div style="margin-bottom:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:2px;">MERGE TAG / TOKEN</label>
+                <p style="font-size:11px;color:#64748b;margin:0 0 6px 0;">Use in other text layers to display this value in real-time:</p>
+                <input type="text" id="prop-display-token" readonly class="widefat code" style="font-family:monospace;font-size:12px;background:#ffffff;">
             </div>
 
-            <div id="prop-target-screen-wrap" style="margin-bottom:12px;">
-                <label>Default Target Screen</label>
-                <select id="prop-target-screen">
-                    <!-- Populated dynamically -->
-                </select>
-            </div>
-
-            <div id="prop-action-url-wrap" style="margin-bottom:12px;">
-                <label>Redirect URL</label>
-                <input type="url" id="prop-action-url" placeholder="https://example.com/checkout">
-            </div>
-
-            <div style="margin-bottom:12px;">
-                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                    <input type="checkbox" id="prop-action-blank"> Open link in new window
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ONCLICK URL REDIRECT ACTION</label>
+                <input type="url" id="prop-action-url" placeholder="https://..." class="widefat" style="font-size:12px;margin-bottom:6px;">
+                <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="prop-action-blank" value="1"> Open redirect in new browser tab
                 </label>
             </div>
 
-            <div class="wppoppop-cond-toggle-wrap" style="margin-top:14px;padding:12px;background:#1e293b;border:1px solid #334155;border-radius:6px;">
-                <label style="display:flex;align-items:center;gap:8px;font-weight:700;color:#f8fafc;cursor:pointer;margin-bottom:6px;">
-                    <input type="checkbox" id="prop-cond-enable">
-                    <span>Enable Conditional Logic</span>
-                </label>
-                <p style="font-size:11px;color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">
-                    Branch navigation dynamically based on visitor inputs in elements on this screen.
-                </p>
-
-                <div id="prop-cond-box" style="display:none;border-top:1px solid #334155;padding-top:10px;">
-                    <div style="margin-bottom:10px;">
-                        <label>Evaluate Element</label>
-                        <select id="prop-cond-field">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom:10px;">
-                        <label>Condition</label>
-                        <select id="prop-cond-operator">
-                            <option value="equals">Equals (=)</option>
-                            <option value="not_equals">Does not equal (!=)</option>
-                            <option value="contains">Contains text</option>
-                            <option value="greater_than">Greater than (&gt;)</option>
-                            <option value="less_than">Less than (&lt;)</option>
-                            <option value="is_empty">Is Empty</option>
-                            <option value="is_not_empty">Is Not Empty</option>
-                        </select>
-                    </div>
-
-                    <div id="prop-cond-val-wrap" style="margin-bottom:10px;">
-                        <label>Match Value</label>
-                        <input type="text" id="prop-cond-val" placeholder="e.g. VIP, Yes, 5">
-                    </div>
-
-                    <div style="margin-bottom:10px;">
-                        <label>If True, Jump to Screen</label>
-                        <select id="prop-cond-target-screen">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom:4px;">
-                        <label>Otherwise (Fallback)</label>
-                        <select id="prop-cond-fallback-screen">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-                </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">POPUP CLOSE BEHAVIOR</label>
+                <select id="prop-action-close" class="widefat" style="font-size:12px;">
+                    <option value="none">Do not close popup</option>
+                    <option value="close">Close popup immediately</option>
+                    <option value="close_period">Close and hide for current session</option>
+                    <option value="close_forever">Close and hide permanently</option>
+                </select>
             </div>
 
-            <div style="margin-top:14px;">
-                <label>Custom JavaScript OnClick</label>
-                <textarea id="prop-action-js" rows="3" placeholder="console.log('Action triggered');"></textarea>
+            <div style="margin-bottom:12px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CUSTOM JS CALLBACK</label>
+                <textarea id="prop-action-js" rows="3" placeholder="console.log('Layer clicked');" class="widefat code" style="font-size:11px;font-family:monospace;"></textarea>
             </div>
         </div>
     </div>

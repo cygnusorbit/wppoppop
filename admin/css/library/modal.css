@@ -1,40 +1,122 @@
 /* ==========================================================================
-   WpPopPop Library: Inspection & Preview Modal Dialog
+   WpPopPop Popups Library: Template Preview Inspection Modal
+   Compatible with Chrome, Safari, Firefox, Edge
    ========================================================================== */
 
-#wppoppop-lib-preview-modal {
+.wppoppop-lib-modal-backdrop {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(3px);
-    z-index: 99999;
+    background: rgba(15, 23, 42, 0.75);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    z-index: 999999;
     align-items: center;
     justify-content: center;
-    padding: 16px;
     box-sizing: border-box;
 }
 
-#wppoppop-lib-preview-modal > div {
+.wppoppop-lib-modal-card {
     background: #ffffff;
     border-radius: 10px;
     width: 600px;
     max-width: 92vw;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    max-height: 85vh;
-    animation: wppoppopLibModalFade 0.2s ease-out forwards;
+    box-sizing: border-box;
 }
 
-@keyframes wppoppopLibModalFade {
-    from {
-        opacity: 0;
-        transform: scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.wppoppop-lib-modal-header {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.wppoppop-lib-modal-header h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.wppoppop-lib-modal-close {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.wppoppop-lib-modal-close:hover {
+    color: #ffffff;
+}
+
+.wppoppop-lib-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 70vh;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #ffffff;
+}
+
+.wppoppop-lib-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.wppoppop-lib-modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.wppoppop-lib-modal-specs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.wppoppop-lib-spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.wppoppop-lib-spec-item .spec-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.wppoppop-lib-spec-item .spec-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.wppoppop-lib-modal-footer {
+    padding: 14px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
 }

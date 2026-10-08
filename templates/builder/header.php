@@ -3,64 +3,64 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<header class="wppoppop-builder-header">
-    <div class="wppoppop-hdr-left">
-        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="wppoppop-hdr-exit" title="Exit to Dashboard">
-            <span class="dashicons dashicons-arrow-left-alt"></span>
-            <span class="wppoppop-btn-txt">Exit</span>
+<div class="wppoppop-builder-header">
+    <!-- Left Section: Navigation, Settings, Title -->
+    <div class="wppoppop-hdr-group wppoppop-hdr-left">
+        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popups Dashboard">
+            <span class="dashicons dashicons-arrow-left-alt2"></span>
+            <span class="wppoppop-btn-label">Dashboard</span>
         </a>
-        <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($title); ?>" placeholder="Popup Campaign Name..." title="Campaign Name">
-        
-        <button type="button" id="wppoppop-btn-settings" class="wppoppop-hdr-btn" title="Campaign Settings">
+        <button type="button" id="wppoppop-btn-settings" class="button button-secondary" title="Campaign Settings">
             <span class="dashicons dashicons-admin-generic"></span>
-            <span class="wppoppop-btn-txt">Settings</span>
+            <span class="wppoppop-btn-label">Settings</span>
         </button>
-
-        <div class="wppoppop-history-btns">
-            <button type="button" id="wppoppop-btn-undo" title="Undo (Cmd/Ctrl+Z)" disabled>
-                <span class="dashicons dashicons-undo"></span>
-            </button>
-            <button type="button" id="wppoppop-btn-redo" title="Redo (Cmd/Ctrl+Y)" disabled>
-                <span class="dashicons dashicons-redo"></span>
-            </button>
-        </div>
+        <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
     </div>
 
-    <!-- Dynamic Screen Sequence Tabs -->
-    <div class="wppoppop-hdr-center">
-        <div class="wppoppop-screen-tabs-wrapper">
-            <div class="wppoppop-screen-tabs" id="wppoppop-screen-tabs-list">
-                <!-- Rendered dynamically with Screen 1 deletion lock -->
+    <!-- Center Section: Canvas Sequence Tabs, Dimensions & Viewport Switcher -->
+    <div class="wppoppop-hdr-group wppoppop-hdr-center">
+        <div class="wppoppop-canvas-tabs wppoppop-screen-tabs" id="wppoppop-canvas-tabs-container">
+            <div class="wppoppop-canvas-tab-wrapper active">
+                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
             </div>
-            <button type="button" id="wppoppop-btn-add-screen" class="wppoppop-add-screen-btn" title="Add New Screen">
-                <span class="dashicons dashicons-plus"></span>
-            </button>
+            <div class="wppoppop-canvas-tab-wrapper">
+                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="2" data-screen="2">Canvas 2</button>
+                <span class="wppoppop-tab-delete-canvas" data-canvas="2" title="Delete Canvas">&times;</span>
+            </div>
+            <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="Add Canvas">+</button>
         </div>
-    </div>
 
-    <div class="wppoppop-hdr-right">
+        <!-- Quick Dimension Display (Collapses cleanly on smaller screens) -->
+        <div class="wppoppop-quick-dimensions-wrap" title="Canvas Stage Dimensions">
+            <span>W:</span>
+            <input type="number" id="quick-box-width" value="640" min="200" max="1400">
+            <span>H:</span>
+            <input type="number" id="quick-box-height" value="400" min="150" max="1000">
+        </div>
+
         <div class="wppoppop-viewport-toggles">
-            <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport">
+            <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>
             </button>
-            <button type="button" class="wppoppop-viewport-btn" data-mode="mobile" title="Mobile Viewport">
+            <button type="button" class="wppoppop-viewport-btn" data-mode="mobile" title="Mobile Viewport (360px)">
                 <span class="dashicons dashicons-smartphone"></span>
             </button>
         </div>
+    </div>
 
-        <button type="button" id="wppoppop-btn-preview" class="wppoppop-hdr-btn" title="Live Preview">
+    <!-- Right Section: Preview, Embed, Save Actions -->
+    <div class="wppoppop-hdr-group wppoppop-hdr-right">
+        <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">
             <span class="dashicons dashicons-visibility"></span>
-            <span class="wppoppop-btn-txt">Preview</span>
+            <span class="wppoppop-btn-label">Preview</span>
         </button>
-
-        <button type="button" id="wppoppop-btn-embed" class="wppoppop-hdr-btn" title="Embed & Shortcodes">
-            <span class="dashicons dashicons-shortcode"></span>
-            <span class="wppoppop-btn-txt">Embed</span>
+        <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">
+            <span class="dashicons dashicons-editor-code"></span>
+            <span class="wppoppop-btn-label">Embed</span>
         </button>
-
-        <button type="button" id="wppoppop-btn-save" class="wppoppop-hdr-btn wppoppop-btn-primary" title="Save Campaign (Cmd/Ctrl+S)">
+        <button type="button" id="wppoppop-btn-save" class="button button-primary" title="Save Popup Campaign">
             <span class="dashicons dashicons-saved"></span>
-            <span class="wppoppop-btn-txt">Save</span>
+            <span class="wppoppop-save-text">Save Popup</span>
         </button>
     </div>
-</header>
+</div>

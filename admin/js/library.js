@@ -1,19 +1,11 @@
-(function(window, $) {
+/**
+ * WpPopPop Popups Library: Master Bootstrap Coordinator
+ * Cross-Browser Compatibility: Safari, Firefox, Chrome, Edge
+ */
+jQuery(document).ready(function($) {
     'use strict';
 
-    $(document).ready(function() {
-        if (!window.WpPopPopLibrary) return;
-
-        if (window.WpPopPopLibrary.Filter) {
-            window.WpPopPopLibrary.Filter.init();
-        }
-
-        if (window.WpPopPopLibrary.Preview) {
-            window.WpPopPopLibrary.Preview.init();
-        }
-
-        if (window.WpPopPopLibrary.Import) {
-            window.WpPopPopLibrary.Import.init();
-        }
-    });
-})(window, jQuery);
+    if (window.WpPopPopLibraryFilter) window.WpPopPopLibraryFilter.init();
+    if (window.WpPopPopLibraryPreview) window.WpPopPopLibraryPreview.init();
+    if (window.WpPopPopLibraryImport) window.WpPopPopLibraryImport.init();
+});

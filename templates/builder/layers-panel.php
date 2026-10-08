@@ -3,10 +3,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div id="wppoppop-floating-layers-panel">
+<div id="wppoppop-floating-layers-panel" class="wppoppop-floating-layers-panel">
     <div id="wppoppop-layers-header">
-        <span><span class="dashicons dashicons-admin-page" style="font-size:14px;width:14px;height:14px;vertical-align:text-top;margin-right:4px;"></span> LAYERS</span>
-        <span id="wppoppop-layers-count">0</span>
+        <span class="wppoppop-layers-title-wrap">
+            <span class="dashicons dashicons-menu"></span> LAYERS
+        </span>
+        <div class="wppoppop-layers-ctrls-wrap">
+            <span id="wppoppop-layers-count" title="Active Layers Count">0</span>
+            <button type="button" id="wppoppop-layers-toggle-collapse" title="Collapse / Expand Layers Panel" aria-label="Toggle Layers Panel">
+                <span class="dashicons dashicons-arrow-up-alt2"></span>
+            </button>
+        </div>
     </div>
-    <div id="wppoppop-layers-list"></div>
+    
+    <div id="wppoppop-layers-list">
+        <!-- Dynamically rendered and sortable layer items -->
+    </div>
 </div>

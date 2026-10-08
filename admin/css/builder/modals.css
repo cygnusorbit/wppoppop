@@ -1,5 +1,6 @@
 /* ==========================================================================
    WpPopPop Visual Builder: Embed Snippets & Live Sandbox Preview Modals
+   Compatible with Chrome, Safari, Firefox, Edge, Touch Viewports
    ========================================================================== */
 
 .wppoppop-modal-backdrop {
@@ -7,42 +8,63 @@
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.75);
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     z-index: 999999;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    padding: 16px;
 }
 
-/* Embed Modal Box */
 #wppoppop-builder-embed-modal > div {
     background: #ffffff;
     border-radius: 8px;
     width: 520px;
-    max-width: 92vw;
+    max-width: 94vw;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
     overflow: hidden;
+    box-sizing: border-box;
 }
 
-/* Sandbox Preview Modal Box */
 #wppoppop-builder-preview-modal > div {
     background: #ffffff;
     border-radius: 8px;
     width: 720px;
     max-width: 95vw;
-    max-height: 90vh;
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
 }
 
 #wppoppop-preview-sandbox-root {
     flex: 1;
     overflow: auto;
-    padding: 30px;
+    padding: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #f1f5f9;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+    -webkit-overflow-scrolling: touch;
+}
+
+#wppoppop-preview-sandbox-root::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+#wppoppop-preview-sandbox-root::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+@media screen and (max-width: 782px) {
+    #wppoppop-preview-sandbox-root {
+        padding: 14px;
+    }
 }

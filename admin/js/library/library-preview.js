@@ -1,44 +1,54 @@
+/**
+ * WpPopPop Popups Library: Template Inspection Modal Engine
+ * Cross-Browser Compatibility: Safari, Firefox, Chrome, Edge
+ */
 (function(window, $) {
     'use strict';
-    window.WpPopPopLibrary = window.WpPopPopLibrary || {};
+    window.WpPopPopLibraryPreview = window.WpPopPopLibraryPreview || {};
 
     var Preview = {
-        activeConfig: null,
-
         init: function() {
-            this.bindCardPreview();
-            this.bindModalDismissal();
+            this.bindTriggers();
+            this.bindClose();
         },
 
-        bindCardPreview: function() {
-            var self = this;
-            $('.wppoppop-tpl-preview-btn').on('click', function() {
-                var $btn = $(this);
-                $('#wppoppop-lib-modal-title').text($btn.data('title'));
-                $('#wppoppop-lib-modal-desc').text($btn.data('desc'));
-                $('#wppoppop-lib-modal-dims').text($btn.data('width') + ' x ' + $btn.data('height') + ' px');
-                $('#wppoppop-lib-modal-elements').text($btn.data('elements') + ' Layers');
-                self.activeConfig = $btn.data('config');
+        bindTriggers: function() {
+            $(document).on('click', '.wppoppop-tpl-preview-btn', function(e) {
+                e.preventDefault();
+                var $card = $(this).closest('.wppoppop-template-card');
+                var title = $card.find('.wppoppop-tpl-info h3').text() || 'Starter Template';
+                var desc = $card.find('.wppoppop-tpl-info p').text() || '';
+                var category = $card.find('.wppoppop-tpl-badge').text() || 'Standard';
+                var elementsCount = $card.find('.wppoppop-tpl-count').text() || '4 Elements';
+                var templateKey = $card.data('template-key') || '';
 
-                $('#wppoppop-lib-preview-modal').css('display', 'flex');
+                $('#wppoppop-modal-tpl-title').text(title);
+                $('#wppoppop-modal-tpl-desc').text(desc);
+                $('#wppoppop-modal-spec-category').text(category);
+                $('#wppoppop-modal-spec-elements').text(elementsCount);
+                $('#wppoppop-modal-spec-canvas').text('640 × 400 px');
+
+                $('#wppoppop-lib-modal-import-btn').attr('data-template-key', templateKey);
+
+                $('#wppoppop-lib-preview-modal').css('display', 'flex').fadeIn(150);
             });
         },
 
-        bindModalDismissal: function() {
-            var self = this;
-            $('#wppoppop-lib-modal-close, #wppoppop-lib-modal-cancel').on('click', function() {
-                $('#wppoppop-lib-preview-modal').hide();
-                self.activeConfig = null;
+        bindClose: function() {
+            $(document).on('click', '.wppoppop-lib-modal-close, #wppoppop-lib-preview-modal', function(e) {
+                if (e.target === this || $(this).hasClass('wppoppop-lib-modal-close')) {
+                    $('#wppoppop-lib-preview-modal').fadeOut(150);
+                }
             });
 
-            $('#wppoppop-lib-preview-modal').on('click', function(e) {
-                if (e.target === this) {
-                    $(this).hide();
-                    self.activeConfig = null;
+            // Cross-browser ESC key listener
+            $(document).on('keydown', function(e) {
+                if ((e.key === 'Escape' || e.keyCode === 27) && $('#wppoppop-lib-preview-modal').is(':visible')) {
+                    $('#wppoppop-lib-preview-modal').fadeOut(150);
                 }
             });
         }
     };
 
-    window.WpPopPopLibrary.Preview = Preview;
+    window.WpPopPopLibraryPreview = Preview;
 })(window, jQuery);

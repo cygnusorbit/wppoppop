@@ -1,24 +1,277 @@
 /* ==========================================================================
-   WpPopPop Visual Builder: Core Workspace & Frame Mechanics
+   WpPopPop Visual Builder: Core Workspace & Cross-Browser Responsive Engine
+   Compatible with Chrome, Safari, Firefox, Edge, iPadOS, iOS, Android
    ========================================================================== */
 
+/* Respect native WordPress Admin Shell across all screen sizes */
 .wppoppop-builder-wrap {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    top: 32px;
+    left: 160px;
+    right: 0;
+    bottom: 0;
+    background: #0f172a;
+    z-index: 9990;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    box-sizing: border-box;
+    transition: left 0.15s ease;
 }
 
-/* Main Workspace & Pushing Frame */
+/* Dynamically adjust when WordPress Admin Menu is collapsed (Folded) */
+body.folded .wppoppop-builder-wrap {
+    left: 36px;
+}
+
+/* Tablet & Mobile Breakpoint for WP Shell */
+@media screen and (max-width: 782px) {
+    .wppoppop-builder-wrap {
+        top: 46px;
+        left: 0;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Top Control Header & Responsive Groups
+   -------------------------------------------------------------------------- */
+.wppoppop-builder-header {
+    background: #111827;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    color: #ffffff;
+    border-bottom: 1px solid #1f2937;
+    z-index: 9999;
+    position: relative;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.wppoppop-builder-header::-webkit-scrollbar {
+    display: none;
+}
+
+.wppoppop-hdr-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.wppoppop-hdr-left {
+    flex-shrink: 1;
+}
+
+.wppoppop-hdr-group .button {
+    background: #1f2937;
+    color: #f3f4f6;
+    border-color: #374151;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.wppoppop-hdr-group .button:hover {
+    background: #374151;
+    color: #ffffff;
+    border-color: #4b5563;
+}
+
+#wppoppop-builder-title {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 4px;
+    padding: 4px 10px;
+    width: 180px;
+    min-width: 110px;
+    max-width: 220px;
+    height: 32px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+#wppoppop-builder-title:focus {
+    border-color: #2563eb;
+    outline: none;
+}
+
+/* Canvas Sequence Tabs */
+.wppoppop-canvas-tabs,
+.wppoppop-screen-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #1f2937;
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid #374151;
+}
+
+.wppoppop-canvas-tab-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 4px;
+    padding: 2px 6px;
+    transition: background 0.15s ease;
+}
+
+.wppoppop-canvas-tab-wrapper.active {
+    background: #2563eb;
+}
+
+.wppoppop-canvas-tab,
+.wppoppop-screen-tab {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+}
+
+.wppoppop-canvas-tab-wrapper.active .wppoppop-canvas-tab {
+    color: #ffffff;
+}
+
+.wppoppop-tab-delete-canvas {
+    color: #fca5a5;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 0 2px;
+    font-weight: 700;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.wppoppop-tab-delete-canvas:hover {
+    color: #ffffff;
+    background: #ef4444;
+}
+
+.wppoppop-canvas-add-btn {
+    background: #374151;
+    color: #10b981;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    margin-left: 2px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wppoppop-canvas-add-btn:hover {
+    background: #475569 !important;
+    color: #34d399 !important;
+}
+
+/* Quick Dimension Display */
+.wppoppop-quick-dimensions-wrap {
+    display: flex;
+    align-items: center;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    padding: 2px 8px;
+    gap: 6px;
+    font-size: 11px;
+    color: #9ca3af;
+    box-sizing: border-box;
+}
+
+.wppoppop-quick-dimensions-wrap input {
+    width: 50px;
+    height: 24px;
+    background: #111827;
+    border: 1px solid #374151;
+    color: #ffffff;
+    font-size: 11px;
+    padding: 0 4px;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+/* Viewport Toggle Switcher */
+.wppoppop-viewport-toggles {
+    display: flex;
+    background: #1f2937;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    overflow: hidden;
+}
+
+.wppoppop-viewport-btn {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wppoppop-viewport-btn.active {
+    background: #374151;
+    color: #ffffff;
+}
+
+#wppoppop-btn-save {
+    background: #c2185b !important;
+    border-color: #ad1457 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+#wppoppop-btn-save:hover {
+    background: #ad1457 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Workspace Frame & Stage Resizing
+   -------------------------------------------------------------------------- */
 .wppoppop-main-frame {
     display: flex;
     flex: 1;
     overflow: hidden;
     position: relative;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: margin-right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .wppoppop-builder-workspace {
@@ -28,20 +281,197 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #0f172a;
+    background-image: 
+        linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    padding: 60px 40px;
+    min-height: calc(100vh - 100px);
     box-sizing: border-box;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    scrollbar-width: thin;
+    scrollbar-color: #475569 #0f172a;
+    -webkit-overflow-scrolling: touch;
+    transition: margin-right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.wppoppop-builder-workspace::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.wppoppop-builder-workspace::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+.wppoppop-builder-workspace::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+}
+
+/* Smart Desktop Workspace Contraction (Docked Pushing Frame) */
+@media screen and (min-width: 993px) {
+    .panel-open .wppoppop-builder-workspace {
+        margin-right: 360px;
+    }
+}
+
+/* Tablet & Mobile Workspace: Overlays Drawer Instead of Crushing Workspace */
+@media screen and (max-width: 992px) {
+    .panel-open .wppoppop-builder-workspace {
+        margin-right: 0 !important;
+    }
+}
+
+/* Canvas Box Stage */
 #wppoppop-canvas-box {
     position: relative;
+    width: 640px;
+    height: 400px;
+    background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    transition: width 0.25s ease, height 0.25s ease;
+    transition: none !important;
+    box-sizing: border-box;
 }
 
 #wppoppop-canvas-elements-root {
     width: 100%;
     height: 100%;
     position: relative;
+    border-radius: inherit;
+    overflow: hidden;
+}
+
+/* Stage Delete Button */
+.wppoppop-stage-delete-canvas-btn:hover {
+    background: #dc2626 !important;
+}
+
+/* Canvas Element Layers Selection & Dragging */
+.wppoppop-canvas-item {
+    position: absolute;
+    cursor: move;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    touch-action: none;
+}
+
+.wppoppop-canvas-item * {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+}
+
+.wppoppop-canvas-item.wppoppop-selected {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+    z-index: 99999 !important;
+}
+
+.wppoppop-canvas-item.wppoppop-locked {
+    cursor: not-allowed !important;
+}
+
+/* Layer Resizable Handles */
+.wppoppop-canvas-item .ui-resizable-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #2563eb;
+    border: 1.5px solid #ffffff;
+    border-radius: 2px;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+    touch-action: none;
+}
+
+.wppoppop-canvas-item .ui-resizable-se {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+.wppoppop-canvas-item .ui-resizable-e {
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: e-resize;
+}
+
+.wppoppop-canvas-item .ui-resizable-s {
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: s-resize;
+}
+
+/* Dedicated Corner Drag Handle */
+#wppoppop-canvas-corner-handle {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+/* Body state during corner dragging across all browsers */
+body.wppoppop-resizing-canvas {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    cursor: se-resize !important;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Breakpoints for Smaller Screens & Mobile
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 1200px) {
+    .wppoppop-quick-dimensions-wrap {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .wppoppop-builder-header {
+        padding: 0 10px;
+        gap: 6px;
+    }
+    #wppoppop-builder-title {
+        width: 130px;
+    }
+}
+
+@media screen and (max-width: 782px) {
+    .wppoppop-builder-header {
+        height: auto;
+        min-height: 48px;
+        padding: 6px 10px;
+        gap: 8px;
+    }
+
+    .wppoppop-btn-label {
+        display: none !important;
+    }
+
+    .wppoppop-save-text {
+        font-size: 11px;
+    }
+
+    .wppoppop-builder-workspace {
+        padding: 24px 12px;
+        min-height: calc(100vh - 150px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #wppoppop-builder-title {
+        width: 100px;
+        font-size: 12px;
+    }
 }

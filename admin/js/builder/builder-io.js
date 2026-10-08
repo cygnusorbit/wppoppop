@@ -1,103 +1,181 @@
-(function(window, $) {
+/**
+ * WpPopPop Visual Builder: I/O Persistence Engine
+ * Handles Save/Load Routines, Per-Canvas Metadata & history.replaceState Sync
+ */
+(function($) {
     'use strict';
-    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
-    var IO = {
+    window.WpPopPopBuilderIO = {
         init: function() {
-            this.bindEvents();
+            this.bindSave();
+            this.loadInitialData();
         },
 
-        bindEvents: function() {
+        getUid: function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('uid') || $('#wppoppop-builder-uid').val() || (window.wppoppop_vars ? window.wppoppop_vars.current_uid : '') || '';
+        },
+
+        syncUid: function(uid) {
+            if (!uid) return;
+            if ($('#wppoppop-builder-uid').length === 0) {
+                $('<input>').attr({ type: 'hidden', id: 'wppoppop-builder-uid', value: uid }).appendTo('body');
+            } else {
+                $('#wppoppop-builder-uid').val(uid);
+            }
+
+            if (window.wppoppop_vars) {
+                window.wppoppop_vars.current_uid = uid;
+            }
+
+            var currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get('uid') !== uid) {
+                currentUrl.searchParams.set('uid', uid);
+                window.history.replaceState({ path: currentUrl.toString() }, '', currentUrl.toString());
+            }
+        },
+
+        bindSave: function() {
             var self = this;
-
-            $(document).on('click', '#wppoppop-btn-save', function(e) {
+            $('#wppoppop-btn-save').on('click', function(e) {
                 e.preventDefault();
-                self.save();
-            });
+                var $btn = $(this);
+                var origText = $btn.html();
 
-            // Keyboard shortcut: Cmd/Ctrl + S
-            $(document).on('keydown', function(e) {
-                if ((e.metaKey || e.ctrlKey) && (e.key === 's' || e.keyCode === 83)) {
-                    e.preventDefault();
-                    self.save();
-                }
-            });
+                $btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Saving...');
 
-            // Prevent accidental navigation when changes are unsaved
-            window.addEventListener('beforeunload', function(e) {
-                var Core = window.WpPopPopBuilder.Core;
-                if (Core && Core.isDirty) {
-                    e.preventDefault();
-                    e.returnValue = 'You have unsaved changes in your popup campaign.';
-                }
+                var core = window.WpPopPopBuilderCore;
+                var settings = window.WpPopPopBuilderSettings ? window.WpPopPopBuilderSettings.getSettings() : {};
+
+                var payload = {
+                    canvases: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
+                    screens: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
+                    canvasMeta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
+                    canvas_meta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
+                    settings: settings,
+                    title: $('#wppoppop-builder-title').val() || 'Untitled Campaign'
+                };
+
+                var serialized = JSON.stringify(payload);
+                var postData = {
+                    action: 'wppoppop_save_popup',
+                    nonce: (window.wppoppop_vars ? window.wppoppop_vars.nonce : '') || $('#wppoppop-builder-nonce').val(),
+                    uid: self.getUid(),
+                    title: payload.title,
+                    data: serialized,
+                    config: serialized
+                };
+
+                var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
+
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: postData,
+                    success: function(response) {
+                        if (response && response.success && response.data) {
+                            var savedUid = response.data.uid;
+                            self.syncUid(savedUid);
+                            $btn.html('<span class="dashicons dashicons-yes"></span> Saved!');
+                            setTimeout(function() {
+                                $btn.prop('disabled', false).html(origText);
+                            }, 1500);
+                        } else {
+                            var msg = (response && response.data && response.data.message) ? response.data.message : 'Save failed.';
+                            alert(msg);
+                            $btn.prop('disabled', false).html(origText);
+                        }
+                    },
+                    error: function() {
+                        alert('Server error while saving popup.');
+                        $btn.prop('disabled', false).html(origText);
+                    }
+                });
             });
         },
 
-        save: function(successCb, errorCb) {
-            var Core = window.WpPopPopBuilder.Core;
-            var Settings = window.WpPopPopBuilder.Settings;
-            var $btn = $('#wppoppop-btn-save');
-            var originalHtml = $btn.html();
+        loadInitialData: function() {
+            var core = window.WpPopPopBuilderCore;
+            var uid = this.getUid();
+            if (!uid) {
+                // New Popup Baseline: strictly Canvas 1 & Canvas 2
+                if (core) {
+                    core.state.canvases = { 1: [], 2: [] };
+                    core.state.canvasMeta = {
+                        1: { name: 'Canvas 1', width: 640, height: 400 },
+                        2: { name: 'Canvas 2', width: 640, height: 400 }
+                    };
+                    core.renderCanvasTabs();
+                    core.switchCanvas(1);
+                }
+                return;
+            }
 
-            $btn.prop('disabled', true).html('<span class="dashicons dashicons-update dashicons-spin" style="margin-right:4px;"></span> Saving...');
-
-            var settingsData = (Settings && typeof Settings.getSettings === 'function') ? Settings.getSettings() : {};
-            var title = $('#wppoppop-builder-title').val() || 'Untitled Popup Campaign';
-
-            var payload = {
-                screens: Core.screens || [{ id: 1, name: 'Screen 1', width: 640, height: 400 }],
-                elements: Core.elements || [],
-                settings: settingsData
-            };
-
-            var postData = {
-                action: 'wppoppop_save_popup',
-                nonce: (window.wppoppop_vars && (window.wppoppop_vars.builder_nonce || window.wppoppop_vars.nonce)) || '',
-                uid: Core.uid || (window.wppoppop_vars && window.wppoppop_vars.uid) || '',
-                title: title,
-                data: JSON.stringify(payload)
-            };
+            var self = this;
+            var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
+            var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : $('#wppoppop-builder-nonce').val();
 
             $.ajax({
-                url: (window.wppoppop_vars && window.wppoppop_vars.ajax_url) || ajaxurl,
+                url: ajaxUrl,
                 type: 'POST',
-                data: postData,
                 dataType: 'json',
-                success: function(res) {
-                    $btn.prop('disabled', false).html(originalHtml);
-                    if (res && res.success) {
-                        Core.isDirty = false;
-                        var savedUid = (res.data && res.data.uid) ? res.data.uid : Core.uid;
-                        if (savedUid) {
-                            Core.uid = savedUid;
-                            if (window.wppoppop_vars) window.wppoppop_vars.uid = savedUid;
-                            var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=wppoppop-builder&uid=' + encodeURIComponent(savedUid);
-                            window.history.replaceState({ path: newUrl }, '', newUrl);
+                data: {
+                    action: 'wppoppop_load_popup',
+                    nonce: nonce,
+                    uid: uid
+                },
+                success: function(response) {
+                    if (response && response.success && response.data) {
+                        var row = response.data;
+                        var rawData = row.data || row.config || '{}';
+                        var cfg = {};
+
+                        if (typeof rawData === 'string') {
+                            try { cfg = JSON.parse(rawData); } catch(e) { cfg = {}; }
+                        } else if (typeof rawData === 'object' && rawData !== null) {
+                            cfg = rawData;
                         }
 
-                        if (typeof successCb === 'function') {
-                            successCb(savedUid);
+                        if (core) {
+                            var sourceCanvases = cfg.canvases || cfg.screens;
+                            if (sourceCanvases && typeof sourceCanvases === 'object') {
+                                core.state.canvases = sourceCanvases;
+                            } else {
+                                core.state.canvases = { 1: [], 2: [] };
+                            }
+
+                            core.state.canvasMeta = cfg.canvasMeta || cfg.canvas_meta || {};
+
+                            // Ensure metadata exists for all canvases
+                            Object.keys(core.state.canvases).forEach(function(k) {
+                                if (!core.state.canvasMeta[k]) {
+                                    core.state.canvasMeta[k] = {
+                                        name: 'Canvas ' + k,
+                                        width: (cfg.settings && cfg.settings.box && cfg.settings.box.width) || 640,
+                                        height: (cfg.settings && cfg.settings.box && cfg.settings.box.height) || 400
+                                    };
+                                }
+                            });
+
+                            core.renderCanvasTabs();
                         }
-                    } else {
-                        var msg = (res && res.data && res.data.message) ? res.data.message : 'Save operation failed.';
-                        if (typeof errorCb === 'function') {
-                            errorCb(msg);
-                        } else {
-                            alert('Error: ' + msg);
+
+                        if (window.WpPopPopBuilderSettings && cfg.settings) {
+                            window.WpPopPopBuilderSettings.setSettings(cfg.settings);
                         }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $btn.prop('disabled', false).html(originalHtml);
-                    if (typeof errorCb === 'function') {
-                        errorCb(error);
-                    } else {
-                        alert('AJAX Communication Failed: ' + error);
+
+                        var title = row.title || cfg.title || '';
+                        if (title) {
+                            $('#wppoppop-builder-title').val(title);
+                        }
+
+                        if (core) {
+                            core.switchCanvas(1);
+                        }
                     }
                 }
             });
         }
     };
-
-    window.WpPopPopBuilder.IO = IO;
-})(window, jQuery);
+})(jQuery);

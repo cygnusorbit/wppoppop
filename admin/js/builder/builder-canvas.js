@@ -1,396 +1,437 @@
-(function(window, $) {
+/**
+ * WpPopPop Visual Builder: Canvas Stage Engine
+ * Unified Pointer Capture Resizing, 19 Elements & Cross-Browser Stability
+ */
+(function($) {
     'use strict';
-    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 
-    var Canvas = {
+    window.WpPopPopBuilderCanvas = {
         init: function() {
+            this.bindCanvasCornerResize();
             this.bindRibbonTools();
-            this.bindStageClick();
-            this.bindCustomEvents();
-            this.bindCornerResizer();
-            this.render();
+            this.bindCanvasSelection();
+        },
+
+        bindCanvasCornerResize: function() {
+            var self = this;
+            var $box = $('#wppoppop-canvas-box');
+            var handleEl = document.getElementById('wppoppop-canvas-corner-handle');
+            if (!handleEl) return;
+
+            // Unified Pointer Events API with Pointer Capture (Chrome, Safari, Firefox, Edge)
+            var onPointerDown = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var pointerId = e.pointerId;
+                if (handleEl.setPointerCapture && pointerId !== undefined) {
+                    try { handleEl.setPointerCapture(pointerId); } catch(err) {}
+                }
+
+                var startX = e.clientX;
+                var startY = e.clientY;
+                var startW = $box.outerWidth();
+                var startH = $box.outerHeight();
+                var core = window.WpPopPopBuilderCore;
+                var cur = core ? (core.state.currentCanvas || 1) : 1;
+
+                $('body').addClass('wppoppop-resizing-canvas');
+                self.updateSizeBadge(startW, startH);
+
+                var onPointerMove = function(moveEvent) {
+                    moveEvent.preventDefault();
+                    var dx = moveEvent.clientX - startX;
+                    var dy = moveEvent.clientY - startY;
+
+                    var newW = Math.max(200, Math.min(1600, Math.round(startW + dx)));
+                    var newH = Math.max(150, Math.min(1200, Math.round(startH + dy)));
+
+                    $box.css({ width: newW + 'px', height: newH + 'px' });
+                    self.updateSizeBadge(newW, newH);
+
+                    if (core && core.state.canvasMeta && core.state.canvasMeta[cur]) {
+                        core.state.canvasMeta[cur].width = newW;
+                        core.state.canvasMeta[cur].height = newH;
+                    }
+
+                    $('#set-canvas-width, #quick-box-width').val(newW);
+                    $('#set-canvas-height, #quick-box-height').val(newH);
+                };
+
+                var onPointerUp = function(upEvent) {
+                    if (handleEl.releasePointerCapture && pointerId !== undefined) {
+                        try { handleEl.releasePointerCapture(pointerId); } catch(err) {}
+                    }
+
+                    window.removeEventListener('pointermove', onPointerMove);
+                    window.removeEventListener('pointerup', onPointerUp);
+                    window.removeEventListener('pointercancel', onPointerUp);
+
+                    // Mouse event fallbacks
+                    window.removeEventListener('mousemove', onPointerMove);
+                    window.removeEventListener('mouseup', onPointerUp);
+
+                    $('body').removeClass('wppoppop-resizing-canvas');
+                    $('#wppoppop-canvas-size-badge').fadeOut(200);
+
+                    if (core) {
+                        core.pushHistory();
+                    }
+                };
+
+                window.addEventListener('pointermove', onPointerMove, { passive: false });
+                window.addEventListener('pointerup', onPointerUp);
+                window.addEventListener('pointercancel', onPointerUp);
+
+                // Mouse event fallback listener for older engines
+                window.addEventListener('mousemove', onPointerMove, { passive: false });
+                window.addEventListener('mouseup', onPointerUp);
+            };
+
+            handleEl.removeEventListener('pointerdown', onPointerDown);
+            handleEl.addEventListener('pointerdown', onPointerDown);
+            handleEl.removeEventListener('mousedown', onPointerDown);
+            handleEl.addEventListener('mousedown', onPointerDown);
+        },
+
+        updateSizeBadge: function(w, h) {
+            $('#wppoppop-canvas-size-badge').text(w + ' × ' + h + ' px').show();
+        },
+
+        getActiveElements: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state.canvases) return [];
+            var cur = core.state.currentCanvas || 1;
+            if (!core.state.canvases[cur]) {
+                core.state.canvases[cur] = [];
+            }
+            return core.state.canvases[cur];
+        },
+
+        renderCanvas: function() {
+            var self = this;
+            var $root = $('#wppoppop-canvas-elements-root');
+            $root.empty();
+
+            var elements = this.getActiveElements();
+            elements.forEach(function(el) {
+                var $node = self.buildElementNode(el);
+                $root.append($node);
+                self.attachInteractions($node, el);
+            });
+        },
+
+        buildElementNode: function(el) {
+            var $div = $('<div>')
+                .addClass('wppoppop-canvas-item')
+                .attr('id', 'el-' + el.id)
+                .attr('data-id', el.id)
+                .css({
+                    top: (el.top || 20) + 'px',
+                    left: (el.left || 20) + 'px',
+                    width: (el.width || 180) + 'px',
+                    height: (el.height || 42) + 'px',
+                    zIndex: el.zIndex || 10,
+                    borderRadius: (el.borderRadius || 4) + 'px',
+                    borderWidth: (el.borderWidth || 0) + 'px',
+                    borderStyle: (el.borderWidth > 0 ? 'solid' : 'none'),
+                    borderColor: el.borderColor || 'transparent',
+                    boxShadow: (el.boxShadow && el.boxShadow !== 'none') ? el.boxShadow : 'none',
+                    opacity: el.opacity !== undefined ? el.opacity : 1,
+                    display: el.hidden ? 'none' : 'block'
+                });
+
+            if (el.fontFamily && el.fontFamily !== 'inherit') $div.css('fontFamily', el.fontFamily);
+            if (el.fontSize) $div.css('fontSize', el.fontSize + 'px');
+            if (el.fontWeight) $div.css('fontWeight', el.fontWeight);
+            if (el.textAlign) $div.css('textAlign', el.textAlign);
+            if (el.color) $div.css('color', el.color);
+            if (el.bgColor) $div.css('backgroundColor', el.bgColor);
+
+            $div.html(this.getInnerMarkup(el));
+
+            var activeId = window.WpPopPopBuilderCore.state.activeId;
+            if (activeId !== null && String(activeId) === String(el.id)) {
+                $div.addClass('wppoppop-selected');
+            }
+
+            return $div;
+        },
+
+        getInnerMarkup: function(el) {
+            var label = el.content || el.name || 'Element';
+            var align = el.textAlign || 'left';
+            var type = (el.type || 'text').toString().toLowerCase().trim();
+
+            switch (type) {
+                case 'text':
+                    var tag = el.htmlTag || 'p';
+                    return '<' + tag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + (align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start')) + ';margin:0;padding:0 8px;line-height:1.3;">' + (el.content || 'Click to edit text layer...') + '</' + tag + '>';
+
+                case 'email':
+                    return '<input type="email" placeholder="' + (el.content || 'Enter your email...') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
+
+                case 'number':
+                    return '<input type="number" value="' + (el.content || '1') + '" min="' + (el.min || 0) + '" max="' + (el.max || 100) + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
+
+                case 'select':
+                    var opts = (el.content ? el.content.split(',') : ['Option 1', 'Option 2', 'Option 3']);
+                    var selectHtml = '<select style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
+                    opts.forEach(function(o) { selectHtml += '<option>' + o.trim() + '</option>'; });
+                    selectHtml += '</select>';
+                    return selectHtml;
+
+                case 'radios':
+                    var rOpts = (el.content ? el.content.split(',') : ['Choice A', 'Choice B']);
+                    var radiosHtml = '<div style="display:flex;gap:12px;align-items:center;height:100%;padding:0 8px;font-size:12px;">';
+                    rOpts.forEach(function(r, idx) {
+                        radiosHtml += '<label><input type="radio" ' + (idx === 0 ? 'checked' : '') + '> ' + r.trim() + '</label>';
+                    });
+                    radiosHtml += '</div>';
+                    return radiosHtml;
+
+                case 'checkboxes':
+                    return '<div style="display:flex;align-items:center;gap:6px;height:100%;padding:0 8px;font-size:12px;"><input type="checkbox" ' + (el.checked !== false ? 'checked' : '') + '> <span>' + (el.content || 'I agree to the terms') + '</span></div>';
+
+                case 'rating':
+                    var starCount = parseInt(el.content, 10) || 5;
+                    var starColor = el.ratingColor || '#f59e0b';
+                    var stars = '';
+                    for (var s = 0; s < starCount; s++) stars += '★ ';
+                    return '<div style="display:flex;gap:4px;align-items:center;justify-content:' + (align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start')) + ';height:100%;color:' + starColor + ';font-size:18px;">' + stars.trim() + '</div>';
+
+                case 'date':
+                    return '<input type="text" placeholder="' + (el.content || 'YYYY-MM-DD') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
+
+                case 'slider':
+                    return '<div style="padding:0 10px;height:100%;display:flex;align-items:center;"><input type="range" min="' + (el.min || 0) + '" max="' + (el.max || 100) + '" value="' + (el.content || 50) + '" style="width:100%;"></div>';
+
+                case 'signature':
+                    return '<div style="width:100%;height:100%;border:1px dashed #94a3b8;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">✍ ' + (el.clearLabel ? 'Digital Signature' : 'Digital Signature Pad') + '</div>';
+
+                case 'wheel':
+                    return '<div style="width:100%;height:100%;background:#e0e7ff;color:#4338ca;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:12px;border-radius:inherit;padding:4px;"><span style="font-size:24px;">🎡</span><span>' + (el.btnText || 'SPIN TO WIN!') + '</span></div>';
+
+                case 'scratch':
+                    var foil = el.foilColor || '#94a3b8';
+                    return '<div style="width:100%;height:100%;background:' + foil + ';color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border-radius:inherit;padding:4px;">🎟 ' + (el.content || 'Scratch to Reveal') + '</div>';
+
+                case 'countdown':
+                    var secs = parseInt(el.countdownSeconds, 10) || 900;
+                    var mins = Math.floor(secs / 60);
+                    var remSecs = secs % 60;
+                    var timeStr = (mins < 10 ? '0' : '') + mins + ' : ' + (remSecs < 10 ? '0' : '') + remSecs;
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;font-size:16px;background:#1e293b;color:#f8fafc;border-radius:inherit;">' + timeStr + '</div>';
+
+                case 'progress':
+                    var pct = parseInt(el.content, 10) || 65;
+                    var barColor = el.progressColor || '#2563eb';
+                    return '<div style="width:100%;height:100%;background:#e2e8f0;border-radius:inherit;overflow:hidden;position:relative;"><div style="width:' + pct + '%;height:100%;background:' + barColor + ';"></div></div>';
+
+                case 'file':
+                    return '<div style="width:100%;height:100%;border:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;border-radius:inherit;">📁 Choose File (' + (el.fileExts || '.pdf, .jpg') + ')</div>';
+
+                case 'step_btn':
+                    var targetCanvas = el.goto_canvas || el.goto_screen || 2;
+                    return '<button type="button" style="width:100%;height:100%;background:' + (el.bgColor || '#2563eb') + ';color:' + (el.color || '#fff') + ';border:none;border-radius:inherit;font-weight:700;">' + (el.content || ('Canvas ' + targetCanvas + ' &rarr;')) + '</button>';
+
+                case 'submit':
+                    return '<button type="button" style="width:100%;height:100%;background:' + (el.bgColor || '#c2185b') + ';color:' + (el.color || '#fff') + ';border:none;border-radius:inherit;font-weight:700;">' + (el.content || 'Submit Form') + '</button>';
+
+                case 'pay':
+                    var cur = el.payCurrency || 'USD';
+                    var amt = el.payAmount !== undefined ? el.payAmount : 19.99;
+                    return '<button type="button" style="width:100%;height:100%;background:' + (el.bgColor || '#059669') + ';color:' + (el.color || '#fff') + ';border:none;border-radius:inherit;font-weight:700;">' + (el.content || ('Pay ' + cur + ' ' + amt)) + '</button>';
+
+                case 'html':
+                    return '<div style="width:100%;height:100%;overflow:hidden;padding:4px;font-size:11px;border:1px dashed #cbd5e1;border-radius:inherit;">' + (el.content || '<strong>Custom HTML Block</strong>') + '</div>';
+
+                default:
+                    return '<div style="padding:6px;font-size:12px;">' + label + '</div>';
+            }
+        },
+
+        attachInteractions: function($node, el) {
+            var self = this;
+            if (el.locked) {
+                $node.addClass('wppoppop-locked');
+                return;
+            }
+
+            $node.draggable({
+                containment: '#wppoppop-canvas-elements-root',
+                grid: [10, 10],
+                drag: function(event, ui) {
+                    el.top = ui.position.top;
+                    el.left = ui.position.left;
+                    if (window.WpPopPopBuilderInspector) {
+                        window.WpPopPopBuilderInspector.syncCoordinates(el);
+                    }
+                },
+                stop: function(event, ui) {
+                    el.top = ui.position.top;
+                    el.left = ui.position.left;
+                    if (window.WpPopPopBuilderInspector) {
+                        window.WpPopPopBuilderInspector.syncCoordinates(el);
+                    }
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            });
+
+            $node.resizable({
+                containment: '#wppoppop-canvas-elements-root',
+                handles: 'e, s, se',
+                resize: function(event, ui) {
+                    el.width = ui.size.width;
+                    el.height = ui.size.height;
+                    if (window.WpPopPopBuilderInspector) {
+                        window.WpPopPopBuilderInspector.syncCoordinates(el);
+                    }
+                },
+                stop: function(event, ui) {
+                    el.width = ui.size.width;
+                    el.height = ui.size.height;
+                    if (window.WpPopPopBuilderInspector) {
+                        window.WpPopPopBuilderInspector.syncCoordinates(el);
+                    }
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            });
         },
 
         bindRibbonTools: function() {
             var self = this;
-            $('.wppoppop-ribbon-tool').on('click', function() {
-                var type = $(this).data('type');
-                self.createDefaultElement(type);
-            });
-        },
-
-        bindStageClick: function() {
-            $('#wppoppop-builder-stage').on('click', function(e) {
-                if ($(e.target).is('#wppoppop-builder-stage') || $(e.target).is('#wppoppop-canvas-box') || $(e.target).is('#wppoppop-canvas-elements-root')) {
-                    window.WpPopPopBuilder.Core.activeId = null;
-                    $(document).trigger('builder:element:deselected');
-                }
-            });
-        },
-
-        bindCornerResizer: function() {
-            var Core = window.WpPopPopBuilder.Core;
-            var $handle = $('#wppoppop-canvas-resize-handle');
-            var $box = $('#wppoppop-canvas-box');
-            var $tooltip = $('#wppoppop-canvas-dim-tooltip');
-            var isResizing = false;
-            var startX, startY, startW, startH;
-
-            $handle.on('mousedown', function(e) {
+            $('.wppoppop-ribbon-tool').on('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation();
-                isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                startW = $box.outerWidth();
-                startH = $box.outerHeight();
-                $handle.addClass('active');
-                $tooltip.text(startW + ' × ' + startH + ' px').show();
-
-                $(document).on('mousemove.canvasResize', function(ev) {
-                    if (!isResizing) return;
-                    var dx = ev.clientX - startX;
-                    var dy = ev.clientY - startY;
-
-                    var newW = Math.max(260, Math.min(1600, Math.round((startW + dx) / 10) * 10));
-                    var newH = Math.max(160, Math.min(1200, Math.round((startH + dy) / 10) * 10));
-
-                    $box.css({ width: newW + 'px', height: newH + 'px' });
-                    $tooltip.text(newW + ' × ' + newH + ' px');
-                    $('#set-box-width').val(newW);
-                    $('#set-box-height').val(newH);
-                });
-
-                $(document).on('mouseup.canvasResize', function(ev) {
-                    if (!isResizing) return;
-                    isResizing = false;
-                    $handle.removeClass('active');
-                    $tooltip.hide();
-                    $(document).off('.canvasResize');
-
-                    var finalW = $box.outerWidth();
-                    var finalH = $box.outerHeight();
-                    Core.updateScreenDimensions(finalW, finalH);
-                    Core.pushHistory();
-                });
+                var type = $(this).data('type');
+                self.addElement(type);
             });
         },
 
-        bindCustomEvents: function() {
-            var self = this;
-            $(document).on('builder:elements:updated builder:screen:change', function() {
-                self.render();
-            });
+        addElement: function(type) {
+            var elements = this.getActiveElements();
+            var id = 'layer_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
+            var nextZ = elements.length ? Math.max.apply(null, elements.map(function(e) { return e.zIndex || 10; })) + 1 : 10;
 
-            $(document).on('builder:element:selected', function(e, id) {
-                $('.wppoppop-canvas-el').removeClass('active');
-                $('#canvas-el-' + id).addClass('active');
-            });
-
-            $(document).on('builder:element:deselected', function() {
-                $('.wppoppop-canvas-el').removeClass('active');
-            });
-
-            $(document).on('builder:element:modified', function(e, el) {
-                self.renderElementDom(el);
-            });
-        },
-
-        createDefaultElement: function(type) {
-            var Core = window.WpPopPopBuilder.Core;
-            var newId = 'el_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
-
-            var defaultWidth = 220;
-            var defaultHeight = 44;
-            var defaultBg = '#ffffff';
-            var defaultColor = '#1e293b';
-            var defaultContent = '';
-
-            // Default Action Close configuration:
-            // If created on Screen 1, default transition targets Screen 2
-            var defaultActionClose = 'none';
-            var defaultTargetScreen = (Core.currentScreen === 1 && Core.screens.length > 1) ? 2 : Core.currentScreen;
-
-            switch (type) {
-                case 'text':
-                    defaultContent = 'Headline or marketing message goes here.';
-                    defaultHeight = 48;
-                    defaultBg = 'transparent';
-                    break;
-                case 'email':
-                    defaultContent = 'Enter your email...';
-                    break;
-                case 'number':
-                    defaultContent = '0';
-                    defaultWidth = 160;
-                    break;
-                case 'rating':
-                    defaultWidth = 180;
-                    defaultHeight = 40;
-                    defaultBg = 'transparent';
-                    break;
-                case 'slider':
-                    defaultWidth = 240;
-                    defaultHeight = 54;
-                    break;
-                case 'signature':
-                    defaultWidth = 260;
-                    defaultHeight = 110;
-                    break;
-                case 'wheel':
-                    defaultWidth = 160;
-                    defaultHeight = 160;
-                    defaultBg = 'transparent';
-                    break;
-                case 'scratch':
-                    defaultWidth = 220;
-                    defaultHeight = 90;
-                    break;
-                case 'countdown':
-                    defaultWidth = 240;
-                    defaultHeight = 56;
-                    defaultBg = 'transparent';
-                    break;
-                case 'progress':
-                    defaultWidth = 240;
-                    defaultHeight = 40;
-                    defaultBg = 'transparent';
-                    break;
-                case 'file':
-                    defaultWidth = 240;
-                    defaultHeight = 70;
-                    break;
-                case 'step_btn':
-                    defaultContent = 'Next Step →';
-                    defaultBg = '#3b82f6';
-                    defaultColor = '#ffffff';
-                    defaultActionClose = 'next_screen';
-                    break;
-                case 'submit':
-                    defaultContent = 'Claim Your Discount';
-                    defaultBg = '#10b981';
-                    defaultColor = '#ffffff';
-                    defaultActionClose = (Core.currentScreen === 1) ? 'next_screen' : 'close';
-                    break;
-                case 'pay':
-                    defaultContent = 'Pay $19.99 Now';
-                    defaultBg = '#6366f1';
-                    defaultColor = '#ffffff';
-                    defaultActionClose = 'next_screen';
-                    break;
-                case 'html':
-                    defaultContent = '<div style="padding:10px;text-align:center;">Custom HTML Box</div>';
-                    defaultWidth = 260;
-                    defaultHeight = 70;
-                    defaultBg = '#f8fafc';
-                    break;
-            }
-
-            var defaultEl = {
-                id: newId,
+            var newEl = {
+                id: id,
                 type: type,
-                screen: Core.currentScreen,
-                top: 60,
-                left: 60,
-                width: defaultWidth,
-                height: defaultHeight,
-                label: type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' '),
-                content: defaultContent,
-                fontFamily: 'inherit',
-                fontSize: 14,
+                name: type.toUpperCase() + ' ' + (elements.length + 1),
+                top: 50 + (elements.length * 15) % 150,
+                left: 50 + (elements.length * 15) % 200,
+                width: (type === 'text' || type === 'html') ? 260 : (type === 'wheel' ? 180 : 200),
+                height: (type === 'text') ? 50 : (type === 'signature' || type === 'wheel' ? 120 : 42),
+                zIndex: nextZ,
                 borderRadius: 4,
-                color: defaultColor,
-                bgColor: defaultBg,
+                borderWidth: (type === 'email' || type === 'number' || type === 'select' || type === 'date') ? 1 : 0,
+                borderColor: '#cbd5e1',
                 opacity: 1,
-                animEffect: 'none',
-                actionUrl: '',
-                actionBlank: false,
-                actionClose: defaultActionClose,
-                actionTargetScreen: defaultTargetScreen,
-                condVal: '',
-                condTargetScreen: defaultTargetScreen,
-                actionJs: '',
+                fontSize: 14,
+                fontWeight: '400',
+                textAlign: 'left',
+                color: (type === 'step_btn' || type === 'submit' || type === 'pay') ? '#ffffff' : '#0f172a',
+                bgColor: (type === 'step_btn') ? '#2563eb' : (type === 'submit' ? '#c2185b' : (type === 'pay' ? '#059669' : '#ffffff')),
+                content: this.getDefaultContent(type),
+                field_name: type + '_' + (elements.length + 1),
+                goto_canvas: 2,
+                goto_screen: 2,
                 locked: false,
                 hidden: false
             };
 
-            Core.addElement(defaultEl);
+            elements.push(newEl);
+            window.WpPopPopBuilderCore.state.activeId = id;
+            this.renderCanvas();
+
+            if (window.WpPopPopBuilderLayers) {
+                window.WpPopPopBuilderLayers.renderLayers();
+            }
+            if (window.WpPopPopBuilderInspector) {
+                window.WpPopPopBuilderInspector.open(id);
+            }
+
+            window.WpPopPopBuilderCore.pushHistory();
         },
 
-        render: function() {
+        getDefaultContent: function(type) {
+            switch(type) {
+                case 'text': return 'Click to edit your text headline...';
+                case 'email': return 'Enter your email...';
+                case 'number': return '1';
+                case 'select': return 'First Option, Second Option, Third Option';
+                case 'radios': return 'Choice A, Choice B';
+                case 'checkboxes': return 'I agree to the terms';
+                case 'date': return '2026-10-08';
+                case 'slider': return '50';
+                case 'wheel': return '10% OFF, FREE SHIPPING, 25% OFF, JACKPOT';
+                case 'scratch': return 'YOU WON 25% OFF! USE CODE: WIN25';
+                case 'countdown': return '900';
+                case 'progress': return '65';
+                case 'step_btn': return 'Next Canvas &rarr;';
+                case 'submit': return 'Submit Form';
+                case 'pay': return 'Checkout Now';
+                case 'html': return '<p>Custom <strong>HTML block</strong></p>';
+                default: return '';
+            }
+        },
+
+        bindCanvasSelection: function() {
             var self = this;
-            var Core = window.WpPopPopBuilder.Core;
-            var $root = $('#wppoppop-canvas-elements-root');
-            $root.empty();
 
-            var currentEls = Core.elements.filter(function(e) {
-                return e.screen === Core.currentScreen && !e.hidden;
-            });
-
-            currentEls.forEach(function(el, idx) {
-                var $el = self.buildElementNode(el, idx + 10);
-                $root.append($el);
-                self.attachInteractions($el, el);
-            });
-
-            if (Core.activeId) {
-                $('#canvas-el-' + Core.activeId).addClass('active');
-            }
-        },
-
-        buildElementNode: function(el, zIndex) {
-            var $el = $('<div></div>')
-                .attr('id', 'canvas-el-' + el.id)
-                .addClass('wppoppop-canvas-el')
-                .css({
-                    top: el.top + 'px',
-                    left: el.left + 'px',
-                    width: el.width + 'px',
-                    height: el.height + 'px',
-                    fontFamily: el.fontFamily || 'inherit',
-                    fontSize: (el.fontSize || 14) + 'px',
-                    borderRadius: (el.borderRadius || 0) + 'px',
-                    color: el.color || '#1e293b',
-                    background: el.bgColor || 'transparent',
-                    opacity: el.opacity !== undefined ? el.opacity : 1,
-                    zIndex: zIndex || 10
-                });
-
-            if (el.locked) $el.addClass('locked');
-            $el.html(this.generateMarkupForType(el));
-            return $el;
-        },
-
-        generateMarkupForType: function(el) {
-            var text = el.content || el.label || '';
-            switch (el.type) {
-                case 'text':
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;padding:0 8px;line-height:1.4;box-sizing:border-box;">' + text + '</div>';
-                case 'email':
-                    return '<div style="display:flex;align-items:center;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span class="dashicons dashicons-email" style="color:#94a3b8;margin-right:8px;font-size:16px;"></span><span style="color:#94a3b8;font-size:inherit;">' + (text || 'user@example.com') + '</span></div>';
-                case 'number':
-                    return '<div style="display:flex;align-items:center;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span class="dashicons dashicons-calculator" style="color:#94a3b8;margin-right:8px;font-size:16px;"></span><span style="color:#94a3b8;font-size:inherit;">' + (text || '0') + '</span></div>';
-                case 'select':
-                    return '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span style="color:#475569;font-size:inherit;">Select an option...</span><span class="dashicons dashicons-arrow-down-alt2" style="color:#94a3b8;font-size:14px;"></span></div>';
-                case 'radios':
-                    return '<div style="display:flex;align-items:center;gap:12px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;"><label style="display:flex;align-items:center;gap:4px;font-size:inherit;color:inherit;"><input type="radio" checked disabled> Choice A</label><label style="display:flex;align-items:center;gap:4px;font-size:inherit;color:inherit;"><input type="radio" disabled> Choice B</label></div>';
-                case 'checkboxes':
-                    return '<div style="display:flex;align-items:center;gap:8px;width:100%;height:100%;padding:0 8px;box-sizing:border-box;"><input type="checkbox" checked disabled><span style="font-size:inherit;color:inherit;">' + (text || 'I accept terms & conditions') + '</span></div>';
-                case 'rating':
-                    return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;color:#f59e0b;font-size:22px;"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>';
-                case 'date':
-                    return '<div style="display:flex;align-items:center;width:100%;height:100%;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><span class="dashicons dashicons-calendar-alt" style="color:#94a3b8;margin-right:8px;font-size:16px;"></span><span style="color:#94a3b8;font-size:inherit;">YYYY-MM-DD</span></div>';
-                case 'slider':
-                    return '<div style="display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;padding:0 10px;box-sizing:border-box;"><div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:4px;"><span>0</span><span>Value: 50</span><span>100</span></div><input type="range" min="0" max="100" value="50" style="width:100%;pointer-events:none;"></div>';
-                case 'signature':
-                    return '<div style="display:flex;flex-direction:column;justify-content:flex-end;width:100%;height:100%;border:1px dashed #94a3b8;background:rgba(255,255,255,0.95);border-radius:inherit;padding:8px;box-sizing:border-box;"><div style="border-bottom:1px solid #64748b;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;font-style:italic;padding-bottom:2px;"><span>Sign here ✕</span><span class="dashicons dashicons-edit"></span></div></div>';
-                case 'wheel':
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle, #f59e0b 20%, #ef4444 80%);border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 6px rgba(0,0,0,0.2);color:#ffffff;font-weight:800;font-size:12px;letter-spacing:1px;text-align:center;">🎡 SPIN</div>';
-                case 'scratch':
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg, #94a3b8, #94a3b8 10px, #64748b 10px, #64748b 20px);border-radius:inherit;color:#ffffff;font-weight:700;font-size:12px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">✨ SCRATCH HERE ✨</div>';
-                case 'countdown':
-                    return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;"><div style="background:#1e293b;color:#fff;padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;text-align:center;">00<span style="display:block;font-size:8px;color:#94a3b8;">HRS</span></div><span>:</span><div style="background:#1e293b;color:#fff;padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;text-align:center;">15<span style="display:block;font-size:8px;color:#94a3b8;">MIN</span></div><span>:</span><div style="background:#1e293b;color:#fff;padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;text-align:center;">30<span style="display:block;font-size:8px;color:#94a3b8;">SEC</span></div></div>';
-                case 'progress':
-                    return '<div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 8px;box-sizing:border-box;"><div style="width:100%;height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;"><div style="width:65%;height:100%;background:#3b82f6;border-radius:6px;"></div></div><span style="font-size:10px;color:#64748b;margin-top:2px;text-align:right;">Step 1 of 2 (65%)</span></div>';
-                case 'file':
-                    return '<div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;border:2px dashed #94a3b8;border-radius:inherit;background:rgba(248,250,252,0.9);color:#64748b;font-size:12px;font-weight:600;"><span class="dashicons dashicons-upload" style="font-size:16px;"></span> Choose file</div>';
-                case 'step_btn':
-                    return '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">' + (text || 'Next Step') + ' <span class="dashicons dashicons-controls-forward" style="font-size:14px;width:14px;height:14px;"></span></button>';
-                case 'submit':
-                    return '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><span class="dashicons dashicons-yes" style="font-size:14px;width:14px;height:14px;"></span> ' + (text || 'Submit') + '</button>';
-                case 'pay':
-                    return '<button type="button" style="width:100%;height:100%;background:inherit;color:inherit;border:none;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><span class="dashicons dashicons-cart" style="font-size:14px;width:14px;height:14px;"></span> ' + (text || 'Pay Now') + '</button>';
-                case 'html':
-                    return '<div style="width:100%;height:100%;overflow:hidden;box-sizing:border-box;">' + (text || '<div>Custom HTML</div>') + '</div>';
-                default:
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">[' + el.label + ']</div>';
-            }
-        },
-
-        renderElementDom: function(el) {
-            var $el = $('#canvas-el-' + el.id);
-            if ($el.length) {
-                $el.css({
-                    top: el.top + 'px',
-                    left: el.left + 'px',
-                    width: el.width + 'px',
-                    height: el.height + 'px',
-                    fontFamily: el.fontFamily,
-                    fontSize: el.fontSize + 'px',
-                    borderRadius: el.borderRadius + 'px',
-                    color: el.color,
-                    background: el.bgColor,
-                    opacity: el.opacity
-                });
-
-                if (el.locked) {
-                    $el.addClass('locked');
-                    if ($el.data('ui-draggable')) $el.draggable('disable');
-                    if ($el.data('ui-resizable')) $el.resizable('disable');
-                } else {
-                    $el.removeClass('locked');
-                    if ($el.data('ui-draggable')) $el.draggable('enable');
-                    if ($el.data('ui-resizable')) $el.resizable('enable');
-                }
-
-                if (el.hidden) {
-                    $el.hide();
-                } else {
-                    $el.show();
-                }
-
-                $el.html(this.generateMarkupForType(el));
-            }
-        },
-
-        attachInteractions: function($el, el) {
-            var Core = window.WpPopPopBuilder.Core;
-
-            $el.off('click').on('click', function(e) {
+            $('#wppoppop-canvas-elements-root').on('click', '.wppoppop-canvas-item', function(e) {
+                e.preventDefault();
                 e.stopPropagation();
-                Core.selectElement(el.id);
+                var id = $(this).attr('data-id') || $(this).data('id');
+                self.selectElement(id);
             });
 
-            $el.draggable({
-                containment: '#wppoppop-canvas-box',
-                grid: [10, 10],
-                disabled: !!el.locked,
-                drag: function(evt, ui) {
-                    var top = Math.round(ui.position.top);
-                    var left = Math.round(ui.position.left);
-                    el.top = top;
-                    el.left = left;
-                    $(document).trigger('builder:element:moving', [{ id: el.id, top: top, left: left }]);
-                },
-                stop: function(evt, ui) {
-                    var top = Math.round(ui.position.top);
-                    var left = Math.round(ui.position.left);
-                    Core.updateElement(el.id, { top: top, left: left });
-                    Core.pushHistory();
+            $(document).on('click', '.wppoppop-canvas-item', function(e) {
+                e.stopPropagation();
+                var id = $(this).attr('data-id') || $(this).data('id');
+                self.selectElement(id);
+            });
+
+            $('#wppoppop-canvas-box').on('click', function(e) {
+                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-canvas-corner-handle, #wppoppop-canvas-stage-bar').length === 0) {
+                    self.deselect();
+                    if (window.WpPopPopBuilderSettings) {
+                        window.WpPopPopBuilderSettings.openDrawer();
+                    }
                 }
             });
 
-            $el.resizable({
-                containment: '#wppoppop-canvas-box',
-                grid: [10, 10],
-                handles: 'e, s, se',
-                disabled: !!el.locked,
-                resize: function(evt, ui) {
-                    var width = Math.round(ui.size.width);
-                    var height = Math.round(ui.size.height);
-                    el.width = width;
-                    el.height = height;
-                    $(document).trigger('builder:element:resizing', [{ id: el.id, width: width, height: height }]);
-                },
-                stop: function(evt, ui) {
-                    var width = Math.round(ui.size.width);
-                    var height = Math.round(ui.size.height);
-                    Core.updateElement(el.id, { width: width, height: height });
-                    Core.pushHistory();
+            $('.wppoppop-builder-workspace').on('click', function(e) {
+                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel, #wppoppop-canvas-corner-handle, .wppoppop-ribbon-bar, .wppoppop-builder-header, #wppoppop-settings-drawer, #wppoppop-canvas-box').length === 0) {
+                    self.deselect();
                 }
             });
+        },
+
+        selectElement: function(id) {
+            window.WpPopPopBuilderCore.state.activeId = id;
+            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+            $('#el-' + id).addClass('wppoppop-selected');
+
+            if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.closeDrawer();
+            }
+            if (window.WpPopPopBuilderLayers) {
+                window.WpPopPopBuilderLayers.highlightLayer(id);
+            }
+            if (window.WpPopPopBuilderInspector) {
+                window.WpPopPopBuilderInspector.open(id);
+            }
+        },
+
+        deselect: function() {
+            window.WpPopPopBuilderCore.state.activeId = null;
+            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+            if (window.WpPopPopBuilderInspector) {
+                window.WpPopPopBuilderInspector.close();
+            }
+            if (window.WpPopPopBuilderLayers) {
+                $('.wppoppop-layer-item').removeClass('active');
+            }
         }
     };
-
-    window.WpPopPopBuilder.Canvas = Canvas;
-})(window, jQuery);
+})(jQuery);

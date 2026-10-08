@@ -1,5 +1,6 @@
 /* ==========================================================================
    WpPopPop Visual Builder: Horizontal Elements Ribbon Toolbar
+   Compatible with Chrome, Safari, Firefox, Edge, Touch & Trackpads
    ========================================================================== */
 
 .wppoppop-ribbon-bar {
@@ -14,10 +15,18 @@
     z-index: 9998;
     position: relative;
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #475569 #1e293b;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
 }
 
 .wppoppop-ribbon-bar::-webkit-scrollbar {
     height: 4px;
+}
+
+.wppoppop-ribbon-bar::-webkit-scrollbar-track {
+    background: #1e293b;
 }
 
 .wppoppop-ribbon-bar::-webkit-scrollbar-thumb {
@@ -40,6 +49,9 @@
     white-space: nowrap;
     transition: all 0.15s ease;
     user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    flex-shrink: 0;
 }
 
 .wppoppop-ribbon-tool .dashicons {
@@ -62,4 +74,11 @@
 
 .wppoppop-ribbon-tool:active {
     transform: translateY(0);
+}
+
+@media screen and (max-width: 782px) {
+    .wppoppop-ribbon-bar {
+        height: 44px;
+        padding: 0 8px;
+    }
 }
