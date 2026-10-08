@@ -6,14 +6,8 @@ if (!defined('ABSPATH')) {
 <div class="wppoppop-builder-header">
     <!-- Left Section: Navigation, Settings, Title -->
     <div class="wppoppop-hdr-group wppoppop-hdr-left">
-        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popups Dashboard">
-            <span class="dashicons dashicons-arrow-left-alt2"></span>
-            <span class="wppoppop-btn-label">Dashboard</span>
-        </a>
-        <button type="button" id="wppoppop-btn-settings" class="button button-secondary" title="Campaign Settings">
-            <span class="dashicons dashicons-admin-generic"></span>
-            <span class="wppoppop-btn-label">Settings</span>
-        </button>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popups Dashboard">Dashboard</a>
+        <button type="button" id="wppoppop-btn-settings" class="button button-secondary" title="Campaign Settings">Settings</button>
         <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
     </div>
 
@@ -51,14 +45,8 @@ if (!defined('ABSPATH')) {
 
     <!-- Right Section: Preview, Embed, Save Actions -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
-        <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">
-            <span class="dashicons dashicons-visibility"></span>
-            <span class="wppoppop-btn-label">Preview</span>
-        </button>
-        <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">
-            <span class="dashicons dashicons-editor-code"></span>
-            <span class="wppoppop-btn-label">Embed</span>
-        </button>
+        <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">Preview</button>
+        <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>
         <button type="button" id="wppoppop-btn-save" class="button button-primary" title="Save Popup Campaign">
             <span class="dashicons dashicons-saved"></span>
             <span class="wppoppop-save-text">Save Popup</span>
