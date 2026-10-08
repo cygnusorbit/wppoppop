@@ -1,6 +1,6 @@
 /* ==========================================================================
    WpPopPop Visual Builder: Floating Draggable Magenta LAYERS Panel
-   Compatible with Chrome, Safari, Firefox, Edge, Touch & Mobile Viewports
+   Compact Layer Actions (30% Reduced Footprint)
    ========================================================================== */
 
 #wppoppop-floating-layers-panel,
@@ -8,7 +8,7 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    width: 240px;
+    width: 250px;
     max-width: calc(100vw - 32px);
     height: auto;
     max-height: calc(100vh - 180px);
@@ -17,7 +17,7 @@
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 100000 !important; /* Higher than wppoppop-canvas-corner-handle (z-index: 9995) */
+    z-index: 100000 !important;
     overflow: hidden;
     border: 1px solid #e2e8f0;
     box-sizing: border-box;
@@ -87,7 +87,6 @@
     transition: transform 0.2s ease;
 }
 
-/* Collapsed State for Screen Space Optimization */
 .wppoppop-floating-layers-panel.collapsed #wppoppop-layers-list {
     display: none !important;
 }
@@ -98,7 +97,7 @@
 
 #wppoppop-layers-list {
     flex: 1 1 auto;
-    max-height: 280px;
+    max-height: 320px;
     overflow-y: auto;
     padding: 6px;
     display: flex;
@@ -124,17 +123,18 @@
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 4px;
-    padding: 6px 8px;
+    padding: 5px 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: 11px;
     color: #1e293b;
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    gap: 6px;
 }
 
 .wppoppop-layer-item:hover {
@@ -148,13 +148,43 @@
     font-weight: 600;
 }
 
+.wppoppop-layer-drag-grip,
 .wppoppop-layer-grip {
     color: #94a3b8;
     cursor: grab;
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wppoppop-layer-drag-grip .dashicons,
+.wppoppop-layer-grip .dashicons {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+}
+
+.wppoppop-layer-icon {
+    color: #64748b;
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wppoppop-layer-icon .dashicons {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    line-height: 13px;
 }
 
 .wppoppop-layer-title {
@@ -162,41 +192,64 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 4px;
+    padding: 0 2px;
     font-size: 11px;
+    min-width: 0;
 }
 
+/* Layer Actions: 30% Smaller Footprint (From 20px down to 14px) */
 .wppoppop-layer-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
+    flex-shrink: 0;
 }
 
+.wppoppop-layer-actions button,
 .wppoppop-layer-action-btn {
     background: transparent;
     border: none;
     color: #94a3b8;
     cursor: pointer;
-    padding: 2px;
-    display: flex;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
     line-height: 1;
+    border-radius: 2px;
+    box-sizing: border-box;
+    transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 
+.wppoppop-layer-actions button:hover,
 .wppoppop-layer-action-btn:hover {
     color: #1e293b;
+    background: #e2e8f0;
 }
 
+.wppoppop-layer-actions button.active,
 .wppoppop-layer-action-btn.active {
     color: #c2185b;
 }
 
+.wppoppop-layer-actions button.wppoppop-layer-btn-del:hover,
 .wppoppop-layer-action-btn.btn-del:hover {
     color: #ef4444;
+    background: #fee2e2;
+}
+
+/* 30% Scaled Dashicons: 10px glyphs (70% of standard 14px) */
+.wppoppop-layer-actions button .dashicons,
+.wppoppop-layer-action-btn .dashicons {
+    font-size: 10px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
 }
 
 .wppoppop-layer-drop-placeholder {
@@ -211,6 +264,6 @@
     .wppoppop-floating-layers-panel {
         top: 10px;
         right: 10px;
-        width: 200px;
+        width: 220px;
     }
 }

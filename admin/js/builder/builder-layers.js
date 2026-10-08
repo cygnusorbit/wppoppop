@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Floating Magenta Layers Panel Controller
- * Full 26-Element Stacking, Deep Duplication, Lock/Visibility Toggles & Drag Sorting
+ * Full 26-Element Stacking, Deep Duplication, Compact 30% Action Buttons & Sorting
  */
 (function($) {
     'use strict';
@@ -15,22 +15,18 @@
             var $panel = $('#wppoppop-floating-layers-panel');
             if (!$panel.length) return;
 
-            // Make panel draggable within checkerboard workspace
+            // Make panel draggable within workspace
             $panel.draggable({
-                handle: '.wppoppop-layers-panel-header',
+                handle: '#wppoppop-layers-header, .wppoppop-layers-panel-header',
                 containment: '.wppoppop-builder-workspace',
                 scroll: false,
-                stop: function() {
-                    // Retain coordinates in session if moved
-                }
+                cursor: 'grab'
             });
 
             // Toggle collapse body
-            $panel.off('click.toggleCollapse', '.wppoppop-layers-collapse-btn').on('click.toggleCollapse', '.wppoppop-layers-collapse-btn', function(e) {
+            $panel.off('click.toggleCollapse', '#wppoppop-layers-toggle-collapse, .wppoppop-layers-collapse-btn').on('click.toggleCollapse', '#wppoppop-layers-toggle-collapse, .wppoppop-layers-collapse-btn', function(e) {
                 e.stopPropagation();
-                var $body = $panel.find('.wppoppop-layers-panel-body');
-                $body.slideToggle(150);
-                $(this).toggleClass('collapsed');
+                $panel.toggleClass('collapsed');
             });
         },
 
@@ -43,6 +39,8 @@
 
             if (!window.WpPopPopBuilderCanvas) return;
             var elements = window.WpPopPopBuilderCanvas.getActiveElements();
+
+            $('#wppoppop-layers-count').text(elements ? elements.length : 0);
 
             if (!elements || elements.length === 0) {
                 $list.html('<div style="padding:14px 10px;text-align:center;color:#94a3b8;font-size:11px;font-style:italic;">No layers on this canvas. Click an element in the Ribbon Bar to add one.</div>');
@@ -62,7 +60,8 @@
                 var isHidden = !!el.hidden;
 
                 var iconClass = self.getLayerIcon(el.type || 'text');
-                var layerTitle = el.name || ((el.type || 'Element').toUpperCase());
+                var defaultLabel = (el.type === 'text' || el.type === 'paragraph') ? 'PARAGRAPH' : (el.type || 'ELEMENT').toUpperCase();
+                var layerTitle = el.name || defaultLabel;
 
                 var $item = $('<div>')
                     .addClass('wppoppop-layer-item')
@@ -72,15 +71,16 @@
                     .toggleClass('is-locked', isLocked)
                     .toggleClass('is-hidden', isHidden);
 
+                // 30% Smaller Action Buttons
                 var itemHtml = 
                     '<div class="wppoppop-layer-drag-grip" title="Drag to reorder layer depth"><span class="dashicons dashicons-menu"></span></div>' +
                     '<div class="wppoppop-layer-icon"><span class="dashicons ' + iconClass + '"></span></div>' +
                     '<div class="wppoppop-layer-title" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
                     '<div class="wppoppop-layer-actions">' +
-                        '<button type="button" class="wppoppop-layer-btn-duplicate" title="Duplicate Layer" data-id="' + el.id + '"><span class="dashicons dashicons-admin-page"></span></button>' +
-                        '<button type="button" class="wppoppop-layer-btn-lock" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
-                        '<button type="button" class="wppoppop-layer-btn-vis" title="' + (isHidden ? 'Show Layer' : 'Hide Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
-                        '<button type="button" class="wppoppop-layer-btn-del" title="Delete Layer" data-id="' + el.id + '"><span class="dashicons dashicons-trash"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-duplicate" title="Duplicate Layer" data-id="' + el.id + '"><span class="dashicons dashicons-admin-page"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-lock" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-vis" title="' + (isHidden ? 'Show Layer' : 'Hide Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-del" title="Delete Layer" data-id="' + el.id + '"><span class="dashicons dashicons-trash"></span></button>' +
                     '</div>';
 
                 $item.html(itemHtml);
@@ -95,7 +95,8 @@
             switch (t) {
                 // Core Typography
                 case 'title':       return 'dashicons-heading';
-                case 'text':        return 'dashicons-editor-textcolor';
+                case 'text':
+                case 'paragraph':   return 'dashicons-editor-paragraph';
 
                 // Media & Shapes
                 case 'image':       return 'dashicons-format-image';
@@ -161,7 +162,6 @@
 
             $items.each(function(index) {
                 var id = $(this).attr('data-id');
-                // Top-most in list receives highest z-index
                 var newZ = (total - index) * 5 + 10;
 
                 var el = elements.find(function(e) { return String(e.id) === String(id); });
@@ -222,7 +222,6 @@
             var $item = $('#layer-item-' + id);
             if ($item.length) {
                 $item.addClass('active');
-                // Scroll into view within the panel list
                 var $container = $('#wppoppop-layers-list');
                 if ($container.length) {
                     var itemTop = $item.position().top;
@@ -302,32 +301,26 @@
             var el = elements.find(function(e) { return String(e.id) === String(id); });
             if (!el) return;
 
-            // Deep clone all element properties
             var clone = JSON.parse(JSON.stringify(el));
-
-            // Generate fresh unique identifier and name
             var newId = 'layer_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
             clone.id = newId;
-            clone.name = (el.name || el.type.toUpperCase()) + ' (Copy)';
 
-            // Offset position by +15px
+            var baseLabel = (el.type === 'text' || el.type === 'paragraph') ? 'PARAGRAPH' : (el.name || el.type.toUpperCase());
+            clone.name = baseLabel + ' (Copy)';
+
             clone.top = (parseInt(el.top, 10) || 0) + 15;
             clone.left = (parseInt(el.left, 10) || 0) + 15;
 
-            // Assign highest zIndex
             var maxZ = elements.reduce(function(max, item) {
                 return Math.max(max, parseInt(item.zIndex, 10) || 10);
             }, 10);
             clone.zIndex = maxZ + 5;
 
-            // Insert into active canvas model
             elements.push(clone);
 
-            // Render stage and layers
             window.WpPopPopBuilderCanvas.renderCanvas();
             this.renderLayers();
 
-            // Select new duplicate and open inspector
             window.WpPopPopBuilderCanvas.selectElement(newId);
 
             if (window.WpPopPopBuilderCore) {
@@ -342,7 +335,6 @@
 
             elements.splice(idx, 1);
 
-            // If active element was deleted, deselect
             if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state.activeId === id) {
                 window.WpPopPopBuilderCanvas.deselect();
             }
@@ -366,7 +358,6 @@
         }
     };
 
-    // Backward-compatible alias
     window.WpPopPopBuilder = window.WpPopPopBuilder || {};
     window.WpPopPopBuilder.Layers = window.WpPopPopBuilderLayers;
 })(jQuery);

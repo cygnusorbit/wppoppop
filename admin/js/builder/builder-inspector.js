@@ -40,9 +40,10 @@
             if (!el) return;
 
             var type = (el.type || 'text').toLowerCase();
+            var badgeText = (type === 'text' || type === 'paragraph') ? 'PARAGRAPH' : type.toUpperCase();
 
             // 1. Header Type Badge
-            $('#insp-element-type-badge').text(type.toUpperCase());
+            $('#insp-element-type-badge').text(badgeText);
 
             // 2. Switch Contextual Element Panel in Basic Tab
             $('#wppoppop-element-specific-settings .element-panel').hide();
@@ -63,6 +64,7 @@
                     break;
 
                 case 'text':
+                case 'paragraph':
                     $('#prop-text-content').val(el.content || '');
                     $('#prop-text-tag').val(el.htmlTag || 'p');
                     break;
@@ -349,10 +351,10 @@
                 }
             });
 
-            // 2. Text Live Sync
+            // 2. Paragraph / Text Live Sync
             $('#prop-text-content, #prop-text-tag').on('input change', function() {
                 var el = getActiveEl();
-                if (el && el.type === 'text') {
+                if (el && (el.type === 'text' || el.type === 'paragraph')) {
                     el.content = $('#prop-text-content').val();
                     el.htmlTag = $('#prop-text-tag').val();
                     window.WpPopPopBuilderCanvas.renderCanvas();

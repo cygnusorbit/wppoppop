@@ -10,8 +10,8 @@ if (!defined('ABSPATH')) {
     <button type="button" class="wppoppop-ribbon-tool" data-type="title" title="Title / Heading Layer">
         <span class="dashicons dashicons-heading"></span> Title
     </button>
-    <button type="button" class="wppoppop-ribbon-tool" data-type="text" title="Text Paragraph Layer">
-        <span class="dashicons dashicons-editor-textcolor"></span> Text
+    <button type="button" class="wppoppop-ribbon-tool" data-type="text" title="Paragraph Layer">
+        <span class="dashicons dashicons-editor-paragraph"></span> Paragraph
     </button>
 
     <!-- Media & Visual Elements -->

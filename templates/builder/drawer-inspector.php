@@ -19,7 +19,7 @@ if (function_exists('wp_enqueue_media')) {
     <!-- Active Element Type Indicator -->
     <div style="background:#1e293b;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #334155;flex-shrink:0;">
         <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Selected Element:</span>
-        <span id="insp-element-type-badge" style="background:#2563eb;color:#ffffff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;">TEXT</span>
+        <span id="insp-element-type-badge" style="background:#2563eb;color:#ffffff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;">PARAGRAPH</span>
     </div>
 
     <!-- Inspector Body -->
@@ -70,9 +70,9 @@ if (function_exists('wp_enqueue_media')) {
                     </select>
                 </div>
 
-                <!-- 2. TEXT -->
+                <!-- 2. PARAGRAPH / TEXT -->
                 <div class="element-panel" id="panel-elem-text" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TEXT CONTENT / HTML</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PARAGRAPH CONTENT / HTML</label>
                     <textarea id="prop-text-content" rows="3" class="widefat" style="font-size:12px;margin-bottom:8px;"></textarea>
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">HTML TAG</label>
                     <select id="prop-text-tag" class="widefat" style="font-size:12px;">

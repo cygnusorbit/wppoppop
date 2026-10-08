@@ -150,7 +150,6 @@
             if (el.color) $div.css('color', el.color);
             if (el.bgColor) $div.css('backgroundColor', el.bgColor);
 
-            // Shape element geometry is handled via internal SVG strokes
             if (el.type !== 'shape') {
                 var bStyle = el.borderStyle || 'solid';
                 if (el.borderWidth !== undefined && el.borderWidth !== null) {
@@ -195,8 +194,9 @@
                     return '<' + titleTag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Catchy Campaign Title') + '</' + titleTag + '>';
 
                 case 'text':
+                case 'paragraph':
                     var tag = el.htmlTag || 'p';
-                    return '<' + tag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Headline or Text') + '</' + tag + '>';
+                    return '<' + tag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Add your paragraph text here...') + '</' + tag + '>';
 
                 case 'image':
                     var imgUrl = el.imageUrl || el.content || '';
@@ -228,7 +228,6 @@
                         embedUrl = 'https://player.vimeo.com/video/' + vimId + (el.videoAutoplay ? '?autoplay=1&muted=1' : '');
                         return '<iframe src="' + embedUrl + '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
                     } else {
-                        // Native HTML5 MP4 Video
                         return '<video src="' + rawUrl + '" ' + (el.videoControls !== false ? 'controls' : '') + ' ' + (el.videoAutoplay ? 'autoplay muted' : '') + ' style="width:100%;height:100%;object-fit:cover;border-radius:inherit;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '"></video>';
                     }
 
@@ -391,7 +390,7 @@
             if (!$node.length) return;
 
             $node.removeClass(function(index, className) {
-                return (className.match(/animate__\S+/g) || []).join(' ') + ' ' + (className.match(/anim-\S+/g) || []).join(' ');
+                return (className.match(/\banimate__\S+/g) || []).join(' ') + ' ' + (className.match(/\banim-\S+/g) || []).join(' ');
             });
 
             void $node[0].offsetWidth;
@@ -475,9 +474,10 @@
                     defaultContent = 'Catchy Campaign Title';
                     break;
                 case 'text':
+                case 'paragraph':
                     defaultWidth = 240;
                     defaultHeight = 60;
-                    defaultContent = 'Add your description or subheadline text here.';
+                    defaultContent = 'Add your paragraph text here...';
                     break;
                 case 'image':
                     defaultWidth = 200;
@@ -541,10 +541,11 @@
                     break;
             }
 
+            var typeName = (type === 'text' || type === 'paragraph') ? 'PARAGRAPH' : type.toUpperCase();
             var newEl = {
                 id: id,
-                type: type,
-                name: type.toUpperCase() + ' ' + (elements.length + 1),
+                type: (type === 'paragraph' ? 'text' : type),
+                name: typeName + ' ' + (elements.length + 1),
                 top: 50 + (elements.length * 15) % 150,
                 left: 50 + (elements.length * 15) % 200,
                 width: defaultWidth,
@@ -666,9 +667,6 @@
             }
         },
 
-        // =========================================================================
-        // LIVE WORKSPACE PREVIEW ENGINE
-        // =========================================================================
         bindPreviewModeControls: function() {
             var self = this;
 
@@ -773,20 +771,17 @@
         initActivePreviewWidgets: function() {
             var self = this;
 
-            // 1. Next Canvas Button
             $('.wppoppop-preview-step-btn').off('click.previewStep').on('click.previewStep', function(e) {
                 e.preventDefault();
                 var target = parseInt($(this).data('goto-canvas'), 10) || 2;
                 self.transitionToCanvas(target);
             });
 
-            // 2. Submit Button
             $('.wppoppop-preview-submit-btn').off('click.previewSubmit').on('click.previewSubmit', function(e) {
                 e.preventDefault();
                 self.handlePreviewSubmit($(this));
             });
 
-            // 3. Link Button
             $('.wppoppop-preview-link-btn').off('click.previewLink').on('click.previewLink', function(e) {
                 e.preventDefault();
                 var url = $(this).data('url');
@@ -802,7 +797,6 @@
                 }
             });
 
-            // 4. Close Icon
             $('.wppoppop-preview-close-btn').off('click.previewClose').on('click.previewClose', function(e) {
                 e.preventDefault();
                 var act = $(this).data('close-action') || 'close';
@@ -813,7 +807,6 @@
                 });
             });
 
-            // 5. Star Rating Interactivity
             $('.wppoppop-preview-star').off('click.previewStar').on('click.previewStar', function(e) {
                 e.stopPropagation();
                 var ratingVal = parseInt($(this).data('val'), 10) || 5;
@@ -825,7 +818,6 @@
                 self.playChime('click');
             });
 
-            // 6. Digital Signature Drawing
             $('.wppoppop-preview-sig-canvas').each(function() {
                 var sigCanvas = this;
                 var ctx = sigCanvas.getContext('2d');
@@ -860,7 +852,6 @@
                 }
             });
 
-            // 7. Lucky Wheel Interactive Simulation
             $('.wppoppop-preview-wheel-wrap').each(function() {
                 var $wrap = $(this);
                 var canvas = $wrap.find('.wppoppop-preview-wheel-canvas')[0];
@@ -913,7 +904,6 @@
                 });
             });
 
-            // 8. Scratch Card Interactive Simulation
             $('.wppoppop-preview-scratch-wrap').each(function() {
                 var $wrap = $(this);
                 var canvas = $wrap.find('.wppoppop-preview-scratch-canvas')[0];
@@ -963,7 +953,6 @@
                 }
             });
 
-            // 9. Live Countdown Ticker
             $('.wppoppop-preview-countdown').each(function() {
                 var $timer = $(this);
                 var secs = parseInt($timer.data('secs'), 10) || 900;
