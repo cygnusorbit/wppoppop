@@ -4,10 +4,11 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="wppoppop-ribbon-bar">
-    <span class="wppoppop-ribbon-label">Elements:</span>
-    
     <button type="button" class="wppoppop-ribbon-tool" data-type="text" title="Text Layer">
         <span class="dashicons dashicons-editor-textcolor"></span> Text
+    </button>
+    <button type="button" class="wppoppop-ribbon-tool" data-type="image" title="Image Layer">
+        <span class="dashicons dashicons-format-image"></span> Image
     </button>
     <button type="button" class="wppoppop-ribbon-tool" data-type="email" title="Email Field">
         <span class="dashicons dashicons-email"></span> Email

@@ -1,11 +1,13 @@
 /**
- * WpPopPop Visual Builder: Layer Properties Inspector Engine (Restored v3.0.53 + Animate.css)
- * Full Dynamic 19-Element Contextual Settings, Style Suite & Logic Sync
+ * WpPopPop Visual Builder: Layer Properties Inspector Engine (Restored v3.0.53 + Animate.css + WP Media Picker)
+ * Full Dynamic 20-Element Contextual Settings, Native Media Upload & Logic Sync
  */
 (function($) {
     'use strict';
 
     window.WpPopPopBuilderInspector = {
+        wpMediaFrame: null,
+
         init: function() {
             this.bindTabs();
             this.bindClose();
@@ -67,7 +69,7 @@
             $('#prop-size-width').val(el.width || 200);
             $('#prop-size-height').val(el.height || 42);
 
-            // 3. Show & Populate Contextual Element Panel (All 19 Elements)
+            // 3. Show & Populate Contextual Element Panel (All 20 Elements)
             $('.element-panel').hide();
             var $activePanel = $('#panel-elem-' + type);
             if ($activePanel.length) {
@@ -78,6 +80,19 @@
                 case 'text':
                     $('#prop-text-content').val(el.content || '');
                     $('#prop-text-tag').val(el.htmlTag || 'p');
+                    break;
+                case 'image':
+                    var imgUrl = el.content || el.imgUrl || '';
+                    $('#prop-image-url').val(imgUrl);
+                    $('#prop-image-alt').val(el.altText || '');
+                    $('#prop-image-fit').val(el.objectFit || 'cover');
+                    if (imgUrl) {
+                        $('#prop-image-preview').attr('src', imgUrl).show();
+                        $('#prop-image-placeholder').hide();
+                    } else {
+                        $('#prop-image-preview').attr('src', '').hide();
+                        $('#prop-image-placeholder').show();
+                    }
                     break;
                 case 'email':
                     $('#prop-email-placeholder').val(el.content || 'Enter your email...');
@@ -179,7 +194,6 @@
             $('#prop-border-width').val(el.borderWidth !== undefined ? el.borderWidth : 1);
             $('#prop-opacity').val(el.opacity !== undefined ? el.opacity : 1);
 
-            // Animate.css Effect Value
             $('#prop-anim-effect').val(el.animEffect || 'none');
             $('#prop-box-shadow').val(el.boxShadow || 'none');
 
@@ -233,6 +247,7 @@
         },
 
         bindInputs: function() {
+            var self = this;
             var getActiveEl = function() {
                 var activeId = window.WpPopPopBuilderCore.state.activeId;
                 if (!activeId && activeId !== 0) return null;
@@ -240,6 +255,7 @@
                 return elements.find(function(e) { return e && String(e.id) === String(activeId); });
             };
 
+            // Standard Coordinates & Bounds Sync
             $('#prop-layer-name').on('input', function() {
                 var el = getActiveEl();
                 if (el) {
@@ -264,6 +280,111 @@
                 });
             });
 
+            // Native WordPress Media Library Uploader Hook
+            $('#prop-image-upload-btn').on('click', function(e) {
+                e.preventDefault();
+                var el = getActiveEl();
+                if (!el) return;
+
+                if (typeof wp !== 'undefined' && wp.media) {
+                    if (self.wpMediaFrame) {
+                        self.wpMediaFrame.open();
+                        return;
+                    }
+
+                    self.wpMediaFrame = wp.media({
+                        title: 'Select or Upload Popup Image',
+                        button: { text: 'Use This Image' },
+                        multiple: false,
+                        library: { type: 'image' }
+                    });
+
+                    self.wpMediaFrame.on('select', function() {
+                        var attachment = self.wpMediaFrame.state().get('selection').first().toJSON();
+                        var selectedUrl = attachment.url || '';
+                        var selectedAlt = attachment.alt || attachment.title || 'Popup Image';
+
+                        var activeElement = getActiveEl();
+                        if (activeElement) {
+                            activeElement.content = selectedUrl;
+                            activeElement.imgUrl = selectedUrl;
+                            if (!activeElement.altText && selectedAlt) {
+                                activeElement.altText = selectedAlt;
+                                $('#prop-image-alt').val(selectedAlt);
+                            }
+
+                            $('#prop-image-url').val(selectedUrl);
+                            $('#prop-image-preview').attr('src', selectedUrl).show();
+                            $('#prop-image-placeholder').hide();
+
+                            window.WpPopPopBuilderCanvas.renderCanvas();
+                            window.WpPopPopBuilderCore.pushHistory();
+                        }
+                    });
+
+                    self.wpMediaFrame.open();
+                } else {
+                    var manualUrl = prompt('Enter Image URL:', $('#prop-image-url').val() || '');
+                    if (manualUrl !== null) {
+                        el.content = manualUrl;
+                        el.imgUrl = manualUrl;
+                        $('#prop-image-url').val(manualUrl);
+                        $('#prop-image-preview').attr('src', manualUrl).show();
+                        $('#prop-image-placeholder').hide();
+                        window.WpPopPopBuilderCanvas.renderCanvas();
+                        window.WpPopPopBuilderCore.pushHistory();
+                    }
+                }
+            });
+
+            $('#prop-image-remove-btn').on('click', function(e) {
+                e.preventDefault();
+                var el = getActiveEl();
+                if (el) {
+                    el.content = '';
+                    el.imgUrl = '';
+                    $('#prop-image-url').val('');
+                    $('#prop-image-preview').attr('src', '').hide();
+                    $('#prop-image-placeholder').show();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            });
+
+            $('#prop-image-url').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'image') {
+                    var url = $(this).val();
+                    el.content = url;
+                    el.imgUrl = url;
+                    if (url) {
+                        $('#prop-image-preview').attr('src', url).show();
+                        $('#prop-image-placeholder').hide();
+                    } else {
+                        $('#prop-image-preview').attr('src', '').hide();
+                        $('#prop-image-placeholder').show();
+                    }
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            $('#prop-image-alt').on('input change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'image') {
+                    el.altText = $(this).val();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            $('#prop-image-fit').on('change', function() {
+                var el = getActiveEl();
+                if (el && el.type === 'image') {
+                    el.objectFit = $(this).val();
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // Contextual Inputs Live Sync
             $('#prop-text-content, #prop-text-tag').on('input change', function() {
                 var el = getActiveEl();
                 if (el) {
@@ -480,7 +601,6 @@
 
                 window.WpPopPopBuilderCanvas.renderCanvas();
 
-                // Live preview the selected Animate.css animation on the canvas element
                 if (el.animEffect && el.animEffect !== 'none') {
                     var $node = $('#el-' + el.id);
                     $node.removeClass(function(index, className) {

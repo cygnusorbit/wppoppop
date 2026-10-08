@@ -62,7 +62,6 @@ class WpPopPop_Front_Renderer {
                     $c_anim_del = intval($cm['anim_delay'] ?? 0);
                     $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
 
-                    // Canvas Background Override
                     $c_bg_mode = $cm['bg_mode'] ?? 'solid';
                     $c_bg_color = $cm['bg_color'] ?? '';
                     $c_bg_style = '';
@@ -138,6 +137,15 @@ class WpPopPop_Front_Renderer {
         switch ($type) {
             case 'text':
                 return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
+
+            case 'image':
+                $img_url = !empty($content) ? esc_url($content) : esc_url($el['imgUrl'] ?? '');
+                $alt = esc_attr($el['altText'] ?? 'Popup Image');
+                $fit = esc_attr($el['objectFit'] ?? 'cover');
+                if (empty($img_url)) {
+                    return '';
+                }
+                return '<div class="wppoppop-layer-item ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;"><img src="' . $img_url . '" alt="' . $alt . '" style="width:100%;height:100%;object-fit:' . $fit . ';border-radius:inherit;display:block;"></div>';
 
             case 'email':
                 $ph = !empty($content) ? esc_attr($content) : 'Enter your email...';

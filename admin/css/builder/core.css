@@ -35,7 +35,7 @@ body.folded .wppoppop-builder-wrap {
 }
 
 /* --------------------------------------------------------------------------
-   Top Control Header: Dynamic Multi-Row Layout Engine
+   Top Control Header: Strict 32px Height Uniformity Across All Elements
    -------------------------------------------------------------------------- */
 .wppoppop-builder-header {
     background: #111827;
@@ -61,27 +61,35 @@ body.folded .wppoppop-builder-wrap {
     align-items: center;
     gap: 8px;
     box-sizing: border-box;
+    height: 32px;
 }
 
-.wppoppop-hdr-group .button {
+/* Uniform 32px Height for all Buttons in Header */
+.wppoppop-hdr-group .button,
+.wppoppop-hdr-group a.button,
+.wppoppop-hdr-group button.button {
     background: #1f2937;
     color: #f3f4f6;
-    border-color: #374151;
+    border: 1px solid #374151;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    height: 32px;
-    padding: 0 10px;
-    font-size: 12px;
-    font-weight: 600;
+    gap: 6px;
+    height: 32px !important;
+    line-height: 30px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
     cursor: pointer;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
     white-space: nowrap;
+    border-radius: 4px;
     transition: background 0.15s ease, border-color 0.15s ease;
+    margin: 0;
 }
 
-.wppoppop-hdr-group .button:hover {
+.wppoppop-hdr-group .button:hover,
+.wppoppop-hdr-group a.button:hover {
     background: #374151;
     color: #ffffff;
     border-color: #4b5563;
@@ -95,6 +103,7 @@ body.folded .wppoppop-builder-wrap {
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
+/* Uniform 32px Height for Title Input */
 #wppoppop-builder-title {
     background: #1f2937;
     border: 1px solid #374151;
@@ -102,12 +111,14 @@ body.folded .wppoppop-builder-wrap {
     font-weight: 600;
     font-size: 13px;
     border-radius: 4px;
-    padding: 4px 10px;
+    padding: 0 10px;
     width: 170px;
     min-width: 110px;
-    height: 32px;
-    box-sizing: border-box;
+    height: 32px !important;
+    line-height: 30px !important;
+    box-sizing: border-box !important;
     transition: border-color 0.15s ease;
+    margin: 0;
 }
 
 #wppoppop-builder-title:focus {
@@ -115,37 +126,29 @@ body.folded .wppoppop-builder-wrap {
     outline: none;
 }
 
-.wppoppop-hdr-canvas-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-right: 2px;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-}
-
-/* Canvas Sequence Tabs */
+/* Uniform 32px Height for Canvas Tabs Strip */
 .wppoppop-canvas-tabs,
 .wppoppop-screen-tabs {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     background: #1f2937;
-    padding: 3px;
+    padding: 3px 4px;
     border-radius: 6px;
     border: 1px solid #374151;
+    height: 32px !important;
+    box-sizing: border-box !important;
 }
 
 .wppoppop-canvas-tab-wrapper {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     border-radius: 4px;
-    padding: 2px 6px;
+    padding: 0 4px;
+    height: 24px;
     transition: background 0.15s ease;
+    box-sizing: border-box;
 }
 
 .wppoppop-canvas-tab-wrapper.active {
@@ -157,13 +160,17 @@ body.folded .wppoppop-builder-wrap {
     background: transparent;
     color: #9ca3af;
     border: none;
-    border-radius: 4px;
-    padding: 3px 6px;
+    border-radius: 3px;
+    padding: 0 4px;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
     transition: color 0.15s ease;
     white-space: nowrap;
+    height: 24px;
+    line-height: 24px;
+    display: inline-flex;
+    align-items: center;
 }
 
 .wppoppop-canvas-tab-wrapper.active .wppoppop-canvas-tab {
@@ -172,7 +179,7 @@ body.folded .wppoppop-builder-wrap {
 
 .wppoppop-tab-delete-canvas {
     color: #fca5a5;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1;
     cursor: pointer;
     border-radius: 50%;
@@ -191,16 +198,16 @@ body.folded .wppoppop-builder-wrap {
     color: #10b981;
     border: none;
     border-radius: 4px;
-    width: 24px;
-    height: 24px;
-    display: flex;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     line-height: 1;
-    margin-left: 2px;
+    margin-left: 1px;
     transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -209,23 +216,25 @@ body.folded .wppoppop-builder-wrap {
     color: #34d399 !important;
 }
 
-/* Quick Dimension Display */
+/* Uniform 32px Height for Quick Dimensions Box */
 .wppoppop-quick-dimensions-wrap {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     background: #1f2937;
     border: 1px solid #374151;
     border-radius: 6px;
-    padding: 2px 8px;
+    padding: 0 8px;
     gap: 6px;
     font-size: 11px;
     color: #9ca3af;
-    box-sizing: border-box;
+    height: 32px !important;
+    box-sizing: border-box !important;
 }
 
 .wppoppop-quick-dimensions-wrap input {
     width: 48px;
-    height: 24px;
+    height: 22px;
+    line-height: 22px;
     background: #111827;
     border: 1px solid #374151;
     color: #ffffff;
@@ -233,14 +242,18 @@ body.folded .wppoppop-builder-wrap {
     padding: 0 4px;
     border-radius: 3px;
     box-sizing: border-box;
+    margin: 0;
 }
 
-/* Viewport Toggle Switcher */
+/* Uniform 32px Height for Viewport Switcher */
 .wppoppop-viewport-toggles {
-    display: flex;
+    display: inline-flex;
+    align-items: center;
     background: #1f2937;
     border-radius: 6px;
     border: 1px solid #374151;
+    height: 32px !important;
+    box-sizing: border-box !important;
     overflow: hidden;
 }
 
@@ -248,13 +261,15 @@ body.folded .wppoppop-builder-wrap {
     background: transparent;
     color: #9ca3af;
     border: none;
-    padding: 5px 10px;
+    padding: 0 8px;
+    height: 30px !important;
     font-size: 11px;
     cursor: pointer;
     transition: color 0.15s ease, background 0.15s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
 }
 
 .wppoppop-viewport-btn.active {
@@ -276,8 +291,6 @@ body.folded .wppoppop-builder-wrap {
 /* --------------------------------------------------------------------------
    HEADER RESPONSIVE TIERS: 1, 2, AND 3 ROWS
    -------------------------------------------------------------------------- */
-
-/* TIER 1: Wide Desktop (>= 1280px) -> 1 Row */
 @media screen and (min-width: 1280px) {
     .wppoppop-builder-header {
         flex-wrap: nowrap;
@@ -299,14 +312,12 @@ body.folded .wppoppop-builder-wrap {
     }
 }
 
-/* TIER 2: Medium Desktop / Laptop (861px - 1279px) -> 2 Rows */
 @media screen and (min-width: 861px) and (max-width: 1279px) {
     .wppoppop-builder-header {
         flex-wrap: wrap;
         padding: 8px 14px;
         gap: 8px 14px;
     }
-    /* Row 1: Left + Right */
     .wppoppop-hdr-left {
         order: 1;
         flex: 1 1 auto;
@@ -317,7 +328,6 @@ body.folded .wppoppop-builder-wrap {
         flex: 0 0 auto;
         justify-content: flex-end;
     }
-    /* Row 2: Center (Full Width across bottom) */
     .wppoppop-hdr-center {
         order: 3;
         width: 100%;
@@ -331,7 +341,6 @@ body.folded .wppoppop-builder-wrap {
     }
 }
 
-/* TIER 3: Tablet & Mobile (<= 860px) -> 3 Rows */
 @media screen and (max-width: 860px) {
     .wppoppop-builder-header {
         flex-direction: column;
@@ -339,18 +348,17 @@ body.folded .wppoppop-builder-wrap {
         padding: 8px 12px;
         gap: 8px;
     }
-    /* Row 1: Dashboard, Settings, Title */
     .wppoppop-hdr-left {
         order: 1;
         width: 100%;
         justify-content: space-between;
         flex-wrap: wrap;
+        height: auto;
     }
     #wppoppop-builder-title {
         flex: 1 1 120px;
         min-width: 110px;
     }
-    /* Row 2: Canvas Steps + Viewport (Centered) */
     .wppoppop-hdr-center {
         order: 2;
         width: 100%;
@@ -358,16 +366,17 @@ body.folded .wppoppop-builder-wrap {
         padding: 6px 0;
         border-top: 1px solid rgba(55, 65, 81, 0.4);
         border-bottom: 1px solid rgba(55, 65, 81, 0.4);
+        height: auto;
     }
     .wppoppop-quick-dimensions-wrap {
         display: none !important;
     }
-    /* Row 3: Preview, Embed, Save Popup */
     .wppoppop-hdr-right {
         order: 3;
         width: 100%;
         justify-content: space-between;
         gap: 6px;
+        height: auto;
     }
     .wppoppop-hdr-right .button {
         flex: 1 1 auto;
@@ -402,7 +411,7 @@ body.folded .wppoppop-builder-wrap {
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     padding: 60px 40px;
-    min-height: 0; /* Allows flexible container contraction */
+    min-height: 0;
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: #475569 #0f172a;
@@ -579,7 +588,7 @@ body.folded .wppoppop-builder-wrap {
     cursor: s-resize;
 }
 
-/* Dedicated Corner Drag Handle (Stacked beneath floating layer panel) */
+/* Dedicated Corner Drag Handle */
 #wppoppop-canvas-corner-handle {
     position: absolute;
     bottom: 0;

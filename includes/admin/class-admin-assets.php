@@ -42,8 +42,9 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 2. Visual Builder Assets (Enqueuing Animate.css + Sub-Modules)
+        // 2. Visual Builder Assets (Enqueuing Native WordPress Media + Animate.css + Sub-Modules)
         if ($page === 'wppoppop-builder') {
+            wp_enqueue_media(); // Native WordPress Media Library uploader
             wp_enqueue_style('animate-css', WPPOPPOP_URL . 'admin/css/vendor/animate.min.css', [], '4.1.1');
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', ['animate-css'], WPPOPPOP_VERSION);
             

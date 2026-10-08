@@ -174,6 +174,14 @@
                     var tag = el.htmlTag || 'p';
                     return '<' + tag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + (align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start')) + ';margin:0;padding:0 8px;line-height:1.3;">' + (el.content || 'Click to edit text layer...') + '</' + tag + '>';
 
+                case 'image':
+                    var imgUrl = el.content || el.imgUrl || '';
+                    var fit = el.objectFit || 'cover';
+                    if (!imgUrl) {
+                        return '<div style="width:100%;height:100%;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;font-weight:600;"><span class="dashicons dashicons-format-image" style="font-size:24px;width:24px;height:24px;margin-bottom:2px;"></span><span>Select Image in Settings</span></div>';
+                    }
+                    return '<img src="' + imgUrl + '" alt="' + (el.altText || '') + '" style="width:100%;height:100%;object-fit:' + fit + ';border-radius:inherit;display:block;pointer-events:none;">';
+
                 case 'email':
                     var phEmail = el.content || 'Enter your email...';
                     return '<input type="email" placeholder="' + phEmail + '" ' + (el.required ? 'required' : '') + ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
@@ -332,8 +340,8 @@
                 name: type.toUpperCase() + ' ' + (elements.length + 1),
                 top: 50 + (elements.length * 15) % 150,
                 left: 50 + (elements.length * 15) % 200,
-                width: (type === 'text' || type === 'html') ? 260 : (type === 'wheel' ? 180 : 200),
-                height: (type === 'text') ? 50 : (type === 'signature' || type === 'wheel' ? 120 : 42),
+                width: (type === 'image') ? 220 : ((type === 'text' || type === 'html') ? 260 : (type === 'wheel' ? 180 : 200)),
+                height: (type === 'image') ? 140 : ((type === 'text') ? 50 : (type === 'signature' || type === 'wheel' ? 120 : 42)),
                 zIndex: nextZ,
                 borderRadius: 4,
                 borderWidth: (type === 'email' || type === 'number' || type === 'select' || type === 'date') ? 1 : 0,
@@ -349,7 +357,9 @@
                 goto_canvas: 2,
                 goto_screen: 2,
                 locked: false,
-                hidden: false
+                hidden: false,
+                objectFit: 'cover',
+                altText: 'Popup Image'
             };
 
             elements.push(newEl);
@@ -372,6 +382,7 @@
         getDefaultContent: function(type) {
             switch(type) {
                 case 'text': return 'Click to edit your text headline...';
+                case 'image': return '';
                 case 'email': return 'Enter your email...';
                 case 'number': return '1';
                 case 'select': return 'First Option, Second Option, Third Option';
@@ -451,9 +462,6 @@
             }
         },
 
-        // =========================================================================
-        // LIVE WORKSPACE PREVIEW ENGINE (CLEAN TEXT TOGGLING - NO DASHICONS)
-        // =========================================================================
         bindPreviewModeControls: function() {
             var self = this;
 
@@ -488,7 +496,6 @@
             $('body').addClass('wppoppop-preview-active');
             $('.wppoppop-builder-workspace').addClass('is-preview-mode');
 
-            // Text only - no dashicon
             $('#wppoppop-btn-preview').addClass('preview-active').text('Exit Preview');
 
             if (window.WpPopPopBuilderInspector) window.WpPopPopBuilderInspector.close();
@@ -504,7 +511,6 @@
             $('body').removeClass('wppoppop-preview-active');
             $('.wppoppop-builder-workspace').removeClass('is-preview-mode');
 
-            // Text only - no dashicon
             $('#wppoppop-btn-preview').removeClass('preview-active').text('Preview');
 
             $('#wppoppop-stage-status-overlay').removeClass('active');
