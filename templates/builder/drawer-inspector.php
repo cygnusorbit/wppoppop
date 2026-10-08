@@ -2,6 +2,9 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+if (function_exists('wp_enqueue_media')) {
+    wp_enqueue_media();
+}
 ?>
 <!-- Hardware-Accelerated Slide-In Layer Settings Inspector Panel -->
 <div id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer">
@@ -76,10 +79,10 @@ if (!defined('ABSPATH')) {
                         <span id="prop-image-placeholder" style="font-size:11px;color:#94a3b8;font-weight:600;">No image selected</span>
                     </div>
                     <div style="display:flex;gap:6px;margin-bottom:10px;">
-                        <button type="button" id="prop-image-upload-btn" class="button button-primary" style="flex:1;height:32px;font-size:11px;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:#2563eb;border-color:#1d4ed8;">
-                            <span class="dashicons dashicons-upload" style="font-size:14px;width:14px;height:14px;"></span> Select from Media Library
+                        <button type="button" id="prop-image-upload-btn" class="button button-primary" style="flex:1;height:32px;font-size:11px;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:#2563eb;border-color:#1d4ed8;cursor:pointer;">
+                            <span class="dashicons dashicons-upload" style="font-size:14px;width:14px;height:14px;line-height:1;"></span> Select from Media Library
                         </button>
-                        <button type="button" id="prop-image-remove-btn" class="button" style="height:32px;font-size:11px;color:#ef4444;border-color:#fca5a5;">
+                        <button type="button" id="prop-image-remove-btn" class="button" style="height:32px;font-size:11px;color:#ef4444;border-color:#fca5a5;cursor:pointer;">
                             Remove
                         </button>
                     </div>
