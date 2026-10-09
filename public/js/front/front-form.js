@@ -1,6 +1,6 @@
 /**
  * WpPopPop Frontend Lead Capture & Form Submission Controller
- * Handles token extraction, reCAPTCHA resolution, and server dispatch
+ * Normalizes .wppoppop-submit-trigger & .wppoppop-submit-btn
  */
 (function(window, $) {
     'use strict';
@@ -20,24 +20,23 @@
         bindSubmissions: function() {
             var self = this;
 
-            $(document).on('click', '.wppoppop-submit-btn', function(e) {
+            $(document).on('click', '.wppoppop-submit-btn, .wppoppop-submit-trigger', function(e) {
                 e.preventDefault();
                 var $btn = $(this);
-                var $canvas = $btn.closest('.wppoppop-canvas-stage');
-                var $popup = $btn.closest('.wppoppop-popup-wrap');
-                var uid = $popup.data('uid');
+                var $canvas = $btn.closest('.wppoppop-canvas-container, .wppoppop-canvas-stage, .wppoppop-box');
+                var $popup  = $btn.closest('.wppoppop-popup-wrap, .wppoppop-overlay');
+                var uid     = $popup.data('uid');
 
-                self.processSubmission($canvas, $btn, uid);
+                self.processSubmission($canvas, $btn, uid, $popup);
             });
         },
 
-        processSubmission: function($canvas, $btn, uid) {
+        processSubmission: function($canvas, $btn, uid, $popup) {
             var self = this;
             var fields = {};
             var hasEmail = false;
             var emailVal = '';
 
-            // Extract input values from the active canvas
             $canvas.find('input, select, textarea').each(function() {
                 var $input = $(this);
                 var name = $input.attr('name') || $input.data('field-name') || $input.attr('type');
@@ -46,13 +45,12 @@
                 var val = $input.val();
                 fields[name] = val;
 
-                if ($input.attr('type') === 'email' || name.indexOf('email') !== false) {
+                if ($input.attr('type') === 'email' || name.indexOf('email') !== -1) {
                     hasEmail = true;
                     emailVal = val;
                 }
             });
 
-            // Basic email validation
             if (hasEmail && emailVal) {
                 var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(emailVal)) {
@@ -64,24 +62,22 @@
             var origText = $btn.text();
             $btn.prop('disabled', true).text('Submitting...');
 
-            // If reCAPTCHA is active, execute and obtain token before AJAX dispatch
             if (vars.enable_recaptcha && vars.recaptcha_site_key && typeof window.grecaptcha !== 'undefined') {
                 window.grecaptcha.ready(function() {
                     window.grecaptcha.execute(vars.recaptcha_site_key, { action: 'wppoppop_submit' })
                         .then(function(token) {
-                            self.dispatchAjax(fields, token, $canvas, $btn, origText, uid);
+                            self.dispatchAjax(fields, token, $canvas, $btn, origText, uid, $popup);
                         })
                         .catch(function() {
-                            // If token resolution fails, fall back to direct dispatch
-                            self.dispatchAjax(fields, '', $canvas, $btn, origText, uid);
+                            self.dispatchAjax(fields, '', $canvas, $btn, origText, uid, $popup);
                         });
                 });
             } else {
-                self.dispatchAjax(fields, '', $canvas, $btn, origText, uid);
+                self.dispatchAjax(fields, '', $canvas, $btn, origText, uid, $popup);
             }
         },
 
-        dispatchAjax: function(fields, recaptchaToken, $canvas, $btn, origText, uid) {
+        dispatchAjax: function(fields, recaptchaToken, $canvas, $btn, origText, uid, $popup) {
             var self = this;
             var payload = {
                 action: 'wppoppop_submit_form',
@@ -100,23 +96,21 @@
                     $btn.prop('disabled', false).text(origText);
 
                     if (res && res.success) {
-                        // Trigger celebration if loaded
                         if (window.WpPopPopFrontDisplay && typeof window.WpPopPopFrontDisplay.triggerCelebration === 'function') {
                             window.WpPopPopFrontDisplay.triggerCelebration();
                         }
                         $(document).trigger('wppoppop:form_submitted', [res.data]);
 
-                        // Redirect or display completion message
                         if (res.data && res.data.redirect_url) {
                             window.location.href = res.data.redirect_url;
                         } else {
                             var successMsg = (res.data && res.data.message) ? res.data.message : 'Thank you for your submission!';
-                            self.showSuccess($canvas, successMsg);
+                            self.showSuccess($canvas, successMsg, $popup);
                             setTimeout(function() {
                                 if (window.WpPopPopFrontDisplay) {
                                     window.WpPopPopFrontDisplay.close(uid);
                                 }
-                            }, 2000);
+                            }, 2200);
                         }
                     } else {
                         var errMsg = (res && res.data && res.data.message) ? res.data.message : 'Submission failed. Please try again.';
@@ -134,18 +128,24 @@
             var $msgBox = $canvas.find('.wppoppop-status-bubble');
             if (!$msgBox.length) {
                 $msgBox = $('<div class="wppoppop-status-bubble" style="color:#dc2626;font-size:12px;font-weight:600;margin-top:8px;text-align:center;"></div>');
-                $canvas.find('.wppoppop-canvas-content').append($msgBox);
+                $canvas.append($msgBox);
             }
             $msgBox.css('color', '#dc2626').text(msg).show();
         },
 
-        showSuccess: function($canvas, msg) {
-            var $msgBox = $canvas.find('.wppoppop-status-bubble');
-            if (!$msgBox.length) {
-                $msgBox = $('<div class="wppoppop-status-bubble" style="color:#16a34a;font-size:12px;font-weight:600;margin-top:8px;text-align:center;"></div>');
-                $canvas.find('.wppoppop-canvas-content').append($msgBox);
+        showSuccess: function($canvas, msg, $popup) {
+            var $statusOverlay = $popup.find('.wppoppop-status-overlay');
+            if ($statusOverlay.length) {
+                $statusOverlay.find('.wppoppop-status-message').text(msg);
+                $statusOverlay.css('display', 'flex').fadeIn(200);
+            } else {
+                var $msgBox = $canvas.find('.wppoppop-status-bubble');
+                if (!$msgBox.length) {
+                    $msgBox = $('<div class="wppoppop-status-bubble" style="color:#16a34a;font-size:12px;font-weight:600;margin-top:8px;text-align:center;"></div>');
+                    $canvas.append($msgBox);
+                }
+                $msgBox.css('color', '#16a34a').text(msg).show();
             }
-            $msgBox.css('color', '#16a34a').text(msg).show();
         }
     };
 

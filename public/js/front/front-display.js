@@ -1,6 +1,6 @@
 /**
  * WpPopPop Frontend Display Runtime Engine
- * Manages GA Events, Render Delays, Component Celebrations, and Cookie Epoch Synchronization
+ * Dual-Contract Normalization: Connects All Settings to All Popup Variants
  */
 (function(window, $) {
     'use strict';
@@ -19,7 +19,7 @@
     window.WpPopPopFrontDisplay = {
         init: function() {
             var self = this;
-            var startDelay = vars.render_delay || 0;
+            var startDelay = parseInt(vars.render_delay, 10) || 0;
 
             if (startDelay > 0) {
                 setTimeout(function() {
@@ -41,7 +41,6 @@
             try {
                 var storedEpoch = localStorage.getItem('wppoppop_cookie_epoch');
                 if (storedEpoch && parseInt(storedEpoch, 10) < parseInt(vars.cookie_epoch, 10)) {
-                    // Cookie epoch incremented by admin; clear dismissals
                     Object.keys(localStorage).forEach(function(key) {
                         if (key.indexOf('wppoppop_dismissed_') === 0 || key.indexOf('wppoppop_submitted_') === 0) {
                             localStorage.removeItem(key);
@@ -49,19 +48,31 @@
                     });
                 }
                 localStorage.setItem('wppoppop_cookie_epoch', vars.cookie_epoch);
-            } catch (e) {
-                // Ignore storage exceptions in private/incognito modes
-            }
+            } catch (e) {}
         },
 
         bindEvents: function() {
             var self = this;
 
-            // Close button trigger
+            // Universal close triggers
             $(document).on('click', '.wppoppop-close-btn, .wppoppop-backdrop', function(e) {
                 e.preventDefault();
-                var uid = $(this).data('uid');
+                var $wrap = $(this).closest('.wppoppop-popup-wrap, .wppoppop-overlay');
+                var uid = $(this).data('uid') || $wrap.data('uid');
                 self.close(uid);
+            });
+
+            // Sequence next-canvas step triggers
+            $(document).on('click', '.wppoppop-next-canvas-btn, .wppoppop-next-screen-btn', function(e) {
+                e.preventDefault();
+                var targetIdx = $(this).data('goto-canvas') || $(this).data('goto-screen') || $(this).data('goto') || 2;
+                var $popup = $(this).closest('.wppoppop-popup-wrap, .wppoppop-overlay');
+
+                $popup.find('.wppoppop-canvas-container, .wppoppop-canvas-stage').removeClass('wppoppop-canvas-active wppoppop-screen-active active').hide();
+                var $next = $popup.find('[data-canvas="' + targetIdx + '"], [data-screen="' + targetIdx + '"], [data-canvas-index="' + targetIdx + '"]');
+                if ($next.length) {
+                    $next.addClass('wppoppop-canvas-active wppoppop-screen-active active').fadeIn(200);
+                }
             });
 
             // AdBlock Event Check
@@ -75,13 +86,17 @@
             });
         },
 
+        getPopupWrap: function(uid) {
+            return $('#wppoppop-popup-' + uid + ', #wppoppop-wrap-' + uid + ', [data-uid="' + uid + '"]');
+        },
+
         evaluateTriggers: function() {
             var self = this;
-            $('.wppoppop-popup-wrap').each(function() {
+            $('.wppoppop-popup-wrap, .wppoppop-overlay[data-uid]').each(function() {
                 var $wrap = $(this);
                 var uid = $wrap.data('uid');
-                
-                // Frequency check: if dismissed in current epoch, bypass
+                if (!uid) return;
+
                 try {
                     if (localStorage.getItem('wppoppop_dismissed_' + uid)) {
                         return;
@@ -93,19 +108,18 @@
         },
 
         show: function(uid) {
-            var $wrap = $('#wppoppop-wrap-' + uid);
+            var $wrap = this.getPopupWrap(uid);
             if (!$wrap.length) return;
 
-            $wrap.fadeIn(250).attr('aria-hidden', 'false');
+            $wrap.fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
 
-            // Dispatch Google Analytics Event if enabled
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_impression', { popup_uid: uid });
             }
         },
 
         close: function(uid) {
-            var $wrap = $('#wppoppop-wrap-' + uid);
+            var $wrap = this.getPopupWrap(uid);
             if (!$wrap.length) return;
 
             $wrap.fadeOut(200).attr('aria-hidden', 'true');
@@ -114,7 +128,6 @@
                 localStorage.setItem('wppoppop_dismissed_' + uid, Date.now());
             } catch(e) {}
 
-            // Dispatch Google Analytics Event if enabled
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_close', { popup_uid: uid });
             }
@@ -131,11 +144,7 @@
             } catch (err) {}
         },
 
-        /**
-         * Trigger celebration effects (Confetti / Fireworks) upon conversion.
-         */
         triggerCelebration: function() {
-            // 1. Canvas Confetti Burst
             if (typeof window.confetti === 'function') {
                 try {
                     window.confetti({
@@ -146,7 +155,6 @@
                 } catch (e) {}
             }
 
-            // 2. Canvas Fireworks
             if (typeof window.Fireworks !== 'undefined') {
                 try {
                     var container = document.body;
@@ -168,32 +176,22 @@
             }
         },
 
-        /**
-         * Initialize component extension widgets on canvas elements.
-         */
         initExtensionWidgets: function() {
-            // 1. jQuery Mask
             if (typeof $.fn.mask === 'function') {
                 $('input[data-mask]').each(function() {
                     var maskPattern = $(this).data('mask');
-                    if (maskPattern) {
-                        $(this).mask(maskPattern);
-                    }
+                    if (maskPattern) $(this).mask(maskPattern);
                 });
             }
 
-            // 2. Air Datepicker
             if (typeof window.AirDatepicker !== 'undefined') {
                 $('.wppoppop-datepicker-input').each(function() {
-                    new window.AirDatepicker(this, {
-                        autoClose: true
-                    });
+                    new window.AirDatepicker(this, { autoClose: true });
                 });
             }
 
-            // 3. Digital Signature Pad
             if (typeof window.SignaturePad !== 'undefined') {
-                $('.wppoppop-signature-canvas').each(function() {
+                $('.wppoppop-signature-canvas, .wppoppop-sig-canvas').each(function() {
                     if (!this._sigPad) {
                         this._sigPad = new window.SignaturePad(this, {
                             backgroundColor: 'rgba(255, 255, 255, 0)',
