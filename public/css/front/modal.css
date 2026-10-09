@@ -1,141 +1,103 @@
 /* ==========================================================================
-   WpPopPop Public Frontend: Modal Presentation, Viewports & Overlays
-   Compatible with Chrome, Safari, Firefox, Edge, iOS Safari, Android
+   WpPopPop Public Modal Runtime Stylesheet
+   Cross-Browser Compatible (Chrome, Safari, Firefox, Edge, Mobile)
    ========================================================================== */
 
-.wppoppop-overlay {
-    display: none;
+.wppoppop-popup-wrap {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100dvh;
-    background: rgba(15, 23, 42, 0.65);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    width: 100vw;
+    height: 100vh;
     z-index: 999999;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-}
-
-.wppoppop-overlay.wppoppop-visible {
-    display: flex !important;
-}
-
-/* Modal Content Card */
-.wppoppop-box {
-    position: relative;
-    max-width: 95vw;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
-    border-radius: 8px;
-    overflow: hidden;
-    box-sizing: border-box;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform, opacity;
-}
-
-/* Inline Container Mode (Shortcode) */
-.wppoppop-inline-container {
-    display: block !important;
-    position: relative !important;
-    min-height: auto !important;
-    background: transparent !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    padding: 0 !important;
-    z-index: 10 !important;
-}
-
-.wppoppop-inline-container .wppoppop-box {
-    margin: 0 auto;
-}
-
-/* Close Button */
-.wppoppop-close-btn {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: transparent;
-    border: none;
-    color: #64748b;
-    font-size: 24px;
-    cursor: pointer;
-    line-height: 1;
-    z-index: 9999999;
-    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    transition: color 0.15s ease, background 0.15s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
+    box-sizing: border-box;
+}
+
+.wppoppop-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.65);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.wppoppop-box-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+.wppoppop-canvas-stage {
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.wppoppop-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    z-index: 10;
+    padding: 4px;
+    transition: color 0.15s ease;
 }
 
 .wppoppop-close-btn:hover {
     color: #0f172a;
-    background: rgba(0, 0, 0, 0.05);
 }
 
-.wppoppop-close-btn::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-}
-
-/* Sequence Canvases & Screens */
-.wppoppop-canvas-container,
-.wppoppop-screen-container {
-    width: 100%;
-    position: relative;
-    box-sizing: border-box;
-}
-
-/* Submission Status Overlay */
-.wppoppop-status-overlay {
+/* Watermark Badge */
+.wppoppop-watermark-badge {
     position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.95);
-    z-index: 999999;
+    bottom: 8px;
+    right: 12px;
+    z-index: 5;
+    user-select: none;
+}
+
+.wppoppop-watermark-badge a {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 24px;
-    text-align: center;
-    box-sizing: border-box;
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: #64748b;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease;
 }
 
-.wppoppop-status-overlay.wppoppop-visible {
-    display: flex !important;
+.wppoppop-watermark-badge a:hover {
+    background: #ffffff;
+    color: #2563eb;
+    border-color: #cbd5e1;
 }
 
-/* Transparent Canvas Support: Eliminate solid fills and dark box shadows */
-.wppoppop-modal-box.wppoppop-canvas-transparent {
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
-.wppoppop-canvas-container.wppoppop-canvas-transparent,
-.wppoppop-screen-container.wppoppop-canvas-transparent {
-    background: transparent !important;
-    box-shadow: none !important;
+.wppoppop-watermark-badge strong {
+    color: #1e293b;
+    font-weight: 700;
 }

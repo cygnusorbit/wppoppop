@@ -3,313 +3,244 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/**
- * WpPopPop Frontend AJAX Endpoints Controller
- * Lead Capture, Dynamic Text Fields, Webhooks, Autoresponders & Analytics
- */
-class WpPopPop_Ajax_Frontend {
+if (!class_exists('WpPopPop_Security')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-security.php';
+}
 
+class WpPopPop_Ajax_Frontend {
     public function __construct() {
         add_action('wp_ajax_wppoppop_submit_form', [$this, 'submit_form']);
         add_action('wp_ajax_nopriv_wppoppop_submit_form', [$this, 'submit_form']);
-
-        add_action('wp_ajax_wppoppop_record_impression', [$this, 'record_impression']);
-        add_action('wp_ajax_nopriv_wppoppop_record_impression', [$this, 'record_impression']);
-
-        add_action('wp_ajax_wppoppop_serve_remote_embed', [$this, 'serve_remote_embed']);
-        add_action('wp_ajax_nopriv_wppoppop_serve_remote_embed', [$this, 'serve_remote_embed']);
-
-        add_action('wp_ajax_wppoppop_process_payment', [$this, 'process_payment']);
-        add_action('wp_ajax_nopriv_wppoppop_process_payment', [$this, 'process_payment']);
+        add_action('wp_ajax_wppoppop_delete_submission', [$this, 'delete_submission']);
+        add_action('wp_ajax_wppoppop_bulk_delete_submissions', [$this, 'bulk_delete_submissions']);
     }
 
-    /**
-     * Handle public form submissions with full support for custom Text Fields
-     */
     public function submit_form() {
-        global $wpdb;
-
-        // Verify nonce if present
-        if (!empty($_POST['nonce'])) {
-            check_ajax_referer('wppoppop_front_nonce', 'nonce', false);
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'wppoppop_front_nonce') && !wp_verify_nonce($nonce, 'wppoppop_submit_nonce')) {
+            wp_send_json_error(['message' => __('Session expired. Please reload the page and try again.', 'wppoppop')]);
         }
 
-        $uid = isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '';
-        if (empty($uid)) {
-            wp_send_json_error(['message' => __('Invalid campaign identifier.', 'wppoppop')]);
+        $ip = WpPopPop_Security::get_client_ip();
+
+        // 1. IP Rate Limiting Verification
+        $max_per_hour = (int) wppoppop_get_setting('max_submissions_per_ip', 10);
+        if (WpPopPop_Security::is_rate_limited($ip,$max_per_hour)) {
+            wppoppop_log_event('security_rate_limit', "Rate limit exceeded for IP: {$ip}", ['ip' => $ip]);
+            wp_send_json_error([
+                'message' => __('Submission rate limit exceeded. Please wait a while before submitting again.', 'wppoppop')
+            ]);
         }
 
-        // Retrieve campaign record
-        $table_items = $wpdb->prefix . 'wppoppop_items';
-        $popup = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_items} WHERE uid = %s", $uid));
-        if (!$popup) {
-            wp_send_json_error(['message' => __('Campaign not found.', 'wppoppop')]);
+        // 2. Google reCAPTCHA Verification
+        if ((bool) wppoppop_get_setting('enable_recaptcha', false)) {
+            $token = isset($_POST['recaptcha_token']) ? sanitize_text_field(wp_unslash($_POST['recaptcha_token'])) : (isset($_POST['g-recaptcha-response']) ? sanitize_text_field(wp_unslash($_POST['g-recaptcha-response'])) : '');
+            if (!WpPopPop_Security::verify_recaptcha($token,$ip)) {
+                wppoppop_log_event('security_recaptcha_fail', "reCAPTCHA verification failed for IP: {$ip}", ['ip' => $ip]);
+                wp_send_json_error([
+                    'message' => __('Bot verification failed. Please refresh the page and try again.', 'wppoppop')
+                ]);
+            }
         }
 
-        $config = json_decode($popup->data, true);
-        if (!is_array($config)) {
-            $config = [];
-        }
-
-        $settings = $config['settings'] ?? [];
-
-        // 1. Ingest Raw Field Data
+        // 3. Extract & Sanitize Form Fields
         $raw_fields = isset($_POST['fields']) && is_array($_POST['fields']) ? wp_unslash($_POST['fields']) : [];
-        if (empty($raw_fields) && !empty($_POST)) {
-            // Fallback: collect direct POST keys excluding WordPress internals
-            foreach ($_POST as $k => $v) {
-                if (!in_array($k, ['action', 'uid', 'nonce'], true)) {
-                    $raw_fields[$k] = wp_unslash($v);
+        if (empty($raw_fields)) {
+            foreach ($_POST as $k =>$v) {
+                if (!in_array($k, ['action', 'nonce', 'popup_uid', 'g-recaptcha-response', 'recaptcha_token'], true)) {$raw_fields[$k] = wp_unslash($v);
                 }
             }
         }
 
-        // Anti-spam honeypot verification
-        if (!empty($raw_fields['wppoppop_hp_check']) || !empty($_POST['wppoppop_hp_check'])) {
-            wp_send_json_success(['message' => __('Submission received.', 'wppoppop')]);
-        }
+        $clean_fields = [];$email = '';
+        $name = '';$phone = '';
 
-        // 2. Sanitize and Normalize All Incoming Fields
-        $clean_fields = [];
-        foreach ($raw_fields as $key => $val) {
-            $sanitized_key = sanitize_key($key);
-            if (is_array($val)) {
-                $clean_fields[$sanitized_key] = array_map('sanitize_text_field', $val);
-            } elseif (is_string($val)) {
-                $clean_fields[$sanitized_key] = (strpos($val, "
-") !== false) ? sanitize_textarea_field($val) : sanitize_text_field($val);
+        foreach ($raw_fields as $key =>$val) {
+            $clean_key = sanitize_key($key);
+            if (is_array($val)) {$clean_fields[$clean_key] = array_map('sanitize_text_field',$val);
             } else {
-                $clean_fields[$sanitized_key] = $val;
-            }
-        }
+                $clean_val = sanitize_text_field($val);$clean_fields[$clean_key] =$clean_val;
 
-        // 3. Extract Core Identity Fields (Email, Name, Phone)
-        $email = '';
-        if (!empty($clean_fields['email']) && is_email($clean_fields['email'])) {
-            $email = sanitize_email($clean_fields['email']);
-        } else {
-            foreach ($clean_fields as $k => $v) {
-                if (strpos($k, 'email') !== false && is_string($v) && is_email($v)) {
-                    $email = sanitize_email($v);
-                    break;
+                if (empty($email) && (strpos($clean_key, 'email') !== false || filter_var($clean_val, FILTER_VALIDATE_EMAIL))) {
+                    $email = sanitize_email($clean_val);
+                }
+                if (empty($name) && in_array($clean_key, ['name', 'first_name', 'full_name'], true)) {
+                    $name =$clean_val;
+                }
+                if (empty($phone) && (strpos($clean_key, 'phone') !== false || strpos($clean_key, 'tel') !== false)) {
+                    $phone =$clean_val;
                 }
             }
         }
 
-        // Check disposable email blacklist if security setting is enabled
-        $global_settings = get_option('wppoppop_settings', []);
-        if (!empty($global_settings['block_disposable_emails']) && !empty($email)) {
-            $domain = substr(strrchr($email, "@"), 1);
-            $disposable_domains = ['mailinator.com', 'tempmail.com', '10minutemail.com', 'guerrillamail.com', 'throwawaymail.com'];
-            if (in_array(strtolower($domain), $disposable_domains, true)) {
-                wp_send_json_error(['message' => __('Please provide a valid permanent email address.', 'wppoppop')]);
+        // 4. Handle Multipart File Uploads
+        if (!empty($_FILES)) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            foreach ($_FILES as $file_key =>$file_data) {
+                if (!empty($file_data['name']) &&$file_data['error'] === UPLOAD_ERR_OK) {
+                    $upload_overrides = ['test_form' => false];$movefile = wp_handle_upload($file_data,$upload_overrides);
+                    if ($movefile && !isset($movefile['error'])) {
+                        $clean_fields[$file_key] = esc_url_raw($movefile['url']);$clean_fields[$file_key . '_path'] = sanitize_text_field($movefile['file']);
+                    }
+                }
             }
         }
 
-        // Extract Customer Name
-        $name = '';
-        if (!empty($clean_fields['name'])) {
-            $name = $clean_fields['name'];
-        } elseif (!empty($clean_fields['full_name'])) {
-            $name = $clean_fields['full_name'];
-        } elseif (!empty($clean_fields['first_name'])) {
-            $name = $clean_fields['first_name'] . (!empty($clean_fields['last_name']) ? ' ' . $clean_fields['last_name'] : '');
-        } elseif (!empty($clean_fields['fname'])) {
-            $name = $clean_fields['fname'] . (!empty($clean_fields['lname']) ? ' ' . $clean_fields['lname'] : '');
+        // 5. Disposable Email Address Filtering
+        $email_mode = wppoppop_get_setting('email_validation', 'basic');
+        if (!empty($email) &&$email_mode === 'disposable_filter') {
+            if (WpPopPop_Security::is_disposable_email($email)) {
+                wppoppop_log_event('security_disposable_email', "Rejected disposable email: {$email}", ['ip' => $ip, 'email' =>$email]);
+                wp_send_json_error([
+                    'message' => __('Disposable or temporary email addresses are not permitted. Please use a valid personal or business email.', 'wppoppop')
+                ]);
+            }
         }
 
-        // Extract Customer Phone
-        $phone = '';
-        if (!empty($clean_fields['phone'])) {
-            $phone = $clean_fields['phone'];
-        } elseif (!empty($clean_fields['telephone'])) {
-            $phone = $clean_fields['telephone'];
-        } elseif (!empty($clean_fields['mobile'])) {
-            $phone = $clean_fields['mobile'];
-        }
+        // 6. Database Persistence
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wppoppop_submissions';$popup_uid  = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
 
-        // 4. IP, Geolocation & Tracking Metadata
-        $ip = sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? '');
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            $ip = sanitize_text_field($_SERVER['HTTP_CF_CONNECTING_IP']);
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $parts = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-            $ip = sanitize_text_field(trim($parts[0]));
-        }
-
-        $country = sanitize_text_field($_SERVER['HTTP_CF_IPCOUNTRY'] ?? '');
-        $referer = sanitize_text_field(wp_get_referer() ?: ($_SERVER['HTTP_REFERER'] ?? ''));
-
-        // 5. Database Insertion
-        $table_submissions = $wpdb->prefix . 'wppoppop_submissions';
-        $payload_json = wp_json_encode($clean_fields);
-
-        $inserted = $wpdb->insert(
-            $table_submissions,
+        $wpdb->insert($table_name,
             [
-                'popup_uid'  => $uid,
-                'email'      => $email,
+                'popup_uid'  => $popup_uid,
                 'name'       => $name,
+                'email'      => $email,
                 'phone'      => $phone,
-                'payload'    => $payload_json,
+                'payload'    => wp_json_encode($clean_fields),
                 'ip_address' => $ip,
-                'country'    => $country,
-                'referer'    => $referer,
-                'created_at' => current_time('mysql'),
+                'created_at' => current_time('mysql')
             ],
-            ['%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
+            ['%s', '%s', '%s', '%s', '%s', '%s', '%s']
         );
 
-        $submission_id = $wpdb->insert_id;
+        $submission_id =$wpdb->insert_id;
 
-        // 6. Increment Campaign Submissions Counter
-        $wpdb->query($wpdb->prepare(
-            "UPDATE {$table_items} SET submissions = submissions + 1 WHERE uid = %s",
-            $uid
-        ));
+        // 7. Automated Email Notification
+        $admin_notification_email = wppoppop_get_setting('admin_email', get_option('admin_email'));
+        $from_name                = wppoppop_get_setting('sender_name', wppoppop_get_setting('from_name', get_bloginfo('name')));$from_email               = wppoppop_get_setting('sender_email', wppoppop_get_setting('from_email', get_option('admin_email')));
 
-        // 7. Autoresponder Email Notification with Dynamic Token Interpolation
-        $autoresponder = $settings['autoresponder'] ?? [];
-        if (!empty($autoresponder['enabled']) && !empty($email)) {
-            $subject = !empty($autoresponder['subject']) ? $autoresponder['subject'] : sprintf(__('Thank you for subscribing to %s', 'wppoppop'), $popup->title);
-            $body = !empty($autoresponder['body']) ? $autoresponder['body'] : __("Hello {name},
+        if (!empty($admin_notification_email) && is_email($admin_notification_email)) {$lead_identifier = !empty($name) ?$name : (!empty($email) ?$email : 'Anonymous');
+            $subject = sprintf('[%s] New Lead Captured: %s', get_bloginfo('name'),$lead_identifier);
 
-Thank you for reaching out! We have received your submission.", 'wppoppop');
-
-            // Interpolate dynamic tokens across body and subject
-            $tokens = array_merge($clean_fields, [
-                'name'        => $name ?: __('there', 'wppoppop'),
-                'email'       => $email,
-                'phone'       => $phone,
-                'popup_title' => $popup->title,
-                'date'        => date_i18n(get_option('date_format')),
-            ]);
-
-            foreach ($tokens as $token_key => $token_val) {
-                if (is_scalar($token_val)) {
-                    $subject = str_ireplace('{' . $token_key . '}', (string) $token_val, $subject);
-                    $body    = str_ireplace('{' . $token_key . '}', (string) $token_val, $body);
-                }
-            }
-
-            $sender_email = !empty($global_settings['mail_from_email']) ? $global_settings['mail_from_email'] : get_option('admin_email');
-            $sender_name  = !empty($global_settings['mail_from_name']) ? $global_settings['mail_from_name'] : get_bloginfo('name');
-            $headers      = [
+            $headers = [
                 'Content-Type: text/html; charset=UTF-8',
-                "From: {$sender_name} <{$sender_email}>"
+                'From: ' . esc_attr($from_name) . ' <' . sanitize_email($from_email) . '>',
+                'Reply-To: ' . (!empty($email) ? sanitize_email($email) : sanitize_email($from_email))
             ];
 
-            wp_mail($email, $subject, nl2br($body), $headers);
+            $msg  = '<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">';
+            $msg .= '<h2 style="color:#0f172a;margin-top:0;">' . esc_html__('New Lead Captured', 'wppoppop') . '</h2>';
+            $msg .= '<p style="color:#475569;">' . sprintf(esc_html__('A new submission was received on %s for Campaign UID: %s.', 'wppoppop'), esc_html(current_time('mysql')), '<code>' . esc_html($popup_uid) . '</code>') . '</p>';$msg .= '<table style="width:100%;border-collapse:collapse;margin-top:16px;background:#ffffff;border-radius:6px;overflow:hidden;border:1px solid #e2e8f0;">';
+
+            foreach ($clean_fields as $field_label =>$field_val) {
+                if (strpos($field_label, '_path') !== false) {
+                    continue;
+                }
+                $msg .= '<tr>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:600;color:#334155;width:35%;">' . esc_html(ucwords(str_replace(['_', '-'], ' ', $field_label))) . '</td>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#64748b;">' . esc_html(is_array($field_val) ? implode(', ', $field_val) : $field_val) . '</td>';$msg .= '</tr>';
+            }
+
+            $msg .= '<tr><td style="padding:10px 14px;font-weight:600;color:#334155;">' . esc_html__('IP Address', 'wppoppop') . '</td><td style="padding:10px 14px;color:#64748b;">' . esc_html($ip) . '</td></tr>';$msg .= '</table></div>';
+
+            wp_mail($admin_notification_email,$subject, $msg,$headers);
         }
 
-        // 8. Outbound Webhooks (Zapier, Make, Custom Webhook)
-        $marketing = $settings['marketing'] ?? ($settings['webhooks'] ?? []);
-        $webhook_url = !empty($marketing['webhook_url']) ? esc_url_raw($marketing['webhook_url']) : '';
-        if (!empty($webhook_url)) {
-            wp_remote_post($webhook_url, [
-                'headers' => ['Content-Type' => 'application/json; charset=utf-8'],
-                'body'    => wp_json_encode([
-                    'event'         => 'wppoppop_lead_captured',
-                    'submission_id' => $submission_id,
-                    'popup_uid'     => $uid,
-                    'popup_title'   => $popup->title,
-                    'email'         => $email,
-                    'name'          => $name,
-                    'phone'         => $phone,
-                    'fields'        => $clean_fields,
-                    'ip_address'    => $ip,
-                    'country'       => $country,
-                    'referer'       => $referer,
-                    'timestamp'     => current_time('mysql'),
-                ]),
-                'timeout'  => 5,
-                'blocking' => false,
-            ]);
-        }
-
-        // 9. Twilio SMS Alerts
-        $twilio = $settings['twilio'] ?? [];
-        if (!empty($twilio['enabled']) && !empty($twilio['account_sid']) && !empty($twilio['auth_token']) && !empty($twilio['admin_phone'])) {
-            $sms_body = sprintf(__("New WpPopPop Lead: %s (%s) from '%s'", 'wppoppop'), $name ?: 'Visitor', $email ?: $phone, $popup->title);
-            $twilio_endpoint = 'https://api.twilio.com/2010-04-01/Accounts/' . urlencode($twilio['account_sid']) . '/Messages.json';
-            wp_remote_post($twilio_endpoint, [
-                'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode($twilio['account_sid'] . ':' . $twilio['auth_token']),
-                ],
-                'body' => [
-                    'From' => $twilio['from_number'] ?? '',
-                    'To'   => $twilio['admin_phone'],
-                    'Body' => $sms_body,
-                ],
-                'timeout'  => 5,
-                'blocking' => false,
-            ]);
-        }
-
-        // 10. Resolve Post-Submit Redirect URL
+        // Resolve optional redirect destination
         $redirect_url = '';
         if (!empty($_POST['redirect_url'])) {
             $redirect_url = esc_url_raw(wp_unslash($_POST['redirect_url']));
-        } elseif (!empty($settings['redirect_url'])) {
-            $redirect_url = esc_url_raw($settings['redirect_url']);
-        } elseif (!empty($settings['box']['redirect_url'])) {
-            $redirect_url = esc_url_raw($settings['box']['redirect_url']);
         }
 
         wp_send_json_success([
-            'message'       => __('Thank you! Your information has been recorded.', 'wppoppop'),
+            'message'       => __('Thank you! Your submission has been received.', 'wppoppop'),
             'submission_id' => $submission_id,
-            'redirect_url'  => $redirect_url,
-            'email'         => $email,
-            'name'          => $name,
+            'redirect_url'  => $redirect_url
         ]);
     }
 
-    /**
-     * Record impression or conversion telemetry
-     */
-    public function record_impression() {
-        global $wpdb;
-
-        $uid = isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '';
-        if (empty($uid)) {
-            wp_send_json_error();
+    public function delete_submission() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Unauthorized capability.', 'wppoppop')]);
+        }
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')]);
         }
 
-        $table_items = $wpdb->prefix . 'wppoppop_items';
-        $is_conv = !empty($_POST['is_conversion']);
+        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+        if (!$id) {
+            wp_send_json_error(['message' => __('Invalid submission ID.', 'wppoppop')]);
+        }
 
-        if ($is_conv) {
-            $wpdb->query($wpdb->prepare("UPDATE {$table_items} SET submissions = submissions + 1 WHERE uid = %s", $uid));
+        global $wpdb;
+        $table_name =$wpdb->prefix . 'wppoppop_submissions';
+
+        // Purge files if user_uploads is set to 'delete'
+        $user_uploads = wppoppop_get_setting('user_uploads', 'keep');
+        if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT payload FROM {$table_name} WHERE id = %d", $id));
+            if ($row && !empty($row->payload)) {
+                $payload = json_decode($row->payload, true);
+                if (is_array($payload)) {$upload_dir = wp_upload_dir();
+                    $base_dir = realpath($upload_dir['basedir']);
+                    foreach ($payload as $key =>$val) {
+                        if (is_string($val) && (strpos($key, '_path') !== false || file_exists($val))) {
+                            $real_path = realpath($val);
+                            if ($real_path && strpos($real_path,$base_dir) === 0) {
+                                @unlink($real_path);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $deleted =$wpdb->delete($table_name, ['id' =>$id], ['%d']);
+        if ($deleted) {
+            wp_send_json_success(['message' => __('Submission deleted successfully.', 'wppoppop'), 'id' => $id]);
         } else {
-            $wpdb->query($wpdb->prepare("UPDATE {$table_items} SET views = views + 1 WHERE uid = %s", $uid));
+            wp_send_json_error(['message' => __('Failed to delete submission.', 'wppoppop')]);
+        }
+    }
+
+    public function bulk_delete_submissions() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Unauthorized capability.', 'wppoppop')]);
+        }
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')]);
         }
 
-        wp_send_json_success();
-    }
+        $ids = isset($_POST['ids']) && is_array($_POST['ids']) ? array_map('intval', $_POST['ids']) : [];
+        if (empty($ids)) {
+            wp_send_json_error(['message' => __('No submissions selected.', 'wppoppop')]);
+        }
 
-    /**
-     * Serve standalone remote embed JavaScript
-     */
-    public function serve_remote_embed() {
-        header('Content-Type: application/javascript; charset=utf-8');
-        echo "/* WpPopPop Remote Embed Service */";
-        exit;
-    }
-
-    /**
-     * Handle payment processing callbacks
-     */
-    public function process_payment() {
         global $wpdb;
-        $uid = isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '';
-        if (empty($uid)) {
-            wp_send_json_error(['message' => __('Invalid request', 'wppoppop')]);
+        $table_name =$wpdb->prefix . 'wppoppop_submissions';
+
+        $user_uploads = wppoppop_get_setting('user_uploads', 'keep');$upload_dir = wp_upload_dir();
+        $base_dir = realpath($upload_dir['basedir']);
+
+        foreach ($ids as$id) {
+            if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT payload FROM {$table_name} WHERE id = %d", $id));
+                if ($row && !empty($row->payload)) {
+                    $payload = json_decode($row->payload, true);
+                    if (is_array($payload)) {
+                        foreach ($payload as $key =>$val) {
+                            if (is_string($val) && (strpos($key, '_path') !== false || file_exists($val))) {
+                                $real_path = realpath($val);
+                                if ($real_path && strpos($real_path,$base_dir) === 0) {
+                                    @unlink($real_path);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $wpdb->delete($table_name, ['id' =>$id], ['%d']);
         }
 
-        $table_items = $wpdb->prefix . 'wppoppop_items';
-        $wpdb->query($wpdb->prepare("UPDATE {$table_items} SET submissions = submissions + 1 WHERE uid = %s", $uid));
-
-        wp_send_json_success(['message' => __('Payment authorized successfully.', 'wppoppop')]);
+        wp_send_json_success(['message' => __('Selected submissions deleted successfully.', 'wppoppop')]);
     }
 }

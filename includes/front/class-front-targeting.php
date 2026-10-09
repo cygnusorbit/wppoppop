@@ -3,67 +3,64 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+if (!class_exists('WpPopPop_Security')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-security.php';
+}
+
 class WpPopPop_Front_Targeting {
 
     public function detect_visitor_country() {
-        $country = '';
-
-        if (!empty($_SERVER['HTTP_CF_IPCOUNTRY'])) {
-            $country = strtoupper(sanitize_text_field($_SERVER['HTTP_CF_IPCOUNTRY']));
-        } elseif (!empty($_SERVER['GEOIP_COUNTRY_CODE'])) {
-            $country = strtoupper(sanitize_text_field($_SERVER['GEOIP_COUNTRY_CODE']));
-        }
-
-        // Filter: Override or customize visitor country detection (e.g., custom GeoIP DB)
-        return apply_filters('wppoppop_visitor_country', $country);
+        return WpPopPop_Security::detect_visitor_country();
     }
 
-    public function matches_targeting(array $config) {
-        $targeting = $config['targeting'] ?? [];
-
-        // 1. Device Viewport Targeting
-        if (!empty($targeting['devices']) && $targeting['devices'] !== 'all') {
-            $is_mobile = wp_is_mobile();
-            if ($targeting['devices'] === 'mobile' && !$is_mobile) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
-            }
-            if ($targeting['devices'] === 'desktop' && $is_mobile) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
-            }
+    public function is_eligible($popup) {
+        if (!$popup || empty($popup->status) || $popup->status !== 'publish') {
+            return false;
         }
 
-        // 2. User Authentication State
-        if (!empty($targeting['user_state'])) {
-            if ($targeting['user_state'] === 'logged_in' && !is_user_logged_in()) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
-            }
-            if ($targeting['user_state'] === 'logged_out' && is_user_logged_in()) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
-            }
+        $config = !empty($popup->config) ? json_decode($popup->config, true) : [];
+        if (!is_array($config)) {
+            $config = [];
         }
 
-        // 3. Geolocation Whitelisting / Blacklisting
-        $geo_mode      = $targeting['geo_mode'] ?? 'none';
-        $target_countries = !empty($targeting['countries']) && is_array($targeting['countries']) ? $targeting['countries'] : [];
-        if ($geo_mode !== 'none' && !empty($target_countries)) {
+        // 1. Geolocation Targeting Gate
+        if ((bool) wppoppop_get_setting('ip_geotargeting', false)) {
             $visitor_country = $this->detect_visitor_country();
-            if ($geo_mode === 'whitelist' && !in_array($visitor_country, $target_countries, true)) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
-            }
-            if ($geo_mode === 'blacklist' && in_array($visitor_country, $target_countries, true)) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
+            $target_settings = isset($config['targeting']) && is_array($config['targeting']) ? $config['targeting'] : [];
+            $geo_mode        = isset($target_settings['geo_mode']) ? $target_settings['geo_mode'] : 'all';
+            $geo_countries   = isset($target_settings['geo_countries']) && is_array($target_settings['geo_countries']) ? array_map('strtoupper', $target_settings['geo_countries']) : [];
+
+            if (!empty($visitor_country) && !empty($geo_countries)) {
+                if ($geo_mode === 'whitelist' && !in_array($visitor_country, $geo_countries, true)) {
+                    return false;
+                }
+                if ($geo_mode === 'blacklist' && in_array($visitor_country, $geo_countries, true)) {
+                    return false;
+                }
             }
         }
 
-        // 4. UTM Parameter Targeting
-        if (!empty($targeting['utm_source'])) {
-            $param = sanitize_text_field($_GET['utm_source'] ?? '');
-            if ($param !== $targeting['utm_source']) {
-                return apply_filters('wppoppop_targeting_decision', false, $config, $this);
-            }
+        // 2. Device Viewport Targeting
+        $target_settings = isset($config['targeting']) && is_array($config['targeting']) ? $config['targeting'] : [];
+        $devices = isset($target_settings['devices']) ? $target_settings['devices'] : 'all';
+        $is_mobile = wp_is_mobile();
+
+        if ($devices === 'desktop' && $is_mobile) {
+            return false;
+        }
+        if ($devices === 'mobile' && !$is_mobile) {
+            return false;
         }
 
-        // Filter: Final programmatic filter for all targeting rules
-        return apply_filters('wppoppop_targeting_decision', true, $config, $this);
+        // 3. User Authentication Targeting
+        $users = isset($target_settings['users']) ? $target_settings['users'] : 'all';
+        if ($users === 'logged_in' && !is_user_logged_in()) {
+            return false;
+        }
+        if ($users === 'logged_out' && is_user_logged_in()) {
+            return false;
+        }
+
+        return true;
     }
 }

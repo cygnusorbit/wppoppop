@@ -3,6 +3,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+if (!class_exists('WpPopPop_Libraries')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-libraries.php';
+}
+
 class WpPopPop_Admin_Assets {
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
@@ -43,12 +47,15 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 2. Visual Builder Assets
+        // 2. Visual Builder Assets (Equipped with Typography and Custom Fonts)
         if ($page === 'wppoppop-builder') {
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
+
+            // Enqueue active typography & Font Awesome for builder stage
+            WpPopPop_Libraries::enqueue_builder_libraries();
 
             wp_enqueue_script('wppoppop-builder-core-js', WPPOPPOP_URL . 'admin/js/builder/builder-core.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-builder-canvas-js', WPPOPPOP_URL . 'admin/js/builder/builder-canvas.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'wppoppop-builder-core-js'], WPPOPPOP_VERSION, true);
@@ -70,14 +77,16 @@ class WpPopPop_Admin_Assets {
             ], WPPOPPOP_VERSION, true);
 
             $builder_payload = array_merge($shared_payload, [
-                'nonce' => wp_create_nonce('wppoppop_builder_nonce')
+                'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
+                'custom_fonts' => WpPopPop_Libraries::get_custom_font_families()
             ]);
             wp_localize_script('wppoppop-builder-core-js', 'wppoppop_vars', $builder_payload);
+            wp_localize_script('wppoppop-builder-inspector-js', 'wppoppop_custom_fonts', WpPopPop_Libraries::get_custom_font_families());
             wp_localize_script('wppoppop-builder-io-js', 'wppoppop_vars', $builder_payload);
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', $builder_payload);
         }
 
-        // 3. Settings Assets (Enqueuing Decomposed Tabs, Save & Tools Modules)
+        // 3. Settings Assets
         if ($page === 'wppoppop-settings') {
             wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', [], WPPOPPOP_VERSION);
 

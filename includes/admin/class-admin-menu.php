@@ -5,90 +5,62 @@ if (!defined('ABSPATH')) {
 
 class WpPopPop_Admin_Menu {
     protected $pages;
+    protected $dashboard_hook = '';
 
-    public function __construct(WpPopPop_Admin_Pages $pages) {
-        $this->pages = $pages;
+    public function __construct($pages = null) {
+        if ($pages instanceof WpPopPop_Admin_Pages) {
+            $this->pages = $pages;
+        } else {
+            if (!class_exists('WpPopPop_Admin_Pages') && file_exists(WPPOPPOP_PATH . 'includes/admin/class-admin-pages.php')) {
+                require_once WPPOPPOP_PATH . 'includes/admin/class-admin-pages.php';
+            }
+            $this->pages = new WpPopPop_Admin_Pages();
+        }
+
         add_action('admin_menu', [$this, 'register_menus']);
-        add_filter('set-screen-option', [$this, 'save_screen_options'], 10, 3);
+        add_filter('set-screen-option', [$this, 'set_screen_option'], 10, 3);
     }
 
     public function register_menus() {
-        $main_hook = add_menu_page(
+        $this->dashboard_hook = add_menu_page(
             'WpPopPop',
             'WpPopPop',
-            'edit_wppoppop_campaigns',
+            'manage_options',
             'wppoppop',
             [$this->pages, 'render_dashboard'],
             'dashicons-external',
             30
         );
 
-        add_submenu_page('wppoppop', __('Popups', 'wppoppop'), __('Popups', 'wppoppop'), 'edit_wppoppop_campaigns', 'wppoppop', [$this->pages, 'render_dashboard']);
-        add_submenu_page('wppoppop', __('Create Popup', 'wppoppop'), __('Create Popup', 'wppoppop'), 'edit_wppoppop_campaigns', 'wppoppop-builder', [$this->pages, 'render_builder']);
-        add_submenu_page('wppoppop', __('A/B Campaigns', 'wppoppop'), __('A/B Campaigns', 'wppoppop'), 'edit_wppoppop_campaigns', 'wppoppop-ab', [$this->pages, 'render_ab']);
-        $subs_hook = add_submenu_page('wppoppop', __('Submissions', 'wppoppop'), __('Submissions', 'wppoppop'), 'read_wppoppop_submissions', 'wppoppop-submissions', [$this->pages, 'render_submissions']);
-        $log_hook  = add_submenu_page('wppoppop', __('Activity Log', 'wppoppop'), __('Activity Log', 'wppoppop'), 'read_wppoppop_submissions', 'wppoppop-log', [$this->pages, 'render_log']);
-        add_submenu_page('wppoppop', __('Statistics', 'wppoppop'), __('Statistics', 'wppoppop'), 'read_wppoppop_submissions', 'wppoppop-stats', [$this->pages, 'render_stats']);
-        add_submenu_page('wppoppop', __('Field Analytics', 'wppoppop'), __('Field Analytics', 'wppoppop'), 'read_wppoppop_submissions', 'wppoppop-field-analytics', [$this->pages, 'render_field_analytics']);
-        $pay_hook  = add_submenu_page('wppoppop', __('Transactions', 'wppoppop'), __('Transactions', 'wppoppop'), 'read_wppoppop_submissions', 'wppoppop-payments', [$this->pages, 'render_payments']);
-        add_submenu_page('wppoppop', __('Popups Library', 'wppoppop'), __('Popups Library', 'wppoppop'), 'edit_wppoppop_campaigns', 'wppoppop-library', [$this->pages, 'render_library']);
-        add_submenu_page('wppoppop', __('Settings', 'wppoppop'), __('Settings', 'wppoppop'), 'manage_wppoppop', 'wppoppop-settings', [$this->pages, 'render_settings']);
-        add_submenu_page('wppoppop', __('Tools & Export', 'wppoppop'), __('Tools & Export', 'wppoppop'), 'manage_wppoppop', 'wppoppop-tools', [$this->pages, 'render_tools']);
+        add_submenu_page('wppoppop', 'Popups', 'Popups', 'manage_options', 'wppoppop', [$this->pages, 'render_dashboard']);
+        add_submenu_page('wppoppop', 'Create Popup', 'Create Popup', 'manage_options', 'wppoppop-builder', [$this->pages, 'render_builder']);
+        add_submenu_page('wppoppop', 'A/B Campaigns', 'A/B Campaigns', 'manage_options', 'wppoppop-ab', [$this->pages, 'render_ab']);
+        add_submenu_page('wppoppop', 'Submissions', 'Submissions', 'manage_options', 'wppoppop-submissions', [$this->pages, 'render_submissions']);
+        add_submenu_page('wppoppop', 'Activity Log', 'Activity Log', 'manage_options', 'wppoppop-log', [$this->pages, 'render_log']);
+        add_submenu_page('wppoppop', 'Statistics', 'Statistics', 'manage_options', 'wppoppop-stats', [$this->pages, 'render_stats']);
+        add_submenu_page('wppoppop', 'Field Analytics', 'Field Analytics', 'manage_options', 'wppoppop-field-analytics', [$this->pages, 'render_field_analytics']);
+        add_submenu_page('wppoppop', 'Transactions', 'Transactions', 'manage_options', 'wppoppop-payments', [$this->pages, 'render_payments']);
+        add_submenu_page('wppoppop', 'Popups Library', 'Popups Library', 'manage_options', 'wppoppop-library', [$this->pages, 'render_library']);
+        add_submenu_page('wppoppop', 'Settings', 'Settings', 'manage_options', 'wppoppop-settings', [$this->pages, 'render_settings']);
+        add_submenu_page('wppoppop', 'Tools & Export', 'Tools & Export', 'manage_options', 'wppoppop-tools', [$this->pages, 'render_tools']);
 
-        // Register native Screen Options for all tabular screens
-        if ($main_hook) {
-            add_action('load-' . $main_hook, function() {
-                add_screen_option('per_page', [
-                    'label'   => __('Campaigns per page', 'wppoppop'),
-                    'default' => 25,
-                    'option'  => 'wppoppop_campaigns_per_page',
-                ]);
-            });
-        }
-
-        if ($subs_hook) {
-            add_action('load-' . $subs_hook, function() {
-                add_screen_option('per_page', [
-                    'label'   => __('Submissions per page', 'wppoppop'),
-                    'default' => 25,
-                    'option'  => 'wppoppop_submissions_per_page',
-                ]);
-            });
-        }
-
-        if ($log_hook) {
-            add_action('load-' . $log_hook, function() {
-                add_screen_option('per_page', [
-                    'label'   => __('Log entries per page', 'wppoppop'),
-                    'default' => 50,
-                    'option'  => 'wppoppop_logs_per_page',
-                ]);
-            });
-        }
-
-        if ($pay_hook) {
-            add_action('load-' . $pay_hook, function() {
-                add_screen_option('per_page', [
-                    'label'   => __('Transactions per page', 'wppoppop'),
-                    'default' => 25,
-                    'option'  => 'wppoppop_payments_per_page',
-                ]);
-            });
+        if (!empty($this->dashboard_hook)) {
+            add_action("load-{$this->dashboard_hook}", [$this, 'load_dashboard_screen_options']);
         }
     }
 
-    public function save_screen_options($status, $option, $value) {
-        $allowed = [
-            'wppoppop_campaigns_per_page',
-            'wppoppop_submissions_per_page',
-            'wppoppop_logs_per_page',
-            'wppoppop_payments_per_page',
-        ];
+    public function load_dashboard_screen_options() {
+        add_screen_option('per_page', [
+            'label'   => __('Campaigns per page', 'wppoppop'),
+            'default' => 25,
+            'option'  => 'wppoppop_campaigns_per_page',
+        ]);
+    }
 
-        if (in_array($option, $allowed, true)) {
+    public function set_screen_option($status, $option, $value) {
+        if ('wppoppop_campaigns_per_page' === $option) {
             return (int) $value;
         }
-
         return $status;
     }
 }

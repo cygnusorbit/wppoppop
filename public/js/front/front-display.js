@@ -1,251 +1,212 @@
+/**
+ * WpPopPop Frontend Display Runtime Engine
+ * Manages GA Events, Render Delays, Component Celebrations, and Cookie Epoch Synchronization
+ */
 (function(window, $) {
     'use strict';
-    window.WpPopPopFront = window.WpPopPopFront || {};
 
-    var Display = {
-        canShow: function(uid, config) {
-            var freq = config.frequency || {};
-            var epoch = (window.wppoppop_front_vars && window.wppoppop_front_vars.cookie_epoch) || '1';
+    var vars = window.wppoppop_front_vars || {
+        ajax_url: '',
+        nonce: '',
+        cookie_epoch: 1,
+        render_delay: 0,
+        preload_events: false,
+        ga_tracking: false,
+        adblock_detector: false,
+        libraries: {}
+    };
 
-            if (this.getCookie('wppoppop_epoch_' + uid) !== epoch) {
-                this.eraseCookie('wppoppop_closed_' + uid);
-                this.eraseCookie('wppoppop_sub_' + uid);
-                this.setCookie('wppoppop_epoch_' + uid, epoch, 365);
-            }
-
-            if (freq.hide_on_submit && this.getCookie('wppoppop_sub_' + uid)) {
-                return false;
-            }
-
-            if (freq.mode === 'session') {
-                if (sessionStorage.getItem('wppoppop_session_' + uid)) return false;
-            } else if (freq.mode === 'days') {
-                if (this.getCookie('wppoppop_closed_' + uid)) return false;
-            }
-
-            return true;
-        },
-
-        show: function($popup, config) {
-            var uid = $popup.data('uid');
-            $popup.fadeIn(300);
-            this.recordImpression(uid);
-
-            if (config.sound && config.sound.enable && window.WpPopPopFront.Gamification) {
-                window.WpPopPopFront.Gamification.playChime('open');
-            }
-
-            // Trigger initial canvas entrance animation (Animate.css)
-            var $firstCanvas = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container').first();
-            if ($firstCanvas.length) {
-                this.triggerCanvasAnimation($firstCanvas);
-            }
-
-            if (config.custom_js) {
-                try { (new Function(config.custom_js))(); } catch(e) {}
-            }
-        },
-
-        triggerCanvasAnimation: function($canvas) {
-            var appearance = ($canvas.data('anim-appearance') || 'fadeIn').toString().trim();
-            var duration = parseInt($canvas.data('anim-duration'), 10) || 1000;
-            var delay = parseInt($canvas.data('anim-delay'), 10) || 0;
-
-            if (appearance === 'none') {
-                $canvas.show().addClass('wppoppop-canvas-active wppoppop-screen-active');
-                return;
-            }
-
-            // Support both standard Animate.css names (fadeIn, slideInDown) and legacy prefixes (fade, slideDown)
-            var animClass = appearance;
-            if (animClass.indexOf('animate__') !== 0) {
-                if (animClass === 'fade') animClass = 'fadeIn';
-                if (animClass === 'slideDown') animClass = 'slideInDown';
-                if (animClass === 'slideUp') animClass = 'slideInUp';
-                if (animClass === 'slideLeft') animClass = 'slideInLeft';
-                if (animClass === 'slideRight') animClass = 'slideInRight';
-                animClass = 'animate__' + animClass;
-            }
-
-            $canvas.css({
-                '--animate-duration': (duration / 1000) + 's',
-                '--animate-delay': (delay / 1000) + 's'
-            });
-
-            $canvas.show().addClass('wppoppop-canvas-active wppoppop-screen-active animate__animated ' + animClass);
-        },
-
-        close: function($popup, config) {
+    window.WpPopPopFrontDisplay = {
+        init: function() {
             var self = this;
-            var uid = $popup.data('uid');
-            var freq = config.frequency || {};
+            var startDelay = vars.render_delay || 0;
 
-            var $activeCanvas = $popup.find('.wppoppop-canvas-container.wppoppop-canvas-active, .wppoppop-screen-container.wppoppop-screen-active');
-            var disappearance = ($activeCanvas.data('anim-disappearance') || 'fadeOut').toString().trim();
-
-            if (disappearance !== 'none') {
-                var exitClass = disappearance;
-                if (exitClass.indexOf('animate__') !== 0) {
-                    if (exitClass === 'fade') exitClass = 'fadeOut';
-                    if (exitClass === 'slideDown') exitClass = 'slideOutDown';
-                    if (exitClass === 'slideUp') exitClass = 'slideOutUp';
-                    if (exitClass === 'slideLeft') exitClass = 'slideOutLeft';
-                    if (exitClass === 'slideRight') exitClass = 'slideOutRight';
-                    exitClass = 'animate__' + exitClass;
-                }
-
-                $activeCanvas.addClass('animate__animated ' + exitClass);
+            if (startDelay > 0) {
                 setTimeout(function() {
-                    $popup.fadeOut(200);
-                }, 400);
+                    self.bootstrap();
+                }, startDelay);
             } else {
-                $popup.fadeOut(250);
-            }
-
-            if (freq.mode === 'session') {
-                sessionStorage.setItem('wppoppop_session_' + uid, '1');
-            } else if (freq.mode === 'days') {
-                var days = parseInt(freq.days, 10) || 7;
-                this.setCookie('wppoppop_closed_' + uid, '1', days);
+                self.bootstrap();
             }
         },
 
-        bindEvents: function($popup, config) {
+        bootstrap: function() {
+            this.syncCookieEpoch();
+            this.bindEvents();
+            this.evaluateTriggers();
+            this.initExtensionWidgets();
+        },
+
+        syncCookieEpoch: function() {
+            try {
+                var storedEpoch = localStorage.getItem('wppoppop_cookie_epoch');
+                if (storedEpoch && parseInt(storedEpoch, 10) < parseInt(vars.cookie_epoch, 10)) {
+                    // Cookie epoch incremented by admin; clear dismissals
+                    Object.keys(localStorage).forEach(function(key) {
+                        if (key.indexOf('wppoppop_dismissed_') === 0 || key.indexOf('wppoppop_submitted_') === 0) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+                }
+                localStorage.setItem('wppoppop_cookie_epoch', vars.cookie_epoch);
+            } catch (e) {
+                // Ignore storage exceptions in private/incognito modes
+            }
+        },
+
+        bindEvents: function() {
             var self = this;
-            var uid = $popup.data('uid');
 
-            $popup.find('.wppoppop-close-btn').on('click', function() {
-                self.close($popup, config);
-            });
-
-            $popup.on('click', function(e) {
-                if (e.target === this) {
-                    self.close($popup, config);
-                }
-            });
-
-            $(document).on('keydown.wppoppop_esc_' + uid, function(e) {
-                if (e.key === 'Escape' && $popup.is(':visible')) {
-                    self.close($popup, config);
-                }
-            });
-
-            $('.wppoppop-side-tab[data-target-uid="' + uid + '"]').on('click', function() {
-                self.show($popup, config);
-            });
-
-            $popup.on('click', '.wppoppop-next-canvas-btn, .wppoppop-next-screen-btn, .wppoppop-next-step', function(e) {
+            // Close button trigger
+            $(document).on('click', '.wppoppop-close-btn, .wppoppop-backdrop', function(e) {
                 e.preventDefault();
-                var targetCanvas = parseInt($(this).data('goto-canvas') || $(this).data('goto-screen') || $(this).data('goto'), 10) || 2;
-                self.switchCanvas($popup, targetCanvas);
+                var uid = $(this).data('uid');
+                self.close(uid);
+            });
+
+            // AdBlock Event Check
+            if (vars.adblock_detector && window.wppoppop_adblock_detected) {
+                $(document).trigger('wppoppop:adblock_active');
+            }
+
+            // Lead capture celebration trigger
+            $(document).on('wppoppop:form_submitted', function(e, data) {
+                self.triggerCelebration();
             });
         },
 
-        switchCanvas: function($popup, canvasNum) {
-        var $containers = $popup.find('.wppoppop-canvas-container, .wppoppop-screen-container');
-        var $target = $popup.find('.wppoppop-canvas-container[data-canvas-index="' + canvasNum + '"], .wppoppop-screen-container[data-screen-index="' + canvasNum + '"]');
-        if (!$target.length) return this;
+        evaluateTriggers: function() {
+            var self = this;
+            $('.wppoppop-popup-wrap').each(function() {
+                var $wrap = $(this);
+                var uid = $wrap.data('uid');
+                
+                // Frequency check: if dismissed in current epoch, bypass
+                try {
+                    if (localStorage.getItem('wppoppop_dismissed_' + uid)) {
+                        return;
+                    }
+                } catch(e) {}
 
-        var $box = $popup.find('.wppoppop-modal-box');
-        var $current = $containers.filter('.is-active');
+                self.show(uid);
+            });
+        },
 
-        // Play disappearance animation on outgoing canvas if defined
-        var curDis = $current.data('anim-disappearance');
-        if (curDis && curDis !== 'none') {
-            $current.addClass('animate__animated animate__' + curDis);
-        }
+        show: function(uid) {
+            var $wrap = $('#wppoppop-wrap-' + uid);
+            if (!$wrap.length) return;
 
-        $containers.removeClass('is-active').hide();
-        $target.addClass('is-active').css('display', 'block');
+            $wrap.fadeIn(250).attr('aria-hidden', 'false');
 
-        // Dynamic Dimension Adaptation
-        var targetW = parseInt($target.data('width'), 10);
-        var targetH = parseInt($target.data('height'), 10);
-        if (targetW && targetH) {
-            $box.css({ width: targetW + 'px', height: targetH + 'px' });
-        }
+            // Dispatch Google Analytics Event if enabled
+            if (vars.ga_tracking) {
+                this.dispatchGA('wppoppop_impression', { popup_uid: uid });
+            }
+        },
 
-        // Dynamic Background & Shadow Adaptation
-        var bgColor = $target.data('bg-color') || $target.attr('data-bg-color');
-        var bgMode = $target.data('bg-mode') || $target.attr('data-bg-mode') || 'solid';
-        var grad1 = $target.data('grad-color1') || $target.attr('data-grad-color1') || '#3b82f6';
-        var grad2 = $target.data('grad-color2') || $target.attr('data-grad-color2') || '#1d4ed8';
-        var gradAngle = $target.data('grad-angle') || $target.attr('data-grad-angle') || 135;
+        close: function(uid) {
+            var $wrap = $('#wppoppop-wrap-' + uid);
+            if (!$wrap.length) return;
 
-        if (bgColor === 'transparent') {
-            $box.addClass('wppoppop-canvas-transparent');
-            $box.css({ background: 'transparent', 'box-shadow': 'none' });
-        } else {
-            $box.removeClass('wppoppop-canvas-transparent');
-            if (bgMode === 'gradient') {
-                $box.css({
-                    background: 'linear-gradient(' + gradAngle + 'deg, ' + grad1 + ', ' + grad2 + ')',
-                    'box-shadow': ''
+            $wrap.fadeOut(200).attr('aria-hidden', 'true');
+
+            try {
+                localStorage.setItem('wppoppop_dismissed_' + uid, Date.now());
+            } catch(e) {}
+
+            // Dispatch Google Analytics Event if enabled
+            if (vars.ga_tracking) {
+                this.dispatchGA('wppoppop_close', { popup_uid: uid });
+            }
+        },
+
+        dispatchGA: function(eventName, params) {
+            try {
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', eventName, params);
+                }
+                if (Array.isArray(window.dataLayer)) {
+                    window.dataLayer.push($.extend({ event: eventName }, params));
+                }
+            } catch (err) {}
+        },
+
+        /**
+         * Trigger celebration effects (Confetti / Fireworks) upon conversion.
+         */
+        triggerCelebration: function() {
+            // 1. Canvas Confetti Burst
+            if (typeof window.confetti === 'function') {
+                try {
+                    window.confetti({
+                        particleCount: 90,
+                        spread: 65,
+                        origin: { y: 0.6 }
+                    });
+                } catch (e) {}
+            }
+
+            // 2. Canvas Fireworks
+            if (typeof window.Fireworks !== 'undefined') {
+                try {
+                    var container = document.body;
+                    var fireworks = new window.Fireworks.default(container, {
+                        autoresize: true,
+                        opacity: 0.5,
+                        acceleration: 1.05,
+                        friction: 0.97,
+                        gravity: 1.5,
+                        particles: 50,
+                        traceLength: 3,
+                        traceSpeed: 10,
+                        explosion: 5,
+                        intensity: 30
+                    });
+                    fireworks.start();
+                    setTimeout(function() { fireworks.stop(); }, 2500);
+                } catch (e) {}
+            }
+        },
+
+        /**
+         * Initialize component extension widgets on canvas elements.
+         */
+        initExtensionWidgets: function() {
+            // 1. jQuery Mask
+            if (typeof $.fn.mask === 'function') {
+                $('input[data-mask]').each(function() {
+                    var maskPattern = $(this).data('mask');
+                    if (maskPattern) {
+                        $(this).mask(maskPattern);
+                    }
                 });
-            } else {
-                $box.css({
-                    background: bgColor || '#ffffff',
-                    'box-shadow': ''
+            }
+
+            // 2. Air Datepicker
+            if (typeof window.AirDatepicker !== 'undefined') {
+                $('.wppoppop-datepicker-input').each(function() {
+                    new window.AirDatepicker(this, {
+                        autoClose: true
+                    });
                 });
             }
-        }
 
-        // Play entrance animation on incoming canvas
-        var appAnim = $target.data('anim-appearance');
-        if (appAnim && appAnim !== 'none') {
-            $target.addClass('animate__animated animate__' + appAnim);
-        }
-
-        return this;
-    },
-
-        switchScreen: function($popup, screenNum) {
-            this.switchCanvas($popup, screenNum);
-        },
-
-        recordImpression: function(uid) {
-            var restUrl = (window.wppoppop_front_vars && window.wppoppop_front_vars.rest_url) || '';
-            var ajaxUrl = (window.wppoppop_front_vars && window.wppoppop_front_vars.ajax_url) || '';
-
-            if (restUrl) {
-                fetch(restUrl + 'impression', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uid: uid })
-                }).catch(function() {});
-            } else if (ajaxUrl) {
-                $.post(ajaxUrl, { action: 'wppoppop_record_impression', uid: uid });
+            // 3. Digital Signature Pad
+            if (typeof window.SignaturePad !== 'undefined') {
+                $('.wppoppop-signature-canvas').each(function() {
+                    if (!this._sigPad) {
+                        this._sigPad = new window.SignaturePad(this, {
+                            backgroundColor: 'rgba(255, 255, 255, 0)',
+                            penColor: '#0f172a'
+                        });
+                    }
+                });
             }
-
-            if (window.gtag) gtag('event', 'wppoppop_impression', { popup_uid: uid });
-            if (window.dataLayer) window.dataLayer.push({ event: 'wppoppop_impression', popup_uid: uid });
-        },
-
-        setCookie: function(name, value, days) {
-            var expires = '';
-            if (days) {
-                var d = new Date();
-                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = '; expires=' + d.toUTCString();
-            }
-            document.cookie = name + '=' + (value || '') + expires + '; path=/; SameSite=Lax';
-        },
-
-        getCookie: function(name) {
-            var nameEQ = name + '=';
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        },
-
-        eraseCookie: function(name) {
-            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
     };
 
-    window.WpPopPopFront.Display = Display;
+    $(document).ready(function() {
+        window.WpPopPopFrontDisplay.init();
+    });
+
 })(window, jQuery);
