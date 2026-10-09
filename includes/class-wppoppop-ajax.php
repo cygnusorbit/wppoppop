@@ -3,20 +3,19 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/**
- * Modular AJAX Dispatcher
- * Loads decomposed AJAX sub-controllers.
- */
 class WpPopPop_Ajax {
     public function __construct() {
-        require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-builder.php';
-        require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-frontend.php';
-        require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-submissions.php';
-        require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-settings.php';
-
-        new WpPopPop_Ajax_Builder();
-        new WpPopPop_Ajax_Frontend();
-        new WpPopPop_Ajax_Submissions();
-        new WpPopPop_Ajax_Settings();
+        if (file_exists(WPPOPPOP_PATH . 'includes/ajax/class-ajax-builder.php')) {
+            require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-builder.php';
+            if (class_exists('WpPopPop_Ajax_Builder')) {
+                new WpPopPop_Ajax_Builder();
+            }
+        }
+        if (file_exists(WPPOPPOP_PATH . 'includes/ajax/class-ajax-settings.php')) {
+            require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-settings.php';
+            if (class_exists('WpPopPop_Ajax_Settings')) {
+                new WpPopPop_Ajax_Settings();
+            }
+        }
     }
 }

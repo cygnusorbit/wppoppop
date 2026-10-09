@@ -1,5 +1,6 @@
 /* ==========================================================================
-   WpPopPop Settings: Tab Navigation Bar & Button States
+   WpPopPop Settings: Tab Navigation Bar & Active Highlights
+   Compatible with Chrome, Safari, Firefox, Edge & Responsive Viewports
    ========================================================================== */
 
 .wppoppop-settings-wrap {
@@ -39,11 +40,18 @@
     font-weight: 700;
 }
 
+/* Inactive tabs must be hidden unconditionally */
 .wppoppop-tab-content {
+    display: none !important;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 24px 28px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
+}
+
+/* Active tab display */
+.wppoppop-tab-content.active {
+    display: block !important;
 }

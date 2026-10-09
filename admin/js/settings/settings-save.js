@@ -1,53 +1,74 @@
-(function(window, $) {
+/**
+ * WpPopPop Settings: Asynchronous Save Controller
+ */
+(function($) {
     'use strict';
-    window.WpPopPopSettings = window.WpPopPopSettings || {};
 
-    var Save = {
+    window.WpPopPopSettingsSave = {
         init: function() {
-            this.bindForm();
+            this.bindSubmit();
         },
 
-        getVars: function() {
-            return window.wppoppop_settings_vars || {
-                ajax_url: ajaxurl || '',
-                nonce: ''
-            };
-        },
-
-        bindForm: function() {
+        bindSubmit: function() {
             var self = this;
             $('#wppoppop-settings-form').on('submit', function(e) {
                 e.preventDefault();
 
-                var $btn = $('#wppoppop-settings-save-btn');
-                $btn.prop('disabled', true).text('Saving Changes...');
+                var $form = $(this);
+                var $btn = $('#wppoppop-save-settings-btn');
+                var $spinner = $('#wppoppop-save-settings-spinner');
+                var $msg = $('#wppoppop-save-settings-msg');
+                var $alert = $('#wppoppop-settings-alert');
 
-                var $notice = $('#wppoppop-settings-notice');
-                $notice.hide().removeClass('notice-success notice-error');
+                $btn.prop('disabled', true);
+                $spinner.addClass('is-active');
+                $msg.css('color', '#64748b').text('Saving settings...');
 
-                var vars = self.getVars();
-                var formData = $(this).serialize();
+                var ajaxUrl = (window.wppoppop_settings_vars && window.wppoppop_settings_vars.ajax_url)
+                    ? window.wppoppop_settings_vars.ajax_url
+                    : ((window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php'));
 
-                $.post(vars.ajax_url, {
-                    action: 'wppoppop_save_settings',
-                    nonce: vars.nonce,
-                    data: formData
-                }).done(function(res) {
-                    if (res.success) {
-                        $notice.addClass('notice-success').html('<p>' + (res.data.message || 'Settings saved successfully!') + '</p>').fadeIn(200);
-                    } else {
-                        var errMsg = (res.data && res.data.message) ? res.data.message : 'An error occurred while saving settings.';
-                        $notice.addClass('notice-error').html('<p>' + errMsg + '</p>').fadeIn(200);
+                var nonce = (window.wppoppop_settings_vars && window.wppoppop_settings_vars.nonce)
+                    ? window.wppoppop_settings_vars.nonce
+                    : ((window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : $('#wppoppop_settings_nonce').val());
+
+                var formData = $form.serializeArray();
+                formData.push({ name: 'action', value: 'wppoppop_save_settings' });
+                formData.push({ name: 'nonce', value: nonce });
+
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(res) {
+                        $btn.prop('disabled', false);
+                        $spinner.removeClass('is-active');
+
+                        if (res && res.success) {
+                            var successText = (res.data && res.data.message) ? res.data.message : 'Settings saved successfully!';
+                            $msg.css('color', '#16a34a').text('✓ ' + successText);
+                            if ($alert.length) {
+                                $alert.removeClass('notice-error').addClass('notice-success').show().find('p').text(successText);
+                            }
+                            setTimeout(function() {
+                                $msg.fadeOut(300, function() { $(this).text('').show(); });
+                            }, 3500);
+                        } else {
+                            var errMsg = (res && res.data && res.data.message) ? res.data.message : 'Failed to save settings.';
+                            $msg.css('color', '#dc2626').text('✕ ' + errMsg);
+                            if ($alert.length) {
+                                $alert.removeClass('notice-success').addClass('notice-error').show().find('p').text(errMsg);
+                            }
+                        }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false);
+                        $spinner.removeClass('is-active');
+                        $msg.css('color', '#dc2626').text('✕ Server communication error.');
                     }
-                }).fail(function() {
-                    $notice.addClass('notice-error').html('<p>Network error while saving settings.</p>').fadeIn(200);
-                }).always(function() {
-                    $btn.prop('disabled', false).text('Save Changes');
-                    $('html, body').animate({ scrollTop: 0 }, 200);
                 });
             });
         }
     };
-
-    window.WpPopPopSettings.Save = Save;
-})(window, jQuery);
+})(jQuery);

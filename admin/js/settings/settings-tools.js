@@ -1,47 +1,64 @@
-(function(window, $) {
+/**
+ * WpPopPop Settings: Tools & Maintenance Controller
+ */
+(function($) {
     'use strict';
-    window.WpPopPopSettings = window.WpPopPopSettings || {};
 
-    var Tools = {
+    window.WpPopPopSettingsTools = {
         init: function() {
             this.bindCookieReset();
         },
 
         bindCookieReset: function() {
-            $('#wppoppop-reset-cookies-btn').on('click', function() {
-                if (!confirm('Reset all visitor cookies across all popups? Popups with frequency capping will reappear for returning visitors immediately.')) {
+            $('#wppoppop-reset-cookies-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (!confirm('Are you sure you want to invalidate all visitor cookies? All dismissed or submitted popups will reappear immediately.')) {
                     return;
                 }
 
                 var $btn = $(this);
-                $btn.prop('disabled', true).text('Resetting Cookies...');
-
                 var $status = $('#wppoppop-cookie-reset-status');
-                $status.empty();
+                var origText = $btn.text();
 
-                var vars = window.wppoppop_settings_vars || {
-                    ajax_url: ajaxurl || '',
-                    nonce: ''
-                };
+                $btn.prop('disabled', true).text('Resetting...');
+                $status.css('color', '#64748b').text('Invalidating cookie epoch cache...');
 
-                $.post(vars.ajax_url, {
-                    action: 'wppoppop_reset_cookies',
-                    nonce: vars.nonce
-                }).done(function(res) {
-                    if (res.success) {
-                        $status.html('<span style="color:#10b981;font-weight:600;">&#10004; ' + (res.data.message || 'Cookies reset successfully.') + '</span>');
-                    } else {
-                        var errMsg = (res.data && res.data.message) ? res.data.message : 'Unable to reset cookies.';
-                        $status.html('<span style="color:#ef4444;font-weight:600;">&#9888; ' + errMsg + '</span>');
+                var ajaxUrl = (window.wppoppop_settings_vars && window.wppoppop_settings_vars.ajax_url)
+                    ? window.wppoppop_settings_vars.ajax_url
+                    : ((window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php'));
+
+                var nonce = (window.wppoppop_settings_vars && window.wppoppop_settings_vars.nonce)
+                    ? window.wppoppop_settings_vars.nonce
+                    : ((window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '');
+
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'wppoppop_reset_cookies',
+                        nonce: nonce
+                    },
+                    dataType: 'json',
+                    success: function(res) {
+                        $btn.prop('disabled', false).text(origText);
+                        if (res && res.success) {
+                            var msg = (res.data && res.data.message) ? res.data.message : 'Cookie cache reset successfully!';
+                            $status.css('color', '#16a34a').text('✓ ' + msg);
+                            if (res.data && res.data.epoch) {
+                                $('#wppoppop-current-cookie-epoch').text(res.data.epoch);
+                            }
+                        } else {
+                            var errMsg = (res && res.data && res.data.message) ? res.data.message : 'Failed to reset cookies.';
+                            $status.css('color', '#dc2626').text('✕ ' + errMsg);
+                        }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false).text(origText);
+                        $status.css('color', '#dc2626').text('✕ Server communication error.');
                     }
-                }).fail(function() {
-                    $status.html('<span style="color:#ef4444;font-weight:600;">&#9888; Network error during cookie reset.</span>');
-                }).always(function() {
-                    $btn.prop('disabled', false).text('Reset All Visitor Cookies');
                 });
             });
         }
     };
-
-    window.WpPopPopSettings.Tools = Tools;
-})(window, jQuery);
+})(jQuery);

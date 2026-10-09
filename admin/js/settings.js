@@ -1,19 +1,17 @@
-(function(window, $) {
+/**
+ * WpPopPop Settings Master Coordinator
+ * Initializes Decomposed Sub-Controllers on DOM Ready
+ */
+jQuery(document).ready(function($) {
     'use strict';
 
-    $(document).ready(function() {
-        if (!window.WpPopPopSettings) return;
-
-        if (window.WpPopPopSettings.Tabs) {
-            window.WpPopPopSettings.Tabs.init();
-        }
-
-        if (window.WpPopPopSettings.Save) {
-            window.WpPopPopSettings.Save.init();
-        }
-
-        if (window.WpPopPopSettings.Tools) {
-            window.WpPopPopSettings.Tools.init();
-        }
-    });
-})(window, jQuery);
+    if (window.WpPopPopSettingsTabs) {
+        window.WpPopPopSettingsTabs.init();
+    }
+    if (window.WpPopPopSettingsSave) {
+        window.WpPopPopSettingsSave.init();
+    }
+    if (window.WpPopPopSettingsTools) {
+        window.WpPopPopSettingsTools.init();
+    }
+});

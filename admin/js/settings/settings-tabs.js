@@ -1,3 +1,6 @@
+/**
+ * WpPopPop Settings: Tabs Navigation Controller
+ */
 (function(window, $) {
     'use strict';
     window.WpPopPopSettings = window.WpPopPopSettings || {};
@@ -10,20 +13,28 @@
 
         bindEvents: function() {
             var self = this;
-            $('.wppoppop-tab-btn').on('click', function() {
+            $('.wppoppop-tab-btn').on('click', function(e) {
+                e.preventDefault();
                 var targetTab = $(this).data('tab');
                 self.switchTab(targetTab);
             });
         },
 
         switchTab: function(tabKey) {
+            if (!tabKey) return;
+            tabKey = String(tabKey).replace(/^#/, '').replace(/^tab-/, '').replace(/^wppoppop-tab-/, '');
+
+            // Deactivate all tab buttons and containers
             $('.wppoppop-tab-btn').removeClass('active');
+            $('.wppoppop-tab-content').removeClass('active').hide();
+
+            // Highlight active button
             $('.wppoppop-tab-btn[data-tab="' + tabKey + '"]').addClass('active');
 
-            $('.wppoppop-tab-content').hide().removeClass('active');
-            var $targetContent = $('#tab-' + tabKey);
-            if ($targetContent.length) {
-                $targetContent.show().addClass('active');
+            // Activate target container matching either #tab-* or data-tab-content
+            var $target = $('#tab-' + tabKey + ', #wppoppop-tab-' + tabKey + ', [data-tab-content="' + tabKey + '"]');
+            if ($target.length) {
+                $target.addClass('active').show();
             }
 
             // Sync with URL Hash for direct linking
@@ -34,13 +45,17 @@
 
         restoreActiveTab: function() {
             if (window.location.hash) {
-                var hashTab = window.location.hash.replace('#', '');
+                var hashTab = window.location.hash.replace('#', '').replace(/^tab-/, '');
                 if ($('.wppoppop-tab-btn[data-tab="' + hashTab + '"]').length) {
                     this.switchTab(hashTab);
+                    return;
                 }
             }
+            // Default to general tab if none selected
+            this.switchTab('general');
         }
     };
 
     window.WpPopPopSettings.Tabs = Tabs;
+    window.WpPopPopSettingsTabs = Tabs;
 })(window, jQuery);

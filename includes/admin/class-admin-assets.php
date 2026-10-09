@@ -16,6 +16,7 @@ class WpPopPop_Admin_Assets {
         $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
         $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
 
+        // Shared general configuration
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),
             'nonce'       => wp_create_nonce('wppoppop_admin_nonce'),
@@ -42,12 +43,9 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-dashboard-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 2. Visual Builder Assets (Enqueuing Native WordPress Media + Animate.css + Sub-Modules)
+        // 2. Visual Builder Assets
         if ($page === 'wppoppop-builder') {
-            wp_enqueue_media(); // Native WordPress Media Library uploader
-            wp_enqueue_style('animate-css', WPPOPPOP_URL . 'admin/css/vendor/animate.min.css', [], '4.1.1');
-            wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', ['animate-css'], WPPOPPOP_VERSION);
-            
+            wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], WPPOPPOP_VERSION);
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
@@ -79,14 +77,30 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', $builder_payload);
         }
 
-        // 3. Settings Assets
+        // 3. Settings Assets (Enqueuing Decomposed Tabs, Save & Tools Modules)
         if ($page === 'wppoppop-settings') {
             wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', [], WPPOPPOP_VERSION);
-            wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', ['jquery'], WPPOPPOP_VERSION, true);
-            wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', [
+
+            wp_enqueue_script('wppoppop-settings-tabs-js', WPPOPPOP_URL . 'admin/js/settings/settings-tabs.js', ['jquery'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery', 'wppoppop-settings-tabs-js'], WPPOPPOP_VERSION, true);
+            wp_enqueue_script('wppoppop-settings-tools-js', WPPOPPOP_URL . 'admin/js/settings/settings-tools.js', ['jquery'], WPPOPPOP_VERSION, true);
+
+            wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', [
+                'jquery',
+                'wppoppop-settings-tabs-js',
+                'wppoppop-settings-save-js',
+                'wppoppop-settings-tools-js'
+            ], WPPOPPOP_VERSION, true);
+
+            $settings_payload = [
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce'    => wp_create_nonce('wppoppop_settings_nonce')
-            ]);
+            ];
+
+            wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', $settings_payload);
+            wp_localize_script('wppoppop-settings-save-js', 'wppoppop_settings_vars', $settings_payload);
+            wp_localize_script('wppoppop-settings-tools-js', 'wppoppop_settings_vars', $settings_payload);
+            wp_localize_script('wppoppop-settings-js', 'wppoppop_vars', $shared_payload);
         }
 
         // 4. Library Assets
@@ -96,7 +110,7 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
         }
 
-        // 5. Tools Assets
+        // 5. Tools & Portability Assets
         if ($page === 'wppoppop-tools') {
             wp_enqueue_script('wppoppop-tools-system-js', WPPOPPOP_URL . 'admin/js/tools/tools-system.js', ['jquery'], WPPOPPOP_VERSION, true);
             wp_enqueue_script('wppoppop-tools-database-js', WPPOPPOP_URL . 'admin/js/tools/tools-database.js', ['jquery'], WPPOPPOP_VERSION, true);

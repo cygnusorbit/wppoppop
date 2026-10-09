@@ -11,8 +11,9 @@ if (!defined('ABSPATH')) {
         <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
     </div>
 
-    <!-- Center Section: Sequence Tabs, Dimensions & Viewport Switcher (Without "Canvas:" text) -->
+    <!-- Center Section: Canvas Label (Outside Workspace) & Sequence Tabs -->
     <div class="wppoppop-hdr-group wppoppop-hdr-center">
+        <span class="wppoppop-hdr-canvas-label" style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;user-select:none;">Canvas:</span>
         <div class="wppoppop-canvas-tabs wppoppop-screen-tabs" id="wppoppop-canvas-tabs-container">
             <div class="wppoppop-canvas-tab-wrapper active">
                 <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
@@ -24,7 +25,7 @@ if (!defined('ABSPATH')) {
             <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="Add Canvas">+</button>
         </div>
 
-        <!-- Quick Dimension Display (Equal 32px height) -->
+        <!-- Quick Dimension Display -->
         <div class="wppoppop-quick-dimensions-wrap" title="Canvas Stage Dimensions">
             <span>W:</span>
             <input type="number" id="quick-box-width" value="640" min="200" max="1400">
@@ -32,7 +33,6 @@ if (!defined('ABSPATH')) {
             <input type="number" id="quick-box-height" value="400" min="150" max="1000">
         </div>
 
-        <!-- Viewport Switcher (Equal 32px height) -->
         <div class="wppoppop-viewport-toggles">
             <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>
@@ -43,12 +43,11 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <!-- Right Section: Preview, Embed, Save Actions -->
+    <!-- Right Section: Preview, Embed, Save Actions (Clean Text Buttons) -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
         <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">Preview</button>
         <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>
         <button type="button" id="wppoppop-btn-save" class="button button-primary" title="Save Popup Campaign">
-            <span class="dashicons dashicons-saved"></span>
             <span class="wppoppop-save-text">Save Popup</span>
         </button>
     </div>
