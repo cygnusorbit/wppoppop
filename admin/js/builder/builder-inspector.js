@@ -311,6 +311,42 @@
             });
 
             // Animation Selector & Play Button
+            
+            $('#prop-padding-top, #prop-padding-right, #prop-padding-bottom, #prop-padding-left').off('input.livePad change.livePad').on('input.livePad change.livePad', function() {
+                var el = (typeof self.getActiveElement === 'function') ? self.getActiveElement() : ((typeof getActiveEl === 'function') ? getActiveEl() : null);
+                if (!el && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state.activeId) {
+                    var cur = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+                    var list = window.WpPopPopBuilderCore.state.canvases[cur] || [];
+                    el = list.find(function(item) { return String(item.id) === String(window.WpPopPopBuilderCore.state.activeId); });
+                }
+                if (!el) return;
+
+                var dir = $(this).attr('data-dir') || $(this).attr('id').replace('prop-padding-', '');
+                var val = Math.max(0, parseInt($(this).val(), 10) || 0);
+
+                if (dir === 'top') { el.paddingTop = val; el.padding_top = val; }
+                if (dir === 'right') { el.paddingRight = val; el.padding_right = val; }
+                if (dir === 'bottom') { el.paddingBottom = val; el.padding_bottom = val; }
+                if (dir === 'left') { el.paddingLeft = val; el.padding_left = val; }
+                el.padding = el.paddingTop || 0;
+                $('#prop-padding').val(el.padding);
+
+                var $target = $('#el-' + el.id);
+                if ($target.length) {
+                    var isControl = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf(el.type) !== -1;
+                    var $inner = $target.find('input, button, select, textarea, a, .wppoppop-btn').first();
+                    if (isControl && $inner.length) {
+                        $target.css({ 'padding': '0px', 'box-sizing': 'border-box' });
+                        $inner.css('padding-' + dir, val + 'px').css('box-sizing', 'border-box');
+                    } else {
+                        $target.css('padding-' + dir, val + 'px').css('box-sizing', 'border-box');
+                    }
+                }
+                if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            });
+
             $(document).on('change', '#prop-animation', function() {
                 var el = self.getActiveElement();
                 if (!el) return;

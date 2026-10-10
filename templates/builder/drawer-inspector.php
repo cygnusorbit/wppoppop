@@ -181,7 +181,7 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
 
-                <!-- 4-Way Directional Padding (Dedicated Full-Width Row) -->
+                                                                <!-- 4-Way Directional Padding (Dedicated Full-Width Row & Universal Text/Control Sync) -->
                 <div id="wppoppop-padding-control-wrap">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                         <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:0;">PADDING (PX)</label>
@@ -190,23 +190,170 @@ if (!defined('ABSPATH')) {
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
                         <div>
                             <label for="prop-padding-top" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">TOP</label>
-                            <input type="number" id="prop-padding-top" class="wppoppop-input" min="0" max="250" value="0" data-dir="top" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-top" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="top" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
                             <label for="prop-padding-right" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">RIGHT</label>
-                            <input type="number" id="prop-padding-right" class="wppoppop-input" min="0" max="250" value="0" data-dir="right" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-right" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="right" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
                             <label for="prop-padding-bottom" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">BOTTOM</label>
-                            <input type="number" id="prop-padding-bottom" class="wppoppop-input" min="0" max="250" value="0" data-dir="bottom" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-bottom" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="bottom" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
                             <label for="prop-padding-left" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">LEFT</label>
-                            <input type="number" id="prop-padding-left" class="wppoppop-input" min="0" max="250" value="0" data-dir="left" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-left" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="left" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                     </div>
                     <input type="hidden" id="prop-padding" value="0">
                 </div>
+
+                <!-- Universal Live Padding & Text Sync Engine -->
+                <script id="wppoppop-padding-sync-engine">
+                (function() {
+                    function initWpPopPopPaddingEngine() {
+                        var topInput = document.getElementById('prop-padding-top');
+                        var rightInput = document.getElementById('prop-padding-right');
+                        var bottomInput = document.getElementById('prop-padding-bottom');
+                        var leftInput = document.getElementById('prop-padding-left');
+                        var hiddenInput = document.getElementById('prop-padding');
+                        if (!topInput || !rightInput || !bottomInput || !leftInput) return;
+
+                        function getTargetNode() {
+                            if (!window.jQuery) return null;
+                            var $ = window.jQuery;
+                            var $sel = $('.wppoppop-canvas-item.wppoppop-selected, .wppoppop-canvas-item.is-selected');
+                            if ($sel.length) return $sel;
+
+                            if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.activeId) {
+                                var $byId = $('#el-' + window.WpPopPopBuilderCore.state.activeId);
+                                if ($byId.length) return $byId;
+                            }
+                            return null;
+                        }
+
+                        function applyPaddingToTarget() {
+                            var t = Math.max(0, parseInt(topInput.value, 10) || 0);
+                            var r = Math.max(0, parseInt(rightInput.value, 10) || 0);
+                            var b = Math.max(0, parseInt(bottomInput.value, 10) || 0);
+                            var l = Math.max(0, parseInt(leftInput.value, 10) || 0);
+
+                            if (hiddenInput) {
+                                hiddenInput.value = t;
+                            }
+
+                            if (!window.jQuery) return;
+                            var $ = window.jQuery;
+                            var $target = getTargetNode();
+                            if (!$target || !$target.length) return;
+
+                            var elType = ($target.attr('data-type') || '').toLowerCase();
+                            var isFormOrBtn = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf(elType) !== -1;
+                            var $innerControl = $target.find('input, button, select, textarea, a, .wppoppop-btn').first();
+
+                            if (isFormOrBtn && $innerControl.length) {
+                                $target.css({ 'padding': '0px', 'box-sizing': 'border-box' });
+                                $innerControl.css({
+                                    'padding-top': t + 'px',
+                                    'padding-right': r + 'px',
+                                    'padding-bottom': b + 'px',
+                                    'padding-left': l + 'px',
+                                    'box-sizing': 'border-box'
+                                });
+                            } else {
+                                // All Text Elements: Title, Paragraph, Text, HTML
+                                $target.css({
+                                    'padding-top': t + 'px',
+                                    'padding-right': r + 'px',
+                                    'padding-bottom': b + 'px',
+                                    'padding-left': l + 'px',
+                                    'box-sizing': 'border-box'
+                                });
+                                // Neutralize inner tag padding to prevent duplicate spacing
+                                $target.find('h1, h2, h3, h4, h5, h6, p, .wppoppop-text-render').css('padding', '0px');
+                            }
+
+                            // Commit directly to active in-memory model
+                            var elId = $target.attr('data-id') || ($target.attr('id') ? $target.attr('id').replace('el-', '') : null);
+                            if (elId && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) {
+                                var cur = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+                                var elements = window.WpPopPopBuilderCore.state.canvases[cur] || [];
+                                var model = elements.find(function(item) { return String(item.id) === String(elId); });
+                                if (model) {
+                                    model.paddingTop = t;
+                                    model.paddingRight = r;
+                                    model.paddingBottom = b;
+                                    model.paddingLeft = l;
+                                    model.padding_top = t;
+                                    model.padding_right = r;
+                                    model.padding_bottom = b;
+                                    model.padding_left = l;
+                                    model.padding = t;
+                                }
+                            }
+                        }
+
+                        [topInput, rightInput, bottomInput, leftInput].forEach(function(input) {
+                            input.addEventListener('input', applyPaddingToTarget);
+                            input.addEventListener('change', function() {
+                                applyPaddingToTarget();
+                                if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                                    window.WpPopPopBuilderCore.pushHistory();
+                                }
+                            });
+                        });
+
+                        // Rehydrate from model first, never collapsing asymmetrical padding into identical values
+                        function rehydrateInputs($node) {
+                            if (!$node || !$node.length) return;
+                            var elId = $node.attr('data-id') || ($node.attr('id') ? $node.attr('id').replace('el-', '') : null);
+                            var model = null;
+                            if (elId && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) {
+                                var cur = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+                                var elements = window.WpPopPopBuilderCore.state.canvases[cur] || [];
+                                model = elements.find(function(item) { return String(item.id) === String(elId); });
+                            }
+
+                            var elType = ($node.attr('data-type') || '').toLowerCase();
+                            var isFormOrBtn = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf(elType) !== -1;
+                            var $innerControl = $node.find('input, button, select, textarea, a, .wppoppop-btn').first();
+                            var $src = (isFormOrBtn && $innerControl.length) ? $innerControl : $node;
+
+                            var pt = (model && model.paddingTop !== undefined) ? model.paddingTop : ((model && model.padding_top !== undefined) ? model.padding_top : (parseInt($src.css('padding-top'), 10) || 0));
+                            var pr = (model && model.paddingRight !== undefined) ? model.paddingRight : ((model && model.padding_right !== undefined) ? model.padding_right : (parseInt($src.css('padding-right'), 10) || 0));
+                            var pb = (model && model.paddingBottom !== undefined) ? model.paddingBottom : ((model && model.padding_bottom !== undefined) ? model.padding_bottom : (parseInt($src.css('padding-bottom'), 10) || 0));
+                            var pl = (model && model.paddingLeft !== undefined) ? model.paddingLeft : ((model && model.padding_left !== undefined) ? model.padding_left : (parseInt($src.css('padding-left'), 10) || 0));
+
+                            topInput.value = pt;
+                            rightInput.value = pr;
+                            bottomInput.value = pb;
+                            leftInput.value = pl;
+                            if (hiddenInput) hiddenInput.value = pt;
+                        }
+
+                        if (window.jQuery) {
+                            var $ = window.jQuery;
+                            $(document).on('click', '.wppoppop-canvas-item', function() {
+                                var $clicked = $(this);
+                                setTimeout(function() { rehydrateInputs($clicked); }, 30);
+                            });
+
+                            $(document).on('click', '.wppoppop-layer-item', function() {
+                                setTimeout(function() {
+                                    var $target = getTargetNode();
+                                    if ($target) rehydrateInputs($target);
+                                }, 50);
+                            });
+                        }
+                    }
+
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initWpPopPopPaddingEngine);
+                    } else {
+                        initWpPopPopPaddingEngine();
+                    }
+                })();
+                </script>
 
                 <!-- Section 2: Colors (Full-Width with 2-Column Inputs) -->
                 <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">COLORS</div>

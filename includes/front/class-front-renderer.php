@@ -222,6 +222,14 @@ class WpPopPop_Front_Renderer {
         if (!empty($el['color'])) $style[] = 'color:' . esc_attr($el['color']);
         if (!empty($el['bgColor']) && $type !== 'shape') $style[] = 'background-color:' . esc_attr($el['bgColor']);
 
+                $pad_top    = intval($el['paddingTop'] ?? ($el['padding_top'] ?? ($el['padding'] ?? 0)));
+        $pad_right  = intval($el['paddingRight'] ?? ($el['padding_right'] ?? ($el['padding'] ?? 0)));
+        $pad_bottom = intval($el['paddingBottom'] ?? ($el['padding_bottom'] ?? ($el['padding'] ?? 0)));
+        $pad_left   = intval($el['paddingLeft'] ?? ($el['padding_left'] ?? ($el['padding'] ?? 0)));
+        if ($pad_top > 0 || $pad_right > 0 || $pad_bottom > 0 || $pad_left > 0) {
+            $style[] = "padding:{$pad_top}px {$pad_right}px {$pad_bottom}px {$pad_left}px";
+        }
+
         $style_attr = esc_attr(implode(';', $style));
         $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
 

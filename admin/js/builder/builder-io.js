@@ -72,7 +72,28 @@
             if (liveAnimDis) curCanvasMeta.anim_disappearance = liveAnimDis;
         }
 
-        var payload = {
+        // Pre-save flush: commit active directional padding inputs directly before serialization
+            if ($('#prop-padding-top').length) {
+                var activeId = core.state.activeId;
+                if (activeId && core.state.canvases) {
+                    var curCanvas = core.state.currentCanvas || 1;
+                    var cElements = core.state.canvases[curCanvas] || [];
+                    var activeModel = cElements.find(function(it) { return String(it.id) === String(activeId); });
+                    if (activeModel) {
+                        activeModel.paddingTop = Math.max(0, parseInt($('#prop-padding-top').val(), 10) || 0);
+                        activeModel.paddingRight = Math.max(0, parseInt($('#prop-padding-right').val(), 10) || 0);
+                        activeModel.paddingBottom = Math.max(0, parseInt($('#prop-padding-bottom').val(), 10) || 0);
+                        activeModel.paddingLeft = Math.max(0, parseInt($('#prop-padding-left').val(), 10) || 0);
+                        activeModel.padding_top = activeModel.paddingTop;
+                        activeModel.padding_right = activeModel.paddingRight;
+                        activeModel.padding_bottom = activeModel.paddingBottom;
+                        activeModel.padding_left = activeModel.paddingLeft;
+                        activeModel.padding = activeModel.paddingTop;
+                    }
+                }
+            }
+
+            var payload = {
                     canvases: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
                     screens: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
                     canvasMeta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
