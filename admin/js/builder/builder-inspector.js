@@ -1,6 +1,6 @@
 /**
  * WpPopPop Visual Builder: Layer Settings Inspector Controller
- * Hydrates 26 Elements, Vector Shapes, Typography, and Transparency Swatches
+ * Hydrates 26 Elements, Vector Shapes, Spacing/Padding, Typography & Swatches
  */
 (function($) {
     'use strict';
@@ -102,11 +102,16 @@
                 $('#prop-content').val(el.content || '');
             }
 
-            // Typography & Styling
+            // Typography & Spacing
             $('#prop-font-size').val(el.fontSize || 14);
             $('#prop-font-weight').val(el.fontWeight || '400');
             $('#prop-line-height').val(el.lineHeight || 1.4);
             $('#prop-letter-spacing').val(el.letterSpacing || 0);
+            $('#prop-text-align').val(el.textAlign || 'left');
+            $('#prop-padding').val(el.padding !== undefined ? el.padding : 0);
+
+            // Animation
+            $('#prop-animation').val(el.animation || 'none');
 
             // Text Color Swatch
             var color = el.color || '#ffffff';
@@ -170,7 +175,7 @@
         bindInputs: function() {
             var self = this;
 
-            // Shape Preset
+            // Shape Presets & Controls
             $(document).on('change', '#prop-shape-preset', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -178,7 +183,6 @@
                 self.syncToCanvas();
             });
 
-            // Shape Fill Color
             $(document).on('input change', '#prop-shape-fill', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -187,7 +191,6 @@
                 self.syncToCanvas();
             });
 
-            // Shape Fill Transparent Button
             $(document).on('click', '#prop-shape-fill-transparent-btn', function(e) {
                 e.preventDefault();
                 var el = self.getActiveElement();
@@ -197,7 +200,6 @@
                 self.syncToCanvas();
             });
 
-            // Shape Stroke Color
             $(document).on('input change', '#prop-shape-stroke', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -206,7 +208,6 @@
                 self.syncToCanvas();
             });
 
-            // Shape Stroke Transparent Button
             $(document).on('click', '#prop-shape-stroke-transparent-btn', function(e) {
                 e.preventDefault();
                 var el = self.getActiveElement();
@@ -216,7 +217,6 @@
                 self.syncToCanvas();
             });
 
-            // Shape Stroke Width
             $(document).on('input change', '#prop-shape-stroke-width', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -224,7 +224,6 @@
                 self.syncToCanvas();
             });
 
-            // Shape Rotation
             $(document).on('input change', '#prop-shape-rotate', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -232,7 +231,7 @@
                 self.syncToCanvas();
             });
 
-            // General Content
+            // Content & Text
             $(document).on('input', '#prop-content, #prop-title-text, #prop-paragraph-text, #prop-textfield-placeholder', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -259,7 +258,7 @@
                 self.syncToCanvas();
             });
 
-            // Typography Inputs
+            // Typography & Spacing Inputs
             $(document).on('input change', '#prop-font-size', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -288,7 +287,43 @@
                 self.syncToCanvas();
             });
 
-            // Text Color Swatches
+            $(document).on('change', '#prop-text-align', function() {
+                var el = self.getActiveElement();
+                if (!el) return;
+                el.textAlign = $(this).val();
+                self.syncToCanvas();
+            });
+
+            // Element Padding Input
+            $(document).on('input change', '#prop-padding', function() {
+                var el = self.getActiveElement();
+                if (!el) return;
+                el.padding = Math.max(0, parseInt($(this).val(), 10) || 0);
+                self.syncToCanvas();
+            });
+
+            // Animation Selector & Play Button
+            $(document).on('change', '#prop-animation', function() {
+                var el = self.getActiveElement();
+                if (!el) return;
+                el.animation = $(this).val();
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.playElementAnimation(el.id, el.animation);
+                }
+                self.syncToCanvas();
+            });
+
+            $(document).on('click', '#prop-anim-play-btn', function(e) {
+                e.preventDefault();
+                var el = self.getActiveElement();
+                if (!el) return;
+                var anim = $('#prop-animation').val() || el.animation || 'fade';
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.playElementAnimation(el.id, anim);
+                }
+            });
+
+            // Colors
             $(document).on('input change', '#prop-color', function() {
                 var el = self.getActiveElement();
                 if (!el) return;
@@ -306,7 +341,6 @@
                 self.syncToCanvas();
             });
 
-            // Background Color Swatches
             $(document).on('input change', '#prop-bg-color', function() {
                 var el = self.getActiveElement();
                 if (!el) return;

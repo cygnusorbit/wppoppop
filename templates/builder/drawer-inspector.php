@@ -108,7 +108,7 @@ if (!defined('ABSPATH')) {
                         </div>
                     </div>
 
-                    <!-- General Content Fallback for other elements -->
+                    <!-- General Content Fallback -->
                     <div id="panel-elem-general" class="wppoppop-elem-panel">
                         <div class="wppoppop-prop-group">
                             <label for="prop-content" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">ELEMENT CONTENT / LABEL</label>
@@ -144,8 +144,8 @@ if (!defined('ABSPATH')) {
         <div id="insp-tab-style" class="wppoppop-tab-pane" style="display:none;">
             <div style="display:flex;flex-direction:column;gap:12px;">
                 
-                <!-- Typography Section -->
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">TYPOGRAPHY &amp; FONT</div>
+                <!-- Typography & Spacing Section -->
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">TYPOGRAPHY &amp; SPACING</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                     <div>
                         <label for="prop-font-size" style="font-size:10px;font-weight:700;color:#94a3b8;">SIZE (PX)</label>
@@ -168,9 +168,22 @@ if (!defined('ABSPATH')) {
                         <label for="prop-letter-spacing" style="font-size:10px;font-weight:700;color:#94a3b8;">SPACING (PX)</label>
                         <input type="number" id="prop-letter-spacing" class="wppoppop-input" step="0.5" value="0" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
+                    <div>
+                        <label for="prop-text-align" style="font-size:10px;font-weight:700;color:#94a3b8;">TEXT ALIGN</label>
+                        <select id="prop-text-align" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="prop-padding" style="font-size:10px;font-weight:700;color:#38bdf8;">PADDING (PX)</label>
+                        <input type="number" id="prop-padding" class="wppoppop-input" min="0" max="100" value="0" style="width:100%;background:#0f172a;border:1px solid #38bdf8;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
                 </div>
 
-                <!-- Text Color -->
+                <!-- Colors Section -->
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">COLORS</div>
                 <div class="wppoppop-prop-group">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                         <label for="prop-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">TEXT COLOR</label>
@@ -179,14 +192,28 @@ if (!defined('ABSPATH')) {
                     <input type="color" id="prop-color" class="wppoppop-input" value="#ffffff" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
                 </div>
 
-                <!-- Background & Border Section -->
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">BACKGROUND &amp; BORDERS</div>
                 <div class="wppoppop-prop-group">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                         <label for="prop-bg-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">BG COLOR</label>
                         <button type="button" id="prop-bg-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Background" aria-label="Transparent Background"></button>
                     </div>
                     <input type="color" id="prop-bg-color" class="wppoppop-input" value="#2563eb" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                </div>
+
+                <!-- Entrance Animation Section -->
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">ENTRANCE ANIMATION</div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <select id="prop-animation" class="wppoppop-input" style="flex:1;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
+                        <option value="none">None</option>
+                        <option value="fade">Fade In</option>
+                        <option value="bounce">Bounce</option>
+                        <option value="tada">Tada</option>
+                        <option value="rubberBand">RubberBand</option>
+                        <option value="slideDown">Slide Down</option>
+                        <option value="slideUp">Slide Up</option>
+                        <option value="zoomIn">Zoom In</option>
+                    </select>
+                    <button type="button" id="prop-anim-play-btn" style="background:#2563eb;border:none;color:#ffffff;padding:6px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" title="Replay Animation">▶ Play</button>
                 </div>
             </div>
         </div>
