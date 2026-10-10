@@ -588,3 +588,73 @@ body.wppoppop-resizing-canvas {
     outline: none !important;
     box-shadow: none !important;
 }
+
+/* ==========================================================================
+   WpPopPop Visual Builder: Elements Toolbar Icon-Only Normalization
+   Cross-Browser Centered across Chrome, Safari, Firefox, Edge
+   ========================================================================== */
+.wppoppop-ribbon-bar .wppoppop-tool-item,
+.wppoppop-ribbon-bar .wppoppop-ribbon-tool,
+.wppoppop-tool-item,
+.wppoppop-ribbon-tool {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    position: relative !important;
+}
+
+.wppoppop-ribbon-bar .wppoppop-tool-item .dashicons,
+.wppoppop-ribbon-bar .wppoppop-ribbon-tool .dashicons,
+.wppoppop-tool-item .dashicons,
+.wppoppop-ribbon-tool .dashicons {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    pointer-events: none !important;
+}
+
+.wppoppop-ribbon-bar .wppoppop-tool-item .dashicons::before,
+.wppoppop-ribbon-bar .wppoppop-ribbon-tool .dashicons::before,
+.wppoppop-tool-item .dashicons::before,
+.wppoppop-ribbon-tool .dashicons::before {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 18px !important;
+    line-height: 18px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Guard against residual text labels rendering in toolbar */
+.wppoppop-ribbon-bar .wppoppop-tool-item span:not(.dashicons),
+.wppoppop-ribbon-bar .wppoppop-ribbon-tool span:not(.dashicons),
+.wppoppop-tool-item span:not(.dashicons),
+.wppoppop-ribbon-tool span:not(.dashicons) {
+    display: none !important;
+}
