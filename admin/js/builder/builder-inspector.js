@@ -220,6 +220,27 @@
         },
 
         bindInputs: function() {
+            // Play Active Element Animation on Demand
+            $(document).on('click', '#prop-anim-play', function(e) {
+                e.preventDefault();
+                var el = (typeof getActiveEl === 'function') ? getActiveEl() : null;
+                if (!el && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state.activeId) {
+                    var elements = window.WpPopPopBuilderCanvas ? window.WpPopPopBuilderCanvas.getActiveElements() : [];
+                    el = elements.find(function(item) { return String(item.id) === String(window.WpPopPopBuilderCore.state.activeId); });
+                }
+                if (!el) return;
+
+                var app = $('#prop-anim-appearance').val() || $('#prop-anim-effect').val() || el.anim_appearance || el.animEffect || 'none';
+                var dur = parseInt($('#prop-anim-duration').val(), 10);
+                if (isNaN(dur) || dur < 0) dur = el.anim_duration || 1000;
+                var del = parseInt($('#prop-anim-delay').val(), 10);
+                if (isNaN(del) || del < 0) del = el.anim_delay || 0;
+
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.playAnimation === 'function') {
+                    window.WpPopPopBuilderCanvas.playAnimation(el.id, app, dur, del);
+                }
+            });
+
             // Two-Way Real-Time Binding for Element Animation Suite
             $('#prop-anim-appearance, #prop-anim-effect, #prop-anim-duration, #prop-anim-delay, #prop-anim-disappearance')
                 .off('input.elemAnim change.elemAnim')

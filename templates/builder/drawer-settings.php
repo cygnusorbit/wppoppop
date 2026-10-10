@@ -89,16 +89,19 @@ if (!defined('ABSPATH')) {
                         </div>
 
                         <!-- ANIMATE.STYLE ANIMATION SECTION -->
+                        <!-- ANIMATION SECTION -->
                         <div class="wppoppop-anim-setting-wrap" style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;">
                             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                                 <div style="display:flex;align-items:center;gap:6px;">
                                     <span style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">ANIMATION</span>
-                                    <a href="https://animate.style/" target="_blank" rel="noopener" class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#2563eb;text-decoration:none;" title="Powered by Animate.css (https://animate.style/)"></a>
+                                    <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#64748b;cursor:help;" title="Configure appearance entrance and disappearance exit animations for this canvas."></span>
                                 </div>
-                                <span style="font-size:10px;font-weight:700;background:#eff6ff;color:#2563eb;padding:1px 6px;border-radius:4px;border:1px solid #bfdbfe;">Animate.css</span>
+                                <button type="button" id="set-canvas-anim-play" class="button wppoppop-anim-play-btn" title="Play Canvas Animation" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;font-size:11px;font-weight:600;color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;line-height:1.4;height:24px;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="pointer-events:none;"><polygon points="6,4 20,12 6,20"/></svg>
+                                    <span>Play</span>
+                                </button>
                             </div>
 
-                            <!-- Appearance Dropdown (Animate.css Entrances) -->
                             <div style="margin-bottom:10px;">
                                 <select id="set-canvas-anim-appearance" class="widefat" style="font-size:12px;height:34px;">
                                     <option value="none">None</option>

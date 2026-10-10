@@ -239,7 +239,13 @@ if (!defined('ABSPATH')) {
                             <span style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">ANIMATION</span>
                             <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#2563eb;cursor:help;display:inline-flex;align-items:center;justify-content:center;" title="Configure appearance entrance and disappearance exit animations for this element."></span>
                         </div>
-                        <a href="https://animate.style/" target="_blank" rel="noopener noreferrer" class="wppoppop-anim-badge-link" style="display:inline-flex;align-items:center;padding:2px 8px;font-size:11px;font-weight:600;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;text-decoration:none;line-height:1.4;">Animate.css</a>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <button type="button" id="prop-anim-play" class="button wppoppop-anim-play-btn" title="Play Element Animation" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;font-size:11px;font-weight:600;color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;line-height:1.4;height:24px;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="pointer-events:none;"><polygon points="6,4 20,12 6,20"/></svg>
+                                <span>Play</span>
+                            </button>
+                            <a href="https://animate.style/" target="_blank" rel="noopener noreferrer" class="wppoppop-anim-badge-link" style="display:inline-flex;align-items:center;padding:2px 8px;font-size:11px;font-weight:600;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;text-decoration:none;line-height:1.4;height:24px;box-sizing:border-box;">Animate.css</a>
+                        </div>
                     </div>
 
                     <!-- Appearance Dropdown -->

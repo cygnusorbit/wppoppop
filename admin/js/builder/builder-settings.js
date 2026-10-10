@@ -219,6 +219,14 @@
         },
 
         bindCanvasMetaInputs: function() {
+            // Play Canvas Animation on Demand
+            $(document).on('click', '#set-canvas-anim-play', function(e) {
+                e.preventDefault();
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.playCanvasEntranceAnimation === 'function') {
+                    window.WpPopPopBuilderCanvas.playCanvasEntranceAnimation();
+                }
+            });
+
             var self = this;
 
             // Two-Way Toggle for Canvas Transparency
