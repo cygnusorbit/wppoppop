@@ -321,6 +321,14 @@
                 self.syncToCanvas();
             });
 
+            $(document).on('change', '#prop-anim-disappearance', function() {
+                var el = self.getActiveElement();
+                if (!el) return;
+                el.anim_disappearance = $(this).val();
+                el.exitAnimation = el.anim_disappearance;
+                if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
+            });
+
             $(document).on('click', '#prop-anim-play-btn', function(e) {
                 e.preventDefault();
                 var el = self.getActiveElement();

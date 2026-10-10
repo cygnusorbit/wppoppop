@@ -140,20 +140,21 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <!-- =================== TAB 2: STYLE =================== -->
+                <!-- =================== TAB 2: STYLE =================== -->
         <div id="insp-tab-style" class="wppoppop-tab-pane" style="display:none;">
             <div style="display:flex;flex-direction:column;gap:12px;">
                 
-                <!-- Typography & Spacing Section -->
+                <!-- Section 1: Typography & Spacing -->
                 <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">TYPOGRAPHY &amp; SPACING</div>
+                
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                     <div>
-                        <label for="prop-font-size" style="font-size:10px;font-weight:700;color:#94a3b8;">SIZE (PX)</label>
-                        <input type="number" id="prop-font-size" class="wppoppop-input" value="14" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <label for="prop-font-size" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">SIZE (PX)</label>
+                        <input type="number" id="prop-font-size" class="wppoppop-input" value="14" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label for="prop-font-weight" style="font-size:10px;font-weight:700;color:#94a3b8;">WEIGHT</label>
-                        <select id="prop-font-weight" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <label for="prop-font-weight" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">WEIGHT</label>
+                        <select id="prop-font-weight" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                             <option value="400">Regular (400)</option>
                             <option value="600">Semi-Bold (600)</option>
                             <option value="700">Bold (700)</option>
@@ -161,271 +162,123 @@ if (!defined('ABSPATH')) {
                         </select>
                     </div>
                     <div>
-                        <label for="prop-line-height" style="font-size:10px;font-weight:700;color:#94a3b8;">LINE HEIGHT</label>
-                        <input type="number" id="prop-line-height" class="wppoppop-input" step="0.1" value="1.4" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <label for="prop-line-height" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">LINE HEIGHT</label>
+                        <input type="number" id="prop-line-height" class="wppoppop-input" step="0.1" value="1.4" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label for="prop-letter-spacing" style="font-size:10px;font-weight:700;color:#94a3b8;">SPACING (PX)</label>
-                        <input type="number" id="prop-letter-spacing" class="wppoppop-input" step="0.5" value="0" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <label for="prop-letter-spacing" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">SPACING (PX)</label>
+                        <input type="number" id="prop-letter-spacing" class="wppoppop-input" step="0.5" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
-                                                    <!-- Text Alignment (Dedicated Full-Width Row) -->
-                <div style="margin-top:8px;">
-                    <label style="display:block;font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">TEXT ALIGN</label>
-                    <select id="prop-text-align" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;border-radius:4px;font-size:11px;padding:6px 8px;box-sizing:border-box;">
+                </div>
+
+                <!-- Text Alignment (Dedicated Full-Width Row) -->
+                <div>
+                    <label for="prop-text-align" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">TEXT ALIGN</label>
+                    <select id="prop-text-align" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                         <option value="left">Left</option>
                         <option value="center">Center</option>
                         <option value="right">Right</option>
                     </select>
                 </div>
 
-                <!-- 4-Way Directional Padding (Dedicated New Full-Width Row) -->
-                <div id="wppoppop-padding-control-wrap" style="margin-top:10px;">
+                <!-- 4-Way Directional Padding (Dedicated Full-Width Row) -->
+                <div id="wppoppop-padding-control-wrap">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                        <label style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin:0;">PADDING (PX)</label>
+                        <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:0;">PADDING (PX)</label>
                         <span style="font-size:9px;color:#64748b;font-weight:600;">TOP · RIGHT · BOTTOM · LEFT</span>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
                         <div>
                             <label for="prop-padding-top" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">TOP</label>
-                            <input type="number" id="prop-padding-top" value="0" min="0" max="250" class="wppoppop-input wppoppop-pad-field" data-dir="top" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;border-radius:4px;font-size:11px;padding:5px 2px;text-align:center;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-top" class="wppoppop-input" min="0" max="250" value="0" data-dir="top" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
                             <label for="prop-padding-right" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">RIGHT</label>
-                            <input type="number" id="prop-padding-right" value="0" min="0" max="250" class="wppoppop-input wppoppop-pad-field" data-dir="right" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;border-radius:4px;font-size:11px;padding:5px 2px;text-align:center;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-right" class="wppoppop-input" min="0" max="250" value="0" data-dir="right" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
                             <label for="prop-padding-bottom" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">BOTTOM</label>
-                            <input type="number" id="prop-padding-bottom" value="0" min="0" max="250" class="wppoppop-input wppoppop-pad-field" data-dir="bottom" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;border-radius:4px;font-size:11px;padding:5px 2px;text-align:center;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-bottom" class="wppoppop-input" min="0" max="250" value="0" data-dir="bottom" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
                             <label for="prop-padding-left" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">LEFT</label>
-                            <input type="number" id="prop-padding-left" value="0" min="0" max="250" class="wppoppop-input wppoppop-pad-field" data-dir="left" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;border-radius:4px;font-size:11px;padding:5px 2px;text-align:center;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-left" class="wppoppop-input" min="0" max="250" value="0" data-dir="left" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                     </div>
                     <input type="hidden" id="prop-padding" value="0">
                 </div>
 
-                <!-- Autonomous Individual Directional Padding Engine -->
-                <script>
-                (function() {
-                    function initWpPopPopPaddingEngine() {
-                        var topInput = document.getElementById('prop-padding-top');
-                        var rightInput = document.getElementById('prop-padding-right');
-                        var bottomInput = document.getElementById('prop-padding-bottom');
-                        var leftInput = document.getElementById('prop-padding-left');
-                        var hiddenInput = document.getElementById('prop-padding');
-                        if (!topInput || !rightInput || !bottomInput || !leftInput) return;
-
-                        function applySingleDirectionPadding(dir, val) {
-                            var intVal = parseInt(val, 10) || 0;
-                            var topVal = parseInt(topInput.value, 10) || 0;
-                            var rightVal = parseInt(rightInput.value, 10) || 0;
-                            var bottomVal = parseInt(bottomInput.value, 10) || 0;
-                            var leftVal = parseInt(leftInput.value, 10) || 0;
-
-                            if (hiddenInput) {
-                                hiddenInput.value = topVal;
-                            }
-
-                            if (!window.jQuery) return;
-                            var $ = window.jQuery;
-                            var $target = $('.wppoppop-canvas-item.wppoppop-selected, .wppoppop-canvas-item.is-selected');
-                            if (!$target.length) return;
-
-                            var elType = $target.attr('data-type') || '';
-                            var isFormControl = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf(elType) !== -1;
-                            var $innerControl = $target.find('input, button, select, textarea, a, .wppoppop-btn').first();
-
-                            var cssProp = 'padding-' + dir;
-                            if (isFormControl && $innerControl.length) {
-                                $target.css({ 'padding': '0px', 'box-sizing': 'border-box' });
-                                $innerControl.css(cssProp, intVal + 'px');
-                                $innerControl.css('box-sizing', 'border-box');
-                            } else {
-                                $target.css(cssProp, intVal + 'px');
-                                $target.css('box-sizing', 'border-box');
-                            }
-
-                            // Update active element in-memory model
-                            var elId = $target.attr('data-id');
-                            if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) {
-                                var curCanvas = window.WpPopPopBuilderCore.state.currentCanvas || 1;
-                                var elements = window.WpPopPopBuilderCore.state.canvases[curCanvas] || [];
-                                var model = elements.find(function(item) { return item.id === elId; });
-                                if (model) {
-                                    if (dir === 'top') model.paddingTop = intVal;
-                                    if (dir === 'right') model.paddingRight = intVal;
-                                    if (dir === 'bottom') model.paddingBottom = intVal;
-                                    if (dir === 'left') model.paddingLeft = intVal;
-                                    model.padding = model.paddingTop || 0;
-                                }
-                            }
-                        }
-
-                        [topInput, rightInput, bottomInput, leftInput].forEach(function(input) {
-                            var dir = input.getAttribute('data-dir');
-                            ['input', 'change'].forEach(function(evName) {
-                                input.addEventListener(evName, function() {
-                                    applySingleDirectionPadding(dir, this.value);
-                                });
-                            });
-                        });
-
-                        // Rehydrate each direction individually when element selected
-                        if (window.jQuery) {
-                            window.jQuery(document).on('click', '.wppoppop-canvas-item', function() {
-                                var $el = window.jQuery(this);
-                                setTimeout(function() {
-                                    var $inner = $el.find('input, button, select, textarea, a, .wppoppop-btn').first();
-                                    var isControl = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf($el.attr('data-type') || '') !== -1;
-                                    var src = (isControl && $inner.length) ? $inner : $el;
-
-                                    topInput.value = parseInt(src.css('padding-top'), 10) || 0;
-                                    rightInput.value = parseInt(src.css('padding-right'), 10) || 0;
-                                    bottomInput.value = parseInt(src.css('padding-bottom'), 10) || 0;
-                                    leftInput.value = parseInt(src.css('padding-left'), 10) || 0;
-                                    if (hiddenInput) hiddenInput.value = topInput.value;
-                                }, 50);
-                            });
-                        }
-                    }
-
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', initWpPopPopPaddingEngine);
-                    } else {
-                        initWpPopPopPaddingEngine();
-                    }
-                })();
-                </script>
-
-                <!-- Live Two-Way Canvas Padding Synchronization Engine -->
-                <script>
-                (function() {
-                    function initWpPopPopPaddingEngine() {
-                        var topEl = document.getElementById('prop-padding-top');
-                        var rightEl = document.getElementById('prop-padding-right');
-                        var bottomEl = document.getElementById('prop-padding-bottom');
-                        var leftEl = document.getElementById('prop-padding-left');
-                        var masterEl = document.getElementById('prop-padding');
-                        if (!topEl || !rightEl || !bottomEl || !leftEl || !masterEl) return;
-
-                        function applyPaddingToCanvas() {
-                            var t = parseInt(topEl.value, 10) || 0;
-                            var r = parseInt(rightEl.value, 10) || 0;
-                            var b = parseInt(bottomEl.value, 10) || 0;
-                            var l = parseInt(leftEl.value, 10) || 0;
-
-                            // Sync scalar value to backward-compatible hidden input
-                            masterEl.value = t;
-                            masterEl.dispatchEvent(new Event('input', { bubbles: true }));
-                            masterEl.dispatchEvent(new Event('change', { bubbles: true }));
-
-                            if (window.jQuery) {
-                                var $ = window.jQuery;
-                                $(masterEl).trigger('input').trigger('change');
-
-                                var $target = $('.wppoppop-canvas-item.wppoppop-selected, .wppoppop-canvas-item.is-selected');
-                                if ($target.length) {
-                                    var elType = $target.attr('data-type') || '';
-                                    var padShorthand = t + 'px ' + r + 'px ' + b + 'px ' + l + 'px';
-
-                                    // Form controls and interactive buttons apply padding to inner input/button element
-                                    var isFormControl = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf(elType) !== -1;
-                                    var $innerControl = $target.find('input, button, select, textarea, a, .wppoppop-btn').first();
-
-                                    if (isFormControl && $innerControl.length) {
-                                        $target.css({ 'padding': '0px', 'box-sizing': 'border-box' });
-                                        $innerControl.css({ 'padding': padShorthand, 'box-sizing': 'border-box' });
-                                    } else {
-                                        $target.css({
-                                            'padding-top': t + 'px',
-                                            'padding-right': r + 'px',
-                                            'padding-bottom': b + 'px',
-                                            'padding-left': l + 'px',
-                                            'box-sizing': 'border-box'
-                                        });
-                                    }
-
-                                    // Update active memory element model if present
-                                    var elId = $target.attr('data-id');
-                                    if (window.wppoppop_builder && Array.isArray(window.wppoppop_builder.elements)) {
-                                        var model = window.wppoppop_builder.elements.find(function(item) { return item.id === elId; });
-                                        if (model) {
-                                            model.paddingTop = t;
-                                            model.paddingRight = r;
-                                            model.paddingBottom = b;
-                                            model.paddingLeft = l;
-                                            model.padding = t;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        [topEl, rightEl, bottomEl, leftEl].forEach(function(input) {
-                            input.addEventListener('input', applyPaddingToCanvas);
-                            input.addEventListener('change', applyPaddingToCanvas);
-                        });
-
-                        // Rehydrate directional inputs whenever an element is selected on canvas
-                        if (window.jQuery) {
-                            window.jQuery(document).on('click', '.wppoppop-canvas-item', function() {
-                                var $el = window.jQuery(this);
-                                setTimeout(function() {
-                                    var $inner = $el.find('input, button, select, textarea, a, .wppoppop-btn').first();
-                                    var source = ($inner.length && ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'date', 'select'].indexOf($el.attr('data-type') || '') !== -1) ? $inner : $el;
-                                    
-                                    topEl.value = parseInt(source.css('padding-top'), 10) || 0;
-                                    rightEl.value = parseInt(source.css('padding-right'), 10) || 0;
-                                    bottomEl.value = parseInt(source.css('padding-bottom'), 10) || 0;
-                                    leftEl.value = parseInt(source.css('padding-left'), 10) || 0;
-                                    masterEl.value = topEl.value;
-                                }, 60);
-                            });
-                        }
-                    }
-
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', initWpPopPopPaddingEngine);
-                    } else {
-                        initWpPopPopPaddingEngine();
-                    }
-                })();
-                </script>
-
-                <!-- Colors Section -->
+                <!-- Section 2: Colors (Full-Width with 2-Column Inputs) -->
                 <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">COLORS</div>
-                <div class="wppoppop-prop-group">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                        <label for="prop-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">TEXT COLOR</label>
-                        <button type="button" id="prop-text-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Text" aria-label="Transparent Text"></button>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div class="wppoppop-prop-group">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                            <label for="prop-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">TEXT COLOR</label>
+                            <button type="button" id="prop-text-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Text" aria-label="Transparent Text" style="width:16px;height:16px;border-radius:2px;border:1px solid #475569;background:repeating-conic-gradient(#cbd5e1 0% 25%, #fff 0% 50%) 50%/8px 8px;cursor:pointer;"></button>
+                        </div>
+                        <input type="color" id="prop-color" class="wppoppop-input" value="#ffffff" style="width:100%;height:32px;padding:2px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;cursor:pointer;box-sizing:border-box;">
                     </div>
-                    <input type="color" id="prop-color" class="wppoppop-input" value="#ffffff" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                    <div class="wppoppop-prop-group">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                            <label for="prop-bg-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">BG COLOR</label>
+                            <button type="button" id="prop-bg-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Background" aria-label="Transparent Background" style="width:16px;height:16px;border-radius:2px;border:1px solid #475569;background:repeating-conic-gradient(#cbd5e1 0% 25%, #fff 0% 50%) 50%/8px 8px;cursor:pointer;"></button>
+                        </div>
+                        <input type="color" id="prop-bg-color" class="wppoppop-input" value="#2563eb" style="width:100%;height:32px;padding:2px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                    </div>
                 </div>
 
-                <div class="wppoppop-prop-group">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                        <label for="prop-bg-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">BG COLOR</label>
-                        <button type="button" id="prop-bg-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Background" aria-label="Transparent Background"></button>
-                    </div>
-                    <input type="color" id="prop-bg-color" class="wppoppop-input" value="#2563eb" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
-                </div>
-
-                <!-- Entrance Animation Section -->
+                <!-- Section 3: Entrance Animation (Complete with Duration, Delay & Disappearance) -->
                 <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">ENTRANCE ANIMATION</div>
-                <div style="display:flex;gap:8px;align-items:center;">
-                    <select id="prop-animation" class="wppoppop-input" style="flex:1;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
+                <div>
+                    <label for="prop-animation" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">APPEARANCE EFFECT</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <select id="prop-animation" class="wppoppop-input" style="flex:1;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
+                            <option value="none">None</option>
+                            <option value="fade">Fade In</option>
+                            <option value="bounceIn">Bounce In</option>
+                            <option value="bounceInLeft">Bounce In Left</option>
+                            <option value="bounce">Bounce</option>
+                            <option value="tada">Tada</option>
+                            <option value="rubberBand">RubberBand</option>
+                            <option value="slideDown">Slide Down</option>
+                            <option value="slideUp">Slide Up</option>
+                            <option value="slideLeft">Slide Left</option>
+                            <option value="slideRight">Slide Right</option>
+                            <option value="zoomIn">Zoom In</option>
+                            <option value="flipIn">Flip In</option>
+                            <option value="pulse">Pulse</option>
+                            <option value="shake">Shake</option>
+                        </select>
+                        <button type="button" id="prop-anim-play-btn" style="background:#2563eb;border:none;color:#ffffff;padding:6px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;" title="Replay Animation">&#9654; Play</button>
+                    </div>
+                </div>
+
+                <!-- Missing Settings: Duration & Delay Row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div>
+                        <label for="prop-anim-duration" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">DURATION (MS)</label>
+                        <input type="number" id="prop-anim-duration" class="wppoppop-input" value="1000" step="50" min="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label for="prop-anim-delay" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">START DELAY (MS)</label>
+                        <input type="number" id="prop-anim-delay" class="wppoppop-input" value="0" step="50" min="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
+                </div>
+
+                <!-- Missing Setting: Disappearance / Exit -->
+                <div>
+                    <label for="prop-anim-disappearance" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">DISAPPEARANCE / EXIT</label>
+                    <select id="prop-anim-disappearance" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
                         <option value="none">None</option>
-                        <option value="fade">Fade In</option>
-                        <option value="bounce">Bounce</option>
-                        <option value="tada">Tada</option>
-                        <option value="rubberBand">RubberBand</option>
+                        <option value="fade">Fade</option>
                         <option value="slideDown">Slide Down</option>
                         <option value="slideUp">Slide Up</option>
-                        <option value="zoomIn">Zoom In</option>
+                        <option value="slideLeft">Slide Left</option>
+                        <option value="slideRight">Slide Right</option>
+                        <option value="zoomOut">Zoom Out</option>
                     </select>
-                    <button type="button" id="prop-anim-play-btn" style="background:#2563eb;border:none;color:#ffffff;padding:6px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" title="Replay Animation">▶ Play</button>
                 </div>
+
             </div>
         </div>
 
