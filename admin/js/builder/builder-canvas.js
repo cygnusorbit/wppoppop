@@ -1,13 +1,12 @@
 /**
  * WpPopPop Visual Builder: Canvas Stage Engine
- * Direct-Pointer Resizing, Live Preview & Full 26-Element Stage Rendering
+ * Direct-Pointer Corner Drag Resizing, 26 Elements & Scalable SVG Vector Shape Renderer
  */
 (function($) {
     'use strict';
 
     window.WpPopPopBuilderCanvas = {
         isPreview: false,
-        audioCtx: null,
 
         init: function() {
             this.bindCanvasCornerResize();
@@ -16,21 +15,114 @@
             this.bindPreviewModeControls();
         },
 
-        bindCanvasCornerResize: function() {
+        bindPreviewModeControls: function() {
             var self = this;
-            var $box = $('#wppoppop-canvas-box');
-            var handleEl = document.getElementById('wppoppop-canvas-corner-handle');
-            if (!handleEl) return;
 
-            var onPointerDown = function(e) {
-                if (self.isPreview) return;
+            $('#wppoppop-btn-preview').on('click', function(e) {
+                e.preventDefault();
+                if (self.isPreview) {
+                    self.exitPreviewMode();
+                } else {
+                    self.enterPreviewMode();
+                }
+            });
+
+            $(document).on('click', '#wppoppop-preview-exit-btn', function(e) {
+                e.preventDefault();
+                self.exitPreviewMode();
+            });
+
+            $(document).on('click', '#wppoppop-preview-replay-btn', function(e) {
+                e.preventDefault();
+                self.playCanvasEntranceAnimation();
+            });
+        },
+
+        enterPreviewMode: function() {
+            this.isPreview = true;
+            $('.wppoppop-builder-workspace').addClass('is-preview-mode');
+            $('#wppoppop-btn-preview').addClass('active').html('<span class="dashicons dashicons-no" style="font-size:16px;width:16px;height:16px;margin-top:2px;"></span> Exit Preview');
+
+            if (window.WpPopPopBuilderInspector) window.WpPopPopBuilderInspector.close();
+            if (window.WpPopPopBuilderSettings) window.WpPopPopBuilderSettings.closeDrawer();
+
+            if ($('#wppoppop-workspace-preview-bar').length === 0) {
+                var $bar = $('<div id="wppoppop-workspace-preview-bar" style="position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#0f172a;border:1px solid #334155;border-radius:24px;padding:6px 14px;display:flex;align-items:center;gap:10px;z-index:999999;box-shadow:0 10px 25px rgba(0,0,0,0.5);color:#f8fafc;font-size:12px;font-weight:700;">' +
+                    '<span style="color:#10b981;display:flex;align-items:center;gap:4px;">● LIVE PREVIEW</span>' +
+                    '<button type="button" id="wppoppop-preview-replay-btn" style="background:#1e293b;border:1px solid #475569;color:#e2e8f0;padding:3px 10px;border-radius:12px;font-size:11px;cursor:pointer;">Replay Animation</button>' +
+                    '<button type="button" id="wppoppop-preview-exit-btn" style="background:#dc2626;border:none;color:#ffffff;padding:3px 10px;border-radius:12px;font-size:11px;cursor:pointer;">Exit Preview</button>' +
+                    '</div>');
+                $('body').append($bar);
+            } else {
+                $('#wppoppop-workspace-preview-bar').show();
+            }
+
+            this.playCanvasEntranceAnimation();
+            this.initActivePreviewWidgets();
+        },
+
+        exitPreviewMode: function() {
+            this.isPreview = false;
+            $('.wppoppop-builder-workspace').removeClass('is-preview-mode');
+            $('#wppoppop-btn-preview').removeClass('active').html('<span class="dashicons dashicons-visibility" style="font-size:16px;width:16px;height:16px;margin-top:2px;"></span> Preview');
+            $('#wppoppop-workspace-preview-bar').hide();
+
+            var $box = $('#wppoppop-canvas-box');
+            $box.removeClass('anim-fade anim-slideDown anim-slideUp anim-slideLeft anim-slideRight anim-zoomIn anim-bounceIn');
+
+            if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.applyActiveCanvasBackground();
+            }
+            this.renderCanvas();
+        },
+
+        playCanvasEntranceAnimation: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core) return;
+            var cur = core.state.currentCanvas || 1;
+            var meta = core.state.canvasMeta[cur] || {};
+            var $box = $('#wppoppop-canvas-box');
+
+            var anim = meta.anim_appearance || 'fade';
+            var dur = (meta.anim_duration !== undefined ? meta.anim_duration : 1000) / 1000;
+            var del = (meta.anim_delay !== undefined ? meta.anim_delay : 0) / 1000;
+
+            $box.removeClass('anim-fade anim-slideDown anim-slideUp anim-slideLeft anim-slideRight anim-zoomIn anim-bounceIn');
+
+            if (anim !== 'none') {
+                $box.css({
+                    animationDuration: dur + 's',
+                    animationDelay: del + 's',
+                    animationFillMode: 'both'
+                }).addClass('anim-' + anim);
+            }
+        },
+
+        initActivePreviewWidgets: function() {
+            var self = this;
+            var core = window.WpPopPopBuilderCore;
+
+            $('#wppoppop-canvas-elements-root').off('click.previewStep').on('click.previewStep', '.wppoppop-next-canvas-btn, .wppoppop-next-screen-btn, .wppoppop-next-step, [data-type="step_btn"]', function(e) {
+                if (!self.isPreview) return;
                 e.preventDefault();
                 e.stopPropagation();
 
-                var pointerId = e.pointerId;
-                if (handleEl.setPointerCapture && pointerId !== undefined) {
-                    try { handleEl.setPointerCapture(pointerId); } catch(err) {}
+                var target = parseInt($(this).data('goto-canvas') || $(this).data('goto-screen') || $(this).data('goto'), 10) || 2;
+                if (core) {
+                    core.switchCanvas(target);
+                    self.playCanvasEntranceAnimation();
                 }
+            });
+        },
+
+        bindCanvasCornerResize: function() {
+            var self = this;
+            var $box = $('#wppoppop-canvas-box');
+            var $handle = $('#wppoppop-canvas-corner-handle');
+
+            $handle.off('mousedown.canvasCorner pointerdown.canvasCorner').on('mousedown.canvasCorner pointerdown.canvasCorner', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
                 var startX = e.clientX;
                 var startY = e.clientY;
@@ -42,7 +134,7 @@
                 $('body').addClass('wppoppop-resizing-canvas');
                 self.updateSizeBadge(startW, startH);
 
-                var onPointerMove = function(moveEvent) {
+                $(document).on('mousemove.canvasCorner pointermove.canvasCorner', function(moveEvent) {
                     moveEvent.preventDefault();
                     var dx = moveEvent.clientX - startX;
                     var dy = moveEvent.clientY - startY;
@@ -60,40 +152,18 @@
 
                     $('#set-canvas-width, #quick-box-width').val(newW);
                     $('#set-canvas-height, #quick-box-height').val(newH);
-                };
+                });
 
-                var onPointerUp = function(upEvent) {
-                    if (handleEl.releasePointerCapture && pointerId !== undefined) {
-                        try { handleEl.releasePointerCapture(pointerId); } catch(err) {}
-                    }
-
-                    window.removeEventListener('pointermove', onPointerMove);
-                    window.removeEventListener('pointerup', onPointerUp);
-                    window.removeEventListener('pointercancel', onPointerUp);
-
-                    window.removeEventListener('mousemove', onPointerMove);
-                    window.removeEventListener('mouseup', onPointerUp);
-
+                $(document).one('mouseup.canvasCorner pointerup.canvasCorner', function() {
+                    $(document).off('mousemove.canvasCorner pointermove.canvasCorner');
                     $('body').removeClass('wppoppop-resizing-canvas');
                     $('#wppoppop-canvas-size-badge').fadeOut(200);
 
                     if (core) {
                         core.pushHistory();
                     }
-                };
-
-                window.addEventListener('pointermove', onPointerMove, { passive: false });
-                window.addEventListener('pointerup', onPointerUp);
-                window.addEventListener('pointercancel', onPointerUp);
-
-                window.addEventListener('mousemove', onPointerMove, { passive: false });
-                window.addEventListener('mouseup', onPointerUp);
-            };
-
-            handleEl.removeEventListener('pointerdown', onPointerDown);
-            handleEl.addEventListener('pointerdown', onPointerDown);
-            handleEl.removeEventListener('mousedown', onPointerDown);
-            handleEl.addEventListener('mousedown', onPointerDown);
+                });
+            });
         },
 
         updateSizeBadge: function(w, h) {
@@ -119,12 +189,10 @@
             elements.forEach(function(el) {
                 var $node = self.buildElementNode(el);
                 $root.append($node);
-                self.attachInteractions($node, el);
+                if (!self.isPreview) {
+                    self.attachInteractions($node, el);
+                }
             });
-
-            if (this.isPreview) {
-                this.initActivePreviewWidgets();
-            }
         },
 
         buildElementNode: function(el) {
@@ -139,344 +207,186 @@
                     height: (el.height || 42) + 'px',
                     zIndex: el.zIndex || 10,
                     borderRadius: (el.borderRadius || 4) + 'px',
-                    opacity: el.opacity !== undefined ? el.opacity : 1
+                    opacity: el.opacity || 1,
+                    display: el.hidden ? 'none' : 'block'
                 });
 
             if (el.fontFamily && el.fontFamily !== 'inherit') $div.css('fontFamily', el.fontFamily);
             if (el.fontSize) $div.css('fontSize', el.fontSize + 'px');
             if (el.fontWeight) $div.css('fontWeight', el.fontWeight);
-            if (el.textAlign) $div.css('textAlign', el.textAlign);
-            var elLh = (el.lineHeight !== undefined && el.lineHeight !== '') ? el.lineHeight : (el.line_height !== undefined && el.line_height !== '' ? el.line_height : '');
-            var elLs = (el.letterSpacing !== undefined && el.letterSpacing !== '') ? el.letterSpacing : (el.letter_spacing !== undefined && el.letter_spacing !== '' ? el.letter_spacing : '');
-            if (elLh !== '') $div.css('lineHeight', elLh);
-            if (elLs !== '') $div.css('letterSpacing', elLs + 'px');
-
-            if (el.padding) $div.css('padding', el.padding + 'px');
+            if (el.lineHeight) $div.css('lineHeight', el.lineHeight);
+            if (el.letterSpacing) $div.css('letterSpacing', el.letterSpacing + 'px');
             if (el.color) $div.css('color', el.color);
             if (el.bgColor) $div.css('backgroundColor', el.bgColor);
 
-            if (el.type !== 'shape') {
-                var bStyle = el.borderStyle || 'solid';
-                if (el.borderWidth !== undefined && el.borderWidth !== null) {
-                    var bw = parseInt(el.borderWidth, 10);
-                    if (bw > 0 || bStyle !== 'none') {
-                        $div.css({
-                            borderStyle: bStyle,
-                            borderWidth: bw + 'px',
-                            borderColor: el.borderColor || '#cbd5e1'
-                        });
-                    }
-                } else if (el.borderColor === 'transparent') {
-                    $div.css('borderColor', 'transparent');
-                }
-            }
+            $div.html(this.getInnerMarkup(el));
 
-            if (el.boxShadow && el.boxShadow !== 'none') $div.css('boxShadow', el.boxShadow);
-
-            var innerHtml = this.getInnerMarkup(el);
-            $div.html(innerHtml);
-
-            var activeId = window.WpPopPopBuilderCore ? window.WpPopPopBuilderCore.state.activeId : null;
-            if (!this.isPreview && activeId !== null && String(activeId) === String(el.id)) {
+            if (!this.isPreview && window.WpPopPopBuilderCore.state.activeId === el.id) {
                 $div.addClass('wppoppop-selected');
             }
 
             return $div;
         },
 
+        renderShapeSvg: function(preset, fill, stroke, strokeWidth, rotate) {
+            preset = preset || 'circle';
+            fill = fill || '#3b82f6';
+            stroke = stroke || '#1d4ed8';
+            var sw = (strokeWidth !== undefined) ? parseInt(strokeWidth, 10) : 2;
+            var rot = parseInt(rotate, 10) || 0;
+
+            var sAttr = (sw > 0 && stroke !== 'transparent') ? 'stroke="' + stroke + '" stroke-width="' + sw + '" vector-effect="non-scaling-stroke"' : 'stroke="none"';
+            var fAttr = (fill !== 'transparent') ? 'fill="' + fill + '"' : 'fill="transparent"';
+            var transformAttr = rot ? ' transform="rotate(' + rot + ' 50 50)"' : '';
+
+            var geom = '';
+            switch(preset) {
+                case 'square':
+                    geom = '<rect x="5" y="5" width="90" height="90" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
+                    break;
+                case 'rounded_rect':
+                case 'rounded_rectangle':
+                    geom = '<rect x="5" y="5" width="90" height="90" rx="15" ry="15" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
+                    break;
+                case 'star':
+                    geom = '<polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'triangle':
+                    geom = '<polygon points="50,8 92,90 8,90" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'diamond':
+                    geom = '<polygon points="50,5 92,50 50,95 8,50" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'heart':
+                    geom = '<path d="M50 82 C50 82 12 58 12 33 C12 18 24 10 36 10 C44 10 48 15 50 18 C52 15 56 10 64 10 C76 10 88 18 88 33 C88 58 50 82 50 82 Z" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'hexagon':
+                    geom = '<polygon points="50,5 89,27 89,73 50,95 11,73 11,27" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'octagon':
+                    geom = '<polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'shield':
+                    geom = '<path d="M50 5 L88 18 V50 C88 72 70 88 50 95 C30 88 12 72 12 50 V18 Z" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'cross':
+                    geom = '<polygon points="35,5 65,5 65,35 95,35 95,65 65,65 65,95 35,95 35,65 5,65 5,35 35,35" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
+                    break;
+                case 'circle':
+                default:
+                    geom = '<circle cx="50" cy="50" r="45" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
+                    break;
+            }
+
+            return '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible;">' + geom + '</svg>';
+        },
+
         getInnerMarkup: function(el) {
             var label = el.content || el.name || 'Element';
-            var bgStyle = el.bgColor === 'transparent' ? 'background:transparent;' : (el.bgColor ? 'background:' + el.bgColor + ';' : '');
-            var textStyle = el.color ? 'color:' + el.color + ';' : '';
-            var alignStyle = el.textAlign ? 'text-align:' + el.textAlign + ';' : '';
-            var weightStyle = el.fontWeight ? 'font-weight:' + el.fontWeight + ';' : '';
-            var justifyVal = el.textAlign === 'center' ? 'center' : (el.textAlign === 'right' ? 'flex-end' : 'flex-start');
-            var type = (el.type || 'text').toString().toLowerCase().trim();
-
-            
-            var elLh = (el.lineHeight !== undefined && el.lineHeight !== '') ? el.lineHeight : (el.line_height !== undefined && el.line_height !== '' ? el.line_height : '');
-            var elLs = (el.letterSpacing !== undefined && el.letterSpacing !== '') ? el.letterSpacing : (el.letter_spacing !== undefined && el.letter_spacing !== '' ? el.letter_spacing : '');
-            var lineStyle = (elLh !== '') ? 'line-height:' + elLh + ';' : '';
-            var letterStyle = (elLs !== '') ? 'letter-spacing:' + elLs + 'px;' : '';
-            var typoStyles = lineStyle + letterStyle;
-switch (type) {
-                case 'title':
-                    var titleTag = el.htmlTag || 'h2';
-                    return '<' + titleTag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Catchy Campaign Title') + '</' + titleTag + '>';
-
-                case 'text':
-                case 'paragraph':
-                    var tag = el.htmlTag || 'p';
-                    return '<' + tag + ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';margin:0;padding:0 8px;' + textStyle + alignStyle + weightStyle + '">' + (el.content || 'Add your paragraph text here...') + '</' + tag + '>';
-
-                case 'image':
-                    var imgUrl = el.imageUrl || el.content || '';
-                    var imgAlt = el.imageAlt || '';
-                    var imgFit = el.imageFit || 'cover';
-                    if (!imgUrl) {
-                        return '<div style="width:100%;height:100%;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;font-weight:600;pointer-events:none;padding:4px;"><span class="dashicons dashicons-format-image" style="font-size:24px;width:24px;height:24px;margin-bottom:4px;display:inline-block;line-height:1;"></span><span>No Image Selected</span></div>';
-                    }
-                    return '<img src="' + imgUrl + '" alt="' + imgAlt + '" style="width:100%;height:100%;object-fit:' + imgFit + ';display:block;border-radius:inherit;pointer-events:none;">';
-
-                case 'video':
-                    var rawUrl = (el.videoUrl || el.content || '').trim();
-                    if (!rawUrl) {
-                        return '<div style="width:100%;height:100%;background:#1e293b;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffffff;font-size:11px;font-weight:700;"><span class="dashicons dashicons-video-alt3" style="font-size:32px;width:32px;height:32px;margin-bottom:6px;"></span><span>Video Player Placeholder</span></div>';
-                    }
-
-                    var embedUrl = rawUrl;
-                    var isYt = rawUrl.indexOf('youtube.com') > -1 || rawUrl.indexOf('youtu.be') > -1;
-                    var isVim = rawUrl.indexOf('vimeo.com') > -1;
-
-                    if (isYt) {
-                        var ytId = '';
-                        var m = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-                        if (m && m[1]) ytId = m[1];
-                        embedUrl = 'https://www.youtube.com/embed/' + (ytId || 'dQw4w9WgXcQ') + (el.videoAutoplay ? '?autoplay=1&mute=1' : '');
-                        return '<iframe src="' + embedUrl + '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
-                    } else if (isVim) {
-                        var vimId = rawUrl.split('/').pop().split('?')[0];
-                        embedUrl = 'https://player.vimeo.com/video/' + vimId + (el.videoAutoplay ? '?autoplay=1&muted=1' : '');
-                        return '<iframe src="' + embedUrl + '" style="width:100%;height:100%;border:none;border-radius:inherit;display:block;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
-                    } else {
-                        return '<video src="' + rawUrl + '" ' + (el.videoControls !== false ? 'controls' : '') + ' ' + (el.videoAutoplay ? 'autoplay muted' : '') + ' style="width:100%;height:100%;object-fit:cover;border-radius:inherit;' + (this.isPreview ? 'pointer-events:auto;' : 'pointer-events:none;') + '"></video>';
-                    }
-
+            switch (el.type) {
                 case 'shape':
-                    var preset = el.shapePreset || 'circle';
-                    var fill = el.shapeFill === 'transparent' ? 'none' : (el.shapeFill || '#3b82f6');
-                    var stroke = el.shapeStroke === 'transparent' ? 'none' : (el.shapeStroke || '#1d4ed8');
-                    var strokeW = el.shapeStrokeWidth !== undefined ? parseInt(el.shapeStrokeWidth, 10) : 0;
-                    var rot = el.shapeRotate !== undefined ? parseInt(el.shapeRotate, 10) : 0;
-
-                    var strokeAttr = stroke !== 'none' && strokeW > 0 
-                        ? 'stroke="' + stroke + '" stroke-width="' + strokeW + '" stroke-linejoin="round" vector-effect="non-scaling-stroke"' 
-                        : 'stroke="none"';
-                    var fillAttr = 'fill="' + fill + '"';
-
-                    var svgContent = '';
-                    switch (preset) {
-                        case 'circle':
-                            svgContent = '<ellipse cx="50" cy="50" rx="46" ry="46" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'square':
-                            svgContent = '<rect x="4" y="4" width="92" height="92" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'rounded_square':
-                            svgContent = '<rect x="4" y="4" width="92" height="92" rx="16" ry="16" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'star':
-                            svgContent = '<polygon points="50,4 64,34 97,36 71,58 80,90 50,71 20,90 29,58 3,36 36,34" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'triangle':
-                            svgContent = '<polygon points="50,6 94,92 6,92" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'diamond':
-                            svgContent = '<polygon points="50,5 95,50 50,95 5,50" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'heart':
-                            svgContent = '<path d="M 50,32 C 50,32 44,14 26,14 C 11,14 4,28 4,44 C 4,68 40,88 50,94 C 60,88 96,68 96,44 C 96,28 89,14 74,14 C 56,14 50,32 50,32 Z" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'hexagon':
-                            svgContent = '<polygon points="50,4 92,26 92,74 50,96 8,74 8,26" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'octagon':
-                            svgContent = '<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'shield':
-                            svgContent = '<path d="M 50,4 L 92,18 L 92,54 C 92,78 50,96 50,96 C 50,96 8,78 8,54 L 8,18 Z" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        case 'cross':
-                            svgContent = '<polygon points="35,4 65,4 65,35 96,35 96,65 65,65 65,96 35,96 35,65 4,65 4,35 35,35" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                        default:
-                            svgContent = '<rect x="4" y="4" width="92" height="92" ' + fillAttr + ' ' + strokeAttr + ' />';
-                            break;
-                    }
-
-                    return '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;display:block;transform:rotate(' + rot + 'deg);pointer-events:none;overflow:visible;">' + svgContent + '</svg>';
-
+                    return this.renderShapeSvg(el.shapePreset, el.shapeFill, el.shapeStroke, el.shapeStrokeWidth, el.shapeRotate);
+                case 'title':
+                    return '<h2 style="margin:0;width:100%;height:100%;display:flex;align-items:center;font-size:inherit;font-weight:inherit;color:inherit;line-height:inherit;">' + (el.content || 'Headline Title') + '</h2>';
+                case 'paragraph':
+                case 'text':
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;padding:0 4px;font-size:inherit;color:inherit;line-height:inherit;">' + (el.content || 'Headline or Text') + '</div>';
                 case 'textfield':
-                    return '<input type="text" placeholder="' + (el.content || 'Enter text here...') + '" ' + (el.required ? 'required' : '') + ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
-
+                    return '<input type="text" placeholder="' + (el.content || 'Enter your details...') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
+                case 'image':
+                    return '<div style="width:100%;height:100%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px;border-radius:inherit;">🖼 Image Layer</div>';
+                case 'video':
+                    return '<div style="width:100%;height:100%;background:#1e293b;color:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:inherit;">▶ Video Stream</div>';
+                case 'close':
+                    return '<button type="button" style="width:100%;height:100%;background:transparent;border:none;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">&times;</button>';
+                case 'link_btn':
+                    return '<a href="#" style="width:100%;height:100%;background:#3b82f6;color:#ffffff;display:flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700;border-radius:inherit;">' + (el.content || 'Visit Link &rarr;') + '</a>';
                 case 'email':
-                    return '<input type="email" placeholder="' + (el.content || 'Enter your email...') + '" ' + (el.required ? 'required' : '') + ' style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
-
+                    return '<input type="email" placeholder="' + (el.content || 'Enter your email...') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
                 case 'number':
-                    return '<input type="number" placeholder="' + (el.content || 'Enter number...') + '" min="' + (el.min || 0) + '" max="' + (el.max || 100) + '" step="' + (el.step || 1) + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
-
+                    return '<input type="number" placeholder="' + (el.content || '1') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
                 case 'select':
-                    var opts = (el.content ? el.content.split(',') : ['Option 1', 'Option 2', 'Option 3']);
-                    var selectHtml = '<select style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
-                    opts.forEach(function(o) { selectHtml += '<option>' + o.trim() + '</option>'; });
-                    selectHtml += '</select>';
-                    return selectHtml;
-
+                    return '<select style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><option>' + (el.content || 'Option 1, Option 2') + '</option></select>';
                 case 'radios':
-                    var rOpts = (el.content ? el.content.split(',') : ['Choice A', 'Choice B']);
-                    var radiosHtml = '<div style="display:flex;gap:12px;align-items:center;justify-content:' + justifyVal + ';height:100%;padding:0 8px;font-size:12px;' + textStyle + weightStyle + '">';
-                    rOpts.forEach(function(r, idx) {
-                        radiosHtml += '<label style="cursor:pointer;"><input type="radio" name="preview_radio_' + el.id + '" value="' + r.trim() + '" ' + (idx === 0 ? 'checked' : '') + '> ' + r.trim() + '</label>';
-                    });
-                    radiosHtml += '</div>';
-                    return radiosHtml;
-
+                    return '<div style="display:flex;gap:10px;align-items:center;height:100%;padding:0 8px;font-size:12px;"><label><input type="radio" checked> Option A</label><label><input type="radio"> Option B</label></div>';
                 case 'checkboxes':
-                    return '<div style="display:flex;align-items:center;justify-content:' + justifyVal + ';gap:6px;height:100%;padding:0 8px;font-size:12px;' + textStyle + weightStyle + '"><label style="cursor:pointer;"><input type="checkbox" ' + (el.checked !== false ? 'checked' : '') + '> <span>' + (el.content || 'I agree to the terms') + '</span></label></div>';
-
+                    return '<div style="display:flex;align-items:center;gap:6px;height:100%;padding:0 8px;font-size:12px;"><input type="checkbox" checked> <span>' + (el.content || 'I agree to terms') + '</span></div>';
                 case 'rating':
-                    var starCount = parseInt(el.content, 10) || 5;
-                    var starColor = el.ratingColor || '#f59e0b';
-                    var starsHtml = '<div class="wppoppop-field-rating" style="display:flex;gap:4px;align-items:center;justify-content:' + justifyVal + ';height:100%;color:' + starColor + ';font-size:20px;user-select:none;">';
-                    for (var s = 1; s <= 5; s++) {
-                        starsHtml += '<span class="wppoppop-preview-star" data-val="' + s + '" style="cursor:pointer;transition:transform 0.1s ease;' + (s <= starCount ? '' : 'color:#cbd5e1;') + '">★</span>';
-                    }
-                    starsHtml += '</div>';
-                    return starsHtml;
-
+                    return '<div style="display:flex;gap:4px;align-items:center;justify-content:center;height:100%;color:#f59e0b;font-size:18px;">★ ★ ★ ★ ★</div>';
                 case 'date':
-                    return '<input type="date" value="' + (el.content || '2026-10-08') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">';
-
+                    return '<input type="text" placeholder="' + (el.content || 'YYYY-MM-DD') + '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
                 case 'slider':
-                    return '<div style="padding:0 10px;height:100%;display:flex;align-items:center;"><input type="range" min="' + (el.min || 0) + '" max="' + (el.max || 100) + '" value="' + (el.content || 50) + '" style="width:100%;"></div>';
-
+                    return '<div style="padding:0 10px;height:100%;display:flex;align-items:center;"><input type="range" style="width:100%;"></div>';
                 case 'signature':
-                    return '<div style="width:100%;height:100%;position:relative;background:#ffffff;border-radius:inherit;"><canvas class="wppoppop-preview-sig-canvas" width="' + (el.width || 200) + '" height="' + (el.height || 80) + '" style="width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;touch-action:none;cursor:crosshair;"></canvas><button type="button" class="wppoppop-preview-sig-clear button" style="position:absolute;bottom:4px;right:4px;font-size:9px;padding:1px 6px;height:20px;background:#e2e8f0;border:none;cursor:pointer;">' + (el.clearLabel || 'Clear') + '</button></div>';
-
+                    return '<div style="width:100%;height:100%;border:1px dashed #94a3b8;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">✍ Digital Signature Pad</div>';
                 case 'wheel':
-                    return '<div class="wppoppop-preview-wheel-wrap" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;"><canvas class="wppoppop-preview-wheel-canvas" width="160" height="160" style="border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,0.2);"></canvas><button type="button" class="button wppoppop-preview-wheel-btn" style="margin-top:6px;background:#4338ca;color:#fff;border:none;font-weight:700;' + typoStyles + 'font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;">' + (el.btnText || 'SPIN TO WIN!') + '</button></div>';
-
+                    return '<div style="width:100%;height:100%;background:#e0e7ff;color:#4338ca;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border-radius:inherit;">🎡 Fortune Prize Wheel</div>';
                 case 'scratch':
-                    return '<div class="wppoppop-preview-scratch-wrap" style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:inherit;user-select:none;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#fef08a;color:#854d0e;font-weight:700;font-size:13px;padding:8px;text-align:center;box-sizing:border-box;">' + (el.content || 'YOU WON 25% OFF!') + '</div><canvas class="wppoppop-preview-scratch-canvas" width="' + (el.width || 200) + '" height="' + (el.height || 60) + '" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;"></canvas></div>';
-
+                    return '<div style="width:100%;height:100%;background:#94a3b8;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border-radius:inherit;">🎟 Scratch-Off Card</div>';
                 case 'countdown':
-                    var secs = parseInt(el.countdownSeconds, 10) || 900;
-                    var mins = Math.floor(secs / 60);
-                    var remSecs = secs % 60;
-                    var timeStr = (mins < 10 ? '0' : '') + mins + ' : ' + (remSecs < 10 ? '0' : '') + remSecs;
-                    return '<div class="wppoppop-preview-countdown" data-secs="' + secs + '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;font-size:16px;background:#1e293b;color:#f8fafc;border-radius:inherit;"><span class="cd-display">' + timeStr + '</span></div>';
-
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;font-size:16px;background:#1e293b;color:#f8fafc;border-radius:inherit;">00 : 15 : 00</div>';
                 case 'progress':
-                    var pct = parseInt(el.content, 10) || 65;
-                    var barColor = el.progressColor || '#2563eb';
-                    return '<div style="width:100%;height:100%;background:#e2e8f0;border-radius:inherit;overflow:hidden;position:relative;"><div style="width:' + pct + '%;height:100%;background:' + barColor + ';transition:width 0.3s ease;"></div></div>';
-
+                    return '<div style="width:100%;height:100%;background:#e2e8f0;border-radius:inherit;overflow:hidden;position:relative;"><div style="width:65%;height:100%;background:#2563eb;"></div></div>';
                 case 'file':
-                    return '<div style="width:100%;height:100%;border:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;border-radius:inherit;padding:4px;"><input type="file" style="width:100%;font-size:11px;"></div>';
-
+                    return '<div style="width:100%;height:100%;border:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;border-radius:inherit;">📁 Choose File to Upload</div>';
                 case 'step_btn':
                     var targetCanvas = el.goto_canvas || el.goto_screen || 2;
-                    var stepBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #2563eb;color:#2563eb;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#2563eb;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-step-btn" data-goto-canvas="' + targetCanvas + '" style="width:100%;height:100%;' + stepBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;">' + (el.content || ('Canvas ' + targetCanvas + ' &rarr;')) + '</button>';
-
+                    return '<button type="button" class="wppoppop-next-canvas-btn" data-goto-canvas="' + targetCanvas + '" style="width:100%;height:100%;background:#2563eb;color:#fff;border:none;border-radius:inherit;font-weight:700;cursor:pointer;">' + (el.content || ('Canvas ' + targetCanvas + ' &rarr;')) + '</button>';
                 case 'submit':
-                    var submitBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #c2185b;color:#c2185b;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#c2185b;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-submit-btn" style="width:100%;height:100%;' + submitBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;' + typoStyles + '">' + (el.content || 'Submit Form') + '</button>';
-
-                case 'link_btn':
-                    var linkBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #2563eb;color:#2563eb;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#2563eb;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-link-btn" data-url="' + (el.linkUrl || '#') + '" data-blank="' + (el.linkBlank ? '1' : '0') + '" style="width:100%;height:100%;' + linkBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;' + typoStyles + '">' + (el.content || 'Learn More &rarr;') + '</button>';
-
+                    return '<button type="button" style="width:100%;height:100%;background:#c2185b;color:#fff;border:none;border-radius:inherit;font-weight:700;cursor:pointer;">' + (el.content || 'Submit Form') + '</button>';
                 case 'pay':
-                    var cur = el.payCurrency || 'USD';
-                    var amt = el.payAmount !== undefined ? el.payAmount : 19.99;
-                    var payBtnBg = el.bgColor === 'transparent' ? 'background:transparent;border:1px dashed #059669;color:#059669;' : (el.bgColor ? 'background:' + el.bgColor + ';' : 'background:#059669;color:#fff;border:none;');
-                    return '<button type="button" class="wppoppop-preview-pay-btn" style="width:100%;height:100%;' + payBtnBg + (el.color ? 'color:' + el.color + ';' : '') + weightStyle + 'border-radius:inherit;cursor:pointer;font-weight:700;' + typoStyles + '">' + (el.content || ('Checkout Now (' + cur + ' ' + amt + ')')) + '</button>';
-
-                case 'close_icon':
-                    var iconGlyph = el.closeIconStyle === 'dashicon' ? '<span class="dashicons dashicons-no-alt" style="font-size:inherit;width:auto;height:auto;line-height:1;"></span>' : '&times;';
-                    return '<button type="button" class="wppoppop-preview-close-btn" data-close-action="' + (el.closeAction || 'close') + '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;font-size:inherit;font-weight:700;' + typoStyles + 'line-height:1;cursor:pointer;padding:0;">' + iconGlyph + '</button>';
-
+                    return '<button type="button" style="width:100%;height:100%;background:#059669;color:#fff;border:none;border-radius:inherit;font-weight:700;cursor:pointer;">' + (el.content || 'Checkout Now') + '</button>';
                 case 'html':
-                    return '<div style="width:100%;height:100%;overflow:hidden;padding:4px;font-size:11px;border:1px solid #cbd5e1;border-radius:inherit;' + bgStyle + textStyle + alignStyle + weightStyle + '">' + (el.content || '<strong>Custom HTML</strong>') + '</div>';
-
+                    return '<div style="width:100%;height:100%;overflow:hidden;padding:4px;font-size:11px;border:1px solid #cbd5e1;border-radius:inherit;">' + (el.content || '<strong>Custom HTML Block</strong>') + '</div>';
                 default:
-                    return '<div style="padding:6px;font-size:12px;' + textStyle + alignStyle + weightStyle + '">' + label + '</div>';
+                    return '<div style="padding:6px;font-size:12px;">' + label + '</div>';
             }
         },
-
-        playAnimation: function(id, effect, duration, delay) {
-            var $elNode = $('#el-' + id);
-            if (!$elNode.length) return;
-
-            var cls = ($elNode.attr('class') || '').split(/\s+/);
-            var toRemove = cls.filter(function(c) {
-                return c.indexOf('anim-') === 0 || 
-                       c.indexOf('wppoppop-anim-') === 0 || 
-                       c.indexOf('animate__') === 0 ||
-                       c.indexOf('bounce') === 0;
-            });
-            if (toRemove.length) {
-                $elNode.removeClass(toRemove.join(' '));
-            }
-
-            var eff = (effect || '').toString().trim();
-            if (!eff || eff.toLowerCase() === 'none') return;
-
-            var cleanEff = eff.replace(/^animate__/, '').replace(/^(?:anim-|wppoppop-anim-)/, '');
-            if (cleanEff.toLowerCase() === 'fade') cleanEff = 'fadeIn';
-
-            var dur = (duration !== undefined && duration !== '') ? parseInt(duration, 10) : 1000;
-            if (isNaN(dur) || dur < 0) dur = 1000;
-            var del = (delay !== undefined && delay !== '') ? parseInt(delay, 10) : 0;
-            if (isNaN(del) || del < 0) del = 0;
-
-            // Force DOM layout reflow
-            if ($elNode[0]) void $elNode[0].offsetWidth;
-
-            $elNode.css({
-                'animation-duration': dur + 'ms',
-                '-webkit-animation-duration': dur + 'ms',
-                'animation-delay': del + 'ms',
-                '-webkit-animation-delay': del + 'ms',
-                'animation-fill-mode': 'both',
-                '-webkit-animation-fill-mode': 'both',
-                '--animate-duration': (dur / 1000) + 's',
-                '--animate-delay': (del / 1000) + 's'
-            });
-
-            $elNode.addClass('anim-' + cleanEff + ' wppoppop-anim-' + cleanEff + ' animate__animated animate__' + cleanEff + ' ' + cleanEff);
-        },
-
-        
 
         attachInteractions: function($node, el) {
             var self = this;
-            if (this.isPreview) return;
-
             if (el.locked) {
                 $node.addClass('wppoppop-locked');
                 return;
             }
 
             $node.draggable({
-                containment: '#wppoppop-canvas-box',
+                containment: '#wppoppop-canvas-elements-root',
                 grid: [10, 10],
+                drag: function(event, ui) {
+                    el.top = ui.position.top;
+                    el.left = ui.position.left;
+                    if (window.WpPopPopBuilderInspector) {
+                        window.WpPopPopBuilderInspector.syncCoordinates(el);
+                    }
+                },
                 stop: function(event, ui) {
                     el.top = ui.position.top;
                     el.left = ui.position.left;
                     if (window.WpPopPopBuilderInspector) {
                         window.WpPopPopBuilderInspector.syncCoordinates(el);
                     }
-                    if (window.WpPopPopBuilderCore) {
-                        window.WpPopPopBuilderCore.pushHistory();
-                    }
+                    window.WpPopPopBuilderCore.pushHistory();
                 }
             });
 
             $node.resizable({
-                containment: '#wppoppop-canvas-box',
-                grid: [10, 10],
-                handles: 'se',
+                containment: '#wppoppop-canvas-elements-root',
+                handles: 'e, s, se',
+                resize: function(event, ui) {
+                    el.width = ui.size.width;
+                    el.height = ui.size.height;
+                    if (window.WpPopPopBuilderInspector) {
+                        window.WpPopPopBuilderInspector.syncCoordinates(el);
+                    }
+                },
                 stop: function(event, ui) {
                     el.width = ui.size.width;
                     el.height = ui.size.height;
                     if (window.WpPopPopBuilderInspector) {
                         window.WpPopPopBuilderInspector.syncCoordinates(el);
                     }
-                    if (window.WpPopPopBuilderCore) {
-                        window.WpPopPopBuilderCore.pushHistory();
-                    }
+                    window.WpPopPopBuilderCore.pushHistory();
                 }
             });
         },
@@ -485,7 +395,6 @@ switch (type) {
             var self = this;
             $('.wppoppop-ribbon-tool').on('click', function(e) {
                 e.preventDefault();
-                if (self.isPreview) return;
                 var type = $(this).data('type');
                 self.addElement(type);
             });
@@ -496,142 +405,34 @@ switch (type) {
             var id = 'layer_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
             var nextZ = elements.length ? Math.max.apply(null, elements.map(function(e) { return e.zIndex || 10; })) + 1 : 10;
 
-            var defaultWidth = 200;
-            var defaultHeight = 42;
-            var defaultContent = '';
-            var defaultBorderRadius = 4;
-            var defaultBorderWidth = 1;
-            var defaultBg = '#ffffff';
-            var defaultColor = '#0f172a';
-            var defaultFontSize = 14;
-            var defaultFontWeight = '400';
-            var defaultTextAlign = 'left';
-
-            switch (type) {
-                case 'title':
-                    defaultWidth = 280;
-                    defaultHeight = 48;
-                    defaultFontSize = 24;
-                    defaultFontWeight = '700';
-                    defaultTextAlign = 'center';
-                    defaultContent = 'Catchy Campaign Title';
-                    break;
-                case 'text':
-                case 'paragraph':
-                    defaultWidth = 240;
-                    defaultHeight = 60;
-                    defaultContent = 'Add your paragraph text here...';
-                    break;
-                case 'image':
-                    defaultWidth = 200;
-                    defaultHeight = 140;
-                    defaultBorderRadius = 0;
-                    defaultBorderWidth = 0;
-                    break;
-                case 'video':
-                    defaultWidth = 320;
-                    defaultHeight = 180;
-                    defaultBorderRadius = 6;
-                    defaultBorderWidth = 0;
-                    defaultContent = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
-                    break;
-                case 'shape':
-                    defaultWidth = 160;
-                    defaultHeight = 160;
-                    defaultBorderRadius = 0;
-                    defaultBorderWidth = 0;
-                    break;
-                case 'textfield':
-                    defaultWidth = 220;
-                    defaultHeight = 42;
-                    defaultContent = 'Enter text here...';
-                    break;
-                case 'close_icon':
-                    defaultWidth = 34;
-                    defaultHeight = 34;
-                    defaultBorderRadius = 17;
-                    defaultBorderWidth = 0;
-                    defaultBg = 'transparent';
-                    defaultColor = '#64748b';
-                    defaultFontSize = 22;
-                    defaultContent = '×';
-                    break;
-                case 'submit':
-                    defaultWidth = 200;
-                    defaultHeight = 44;
-                    defaultBg = '#c2185b';
-                    defaultColor = '#ffffff';
-                    defaultBorderRadius = 6;
-                    defaultFontWeight = '700';
-                    defaultContent = 'Submit Form';
-                    break;
-                case 'link_btn':
-                    defaultWidth = 200;
-                    defaultHeight = 44;
-                    defaultBg = '#2563eb';
-                    defaultColor = '#ffffff';
-                    defaultBorderRadius = 6;
-                    defaultFontWeight = '700';
-                    defaultContent = 'Learn More &rarr;';
-                    break;
-                case 'html':
-                    defaultWidth = 240;
-                    defaultHeight = 70;
-                    break;
-                case 'signature':
-                case 'wheel':
-                    defaultHeight = 120;
-                    break;
-            }
-
-            var typeName = (type === 'text' || type === 'paragraph') ? 'PARAGRAPH' : type.toUpperCase();
             var newEl = {
                 id: id,
-                type: (type === 'paragraph' ? 'text' : type),
-                name: typeName + ' ' + (elements.length + 1),
+                type: type,
+                name: type.toUpperCase() + ' ' + (elements.length + 1),
                 top: 50 + (elements.length * 15) % 150,
                 left: 50 + (elements.length * 15) % 200,
-                width: defaultWidth,
-                height: defaultHeight,
+                width: (type === 'shape') ? 120 : ((type === 'text' || type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
+                height: (type === 'shape') ? 120 : ((type === 'text' || type === 'signature') ? 60 : 42),
                 zIndex: nextZ,
-                borderRadius: defaultBorderRadius,
-                borderStyle: 'solid',
-                borderWidth: defaultBorderWidth,
-                bgColor: defaultBg,
-                color: defaultColor,
-                fontSize: defaultFontSize,
-                fontWeight: defaultFontWeight,
-                textAlign: defaultTextAlign,
-                padding: 0,
+                borderRadius: 4,
                 opacity: 1,
-                content: defaultContent,
-                imageUrl: '',
-                imageAlt: '',
-                imageFit: 'cover',
-                videoUrl: type === 'video' ? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' : '',
-                videoAutoplay: false,
-                videoControls: true,
-                shapePreset: 'circle',
-                shapeFill: '#3b82f6',
-                shapeStroke: '#1d4ed8',
-                shapeStrokeWidth: 2,
-                shapeRotate: 0,
-                linkUrl: 'https://example.com',
-                linkBlank: true,
-                closeIconStyle: 'times',
-                closeAction: 'close',
-                submitAction: 'default',
+                content: this.getDefaultContent(type),
                 goto_canvas: 2,
                 goto_screen: 2,
                 locked: false,
                 hidden: false
             };
 
-            elements.push(newEl);
-            if (window.WpPopPopBuilderCore) {
-                window.WpPopPopBuilderCore.state.activeId = id;
+            if (type === 'shape') {
+                newEl.shapePreset = 'circle';
+                newEl.shapeFill = '#3b82f6';
+                newEl.shapeStroke = '#1d4ed8';
+                newEl.shapeStrokeWidth = 2;
+                newEl.shapeRotate = 0;
             }
 
+            elements.push(newEl);
+            window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();
 
             if (window.WpPopPopBuilderLayers) {
@@ -640,13 +441,33 @@ switch (type) {
             if (window.WpPopPopBuilderInspector) {
                 window.WpPopPopBuilderInspector.open(id);
             }
-            if (window.WpPopPopBuilderCore) {
-                window.WpPopPopBuilderCore.pushHistory();
+
+            window.WpPopPopBuilderCore.pushHistory();
+        },
+
+        getDefaultContent: function(type) {
+            switch(type) {
+                case 'title': return 'Headline Title';
+                case 'paragraph':
+                case 'text': return 'Click to edit your text headline...';
+                case 'textfield': return 'Enter your text...';
+                case 'email': return 'Enter your best email...';
+                case 'number': return '1';
+                case 'select': return 'First Option, Second Option';
+                case 'radios': return 'Option A, Option B';
+                case 'checkboxes': return 'I agree to the terms';
+                case 'date': return '2026-10-10';
+                case 'step_btn': return 'Next Canvas &rarr;';
+                case 'submit': return 'Claim Offer Now';
+                case 'pay': return 'Complete Checkout ($19.99)';
+                case 'html': return '<p>Custom <strong>HTML block</strong></p>';
+                default: return '';
             }
         },
 
         bindCanvasSelection: function() {
             var self = this;
+
             $(document).on('click', '.wppoppop-canvas-item', function(e) {
                 if (self.isPreview) return;
                 e.stopPropagation();
@@ -654,21 +475,32 @@ switch (type) {
                 self.selectElement(id);
             });
 
-            $('#wppoppop-canvas-box, .wppoppop-builder-workspace').on('click', function(e) {
+            $('#wppoppop-canvas-box').on('click', function(e) {
                 if (self.isPreview) return;
-                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel, #wppoppop-canvas-corner-handle, .wppoppop-ribbon-bar, .wppoppop-builder-header').length === 0) {
+                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-canvas-corner-handle, #wppoppop-canvas-stage-bar').length === 0) {
+                    self.deselect();
+                    if (window.WpPopPopBuilderSettings) {
+                        window.WpPopPopBuilderSettings.openDrawer();
+                    }
+                }
+            });
+
+            $('.wppoppop-builder-workspace').on('click', function(e) {
+                if (self.isPreview) return;
+                if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel, #wppoppop-canvas-corner-handle, .wppoppop-ribbon-bar, .wppoppop-builder-header, #wppoppop-settings-drawer, #wppoppop-canvas-box').length === 0) {
                     self.deselect();
                 }
             });
         },
 
         selectElement: function(id) {
-            if (window.WpPopPopBuilderCore) {
-                window.WpPopPopBuilderCore.state.activeId = id;
-            }
+            window.WpPopPopBuilderCore.state.activeId = id;
             $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
             $('#el-' + id).addClass('wppoppop-selected');
 
+            if (window.WpPopPopBuilderSettings) {
+                window.WpPopPopBuilderSettings.closeDrawer();
+            }
             if (window.WpPopPopBuilderLayers) {
                 window.WpPopPopBuilderLayers.highlightLayer(id);
             }
@@ -678,9 +510,7 @@ switch (type) {
         },
 
         deselect: function() {
-            if (window.WpPopPopBuilderCore) {
-                window.WpPopPopBuilderCore.state.activeId = null;
-            }
+            window.WpPopPopBuilderCore.state.activeId = null;
             $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
             if (window.WpPopPopBuilderInspector) {
                 window.WpPopPopBuilderInspector.close();
@@ -688,541 +518,6 @@ switch (type) {
             if (window.WpPopPopBuilderLayers) {
                 $('.wppoppop-layer-item').removeClass('active');
             }
-        },
-
-        deleteActiveElement: function() {
-            var core = window.WpPopPopBuilderCore;
-            var activeId = core ? core.state.activeId : null;
-            if (!activeId) return;
-
-            var elements = this.getActiveElements();
-            var idx = elements.findIndex(function(e) { return e.id === activeId; });
-            if (idx > -1) {
-                elements.splice(idx, 1);
-                this.deselect();
-                this.renderCanvas();
-                if (window.WpPopPopBuilderLayers) {
-                    window.WpPopPopBuilderLayers.renderLayers();
-                }
-                if (core) {
-                    core.pushHistory();
-                }
-            }
-        },
-
-        bindPreviewModeControls: function() {
-            var self = this;
-
-            $('#wppoppop-btn-preview').off('click.previewToggle').on('click.previewToggle', function(e) {
-                e.preventDefault();
-                if (self.isPreview) {
-                    self.exitPreviewMode();
-                } else {
-                    self.enterPreviewMode();
-                }
-            });
-
-            $(document).on('click', '#wppoppop-preview-exit-btn', function(e) {
-                e.preventDefault();
-                self.exitPreviewMode();
-            });
-
-            $(document).on('click', '#wppoppop-preview-replay-btn, #wppoppop-preview-replay, #wppoppop-btn-replay-anim', function(e) {
-                e.preventDefault();
-                self.playCanvasEntranceAnimation();
-            });
-
-            $(document).on('click', '.wppoppop-status-reset-btn', function() {
-                $('#wppoppop-stage-status-overlay').removeClass('active');
-            });
-        },
-
-        enterPreviewMode: function() {
-            this.isPreview = true;
-            this.deselect();
-
-            $('body').addClass('wppoppop-preview-active');
-            $('.wppoppop-builder-workspace').addClass('is-preview-mode');
-
-            var $btn = $('#wppoppop-btn-preview');
-            $btn.addClass('preview-active');
-            var $label = $btn.find('.wppoppop-btn-label');
-            if ($label.length) {
-                $label.text('Exit Preview');
-            } else {
-                $btn.text('Exit Preview');
-            }
-
-            if (window.WpPopPopBuilderInspector) window.WpPopPopBuilderInspector.close();
-            if (window.WpPopPopBuilderSettings) window.WpPopPopBuilderSettings.closeDrawer();
-
-            this.renderCanvas();
-
-            var self = this;
-            setTimeout(function() {
-                self.playCanvasEntranceAnimation();
-            }, 30);
-
-            if (typeof this.playChime === 'function') {
-                this.playChime('open');
-            }
-        },
-
-        exitPreviewMode: function() {
-            this.isPreview = false;
-            $('body').removeClass('wppoppop-preview-active');
-            $('.wppoppop-builder-workspace').removeClass('is-preview-mode');
-
-            var $btn = $('#wppoppop-btn-preview');
-            $btn.removeClass('preview-active')
-                .html('<span class="dashicons dashicons-visibility"></span> <span class="wppoppop-btn-label">Preview</span>');
-
-            $('#wppoppop-stage-status-overlay').removeClass('active');
-
-            var $box = $('#wppoppop-canvas-box');
-            $box.removeClass(function(i, c) { return (c.match(/(^|\s)animate__\S+/g) || []).join(' '); });
-
-            this.renderCanvas();
-        },
-
-        playCanvasEntranceAnimation: function() {
-            var core = window.WpPopPopBuilderCore;
-            if (!core) return;
-            var cur = core.state.currentCanvas || 1;
-            var meta = (core.state.canvasMeta && core.state.canvasMeta[cur]) ? core.state.canvasMeta[cur] : {};
-            var $box = $('#wppoppop-canvas-box');
-            if (!$box.length) $box = $('#wppoppop-canvas-stage');
-            if (!$box.length) return;
-
-            var rawAppearance = (meta.anim_appearance || meta.appearance || 'fadeIn').toString().trim();
-            var duration = parseInt(meta.anim_duration || meta.duration, 10);
-            if (isNaN(duration) || duration <= 0) duration = 1000;
-            var delay = parseInt(meta.anim_delay || meta.delay, 10);
-            if (isNaN(delay) || delay < 0) delay = 0;
-
-            var removeAnimClasses = function($el) {
-                var cls = ($el.attr('class') || '').split(/\s+/);
-                var toRemove = cls.filter(function(c) {
-                    return c.indexOf('anim-') === 0 || 
-                           c.indexOf('wppoppop-anim-') === 0 || 
-                           c.indexOf('animate__') === 0;
-                });
-                if (toRemove.length) {
-                    $el.removeClass(toRemove.join(' '));
-                }
-            };
-
-            removeAnimClasses($box);
-
-            if (rawAppearance.toLowerCase() === 'none') {
-                $box.css({ opacity: 1 });
-            } else {
-                var cleanApp = rawAppearance.replace(/^animate__/, '').replace(/^(?:anim-|wppoppop-anim-)/, '');
-                if (cleanApp.toLowerCase() === 'fade') cleanApp = 'fadeIn';
-
-                // Force DOM reflow to restart animation reliably across Blink, WebKit, Gecko
-                if ($box[0]) void $box[0].offsetWidth;
-
-                $box.css({
-                    'animation-duration': duration + 'ms',
-                    '-webkit-animation-duration': duration + 'ms',
-                    'animation-delay': delay + 'ms',
-                    '-webkit-animation-delay': delay + 'ms',
-                    'animation-fill-mode': 'both',
-                    '-webkit-animation-fill-mode': 'both',
-                    '--animate-duration': (duration / 1000) + 's',
-                    '--animate-delay': (delay / 1000) + 's'
-                });
-
-                $box.addClass('anim-' + cleanApp + ' wppoppop-anim-' + cleanApp + ' animate__animated animate__' + cleanApp);
-            }
-
-            // Trigger element entrance animations
-            var elements = this.getActiveElements ? this.getActiveElements() : [];
-            elements.forEach(function(el) {
-                var effect = (el.animEffect || el.anim_effect || el.animation || el.anim || '').toString().trim();
-                if (!effect || effect.toLowerCase() === 'none') return;
-
-                var $elNode = $('#el-' + el.id);
-                if (!$elNode.length) return;
-
-                removeAnimClasses($elNode);
-
-                var cleanEffect = effect.replace(/^animate__/, '').replace(/^(?:anim-|wppoppop-anim-)/, '');
-                if (cleanEffect.toLowerCase() === 'fade') cleanEffect = 'fadeIn';
-
-                var elDuration = parseInt(el.animDuration || el.anim_duration || 800, 10);
-                var elDelay = parseInt(el.animDelay || el.anim_delay || 0, 10);
-
-                // Force DOM reflow on element node
-                if ($elNode[0]) void $elNode[0].offsetWidth;
-
-                $elNode.css({
-                    'animation-duration': elDuration + 'ms',
-                    '-webkit-animation-duration': elDuration + 'ms',
-                    'animation-delay': elDelay + 'ms',
-                    '-webkit-animation-delay': elDelay + 'ms',
-                    'animation-fill-mode': 'both',
-                    '-webkit-animation-fill-mode': 'both',
-                    '--animate-duration': (elDuration / 1000) + 's',
-                    '--animate-delay': (elDelay / 1000) + 's'
-                });
-
-                $elNode.addClass('anim-' + cleanEffect + ' wppoppop-anim-' + cleanEffect + ' animate__animated animate__' + cleanEffect);
-            });
-        },
-
-        initActivePreviewWidgets: function() {
-            var self = this;
-
-            $('.wppoppop-preview-step-btn').off('click.previewStep').on('click.previewStep', function(e) {
-                e.preventDefault();
-                var target = parseInt($(this).data('goto-canvas'), 10) || 2;
-                self.transitionToCanvas(target);
-            });
-
-            $('.wppoppop-preview-submit-btn').off('click.previewSubmit').on('click.previewSubmit', function(e) {
-                e.preventDefault();
-                self.handlePreviewSubmit($(this));
-            });
-
-            $('.wppoppop-preview-link-btn').off('click.previewLink').on('click.previewLink', function(e) {
-                e.preventDefault();
-                var url = $(this).data('url');
-                var blank = $(this).data('blank') == '1';
-                if (!url || url === '#') {
-                    alert('Preview: Link destination triggered (URL: empty)');
-                    return;
-                }
-                if (blank) {
-                    window.open(url, '_blank');
-                } else {
-                    window.location.href = url;
-                }
-            });
-
-            $('.wppoppop-preview-close-btn').off('click.previewClose').on('click.previewClose', function(e) {
-                e.preventDefault();
-                var act = $(this).data('close-action') || 'close';
-                self.playChime('click');
-                $('#wppoppop-canvas-box').fadeOut(250, function() {
-                    alert('Preview: Popup closed via Close Icon (Action: ' + act + ')');
-                    $('#wppoppop-canvas-box').fadeIn(200);
-                });
-            });
-
-            $('.wppoppop-preview-star').off('click.previewStar').on('click.previewStar', function(e) {
-                e.stopPropagation();
-                var ratingVal = parseInt($(this).data('val'), 10) || 5;
-                var $parent = $(this).closest('.wppoppop-field-rating');
-                $parent.find('.wppoppop-preview-star').each(function() {
-                    var v = parseInt($(this).data('val'), 10);
-                    $(this).css('color', v <= ratingVal ? '#f59e0b' : '#cbd5e1');
-                });
-                self.playChime('click');
-            });
-
-            $('.wppoppop-preview-sig-canvas').each(function() {
-                var sigCanvas = this;
-                var ctx = sigCanvas.getContext('2d');
-                var drawing = false;
-
-                $(sigCanvas).off('pointerdown.sig pointermove.sig pointerup.sig')
-                    .on('pointerdown.sig', function(e) {
-                        drawing = true;
-                        var rect = sigCanvas.getBoundingClientRect();
-                        ctx.beginPath();
-                        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-                    })
-                    .on('pointermove.sig', function(e) {
-                        if (!drawing) return;
-                        var rect = sigCanvas.getBoundingClientRect();
-                        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-                        ctx.strokeStyle = '#0f172a';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                    })
-                    .on('pointerup.sig pointercancel.sig', function() {
-                        drawing = false;
-                    });
-            });
-
-            $('.wppoppop-preview-sig-clear').off('click.sigClear').on('click.sigClear', function(e) {
-                e.stopPropagation();
-                var $c = $(this).siblings('.wppoppop-preview-sig-canvas');
-                if ($c.length) {
-                    var ctx = $c[0].getContext('2d');
-                    ctx.clearRect(0, 0, $c[0].width, $c[0].height);
-                }
-            });
-
-            $('.wppoppop-preview-wheel-wrap').each(function() {
-                var $wrap = $(this);
-                var canvas = $wrap.find('.wppoppop-preview-wheel-canvas')[0];
-                if (!canvas) return;
-
-                var ctx = canvas.getContext('2d');
-                var slices = ['10% OFF', 'FREE SHIPPING', '25% OFF', 'JACKPOT', '5% OFF'];
-                var numSlices = slices.length;
-                var arc = (2 * Math.PI) / numSlices;
-                var colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
-                var r = canvas.width / 2;
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (var i = 0; i < numSlices; i++) {
-                    var angle = i * arc;
-                    ctx.beginPath();
-                    ctx.fillStyle = colors[i % colors.length];
-                    ctx.moveTo(r, r);
-                    ctx.arc(r, r, r - 3, angle, angle + arc);
-                    ctx.lineTo(r, r);
-                    ctx.fill();
-                    ctx.save();
-                    ctx.translate(r, r);
-                    ctx.rotate(angle + arc / 2);
-                    ctx.textAlign = 'right';
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 10px sans-serif';
-                    ctx.fillText(slices[i], r - 8, 3);
-                    ctx.restore();
-                }
-
-                $wrap.find('.wppoppop-preview-wheel-btn').off('click.wheelSpin').on('click.wheelSpin', function(e) {
-                    e.stopPropagation();
-                    var $btn = $(this);
-                    if ($btn.prop('disabled')) return;
-                    $btn.prop('disabled', true);
-
-                    var winIdx = Math.floor(Math.random() * numSlices);
-                    var deg = 1800 + (360 - (winIdx * (360 / numSlices) + 18));
-                    $(canvas).css({
-                        transition: 'transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1)',
-                        transform: 'rotate(' + deg + 'deg)'
-                    });
-
-                    setTimeout(function() {
-                        self.playChime('win');
-                        self.launchConfetti();
-                        $btn.text('Won: ' + slices[winIdx] + '!').css('background', '#10b981');
-                    }, 3500);
-                });
-            });
-
-            $('.wppoppop-preview-scratch-wrap').each(function() {
-                var $wrap = $(this);
-                var canvas = $wrap.find('.wppoppop-preview-scratch-canvas')[0];
-                if (!canvas) return;
-
-                var ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#94a3b8';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 11px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('SCRATCH TO REVEAL', canvas.width / 2, canvas.height / 2 + 4);
-
-                var scratching = false;
-                var cleared = false;
-
-                $(canvas).off('pointerdown.scratch pointermove.scratch pointerup.scratch')
-                    .on('pointerdown.scratch', function(e) {
-                        scratching = true;
-                        scratchAt(e);
-                    })
-                    .on('pointermove.scratch', function(e) {
-                        if (!scratching) return;
-                        scratchAt(e);
-                    })
-                    .on('pointerup.scratch pointercancel.scratch', function() {
-                        scratching = false;
-                    });
-
-                function scratchAt(e) {
-                    var rect = canvas.getBoundingClientRect();
-                    var x = e.clientX - rect.left;
-                    var y = e.clientY - rect.top;
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 14, 0, Math.PI * 2, false);
-                    ctx.fill();
-
-                    if (!cleared) {
-                        cleared = true;
-                        setTimeout(function() {
-                            $(canvas).fadeOut(300);
-                            self.playChime('win');
-                            self.launchConfetti();
-                        }, 1200);
-                    }
-                }
-            });
-
-            $('.wppoppop-preview-countdown').each(function() {
-                var $timer = $(this);
-                var secs = parseInt($timer.data('secs'), 10) || 900;
-                var $display = $timer.find('.cd-display');
-
-                if ($timer.data('timer-id')) {
-                    clearInterval($timer.data('timer-id'));
-                }
-
-                var tid = setInterval(function() {
-                    secs--;
-                    if (secs <= 0) {
-                        clearInterval(tid);
-                        secs = 0;
-                    }
-                    var m = Math.floor(secs / 60);
-                    var s = secs % 60;
-                    $display.text((m < 10 ? '0' : '') + m + ' : ' + (s < 10 ? '0' : '') + s);
-                }, 1000);
-
-                $timer.data('timer-id', tid);
-            });
-        },
-
-        transitionToCanvas: function(targetCanvas) {
-            var self = this;
-            var core = window.WpPopPopBuilderCore;
-            if (!core) return;
-
-            var cur = core.state.currentCanvas || 1;
-            var meta = (core.state.canvasMeta && core.state.canvasMeta[cur]) || {};
-            var $box = $('#wppoppop-canvas-box');
-
-            var exitAnim = (meta.anim_disappearance || 'fadeOut').toString().trim();
-            if (exitAnim.indexOf('animate__') !== 0 && exitAnim !== 'none') {
-                exitAnim = 'animate__' + exitAnim;
-            }
-
-            var doSwitch = function() {
-                core.switchCanvas(targetCanvas);
-                self.playCanvasEntranceAnimation();
-            };
-
-            if (exitAnim !== 'none') {
-                $box.removeClass(function(i, c) { return (c.match(/(^|\s)animate__\S+/g) || []).join(' '); });
-                $box.addClass('animate__animated ' + exitAnim);
-                setTimeout(doSwitch, 350);
-            } else {
-                doSwitch();
-            }
-        },
-
-        handlePreviewSubmit: function($btn) {
-            var self = this;
-            var $box = $('#wppoppop-canvas-box');
-            var valid = true;
-
-            $box.find('input[type="email"]').each(function() {
-                var val = $(this).val();
-                if ($(this).prop('required') && (!val || val.indexOf('@') === -1)) {
-                    valid = false;
-                    $(this).css('borderColor', '#ef4444');
-                } else {
-                    $(this).css('borderColor', '#cbd5e1');
-                }
-            });
-
-            $box.find('input[type="text"]').each(function() {
-                var val = $(this).val();
-                if ($(this).prop('required') && !val.trim()) {
-                    valid = false;
-                    $(this).css('borderColor', '#ef4444');
-                } else {
-                    $(this).css('borderColor', '#cbd5e1');
-                }
-            });
-
-            if (!valid) {
-                alert('Please fill out all required fields.');
-                return;
-            }
-
-            this.playChime('win');
-            this.launchConfetti();
-            $('#wppoppop-stage-status-overlay').addClass('active');
-        },
-
-        playChime: function(type) {
-            try {
-                var AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                if (!this.audioCtx) this.audioCtx = new AudioContext();
-                var ctx = this.audioCtx;
-                if (ctx.state === 'suspended') {
-                    ctx.resume().catch(function() {});
-                }
-
-                var osc = ctx.createOscillator();
-                var gain = ctx.createGain();
-                osc.type = (type === 'win') ? 'triangle' : 'sine';
-                osc.frequency.setValueAtTime(type === 'win' ? 659.25 : 523.25, ctx.currentTime);
-                if (type === 'win') {
-                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.25);
-                }
-                gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(ctx.currentTime);
-                osc.stop(ctx.currentTime + 0.36);
-            } catch(e) {}
-        },
-
-        launchConfetti: function() {
-            var $box = $('#wppoppop-canvas-box');
-            var canvas = document.createElement('canvas');
-            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:999999;';
-            $box.append(canvas);
-
-            var w = canvas.width = $box.outerWidth() || 640;
-            var h = canvas.height = $box.outerHeight() || 400;
-            var ctx = canvas.getContext('2d');
-            var particles = [];
-            var colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
-
-            for (var i = 0; i < 60; i++) {
-                particles.push({
-                    x: w / 2,
-                    y: h / 2,
-                    w: Math.random() * 8 + 4,
-                    h: Math.random() * 6 + 4,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    vx: (Math.random() - 0.5) * 12,
-                    vy: (Math.random() - 0.7) * 14,
-                    rot: Math.random() * 360,
-                    vRot: (Math.random() - 0.5) * 10
-                });
-            }
-
-            var frame = 0;
-            function animate() {
-                ctx.clearRect(0, 0, w, h);
-                particles.forEach(function(p) {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.35;
-                    p.rot += p.vRot;
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate((p.rot * Math.PI) / 180);
-                    ctx.fillStyle = p.color;
-                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-                    ctx.restore();
-                });
-
-                frame++;
-                if (frame < 100) {
-                    requestAnimationFrame(animate);
-                } else {
-                    $(canvas).remove();
-                }
-            }
-            animate();
         }
     };
-
-    window.WpPopPopBuilder = window.WpPopPopBuilder || {};
-    window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
 })(jQuery);
