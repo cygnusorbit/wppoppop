@@ -168,18 +168,38 @@ if (!defined('ABSPATH')) {
                         <label for="prop-letter-spacing" style="font-size:10px;font-weight:700;color:#94a3b8;">SPACING (PX)</label>
                         <input type="number" id="prop-letter-spacing" class="wppoppop-input" step="0.5" value="0" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
-                    <div>
-                        <label for="prop-text-align" style="font-size:10px;font-weight:700;color:#94a3b8;">TEXT ALIGN</label>
-                        <select id="prop-text-align" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    <div style="grid-column: span 2;">
+                        <label for="prop-text-align" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;text-transform:uppercase;">TEXT ALIGN</label>
+                        <select id="prop-text-align" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                             <option value="left">Left</option>
                             <option value="center">Center</option>
                             <option value="right">Right</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="prop-padding" style="font-size:10px;font-weight:700;color:#38bdf8;">PADDING (PX)</label>
-                        <input type="number" id="prop-padding" class="wppoppop-input" min="0" max="100" value="0" style="width:100%;background:#0f172a;border:1px solid #38bdf8;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                </div>
+
+                <!-- 4-Way Directional Padding Section (Dedicated Row & Matching CSS) -->
+                <div>
+                    <label style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">PADDING (PX) — TOP / RIGHT / BOTTOM / LEFT</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
+                        <div>
+                            <label for="prop-padding-top" style="font-size:9px;font-weight:700;color:#94a3b8;display:block;margin-bottom:3px;text-align:center;text-transform:uppercase;">TOP</label>
+                            <input type="number" id="prop-padding-top" class="wppoppop-input" min="0" max="200" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 4px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                        </div>
+                        <div>
+                            <label for="prop-padding-right" style="font-size:9px;font-weight:700;color:#94a3b8;display:block;margin-bottom:3px;text-align:center;text-transform:uppercase;">RIGHT</label>
+                            <input type="number" id="prop-padding-right" class="wppoppop-input" min="0" max="200" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 4px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                        </div>
+                        <div>
+                            <label for="prop-padding-bottom" style="font-size:9px;font-weight:700;color:#94a3b8;display:block;margin-bottom:3px;text-align:center;text-transform:uppercase;">BOTTOM</label>
+                            <input type="number" id="prop-padding-bottom" class="wppoppop-input" min="0" max="200" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 4px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                        </div>
+                        <div>
+                            <label for="prop-padding-left" style="font-size:9px;font-weight:700;color:#94a3b8;display:block;margin-bottom:3px;text-align:center;text-transform:uppercase;">LEFT</label>
+                            <input type="number" id="prop-padding-left" class="wppoppop-input" min="0" max="200" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 4px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                        </div>
                     </div>
+                    <input type="hidden" id="prop-padding" value="0">
                 </div>
 
                 <!-- Colors Section -->
