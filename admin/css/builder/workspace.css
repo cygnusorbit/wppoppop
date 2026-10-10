@@ -1,0 +1,24 @@
+/**
+ * WpPopPop Visual Builder: Workspace Area Styling
+ */
+.wppoppop-builder-workspace {
+    position: relative !important;
+    flex: 1;
+    height: 100%;
+    overflow: hidden !important;
+    background-color: #f1f5f9;
+    background-image: 
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    margin-right: 0 !important;
+}
+
+.panel-open .wppoppop-builder-workspace,
+.wppoppop-builder-wrap.panel-open .wppoppop-builder-workspace {
+    margin-right: 0 !important;
+    width: 100% !important;
+}
