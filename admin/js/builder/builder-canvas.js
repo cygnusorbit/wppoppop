@@ -58,6 +58,7 @@
             }
 
             this.playCanvasEntranceAnimation();
+            this.playAllElementsEntranceAnimation();
             this.initActivePreviewWidgets();
         },
 
@@ -553,3 +554,13 @@
         }
     };
 })(jQuery);
+
+    // Global Replay Animation Engine for Preview Floating Bar
+    $(document).off('click.replaySync', '#wppoppop-btn-preview, #wppoppop-preview-replay-btn, #preview-replay-btn').on('click.replaySync', '#wppoppop-btn-preview, #wppoppop-preview-replay-btn, #preview-replay-btn', function() {
+        setTimeout(function() {
+            if (window.WpPopPopBuilderCanvas) {
+                window.WpPopPopBuilderCanvas.playCanvasEntranceAnimation();
+                window.WpPopPopBuilderCanvas.playAllElementsEntranceAnimation();
+            }
+        }, 60);
+    });

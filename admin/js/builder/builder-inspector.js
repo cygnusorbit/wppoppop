@@ -108,7 +108,26 @@
             $('#prop-line-height').val(el.lineHeight || 1.4);
             $('#prop-letter-spacing').val(el.letterSpacing || 0);
             $('#prop-text-align').val(el.textAlign || 'left');
-            $('#prop-padding').val(el.padding !== undefined ? el.padding : 0);
+            // Discrete 4-way padding hydration
+            var pTop = el.paddingTop !== undefined ? el.paddingTop : (el.padding_top !== undefined ? el.padding_top : (el.padding !== undefined ? el.padding : 0));
+            var pRight = el.paddingRight !== undefined ? el.paddingRight : (el.padding_right !== undefined ? el.padding_right : (el.padding !== undefined ? el.padding : 0));
+            var pBottom = el.paddingBottom !== undefined ? el.paddingBottom : (el.padding_bottom !== undefined ? el.padding_bottom : (el.padding !== undefined ? el.padding : 0));
+            var pLeft = el.paddingLeft !== undefined ? el.paddingLeft : (el.padding_left !== undefined ? el.padding_left : (el.padding !== undefined ? el.padding : 0));
+            $('#prop-padding-top').val(pTop);
+            $('#prop-padding-right').val(pRight);
+            $('#prop-padding-bottom').val(pBottom);
+            $('#prop-padding-left').val(pLeft);
+            $('#prop-padding').val(pTop);
+
+            // Content tab animation hydration
+            var animEff = el.anim_appearance || el.animation || el.animEffect || el.anim_effect || 'none';
+            var animDur = el.anim_duration !== undefined ? el.anim_duration : (el.duration !== undefined ? el.duration : 1000);
+            var animDel = el.anim_delay !== undefined ? el.anim_delay : (el.delay !== undefined ? el.delay : 0);
+            var animDis = el.anim_disappearance || el.exitAnimation || el.animExit || 'none';
+            $('#prop-animation, #prop-anim-appearance, #prop-anim-effect').val(animEff);
+            $('#prop-anim-duration').val(animDur);
+            $('#prop-anim-delay').val(animDel);
+            $('#prop-anim-disappearance').val(animDis);
             var padTop = el.paddingTop !== undefined ? el.paddingTop : (el.padding !== undefined ? el.padding : 0);
             var padRight = el.paddingRight !== undefined ? el.paddingRight : (el.padding !== undefined ? el.padding : 0);
             var padBottom = el.paddingBottom !== undefined ? el.paddingBottom : (el.padding !== undefined ? el.padding : 0);
