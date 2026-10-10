@@ -231,6 +231,10 @@
             }
         },
 
+        pushLayerPanel: function(isOpen) {
+            this.pushForInspector(isOpen);
+        },
+
         bindEvents: function() {
             var self = this;
 
