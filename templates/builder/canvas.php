@@ -9,12 +9,8 @@ if (!defined('ABSPATH')) {
         <span class="wppoppop-preview-badge">
             <span class="dashicons dashicons-visibility"></span> LIVE PREVIEW MODE
         </span>
-        <button type="button" id="wppoppop-preview-replay-btn" class="button wppoppop-preview-bar-btn" title="Replay Canvas Entrance Animation">
-            <span class="dashicons dashicons-controls-play"></span> Replay Animation
-        </button>
-        <button type="button" id="wppoppop-preview-exit-btn" class="button button-primary wppoppop-preview-bar-btn" title="Exit Preview and Return to Editor">
-            <span class="dashicons dashicons-edit"></span> Exit Preview
-        </button>
+        <button type="button" id="wppoppop-preview-replay-btn" class="button wppoppop-preview-bar-btn" title="Replay Canvas Entrance Animation">Replay Animation</button>
+        <button type="button" id="wppoppop-preview-exit-btn" class="button button-primary wppoppop-preview-bar-btn" title="Exit Preview and Return to Editor">Exit Preview</button>
     </div>
 
     <!-- Floating Draggable Magenta LAYERS Panel (Top Right of Workspace) -->

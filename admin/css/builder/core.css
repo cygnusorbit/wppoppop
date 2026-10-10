@@ -658,3 +658,50 @@ body.wppoppop-resizing-canvas {
 .wppoppop-ribbon-tool span:not(.dashicons) {
     display: none !important;
 }
+
+/* ==========================================================================
+   WpPopPop Visual Builder: Clean Text-Only Preview & Replay Controls
+   Cross-Browser Centered across Chrome, Safari, Firefox, Edge
+   ========================================================================== */
+#wppoppop-btn-preview,
+#wppoppop-btn-replay-anim,
+#wppoppop-btn-exit-preview,
+#wppoppop-preview-replay,
+#wppoppop-preview-exit,
+.wppoppop-btn-preview,
+.wppoppop-btn-replay-anim,
+.wppoppop-btn-exit-preview {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 14px !important;
+    height: 32px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    cursor: pointer !important;
+}
+
+/* Guard against residual icon elements rendering inside these controls */
+#wppoppop-btn-preview .dashicons,
+#wppoppop-btn-preview .dashicons::before,
+#wppoppop-btn-replay-anim .dashicons,
+#wppoppop-btn-replay-anim .dashicons::before,
+#wppoppop-btn-exit-preview .dashicons,
+#wppoppop-btn-exit-preview .dashicons::before,
+#wppoppop-preview-replay .dashicons,
+#wppoppop-preview-replay .dashicons::before,
+#wppoppop-preview-exit .dashicons,
+#wppoppop-preview-exit .dashicons::before,
+.wppoppop-btn-preview .dashicons,
+.wppoppop-btn-replay-anim .dashicons,
+.wppoppop-btn-exit-preview .dashicons {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
