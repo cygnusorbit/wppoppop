@@ -109,6 +109,14 @@
             $('#prop-letter-spacing').val(el.letterSpacing || 0);
             $('#prop-text-align').val(el.textAlign || 'left');
             $('#prop-padding').val(el.padding !== undefined ? el.padding : 0);
+            var padTop = el.paddingTop !== undefined ? el.paddingTop : (el.padding !== undefined ? el.padding : 0);
+            var padRight = el.paddingRight !== undefined ? el.paddingRight : (el.padding !== undefined ? el.padding : 0);
+            var padBottom = el.paddingBottom !== undefined ? el.paddingBottom : (el.padding !== undefined ? el.padding : 0);
+            var padLeft = el.paddingLeft !== undefined ? el.paddingLeft : (el.padding !== undefined ? el.padding : 0);
+            $('#prop-padding-top').val(padTop);
+            $('#prop-padding-right').val(padRight);
+            $('#prop-padding-bottom').val(padBottom);
+            $('#prop-padding-left').val(padLeft);
 
             // Animation
             $('#prop-animation').val(el.animation || 'none');
