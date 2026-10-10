@@ -176,6 +176,61 @@
             }
         },
 
+        pushForInspector: function(isOpen) {
+            var $panel = $('#wppoppop-floating-layers-panel');
+            if (!$panel.length) return;
+
+            var $workspace = $('#wppoppop-builder-workspace, .wppoppop-builder-workspace').first();
+            var wsWidth = $workspace.width() || $(window).width();
+            var drawerWidth = 360;
+            var gutter = 16;
+            var panelWidth = $panel.outerWidth() || 240;
+
+            if (isOpen) {
+                var hasInlineLeft = $panel[0].style.left !== '' && $panel[0].style.left !== 'auto';
+                if (hasInlineLeft) {
+                    var currentLeft = parseFloat($panel.css('left')) || 0;
+                    var collisionThreshold = wsWidth - drawerWidth - gutter;
+
+                    if (currentLeft + panelWidth > collisionThreshold) {
+                        if ($panel.data('orig-left') === undefined) {
+                            $panel.data('orig-left', currentLeft);
+                        }
+                        var pushedLeft = Math.max(gutter, collisionThreshold - panelWidth);
+                        $panel.css({
+                            left: pushedLeft + 'px',
+                            right: 'auto',
+                            transition: 'left 0.28s cubic-bezier(0.16, 1, 0.3, 1)'
+                        });
+                    }
+                } else {
+                    $panel.removeClass('is-dragged').addClass('docked-default');
+                    $panel.css({
+                        right: (drawerWidth + gutter) + 'px',
+                        left: 'auto',
+                        transition: 'right 0.28s cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+                }
+            } else {
+                if ($panel.data('orig-left') !== undefined) {
+                    var origLeft = $panel.data('orig-left');
+                    $panel.removeData('orig-left');
+                    $panel.css({
+                        left: origLeft + 'px',
+                        right: 'auto',
+                        transition: 'left 0.28s cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+                } else if (!$panel.hasClass('is-dragged') || ($panel[0].style.left === '' || $panel[0].style.left === 'auto')) {
+                    $panel.addClass('docked-default');
+                    $panel.css({
+                        right: gutter + 'px',
+                        left: 'auto',
+                        transition: 'right 0.28s cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+                }
+            }
+        },
+
         bindEvents: function() {
             var self = this;
 

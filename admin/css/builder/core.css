@@ -1002,3 +1002,71 @@ body.wppoppop-resizing-canvas {
     vertical-align: middle !important;
     color: currentColor !important;
 }
+
+/* WPPOPPOP_INSPECTOR_CHECKER_SLIDE_IN */
+/* Checkerboard Workspace: Retain 100% full width without contracting */
+.wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+    margin-right: 0 !important;
+}
+
+.panel-open .wppoppop-builder-workspace,
+.inspector-open .wppoppop-builder-workspace,
+.wppoppop-builder-wrap.panel-open .wppoppop-builder-workspace {
+    margin-right: 0 !important;
+    width: 100% !important;
+}
+
+/* Layer Setting Inspector Drawer: Slides in strictly within checker area */
+#wppoppop-inspector-drawer.wppoppop-inspector-drawer,
+#wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    background: #ffffff !important;
+    border-left: 1px solid #cbd5e1 !important;
+    box-shadow: -4px 0 24px rgba(15, 23, 42, 0.15) !important;
+    z-index: 99990 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+}
+
+#wppoppop-inspector-drawer.is-open,
+.panel-open #wppoppop-inspector-drawer,
+.inspector-open #wppoppop-inspector-drawer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Synchronized Floating Layers Push Transition */
+#wppoppop-floating-layers-panel {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px;
+    z-index: 100000 !important;
+    transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    -webkit-transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.panel-open #wppoppop-floating-layers-panel.docked-default,
+.panel-open #wppoppop-floating-layers-panel.docked-right,
+.panel-open #wppoppop-floating-layers-panel:not(.is-dragged):not([style*="left:"]),
+.inspector-open #wppoppop-floating-layers-panel:not(.is-dragged):not([style*="left:"]) {
+    right: 376px !important; /* 360px drawer + 16px gutter */
+    left: auto !important;
+}

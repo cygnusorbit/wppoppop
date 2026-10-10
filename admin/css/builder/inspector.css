@@ -180,7 +180,7 @@
 @media screen and (max-width: 992px) {
     #wppoppop-inspector-drawer,
     .wppoppop-inspector-drawer {
-        position: fixed !important;
+        position: absolute !important;
         top: 32px !important;
         right: 0 !important;
         bottom: 0 !important;

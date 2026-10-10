@@ -96,6 +96,19 @@
         },
 
         open: function(id) {
+            // Ensure Inspector Drawer is structurally contained within checkerboard workspace
+            var $drawer = $('#wppoppop-inspector-drawer');
+            var $ws = $('.wppoppop-builder-workspace, #wppoppop-builder-workspace').first();
+            if ($drawer.length && $ws.length && $drawer.parent()[0] !== $ws[0]) {
+                $drawer.appendTo($ws);
+            }
+            $('body').addClass('inspector-open');
+            $drawer.css('display', 'flex').removeClass('is-closed').addClass('is-open');
+
+            if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+                window.WpPopPopBuilderLayers.pushForInspector(true);
+            }
+
             this.activeId = id;
             var el = this.getActiveElement();
             if (!el) return;
@@ -154,6 +167,13 @@
         },
 
         close: function() {
+            $('body').removeClass('inspector-open');
+            $('#wppoppop-inspector-drawer').removeClass('is-open').addClass('is-closed');
+
+            if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+                window.WpPopPopBuilderLayers.pushForInspector(false);
+            }
+
             $('#wppoppop-inspector-drawer').removeClass('open').css('transform', 'translateX(100%)');
             $('body').removeClass('panel-open');
             this.activeId = null;
