@@ -84,6 +84,38 @@
           },
           "styles": {
             "type": "object"
+          },
+          "paddingTop": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paddingRight": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paddingBottom": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paddingLeft": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "padding_top": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "padding_right": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "padding_bottom": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "padding_left": {
+            "type": "integer",
+            "minimum": 0
           }
         },
         "required": [

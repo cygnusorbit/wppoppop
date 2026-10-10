@@ -1,3 +1,16 @@
+
+    function resolveActiveElement() {
+        if (!window.WpPopPopBuilderCore || !window.WpPopPopBuilderCore.state) return null;
+        var rawId = window.WpPopPopBuilderCore.state.activeId;
+        if (!rawId) return null;
+        var cleanId = String(rawId).replace(/^el-/, '');
+        var cur = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+        var elements = (window.WpPopPopBuilderCore.state.canvases && window.WpPopPopBuilderCore.state.canvases[cur]) ? window.WpPopPopBuilderCore.state.canvases[cur] : [];
+        return elements.find(function(it) {
+            return String(it.id).replace(/^el-/, '') === cleanId;
+        });
+    }
+
 /**
  * WpPopPop Visual Builder: Layer Settings Inspector Controller
  * Hydrates 26 Elements, Vector Shapes, Spacing/Padding, Typography & Swatches

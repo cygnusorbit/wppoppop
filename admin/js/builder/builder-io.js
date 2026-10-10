@@ -93,6 +93,34 @@
                 }
             }
 
+            // Pre-save DOM-to-Model Flush: commit active directional padding inputs directly before serialization
+            if ($('#prop-padding-top').length) {
+                var activeRawId = core.state.activeId;
+                if (activeRawId && core.state.canvases) {
+                    var cleanId = String(activeRawId).replace(/^el-/, '');
+                    var curCanvas = core.state.currentCanvas || 1;
+                    var cElements = core.state.canvases[curCanvas] || [];
+                    var activeModel = cElements.find(function(it) {
+                        return String(it.id).replace(/^el-/, '') === cleanId;
+                    });
+                    if (activeModel) {
+                        var pt = Math.max(0, parseInt($('#prop-padding-top').val(), 10) || 0);
+                        var pr = Math.max(0, parseInt($('#prop-padding-right').val(), 10) || 0);
+                        var pb = Math.max(0, parseInt($('#prop-padding-bottom').val(), 10) || 0);
+                        var pl = Math.max(0, parseInt($('#prop-padding-left').val(), 10) || 0);
+                        activeModel.paddingTop = pt;
+                        activeModel.paddingRight = pr;
+                        activeModel.paddingBottom = pb;
+                        activeModel.paddingLeft = pl;
+                        activeModel.padding_top = pt;
+                        activeModel.padding_right = pr;
+                        activeModel.padding_bottom = pb;
+                        activeModel.padding_left = pl;
+                        activeModel.padding = pt;
+                    }
+                }
+            }
+
             var payload = {
                     canvases: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
                     screens: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
