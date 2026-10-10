@@ -33,6 +33,121 @@ if (!defined('ABSPATH')) {
 
                 <!-- DYNAMIC ELEMENT-SPECIFIC SETTINGS -->
                 <div id="wppoppop-element-specific-settings">
+
+                <!-- VIDEO -->
+                <div class="element-panel" id="panel-elem-video" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">VIDEO URL (YOUTUBE / VIMEO / MP4)</label>
+                    <input type="url" id="prop-video-url" class="widefat" placeholder="https://www.youtube.com/watch?v=..." style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:flex;gap:12px;align-items:center;margin-top:6px;">
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-video-autoplay" value="1"> Autoplay
+                        </label>
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-video-controls" value="1" checked> Controls
+                        </label>
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-video-loop" value="1"> Loop
+                        </label>
+                    </div>
+                </div>
+                <!-- LINK / ACTION BUTTON -->
+                <div class="element-panel" id="panel-elem-link" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON / LINK TEXT</label>
+                    <input type="text" id="prop-link-label" value="Learn More &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">LINK DESTINATION URL</label>
+                    <input type="url" id="prop-link-url" placeholder="https://..." class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-link-target-blank" value="1" checked> Open in New Tab
+                    </label>
+                </div>
+                <!-- CLOSE BUTTON -->
+                <div class="element-panel" id="panel-elem-close" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE BUTTON ICON / LABEL</label>
+                    <input type="text" id="prop-close-label" value="&times;" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE ACTION BEHAVIOR</label>
+                    <select id="prop-close-action" class="widefat" style="font-size:12px;">
+                        <option value="close">Close popup immediately</option>
+                        <option value="close_period">Close and hide for current session</option>
+                        <option value="close_forever">Close and hide permanently</option>
+                    </select>
+                </div>
+                <!-- WHEEL -->
+                <div class="element-panel" id="panel-elem-wheel" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRIZE SLICES (COMMA SEPARATED)</label>
+                    <textarea id="prop-wheel-slices" rows="4" class="widefat" placeholder="10% OFF, FREE SHIPPING, 25% OFF, JACKPOT" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SPIN BUTTON LABEL</label>
+                    <input type="text" id="prop-wheel-btn-text" value="SPIN TO WIN!" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">WIN MESSAGE</label>
+                    <input type="text" id="prop-wheel-win-msg" value="Congratulations! You won {prize}!" class="widefat" style="font-size:12px;">
+                </div>
+                <!-- SCRATCH -->
+                <div class="element-panel" id="panel-elem-scratch" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SECRET WINNING / REVEAL TEXT</label>
+                    <input type="text" id="prop-scratch-prize" value="YOU WON 25% OFF! USE CODE: WIN25" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FOIL COVER COLOR</label>
+                    <input type="color" id="prop-scratch-foil" value="#94a3b8" class="widefat" style="height:32px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PERCENT UNCOVERED TO REVEAL (10-90%)</label>
+                    <input type="number" id="prop-scratch-pct" min="10" max="90" value="45" class="widefat" style="font-size:12px;">
+                </div>
+                <!-- COUNTDOWN -->
+                <div class="element-panel" id="panel-elem-countdown" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DURATION (SECONDS)</label>
+                    <input type="number" id="prop-countdown-seconds" value="900" class="widefat" placeholder="e.g. 900 for 15 minutes" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON EXPIRE</label>
+                    <select id="prop-countdown-expire" class="widefat" style="font-size:12px;">
+                        <option value="none">Stay at 00:00</option>
+                        <option value="close">Close Popup</option>
+                        <option value="redirect">Redirect URL</option>
+                    </select>
+                </div>
+                <!-- RATING -->
+                <div class="element-panel" id="panel-elem-rating" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT STAR RATING (1-5)</label>
+                    <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">STAR COLOR</label>
+                    <input type="color" id="prop-rating-color" value="#f59e0b" class="widefat" style="height:32px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-rating-fieldname" value="rating" class="widefat" style="font-size:12px;">
+                </div>
+                <!-- SIGNATURE -->
+                <div class="element-panel" id="panel-elem-signature" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PEN INK COLOR</label>
+                    <input type="color" id="prop-sig-color" value="#0f172a" class="widefat" style="height:32px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLEAR BUTTON LABEL</label>
+                    <input type="text" id="prop-sig-clear-label" value="Clear Signature" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME</label>
+                    <input type="text" id="prop-sig-fieldname" value="digital_signature" class="widefat" style="font-size:12px;">
+                </div>
+                <!-- SLIDER -->
+                <div class="element-panel" id="panel-elem-slider" style="display:none;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MIN</label>
+                            <input type="number" id="prop-slider-min" value="0" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MAX</label>
+                            <input type="number" id="prop-slider-max" value="100" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">DEFAULT</label>
+                            <input type="number" id="prop-slider-val" value="50" class="widefat" style="font-size:11px;">
+                        </div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
+                </div>
+                <!-- SUBMIT BUTTON -->
+                <div class="element-panel" id="panel-elem-submit" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-submit-label" value="Submit Form" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON SUBMIT</label>
+                    <select id="prop-submit-action" class="widefat" style="font-size:12px;">
+                        <option value="default">Save Lead & Close</option>
+                        <option value="next_canvas">Save Lead & Advance to Next Canvas</option>
+                        <option value="redirect">Save Lead & Redirect URL</option>
+                    </select>
+                </div>
                     
                     <!-- Element #1: Title -->
                     <div id="panel-elem-title" class="wppoppop-elem-panel" style="display:none;">
