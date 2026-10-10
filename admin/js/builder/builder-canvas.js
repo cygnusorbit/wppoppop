@@ -395,18 +395,50 @@ switch (type) {
             }
         },
 
-        playAnimation: function(id, effect) {
-            if (!effect || effect === 'none') return;
-            var $node = $('#el-' + id);
-            if (!$node.length) return;
+        playAnimation: function(id, effect, duration, delay) {
+            var $elNode = $('#el-' + id);
+            if (!$elNode.length) return;
 
-            $node.removeClass(function(index, className) {
-                return (className.match(/\banimate__\S+/g) || []).join(' ') + ' ' + (className.match(/\banim-\S+/g) || []).join(' ');
+            var cls = ($elNode.attr('class') || '').split(/\s+/);
+            var toRemove = cls.filter(function(c) {
+                return c.indexOf('anim-') === 0 || 
+                       c.indexOf('wppoppop-anim-') === 0 || 
+                       c.indexOf('animate__') === 0 ||
+                       c.indexOf('bounce') === 0;
+            });
+            if (toRemove.length) {
+                $elNode.removeClass(toRemove.join(' '));
+            }
+
+            var eff = (effect || '').toString().trim();
+            if (!eff || eff.toLowerCase() === 'none') return;
+
+            var cleanEff = eff.replace(/^animate__/, '').replace(/^(?:anim-|wppoppop-anim-)/, '');
+            if (cleanEff.toLowerCase() === 'fade') cleanEff = 'fadeIn';
+
+            var dur = (duration !== undefined && duration !== '') ? parseInt(duration, 10) : 1000;
+            if (isNaN(dur) || dur < 0) dur = 1000;
+            var del = (delay !== undefined && delay !== '') ? parseInt(delay, 10) : 0;
+            if (isNaN(del) || del < 0) del = 0;
+
+            // Force DOM layout reflow
+            if ($elNode[0]) void $elNode[0].offsetWidth;
+
+            $elNode.css({
+                'animation-duration': dur + 'ms',
+                '-webkit-animation-duration': dur + 'ms',
+                'animation-delay': del + 'ms',
+                '-webkit-animation-delay': del + 'ms',
+                'animation-fill-mode': 'both',
+                '-webkit-animation-fill-mode': 'both',
+                '--animate-duration': (dur / 1000) + 's',
+                '--animate-delay': (del / 1000) + 's'
             });
 
-            void $node[0].offsetWidth;
-            $node.addClass('animate__animated animate__' + effect + ' anim-' + effect);
+            $elNode.addClass('anim-' + cleanEff + ' wppoppop-anim-' + cleanEff + ' animate__animated animate__' + cleanEff + ' ' + cleanEff);
         },
+
+        
 
         attachInteractions: function($node, el) {
             var self = this;
@@ -695,7 +727,7 @@ switch (type) {
                 self.exitPreviewMode();
             });
 
-            $(document).on('click', '#wppoppop-preview-replay-btn', function(e) {
+            $(document).on('click', '#wppoppop-preview-replay-btn, #wppoppop-preview-replay, #wppoppop-btn-replay-anim', function(e) {
                 e.preventDefault();
                 self.playCanvasEntranceAnimation();
             });
@@ -713,15 +745,27 @@ switch (type) {
             $('.wppoppop-builder-workspace').addClass('is-preview-mode');
 
             var $btn = $('#wppoppop-btn-preview');
-            $btn.addClass('preview-active')
-                .html('<span class="dashicons dashicons-edit"></span> <span class="wppoppop-btn-label">Exit Preview</span>');
+            $btn.addClass('preview-active');
+            var $label = $btn.find('.wppoppop-btn-label');
+            if ($label.length) {
+                $label.text('Exit Preview');
+            } else {
+                $btn.text('Exit Preview');
+            }
 
             if (window.WpPopPopBuilderInspector) window.WpPopPopBuilderInspector.close();
             if (window.WpPopPopBuilderSettings) window.WpPopPopBuilderSettings.closeDrawer();
 
             this.renderCanvas();
-            this.playCanvasEntranceAnimation();
-            this.playChime('open');
+
+            var self = this;
+            setTimeout(function() {
+                self.playCanvasEntranceAnimation();
+            }, 30);
+
+            if (typeof this.playChime === 'function') {
+                this.playChime('open');
+            }
         },
 
         exitPreviewMode: function() {
@@ -745,37 +789,86 @@ switch (type) {
             var core = window.WpPopPopBuilderCore;
             if (!core) return;
             var cur = core.state.currentCanvas || 1;
-            var meta = (core.state.canvasMeta && core.state.canvasMeta[cur]) || {};
+            var meta = (core.state.canvasMeta && core.state.canvasMeta[cur]) ? core.state.canvasMeta[cur] : {};
             var $box = $('#wppoppop-canvas-box');
+            if (!$box.length) $box = $('#wppoppop-canvas-stage');
+            if (!$box.length) return;
 
-            var appearance = (meta.anim_appearance || 'fadeIn').toString().trim();
-            var duration = parseInt(meta.anim_duration, 10) || 1000;
-            var delay = parseInt(meta.anim_delay, 10) || 0;
+            var rawAppearance = (meta.anim_appearance || meta.appearance || 'fadeIn').toString().trim();
+            var duration = parseInt(meta.anim_duration || meta.duration, 10);
+            if (isNaN(duration) || duration <= 0) duration = 1000;
+            var delay = parseInt(meta.anim_delay || meta.delay, 10);
+            if (isNaN(delay) || delay < 0) delay = 0;
 
-            $box.removeClass(function(i, c) { return (c.match(/(^|\s)animate__\S+/g) || []).join(' '); });
+            var removeAnimClasses = function($el) {
+                var cls = ($el.attr('class') || '').split(/\s+/);
+                var toRemove = cls.filter(function(c) {
+                    return c.indexOf('anim-') === 0 || 
+                           c.indexOf('wppoppop-anim-') === 0 || 
+                           c.indexOf('animate__') === 0;
+                });
+                if (toRemove.length) {
+                    $el.removeClass(toRemove.join(' '));
+                }
+            };
 
-            if (appearance === 'none') {
+            removeAnimClasses($box);
+
+            if (rawAppearance.toLowerCase() === 'none') {
                 $box.css({ opacity: 1 });
             } else {
-                var animClass = appearance;
-                if (animClass.indexOf('animate__') !== 0) {
-                    animClass = 'animate__' + animClass;
-                }
+                var cleanApp = rawAppearance.replace(/^animate__/, '').replace(/^(?:anim-|wppoppop-anim-)/, '');
+                if (cleanApp.toLowerCase() === 'fade') cleanApp = 'fadeIn';
+
+                // Force DOM reflow to restart animation reliably across Blink, WebKit, Gecko
+                if ($box[0]) void $box[0].offsetWidth;
 
                 $box.css({
+                    'animation-duration': duration + 'ms',
+                    '-webkit-animation-duration': duration + 'ms',
+                    'animation-delay': delay + 'ms',
+                    '-webkit-animation-delay': delay + 'ms',
+                    'animation-fill-mode': 'both',
+                    '-webkit-animation-fill-mode': 'both',
                     '--animate-duration': (duration / 1000) + 's',
                     '--animate-delay': (delay / 1000) + 's'
                 });
-                $box.addClass('animate__animated ' + animClass);
+
+                $box.addClass('anim-' + cleanApp + ' wppoppop-anim-' + cleanApp + ' animate__animated animate__' + cleanApp);
             }
 
-            var elements = this.getActiveElements();
+            // Trigger element entrance animations
+            var elements = this.getActiveElements ? this.getActiveElements() : [];
             elements.forEach(function(el) {
-                if (el.animEffect && el.animEffect !== 'none') {
-                    var $elNode = $('#el-' + el.id);
-                    $elNode.removeClass(function(i, c) { return (c.match(/(^|\s)animate__\S+/g) || []).join(' '); });
-                    $elNode.addClass('animate__animated animate__' + el.animEffect);
-                }
+                var effect = (el.animEffect || el.anim_effect || el.animation || el.anim || '').toString().trim();
+                if (!effect || effect.toLowerCase() === 'none') return;
+
+                var $elNode = $('#el-' + el.id);
+                if (!$elNode.length) return;
+
+                removeAnimClasses($elNode);
+
+                var cleanEffect = effect.replace(/^animate__/, '').replace(/^(?:anim-|wppoppop-anim-)/, '');
+                if (cleanEffect.toLowerCase() === 'fade') cleanEffect = 'fadeIn';
+
+                var elDuration = parseInt(el.animDuration || el.anim_duration || 800, 10);
+                var elDelay = parseInt(el.animDelay || el.anim_delay || 0, 10);
+
+                // Force DOM reflow on element node
+                if ($elNode[0]) void $elNode[0].offsetWidth;
+
+                $elNode.css({
+                    'animation-duration': elDuration + 'ms',
+                    '-webkit-animation-duration': elDuration + 'ms',
+                    'animation-delay': elDelay + 'ms',
+                    '-webkit-animation-delay': elDelay + 'ms',
+                    'animation-fill-mode': 'both',
+                    '-webkit-animation-fill-mode': 'both',
+                    '--animate-duration': (elDuration / 1000) + 's',
+                    '--animate-delay': (elDelay / 1000) + 's'
+                });
+
+                $elNode.addClass('anim-' + cleanEffect + ' wppoppop-anim-' + cleanEffect + ' animate__animated animate__' + cleanEffect);
             });
         },
 

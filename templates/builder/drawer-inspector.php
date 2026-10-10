@@ -232,40 +232,90 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <div class="wppoppop-prop-group" style="margin-bottom:18px;">
-                <label for="prop-anim-effect" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:8px;letter-spacing:0.5px;">Entrance Animation</label>
-                <div style="display:flex;gap:6px;">
-                    <select id="prop-anim-effect" style="flex:1;background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:6px;border-radius:4px;">
-                        <option value="none">None (Static)</option>
-                        <option value="fadeIn">Fade In</option>
-                        <option value="bounceIn">Bounce In</option>
-                        <option value="zoomIn">Zoom In</option>
-                        <option value="slideInUp">Slide In Up</option>
-                        <option value="slideInDown">Slide In Down</option>
-                        <option value="pulse">Pulse</option>
-                        <option value="tada">Tada</option>
-                    </select>
-                    <button type="button" id="prop-anim-test-btn" class="button button-small" style="background:#2563eb;color:#fff;border:none;padding:2px 8px;cursor:pointer;">Play</button>
-                </div>
-            </div>
-        </div>
+            <!-- ELEMENT ANIMATION SUITE -->
+                <div class="wppoppop-elem-anim-setting-wrap" style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">ANIMATION</span>
+                            <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#2563eb;cursor:help;display:inline-flex;align-items:center;justify-content:center;" title="Configure appearance entrance and disappearance exit animations for this element."></span>
+                        </div>
+                        <a href="https://animate.style/" target="_blank" rel="noopener noreferrer" class="wppoppop-anim-badge-link" style="display:inline-flex;align-items:center;padding:2px 8px;font-size:11px;font-weight:600;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;text-decoration:none;line-height:1.4;">Animate.css</a>
+                    </div>
 
-        <!-- ================= TAB 3: LOGIC ================= -->
-        <div id="wppoppop-insp-tab-logic" class="wppoppop-insp-tab-content" style="display:none;">
-            <div class="wppoppop-prop-group" style="margin-bottom:18px;">
-                <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:8px;letter-spacing:0.5px;">Form Token Variable</label>
-                <p style="font-size:12px;color:#94a3b8;margin:0 0 8px 0;">Use this token in subsequent screens or autoresponders:</p>
-                <code id="prop-logic-token" style="display:block;background:#1e293b;padding:8px;border-radius:4px;color:#38bdf8;font-size:13px;">{field_token}</code>
-            </div>
-            <div class="wppoppop-prop-group" style="margin-bottom:18px;">
-                <label for="prop-click-action" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:8px;letter-spacing:0.5px;">Click Action Trigger</label>
-                <select id="prop-click-action" style="width:100%;background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:6px;border-radius:4px;">
-                    <option value="none">None</option>
-                    <option value="close">Close Popup</option>
-                    <option value="redirect">Redirect to Custom URL</option>
-                    <option value="canvas">Switch to Another Canvas</option>
-                </select>
-            </div>
+                    <!-- Appearance Dropdown -->
+                    <div style="margin-bottom:10px;">
+                        <select id="prop-anim-appearance" class="widefat wppoppop-anim-appearance-input" style="width:100%;font-size:12px;height:34px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;padding:0 8px;box-sizing:border-box;">
+                            <option value="none">None</option>
+                            <option value="bounceInLeft" selected>bounceInLeft</option>
+                            <option value="bounceInRight">bounceInRight</option>
+                            <option value="bounceInDown">bounceInDown</option>
+                            <option value="bounceInUp">bounceInUp</option>
+                            <option value="bounceIn">bounceIn</option>
+                            <option value="fadeIn">fadeIn</option>
+                            <option value="fadeInDown">fadeInDown</option>
+                            <option value="fadeInLeft">fadeInLeft</option>
+                            <option value="fadeInRight">fadeInRight</option>
+                            <option value="fadeInUp">fadeInUp</option>
+                            <option value="zoomIn">zoomIn</option>
+                            <option value="zoomInDown">zoomInDown</option>
+                            <option value="zoomInUp">zoomInUp</option>
+                            <option value="slideDown">slideDown</option>
+                            <option value="slideUp">slideUp</option>
+                            <option value="slideLeft">slideLeft</option>
+                            <option value="slideRight">slideRight</option>
+                            <option value="flipInX">flipInX</option>
+                            <option value="flipInY">flipInY</option>
+                            <option value="pulse">pulse</option>
+                            <option value="tada">tada</option>
+                            <option value="rubberBand">rubberBand</option>
+                            <option value="shake">shake</option>
+                        </select>
+                        <span class="wppoppop-anim-sublabel" style="display:block;font-size:11px;font-style:italic;color:#94a3b8;margin-top:3px;">Appearance</span>
+                    </div>
+
+                    <!-- Duration & Start delay Inputs Row -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                        <div>
+                            <div class="wppoppop-input-suffix-wrap" style="position:relative;display:flex;align-items:center;">
+                                <input type="number" id="prop-anim-duration" value="1000" min="0" step="50" class="widefat wppoppop-anim-duration-input" style="width:100%;height:34px;padding:0 30px 0 8px;font-size:12px;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                                <span class="wppoppop-input-suffix" style="position:absolute;right:8px;font-size:11px;color:#94a3b8;pointer-events:none;">ms</span>
+                            </div>
+                            <span class="wppoppop-anim-sublabel" style="display:block;font-size:11px;font-style:italic;color:#94a3b8;margin-top:3px;">Duration</span>
+                        </div>
+                        <div>
+                            <div class="wppoppop-input-suffix-wrap" style="position:relative;display:flex;align-items:center;">
+                                <input type="number" id="prop-anim-delay" value="0" min="0" step="50" class="widefat wppoppop-anim-delay-input" style="width:100%;height:34px;padding:0 30px 0 8px;font-size:12px;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                                <span class="wppoppop-input-suffix" style="position:absolute;right:8px;font-size:11px;color:#94a3b8;pointer-events:none;">ms</span>
+                            </div>
+                            <span class="wppoppop-anim-sublabel" style="display:block;font-size:11px;font-style:italic;color:#94a3b8;margin-top:3px;">Start delay</span>
+                        </div>
+                    </div>
+
+                    <!-- Disappearance Dropdown -->
+                    <div style="margin-bottom:4px;">
+                        <select id="prop-anim-disappearance" class="widefat wppoppop-anim-disappearance-input" style="width:100%;font-size:12px;height:34px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;padding:0 8px;box-sizing:border-box;">
+                            <option value="none">None</option>
+                            <option value="bounceOut">bounceOut</option>
+                            <option value="bounceOutLeft">bounceOutLeft</option>
+                            <option value="bounceOutRight">bounceOutRight</option>
+                            <option value="bounceOutUp">bounceOutUp</option>
+                            <option value="bounceOutDown">bounceOutDown</option>
+                            <option value="fadeOut">fadeOut</option>
+                            <option value="fadeOutDown">fadeOutDown</option>
+                            <option value="fadeOutLeft">fadeOutLeft</option>
+                            <option value="fadeOutRight">fadeOutRight</option>
+                            <option value="fadeOutUp">fadeOutUp</option>
+                            <option value="zoomOut">zoomOut</option>
+                            <option value="slideOutDown">slideOutDown</option>
+                            <option value="slideOutUp">slideOutUp</option>
+                            <option value="slideOutLeft">slideOutLeft</option>
+                            <option value="slideOutRight">slideOutRight</option>
+                            <option value="flipOutX">flipOutX</option>
+                            <option value="flipOutY">flipOutY</option>
+                        </select>
+                        <span class="wppoppop-anim-sublabel" style="display:block;font-size:11px;font-style:italic;color:#94a3b8;margin-top:3px;">Disappearance</span>
+                    </div>
+                </div>
         </div>
 
     </div>

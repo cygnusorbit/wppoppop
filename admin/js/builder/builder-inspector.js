@@ -220,6 +220,39 @@
         },
 
         bindInputs: function() {
+            // Two-Way Real-Time Binding for Element Animation Suite
+            $('#prop-anim-appearance, #prop-anim-effect, #prop-anim-duration, #prop-anim-delay, #prop-anim-disappearance')
+                .off('input.elemAnim change.elemAnim')
+                .on('input.elemAnim change.elemAnim', function() {
+                    var el = getActiveEl();
+                    if (!el) return;
+
+                    var app = $('#prop-anim-appearance').val() || $('#prop-anim-effect').val() || 'none';
+                    var dur = parseInt($('#prop-anim-duration').val(), 10);
+                    if (isNaN(dur) || dur < 0) dur = 1000;
+                    var del = parseInt($('#prop-anim-delay').val(), 10);
+                    if (isNaN(del) || del < 0) del = 0;
+                    var dis = $('#prop-anim-disappearance').val() || 'none';
+
+                    el.anim_appearance = app;
+                    el.animAppearance = app;
+                    el.animEffect = app;
+                    el.anim_duration = dur;
+                    el.animDuration = dur;
+                    el.anim_delay = del;
+                    el.animDelay = del;
+                    el.anim_disappearance = dis;
+                    el.animDisappearance = dis;
+
+                    if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.playAnimation === 'function') {
+                        window.WpPopPopBuilderCanvas.playAnimation(el.id, app, dur, del);
+                    }
+
+                    if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                        window.WpPopPopBuilderCore.pushHistory();
+                    }
+                });
+
             var self = this;
 
             // Rename layer

@@ -705,3 +705,255 @@ body.wppoppop-resizing-canvas {
     margin: 0 !important;
     padding: 0 !important;
 }
+
+/* ==========================================================================
+   WpPopPop Builder: Universal Preview Animation Keyframes & Classes
+   Cross-Browser Hardware Accelerated across Blink, WebKit, Gecko
+   ========================================================================== */
+
+@keyframes wppoppopFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@-webkit-keyframes wppoppopFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes wppoppopSlideDown {
+    from { opacity: 0; transform: translate3d(0, -80px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@-webkit-keyframes wppoppopSlideDown {
+    from { opacity: 0; -webkit-transform: translate3d(0, -80px, 0); }
+    to { opacity: 1; -webkit-transform: translate3d(0, 0, 0); }
+}
+
+@keyframes wppoppopSlideUp {
+    from { opacity: 0; transform: translate3d(0, 80px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@-webkit-keyframes wppoppopSlideUp {
+    from { opacity: 0; -webkit-transform: translate3d(0, 80px, 0); }
+    to { opacity: 1; -webkit-transform: translate3d(0, 0, 0); }
+}
+
+@keyframes wppoppopSlideLeft {
+    from { opacity: 0; transform: translate3d(80px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@-webkit-keyframes wppoppopSlideLeft {
+    from { opacity: 0; -webkit-transform: translate3d(80px, 0, 0); }
+    to { opacity: 1; -webkit-transform: translate3d(0, 0, 0); }
+}
+
+@keyframes wppoppopSlideRight {
+    from { opacity: 0; transform: translate3d(-80px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@-webkit-keyframes wppoppopSlideRight {
+    from { opacity: 0; -webkit-transform: translate3d(-80px, 0, 0); }
+    to { opacity: 1; -webkit-transform: translate3d(0, 0, 0); }
+}
+
+@keyframes wppoppopZoomIn {
+    from { opacity: 0; transform: scale3d(0.5, 0.5, 0.5); }
+    to { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+@-webkit-keyframes wppoppopZoomIn {
+    from { opacity: 0; -webkit-transform: scale3d(0.5, 0.5, 0.5); }
+    to { opacity: 1; -webkit-transform: scale3d(1, 1, 1); }
+}
+
+@keyframes wppoppopBounceIn {
+    from, 20%, 40%, 60%, 80%, to { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+    0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+    20% { transform: scale3d(1.1, 1.1, 1.1); }
+    40% { transform: scale3d(0.9, 0.9, 0.9); }
+    60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+    80% { transform: scale3d(0.97, 0.97, 0.97); }
+    to { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+@-webkit-keyframes wppoppopBounceIn {
+    from, 20%, 40%, 60%, 80%, to { -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+    0% { opacity: 0; -webkit-transform: scale3d(0.3, 0.3, 0.3); }
+    20% { -webkit-transform: scale3d(1.1, 1.1, 1.1); }
+    40% { -webkit-transform: scale3d(0.9, 0.9, 0.9); }
+    60% { opacity: 1; -webkit-transform: scale3d(1.03, 1.03, 1.03); }
+    80% { -webkit-transform: scale3d(0.97, 0.97, 0.97); }
+    to { opacity: 1; -webkit-transform: scale3d(1, 1, 1); }
+}
+
+@keyframes wppoppopFlipIn {
+    from { transform: perspective(400px) rotate3d(1, 0, 0, 90deg); opacity: 0; }
+    to { transform: perspective(400px); opacity: 1; }
+}
+
+@keyframes wppoppopPulse {
+    from, to { transform: scale3d(1, 1, 1); }
+    50% { transform: scale3d(1.08, 1.08, 1.08); }
+}
+
+@keyframes wppoppopTada {
+    from, to { transform: scale3d(1, 1, 1); }
+    10%, 20% { transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg); }
+    30%, 50%, 70%, 90% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg); }
+    40%, 60%, 80% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg); }
+}
+
+@keyframes wppoppopRubberBand {
+    from, to { transform: scale3d(1, 1, 1); }
+    30% { transform: scale3d(1.25, 0.75, 1); }
+    40% { transform: scale3d(0.75, 1.25, 1); }
+    50% { transform: scale3d(1.15, 0.85, 1); }
+    65% { transform: scale3d(0.95, 1.05, 1); }
+    75% { transform: scale3d(1.05, 0.95, 1); }
+}
+
+/* Dual-contract utility classes */
+.anim-fadeIn, .anim-fade, .wppoppop-anim-fadeIn, .wppoppop-anim-fade, .animate__fadeIn {
+    animation-name: wppoppopFadeIn !important;
+    -webkit-animation-name: wppoppopFadeIn !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-slideDown, .anim-slideInDown, .wppoppop-anim-slideDown, .wppoppop-anim-slideInDown, .animate__slideInDown, .animate__slideDown {
+    animation-name: wppoppopSlideDown !important;
+    -webkit-animation-name: wppoppopSlideDown !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-slideUp, .anim-slideInUp, .wppoppop-anim-slideUp, .wppoppop-anim-slideInUp, .animate__slideInUp, .animate__slideUp {
+    animation-name: wppoppopSlideUp !important;
+    -webkit-animation-name: wppoppopSlideUp !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-slideLeft, .wppoppop-anim-slideLeft, .animate__slideInLeft, .animate__slideLeft {
+    animation-name: wppoppopSlideLeft !important;
+    -webkit-animation-name: wppoppopSlideLeft !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-slideRight, .wppoppop-anim-slideRight, .animate__slideInRight, .animate__slideRight {
+    animation-name: wppoppopSlideRight !important;
+    -webkit-animation-name: wppoppopSlideRight !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-zoomIn, .wppoppop-anim-zoomIn, .animate__zoomIn {
+    animation-name: wppoppopZoomIn !important;
+    -webkit-animation-name: wppoppopZoomIn !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-bounceIn, .wppoppop-anim-bounceIn, .animate__bounceIn {
+    animation-name: wppoppopBounceIn !important;
+    -webkit-animation-name: wppoppopBounceIn !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-flipIn, .wppoppop-anim-flipIn, .animate__flipIn {
+    animation-name: wppoppopFlipIn !important;
+    -webkit-animation-name: wppoppopFlipIn !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-pulse, .wppoppop-anim-pulse, .animate__pulse {
+    animation-name: wppoppopPulse !important;
+    -webkit-animation-name: wppoppopPulse !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-tada, .wppoppop-anim-tada, .animate__tada {
+    animation-name: wppoppopTada !important;
+    -webkit-animation-name: wppoppopTada !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.anim-rubberBand, .wppoppop-anim-rubberBand, .animate__rubberBand {
+    animation-name: wppoppopRubberBand !important;
+    -webkit-animation-name: wppoppopRubberBand !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.animate__animated {
+    animation-duration: var(--animate-duration, 1s);
+    -webkit-animation-duration: var(--animate-duration, 1s);
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+/* ==========================================================================
+   WpPopPop Builder: Directional Bounce Keyframes & Animate.css Classes
+   Cross-Browser Hardware Accelerated across Blink, WebKit, Gecko
+   ========================================================================== */
+
+@keyframes wppoppopBounceInLeft {
+    from, 60%, 75%, 90%, to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    0% {
+        opacity: 0;
+        transform: translate3d(-300px, 0, 0);
+        -webkit-transform: translate3d(-300px, 0, 0);
+    }
+    60% {
+        opacity: 1;
+        transform: translate3d(20px, 0, 0);
+        -webkit-transform: translate3d(20px, 0, 0);
+    }
+    75% {
+        transform: translate3d(-8px, 0, 0);
+        -webkit-transform: translate3d(-8px, 0, 0);
+    }
+    90% {
+        transform: translate3d(3px, 0, 0);
+        -webkit-transform: translate3d(3px, 0, 0);
+    }
+    to {
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+    }
+}
+@-webkit-keyframes wppoppopBounceInLeft {
+    from, 60%, 75%, 90%, to {
+        -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    0% {
+        opacity: 0;
+        -webkit-transform: translate3d(-300px, 0, 0);
+    }
+    60% {
+        opacity: 1;
+        -webkit-transform: translate3d(20px, 0, 0);
+    }
+    75% {
+        -webkit-transform: translate3d(-8px, 0, 0);
+    }
+    90% {
+        -webkit-transform: translate3d(3px, 0, 0);
+    }
+    to {
+        -webkit-transform: translate3d(0, 0, 0);
+    }
+}
+
+.anim-bounceInLeft, .wppoppop-anim-bounceInLeft, .animate__bounceInLeft, .bounceInLeft {
+    animation-name: wppoppopBounceInLeft !important;
+    -webkit-animation-name: wppoppopBounceInLeft !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+.wppoppop-anim-badge-link:hover {
+    background: #dbeafe !important;
+    border-color: #93c5fd !important;
+    color: #1d4ed8 !important;
+}
