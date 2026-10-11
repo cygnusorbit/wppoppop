@@ -117,9 +117,7 @@ def run_feature_scan():
         ("Phase 3: Stage Smart Snap Guides", canvas_js, "smartSnapGuides"),
         ("Phase 3: Alignment Tools (Center/Distribute)", canvas_js, "alignSelectedElements"),
         ("Phase 3: Arrow Key Nudging Engine", canvas_js, "bindKeyboardNudge"),
-        ("Phase 4: Exit-Intent Sensitivity Control", settings_file, "set-exit-intent-sensitivity"),
-        ("Phase 4: Scroll Depth Percentage Trigger", settings_file, "set-trigger-scroll-depth"),
-        ("Phase 4: Canvas Auto-Close Countdown", settings_file, "set-canvas-autoclose"),
+                        ("Phase 4: Canvas Auto-Close Countdown", settings_file, "set-canvas-autoclose"),
         ("Phase 5: Layer Search Filter Input", layers_file, "wppoppop-layers-search"),
         ("Phase 5: Inline Layer Title Renaming", layers_file, "wppoppop-layer-title-editable")
     ]

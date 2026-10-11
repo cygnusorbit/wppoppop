@@ -396,6 +396,19 @@
         },
 
         bindEvents: function() {
+        $(document).off('click.wppoppop_layer_row').on('click.wppoppop_layer_row', '.wppoppop-layer-item, #wppoppop-layers-list li', function(e) {
+            if ($(e.target).closest('.wppoppop-layer-actions, input, button').length) return;
+            var id = $(this).data('id') || $(this).attr('data-id') || $(this).attr('data-element-id');
+            if (id) {
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.selectElement === 'function') {
+                    window.WpPopPopBuilderCanvas.selectElement(id);
+                }
+                if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+                    window.WpPopPopBuilderInspector.open(id);
+                }
+            }
+        });
+
             var self = this;
 
             // 1. Layer item selection

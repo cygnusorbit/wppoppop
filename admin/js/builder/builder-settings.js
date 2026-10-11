@@ -8,7 +8,7 @@
     window.WpPopPopBuilderSettings = {
         bindPhase4SettingsEvents: function() {
         var self = this;
-        $(document).off('input.wppoppop_p4 change.wppoppop_p4', '#set-exit-intent-sensitivity, #set-trigger-scroll-depth, #set-canvas-autoclose').on('input.wppoppop_p4 change.wppoppop_p4', '#set-exit-intent-sensitivity, #set-trigger-scroll-depth, #set-canvas-autoclose', function(e) {
+        $(document).off('input.wppoppop_p4 change.wppoppop_p4', '#set-canvas-autoclose').on('input.wppoppop_p4 change.wppoppop_p4', '#set-canvas-autoclose', function(e) {
             var core = window.WpPopPopBuilderCore;
             if (!core || !core.state) return;
             core.state.settings = core.state.settings || {};
@@ -16,8 +16,8 @@
             var cur = core.state.currentCanvas || 1;
             core.state.canvasMeta[cur] = core.state.canvasMeta[cur] || {};
 
-            core.state.settings.exit_intent_sensitivity = parseInt($('#set-exit-intent-sensitivity').val(), 10) || 30;
-            core.state.settings.trigger_scroll_depth = parseInt($('#set-trigger-scroll-depth').val(), 10) || 50;
+            
+            
             
             var acVal = parseInt($('#set-canvas-autoclose').val(), 10) || 0;
             core.state.settings.canvas_autoclose = acVal;

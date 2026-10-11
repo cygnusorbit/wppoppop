@@ -1294,3 +1294,171 @@ body.wppoppop-resizing-canvas {
 .wppoppop-layer-title-editable:hover {
     color: #38bdf8;
 }
+
+
+/* Hardware-Accelerated Cross-Browser Animation Suite */
+@keyframes anim-bounce {
+    0%, 20%, 53%, 80%, 100% { transform: translate3d(0, 0, 0); }
+    40%, 43% { transform: translate3d(0, -25px, 0); }
+    70% { transform: translate3d(0, -12px, 0); }
+    90% { transform: translate3d(0, -4px, 0); }
+}
+@-webkit-keyframes anim-bounce {
+    0%, 20%, 53%, 80%, 100% { -webkit-transform: translate3d(0, 0, 0); }
+    40%, 43% { -webkit-transform: translate3d(0, -25px, 0); }
+    70% { -webkit-transform: translate3d(0, -12px, 0); }
+    90% { -webkit-transform: translate3d(0, -4px, 0); }
+}
+.anim-bounce, .wppoppop-anim-bounce, .animate__bounce {
+    animation-name: anim-bounce !important;
+    -webkit-animation-name: anim-bounce !important;
+}
+
+@keyframes anim-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@-webkit-keyframes anim-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.anim-fadeIn, .wppoppop-anim-fadeIn, .animate__fadeIn {
+    animation-name: anim-fadeIn !important;
+    -webkit-animation-name: anim-fadeIn !important;
+}
+
+@keyframes anim-slideDown {
+    from { transform: translate3d(0, -100%, 0); opacity: 0; }
+    to { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+@-webkit-keyframes anim-slideDown {
+    from { -webkit-transform: translate3d(0, -100%, 0); opacity: 0; }
+    to { -webkit-transform: translate3d(0, 0, 0); opacity: 1; }
+}
+.anim-slideDown, .wppoppop-anim-slideDown, .animate__slideDown {
+    animation-name: anim-slideDown !important;
+    -webkit-animation-name: anim-slideDown !important;
+}
+
+@keyframes anim-zoomIn {
+    from { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+    50% { opacity: 1; }
+    to { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+@-webkit-keyframes anim-zoomIn {
+    from { opacity: 0; -webkit-transform: scale3d(0.3, 0.3, 0.3); }
+    50% { opacity: 1; }
+    to { opacity: 1; -webkit-transform: scale3d(1, 1, 1); }
+}
+.anim-zoomIn, .wppoppop-anim-zoomIn, .animate__zoomIn {
+    animation-name: anim-zoomIn !important;
+    -webkit-animation-name: anim-zoomIn !important;
+}
+
+@keyframes anim-pulse {
+    from { transform: scale3d(1, 1, 1); }
+    50% { transform: scale3d(1.08, 1.08, 1.08); }
+    to { transform: scale3d(1, 1, 1); }
+}
+@-webkit-keyframes anim-pulse {
+    from { -webkit-transform: scale3d(1, 1, 1); }
+    50% { -webkit-transform: scale3d(1.08, 1.08, 1.08); }
+    to { -webkit-transform: scale3d(1, 1, 1); }
+}
+.anim-pulse, .wppoppop-anim-pulse, .animate__pulse {
+    animation-name: anim-pulse !important;
+    -webkit-animation-name: anim-pulse !important;
+}
+
+@keyframes anim-tada {
+    from { transform: scale3d(1, 1, 1); }
+    10%, 20% { transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg); }
+    30%, 50%, 70%, 90% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg); }
+    40%, 60%, 80% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg); }
+    to { transform: scale3d(1, 1, 1); }
+}
+@-webkit-keyframes anim-tada {
+    from { -webkit-transform: scale3d(1, 1, 1); }
+    10%, 20% { -webkit-transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg); }
+    30%, 50%, 70%, 90% { -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg); }
+    40%, 60%, 80% { -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg); }
+    to { -webkit-transform: scale3d(1, 1, 1); }
+}
+.anim-tada, .wppoppop-anim-tada, .animate__tada {
+    animation-name: anim-tada !important;
+    -webkit-animation-name: anim-tada !important;
+}
+
+
+/* Guaranteed Hardware-Accelerated Absolute Slide-In within Checkerboard Area */
+.wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+    margin-right: 0 !important;
+}
+
+body.panel-open .wppoppop-builder-workspace,
+.panel-open .wppoppop-builder-workspace,
+.inspector-open .wppoppop-builder-workspace,
+.wppoppop-builder-wrap.panel-open .wppoppop-builder-workspace {
+    margin-right: 0 !important;
+    width: 100% !important;
+}
+
+#wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    background: #ffffff !important;
+    border-left: 1px solid #cbd5e1 !important;
+    box-shadow: -4px 0 24px rgba(15, 23, 42, 0.15) !important;
+    z-index: 99990 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+}
+
+#wppoppop-inspector-drawer.is-open,
+.panel-open #wppoppop-inspector-drawer,
+.inspector-open #wppoppop-inspector-drawer {
+    display: flex !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+#wppoppop-inspector-drawer.is-closed {
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+#wppoppop-floating-layers-panel {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px;
+    z-index: 100000 !important;
+    transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    -webkit-transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.panel-open #wppoppop-floating-layers-panel.docked-default,
+.panel-open #wppoppop-floating-layers-panel.docked-right,
+.panel-open #wppoppop-floating-layers-panel:not(.is-dragged):not([style*="left:"]),
+.inspector-open #wppoppop-floating-layers-panel:not(.is-dragged):not([style*="left:"]) {
+    right: 376px !important;
+    left: auto !important;
+}

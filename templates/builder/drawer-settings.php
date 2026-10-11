@@ -449,22 +449,4 @@ if (!defined('ABSPATH')) {
 </div>
 
 
-                <!-- Phase 4: Exit Intent Sensitivity & Scroll Depth Triggers -->
-                <div class="wppoppop-settings-field-group" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);">
-                    <div class="wppoppop-row-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <div class="wppoppop-field-group">
-                            <label for="set-exit-intent-sensitivity" style="font-size:11px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px;">EXIT INTENT SENSITIVITY</label>
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <input type="number" id="set-exit-intent-sensitivity" class="wppoppop-input" min="5" max="150" step="5" value="30" placeholder="30" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
-                                <span style="font-size:11px;color:#94a3b8;white-space:nowrap;">px top</span>
-                            </div>
-                        </div>
-                        <div class="wppoppop-field-group">
-                            <label for="set-trigger-scroll-depth" style="font-size:11px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px;">SCROLL DEPTH TRIGGER</label>
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <input type="number" id="set-trigger-scroll-depth" class="wppoppop-input" min="0" max="100" step="5" value="50" placeholder="50" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
-                                <span style="font-size:11px;color:#94a3b8;">%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                

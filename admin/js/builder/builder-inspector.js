@@ -65,10 +65,79 @@
         });
     },
 
+    bindAnimationPlayControls: function() {
+        var self = this;
+        $(document).off('click.wppoppop_anim_play').on('click.wppoppop_anim_play', '#prop-anim-play-btn, #prop-anim-replay-btn, #prop-anim-test-btn, .wppoppop-anim-play-btn', function(e) {
+            e.preventDefault();
+            var core = window.WpPopPopBuilderCore;
+            var activeId = (core && core.state) ? core.state.activeId : null;
+            if (!activeId && window.WpPopPopBuilderCanvas) {
+                activeId = window.WpPopPopBuilderCanvas.activeId;
+            }
+            if (!activeId) {
+                var $sel = $('.wppoppop-canvas-item.wppoppop-selected, .wppoppop-selected');
+                if ($sel.length) {
+                    activeId = $sel.data('id') || $sel.attr('data-id') || ($sel.attr('id') || '').replace(/^(wppoppop-el-|el-)/, '');
+                }
+            }
+            if (!activeId) return;
+
+            var activeEl = null;
+            if (core && core.state && core.state.canvases) {
+                var cur = core.state.currentCanvas || 1;
+                var list = core.state.canvases[cur] || [];
+                activeEl = list.find(function(el) { return el.id === activeId; });
+            }
+
+            var effect = $('#prop-anim-appearance').val() || $('#prop-animation').val() || $('#prop-anim-effect').val();
+            if (!effect || effect === 'none') {
+                if (activeEl) {
+                    effect = activeEl.anim_appearance || activeEl.animEffect || activeEl.animation || activeEl.anim_effect;
+                }
+            }
+            if (!effect || effect === 'none') {
+                effect = 'bounce';
+            }
+
+            var duration = parseInt($('#prop-anim-duration').val(), 10) || 1000;
+            var delay = parseInt($('#prop-anim-delay').val(), 10) || 0;
+
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.playAnimation === 'function') {
+                window.WpPopPopBuilderCanvas.playAnimation(activeId, effect, duration, delay);
+            }
+        });
+
+        $(document).off('change.wppoppop_anim_sel').on('change.wppoppop_anim_sel', '#prop-anim-appearance, #prop-animation, #prop-anim-effect', function() {
+            var val = $(this).val();
+            if (val && val !== 'none') {
+                var core = window.WpPopPopBuilderCore;
+                var activeId = (core && core.state) ? core.state.activeId : null;
+                if (activeId && window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.playAnimation === 'function') {
+                    window.WpPopPopBuilderCanvas.playAnimation(activeId, val);
+                }
+            }
+        });
+    },
+
+    bindInspectorCloseEvents: function() {
+        var self = this;
+        $(document).off('click.wppoppop_insp_close').on('click.wppoppop_insp_close', '#wppoppop-inspector-close, .wppoppop-inspector-close, .wppoppop-drawer-close, #insp-close-btn', function(e) {
+            e.preventDefault();
+            self.close();
+        });
+        $(document).off('click.wppoppop_ws_deselect').on('click.wppoppop_ws_deselect', '#wppoppop-canvas-workspace, .wppoppop-builder-workspace', function(e) {
+            if ($(e.target).is('#wppoppop-canvas-workspace, .wppoppop-builder-workspace, #wppoppop-canvas-scroll-container')) {
+                self.close();
+            }
+        });
+    },
+
     init: function() {
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
+            this.bindInspectorCloseEvents();
+            this.bindAnimationPlayControls();
         },
 
         bindTabs: function() {
@@ -92,6 +161,25 @@
 
             $('.wppoppop-tab-pane').hide();
             $('#insp-tab-' + tab).show();
+
+                if (tab === 'style') {
+                    var curEl = (typeof self.getActiveEl === 'function' ? self.getActiveEl() : (typeof self.getActiveElement === 'function' ? self.getActiveElement() : null));
+                    if (!curEl && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+                        var aId = window.WpPopPopBuilderCore.state.activeId;
+                        var curC = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+                        var cList = window.WpPopPopBuilderCore.state.canvases ? window.WpPopPopBuilderCore.state.canvases[curC] : [];
+                        curEl = (cList || []).find(function(it) { return it.id === aId; });
+                    }
+                    if (curEl) {
+                        var cType = (curEl.type || 'text').toLowerCase();
+                        if (['shape', 'image', 'video', 'signature', 'html'].indexOf(cType) !== -1) {
+                            $('#insp-typography-section').hide();
+                        } else {
+                            $('#insp-typography-section').show();
+                        }
+                    }
+                }
+
         },
 
         bindClose: function() {
@@ -103,134 +191,206 @@
         },
 
         open: function(id) {
+        var self = this;
+        if (!id) return;
+        self.activeId = id;
 
-            var core = window.WpPopPopBuilderCore;
-            if (!core || !core.state.canvases) return;
-            var cur = core.state.currentCanvas || 1;
-            var elements = core.state.canvases[cur] || [];
-            var el = elements.find(function(item) { return String(item.id) === String(id); });
-            if (!el) return;
+        // 1. Structural containment & Slide-in UI activation
+        var $drawer = $('#wppoppop-inspector-drawer');
+        var $ws = $('.wppoppop-builder-workspace, #wppoppop-builder-workspace').first();
+        if ($drawer.length && $ws.length && $drawer.parent()[0] !== $ws[0]) {
+            $drawer.appendTo($ws);
+        }
 
-            // Coordinates & Layer Name
-            $('#prop-name').val(el.name || (el.type ? el.type.toUpperCase() : 'Layer'));
-            $('#prop-left').val(el.left || 0);
-            $('#prop-top').val(el.top || 0);
-            $('#prop-width').val(el.width || 180);
-            $('#prop-height').val(el.height || 42);
+        $drawer.css('display', 'flex').removeClass('is-closed').addClass('is-open');
+        $('body, .wppoppop-builder-workspace, .wppoppop-main-frame, .wppoppop-builder-wrap').addClass('panel-open inspector-open');
 
-            // Hide all sub-panels
-            $('.wppoppop-elem-panel').hide();
+        if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+            window.WpPopPopBuilderLayers.pushForInspector(true);
+        }
 
-            // Element-specific hydration
-            if (el.type === 'shape') {
-                $('#panel-elem-shape').show();
-                $('#prop-shape-preset').val(el.shapePreset || 'circle');
+        // 2. Safe defensive element resolution
+        var elements = [];
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            elements = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+        }
+        if ((!elements || !elements.length) && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) {
+            var cur = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+            elements = window.WpPopPopBuilderCore.state.canvases[cur] || [];
+        }
 
-                // Shape Fill & Transparency Swatch
-                var fill = el.shapeFill || '#3b82f6';
-                if (fill === 'transparent') {
-                    $('#prop-shape-fill-transparent-btn').addClass('active');
-                    $('#prop-shape-fill').val('#ffffff');
-                } else {
-                    $('#prop-shape-fill-transparent-btn').removeClass('active');
-                    $('#prop-shape-fill').val(fill);
+        var el = null;
+        if (elements && elements.length) {
+            for (var i = 0; i < elements.length; i++) {
+                if (String(elements[i].id) === String(id)) {
+                    el = elements[i];
+                    break;
                 }
-
-                // Shape Stroke & Transparency Swatch
-                var stroke = el.shapeStroke !== undefined ? el.shapeStroke : '#1d4ed8';
-                if (stroke === 'transparent') {
-                    $('#prop-shape-stroke-transparent-btn').addClass('active');
-                    $('#prop-shape-stroke').val('#ffffff');
-                } else {
-                    $('#prop-shape-stroke-transparent-btn').removeClass('active');
-                    $('#prop-shape-stroke').val(stroke);
+            }
+        }
+        if (!el && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) {
+            var curC = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+            var list = window.WpPopPopBuilderCore.state.canvases[curC] || [];
+            for (var j = 0; j < list.length; j++) {
+                if (String(list[j].id) === String(id)) {
+                    el = list[j];
+                    break;
                 }
-
-                $('#prop-shape-stroke-width').val(el.shapeStrokeWidth !== undefined ? el.shapeStrokeWidth : 2);
-                $('#prop-shape-rotate').val(el.shapeRotate || 0);
-            } else if (el.type === 'title') {
-                $('#panel-elem-title').show();
-                $('#prop-title-text').val(el.content || 'Headline');
-            } else if (el.type === 'paragraph') {
-                $('#panel-elem-paragraph').show();
-                $('#prop-paragraph-text').val(el.content || 'Body copy...');
-            } else if (el.type === 'textfield') {
-                $('#panel-elem-textfield').show();
-                $('#prop-textfield-placeholder').val(el.content || 'Enter text...');
-            } else {
-                $('#panel-elem-general').show();
-                $('#prop-content').val(el.content || '');
             }
+        }
 
-            // Typography & Spacing
-            $('#prop-font-size').val(el.fontSize || 14);
-            $('#prop-font-weight').val(el.fontWeight || '400');
-            $('#prop-line-height').val(el.lineHeight || 1.4);
-            $('#prop-letter-spacing').val(el.letterSpacing || 0);
-            $('#prop-text-align').val(el.textAlign || 'left');
-            // Discrete 4-way padding hydration
-            var pTop = el.paddingTop !== undefined ? el.paddingTop : (el.padding_top !== undefined ? el.padding_top : (el.padding !== undefined ? el.padding : 0));
-            var pRight = el.paddingRight !== undefined ? el.paddingRight : (el.padding_right !== undefined ? el.padding_right : (el.padding !== undefined ? el.padding : 0));
-            var pBottom = el.paddingBottom !== undefined ? el.paddingBottom : (el.padding_bottom !== undefined ? el.padding_bottom : (el.padding !== undefined ? el.padding : 0));
-            var pLeft = el.paddingLeft !== undefined ? el.paddingLeft : (el.padding_left !== undefined ? el.padding_left : (el.padding !== undefined ? el.padding : 0));
-            $('#prop-padding-top').val(pTop);
-            $('#prop-padding-right').val(pRight);
-            $('#prop-padding-bottom').val(pBottom);
-            $('#prop-padding-left').val(pLeft);
-            $('#prop-padding').val(pTop);
+        if (!el) return;
 
-            // Content tab animation hydration
-            var animEff = el.anim_appearance || el.animation || el.animEffect || el.anim_effect || 'none';
-            var animDur = el.anim_duration !== undefined ? el.anim_duration : (el.duration !== undefined ? el.duration : 1000);
-            var animDel = el.anim_delay !== undefined ? el.anim_delay : (el.delay !== undefined ? el.delay : 0);
-            var animDis = el.anim_disappearance || el.exitAnimation || el.animExit || 'none';
-            $('#prop-animation, #prop-anim-appearance, #prop-anim-effect').val(animEff);
-            $('#prop-anim-duration').val(animDur);
-            $('#prop-anim-delay').val(animDel);
-            $('#prop-anim-disappearance').val(animDis);
-            var padTop = el.paddingTop !== undefined ? el.paddingTop : (el.padding !== undefined ? el.padding : 0);
-            var padRight = el.paddingRight !== undefined ? el.paddingRight : (el.padding !== undefined ? el.padding : 0);
-            var padBottom = el.paddingBottom !== undefined ? el.paddingBottom : (el.padding !== undefined ? el.padding : 0);
-            var padLeft = el.paddingLeft !== undefined ? el.paddingLeft : (el.padding !== undefined ? el.padding : 0);
-            $('#prop-padding-top').val(padTop);
-            $('#prop-padding-right').val(padRight);
-            $('#prop-padding-bottom').val(padBottom);
-            $('#prop-padding-left').val(padLeft);
+        // 3. Mark element as selected on stage
+        $('.wppoppop-element, .wppoppop-canvas-item').removeClass('wppoppop-selected ui-selected');
+        $('#wppoppop-el-' + id + ', #el-' + id + ', [data-id="' + id + '"]').addClass('wppoppop-selected');
+        if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+            window.WpPopPopBuilderCore.state.activeId = id;
+        }
 
-            // Animation
-            $('#prop-animation').val(el.animation || 'none');
+        // 4. Populate Layer Name
+        $('#prop-layer-name, #prop-element-name').val(el.name || el.label || el.type || '');
 
-            // Text Color Swatch
-            var color = el.color || '#ffffff';
-            if (color === 'transparent') {
-                $('#prop-text-transparent-btn').addClass('active');
-                $('#prop-color').val('#ffffff');
-            } else {
-                $('#prop-text-transparent-btn').removeClass('active');
-                $('#prop-color').val(color);
+        // 5. Canonical Type Normalization & Contextual Panels
+        var canonicalType = (el.type || 'text').toLowerCase();
+        if (canonicalType === 'select') canonicalType = 'dropdown';
+        if (canonicalType === 'radios') canonicalType = 'radio';
+        if (canonicalType === 'checkboxes') canonicalType = 'checkbox';
+        if (canonicalType === 'step_btn') canonicalType = 'step';
+        if (canonicalType === 'link_btn') canonicalType = 'link';
+        if (canonicalType === 'close_icon') canonicalType = 'close';
+        if (canonicalType === 'text') canonicalType = 'paragraph';
+
+        // Contextual Typography Visibility (Hide for non-text types)
+        var nonTextTypes = ['shape', 'image', 'video', 'signature', 'html'];
+        if (nonTextTypes.indexOf(canonicalType) !== -1 || nonTextTypes.indexOf((el.type || '').toLowerCase()) !== -1) {
+            $('#insp-typography-section').hide();
+        } else {
+            $('#insp-typography-section').show();
+        }
+
+        // Contextual Form Token Visibility
+        var inputElements = ['textfield', 'email', 'number', 'dropdown', 'radio', 'checkbox', 'rating', 'date', 'slider', 'file', 'signature'];
+        if (inputElements.indexOf(canonicalType) === -1) {
+            $('#prop-display-token').closest('.wppoppop-inspector-section, div').hide();
+        } else {
+            $('#prop-display-token').closest('.wppoppop-inspector-section, div').show();
+        }
+
+        // Show matching contextual panel in Basic Tab
+        $('.element-panel').hide();
+        var $activePanel = $('#panel-elem-' + canonicalType);
+        if (!$activePanel.length && canonicalType === 'paragraph') $activePanel = $('#panel-elem-text');
+        if (!$activePanel.length && canonicalType === 'dropdown') $activePanel = $('#panel-elem-select');
+        if (!$activePanel.length && canonicalType === 'radio') $activePanel = $('#panel-elem-radios');
+        if (!$activePanel.length && canonicalType === 'checkbox') $activePanel = $('#panel-elem-checkboxes');
+        if (!$activePanel.length && canonicalType === 'step') $activePanel = $('#panel-elem-step_btn');
+        if (!$activePanel.length && canonicalType === 'link') $activePanel = $('#panel-elem-link_btn');
+        if (!$activePanel.length && canonicalType === 'close') $activePanel = $('#panel-elem-close_icon');
+        if ($activePanel.length) {
+            $activePanel.show();
+        }
+
+        // 6. Element-specific values population
+        if (canonicalType === 'title') {
+            $('#prop-title-content, #prop-title-text').val(el.content || el.text || '');
+            $('#prop-title-tag').val(el.htmlTag || el.tag || 'h2');
+        } else if (canonicalType === 'paragraph') {
+            $('#prop-paragraph-content, #prop-text-content').val(el.content || el.text || '');
+        } else if (canonicalType === 'textfield') {
+            $('#prop-textfield-placeholder').val(el.placeholder || el.content || '');
+            $('#prop-textfield-fieldname').val(el.fieldName || el.field_name || 'text_field');
+            $('#prop-textfield-required').prop('checked', !!el.required);
+        } else if (canonicalType === 'dropdown') {
+            $('#prop-dropdown-options, #prop-select-options').val(Array.isArray(el.options) ? el.options.join(', ') : (el.content || ''));
+            $('#prop-dropdown-fieldname, #prop-select-fieldname').val(el.fieldName || el.field_name || 'select_field');
+        } else if (canonicalType === 'step') {
+            $('#prop-step-label').val(el.content || el.text || 'Next');
+            $('#prop-step-canvas').val(el.goto_canvas || el.goto_screen || 2);
+        } else if (canonicalType === 'link') {
+            $('#prop-link-label').val(el.content || el.text || 'Learn More');
+            $('#prop-link-url').val(el.url || el.href || '');
+        } else if (canonicalType === 'close') {
+            $('#prop-close-label').val(el.content || el.text || '×');
+            $('#prop-close-action').val(el.action || el.close_action || 'close');
+        } else if (canonicalType === 'image') {
+            $('#prop-image-url').val(el.url || el.src || '');
+            $('#prop-image-alt').val(el.alt || '');
+        } else if (canonicalType === 'video') {
+            $('#prop-video-url').val(el.url || el.src || '');
+            $('#prop-video-autoplay').prop('checked', !!el.autoplay);
+        }
+
+        // 7. General Appearance, Coordinates & Dimensions
+        $('#prop-left').val(parseInt(el.left, 10) || 0);
+        $('#prop-top').val(parseInt(el.top, 10) || 0);
+        $('#prop-width, #prop-size-width').val(parseInt(el.width, 10) || 100);
+        $('#prop-height, #prop-size-height').val(parseInt(el.height, 10) || 40);
+
+        // Opacity
+        var elOpacity = (el.opacity !== undefined && el.opacity !== null && el.opacity !== '') ? parseInt(el.opacity, 10) : 100;
+        $('#prop-opacity').val(elOpacity);
+        $('#prop-opacity-val').text(elOpacity + '%');
+
+        // Custom CSS Class & ID
+        $('#prop-custom-class').val(el.customClass || el.custom_class || '');
+        $('#prop-custom-id').val(el.customId || el.custom_id || '');
+
+        // Button Hover States
+        var isButtonType = ['submit', 'link', 'step', 'pay'].indexOf(canonicalType) !== -1;
+        if (isButtonType) {
+            $('#prop-btn-hover-section').show();
+            $('#prop-btn-hover-bg').val(el.hoverBgColor || el.hover_bg_color || '#2563eb');
+            $('#prop-btn-hover-color').val(el.hoverTextColor || el.hover_text_color || '#ffffff');
+            $('#prop-btn-hover-border').val(el.hoverBorderColor || el.hover_border_color || '#1d4ed8');
+        } else {
+            $('#prop-btn-hover-section').hide();
+        }
+
+        // Typography
+        if ($('#prop-font-family').length && el.fontFamily) $('#prop-font-family').val(el.fontFamily);
+        if ($('#prop-font-size').length && el.fontSize) $('#prop-font-size').val(parseInt(el.fontSize, 10) || 16);
+        if ($('#prop-font-weight').length && el.fontWeight) $('#prop-font-weight').val(el.fontWeight);
+        if ($('#prop-text-align').length && el.textAlign) $('#prop-text-align').val(el.textAlign);
+        if ($('#prop-line-height').length && el.lineHeight) $('#prop-line-height').val(el.lineHeight);
+        if ($('#prop-letter-spacing').length && el.letterSpacing) $('#prop-letter-spacing').val(el.letterSpacing);
+
+        // Colors
+        if ($('#prop-color').length && el.color) $('#prop-color').val(el.color);
+        if ($('#prop-bg-color').length && el.bgColor) $('#prop-bg-color').val(el.bgColor);
+
+        // Animation
+        if ($('#prop-anim-appearance').length) {
+            $('#prop-anim-appearance').val(el.anim_appearance || el.animation || el.animEffect || 'none');
+        }
+        if ($('#prop-anim-duration').length) {
+            $('#prop-anim-duration').val(el.anim_duration || el.duration || 1000);
+        }
+        if ($('#prop-anim-delay').length) {
+            $('#prop-anim-delay').val(el.anim_delay || el.delay || 0);
+        }
+    },
+
+    close: function() {
+        var $drawer = $('#wppoppop-inspector-drawer');
+        $drawer.removeClass('is-open').addClass('is-closed');
+        $('body, .wppoppop-builder-workspace, .wppoppop-main-frame, .wppoppop-builder-wrap').removeClass('panel-open inspector-open');
+        setTimeout(function() {
+            if (!$drawer.hasClass('is-open')) {
+                $drawer.hide();
             }
-
-            // BG Color Swatch
-            var bgColor = el.bgColor || '#2563eb';
-            if (bgColor === 'transparent') {
-                $('#prop-bg-transparent-btn').addClass('active');
-                $('#prop-bg-color').val('#ffffff');
-            } else {
-                $('#prop-bg-transparent-btn').removeClass('active');
-                $('#prop-bg-color').val(bgColor);
-            }
-
-            // Target Canvas Navigation
-            $('#prop-goto-canvas').val(el.goto_canvas || el.goto_screen || 2);
-
-            $('body').addClass('panel-open');
-            $('#wppoppop-inspector-drawer').addClass('open').css('transform', 'translateX(0)');
-        },
-
-        close: function() {
-            $('body').removeClass('panel-open');
-            $('#wppoppop-inspector-drawer').removeClass('open').css('transform', 'translateX(100%)');
-        },
+        }, 280);
+        $('.wppoppop-element, .wppoppop-canvas-item').removeClass('wppoppop-selected ui-selected');
+        if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+            window.WpPopPopBuilderCore.state.activeId = null;
+        }
+        if (window.WpPopPopBuilderCanvas) {
+            window.WpPopPopBuilderCanvas.activeId = null;
+        }
+        if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+            window.WpPopPopBuilderLayers.pushForInspector(false);
+        }
+    },
 
         getActiveElement: function() {
             var core = window.WpPopPopBuilderCore;

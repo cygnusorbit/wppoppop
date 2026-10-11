@@ -278,6 +278,67 @@
         });
     },
 
+    playAnimation: function(id, effect, duration, delay) {
+        if (!effect || effect === 'none') return;
+        duration = parseInt(duration, 10) || 1000;
+        delay = parseInt(delay, 10) || 0;
+
+        var $node = $('#wppoppop-el-' + id + ', #el-' + id + ', [data-id="' + id + '"]');
+        if (!$node.length) return;
+
+        var cleanEffect = effect.replace(/^animate__/, '').replace(/^wppoppop-anim-/, '').replace(/^anim-/, '');
+
+        // 1. Remove existing animation classes
+        $node.removeClass(function(index, className) {
+            return (className.match(/\b(anim-\S+|wppoppop-anim-\S+|animate__\S+)/g) || []).join(' ');
+        });
+
+        // 2. Clear inline animation styles
+        $node.css({
+            '-webkit-animation-duration': '',
+            'animation-duration': '',
+            '-webkit-animation-delay': '',
+            'animation-delay': '',
+            '-webkit-animation-fill-mode': '',
+            'animation-fill-mode': ''
+        });
+
+        // 3. Force browser layout reflow
+        if ($node[0]) {
+            void $node[0].offsetWidth;
+        }
+
+        // 4. Re-apply hardware-accelerated timing styles
+        $node.css({
+            '-webkit-animation-duration': duration + 'ms',
+            'animation-duration': duration + 'ms',
+            '-webkit-animation-delay': delay + 'ms',
+            'animation-delay': delay + 'ms',
+            '-webkit-animation-fill-mode': 'both',
+            'animation-fill-mode': 'both'
+        });
+
+        // 5. Add dual-contract keyframe classes
+        $node.addClass('animate__animated animate__' + cleanEffect + ' anim-' + cleanEffect + ' wppoppop-anim-' + cleanEffect);
+
+        // 6. Reset styles after playback to keep element interactive
+        clearTimeout($node.data('wppoppop_anim_cleanup_timer'));
+        var timer = setTimeout(function() {
+            $node.removeClass(function(index, className) {
+                return (className.match(/\b(anim-\S+|wppoppop-anim-\S+|animate__\S+)/g) || []).join(' ');
+            });
+            $node.css({
+                '-webkit-animation-duration': '',
+                'animation-duration': '',
+                '-webkit-animation-delay': '',
+                'animation-delay': '',
+                '-webkit-animation-fill-mode': '',
+                'animation-fill-mode': ''
+            });
+        }, duration + delay + 100);
+        $node.data('wppoppop_anim_cleanup_timer', timer);
+    },
+
     init: function() {
             this.bindCanvasCornerResize();
             this.bindRibbonTools();
