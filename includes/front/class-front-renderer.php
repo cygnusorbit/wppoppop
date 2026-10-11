@@ -195,6 +195,30 @@ class WpPopPop_Front_Renderer {
     }
 
     private function render_canvas_element(array $el) {
+        // Phase 2: Opacity, Custom Class & Button Hover Properties
+        if (isset($el['opacity']) && $el['opacity'] !== '' && $el['opacity'] !== null) {
+            $wrapper_styles[] = 'opacity:' . (floatval($el['opacity']) / 100) . ';';
+        }
+        if (!empty($el['customClass'])) {
+            $wrapper_classes[] = sanitize_html_class($el['customClass']);
+        } elseif (!empty($el['custom_class'])) {
+            $wrapper_classes[] = sanitize_html_class($el['custom_class']);
+        }
+        if (in_array($type, ['submit', 'link', 'step', 'pay'], true)) {
+            $hover_bg = !empty($el['hoverBgColor']) ? $el['hoverBgColor'] : (!empty($el['hover_bg_color']) ? $el['hover_bg_color'] : '');
+            $hover_color = !empty($el['hoverTextColor']) ? $el['hoverTextColor'] : (!empty($el['hover_text_color']) ? $el['hover_text_color'] : '');
+            $hover_border = !empty($el['hoverBorderColor']) ? $el['hoverBorderColor'] : (!empty($el['hover_border_color']) ? $el['hover_border_color'] : '');
+            if (!empty($hover_bg)) {
+                $wrapper_styles[] = '--wppoppop-hover-bg:' . esc_attr($hover_bg) . ';';
+            }
+            if (!empty($hover_color)) {
+                $wrapper_styles[] = '--wppoppop-hover-color:' . esc_attr($hover_color) . ';';
+            }
+            if (!empty($hover_border)) {
+                $wrapper_styles[] = '--wppoppop-hover-border:' . esc_attr($hover_border) . ';';
+            }
+        }
+
         $type   = $el['type'] ?? 'text';
         $top    = intval($el['top'] ?? $el['y'] ?? 20);
         $left   = intval($el['left'] ?? $el['x'] ?? 20);

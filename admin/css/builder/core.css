@@ -1125,3 +1125,172 @@ body.wppoppop-resizing-canvas {
     border-color: #38bdf8;
     box-shadow: 0 0 0 1px #38bdf8;
 }
+
+
+/* Phase 2: Button Hover & Custom Class Styling */
+.wppoppop-element[style*="--wppoppop-hover-bg"]:hover button,
+.wppoppop-element[style*="--wppoppop-hover-bg"]:hover a,
+.wppoppop-element[style*="--wppoppop-hover-bg"]:hover .wppoppop-submit-btn,
+.wppoppop-element[style*="--wppoppop-hover-bg"]:hover .wppoppop-link-btn,
+.wppoppop-element[style*="--wppoppop-hover-bg"]:hover .wppoppop-next-canvas-btn {
+    background: var(--wppoppop-hover-bg) !important;
+}
+.wppoppop-element[style*="--wppoppop-hover-color"]:hover button,
+.wppoppop-element[style*="--wppoppop-hover-color"]:hover a,
+.wppoppop-element[style*="--wppoppop-hover-color"]:hover .wppoppop-submit-btn,
+.wppoppop-element[style*="--wppoppop-hover-color"]:hover .wppoppop-link-btn,
+.wppoppop-element[style*="--wppoppop-hover-color"]:hover .wppoppop-next-canvas-btn {
+    color: var(--wppoppop-hover-color) !important;
+}
+.wppoppop-element[style*="--wppoppop-hover-border"]:hover button,
+.wppoppop-element[style*="--wppoppop-hover-border"]:hover a,
+.wppoppop-element[style*="--wppoppop-hover-border"]:hover .wppoppop-submit-btn,
+.wppoppop-element[style*="--wppoppop-hover-border"]:hover .wppoppop-link-btn,
+.wppoppop-element[style*="--wppoppop-hover-border"]:hover .wppoppop-next-canvas-btn {
+    border-color: var(--wppoppop-hover-border) !important;
+}
+
+
+/* Phase 3: Stage Physics, Alignment Toolbar & Smart Snap Guides */
+.wppoppop-alignment-toolbar {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    padding: 3px 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    z-index: 60;
+    user-select: none;
+}
+.wppoppop-align-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.wppoppop-align-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+.wppoppop-align-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.35);
+}
+.wppoppop-align-separator {
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 3px;
+}
+.wppoppop-smart-guide {
+    position: absolute;
+    z-index: 9999;
+    pointer-events: none;
+}
+.wppoppop-guide-v {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    border-left: 1.5px dashed #38bdf8;
+}
+.wppoppop-guide-h {
+    left: 0;
+    right: 0;
+    height: 1px;
+    border-top: 1.5px dashed #38bdf8;
+}
+
+
+/* Phase 5: Floating Layers Panel Toolbar, Search & Inline Rename */
+.wppoppop-layers-panel-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: #111827;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 6px;
+}
+.wppoppop-layers-search-wrap {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 4px;
+    padding: 0 6px;
+}
+.wppoppop-layers-search-wrap .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #64748b;
+    margin-right: 4px;
+}
+.wppoppop-layers-search {
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #f1f5f9 !important;
+    font-size: 11px !important;
+    padding: 3px 0 !important;
+    height: 22px !important;
+}
+.wppoppop-layers-search::placeholder {
+    color: #64748b;
+}
+.wppoppop-layers-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.wppoppop-layers-bulk-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.wppoppop-layers-bulk-btn .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+.wppoppop-layers-bulk-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.35);
+}
+.wppoppop-layer-title-editable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s ease;
+}
+.wppoppop-layer-title-editable:hover {
+    color: #38bdf8;
+}

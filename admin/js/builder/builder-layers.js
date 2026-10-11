@@ -6,9 +6,169 @@
     'use strict';
 
     window.WpPopPopBuilderLayers = {
-        init: function() {
+        bindLayerSearch: function() {
+        var self = this;
+        $(document).off('input.wppoppop_layers_srch').on('input.wppoppop_layers_srch', '#wppoppop-layers-search', function() {
+            var query = ($(this).val() || '').toLowerCase().trim();
+            $('#wppoppop-layers-list li, .wppoppop-layer-item').each(function() {
+                var $item = $(this);
+                var title = ($item.find('.wppoppop-layer-title').text() || '').toLowerCase();
+                if (!query || title.indexOf(query) !== -1) {
+                    $item.show();
+                } else {
+                    $item.hide();
+                }
+            });
+        });
+    },
+
+    bindInlineRename: function() {
+        var self = this;
+        $(document).off('dblclick.wppoppop_rename').on('dblclick.wppoppop_rename', '.wppoppop-layer-title-editable, .wppoppop-layer-title', function(e) {
+            e.stopPropagation();
+            var $span = $(this);
+            var $item = $span.closest('.wppoppop-layer-item, li');
+            var elId = $item.data('id') || $item.attr('data-element-id') || $item.attr('data-id');
+            if (!elId) return;
+
+            var curText = $span.text().trim();
+            var $input = $('<input type="text" class="wppoppop-layer-rename-input" />')
+                .val(curText)
+                .css({
+                    'width': '110px',
+                    'height': '22px',
+                    'font-size': '11px',
+                    'padding': '1px 5px',
+                    'background': '#0f172a',
+                    'color': '#f8fafc',
+                    'border': '1px solid #38bdf8',
+                    'border-radius': '3px',
+                    'outline': 'none'
+                });
+
+            $span.hide().after($input);
+            $input.focus().select();
+
+            var committed = false;
+            function commitRename() {
+                if (committed) return;
+                committed = true;
+                var newName = $input.val().trim() || curText;
+                $input.remove();
+                $span.text(newName).show();
+
+                var core = window.WpPopPopBuilderCore;
+                if (core && core.state) {
+                    var cur = core.state.currentCanvas || 1;
+                    var list = (core.state.canvases && core.state.canvases[cur]) ? core.state.canvases[cur] : [];
+                    for (var i = 0; i < list.length; i++) {
+                        if (list[i].id === elId) {
+                            list[i].name = newName;
+                            list[i].label = newName;
+                            break;
+                        }
+                    }
+                    if (typeof core.pushHistory === 'function') {
+                        core.pushHistory();
+                    }
+                }
+                if ($('#prop-element-name').length) {
+                    $('#prop-element-name').val(newName);
+                }
+            }
+
+            $input.on('blur', commitRename);
+            $input.on('keydown', function(evt) {
+                if (evt.key === 'Enter') {
+                    evt.preventDefault();
+                    commitRename();
+                } else if (evt.key === 'Escape') {
+                    evt.preventDefault();
+                    committed = true;
+                    $input.remove();
+                    $span.show();
+                }
+            });
+        });
+    },
+
+    bindBulkActions: function() {
+        var self = this;
+        // Bulk visibility toggle
+        $(document).off('click.wppoppop_b_vis').on('click.wppoppop_b_vis', '#wppoppop-layers-bulk-vis', function(e) {
+            e.preventDefault();
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state) return;
+            var cur = core.state.currentCanvas || 1;
+            var list = (core.state.canvases && core.state.canvases[cur]) ? core.state.canvases[cur] : [];
+            if (!list.length) return;
+
+            var anyHidden = list.some(function(el) { return el.hidden === true; });
+            var newHiddenState = !anyHidden;
+
+            list.forEach(function(el) {
+                el.hidden = newHiddenState;
+                var $node = $('#wppoppop-el-' + el.id);
+                if (newHiddenState) {
+                    $node.hide();
+                } else {
+                    $node.show();
+                }
+            });
+
+            $(this).find('.dashicons').toggleClass('dashicons-visibility', !newHiddenState).toggleClass('dashicons-hidden', newHiddenState);
+
+            if (typeof self.renderLayers === 'function') {
+                self.renderLayers();
+            }
+            if (typeof core.pushHistory === 'function') {
+                core.pushHistory();
+            }
+        });
+
+        // Bulk lock toggle
+        $(document).off('click.wppoppop_b_lock').on('click.wppoppop_b_lock', '#wppoppop-layers-bulk-lock', function(e) {
+            e.preventDefault();
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state) return;
+            var cur = core.state.currentCanvas || 1;
+            var list = (core.state.canvases && core.state.canvases[cur]) ? core.state.canvases[cur] : [];
+            if (!list.length) return;
+
+            var anyLocked = list.some(function(el) { return el.locked === true; });
+            var newLockState = !anyLocked;
+
+            list.forEach(function(el) {
+                el.locked = newLockState;
+                var $node = $('#wppoppop-el-' + el.id);
+                if (newLockState) {
+                    $node.addClass('wppoppop-locked');
+                    if ($node.hasClass('ui-draggable')) $node.draggable('disable');
+                    if ($node.hasClass('ui-resizable')) $node.resizable('disable');
+                } else {
+                    $node.removeClass('wppoppop-locked');
+                    if ($node.hasClass('ui-draggable')) $node.draggable('enable');
+                    if ($node.hasClass('ui-resizable')) $node.resizable('enable');
+                }
+            });
+
+            $(this).find('.dashicons').toggleClass('dashicons-unlock', !newLockState).toggleClass('dashicons-lock', newLockState);
+
+            if (typeof self.renderLayers === 'function') {
+                self.renderLayers();
+            }
+            if (typeof core.pushHistory === 'function') {
+                core.pushHistory();
+            }
+        });
+    },
+
+    init: function() {
             this.bindPanelInteractions();
             this.bindEvents();
+        this.bindLayerSearch();
+        this.bindInlineRename();
+        this.bindBulkActions();
         },
 
         bindPanelInteractions: function() {
@@ -75,7 +235,7 @@
                 var itemHtml = 
                     '<div class="wppoppop-layer-drag-grip" title="Drag to reorder layer depth"><span class="dashicons dashicons-menu"></span></div>' +
                     '<div class="wppoppop-layer-icon"><span class="dashicons ' + iconClass + '"></span></div>' +
-                    '<div class="wppoppop-layer-title" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
+                    '<div class="wppoppop-layer-title wppoppop-layer-title-editable" title="Double-click to rename" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
                     '<div class="wppoppop-layer-actions">' +
                         '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-duplicate" title="Duplicate Layer" data-id="' + el.id + '"><span class="dashicons dashicons-admin-page"></span></button>' +
                         '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-lock" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +

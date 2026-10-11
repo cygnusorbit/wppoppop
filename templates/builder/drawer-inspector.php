@@ -312,6 +312,37 @@ if (!defined('ABSPATH')) {
 
                         <!-- =================== TAB 2: STYLE =================== -->
         <div id="insp-tab-style" class="wppoppop-tab-pane" style="display:none;">
+            <!-- Button Hover States -->
+            <div class="wppoppop-inspector-section" id="prop-btn-hover-section" style="display:none;">
+                <label class="wppoppop-section-label" id="prop-btn-hover">BUTTON HOVER STATES</label>
+                <div class="wppoppop-row-3col" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;">
+                    <div class="wppoppop-field-group">
+                        <label for="prop-btn-hover-bg" style="font-size:11px;">HOVER BG</label>
+                        <input type="color" id="prop-btn-hover-bg" class="wppoppop-color-input" value="#2563eb" style="width:100%;height:32px;padding:1px;border-radius:4px;border:1px solid #334155;background:#1e293b;cursor:pointer;">
+                    </div>
+                    <div class="wppoppop-field-group">
+                        <label for="prop-btn-hover-color" style="font-size:11px;">HOVER TEXT</label>
+                        <input type="color" id="prop-btn-hover-color" class="wppoppop-color-input" value="#ffffff" style="width:100%;height:32px;padding:1px;border-radius:4px;border:1px solid #334155;background:#1e293b;cursor:pointer;">
+                    </div>
+                    <div class="wppoppop-field-group">
+                        <label for="prop-btn-hover-border" style="font-size:11px;">HOVER BORDER</label>
+                        <input type="color" id="prop-btn-hover-border" class="wppoppop-color-input" value="#1d4ed8" style="width:100%;height:32px;padding:1px;border-radius:4px;border:1px solid #334155;background:#1e293b;cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+            <!-- Element Opacity & Visibility -->
+            <div class="wppoppop-inspector-section">
+                <label class="wppoppop-section-label">OPACITY &amp; VISIBILITY</label>
+                <div class="wppoppop-row-2col">
+                    <div class="wppoppop-field-group">
+                        <label for="prop-opacity">OPACITY</label>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <input type="range" id="prop-opacity" min="0" max="100" value="100" style="flex:1;">
+                            <span id="prop-opacity-val" style="min-width:35px;font-size:12px;color:#94a3b8;">100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div style="display:flex;flex-direction:column;gap:12px;">
                 
                 <!-- Section 1: Typography & Spacing -->
@@ -402,6 +433,20 @@ if (!defined('ABSPATH')) {
 
         <!-- =================== TAB 3: LOGIC =================== -->
         <div id="insp-tab-logic" class="wppoppop-tab-pane" style="display:none;">
+            <!-- Custom CSS Identifiers -->
+            <div class="wppoppop-inspector-section">
+                <label class="wppoppop-section-label">CUSTOM CSS IDENTIFIERS</label>
+                <div class="wppoppop-row-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div class="wppoppop-field-group">
+                        <label for="prop-custom-class" style="font-size:11px;">CSS CLASS</label>
+                        <input type="text" id="prop-custom-class" placeholder="custom-btn-class" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                    </div>
+                    <div class="wppoppop-field-group">
+                        <label for="prop-custom-id" style="font-size:11px;">CSS ID</label>
+                        <input type="text" id="prop-custom-id" placeholder="custom-btn-id" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                    </div>
+                </div>
+            </div>
             <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">STEP NAVIGATION &amp; ACTIONS</div>
             <div class="wppoppop-prop-group" style="margin-top:8px;">
                 <label for="prop-goto-canvas" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">TARGET CANVAS ON CLICK</label>

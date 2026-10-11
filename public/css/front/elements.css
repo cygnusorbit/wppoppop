@@ -534,3 +534,27 @@ button::-moz-focus-inner {
     letter-spacing: inherit;
     line-height: inherit;
 }
+
+
+/* Phase 2: Live Frontend Button Hover Transitions */
+.wppoppop-front-element[style*="--wppoppop-hover-bg"]:hover button,
+.wppoppop-front-element[style*="--wppoppop-hover-bg"]:hover a,
+.wppoppop-front-element[style*="--wppoppop-hover-bg"]:hover .wppoppop-submit-btn,
+.wppoppop-front-element[style*="--wppoppop-hover-bg"]:hover .wppoppop-link-btn,
+.wppoppop-front-element[style*="--wppoppop-hover-bg"]:hover .wppoppop-next-canvas-btn {
+    background: var(--wppoppop-hover-bg) !important;
+}
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover button,
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover a,
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover .wppoppop-submit-btn,
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover .wppoppop-link-btn,
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover .wppoppop-next-canvas-btn {
+    color: var(--wppoppop-hover-color) !important;
+}
+.wppoppop-front-element[style*="--wppoppop-hover-border"]:hover button,
+.wppoppop-front-element[style*="--wppoppop-hover-border"]:hover a,
+.wppoppop-front-element[style*="--wppoppop-hover-border"]:hover .wppoppop-submit-btn,
+.wppoppop-front-element[style*="--wppoppop-hover-border"]:hover .wppoppop-link-btn,
+.wppoppop-front-element[style*="--wppoppop-hover-border"]:hover .wppoppop-next-canvas-btn {
+    border-color: var(--wppoppop-hover-border) !important;
+}

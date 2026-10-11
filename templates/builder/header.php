@@ -18,6 +18,9 @@ if (!defined('ABSPATH')) {
             <div class="wppoppop-canvas-tab-wrapper active">
                 <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
             </div>
+        <button type="button" class="wppoppop-btn-tool" id="wppoppop-canvas-duplicate-btn" title="Duplicate Active Canvas" aria-label="Duplicate Active Canvas">
+            <span class="dashicons dashicons-admin-page"></span>
+        </button>
             <div class="wppoppop-canvas-tab-wrapper">
                 <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="2" data-screen="2">Canvas 2</button>
                 <span class="wppoppop-tab-delete-canvas" data-canvas="2" title="Delete Canvas">&times;</span>
@@ -33,6 +36,14 @@ if (!defined('ABSPATH')) {
             <input type="number" id="quick-box-height" value="400" min="150" max="1000">
         </div>
 
+                <div class="wppoppop-header-history-tools">
+            <button type="button" class="wppoppop-btn-tool" id="wppoppop-btn-undo" title="Undo (Cmd/Ctrl + Z)" aria-label="Undo" disabled>
+                <span class="dashicons dashicons-undo"></span>
+            </button>
+            <button type="button" class="wppoppop-btn-tool" id="wppoppop-btn-redo" title="Redo (Cmd/Ctrl + Y)" aria-label="Redo" disabled>
+                <span class="dashicons dashicons-redo"></span>
+            </button>
+        </div>
         <div class="wppoppop-viewport-toggles">
             <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>

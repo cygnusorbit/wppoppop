@@ -19,7 +19,53 @@
     'use strict';
 
     window.WpPopPopBuilderInspector = {
-        init: function() {
+        bindAdvancedStylingInputs: function() {
+        var self = this;
+
+        // Opacity Live Slider
+        $(document).off('input.wppoppop_op change.wppoppop_op', '#prop-opacity').on('input.wppoppop_op change.wppoppop_op', '#prop-opacity', function(e) {
+            var val = parseInt($(this).val(), 10);
+            $('#prop-opacity-val').text(val + '%');
+            var el = (typeof self.getActiveEl === 'function' ? self.getActiveEl() : (typeof self.getActiveElement === 'function' ? self.getActiveElement() : null));
+            if (el) {
+                el.opacity = val;
+                $('#wppoppop-el-' + el.id).css('opacity', val / 100);
+                if (e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            }
+        });
+
+        // Custom CSS Class & ID
+        $(document).off('input.wppoppop_css_id change.wppoppop_css_id', '#prop-custom-class, #prop-custom-id').on('input.wppoppop_css_id change.wppoppop_css_id', '#prop-custom-class, #prop-custom-id', function() {
+            var el = (typeof self.getActiveEl === 'function' ? self.getActiveEl() : (typeof self.getActiveElement === 'function' ? self.getActiveElement() : null));
+            if (el) {
+                el.customClass = $('#prop-custom-class').val().trim();
+                el.customId = $('#prop-custom-id').val().trim();
+            }
+        });
+
+        // Button Hover State Colors
+        $(document).off('input.wppoppop_btn_hvr change.wppoppop_btn_hvr', '#prop-btn-hover-bg, #prop-btn-hover-color, #prop-btn-hover-border').on('input.wppoppop_btn_hvr change.wppoppop_btn_hvr', '#prop-btn-hover-bg, #prop-btn-hover-color, #prop-btn-hover-border', function(e) {
+            var el = (typeof self.getActiveEl === 'function' ? self.getActiveEl() : (typeof self.getActiveElement === 'function' ? self.getActiveElement() : null));
+            if (el) {
+                el.hoverBgColor = $('#prop-btn-hover-bg').val();
+                el.hoverTextColor = $('#prop-btn-hover-color').val();
+                el.hoverBorderColor = $('#prop-btn-hover-border').val();
+                var $node = $('#wppoppop-el-' + el.id);
+                $node.css({
+                    '--wppoppop-hover-bg': el.hoverBgColor,
+                    '--wppoppop-hover-color': el.hoverTextColor,
+                    '--wppoppop-hover-border': el.hoverBorderColor
+                });
+                if (e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            }
+        });
+    },
+
+    init: function() {
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
@@ -57,6 +103,7 @@
         },
 
         open: function(id) {
+
             var core = window.WpPopPopBuilderCore;
             if (!core || !core.state.canvases) return;
             var cur = core.state.currentCanvas || 1;
@@ -213,6 +260,7 @@
         },
 
         bindInputs: function() {
+        this.bindAdvancedStylingInputs();
             var self = this;
 
             // Shape Presets & Controls

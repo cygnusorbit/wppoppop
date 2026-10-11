@@ -47,6 +47,237 @@
         });
     },
 
+    smartSnapGuides: function(ui, el, $box) {
+        if (!ui || !ui.position || !$box || !$box.length) return;
+        var boxW = $box.outerWidth() || 640;
+        var boxH = $box.outerHeight() || 400;
+        var $node = $('#wppoppop-el-' + el.id);
+        var elW = $node.outerWidth() || el.width || 100;
+        var elH = $node.outerHeight() || el.height || 40;
+
+        var threshold = 6;
+        var posX = ui.position.left;
+        var posY = ui.position.top;
+        var centerX = posX + elW / 2;
+        var centerY = posY + elH / 2;
+        var rightX = posX + elW;
+        var bottomY = posY + elH;
+
+        var curCanvas = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) ? window.WpPopPopBuilderCore.state.currentCanvas || 1 : 1;
+        var elements = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) ? window.WpPopPopBuilderCore.state.canvases[curCanvas] : [];
+
+        var snapTargetsX = [0, Math.round(boxW / 2), boxW];
+        var snapTargetsY = [0, Math.round(boxH / 2), boxH];
+
+        elements.forEach(function(other) {
+            if (other.id === el.id) return;
+            var oL = parseInt(other.left, 10) || 0;
+            var oT = parseInt(other.top, 10) || 0;
+            var oW = parseInt(other.width, 10) || 100;
+            var oH = parseInt(other.height, 10) || 40;
+            snapTargetsX.push(oL, oL + Math.round(oW / 2), oL + oW);
+            snapTargetsY.push(oT, oT + Math.round(oH / 2), oT + oH);
+        });
+
+        var snappedX = null;
+        var snappedY = null;
+
+        for (var i = 0; i < snapTargetsX.length; i++) {
+            var tx = snapTargetsX[i];
+            if (Math.abs(posX - tx) <= threshold) {
+                ui.position.left = tx;
+                snappedX = tx;
+                break;
+            } else if (Math.abs(centerX - tx) <= threshold) {
+                ui.position.left = tx - Math.round(elW / 2);
+                snappedX = tx;
+                break;
+            } else if (Math.abs(rightX - tx) <= threshold) {
+                ui.position.left = tx - elW;
+                snappedX = tx;
+                break;
+            }
+        }
+
+        for (var j = 0; j < snapTargetsY.length; j++) {
+            var ty = snapTargetsY[j];
+            if (Math.abs(posY - ty) <= threshold) {
+                ui.position.top = ty;
+                snappedY = ty;
+                break;
+            } else if (Math.abs(centerY - ty) <= threshold) {
+                ui.position.top = ty - Math.round(elH / 2);
+                snappedY = ty;
+                break;
+            } else if (Math.abs(bottomY - ty) <= threshold) {
+                ui.position.top = ty - elH;
+                snappedY = ty;
+                break;
+            }
+        }
+
+        var $guideV = $('#wppoppop-guide-v');
+        var $guideH = $('#wppoppop-guide-h');
+        if (snappedX !== null) {
+            $guideV.css({ left: snappedX + 'px', display: 'block' });
+        } else {
+            $guideV.hide();
+        }
+        if (snappedY !== null) {
+            $guideH.css({ top: snappedY + 'px', display: 'block' });
+        } else {
+            $guideH.hide();
+        }
+    },
+
+    alignSelectedElements: function(type) {
+        var self = this;
+        var activeId = self.activeId || (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? window.WpPopPopBuilderCore.state.activeId : null);
+        var curCanvas = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) ? window.WpPopPopBuilderCore.state.currentCanvas || 1 : 1;
+        var elements = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) ? window.WpPopPopBuilderCore.state.canvases[curCanvas] : [];
+        if (!elements || !elements.length) return;
+
+        var $box = $('#wppoppop-canvas-box');
+        var boxW = $box.outerWidth() || 640;
+        var boxH = $box.outerHeight() || 400;
+
+        if (type === 'distribute_h' || type === 'distribute_v') {
+            if (elements.length < 3) return;
+            var sorted = elements.slice();
+            if (type === 'distribute_h') {
+                sorted.sort(function(a, b) { return (parseInt(a.left, 10) || 0) - (parseInt(b.left, 10) || 0); });
+                var minL = parseInt(sorted[0].left, 10) || 0;
+                var maxL = parseInt(sorted[sorted.length - 1].left, 10) || 0;
+                var stepL = (maxL - minL) / (sorted.length - 1);
+                sorted.forEach(function(el, idx) {
+                    if (idx > 0 && idx < sorted.length - 1) {
+                        el.left = Math.round(minL + idx * stepL);
+                        $('#wppoppop-el-' + el.id).css('left', el.left + 'px');
+                    }
+                });
+            } else {
+                sorted.sort(function(a, b) { return (parseInt(a.top, 10) || 0) - (parseInt(b.top, 10) || 0); });
+                var minT = parseInt(sorted[0].top, 10) || 0;
+                var maxT = parseInt(sorted[sorted.length - 1].top, 10) || 0;
+                var stepT = (maxT - minT) / (sorted.length - 1);
+                sorted.forEach(function(el, idx) {
+                    if (idx > 0 && idx < sorted.length - 1) {
+                        el.top = Math.round(minT + idx * stepT);
+                        $('#wppoppop-el-' + el.id).css('top', el.top + 'px');
+                    }
+                });
+            }
+            if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                window.WpPopPopBuilderCore.pushHistory();
+            }
+            return;
+        }
+
+        if (!activeId) return;
+        var activeEl = null;
+        for (var eIdx = 0; eIdx < elements.length; eIdx++) {
+            if (elements[eIdx].id === activeId) {
+                activeEl = elements[eIdx];
+                break;
+            }
+        }
+        if (!activeEl) return;
+
+        var $node = $('#wppoppop-el-' + activeId);
+        var elW = $node.outerWidth() || activeEl.width || 100;
+        var elH = $node.outerHeight() || activeEl.height || 40;
+
+        switch (type) {
+            case 'left':
+                activeEl.left = 0;
+                break;
+            case 'center':
+                activeEl.left = Math.round((boxW - elW) / 2);
+                break;
+            case 'right':
+                activeEl.left = Math.max(0, boxW - elW);
+                break;
+            case 'top':
+                activeEl.top = 0;
+                break;
+            case 'middle':
+                activeEl.top = Math.round((boxH - elH) / 2);
+                break;
+            case 'bottom':
+                activeEl.top = Math.max(0, boxH - elH);
+                break;
+        }
+
+        $node.css({ left: activeEl.left + 'px', top: activeEl.top + 'px' });
+        $('#prop-left').val(activeEl.left);
+        $('#prop-top').val(activeEl.top);
+
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory();
+        }
+    },
+
+    bindKeyboardNudge: function() {
+        var self = this;
+        $(document).off('keydown.wppoppop_nudge').on('keydown.wppoppop_nudge', function(e) {
+            var tag = (e.target.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) {
+                return;
+            }
+
+            var arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+            if (arrowKeys.indexOf(e.key) === -1) return;
+
+            var activeId = self.activeId || (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? window.WpPopPopBuilderCore.state.activeId : null);
+            if (!activeId) return;
+
+            var curCanvas = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) ? window.WpPopPopBuilderCore.state.currentCanvas || 1 : 1;
+            var elements = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.canvases) ? window.WpPopPopBuilderCore.state.canvases[curCanvas] : [];
+            var activeEl = null;
+            for (var idx = 0; idx < elements.length; idx++) {
+                if (elements[idx].id === activeId) {
+                    activeEl = elements[idx];
+                    break;
+                }
+            }
+            if (!activeEl) return;
+
+            e.preventDefault();
+            var step = e.shiftKey ? 10 : 1;
+            var $node = $('#wppoppop-el-' + activeId);
+            var left = parseInt(activeEl.left, 10) || 0;
+            var top = parseInt(activeEl.top, 10) || 0;
+
+            if (e.key === 'ArrowUp') top -= step;
+            if (e.key === 'ArrowDown') top += step;
+            if (e.key === 'ArrowLeft') left -= step;
+            if (e.key === 'ArrowRight') left += step;
+
+            activeEl.left = left;
+            activeEl.top = top;
+            $node.css({ left: left + 'px', top: top + 'px' });
+
+            $('#prop-left').val(left);
+            $('#prop-top').val(top);
+
+            clearTimeout(self._nudgeHistTimer);
+            self._nudgeHistTimer = setTimeout(function() {
+                if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                    window.WpPopPopBuilderCore.pushHistory();
+                }
+            }, 300);
+        });
+    },
+
+    bindAlignmentToolbar: function() {
+        var self = this;
+        $(document).off('click.wppoppop_align', '.wppoppop-align-btn').on('click.wppoppop_align', '.wppoppop-align-btn', function(e) {
+            e.preventDefault();
+            var alignType = $(this).data('align');
+            self.alignSelectedElements(alignType);
+        });
+    },
+
     init: function() {
             this.bindCanvasCornerResize();
             this.bindRibbonTools();
@@ -245,6 +476,7 @@
         },
 
         buildElementNode: function(el) {
+
             var pad = el.padding !== undefined ? parseInt(el.padding, 10) : 0;
             var isFormOrBtn = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'select', 'date'].indexOf(el.type) !== -1;
 

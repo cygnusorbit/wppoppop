@@ -51,6 +51,17 @@ if (!defined('ABSPATH')) {
                                     <label style="font-size:10px;color:#64748b;">Width (px)</label>
                                     <input type="number" id="set-canvas-width" value="640" min="200" max="1600" class="widefat" style="font-size:12px;">
                                 </div>
+                <!-- Phase 4: Canvas Auto-Close Countdown -->
+                <div class="wppoppop-settings-field-group" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);">
+                    <div class="wppoppop-field-group">
+                        <label for="set-canvas-autoclose" style="font-size:11px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px;">AUTO-CLOSE COUNTDOWN (SECONDS)</label>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <input type="number" id="set-canvas-autoclose" class="wppoppop-input" min="0" max="120" step="1" value="0" placeholder="0 (Disabled)" style="width:120px;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                            <span style="font-size:11px;color:#94a3b8;">sec (0 = disabled)</span>
+                        </div>
+                        <span style="font-size:11px;color:#64748b;display:block;margin-top:2px;">Automatically dismisses the popup after specified seconds.</span>
+                    </div>
+                </div>
                                 <div>
                                     <label style="font-size:10px;color:#64748b;">Height (px)</label>
                                     <input type="number" id="set-canvas-height" value="400" min="150" max="1200" class="widefat" style="font-size:12px;">
@@ -436,3 +447,24 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 </div>
+
+
+                <!-- Phase 4: Exit Intent Sensitivity & Scroll Depth Triggers -->
+                <div class="wppoppop-settings-field-group" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);">
+                    <div class="wppoppop-row-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div class="wppoppop-field-group">
+                            <label for="set-exit-intent-sensitivity" style="font-size:11px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px;">EXIT INTENT SENSITIVITY</label>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <input type="number" id="set-exit-intent-sensitivity" class="wppoppop-input" min="5" max="150" step="5" value="30" placeholder="30" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                                <span style="font-size:11px;color:#94a3b8;white-space:nowrap;">px top</span>
+                            </div>
+                        </div>
+                        <div class="wppoppop-field-group">
+                            <label for="set-trigger-scroll-depth" style="font-size:11px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px;">SCROLL DEPTH TRIGGER</label>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <input type="number" id="set-trigger-scroll-depth" class="wppoppop-input" min="0" max="100" step="5" value="50" placeholder="50" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                                <span style="font-size:11px;color:#94a3b8;">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
