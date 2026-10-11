@@ -1462,3 +1462,57 @@ body.panel-open .wppoppop-builder-workspace,
     right: 376px !important;
     left: auto !important;
 }
+
+
+/* Floating Layers Panel - Active Colors for Lock & Hide */
+.wppoppop-layer-btn-lock,
+.wppoppop-layer-btn-vis,
+.wppoppop-layers-bulk-btn {
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+/* Active Locked State (Amber Accent) */
+.wppoppop-layer-btn-lock.active,
+.wppoppop-layer-btn-lock.is-active,
+.wppoppop-layer-item.is-locked .wppoppop-layer-btn-lock,
+#wppoppop-layers-bulk-lock.active,
+#wppoppop-layers-bulk-lock.is-active {
+    color: #f59e0b !important;
+    background: rgba(245, 158, 11, 0.18) !important;
+    border-color: rgba(245, 158, 11, 0.5) !important;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.25) !important;
+}
+
+.wppoppop-layer-btn-lock.active .dashicons,
+.wppoppop-layer-btn-lock.is-active .dashicons,
+.wppoppop-layer-item.is-locked .wppoppop-layer-btn-lock .dashicons,
+#wppoppop-layers-bulk-lock.active .dashicons,
+#wppoppop-layers-bulk-lock.is-active .dashicons {
+    color: #f59e0b !important;
+}
+
+/* Active Hidden State (Red/Rose Accent) */
+.wppoppop-layer-btn-vis.active,
+.wppoppop-layer-btn-vis.is-active,
+.wppoppop-layer-item.is-hidden .wppoppop-layer-btn-vis,
+#wppoppop-layers-bulk-vis.active,
+#wppoppop-layers-bulk-vis.is-active {
+    color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.25) !important;
+}
+
+.wppoppop-layer-btn-vis.active .dashicons,
+.wppoppop-layer-btn-vis.is-active .dashicons,
+.wppoppop-layer-item.is-hidden .wppoppop-layer-btn-vis .dashicons,
+#wppoppop-layers-bulk-vis.active .dashicons,
+#wppoppop-layers-bulk-vis.is-active .dashicons {
+    color: #ef4444 !important;
+}
+
+/* Dim row title when layer is hidden */
+.wppoppop-layer-item.is-hidden .wppoppop-layer-title {
+    opacity: 0.55 !important;
+    font-style: italic !important;
+}

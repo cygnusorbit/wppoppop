@@ -117,6 +117,7 @@
                 }
             });
 
+            $(this).toggleClass('active is-active', newHiddenState);
             $(this).find('.dashicons').toggleClass('dashicons-visibility', !newHiddenState).toggleClass('dashicons-hidden', newHiddenState);
 
             if (typeof self.renderLayers === 'function') {
@@ -153,6 +154,7 @@
                 }
             });
 
+            $(this).toggleClass('active is-active', newLockState);
             $(this).find('.dashicons').toggleClass('dashicons-unlock', !newLockState).toggleClass('dashicons-lock', newLockState);
 
             if (typeof self.renderLayers === 'function') {
@@ -478,6 +480,7 @@
             if (el.locked) {
                 $node.addClass('wppoppop-locked');
                 $item.addClass('is-locked');
+                $item.find('.wppoppop-layer-btn-lock').addClass('active is-active');
                 $item.find('.wppoppop-layer-btn-lock').attr('title', 'Unlock Layer')
                     .find('.dashicons').removeClass('dashicons-unlock').addClass('dashicons-lock');
 
@@ -488,6 +491,7 @@
             } else {
                 $node.removeClass('wppoppop-locked');
                 $item.removeClass('is-locked');
+                $item.find('.wppoppop-layer-btn-lock').removeClass('active is-active');
                 $item.find('.wppoppop-layer-btn-lock').attr('title', 'Lock Layer')
                     .find('.dashicons').removeClass('dashicons-lock').addClass('dashicons-unlock');
 
@@ -515,11 +519,13 @@
             if (el.hidden) {
                 $node.css('display', 'none');
                 $item.addClass('is-hidden');
+                $item.find('.wppoppop-layer-btn-vis').addClass('active is-active');
                 $item.find('.wppoppop-layer-btn-vis').attr('title', 'Show Layer')
                     .find('.dashicons').removeClass('dashicons-visibility').addClass('dashicons-hidden');
             } else {
                 $node.css('display', 'block');
                 $item.removeClass('is-hidden');
+                $item.find('.wppoppop-layer-btn-vis').removeClass('active is-active');
                 $item.find('.wppoppop-layer-btn-vis').attr('title', 'Hide Layer')
                     .find('.dashicons').removeClass('dashicons-hidden').addClass('dashicons-visibility');
             }
