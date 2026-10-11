@@ -260,6 +260,31 @@
         },
 
         bindInputs: function() {
+        var self = this;
+
+        // Canonical Aliased Inputs Synchronization
+        $('#prop-dropdown-options, #prop-select-options, #prop-select-fieldname, #prop-dropdown-fieldname').off('input change').on('input change', function() {
+            var el = (typeof self.getActiveEl === 'function' ? self.getActiveEl() : (typeof self.getActiveElement === 'function' ? self.getActiveElement() : null));
+            if (el && (el.type === 'dropdown' || el.type === 'select')) {
+                var val = $('#prop-dropdown-options').length ? $('#prop-dropdown-options').val() : $('#prop-select-options').val();
+                el.content = val;
+                el.options = val ? val.split(',').map(function(s){ return s.trim(); }) : [];
+                el.field_name = $('#prop-dropdown-fieldname').val() || $('#prop-select-fieldname').val() || 'dropdown_field';
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+            }
+        });
+
+        $('#prop-step-label, #prop-step-canvas').off('input change').on('input change', function() {
+            var el = (typeof self.getActiveEl === 'function' ? self.getActiveEl() : (typeof self.getActiveElement === 'function' ? self.getActiveElement() : null));
+            if (el && (el.type === 'step' || el.type === 'step_btn')) {
+                el.content = $('#prop-step-label').val();
+                var cNum = parseInt($('#prop-step-canvas').val(), 10) || 2;
+                el.goto_canvas = cNum;
+                el.goto_screen = cNum;
+                if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+            }
+        });
+
         this.bindAdvancedStylingInputs();
             var self = this;
 
