@@ -45,6 +45,13 @@ if (!defined('ABSPATH')) {
 
     <!-- Right Section: Preview, Embed, Save Actions (Clean Text Buttons) -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
+        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select" title="Stage Zoom" aria-label="Stage Zoom">
+            <option value="0.5">50%</option>
+            <option value="0.75">75%</option>
+            <option value="1" selected>100%</option>
+            <option value="1.25">125%</option>
+            <option value="fit">Fit</option>
+        </select>
         <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">Preview</button>
         <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>
         <button type="button" id="wppoppop-btn-save" class="button button-primary" title="Save Popup Campaign">

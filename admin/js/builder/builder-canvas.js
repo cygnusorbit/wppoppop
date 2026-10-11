@@ -8,7 +8,46 @@
     window.WpPopPopBuilderCanvas = {
         isPreview: false,
 
-        init: function() {
+        setZoom: function(level) {
+        var $box = $('#wppoppop-canvas-box');
+        var $workspace = $('.wppoppop-builder-workspace, #wppoppop-canvas-workspace');
+        if (!$box.length) return;
+
+        if (level === 'fit') {
+            if (!$workspace.length) {
+                level = 1;
+            } else {
+                var availW = $workspace.width() - 80;
+                var availH = $workspace.height() - 80;
+                var boxW = $box.outerWidth() || 640;
+                var boxH = $box.outerHeight() || 400;
+                var scaleX = availW / boxW;
+                var scaleY = availH / boxH;
+                level = Math.min(scaleX, scaleY, 1);
+                if (level < 0.25) level = 0.25;
+            }
+        } else {
+            level = parseFloat(level) || 1;
+        }
+
+        $box.css({
+            '-webkit-transform': 'scale(' + level + ')',
+            'transform': 'scale(' + level + ')',
+            'transform-origin': 'center center',
+            'transition': 'transform 0.15s ease'
+        });
+        this.currentZoom = level;
+    },
+
+    bindZoomControls: function() {
+        var self = this;
+        $(document).off('change.wppoppop_zoom', '#wppoppop-zoom-select').on('change.wppoppop_zoom', '#wppoppop-zoom-select', function() {
+            var val = $(this).val();
+            self.setZoom(val);
+        });
+    },
+
+    init: function() {
             this.bindCanvasCornerResize();
             this.bindRibbonTools();
             this.bindCanvasSelection();

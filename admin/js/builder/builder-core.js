@@ -23,7 +23,105 @@
             historyIndex: -1
         },
 
-        init: function() {
+        updateHistoryButtons: function() {
+        var self = this;
+        var hasUndo = self.historyIndex > 0;
+        var hasRedo = self.history && self.historyIndex < (self.history.length - 1);
+        $('#wppoppop-btn-undo').prop('disabled', !hasUndo);
+        $('#wppoppop-btn-redo').prop('disabled', !hasRedo);
+    },
+
+    duplicateActiveCanvas: function() {
+        var self = this;
+        var srcNum = self.state.currentCanvas || 1;
+        var existingCanvases = Object.keys(self.state.canvases || {}).map(Number);
+        var maxNum = existingCanvases.length ? Math.max.apply(null, existingCanvases) : 1;
+        var newNum = maxNum + 1;
+
+        // Deep clone elements with fresh IDs
+        var srcElements = (self.state.canvases && self.state.canvases[srcNum]) ? self.state.canvases[srcNum] : [];
+        var clonedElements = srcElements.map(function(el) {
+            var copy = JSON.parse(JSON.stringify(el));
+            copy.id = 'el_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5);
+            return copy;
+        });
+
+        self.state.canvases = self.state.canvases || {};
+        self.state.canvases[newNum] = clonedElements;
+
+        // Clone canvas meta
+        self.state.canvasMeta = self.state.canvasMeta || {};
+        if (self.state.canvasMeta[srcNum]) {
+            self.state.canvasMeta[newNum] = JSON.parse(JSON.stringify(self.state.canvasMeta[srcNum]));
+        } else {
+            self.state.canvasMeta[newNum] = { bg_color: '#ffffff' };
+        }
+
+        if (typeof self.renderCanvasTabs === 'function') {
+            self.renderCanvasTabs();
+        }
+        self.switchCanvas(newNum);
+        if (typeof self.pushHistory === 'function') {
+            self.pushHistory();
+        }
+    },
+
+    bindKeyboardShortcuts: function() {
+        var self = this;
+        $(document).off('keydown.wppoppop_shortcuts').on('keydown.wppoppop_shortcuts', function(e) {
+            var tag = (e.target.tagName || '').toLowerCase();
+            var isInput = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+            var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            var cmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
+
+            // Cmd/Ctrl + Z (Undo)
+            if (cmdOrCtrl && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+                if (!isInput) {
+                    e.preventDefault();
+                    if (typeof self.undo === 'function') self.undo();
+                    return;
+                }
+            }
+
+            // Cmd/Ctrl + Y or Cmd/Ctrl + Shift + Z (Redo)
+            if ((cmdOrCtrl && (e.key === 'y' || e.key === 'Y')) || (cmdOrCtrl && e.shiftKey && (e.key === 'z' || e.key === 'Z'))) {
+                if (!isInput) {
+                    e.preventDefault();
+                    if (typeof self.redo === 'function') self.redo();
+                    return;
+                }
+            }
+
+            // Cmd/Ctrl + S (Save)
+            if (cmdOrCtrl && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                $('#wppoppop-btn-save').trigger('click');
+                return;
+            }
+
+            // Escape (Deselect & Close Inspector)
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.deselect === 'function') {
+                    window.WpPopPopBuilderCanvas.deselect();
+                }
+                if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.close === 'function') {
+                    window.WpPopPopBuilderInspector.close();
+                }
+            }
+
+            // Delete / Backspace (Active element)
+            if ((e.key === 'Delete' || e.key === 'Backspace') && !isInput) {
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.deleteActiveElement === 'function') {
+                    if (window.WpPopPopBuilderCanvas.activeId) {
+                        e.preventDefault();
+                        window.WpPopPopBuilderCanvas.deleteActiveElement();
+                    }
+                }
+            }
+        });
+    },
+
+    init: function() {
             this.bindCanvasTabs();
             this.bindViewportToggles();
             this.bindKeyboardShortcuts();
@@ -260,6 +358,7 @@
         },
 
         pushHistory: function() {
+        var self = this; setTimeout(function(){ self.updateHistoryButtons(); }, 10);
             var snapshot = JSON.stringify({
                 canvases: this.state.canvases,
                 canvasMeta: this.state.canvasMeta
@@ -280,6 +379,7 @@
         },
 
         undo: function() {
+        var self = this; setTimeout(function(){ self.updateHistoryButtons(); }, 10);
             if (this.state.historyIndex > 0) {
                 this.state.historyIndex--;
                 this.restoreSnapshot(this.state.history[this.state.historyIndex]);
@@ -287,6 +387,7 @@
         },
 
         redo: function() {
+        var self = this; setTimeout(function(){ self.updateHistoryButtons(); }, 10);
             if (this.state.historyIndex < this.state.history.length - 1) {
                 this.state.historyIndex++;
                 this.restoreSnapshot(this.state.history[this.state.historyIndex]);
