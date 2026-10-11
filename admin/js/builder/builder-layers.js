@@ -61,8 +61,9 @@
                 if (core && core.state) {
                     var cur = core.state.currentCanvas || 1;
                     var list = (core.state.canvases && core.state.canvases[cur]) ? core.state.canvases[cur] : [];
+                    var cleanRenameId = String(elId).replace(/^(wppoppop-el-|el-)/, '');
                     for (var i = 0; i < list.length; i++) {
-                        if (list[i].id === elId) {
+                        if (String(list[i].id).replace(/^(wppoppop-el-|el-)/, '') === cleanRenameId || list[i].id === elId) {
                             list[i].name = newName;
                             list[i].label = newName;
                             break;
@@ -73,7 +74,7 @@
                     }
                 }
                 if ($('#prop-element-name').length) {
-                    $('#prop-element-name').val(newName);
+                    $('#prop-layer-name, #prop-element-name').val(newName);
                 }
             }
 

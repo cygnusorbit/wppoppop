@@ -25,6 +25,11 @@ if (!defined('ABSPATH')) {
         
         <!-- =================== TAB 1: BASIC CONTENT =================== -->
         <div id="insp-tab-basic" class="wppoppop-tab-pane">
+
+            <div class="wppoppop-inspector-section" style="margin-bottom:12px;">
+                <label style="display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:4px;">LAYER NAME</label>
+                <input type="text" id="prop-layer-name" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+            </div>
             <div style="display:flex;flex-direction:column;gap:12px;">
                 <div class="wppoppop-prop-group">
                     <label for="prop-name" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">LAYER NAME</label>

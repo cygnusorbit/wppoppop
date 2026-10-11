@@ -132,10 +132,53 @@
         });
     },
 
+    bindLayerNameInputEvents: function() {
+        var self = this;
+        $(document).off('input.wppoppop_lname change.wppoppop_lname', '#prop-layer-name, #prop-element-name')
+                   .on('input.wppoppop_lname change.wppoppop_lname', '#prop-layer-name, #prop-element-name', function(e) {
+            var newName = $(this).val();
+            $('#prop-layer-name, #prop-element-name').not(this).val(newName);
+
+            var core = window.WpPopPopBuilderCore;
+            var aId = self.activeId || (core && core.state ? core.state.activeId : null);
+            if (!aId && window.WpPopPopBuilderCanvas) aId = window.WpPopPopBuilderCanvas.activeId;
+            if (!aId) return;
+
+            var cleanId = String(aId).replace(/^(wppoppop-el-|el-)/, '');
+            var cur = (core && core.state) ? (core.state.currentCanvas || 1) : 1;
+            var list = (core && core.state && core.state.canvases) ? (core.state.canvases[cur] || []) : [];
+
+            var targetEl = null;
+            for (var i = 0; i < list.length; i++) {
+                if (String(list[i].id).replace(/^(wppoppop-el-|el-)/, '') === cleanId) {
+                    targetEl = list[i];
+                    break;
+                }
+            }
+
+            if (targetEl) {
+                targetEl.name = newName;
+                targetEl.label = newName;
+
+                // Live-update floating layers panel list item title
+                var $panel = $('#wppoppop-floating-layers-panel, #wppoppop-layers-list');
+                var $item = $panel.find('[data-id="' + cleanId + '"], [data-element-id="' + cleanId + '"], [data-id="' + aId + '"]');
+                if ($item.length) {
+                    $item.find('.wppoppop-layer-title').text(newName || targetEl.type);
+                }
+            }
+
+            if (e.type === 'change' && core && typeof core.pushHistory === 'function') {
+                core.pushHistory();
+            }
+        });
+    },
+
     init: function() {
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
+            this.bindLayerNameInputEvents();
             this.bindInspectorCloseEvents();
             this.bindAnimationPlayControls();
         },
