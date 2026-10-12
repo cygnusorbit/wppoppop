@@ -36,6 +36,181 @@ if (!defined('ABSPATH')) {
                 <!-- DYNAMIC ELEMENT-SPECIFIC SETTINGS -->
                 <div id="wppoppop-element-specific-settings">
 
+                <!-- TEXT / RICH CONTENT -->
+                <div class="element-panel" id="panel-elem-text" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TEXT CONTENT</label>
+                    <textarea id="prop-text-content" rows="4" class="widefat" placeholder="Enter text content..." style="font-size:12px;"></textarea>
+                </div>
+
+                <!-- IMAGE -->
+                <div class="element-panel" id="panel-elem-image" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE SOURCE URL</label>
+                    <input type="text" id="prop-image-url" class="widefat" placeholder="https://..." style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE ALT TEXT</label>
+                    <input type="text" id="prop-image-alt" class="widefat" placeholder="Image description for accessibility" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">OBJECT FIT</label>
+                    <select id="prop-image-fit" class="widefat" style="font-size:12px;">
+                        <option value="cover" selected>Cover (Clip to container)</option>
+                        <option value="contain">Contain (Full aspect)</option>
+                        <option value="fill">Fill (Stretch)</option>
+                        <option value="none">Original Scale</option>
+                    </select>
+                </div>
+
+                <!-- EMAIL FIELD -->
+                <div class="element-panel" id="panel-elem-email" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                    <input type="text" id="prop-email-placeholder" class="widefat" placeholder="e.g. name@example.com" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-email-name" class="widefat" value="email" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-email-required" value="1" checked> Required Field
+                    </label>
+                </div>
+
+                <!-- NUMBER FIELD -->
+                <div class="element-panel" id="panel-elem-number" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                    <input type="text" id="prop-num-placeholder" class="widefat" placeholder="e.g. 10" style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MIN</label>
+                            <input type="number" id="prop-num-min" value="0" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">MAX</label>
+                            <input type="number" id="prop-num-max" value="100" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">STEP</label>
+                            <input type="number" id="prop-num-step" value="1" class="widefat" style="font-size:11px;">
+                        </div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-num-name" class="widefat" value="number_field" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-num-required" value="1"> Required Field
+                    </label>
+                </div>
+
+                <!-- SELECT / DROPDOWN -->
+                <div class="element-panel" id="panel-elem-select" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">OPTIONS (ONE PER LINE)</label>
+                    <textarea id="prop-select-options" rows="4" class="widefat" placeholder="Option 1&#10;Option 2&#10;Option 3" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-select-name" class="widefat" value="select_field" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-select-required" value="1"> Required Field
+                    </label>
+                </div>
+
+                <!-- DROPDOWN ALIAS PANEL -->
+                <div class="element-panel" id="panel-elem-dropdown" style="display:none;"></div>
+
+                <!-- RADIOS -->
+                <div class="element-panel" id="panel-elem-radios" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RADIO OPTIONS (ONE PER LINE)</label>
+                    <textarea id="prop-radio-options" rows="4" class="widefat" placeholder="Option A&#10;Option B&#10;Option C" style="font-size:12px;margin-bottom:8px;"></textarea>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-radio-name" class="widefat" value="radio_group" style="font-size:12px;">
+                </div>
+
+                <!-- RADIO ALIAS PANEL -->
+                <div class="element-panel" id="panel-elem-radio" style="display:none;"></div>
+
+                <!-- CHECKBOXES -->
+                <div class="element-panel" id="panel-elem-checkboxes" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CHECKBOX LABEL</label>
+                    <input type="text" id="prop-cb-label" class="widefat" value="I agree to terms" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-cb-name" class="widefat" value="terms_agreement" style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-cb-checked" value="1"> Default Checked
+                        </label>
+                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="checkbox" id="prop-cb-required" value="1"> Required
+                        </label>
+                    </div>
+                </div>
+
+                <!-- CHECKBOX ALIAS PANEL -->
+                <div class="element-panel" id="panel-elem-checkbox" style="display:none;"></div>
+
+                <!-- DATE PICKER -->
+                <div class="element-panel" id="panel-elem-date" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                    <input type="text" id="prop-date-placeholder" class="widefat" placeholder="Select date..." style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-date-name" class="widefat" value="date_field" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-date-required" value="1"> Required Field
+                    </label>
+                </div>
+
+                <!-- PROGRESS BAR -->
+                <div class="element-panel" id="panel-elem-progress" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PROGRESS VALUE: <span id="prop-progress-val-num">50</span>%</label>
+                    <input type="range" id="prop-progress-val" min="0" max="100" value="50" style="width:100%;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BAR FILL COLOR</label>
+                    <input type="color" id="prop-progress-bar-color" value="#3b82f6" class="widefat" style="height:32px;">
+                </div>
+
+                <!-- FILE UPLOAD -->
+                <div class="element-panel" id="panel-elem-file" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ALLOWED EXTENSIONS</label>
+                    <input type="text" id="prop-file-extensions" class="widefat" placeholder="jpg, png, pdf, docx" value="jpg, png, pdf" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">MAX FILE SIZE (MB)</label>
+                    <input type="number" id="prop-file-max-size" value="5" min="1" max="50" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <input type="text" id="prop-file-name" class="widefat" value="attachment" style="font-size:12px;margin-bottom:8px;">
+                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="prop-file-required" value="1"> Required Field
+                    </label>
+                </div>
+
+                <!-- STEP BUTTON -->
+                <div class="element-panel" id="panel-elem-step_btn" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-step-label" value="Next Step &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET CANVAS NUMBER</label>
+                    <input type="number" id="prop-step-canvas" value="2" min="1" max="10" class="widefat" style="font-size:12px;">
+                </div>
+
+                <!-- STEP ALIAS PANEL -->
+                <div class="element-panel" id="panel-elem-step" style="display:none;"></div>
+
+                <!-- PAY BUTTON -->
+                <div class="element-panel" id="panel-elem-pay" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <input type="text" id="prop-pay-label" value="Pay Now" class="widefat" style="font-size:12px;margin-bottom:8px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">AMOUNT</label>
+                            <input type="number" id="prop-pay-amount" value="19.99" step="0.01" class="widefat" style="font-size:11px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;color:#64748b;">CURRENCY</label>
+                            <select id="prop-pay-currency" class="widefat" style="font-size:11px;">
+                                <option value="USD" selected>USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PAYMENT GATEWAY</label>
+                    <select id="prop-pay-gateway" class="widefat" style="font-size:12px;">
+                        <option value="stripe" selected>Stripe</option>
+                        <option value="paypal">PayPal</option>
+                    </select>
+                </div>
+
+                <!-- CUSTOM HTML -->
+                <div class="element-panel" id="panel-elem-html" style="display:none;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CUSTOM HTML / EMBED CODE</label>
+                    <textarea id="prop-html-code" rows="6" class="widefat" placeholder="<div>Custom HTML / Embed here</div>" style="font-family:monospace;font-size:11px;"></textarea>
+                </div>
+
                 <!-- VIDEO -->
                 <div class="element-panel" id="panel-elem-video" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">VIDEO URL (YOUTUBE / VIMEO / MP4)</label>
