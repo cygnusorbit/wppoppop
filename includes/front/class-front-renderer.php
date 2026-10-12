@@ -186,6 +186,79 @@ class WpPopPop_Front_Renderer {
                 $path = sprintf('<polygon points="36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
                 break;
             case 'circle':
+            
+            /* --- 26-ELEMENT COMPLETE FRONTEND FORM RENDERING --- */
+            case 'number':
+                $ph = esc_attr($el['placeholder'] ?? '0');
+                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'number_field'));
+                $min = isset($el['min']) ? ' min="' . esc_attr($el['min']) . '"' : '';
+                $max = isset($el['max']) ? ' max="' . esc_attr($el['max']) . '"' : '';
+                $step = isset($el['step']) ? ' step="' . esc_attr($el['step']) . '"' : '';
+                $req = !empty($el['required']) ? ' required' : '';
+                $inner_html = "<input type=\"number\" name=\"{$fn}\" placeholder=\"{$ph}\"{$min}{$max}{$step}{$req} class=\"wppoppop-front-input\" style=\"width:100%;height:100%;box-sizing:border-box;border-radius:inherit;padding:8px 12px;font:inherit;border:1px solid #cbd5e1;\" />";
+                break;
+
+            case 'select':
+            case 'dropdown':
+                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'select_field'));
+                $req = !empty($el['required']) ? ' required' : '';
+                $opts = $el['options'] ?? ['Option 1', 'Option 2', 'Option 3'];
+                if (is_string($opts)) { $opts = explode("\n", $opts); }
+                $opt_html = '';
+                foreach ($opts as $op) {
+                    $op = trim($op);
+                    if ($op !== '') { $opt_html .= '<option value="' . esc_attr($op) . '">' . esc_html($op) . '</option>'; }
+                }
+                $inner_html = "<select name=\"{$fn}\"{$req} class=\"wppoppop-front-select\" style=\"width:100%;height:100%;box-sizing:border-box;border-radius:inherit;padding:6px 12px;font:inherit;border:1px solid #cbd5e1;\">{$opt_html}</select>";
+                break;
+
+            case 'radios':
+            case 'radio':
+                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'radio_group'));
+                $opts = $el['options'] ?? ['Option A', 'Option B'];
+                if (is_string($opts)) { $opts = explode("\n", $opts); }
+                $opt_html = '<div style=\"display:flex;flex-direction:column;gap:6px;width:100%;justify-content:center;height:100%;\">';
+                foreach ($opts as $idx => $op) {
+                    $op = trim($op);
+                    if ($op !== '') {
+                        $opt_html .= '<label style=\"font-size:13px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;\"><input type=\"radio\" name=\"' . $fn . '\" value=\"' . esc_attr($op) . '\" style=\"cursor:pointer;\">' . esc_html($op) . '</label>';
+                    }
+                }
+                $opt_html .= '</div>';
+                $inner_html = $opt_html;
+                break;
+
+            case 'checkboxes':
+            case 'checkbox':
+                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'terms_agreement'));
+                $lbl = esc_html($el['label'] ?? ($el['checkboxLabel'] ?? 'I agree to terms'));
+                $chk = !empty($el['checked']) ? ' checked' : '';
+                $req = !empty($el['required']) ? ' required' : '';
+                $inner_html = "<label style=\"display:inline-flex;align-items:center;gap:8px;font-size:13px;height:100%;width:100%;cursor:pointer;\"><input type=\"checkbox\" name=\"{$fn}\" value=\"1\"{$chk}{$req} style=\"cursor:pointer;\"> {$lbl}</label>";
+                break;
+
+            case 'date':
+                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'date_field'));
+                $ph = esc_attr($el['placeholder'] ?? 'Select date...');
+                $req = !empty($el['required']) ? ' required' : '';
+                $inner_html = "<input type=\"date\" name=\"{$fn}\" placeholder=\"{$ph}\"{$req} class=\"wppoppop-front-input\" style=\"width:100%;height:100%;box-sizing:border-box;border-radius:inherit;padding:8px 12px;font:inherit;border:1px solid #cbd5e1;\" />";
+                break;
+
+            case 'file':
+                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'attachment'));
+                $ext = esc_attr($el['allowedExtensions'] ?? 'jpg,png,pdf');
+                $req = !empty($el['required']) ? ' required' : '';
+                $inner_html = "<input type=\"file\" name=\"{$fn}\" accept=\".{$ext}\"{$req} class=\"wppoppop-front-file\" style=\"width:100%;height:100%;box-sizing:border-box;font:inherit;\" />";
+                break;
+
+            case 'pay':
+                $lbl = esc_html($el['label'] ?? ($el['text'] ?? 'Pay Now'));
+                $amt = esc_attr($el['amount'] ?? '19.99');
+                $cur = esc_attr($el['currency'] ?? 'USD');
+                $gw = esc_attr($el['gateway'] ?? 'stripe');
+                $inner_html = "<button type=\"button\" class=\"wppoppop-pay-btn\" data-amount=\"{$amt}\" data-currency=\"{$cur}\" data-gateway=\"{$gw}\" style=\"width:100%;height:100%;background:#10b981;color:#fff;border:0;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;\"><span>{$lbl} ({$amt} {$cur})</span></button>";
+                break;
+
             default:
                 $path = sprintf('<ellipse cx="50" cy="50" rx="46" ry="46" fill="%s" %s />', $fill, $s_attr);
                 break;
