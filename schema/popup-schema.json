@@ -116,6 +116,75 @@
           "padding_left": {
             "type": "integer",
             "minimum": 0
+          },
+          "titleTag": {
+            "type": "string"
+          },
+          "htmlTag": {
+            "type": "string"
+          },
+          "imageFit": {
+            "type": "string"
+          },
+          "imageAlt": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string"
+          },
+          "videoAutoplay": {
+            "type": "boolean"
+          },
+          "videoMute": {
+            "type": "boolean"
+          },
+          "videoControls": {
+            "type": "boolean"
+          },
+          "shapeRotate": {
+            "type": "number"
+          },
+          "progressVal": {
+            "type": "number"
+          },
+          "barColor": {
+            "type": "string"
+          },
+          "sliderMin": {
+            "type": "number"
+          },
+          "sliderMax": {
+            "type": "number"
+          },
+          "sliderStep": {
+            "type": "number"
+          },
+          "sliderDefault": {
+            "type": "number"
+          },
+          "ratingColor": {
+            "type": "string"
+          },
+          "ratingMax": {
+            "type": "number"
+          },
+          "htmlCode": {
+            "type": "string"
+          },
+          "targetCanvas": {
+            "type": "integer"
+          },
+          "linkUrl": {
+            "type": "string"
+          },
+          "linkTarget": {
+            "type": "string"
+          },
+          "submitAction": {
+            "type": "string"
+          },
+          "redirectUrl": {
+            "type": "string"
           }
         },
         "required": [

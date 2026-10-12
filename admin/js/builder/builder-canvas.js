@@ -6,6 +6,22 @@
     'use strict';
 
     window.WpPopPopBuilderCanvas = {
+        parseVideoEmbed: function(url, autoplay, mute, controls) {
+            if (!url) return '';
+            var ap = autoplay ? '1' : '0';
+            var mu = mute ? '1' : '0';
+            var ct = (controls !== false && controls !== '0' && controls !== 0) ? '1' : '0';
+            var ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+            if (ytMatch) {
+                return 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=' + ap + '&mute=' + mu + '&controls=' + ct;
+            }
+            var vimMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)/);
+            if (vimMatch) {
+                return 'https://player.vimeo.com/video/' + vimMatch[3] + '?autoplay=' + ap + '&muted=' + mu;
+            }
+            return url;
+        },
+
         isPreview: false,
 
         setZoom: function(level) {
@@ -645,61 +661,28 @@
                 case 'shape':
                     return this.renderShapeSvg(el.shapePreset, el.shapeFill, el.shapeStroke, el.shapeStrokeWidth, el.shapeRotate);
                 case 'title':
-                    return '<h2 style="margin:0;width:100%;height:100%;display:flex;align-items:center;justify-content:' + jAlign + ';text-align:' + align + ';font-size:inherit;font-weight:inherit;color:inherit;line-height:inherit;">' + (el.content || 'Headline Title') + '</h2>';
-                case 'paragraph':
+            case 'heading':
+                var tTag = el.titleTag || el.htmlTag || 'h2';
+                var tText = el.text !== undefined ? el.text : (el.content || 'Headline Title');
+                return '<' + tTag + ' class="wppoppop-stage-title" style="margin:0;padding:0;width:100%;height:100%;font-family:inherit;font-size:inherit;font-weight:inherit;color:inherit;text-align:inherit;line-height:inherit;letter-spacing:inherit;display:flex;align-items:center;word-break:break-word;">' + tText + '</' + tTag + '>';
+            case 'paragraph':
                 case 'text':
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + jAlign + ';text-align:' + align + ';font-size:inherit;color:inherit;line-height:inherit;">' + (el.content || 'Headline or Text') + '</div>';
                 case 'textfield':
                     return '<input type="text" placeholder="' + (el.content || 'Enter text...') + '" style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
                 case 'image':
-                    return '<div style="width:100%;height:100%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px;border-radius:inherit;">🖼 Image Layer</div>';
-                case 'video':
-                    return '<div style="width:100%;height:100%;background:#1e293b;color:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:inherit;">▶ Video Stream</div>';
-                case 'close':
-                    return '<button type="button" style="width:100%;height:100%;background:transparent;border:none;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">&times;</button>';
-                case 'link':
-                case 'link_btn':
-                    return '<a href="#" style="width:100%;height:100%;background:' + (el.bgColor || '#3b82f6') + ';color:' + (el.color || '#ffffff') + ';display:flex;align-items:center;justify-content:' + jAlign + ';padding:0 ' + (padVal > 0 ? padVal : 12) + 'px;text-decoration:none;font-weight:700;border-radius:inherit;box-sizing:border-box;">' + (el.content || 'Visit Link &rarr;') + '</a>';
-                case 'email':
-                    return '<input type="email" placeholder="' + (el.content || 'Enter your email...') + '" style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
-                case 'number':
-                    return '<input type="number" placeholder="' + (el.content || '1') + '" style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
-                case 'dropdown':
-                case 'select':
-                    return '<select style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"><option>' + (el.content || 'Option 1, Option 2') + '</option></select>';
-                case 'radio':
-                case 'radios':
-                    return '<div style="display:flex;gap:10px;align-items:center;height:100%;padding:0 8px;font-size:12px;"><label><input type="radio" checked> Option A</label><label><input type="radio"> Option B</label></div>';
-                case 'checkbox':
-                case 'checkboxes':
-                    return '<div style="display:flex;align-items:center;gap:6px;height:100%;padding:0 8px;font-size:12px;"><input type="checkbox" checked> <span>' + (el.content || 'I agree to terms') + '</span></div>';
-                case 'rating':
-                    return '<div style="display:flex;gap:4px;align-items:center;justify-content:center;height:100%;color:#f59e0b;font-size:18px;">★ ★ ★ ★ ★</div>';
-                case 'date':
-                    return '<input type="text" placeholder="' + (el.content || 'YYYY-MM-DD') + '" style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
-                case 'slider':
-                    return '<div style="padding:0 10px;height:100%;display:flex;align-items:center;"><input type="range" style="width:100%;"></div>';
-                case 'signature':
-                    return '<div style="width:100%;height:100%;border:1px dashed #94a3b8;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">✍ Digital Signature Pad</div>';
-                case 'wheel':
-                    return '<div style="width:100%;height:100%;background:#e0e7ff;color:#4338ca;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border-radius:inherit;">🎡 Fortune Prize Wheel</div>';
-                case 'scratch':
-                    return '<div style="width:100%;height:100%;background:#94a3b8;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border-radius:inherit;">🎟 Scratch-Off Card</div>';
-                case 'countdown':
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;font-size:16px;background:#1e293b;color:#f8fafc;border-radius:inherit;">00 : 15 : 00</div>';
-                case 'progress':
-                    return '<div style="width:100%;height:100%;background:#e2e8f0;border-radius:inherit;overflow:hidden;position:relative;"><div style="width:65%;height:100%;background:#2563eb;"></div></div>';
-                case 'file':
-                    return '<div style="width:100%;height:100%;border:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b;border-radius:inherit;">📁 Choose File to Upload</div>';
-                case 'step':
-                case 'step_btn':
-                    var targetCanvas = el.goto_canvas || el.goto_screen || 2;
-                    return '<button type="button" class="wppoppop-next-canvas-btn" data-goto-canvas="' + targetCanvas + '" style="width:100%;height:100%;background:' + (el.bgColor || '#2563eb') + ';color:' + (el.color || '#fff') + ';border:none;border-radius:inherit;font-weight:700;cursor:pointer;padding:0 ' + (padVal > 0 ? padVal : 12) + 'px;display:flex;align-items:center;justify-content:' + jAlign + ';">' + (el.content || ('Canvas ' + targetCanvas + ' &rarr;')) + '</button>';
-                case 'submit':
-                    return '<button type="button" style="width:100%;height:100%;background:' + (el.bgColor || '#c2185b') + ';color:' + (el.color || '#fff') + ';border:none;border-radius:inherit;font-weight:700;cursor:pointer;padding:0 ' + (padVal > 0 ? padVal : 12) + 'px;display:flex;align-items:center;justify-content:' + jAlign + ';">' + (el.content || 'Submit Form') + '</button>';
-                case 'pay':
-                    return '<button type="button" style="width:100%;height:100%;background:' + (el.bgColor || '#059669') + ';color:' + (el.color || '#fff') + ';border:none;border-radius:inherit;font-weight:700;cursor:pointer;padding:0 ' + (padVal > 0 ? padVal : 12) + 'px;display:flex;align-items:center;justify-content:' + jAlign + ';">' + (el.content || 'Checkout Now') + '</button>';
-                case 'html':
+                var imgSrc = el.imageUrl || el.src || (window.wppoppop_vars ? window.wppoppop_vars.plugin_url + 'assets/images/placeholder.svg' : '');
+                var imgFit = el.imageFit || el.objectFit || 'cover';
+                var imgAlt = el.imageAlt || el.alt || '';
+                return '<img src="' + imgSrc + '" alt="' + imgAlt + '" style="width:100%;height:100%;object-fit:' + imgFit + ';display:block;pointer-events:none;border-radius:inherit;" />';
+            case 'video':
+                var vUrl = el.videoUrl || el.url || '';
+                var embedSrc = self.parseVideoEmbed ? self.parseVideoEmbed(vUrl, el.videoAutoplay, el.videoMute, el.videoControls) : vUrl;
+                if (embedSrc) {
+                    return '<iframe src="' + embedSrc + '" style="width:100%;height:100%;border:0;pointer-events:none;border-radius:inherit;" allow="autoplay; encrypted-media"></iframe>';
+                }
+                return '<div class="wppoppop-video-placeholder" style="width:100%;height:100%;background:#1e293b;color:#94a3b8;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;border-radius:inherit;"><span class="dashicons dashicons-video-alt3" style="font-size:32px;width:32px;height:32px;margin-bottom:8px;"></span><span>Video Embed</span></div>';
+            case 'html':
                     return '<div style="width:100%;height:100%;overflow:hidden;font-size:11px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">' + (el.content || '<strong>Custom HTML Block</strong>') + '</div>';
                 default:
                     return '<div style="padding:6px;font-size:12px;">' + label + '</div>';

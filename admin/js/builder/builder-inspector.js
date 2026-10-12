@@ -174,7 +174,35 @@
         });
     },
 
-    init: function() {
+    
+        normalizeType: function(type) {
+            if (!type) return 'text';
+            var t = String(type).toLowerCase();
+            var map = {
+                'paragraph': 'text',
+                'select': 'dropdown',
+                'dropdown': 'dropdown',
+                'radio': 'radios',
+                'radios': 'radios',
+                'checkbox': 'checkboxes',
+                'checkboxes': 'checkboxes',
+                'step': 'step_btn',
+                'step_btn': 'step_btn',
+                'link': 'link_btn',
+                'link_btn': 'link_btn',
+                'close_icon': 'close',
+                'close': 'close',
+                'lucky_wheel': 'wheel',
+                'wheel': 'wheel',
+                'scratch_card': 'scratch',
+                'scratch': 'scratch',
+                'custom_html': 'html',
+                'html': 'html'
+            };
+            return map[t] || t;
+        },
+    
+        init: function() {
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
@@ -455,6 +483,32 @@
             }
         },
 
+        
+        showElementSpecificSettings: function(el) {
+            var rawType = (el && el.type) ? String(el.type).toLowerCase() : 'text';
+            var normType = this.normalizeType ? this.normalizeType(rawType) : rawType;
+            
+            // Hide all specific panels
+            var panels = document.querySelectorAll('.element-panel, .wppoppop-panel-specific');
+            panels.forEach(function(p) { p.style.display = 'none'; });
+
+            // Activate matching panel
+            var panel = document.getElementById('panel-elem-' + normType) ||
+                        document.getElementById('panel-elem-' + rawType) ||
+                        document.getElementById('panel-elem-' + (normType === 'text' ? 'paragraph' : normType));
+            if (panel) {
+                panel.style.display = 'block';
+            }
+
+            // Contextual isolation: Show/Hide Typography in Style tab based on element type
+            var textTypes = ['text', 'paragraph', 'title', 'email', 'textfield', 'number', 'dropdown', 'select', 'radios', 'checkboxes', 'step_btn', 'link_btn', 'submit', 'pay', 'countdown'];
+            var isTextual = textTypes.indexOf(normType) !== -1 || textTypes.indexOf(rawType) !== -1;
+            var typoSection = document.getElementById('wppoppop-insp-typography-group');
+            if (typoSection) {
+                typoSection.style.display = isTextual ? 'block' : 'none';
+            }
+        },
+    
         syncCoordinates: function(el) {
             $('#prop-left').val(Math.round(el.left || 0));
             $('#prop-top').val(Math.round(el.top || 0));
@@ -463,6 +517,155 @@
         },
 
         bindInputs: function() {
+            var self = this;
+            var resolveEl = function() {
+                return (typeof self.getActiveEl === 'function') ? self.getActiveEl() : ((typeof self.getActiveElement === 'function') ? self.getActiveElement() : null);
+            };
+
+            // Dynamic Heading Tag Synchronization
+            $('#prop-title-tag').off('change.wppoppop_stage').on('change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    el.titleTag = $(this).val();
+                    el.htmlTag = $(this).val();
+                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                    if (window.WpPopPopBuilderCore) window.WpPopPopBuilderCore.pushHistory();
+                }
+            });
+
+            // Image Object-Fit & Alt Synchronization
+            $('#prop-image-fit, #prop-image-alt').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    el.imageFit = $('#prop-image-fit').val();
+                    el.imageAlt = $('#prop-image-alt').val();
+                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // Video URL & Controls Synchronization
+            $('#prop-video-url, #prop-video-autoplay, #prop-video-mute, #prop-video-controls').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    el.videoUrl = $('#prop-video-url').val();
+                    el.videoAutoplay = $('#prop-video-autoplay').is(':checked');
+                    el.videoMute = $('#prop-video-mute').is(':checked');
+                    el.videoControls = $('#prop-video-controls').is(':checked');
+                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // Shape Rotation Matrix Synchronization
+            $('#prop-shape-rotate').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    var deg = parseInt($(this).val(), 10) || 0;
+                    el.shapeRotate = deg;
+                    el.rotate = deg;
+                    var $node = $('#el-' + el.id);
+                    if ($node.length) {
+                        $node.css('transform', 'rotate(' + deg + 'deg)');
+                    }
+                }
+            });
+
+            // Progress Bar Percentage Slider Synchronization
+            $('#prop-progress-val').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    var p = parseInt($(this).val(), 10) || 0;
+                    el.progressVal = p;
+                    $('#prop-progress-val-num').text(p);
+                    var $node = $('#el-' + el.id);
+                    if ($node.length) {
+                        $node.find('.wppoppop-progress-bar').css('width', p + '%');
+                        $node.find('span').text(p + '%');
+                    }
+                }
+            });
+
+            // Slider Bounds Synchronization
+            $('#prop-slider-min, #prop-slider-max, #prop-slider-step, #prop-slider-default').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    el.sliderMin = parseFloat($('#prop-slider-min').val()) || 0;
+                    el.sliderMax = parseFloat($('#prop-slider-max').val()) || 100;
+                    el.sliderStep = parseFloat($('#prop-slider-step').val()) || 1;
+                    el.sliderDefault = parseFloat($('#prop-slider-default').val()) || 0;
+                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+            // Rating Stars & Color Synchronization
+            $('#prop-rating-color, #prop-rating-max').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
+                var el = resolveEl();
+                if (el) {
+                    el.ratingColor = $('#prop-rating-color').val();
+                    el.ratingMax = parseInt($('#prop-rating-max').val(), 10) || 5;
+                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+        var self = this;
+        // Close Pop Element Live Bindings
+        $('#prop-close-action').off('change.wppoppopClose').on('change.wppoppopClose', function() {
+            var val = $(this).val();
+            var activeEl = self.getActiveElement();
+            if (activeEl) {
+                activeEl.closeAction = val;
+                activeEl.close_action = val;
+                if (val === 'redirect') {
+                    $('#prop-close-redirect-wrap').slideDown(150);
+                } else {
+                    $('#prop-close-redirect-wrap').slideUp(150);
+                }
+            }
+        });
+
+        $('#prop-close-icon-style').off('change.wppoppopClose').on('change.wppoppopClose', function() {
+            var val = $(this).val();
+            var activeEl = self.getActiveElement();
+            if (activeEl) {
+                activeEl.closeIconStyle = val;
+                activeEl.close_icon_style = val;
+                if (val === 'custom' || val === 'text') {
+                    $('#prop-close-text-wrap').slideDown(150);
+                    if (!activeEl.closeText) {
+                        activeEl.closeText = 'CLOSE';
+                        $('#prop-close-text').val('CLOSE');
+                    }
+                    activeEl.content = activeEl.closeText;
+                } else {
+                    $('#prop-close-text-wrap').slideUp(150);
+                    activeEl.content = (val === 'dashicon') ? 'dashicons-no-alt' : '×';
+                }
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            }
+        });
+
+        $('#prop-close-text').off('input.wppoppopClose change.wppoppopClose').on('input.wppoppopClose change.wppoppopClose', function() {
+            var val = $(this).val();
+            var activeEl = self.getActiveElement();
+            if (activeEl) {
+                activeEl.closeText = val;
+                activeEl.close_text = val;
+                activeEl.content = val;
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            }
+        });
+
+        $('#prop-close-redirect-url').off('input.wppoppopClose change.wppoppopClose').on('input.wppoppopClose change.wppoppopClose', function() {
+            var val = $(this).val();
+            var activeEl = self.getActiveElement();
+            if (activeEl) {
+                activeEl.closeRedirectUrl = val;
+                activeEl.close_redirect_url = val;
+            }
+        });
         var self = this;
 
         // Canonical Aliased Inputs Synchronization

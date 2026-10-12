@@ -254,6 +254,11 @@ class WpPopPop_Front_Renderer {
             $style[] = "padding:{$pad_top}px {$pad_right}px {$pad_bottom}px {$pad_left}px";
         }
 
+        $shape_rot = intval($el['shapeRotate'] ?? ($el['rotate'] ?? ($el['rotation'] ?? 0)));
+        if ($shape_rot !== 0) {
+            $style[] = "transform:rotate({$shape_rot}deg)";
+        }
+
         $style_attr = esc_attr(implode(';', $style));
         $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
 
@@ -262,14 +267,11 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 
             case 'image':
-                $img_url = !empty($content) ? esc_url($content) : esc_url($el['imgUrl'] ?? '');
-                $alt = esc_attr($el['altText'] ?? 'Popup Image');
-                $fit = esc_attr($el['objectFit'] ?? 'cover');
-                if (empty($img_url)) {
-                    return '';
-                }
-                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-image ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;"><img src="' . $img_url . '" alt="' . $alt . '" style="width:100%;height:100%;object-fit:' . $fit . ';border-radius:inherit;display:block;"></div>';
-
+                $img_src = esc_url($el['imageUrl'] ?? ($el['src'] ?? ''));
+                $img_fit = esc_attr($el['imageFit'] ?? ($el['objectFit'] ?? 'cover'));
+                $img_alt = esc_attr($el['imageAlt'] ?? ($el['alt'] ?? ''));
+                $inner_html = "<img src=\"{$img_src}\" alt=\"{$img_alt}\" style=\"width:100%;height:100%;object-fit:{$img_fit};display:block;border-radius:inherit;\" />";
+                break;
             case 'shape':
                 $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'circle');
                 $fill = esc_attr($el['bgColor'] ?? '#3b82f6');
