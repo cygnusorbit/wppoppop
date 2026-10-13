@@ -463,6 +463,14 @@ body.wppoppop-resizing-canvas {
     z-index: 9990 !important;
 }
 
+/* Workspace Element Hover: 1px Solid Blue Border */
+.wppoppop-canvas-item:hover:not(.wppoppop-selected) {
+    outline: 1px solid #2563eb !important;
+    outline-offset: 0 !important;
+    z-index: 9980 !important;
+}
+
+
 .wppoppop-canvas-item.wppoppop-locked {
     cursor: not-allowed !important;
 }
@@ -1741,4 +1749,102 @@ body.panel-open .wppoppop-builder-workspace,
 }
 #wppoppop-btn-settings * {
     pointer-events: none !important;
+}
+/* ==========================================================================
+   WpPopPop Visual Builder: Day (Light) & Night (Dark) Mode Styles
+   ========================================================================== */
+
+/* Toggle Button Icon Switching */
+.wppoppop-btn-theme {
+    position: relative !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+body.theme-light .wppoppop-icon-sun,
+.wppoppop-builder-wrap.theme-light .wppoppop-icon-sun {
+    display: inline-block !important;
+    color: #f59e0b !important;
+}
+
+body.theme-light .wppoppop-icon-moon,
+.wppoppop-builder-wrap.theme-light .wppoppop-icon-moon {
+    display: none !important;
+}
+
+body:not(.theme-light) .wppoppop-icon-sun,
+.wppoppop-builder-wrap:not(.theme-light) .wppoppop-icon-sun {
+    display: none !important;
+}
+
+body:not(.theme-light) .wppoppop-icon-moon,
+.wppoppop-builder-wrap:not(.theme-light) .wppoppop-icon-moon {
+    display: inline-block !important;
+    color: #38bdf8 !important;
+}
+
+/* Day Mode: Light Checkerboard Workspace */
+body.theme-light .wppoppop-builder-workspace,
+.wppoppop-builder-wrap.theme-light .wppoppop-builder-workspace {
+    background-color: #f8fafc !important;
+    background-image: 
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%) !important;
+    background-size: 20px 20px !important;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px !important;
+}
+
+/* Day Mode: Canvas Box Outer Elevation & Framing */
+body.theme-light #wppoppop-canvas-box,
+.wppoppop-builder-wrap.theme-light #wppoppop-canvas-box {
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Smooth Workspace Background Transition */
+.wppoppop-builder-workspace {
+    transition: background-color 0.25s ease !important;
+}
+
+/* ==========================================================================
+   WpPopPop Default Workspace & Canvas Box (Transparent Dashed Blueprint)
+   ========================================================================== */
+.wppoppop-builder-workspace {
+    background-color: #ffffff !important;
+    background-image: 
+        linear-gradient(45deg, #efefef 25%, transparent 25%), 
+        linear-gradient(-45deg, #efefef 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #efefef 75%), 
+        linear-gradient(-45deg, transparent 75%, #efefef 75%) !important;
+    background-size: 16px 16px !important;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px !important;
+}
+
+#wppoppop-canvas-box {
+    border: 1px dashed #777777 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+}
+
+#wppoppop-canvas-elements-root {
+    border-radius: 0 !important;
+}
+
+#wppoppop-canvas-corner-handle {
+    width: 14px !important;
+    height: 14px !important;
+    right: 2px !important;
+    bottom: 2px !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    cursor: se-resize !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+    user-select: none !important;
 }

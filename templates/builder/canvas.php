@@ -65,10 +65,11 @@ if (!defined('ABSPATH')) {
         <div id="wppoppop-canvas-size-badge">640 × 400 px</div>
 
         <!-- Dedicated Ergonomic Bottom-Right Corner Resize Handle -->
-        <div id="wppoppop-canvas-corner-handle" title="Drag to Resize Canvas">
+                <!-- Dedicated Bottom-Right Corner Resize Handle (Inset Diagonal Gray Grip) -->
+        <div id="wppoppop-canvas-corner-handle" title="Drag to Resize Canvas" style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:transparent;cursor:se-resize;z-index:999999;display:flex;align-items:flex-end;justify-content:flex-end;user-select:none;">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="pointer-events:none;">
-                <line x1="8" y1="2" x2="2" y2="8" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
-                <line x1="8" y1="5.5" x2="5.5" y2="8" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="8.5" y1="2.5" x2="2.5" y2="8.5" stroke="#777777" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="8.5" y1="6" x2="6" y2="8.5" stroke="#777777" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
         </div>
     </div>

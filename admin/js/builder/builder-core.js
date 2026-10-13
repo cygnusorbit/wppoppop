@@ -12,8 +12,8 @@
             set currentScreen(v) { this.currentCanvas = parseInt(v, 10) || 1; },
             canvases: { 1: [], 2: [] },
             canvasMeta: {
-                1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fade', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fade', logic_enabled: false },
-                2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fade', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fade', logic_enabled: false }
+                1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' },
+                2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' }
             },
             get screens() { return this.canvases; },
             set screens(v) { this.canvases = v || { 1: [], 2: [] }; },
@@ -236,7 +236,44 @@
         });
     },
 
-    init: function() {
+    initThemeMode: function() {
+            var savedTheme = localStorage.getItem('wppoppop_builder_theme') || 'light';
+            this.setThemeMode(savedTheme);
+            this.bindThemeToggle();
+        },
+
+        setThemeMode: function(theme) {
+            var $wrap = $('.wppoppop-builder-wrap, .wppoppop-main-frame');
+            var $body = $('body');
+            if (theme === 'light') {
+                $wrap.addClass('theme-light');
+                $body.addClass('theme-light');
+            } else {
+                $wrap.removeClass('theme-light');
+                $body.removeClass('theme-light');
+            }
+            try {
+                localStorage.setItem('wppoppop_builder_theme', theme);
+            } catch(e) {}
+        },
+
+        toggleThemeMode: function() {
+            var current = localStorage.getItem('wppoppop_builder_theme') || 'dark';
+            var next = (current === 'light') ? 'dark' : 'light';
+            this.setThemeMode(next);
+        },
+
+        bindThemeToggle: function() {
+            var self = this;
+            $(document).off('click.wppoppop_theme', '#wppoppop-btn-theme-toggle, .wppoppop-btn-theme')
+                .on('click.wppoppop_theme', '#wppoppop-btn-theme-toggle, .wppoppop-btn-theme', function(e) {
+                    e.preventDefault();
+                    self.toggleThemeMode();
+                });
+        },
+
+        init: function() {
+        this.initThemeMode();
         this.bindModalEvents();
             this.bindCanvasTabs();
             this.bindViewportToggles();
@@ -365,6 +402,9 @@
                 name: 'Canvas ' + nextNum,
                 width: 640,
                 height: 400,
+                bg_mode: 'solid',
+                bg_transparent: true,
+                bg_color: 'transparent',
                 bg_mode: 'solid',
                 bg_color: '#ffffff',
                 grad_color1: '#3b82f6',
