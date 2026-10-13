@@ -267,7 +267,37 @@ class WpPopPop_Front_Renderer {
         return sprintf('<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="%s">%s</svg>', esc_attr($svg_style), $path);
     }
 
-    private function render_canvas_element(array $el) {
+    private function render_canvas_element(array $el, array $config = array()) {
+        $el_id = !empty($el['id']) ? sanitize_html_class($el['id']) : uniqid('el_');
+        $custom_class = !empty($el['custom_css_class']) ? esc_attr($el['custom_css_class']) : '';
+        $custom_id = !empty($el['custom_css_id']) ? (' id="' . esc_attr($el['custom_css_id']) . '"') : '';
+        
+        // Build Box Shadow style
+        $box_shadow_val = !empty($el['boxShadow']) ? $el['boxShadow'] : '';
+        if (empty($box_shadow_val) && (!empty($el['shadowBlur']) || !empty($el['shadowSpread']) || !empty($el['shadowColor']))) {
+            $sx = isset($el['shadowX']) ? intval($el['shadowX']) : 0;
+            $sy = isset($el['shadowY']) ? intval($el['shadowY']) : 0;
+            $sb = isset($el['shadowBlur']) ? intval($el['shadowBlur']) : 0;
+            $ss = isset($el['shadowSpread']) ? intval($el['shadowSpread']) : 0;
+            $sc = !empty($el['shadowColor']) ? esc_attr($el['shadowColor']) : 'rgba(0,0,0,0.2)';
+            $box_shadow_val = "{$sx}px {$sy}px {$sb}px {$ss}px {$sc}";
+        }
+
+        // Opacity
+        $opacity_style = (isset($el['opacity']) && floatval($el['opacity']) < 1.0) ? ('opacity: ' . floatval($el['opacity']) . ';') : '';
+
+        // Dynamic Button Hover Style Injection
+        $hover_style_tag = '';
+        $hover_bg = !empty($el['hoverBg']) ? $el['hoverBg'] : (!empty($el['btnHoverBg']) ? $el['btnHoverBg'] : '');
+        $hover_color = !empty($el['hoverColor']) ? $el['hoverColor'] : (!empty($el['btnHoverColor']) ? $el['btnHoverColor'] : '');
+        $hover_border = !empty($el['hoverBorder']) ? $el['hoverBorder'] : (!empty($el['btnHoverBorder']) ? $el['btnHoverBorder'] : '');
+        if (!empty($hover_bg) || !empty($hover_color) || !empty($hover_border)) {
+            $hover_rules = '';
+            if (!empty($hover_bg)) $hover_rules .= 'background-color: ' . esc_attr($hover_bg) . ' !important;';
+            if (!empty($hover_color)) $hover_rules .= 'color: ' . esc_attr($hover_color) . ' !important;';
+            if (!empty($hover_border)) $hover_rules .= 'border-color: ' . esc_attr($hover_border) . ' !important;';
+            $hover_style_tag = '<style>#el-' . $el_id . ':hover, #el-' . $el_id . ' button:hover, #el-' . $el_id . ' a:hover { ' . $hover_rules . ' }</style>';
+        }
         // Phase 2: Opacity, Custom Class & Button Hover Properties
         if (isset($el['opacity']) && $el['opacity'] !== '' && $el['opacity'] !== null) {
             $wrapper_styles[] = 'opacity:' . (floatval($el['opacity']) / 100) . ';';

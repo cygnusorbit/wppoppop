@@ -33,3 +33,77 @@ if (!defined('ABSPATH')) {
         <div id="wppoppop-preview-sandbox-root" style="flex:1;overflow:auto;padding:30px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;"></div>
     </div>
 </div>
+
+<!-- GreenPop Parity: Embed Code & Sharing Modal -->
+<div class="wppoppop-modal-backdrop" id="wppoppop-modal-embed" style="display:none;">
+    <div class="wppoppop-modal-dialog wppoppop-modal-embed-dialog">
+        <div class="wppoppop-modal-header">
+            <h3><span class="dashicons dashicons-code-standards"></span> <?php esc_html_e('How to Embed & Display Popup', 'wppoppop'); ?></h3>
+            <button type="button" class="wppoppop-modal-close" data-modal="wppoppop-modal-embed">&times;</button>
+        </div>
+        <div class="wppoppop-modal-body">
+            <div class="wppoppop-embed-tabs">
+                <button type="button" class="wppoppop-embed-tab active" data-tab="shortcode"><?php esc_html_e('Shortcode', 'wppoppop'); ?></button>
+                <button type="button" class="wppoppop-embed-tab" data-tab="onclick"><?php esc_html_e('On-Click Link', 'wppoppop'); ?></button>
+                <button type="button" class="wppoppop-embed-tab" data-tab="js-api"><?php esc_html_e('JavaScript API', 'wppoppop'); ?></button>
+            </div>
+            
+            <div class="wppoppop-embed-tab-content active" id="embed-tab-shortcode">
+                <p class="wppoppop-embed-desc"><?php esc_html_e('Paste this shortcode anywhere inside your WordPress page, post, or template:', 'wppoppop'); ?></p>
+                <div class="wppoppop-code-box">
+                    <input type="text" id="wppoppop-embed-shortcode-val" readonly value="[wppoppop id=&quot;0&quot;]">
+                    <button type="button" class="wppoppop-btn-copy" data-target="wppoppop-embed-shortcode-val">
+                        <span class="dashicons dashicons-clipboard"></span> <?php esc_html_e('Copy', 'wppoppop'); ?>
+                    </button>
+                </div>
+            </div>
+
+            <div class="wppoppop-embed-tab-content" id="embed-tab-onclick" style="display:none;">
+                <p class="wppoppop-embed-desc"><?php esc_html_e('Attach this HTML snippet to any anchor link, button, or menu item to open the popup upon click:', 'wppoppop'); ?></p>
+                <div class="wppoppop-code-box">
+                    <input type="text" id="wppoppop-embed-onclick-val" readonly value="&lt;a href=&quot;#&quot; class=&quot;wppoppop-trigger&quot; data-wppoppop-id=&quot;0&quot;&gt;Open Popup&lt;/a&gt;">
+                    <button type="button" class="wppoppop-btn-copy" data-target="wppoppop-embed-onclick-val">
+                        <span class="dashicons dashicons-clipboard"></span> <?php esc_html_e('Copy', 'wppoppop'); ?>
+                    </button>
+                </div>
+            </div>
+
+            <div class="wppoppop-embed-tab-content" id="embed-tab-js-api" style="display:none;">
+                <p class="wppoppop-embed-desc"><?php esc_html_e('Trigger this popup programmatically via custom JavaScript or third-party webhooks:', 'wppoppop'); ?></p>
+                <div class="wppoppop-code-box">
+                    <input type="text" id="wppoppop-embed-js-val" readonly value="window.WpPopPop &amp;&amp; window.WpPopPop.show(0);">
+                    <button type="button" class="wppoppop-btn-copy" data-target="wppoppop-embed-js-val">
+                        <span class="dashicons dashicons-clipboard"></span> <?php esc_html_e('Copy', 'wppoppop'); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GreenPop Parity: Sandbox Multi-Device Live Preview Modal -->
+<div class="wppoppop-modal-backdrop" id="wppoppop-modal-preview" style="display:none;">
+    <div class="wppoppop-modal-dialog wppoppop-modal-preview-dialog">
+        <div class="wppoppop-modal-header" style="justify-content:space-between;">
+            <div class="wppoppop-preview-device-switcher">
+                <button type="button" class="wppoppop-device-btn active" data-device="desktop" title="Desktop View (100%)">
+                    <span class="dashicons dashicons-desktop"></span> <?php esc_html_e('Desktop', 'wppoppop'); ?>
+                </button>
+                <button type="button" class="wppoppop-device-btn" data-device="tablet" title="Tablet View (768px)">
+                    <span class="dashicons dashicons-tablet"></span> <?php esc_html_e('Tablet', 'wppoppop'); ?>
+                </button>
+                <button type="button" class="wppoppop-device-btn" data-device="mobile" title="Mobile View (375px)">
+                    <span class="dashicons dashicons-smartphone"></span> <?php esc_html_e('Mobile', 'wppoppop'); ?>
+                </button>
+            </div>
+            <button type="button" class="wppoppop-modal-close" data-modal="wppoppop-modal-preview">&times;</button>
+        </div>
+        <div class="wppoppop-preview-stage-container">
+            <div class="wppoppop-preview-viewport-wrapper device-desktop" id="wppoppop-preview-viewport">
+                <div class="wppoppop-preview-render-root" id="wppoppop-preview-render-root">
+                    <!-- Cloned stage renders live here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 class WpPopPop_Ajax_Builder {
     public function __construct() {
+        add_action('wp_ajax_wppoppop_builder_save', array($this, 'save_popup'));
         add_action('wp_ajax_wppoppop_save_popup', [$this, 'save_popup']);
         add_action('wp_ajax_wppoppop_load_popup', [$this, 'load_popup']);
         add_action('wp_ajax_wppoppop_duplicate_popup', [$this, 'duplicate_popup']);
@@ -360,4 +361,34 @@ if (!$data || !isset($data['meta'])) {
             'affected' => $affected !== false ? $affected : 0
         ]);
     }
+
+    /**
+     * Phase 2 Backend Whitelist Parity: opacity, hoverBgColor, customClass
+     */
+    public function sanitize_phase2_whitelist_properties(array $el, array &$clean = array()) {
+        if (isset($el['opacity'])) {
+            $clean['opacity'] = floatval($el['opacity']);
+        } else {
+            $clean['opacity'] = 1.0;
+        }
+
+        if (isset($el['hoverBgColor'])) {
+            $clean['hoverBgColor'] = sanitize_text_field($el['hoverBgColor']);
+            $clean['hoverBg'] = $clean['hoverBgColor'];
+        } elseif (isset($el['hoverBg'])) {
+            $clean['hoverBg'] = sanitize_text_field($el['hoverBg']);
+            $clean['hoverBgColor'] = $clean['hoverBg'];
+        }
+
+        if (isset($el['customClass'])) {
+            $clean['customClass'] = sanitize_html_class($el['customClass']);
+            $clean['custom_css_class'] = $clean['customClass'];
+        } elseif (isset($el['custom_css_class'])) {
+            $clean['custom_css_class'] = sanitize_html_class($el['custom_css_class']);
+            $clean['customClass'] = $clean['custom_css_class'];
+        }
+
+        return $clean;
+    }
+
 }

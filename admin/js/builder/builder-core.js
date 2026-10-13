@@ -66,6 +66,121 @@
         }
     },
 
+    openEmbedModal: function() {
+        var popupId = (this.state && this.state.id) ? this.state.id : ($('#wppoppop-popup-id').val() || 0);
+        $('#wppoppop-embed-shortcode-val').val('[wppoppop id="' + popupId + '"]');
+        $('#wppoppop-embed-onclick-val').val('<a href="#" class="wppoppop-trigger" data-wppoppop-id="' + popupId + '">Open Popup</a>');
+        $('#wppoppop-embed-js-val').val('window.WpPopPop && window.WpPopPop.show(' + popupId + ');');
+        $('#wppoppop-modal-embed').fadeIn(150);
+    },
+
+    copyEmbedSnippet: function($btn, targetId) {
+        var $input = $('#' + targetId);
+        if (!$input.length) return;
+        $input.select();
+        
+        var text = $input.val();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+        } else {
+            document.execCommand('copy');
+        }
+
+        var origText = $btn.html();
+        $btn.html('<span class="dashicons dashicons-yes"></span> Copied!').addClass('copied');
+        setTimeout(function() {
+            $btn.html(origText).removeClass('copied');
+        }, 1800);
+    },
+
+    openSandboxPreview: function(device) {
+        var self = this;
+        var dev = device || 'desktop';
+        var $modal = $('#wppoppop-modal-preview');
+        var $viewport = $('#wppoppop-preview-viewport');
+        var $root = $('#wppoppop-preview-render-root');
+        
+        $viewport.removeClass('device-desktop device-tablet device-mobile').addClass('device-' + dev);
+        $('.wppoppop-device-btn').removeClass('active');
+        $('.wppoppop-device-btn[data-device="' + dev + '"]').addClass('active');
+
+        // Render clone of current canvas box into preview container
+        var $sourceBox = $('#wppoppop-canvas-box');
+        if ($sourceBox.length) {
+            var $clone = $sourceBox.clone();
+            $clone.find('.ui-resizable-handle, .wppoppop-selection-overlay').remove();
+            $clone.css({
+                'transform': 'none',
+                'position': 'relative',
+                'margin': '20px auto',
+                'pointer-events': 'auto'
+            });
+            $root.empty().append($clone);
+        }
+
+        $modal.fadeIn(150);
+    },
+
+    bindModalEvents: function() {
+        var self = this;
+
+        // Settings Button Delegated Trigger
+        $(document).off('click.wppoppop_core_settings', '#wppoppop-btn-settings, .wppoppop-btn-settings')
+            .on('click.wppoppop_core_settings', '#wppoppop-btn-settings, .wppoppop-btn-settings', function(e) {
+                e.preventDefault();
+                if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.toggleDrawer === 'function') {
+                    window.WpPopPopBuilderSettings.toggleDrawer();
+                } else if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.openDrawer === 'function') {
+                    window.WpPopPopBuilderSettings.openDrawer();
+                }
+            });
+
+        var self = this;
+
+        // Header Embed Button
+        $('#wppoppop-btn-embed, #wppoppop-btn-shortcode').off('click.wppoppop_embed').on('click.wppoppop_embed', function(e) {
+            e.preventDefault();
+            self.openEmbedModal();
+        });
+
+        // Header Live Sandbox Preview Button
+        $('#wppoppop-btn-preview').off('click.wppoppop_preview_modal').on('click.wppoppop_preview_modal', function(e) {
+            e.preventDefault();
+            self.openSandboxPreview('desktop');
+        });
+
+        // Embed Tabs Switcher
+        $('.wppoppop-embed-tab').off('click.wppoppop_tab').on('click.wppoppop_tab', function(e) {
+            e.preventDefault();
+            var tab = $(this).data('tab');
+            $('.wppoppop-embed-tab').removeClass('active');
+            $(this).addClass('active');
+            $('.wppoppop-embed-tab-content').hide();
+            $('#embed-tab-' + tab).show();
+        });
+
+        // Copy Button Trigger
+        $('.wppoppop-btn-copy').off('click.wppoppop_copy').on('click.wppoppop_copy', function(e) {
+            e.preventDefault();
+            var target = $(this).data('target');
+            self.copyEmbedSnippet($(this), target);
+        });
+
+        // Device Switcher
+        $('.wppoppop-device-btn').off('click.wppoppop_device').on('click.wppoppop_device', function(e) {
+            e.preventDefault();
+            var dev = $(this).data('device');
+            self.openSandboxPreview(dev);
+        });
+
+        // Universal Modal Close
+        $('.wppoppop-modal-close, .wppoppop-modal-backdrop').off('click.wppoppop_close_modal').on('click.wppoppop_close_modal', function(e) {
+            if ($(e.target).hasClass('wppoppop-modal-backdrop') || $(e.target).hasClass('wppoppop-modal-close')) {
+                $('.wppoppop-modal-backdrop').fadeOut(120);
+            }
+        });
+    },
+
     bindKeyboardShortcuts: function() {
         var self = this;
         $(document).off('keydown.wppoppop_shortcuts').on('keydown.wppoppop_shortcuts', function(e) {
@@ -122,6 +237,7 @@
     },
 
     init: function() {
+        this.bindModalEvents();
             this.bindCanvasTabs();
             this.bindViewportToggles();
             this.bindKeyboardShortcuts();
@@ -305,7 +421,15 @@
             if (this.state.viewport === 'desktop') {
                 var w = meta.width || 640;
                 var h = meta.height || 400;
-                $('#wppoppop-canvas-box').css({ width: w + 'px', height: h + 'px' });
+                var $box = $('#wppoppop-canvas-box');
+            if ($box.length) {
+                $box.css({ width: w + 'px', height: h + 'px' });
+                $box[0].style.setProperty('width', w + 'px', 'important');
+                $box[0].style.setProperty('height', h + 'px', 'important');
+            }
+            if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.applyActiveCanvasBackground === 'function') {
+                window.WpPopPopBuilderSettings.applyActiveCanvasBackground();
+            }
                 $('#quick-box-width, #set-canvas-width').val(w);
                 $('#quick-box-height, #set-canvas-height').val(h);
             }

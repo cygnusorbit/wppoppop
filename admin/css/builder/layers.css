@@ -267,3 +267,89 @@
         width: 220px;
     }
 }
+
+/* --- GreenPop Parity: Floating Layers Panel Toolbar, Search & Inline Rename --- */
+.wppoppop-layers-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+.wppoppop-layers-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+.wppoppop-layers-search-wrap .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #64748b;
+}
+.wppoppop-layers-search-wrap input {
+    background: transparent !important;
+    border: none !important;
+    color: #f8fafc !important;
+    font-size: 11px !important;
+    padding: 2px 0 !important;
+    width: 100%;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.wppoppop-layers-search-wrap input::placeholder {
+    color: #64748b;
+}
+.wppoppop-layers-bulk-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.wppoppop-btn-icon-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.wppoppop-btn-icon-sm:hover {
+    background: #334155;
+    color: #38bdf8;
+    border-color: #38bdf8;
+}
+.wppoppop-btn-icon-sm .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+.wppoppop-layer-title-editable {
+    cursor: text;
+    user-select: none;
+    transition: color 0.15s ease;
+}
+.wppoppop-layer-title-editable:hover {
+    color: #38bdf8;
+}
+.wppoppop-layer-rename-input {
+    background: #0f172a !important;
+    border: 1px solid #38bdf8 !important;
+    border-radius: 3px !important;
+    color: #f8fafc !important;
+    font-size: 12px !important;
+    padding: 1px 4px !important;
+    width: calc(100% - 20px) !important;
+    outline: none !important;
+}

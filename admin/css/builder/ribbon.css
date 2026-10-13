@@ -118,3 +118,107 @@
         height: 13px;
     }
 }
+
+/* --- GreenPop Parity: Ribbon Palette & Drag Ghost --- */
+.wppoppop-ribbon-bar {
+    display: flex;
+    align-items: stretch;
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 6px 12px;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: #475569 #1e293b;
+}
+.wppoppop-ribbon-bar::-webkit-scrollbar {
+    height: 4px;
+}
+.wppoppop-ribbon-bar::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 2px;
+}
+.wppoppop-ribbon-group {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 8px;
+    border-right: 1px solid #334155;
+}
+.wppoppop-ribbon-group:last-child {
+    border-right: none;
+}
+.wppoppop-ribbon-group-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 4px;
+    user-select: none;
+}
+.wppoppop-ribbon-items {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.wppoppop-ribbon-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 44px;
+    padding: 3px 6px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #94a3b8;
+    cursor: grab;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+.wppoppop-ribbon-btn:hover {
+    background: #334155;
+    color: #f8fafc;
+    border-color: #38bdf8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+.wppoppop-ribbon-btn:active {
+    cursor: grabbing;
+    transform: translateY(0);
+}
+.wppoppop-ribbon-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-bottom: 2px;
+}
+.wppoppop-ribbon-btn .btn-label {
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+}
+/* Tactile Drag Ghost Pill */
+.wppoppop-drag-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 0 12px rgba(56, 189, 248, 0.5);
+    pointer-events: none;
+    z-index: 9999999 !important;
+}
+.wppoppop-drag-ghost .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}

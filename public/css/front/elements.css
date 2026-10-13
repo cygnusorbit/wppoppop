@@ -558,3 +558,30 @@ button::-moz-focus-inner {
 .wppoppop-front-element[style*="--wppoppop-hover-border"]:hover .wppoppop-next-canvas-btn {
     border-color: var(--wppoppop-hover-border) !important;
 }
+
+
+/* --- GreenPop Parity Phase 2: Public Hover States --- */
+.wppoppop-element[data-has-hover="true"] {
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.wppoppop-element[data-has-hover="true"]:hover {
+    background-color: var(--wppoppop-hover-bg) !important;
+    color: var(--wppoppop-hover-color) !important;
+    border-color: var(--wppoppop-hover-border) !important;
+}
+
+
+/* --- GreenPop Parity: Title Semantic Element Harmonization --- */
+.wppoppop-title-inner {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: inherit !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    text-align: inherit !important;
+    word-break: break-word !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}

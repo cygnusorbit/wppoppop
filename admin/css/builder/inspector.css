@@ -234,3 +234,102 @@
     outline: 2px solid #2563eb;
     outline-offset: 1px;
 }
+
+/* --- GreenPop Parity: Inspector Segmented Controls & Box Shadow Grid --- */
+.wppoppop-segmented-control {
+    display: flex;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+}
+.wppoppop-segment-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+.wppoppop-segment-btn:hover {
+    color: #f8fafc;
+}
+.wppoppop-segment-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: 600;
+}
+.wppoppop-input-sm {
+    background: #0f172a !important;
+    border: 1px solid #334155 !important;
+    border-radius: 4px !important;
+    color: #f8fafc !important;
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.wppoppop-input-sm:focus {
+    border-color: #38bdf8 !important;
+    outline: none !important;
+}
+
+/* --- Layer Settings Dark Theme Normalization --- */
+.wppoppop-inspector-drawer,
+#wppoppop-inspector-drawer {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+}
+.wppoppop-tab-pane,
+.wppoppop-insp-content {
+    background: transparent !important;
+    min-height: unset !important;
+    height: auto !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.wppoppop-inspector-section,
+#wppoppop-inspector-drawer .wppoppop-inspector-section {
+    background: transparent !important;
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 0 14px 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.wppoppop-section-label,
+#wppoppop-inspector-drawer .wppoppop-section-label {
+    display: block !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    color: #38bdf8 !important;
+    text-transform: uppercase !important;
+    border-bottom: 1px solid #334155 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 8px !important;
+}
+#wppoppop-inspector-drawer .wppoppop-field-group label {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+    display: block !important;
+    margin-bottom: 4px !important;
+}
+#wppoppop-inspector-drawer input[type="text"],
+#wppoppop-inspector-drawer input[type="number"],
+#wppoppop-inspector-drawer input[type="url"],
+#wppoppop-inspector-drawer select,
+#wppoppop-inspector-drawer textarea {
+    background: #0f172a !important;
+    border: 1px solid #334155 !important;
+    color: #f8fafc !important;
+    border-radius: 4px !important;
+}

@@ -355,7 +355,157 @@
         $node.data('wppoppop_anim_cleanup_timer', timer);
     },
 
+    alignActiveElement: function(alignment) {
+        var self = this;
+        var selId = self.selectedId || (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? window.WpPopPopBuilderCore.state.activeId : null);
+        if (!selId) return;
+        self.selectedId = selId;
+
+        var curCanvas = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) ? (window.WpPopPopBuilderCore.state.currentCanvas || 1) : 1;
+        var elements = window.WpPopPopBuilderCore.state.canvases[curCanvas] || [];
+        var el = elements.find(function(item) { return item.id === self.selectedId; });
+        if (!el) return;
+
+        var $box = $('#wppoppop-canvas-box');
+        var $node = $('#' + self.selectedId);
+        if (!$node.length) return;
+
+        var boxW = $box.outerWidth() || 640;
+        var boxH = $box.outerHeight() || 400;
+        var elW = $node.outerWidth() || parseInt(el.width, 10) || 120;
+        var elH = $node.outerHeight() || parseInt(el.height, 10) || 40;
+
+        var newX = parseInt(el.x !== undefined ? el.x : el.left, 10) || 0;
+        var newY = parseInt(el.y !== undefined ? el.y : el.top, 10) || 0;
+
+        switch (alignment) {
+            case 'left':
+                newX = 0;
+                break;
+            case 'center-h':
+                newX = Math.round((boxW - elW) / 2);
+                break;
+            case 'right':
+                newX = Math.max(0, boxW - elW);
+                break;
+            case 'top':
+                newY = 0;
+                break;
+            case 'middle-v':
+                newY = Math.round((boxH - elH) / 2);
+                break;
+            case 'bottom':
+                newY = Math.max(0, boxH - elH);
+                break;
+        }
+
+        // Commit coordinates
+        if (el.x !== undefined) el.x = newX;
+        if (el.left !== undefined) el.left = newX;
+        if (el.y !== undefined) el.y = newY;
+        if (el.top !== undefined) el.top = newY;
+
+        $node.css({ left: newX + 'px', top: newY + 'px' });
+
+        // Sync Inspector inputs if open
+        $('#prop-x, #prop-left').val(newX);
+        $('#prop-y, #prop-top').val(newY);
+
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory('Align Element ' + alignment);
+        }
+    },
+
+    smartSnapGuides: function(ui, $node) {
+        var $box = $('#wppoppop-canvas-box');
+        var $guideV = $('#wppoppop-guide-v');
+        var $guideH = $('#wppoppop-guide-h');
+        if (!$box.length) return;
+
+        var boxW = $box.outerWidth() || 640;
+        var boxH = $box.outerHeight() || 400;
+        var elW = $node.outerWidth() || 100;
+        var elH = $node.outerHeight() || 40;
+
+        var threshold = 7;
+        var centerX = Math.round(boxW / 2);
+        var centerY = Math.round(boxH / 2);
+
+        var curCenterX = ui.position.left + Math.round(elW / 2);
+        var curCenterY = ui.position.top + Math.round(elH / 2);
+
+        // Vertical Center Snap (X-axis)
+        if (Math.abs(curCenterX - centerX) <= threshold) {
+            ui.position.left = centerX - Math.round(elW / 2);
+            if ($guideV.length) {
+                $guideV.css({ left: centerX + 'px', display: 'block' });
+            }
+        } else {
+            if ($guideV.length) $guideV.hide();
+        }
+
+        // Horizontal Center Snap (Y-axis)
+        if (Math.abs(curCenterY - centerY) <= threshold) {
+            ui.position.top = centerY - Math.round(elH / 2);
+            if ($guideH.length) {
+                $guideH.css({ top: centerY + 'px', display: 'block' });
+            }
+        } else {
+            if ($guideH.length) $guideH.hide();
+        }
+    },
+
+    bindKeyboardNudge: function() {
+        var self = this;
+        $(document).off('keydown.wppoppop_nudge').on('keydown.wppoppop_nudge', function(e) {
+            if (!self.selectedId) return;
+            if ($(e.target).is('input, textarea, select')) return;
+
+            var key = e.which;
+            if (key < 37 || key > 40) return;
+
+            e.preventDefault();
+            var step = e.shiftKey ? 10 : 1;
+
+            var curCanvas = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) ? (window.WpPopPopBuilderCore.state.currentCanvas || 1) : 1;
+            var elements = window.WpPopPopBuilderCore.state.canvases[curCanvas] || [];
+            var el = elements.find(function(item) { return item.id === self.selectedId; });
+            if (!el) return;
+
+            var $node = $('#' + self.selectedId);
+            var x = parseInt(el.x !== undefined ? el.x : el.left, 10) || 0;
+            var y = parseInt(el.y !== undefined ? el.y : el.top, 10) || 0;
+
+            if (key === 37) x -= step; // Left
+            if (key === 38) y -= step; // Up
+            if (key === 39) x += step; // Right
+            if (key === 40) y += step; // Down
+
+            if (el.x !== undefined) el.x = x;
+            if (el.left !== undefined) el.left = x;
+            if (el.y !== undefined) el.y = y;
+            if (el.top !== undefined) el.top = y;
+
+            $node.css({ left: x + 'px', top: y + 'px' });
+            $('#prop-x, #prop-left').val(x);
+            $('#prop-y, #prop-top').val(y);
+        });
+    },
+
+    bindAlignmentToolbar: function() {
+        var self = this;
+        $('#wppoppop-alignment-toolbar').off('click.wppoppop_align', '.wppoppop-align-btn').on('click.wppoppop_align', '.wppoppop-align-btn', function(e) {
+            e.preventDefault();
+            var alignMode = $(this).data('align');
+            if (alignMode) {
+                self.alignActiveElement(alignMode);
+            }
+        });
+    },
+
     init: function() {
+        this.bindKeyboardNudge();
+        this.bindAlignmentToolbar();
             this.bindCanvasCornerResize();
             this.bindRibbonTools();
             this.bindCanvasSelection();
@@ -718,7 +868,7 @@
 
             $node.resizable({
                 containment: '#wppoppop-canvas-elements-root',
-                handles: 'e, s, se',
+                handles: 'se',
                 resize: function(event, ui) {
                     el.width = ui.size.width;
                     el.height = ui.size.height;
@@ -738,15 +888,82 @@
         },
 
         bindRibbonTools: function() {
-            var self = this;
-            $('.wppoppop-ribbon-tool').on('click', function(e) {
-                e.preventDefault();
-                var type = $(this).data('type');
-                self.addElement(type);
-            });
-        },
+        var self = this;
+        var $ribbonBtns = $('.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-tool-btn');
 
-        addElement: function(type) {
+        var normalizeType = function(rawType) {
+            var map = {
+                'step': 'step_btn',
+                'link': 'link_btn',
+                'close': 'close_icon',
+                'dropdown': 'select',
+                'radio': 'radios',
+                'checkbox': 'checkboxes',
+                'text': 'paragraph'
+            };
+            return map[rawType] || rawType;
+        };
+
+        // 1-Click Spawning directly onto canvas center
+        $ribbonBtns.off('click.wppoppop_add').on('click.wppoppop_add', function(e) {
+            e.preventDefault();
+            var rawType = $(this).data('type');
+            if (!rawType) return;
+            var type = normalizeType(rawType);
+
+            var $box = $('#wppoppop-canvas-box');
+            var boxW = $box.outerWidth() || 640;
+            var boxH = $box.outerHeight() || 400;
+
+            var spawnX = Math.max(20, Math.round((boxW / 2) - 100));
+            var spawnY = Math.max(20, Math.round((boxH / 2) - 30));
+
+            self.addElement(type, spawnX, spawnY);
+        });
+
+        // Tactile Drag Ghost & Droppable
+        if ($.fn.draggable) {
+            $ribbonBtns.draggable({
+                helper: function() {
+                    var label = $(this).find('.btn-label').text() || $(this).data('type') || 'Element';
+                    var iconHtml = $(this).find('.dashicons').prop('outerHTML') || '<span class="dashicons dashicons-plus"></span>';
+                    return $('<div class="wppoppop-drag-ghost">' + iconHtml + '<span>' + label + '</span></div>');
+                },
+                appendTo: 'body',
+                cursor: 'grabbing',
+                cursorAt: { left: 40, top: 18 },
+                zIndex: 999999,
+                revert: 'invalid'
+            });
+        }
+
+        // Droppable on Canvas Box with Zoom Normalization
+        var $box = $('#wppoppop-canvas-box');
+        if ($.fn.droppable && $box.length) {
+            $box.droppable({
+                accept: '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-tool-btn',
+                tolerance: 'pointer',
+                drop: function(e, ui) {
+                    var rawType = ui.draggable.data('type');
+                    if (!rawType) return;
+                    var type = normalizeType(rawType);
+
+                    var boxOffset = $box.offset();
+                    var scale = self.currentZoom || 1.0;
+
+                    var dropX = Math.round((e.pageX - boxOffset.left) / scale);
+                    var dropY = Math.round((e.pageY - boxOffset.top) / scale);
+
+                    dropX = Math.max(0, Math.min(dropX, $box.outerWidth() - 50));
+                    dropY = Math.max(0, Math.min(dropY, $box.outerHeight() - 30));
+
+                    self.addElement(type, dropX, dropY);
+                }
+            });
+        }
+    },
+
+    addElement: function(type) {
             var elements = this.getActiveElements();
             var id = 'layer_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
             var nextZ = elements.length ? Math.max.apply(null, elements.map(function(e) { return e.zIndex || 10; })) + 1 : 10;
@@ -851,40 +1068,56 @@
         },
 
         selectElement: function(id) {
-            window.WpPopPopBuilderCore.state.activeId = id;
-            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
-            $('#el-' + id).addClass('wppoppop-selected');
-
-            if (window.WpPopPopBuilderSettings) {
-                window.WpPopPopBuilderSettings.closeDrawer();
-            }
-            if (window.WpPopPopBuilderLayers) {
-                window.WpPopPopBuilderLayers.highlightLayer(id);
-            }
-            if (window.WpPopPopBuilderInspector) {
-                window.WpPopPopBuilderInspector.open(id);
-            }
-        },
-
-        deselect: function() {
-            window.WpPopPopBuilderCore.state.activeId = null;
-            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
-            if (window.WpPopPopBuilderInspector) {
-                window.WpPopPopBuilderInspector.close();
-            }
-            if (window.WpPopPopBuilderLayers) {
-                $('.wppoppop-layer-item').removeClass('active');
-            }
+        this.selectedId = id;
+        if ($("#wppoppop-alignment-toolbar").length) {
+            $("#wppoppop-alignment-toolbar").fadeIn(120);
         }
-    };
-})(jQuery);
+        if (window.WpPopPopBuilderCore) {
+            window.WpPopPopBuilderCore.state.activeId = id;
+        }
+        $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+        $('#el-' + id).addClass('wppoppop-selected');
 
-    // Global Replay Animation Engine for Preview Floating Bar
-    $(document).off('click.replaySync', '#wppoppop-btn-preview, #wppoppop-preview-replay-btn, #preview-replay-btn').on('click.replaySync', '#wppoppop-btn-preview, #wppoppop-preview-replay-btn, #preview-replay-btn', function() {
-        setTimeout(function() {
-            if (window.WpPopPopBuilderCanvas) {
-                window.WpPopPopBuilderCanvas.playCanvasEntranceAnimation();
-                window.WpPopPopBuilderCanvas.playAllElementsEntranceAnimation();
-            }
-        }, 60);
-    });
+        if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
+            window.WpPopPopBuilderSettings.closeDrawer();
+        }
+        if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.highlightLayer === 'function') {
+            window.WpPopPopBuilderLayers.highlightLayer(id);
+        }
+        if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+            window.WpPopPopBuilderInspector.open(id);
+        }
+    },
+
+    deselect: function() {
+        this.selectedId = null;
+        if ($("#wppoppop-alignment-toolbar").length) {
+            $("#wppoppop-alignment-toolbar").fadeOut(120);
+        }
+        $("#wppoppop-guide-v, #wppoppop-guide-h").hide();
+        if (window.WpPopPopBuilderCore) {
+            window.WpPopPopBuilderCore.state.activeId = null;
+        }
+        $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+        if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.close === 'function') {
+            window.WpPopPopBuilderInspector.close();
+        }
+        if (window.WpPopPopBuilderLayers) {
+            $('.wppoppop-layer-item').removeClass('active');
+        }
+    },
+
+    deleteActiveElement: function() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state || !core.state.activeId) return;
+        if (typeof this.deleteElement === 'function') {
+            this.deleteElement(core.state.activeId);
+        }
+    }
+};
+
+// Global namespace aliases
+window.WpPopPopCanvas = window.WpPopPopBuilderCanvas;
+window.WpPopPopBuilder = window.WpPopPopBuilder || {};
+window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
+})(jQuery);

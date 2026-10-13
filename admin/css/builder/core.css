@@ -456,9 +456,10 @@ body.wppoppop-resizing-canvas {
     -moz-user-select: none !important;
 }
 
+/* Dotted / Dashed Gray Selection Border */
 .wppoppop-canvas-item.wppoppop-selected {
-    outline: 2px solid #2563eb;
-    outline-offset: 1px;
+    outline: 1px dashed #777777 !important;
+    outline-offset: 0 !important;
     z-index: 9990 !important;
 }
 
@@ -466,37 +467,39 @@ body.wppoppop-resizing-canvas {
     cursor: not-allowed !important;
 }
 
-/* Layer Resizable Handles */
+/* Hide unselected handles */
+.wppoppop-canvas-item:not(.wppoppop-selected) .ui-resizable-handle {
+    display: none !important;
+}
+
+/* Layer Resizable Handles: Hide 2 edge handles, preserve corner draggable only */
 .wppoppop-canvas-item .ui-resizable-handle {
     position: absolute;
-    width: 10px;
-    height: 10px;
-    background: #2563eb;
-    border: 1.5px solid #ffffff;
-    border-radius: 2px;
     z-index: 9992 !important;
     pointer-events: auto !important;
     touch-action: none;
 }
 
-.wppoppop-canvas-item .ui-resizable-se {
-    bottom: -5px;
-    right: -5px;
-    cursor: se-resize;
-}
-
-.wppoppop-canvas-item .ui-resizable-e {
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: e-resize;
-}
-
+.wppoppop-canvas-item .ui-resizable-e,
 .wppoppop-canvas-item .ui-resizable-s {
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    cursor: s-resize;
+    display: none !important;
+}
+
+/* Corner Draggable Handle: Inset diagonal gray grip icon */
+.wppoppop-canvas-item.wppoppop-selected .ui-resizable-se,
+.wppoppop-canvas-item .ui-resizable-se {
+    width: 14px !important;
+    height: 14px !important;
+    right: 2px !important;
+    bottom: 2px !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    cursor: se-resize !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10' fill='none'%3E%3Cline x1='8.5' y1='2.5' x2='2.5' y2='8.5' stroke='%23777777' stroke-width='1.2' stroke-linecap='round'/%3E%3Cline x1='8.5' y1='6' x2='6' y2='8.5' stroke='%23777777' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right bottom !important;
+    background-size: 10px 10px !important;
 }
 
 /* On-Canvas Status Overlay */
@@ -1515,4 +1518,227 @@ body.panel-open .wppoppop-builder-workspace,
 .wppoppop-layer-item.is-hidden .wppoppop-layer-title {
     opacity: 0.55 !important;
     font-style: italic !important;
+}
+
+
+/* --- GreenPop Parity Phase 2: Live Hover Transitions --- */
+.wppoppop-element[data-has-hover="true"] {
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.wppoppop-element[data-has-hover="true"]:hover {
+    background-color: var(--wppoppop-hover-bg) !important;
+    color: var(--wppoppop-hover-color) !important;
+    border-color: var(--wppoppop-hover-border) !important;
+}
+
+
+/* --- GreenPop Parity: Title Semantic Element Harmonization --- */
+.wppoppop-title-inner {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: inherit !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    text-align: inherit !important;
+    word-break: break-word !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+/* --- GreenPop Parity: Header Workflow & Zoom Controls --- */
+.wppoppop-header-workflow-tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.wppoppop-header-workflow-tools .wppoppop-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.wppoppop-header-workflow-tools .wppoppop-btn-icon:hover:not(:disabled) {
+    background: #334155;
+    color: #f8fafc;
+    border-color: #475569;
+}
+.wppoppop-header-workflow-tools .wppoppop-btn-icon:disabled,
+.wppoppop-header-workflow-tools .wppoppop-btn-icon.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.wppoppop-zoom-select:focus {
+    outline: none;
+    border-color: #38bdf8 !important;
+}
+
+/* ==========================================================================
+   Header Action Buttons & Strict 2D Flexbox Centering Normalization
+   ========================================================================== */
+.wppoppop-header-actions,
+.wppoppop-header-workflow-tools {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+/* 32px Icon-Only Buttons */
+.wppoppop-btn-icon,
+#wppoppop-btn-settings,
+#wppoppop-btn-undo,
+#wppoppop-btn-redo,
+#wppoppop-canvas-duplicate-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 6px !important;
+    color: #94a3b8 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+    transition: all 0.15s ease !important;
+}
+
+.wppoppop-btn-icon:hover,
+#wppoppop-btn-settings:hover,
+#wppoppop-btn-undo:hover:not(:disabled),
+#wppoppop-btn-redo:hover:not(:disabled),
+#wppoppop-canvas-duplicate-btn:hover {
+    background: #334155 !important;
+    color: #38bdf8 !important;
+    border-color: #38bdf8 !important;
+}
+
+/* Strict Dashicon 2D Glyph Box Normalization */
+.wppoppop-btn-icon .dashicons,
+#wppoppop-btn-settings .dashicons,
+#wppoppop-btn-undo .dashicons,
+#wppoppop-btn-redo .dashicons,
+#wppoppop-canvas-duplicate-btn .dashicons {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 18px !important;
+    line-height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+.wppoppop-btn-icon .dashicons::before,
+#wppoppop-btn-settings .dashicons::before,
+#wppoppop-btn-undo .dashicons::before,
+#wppoppop-btn-redo .dashicons::before,
+#wppoppop-canvas-duplicate-btn .dashicons::before {
+    display: inline-block !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 18px !important;
+    line-height: 18px !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+/* Zoom Dropdown Normalization */
+#wppoppop-zoom-select {
+    height: 32px !important;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 6px !important;
+    color: #f8fafc !important;
+    font-size: 12px !important;
+    padding: 0 8px !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+}
+
+/* Primary Save Button (Clean Text-Only) */
+#wppoppop-btn-save,
+.wppoppop-btn-save {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    padding: 0 14px !important;
+    background: #0284c7 !important;
+    border: 1px solid #0284c7 !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+    transition: all 0.15s ease !important;
+}
+#wppoppop-btn-save:hover,
+.wppoppop-btn-save:hover {
+    background: #0369a1 !important;
+    border-color: #0369a1 !important;
+}
+#wppoppop-btn-save .dashicons,
+.wppoppop-btn-save .dashicons {
+    display: none !important;
+}
+
+/* Secondary Action Buttons (Preview, Embed) */
+.wppoppop-btn-secondary,
+#wppoppop-btn-preview,
+#wppoppop-btn-embed,
+#wppoppop-btn-shortcode {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    padding: 0 12px !important;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 6px !important;
+    color: #f8fafc !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+    transition: all 0.15s ease !important;
+}
+.wppoppop-btn-secondary:hover,
+#wppoppop-btn-preview:hover,
+#wppoppop-btn-embed:hover {
+    background: #334155 !important;
+    color: #38bdf8 !important;
+    border-color: #38bdf8 !important;
+}
+/* Ensure #wppoppop-btn-settings is never blocked by layout containers */
+#wppoppop-btn-settings,
+.wppoppop-btn-settings {
+    position: relative !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+#wppoppop-btn-settings * {
+    pointer-events: none !important;
 }

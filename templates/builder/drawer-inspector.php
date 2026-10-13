@@ -327,11 +327,36 @@ if (!defined('ABSPATH')) {
                 </div>
                     
                     <!-- Element #1: Title -->
-                    <div id="panel-elem-title" class="wppoppop-elem-panel" style="display:none;">
-                        <div class="wppoppop-prop-group">
-                            <label for="prop-title-text" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">HEADING TEXT</label>
-                            <textarea id="prop-title-text" class="wppoppop-input" rows="3" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
-                        </div>
+                            <!-- GreenPop Parity: Title Element Dedicated Panel -->
+        <div class="element-panel" id="panel-elem-title" style="display:none;">
+            <div class="insp-group" style="margin-bottom:12px;">
+                <label class="insp-label" for="prop-title-text" style="font-weight:600;display:block;margin-bottom:4px;">Headline Text</label>
+                <textarea id="prop-title-text" class="wppoppop-input" rows="3" placeholder="Enter headline text..." style="width:100%;resize:vertical;font-size:13px;line-height:1.4;box-sizing:border-box;"></textarea>
+            </div>
+            <div class="insp-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                <div>
+                    <label class="insp-label" for="prop-title-tag" style="font-weight:600;display:block;margin-bottom:4px;">Heading Tag</label>
+                    <select id="prop-title-tag" class="wppoppop-select" style="width:100%;height:30px;font-size:12px;">
+                        <option value="h1">H1 - Page Main</option>
+                        <option value="h2" selected>H2 - Section</option>
+                        <option value="h3">H3 - Subheading</option>
+                        <option value="h4">H4 - Small Heading</option>
+                        <option value="h5">H5 - Minor Heading</option>
+                        <option value="h6">H6 - Caption Heading</option>
+                        <option value="div">DIV - Generic</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="insp-label" for="prop-title-transform" style="font-weight:600;display:block;margin-bottom:4px;">Text Transform</label>
+                    <select id="prop-title-transform" class="wppoppop-select" style="width:100%;height:30px;font-size:12px;">
+                        <option value="none">None (Default)</option>
+                        <option value="uppercase">UPPERCASE</option>
+                        <option value="lowercase">lowercase</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+            </div>
+        </div>
                     </div>
 
                     <!-- Element #2: Paragraph -->
@@ -485,54 +510,52 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
         </div>
-        </div>
 
-                        <!-- =================== TAB 2: STYLE =================== -->
-        <div id="insp-tab-style" class="wppoppop-tab-pane" style="display:none;">
-            <!-- Button Hover States -->
-            <div class="wppoppop-inspector-section" id="prop-btn-hover-section" style="display:none;">
-                <label class="wppoppop-section-label" id="prop-btn-hover">BUTTON HOVER STATES</label>
-                <div class="wppoppop-row-3col" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;">
-                    <div class="wppoppop-field-group">
-                        <label for="prop-btn-hover-bg" style="font-size:11px;">HOVER BG</label>
-                        <input type="color" id="prop-btn-hover-bg" class="wppoppop-color-input" value="#2563eb" style="width:100%;height:32px;padding:1px;border-radius:4px;border:1px solid #334155;background:#1e293b;cursor:pointer;">
-                    </div>
-                    <div class="wppoppop-field-group">
-                        <label for="prop-btn-hover-color" style="font-size:11px;">HOVER TEXT</label>
-                        <input type="color" id="prop-btn-hover-color" class="wppoppop-color-input" value="#ffffff" style="width:100%;height:32px;padding:1px;border-radius:4px;border:1px solid #334155;background:#1e293b;cursor:pointer;">
-                    </div>
-                    <div class="wppoppop-field-group">
-                        <label for="prop-btn-hover-border" style="font-size:11px;">HOVER BORDER</label>
-                        <input type="color" id="prop-btn-hover-border" class="wppoppop-color-input" value="#1d4ed8" style="width:100%;height:32px;padding:1px;border-radius:4px;border:1px solid #334155;background:#1e293b;cursor:pointer;">
-                    </div>
-                </div>
-            </div>
+        <!-- =================== TAB 2: STYLE =================== -->
+        <div id="insp-tab-style" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;background:transparent !important;padding:0;margin:0;">
             <!-- Element Opacity & Visibility -->
-            <div class="wppoppop-inspector-section">
-                <label class="wppoppop-section-label">OPACITY &amp; VISIBILITY</label>
-                <div class="wppoppop-row-2col">
-                    <div class="wppoppop-field-group">
-                        <label for="prop-opacity">OPACITY</label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <input type="range" id="prop-opacity" min="0" max="100" value="100" style="flex:1;">
-                            <span id="prop-opacity-val" style="min-width:35px;font-size:12px;color:#94a3b8;">100%</span>
-                        </div>
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">OPACITY &amp; VISIBILITY</div>
+                <div class="wppoppop-field-group">
+                    <label for="prop-opacity" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">OPACITY</label>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <input type="range" id="prop-opacity" min="0" max="100" value="100" style="flex:1;cursor:pointer;">
+                        <span id="prop-opacity-val" style="min-width:38px;font-size:11px;font-weight:700;color:#38bdf8;background:#0f172a;border:1px solid #334155;padding:2px 6px;border-radius:4px;text-align:center;">100%</span>
                     </div>
                 </div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:12px;">
+
+            <!-- Button Hover States (Contextual for Buttons) -->
+            <div class="wppoppop-inspector-section" id="prop-btn-hover-section" style="display:none;background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">BUTTON HOVER STATES</div>
+                <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;">
+                    <div>
+                        <label for="prop-btn-hover-bg" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">HOVER BG</label>
+                        <input type="color" id="prop-btn-hover-bg" value="#2563eb" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label for="prop-btn-hover-color" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">HOVER TEXT</label>
+                        <input type="color" id="prop-btn-hover-color" value="#ffffff" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label for="prop-btn-hover-border" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">HOVER BORDER</label>
+                        <input type="color" id="prop-btn-hover-border" value="#1d4ed8" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typography & Spacing -->
+            <div class="wppoppop-inspector-section" id="insp-section-typography" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">TYPOGRAPHY &amp; SPACING</div>
                 
-                <!-- Section 1: Typography & Spacing -->
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">TYPOGRAPHY &amp; SPACING</div>
-                
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
                     <div>
                         <label for="prop-font-size" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">SIZE (PX)</label>
-                        <input type="number" id="prop-font-size" class="wppoppop-input" value="14" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <input type="number" id="prop-font-size" value="14" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
                         <label for="prop-font-weight" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">WEIGHT</label>
-                        <select id="prop-font-weight" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <select id="prop-font-weight" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                             <option value="400">Regular (400)</option>
                             <option value="600">Semi-Bold (600)</option>
                             <option value="700">Bold (700)</option>
@@ -541,25 +564,25 @@ if (!defined('ABSPATH')) {
                     </div>
                     <div>
                         <label for="prop-line-height" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">LINE HEIGHT</label>
-                        <input type="number" id="prop-line-height" class="wppoppop-input" step="0.1" value="1.4" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <input type="number" id="prop-line-height" step="0.1" value="1.4" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
                         <label for="prop-letter-spacing" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">SPACING (PX)</label>
-                        <input type="number" id="prop-letter-spacing" class="wppoppop-input" step="0.5" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                        <input type="number" id="prop-letter-spacing" step="0.5" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                 </div>
 
-                <!-- Text Alignment (Dedicated Full-Width Row) -->
-                <div>
+                <!-- Text Alignment -->
+                <div style="margin-bottom:8px;">
                     <label for="prop-text-align" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">TEXT ALIGN</label>
-                    <select id="prop-text-align" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    <select id="prop-text-align" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                         <option value="left">Left</option>
                         <option value="center">Center</option>
                         <option value="right">Right</option>
                     </select>
                 </div>
 
-                <!-- 4-Way Directional Padding (Dedicated Full-Width Row & Universal Text/Control Sync) -->
+                <!-- 4-Way Directional Padding -->
                 <div id="wppoppop-padding-control-wrap">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                         <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:0;">PADDING (PX)</label>
@@ -567,71 +590,134 @@ if (!defined('ABSPATH')) {
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
                         <div>
-                            <label for="prop-padding-top" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">TOP</label>
-                            <input type="number" id="prop-padding-top" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="top" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-top" class="wppoppop-pad-field" min="0" max="250" value="0" data-dir="top" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
-                            <label for="prop-padding-right" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">RIGHT</label>
-                            <input type="number" id="prop-padding-right" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="right" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-right" class="wppoppop-pad-field" min="0" max="250" value="0" data-dir="right" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
-                            <label for="prop-padding-bottom" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">BOTTOM</label>
-                            <input type="number" id="prop-padding-bottom" class="wppoppop-input wppoppop-pad-field" min="0" max="250" value="0" data-dir="bottom" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-bottom" class="wppoppop-pad-field" min="0" max="250" value="0" data-dir="bottom" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                         <div>
-                            <label for="prop-padding-left" style="font-size:9px;color:#94a3b8;font-weight:600;display:block;margin-bottom:2px;text-align:center;">LEFT</label>
-                            <input type="number" id="prop-padding-left" class="wppoppop-input" min="0" max="250" value="0" data-dir="left" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
+                            <input type="number" id="prop-padding-left" class="wppoppop-pad-field" min="0" max="250" value="0" data-dir="left" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 2px;text-align:center;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="0">
                         </div>
                     </div>
                     <input type="hidden" id="prop-padding" value="0">
                 </div>
+            </div>
 
-                <!-- Section 2: Colors (Full-Width with 2-Column Inputs) -->
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">COLORS</div>
+            <!-- Colors Section -->
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">COLORS</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    <div class="wppoppop-prop-group">
+                    <div>
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                             <label for="prop-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">TEXT COLOR</label>
                             <button type="button" id="prop-text-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Text" aria-label="Transparent Text" style="width:16px;height:16px;border-radius:2px;border:1px solid #475569;background:repeating-conic-gradient(#cbd5e1 0% 25%, #fff 0% 50%) 50%/8px 8px;cursor:pointer;"></button>
                         </div>
-                        <input type="color" id="prop-color" class="wppoppop-input" value="#ffffff" style="width:100%;height:32px;padding:2px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                        <input type="color" id="prop-color" value="#ffffff" style="width:100%;height:32px;padding:2px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;cursor:pointer;box-sizing:border-box;">
                     </div>
-                    <div class="wppoppop-prop-group">
+                    <div>
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                             <label for="prop-bg-color" style="font-size:10px;font-weight:700;color:#94a3b8;margin:0;">BG COLOR</label>
                             <button type="button" id="prop-bg-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Background" aria-label="Transparent Background" style="width:16px;height:16px;border-radius:2px;border:1px solid #475569;background:repeating-conic-gradient(#cbd5e1 0% 25%, #fff 0% 50%) 50%/8px 8px;cursor:pointer;"></button>
                         </div>
-                        <input type="color" id="prop-bg-color" class="wppoppop-input" value="#2563eb" style="width:100%;height:32px;padding:2px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;cursor:pointer;box-sizing:border-box;">
+                        <input type="color" id="prop-bg-color" value="#2563eb" style="width:100%;height:32px;padding:2px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;cursor:pointer;box-sizing:border-box;">
                     </div>
                 </div>
+            </div>
 
+            <!-- Box Shadow Builder -->
+            <div class="wppoppop-inspector-section" id="insp-section-box-shadow" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">BOX SHADOW</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;">
+                    <div>
+                        <label style="font-size:9px;color:#64748b;font-weight:600;display:block;">X (PX)</label>
+                        <input type="number" id="prop-shadow-x" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:4px 6px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#64748b;font-weight:600;display:block;">Y (PX)</label>
+                        <input type="number" id="prop-shadow-y" value="4" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:4px 6px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#64748b;font-weight:600;display:block;">BLUR</label>
+                        <input type="number" id="prop-shadow-blur" value="10" min="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:4px 6px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#64748b;font-weight:600;display:block;">SPREAD</label>
+                        <input type="number" id="prop-shadow-spread" value="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:4px 6px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                    </div>
+                </div>
+                <div>
+                    <label for="prop-shadow-color" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">SHADOW COLOR</label>
+                    <input type="text" id="prop-shadow-color" placeholder="rgba(0,0,0,0.15)" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
+                </div>
             </div>
         </div>
 
         <!-- =================== TAB 3: LOGIC =================== -->
-        <div id="insp-tab-logic" class="wppoppop-tab-pane" style="display:none;">
+        <div id="insp-tab-logic" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;background:transparent !important;padding:0;margin:0;">
+            <!-- Merge Tag / Token -->
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">MERGE TAG / TOKEN</div>
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:6px;padding:8px;">
+                    <label style="font-size:10px;color:#64748b;display:block;margin-bottom:4px;">Click to copy token placeholder:</label>
+                    <input type="text" id="prop-display-token" readonly style="width:100%;background:#1e293b !important;border:1px solid #475569 !important;color:#38bdf8 !important;font-family:monospace;font-size:12px;font-weight:600;padding:6px 10px;border-radius:4px;cursor:pointer;box-sizing:border-box;" title="Click to copy">
+                </div>
+            </div>
+
+            <!-- Step Navigation & Actions -->
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">STEP NAVIGATION &amp; ACTIONS</div>
+                <div class="wppoppop-field-group">
+                    <label for="prop-goto-canvas" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">TARGET CANVAS ON CLICK</label>
+                    <select id="prop-goto-canvas" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
+                        <option value="1">Canvas 1</option>
+                        <option value="2">Canvas 2</option>
+                        <option value="3">Canvas 3</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- On-Click URL Redirect -->
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">ON-CLICK URL REDIRECT</div>
+                <input type="url" id="prop-action-url" placeholder="https://..." style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;margin-bottom:6px;">
+                <label style="font-size:11px;color:#94a3b8;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="prop-action-blank" value="1"> Open redirect in new tab
+                </label>
+            </div>
+
+            <!-- Popup Close Behavior -->
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">POPUP CLOSE BEHAVIOR</div>
+                <select id="prop-action-close" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
+                    <option value="none">Do not close popup</option>
+                    <option value="close">Close popup immediately</option>
+                    <option value="close_period">Close and hide for current session</option>
+                    <option value="close_forever">Close and hide permanently</option>
+                </select>
+            </div>
+
             <!-- Custom CSS Identifiers -->
-            <div class="wppoppop-inspector-section">
-                <label class="wppoppop-section-label">CUSTOM CSS IDENTIFIERS</label>
-                <div class="wppoppop-row-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    <div class="wppoppop-field-group">
-                        <label for="prop-custom-class" style="font-size:11px;">CSS CLASS</label>
-                        <input type="text" id="prop-custom-class" placeholder="custom-btn-class" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">CUSTOM CSS IDENTIFIERS</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div>
+                        <label for="prop-custom-class" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">CSS CLASS</label>
+                        <input type="text" id="prop-custom-class" placeholder="custom-btn-class" style="width:100%;height:30px;padding:4px 8px;font-size:11px;border:1px solid #334155;border-radius:4px;background:#0f172a;color:#f1f5f9;box-sizing:border-box;">
                     </div>
-                    <div class="wppoppop-field-group">
-                        <label for="prop-custom-id" style="font-size:11px;">CSS ID</label>
-                        <input type="text" id="prop-custom-id" placeholder="custom-btn-id" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                    <div>
+                        <label for="prop-custom-id" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">CSS ID</label>
+                        <input type="text" id="prop-custom-id" placeholder="custom-btn-id" style="width:100%;height:30px;padding:4px 8px;font-size:11px;border:1px solid #334155;border-radius:4px;background:#0f172a;color:#f1f5f9;box-sizing:border-box;">
                     </div>
                 </div>
             </div>
-            <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">STEP NAVIGATION &amp; ACTIONS</div>
-            <div class="wppoppop-prop-group" style="margin-top:8px;">
-                <label for="prop-goto-canvas" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">TARGET CANVAS ON CLICK</label>
-                <select id="prop-goto-canvas" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                    <option value="2">Canvas 2</option>
-                    <option value="1">Canvas 1</option>
-                    <option value="3">Canvas 3</option>
-                </select>
+
+            <!-- Custom JS Callback -->
+            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:8px;">
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">CUSTOM JS CALLBACK</div>
+                <textarea id="prop-action-js" rows="3" placeholder="console.log('Layer clicked');" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-family:monospace;font-size:11px;padding:6px 10px;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
             </div>
         </div>
 

@@ -6,30 +6,7 @@
     'use strict';
 
     window.WpPopPopBuilderSettings = {
-        bindPhase4SettingsEvents: function() {
-        var self = this;
-        $(document).off('input.wppoppop_p4 change.wppoppop_p4', '#set-canvas-autoclose').on('input.wppoppop_p4 change.wppoppop_p4', '#set-canvas-autoclose', function(e) {
-            var core = window.WpPopPopBuilderCore;
-            if (!core || !core.state) return;
-            core.state.settings = core.state.settings || {};
-            core.state.canvasMeta = core.state.canvasMeta || {};
-            var cur = core.state.currentCanvas || 1;
-            core.state.canvasMeta[cur] = core.state.canvasMeta[cur] || {};
-
-            
-            
-            
-            var acVal = parseInt($('#set-canvas-autoclose').val(), 10) || 0;
-            core.state.settings.canvas_autoclose = acVal;
-            core.state.canvasMeta[cur].autoclose = acVal;
-
-            if (e.type === 'change' && typeof core.pushHistory === 'function') {
-                core.pushHistory();
-            }
-        });
-    },
-
-    init: function() {
+        init: function() {
             this.bindDrawer();
             this.bindAccordions();
             this.bindCanvasSubtabs();
@@ -242,6 +219,29 @@
         },
 
         bindCanvasMetaInputs: function() {
+            var self = this;
+            $(document).off('input.wppoppop_cac change.wppoppop_cac', '#set-canvas-autoclose').on('input.wppoppop_cac change.wppoppop_cac', '#set-canvas-autoclose', function() {
+                var val = parseInt($(this).val(), 10) || 0;
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                core.state.canvasMeta[cur].autoclose = val;
+                core.state.canvasMeta[cur].autoclose_delay = val;
+                if (core.state.settings) core.state.settings.autoclose_delay = val;
+            });
+            $(document).off('input.wppoppop_exit change.wppoppop_exit', '#set-exit-intent-sensitivity').on('input.wppoppop_exit change.wppoppop_exit', '#set-exit-intent-sensitivity', function() {
+                var val = parseInt($(this).val(), 10) || 20;
+                if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.settings) {
+                    window.WpPopPopBuilderCore.state.settings.exit_intent_sensitivity = val;
+                }
+            });
+            $(document).off('input.wppoppop_scroll change.wppoppop_scroll', '#set-trigger-scroll-depth').on('input.wppoppop_scroll change.wppoppop_scroll', '#set-trigger-scroll-depth', function() {
+                var val = parseInt($(this).val(), 10) || 50;
+                if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.settings) {
+                    window.WpPopPopBuilderCore.state.settings.scroll_depth = val;
+                }
+            });
             // Play Canvas Animation on Demand
             $(document).on('click', '#set-canvas-anim-play', function(e) {
                 e.preventDefault();

@@ -6,6 +6,36 @@
     'use strict';
 
     window.WpPopPopBuilderIO = {
+        flushActiveElement: function() {
+            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.flushActiveElement === 'function') {
+                try { window.WpPopPopBuilderInspector.flushActiveElement(); } catch(e) {}
+            }
+            if (typeof this.flushActiveInputs === 'function') {
+                try { this.flushActiveInputs(); } catch(e) {}
+            }
+            if (window.jQuery) {
+                window.jQuery('input:focus, textarea:focus, select:focus').trigger('change').trigger('blur');
+            }
+        },
+
+        exportConfig: function() {
+            if (typeof this.flushActiveElement === 'function') {
+                this.flushActiveElement();
+            }
+            if (typeof this.exportPopup === 'function') {
+                return this.exportPopup();
+            }
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state) return {};
+            return {
+                id: core.state.id || (window.jQuery ? window.jQuery('#wppoppop-builder-uid').val() : 0) || 0,
+                title: core.state.title || (window.jQuery ? window.jQuery('#wppoppop-popup-title-input').val() : '') || 'Untitled Popup',
+                canvases: JSON.parse(JSON.stringify(core.state.canvases || { 1: [] })),
+                canvasMeta: JSON.parse(JSON.stringify(core.state.canvasMeta || {})),
+                settings: JSON.parse(JSON.stringify(core.state.settings || {}))
+            };
+        },
+
         init: function() {
             this.bindSave();
             this.loadInitialData();
@@ -273,3 +303,12 @@
         }
     };
 })(jQuery);
+
+// Delegated click handler for Save Popup button
+jQuery(document).off('click.wppoppop_global_save_click', '#wppoppop-btn-save, .wppoppop-btn-save')
+    .on('click.wppoppop_global_save_click', '#wppoppop-btn-save, .wppoppop-btn-save', function(e) {
+        e.preventDefault();
+        if (window.WpPopPopBuilderIO && typeof window.WpPopPopBuilderIO.savePopup === 'function') {
+            window.WpPopPopBuilderIO.savePopup();
+        }
+    });

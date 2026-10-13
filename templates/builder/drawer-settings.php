@@ -51,23 +51,22 @@ if (!defined('ABSPATH')) {
                                     <label style="font-size:10px;color:#64748b;">Width (px)</label>
                                     <input type="number" id="set-canvas-width" value="640" min="200" max="1600" class="widefat" style="font-size:12px;">
                                 </div>
-                <!-- Phase 4: Canvas Auto-Close Countdown -->
-                <div class="wppoppop-settings-field-group" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);">
-                    <div class="wppoppop-field-group">
-                        <label for="set-canvas-autoclose" style="font-size:11px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px;">AUTO-CLOSE COUNTDOWN (SECONDS)</label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <input type="number" id="set-canvas-autoclose" class="wppoppop-input" min="0" max="120" step="1" value="0" placeholder="0 (Disabled)" style="width:120px;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
-                            <span style="font-size:11px;color:#94a3b8;">sec (0 = disabled)</span>
-                        </div>
-                        <span style="font-size:11px;color:#64748b;display:block;margin-top:2px;">Automatically dismisses the popup after specified seconds.</span>
-                    </div>
-                </div>
                                 <div>
                                     <label style="font-size:10px;color:#64748b;">Height (px)</label>
                                     <input type="number" id="set-canvas-height" value="400" min="150" max="1200" class="widefat" style="font-size:12px;">
                                 </div>
                             </div>
                         </div>
+                        <!-- Phase 4: Canvas Auto-Close Countdown -->
+                        <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
+                            <label for="set-canvas-autoclose" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">AUTO-CLOSE COUNTDOWN (SECONDS)</label>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <input type="number" id="set-canvas-autoclose" class="wppoppop-input" min="0" max="300" step="1" value="0" placeholder="0" style="width:120px;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
+                                <span style="font-size:11px;color:#94a3b8;">sec (0 = disabled)</span>
+                            </div>
+                            <span style="font-size:10px;color:#64748b;display:block;margin-top:2px;">Automatically dismisses the popup after specified duration.</span>
+                        </div>
+
 
                         <div style="margin-bottom:12px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
@@ -289,8 +288,16 @@ if (!defined('ABSPATH')) {
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label><input type="checkbox" id="trig-load" value="1"> On Page Load</label>
                     <input type="number" id="trig-load-delay" placeholder="Delay (seconds)" class="widefat" style="margin:4px 0 8px 0;">
-                    <label><input type="checkbox" id="trig-exit" value="1"> On Exit Intent</label><br>
+                    <label><input type="checkbox" id="trig-exit" value="1"> On Exit Intent</label>
+                    <div style="margin:4px 0 8px 20px;">
+                        <label style="font-size:10px;color:#64748b;display:block;">Sensitivity Threshold (px top):</label>
+                        <input type="number" id="set-exit-intent-sensitivity" class="widefat" min="5" max="100" step="5" value="20" placeholder="20" style="background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:4px 8px;border-radius:4px;font-size:12px;">
+                    </div><br>
                     <label><input type="checkbox" id="trig-scroll" value="1"> On Scroll Depth (%)</label>
+                    <div style="margin:4px 0 8px 20px;">
+                        <label style="font-size:10px;color:#64748b;display:block;">Scroll Depth Trigger (%):</label>
+                        <input type="number" id="set-trigger-scroll-depth" class="widefat" min="1" max="100" step="5" value="50" placeholder="50" style="background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:4px 8px;border-radius:4px;font-size:12px;">
+                    </div>
                     <input type="number" id="trig-scroll-val" placeholder="Scroll % (e.g. 50)" class="widefat" style="margin:4px 0 8px 0;">
                     <label><input type="checkbox" id="trig-adblock" value="1"> On AdBlock Detected</label><br>
                     <label><input type="checkbox" id="trig-backbutton" value="1"> On Mobile Back-Button</label>
@@ -447,6 +454,3 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 </div>
-
-
-                

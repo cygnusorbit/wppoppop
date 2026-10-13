@@ -346,3 +346,33 @@ body.folded .wppoppop-settings-drawer {
     border-color: #0284c7 !important;
     box-shadow: 0 0 0 2px #38bdf8, 0 0 8px rgba(56, 189, 248, 0.7) !important;
 }
+/* --- WpPopPop Settings Drawer: Priority Stacking Shield --- */
+#wppoppop-settings-drawer,
+.wppoppop-settings-drawer {
+    z-index: 999999 !important;
+}
+#wppoppop-settings-drawer.open,
+#wppoppop-settings-drawer.is-open {
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+#wppoppop-settings-drawer button,
+#wppoppop-settings-drawer .wppoppop-acc-header,
+#wppoppop-settings-drawer .wppoppop-csubtab,
+#wppoppop-settings-drawer .wppoppop-canvas-bullet,
+#wppoppop-settings-drawer input,
+#wppoppop-settings-drawer select,
+#wppoppop-settings-drawer textarea {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+#wppoppop-settings-drawer input[type="text"],
+#wppoppop-settings-drawer input[type="number"],
+#wppoppop-settings-drawer input[type="url"],
+#wppoppop-settings-drawer textarea {
+    cursor: text !important;
+}
+#wppoppop-settings-backdrop,
+.wppoppop-settings-backdrop {
+    z-index: 999998 !important;
+}

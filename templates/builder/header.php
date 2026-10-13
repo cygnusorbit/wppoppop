@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     <!-- Left Section: Navigation, Settings, Title -->
     <div class="wppoppop-hdr-group wppoppop-hdr-left">
         <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popups Dashboard">Dashboard</a>
-        <button type="button" id="wppoppop-btn-settings" class="button button-secondary" title="Campaign Settings">Settings</button>
+                <button type="button" class="wppoppop-btn-icon wppoppop-btn-settings" id="wppoppop-btn-settings" data-action="settings" title="Campaign Settings" aria-label="Campaign Settings" onclick="if(window.WpPopPopBuilderSettings&&typeof window.WpPopPopBuilderSettings.toggleDrawer==='function'){window.WpPopPopBuilderSettings.toggleDrawer();}else if(window.WpPopPopSettings){window.WpPopPopSettings.toggleDrawer();}" style="cursor:pointer;pointer-events:auto;"><span class="dashicons dashicons-admin-generic" style="pointer-events:none;"></span></button>Settings</button>
         <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
     </div>
 
@@ -63,10 +63,8 @@ if (!defined('ABSPATH')) {
             <option value="1.25">125%</option>
             <option value="fit">Fit</option>
         </select>
-        <button type="button" id="wppoppop-btn-preview" class="button" title="Interactive Sandbox Preview">Preview</button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-secondary" id="wppoppop-btn-preview">Preview</button>
         <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>
-        <button type="button" id="wppoppop-btn-save" class="button button-primary" title="Save Popup Campaign">
-            <span class="wppoppop-save-text">Save Popup</span>
-        </button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save">Save Popup</button>
     </div>
 </div>
