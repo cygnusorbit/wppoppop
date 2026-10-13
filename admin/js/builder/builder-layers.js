@@ -169,6 +169,7 @@
     init: function() {
             this.bindPanelInteractions();
             this.bindEvents();
+        this.renderLayers();
         this.bindLayerSearch();
         this.bindInlineRename();
         this.bindBulkActions();

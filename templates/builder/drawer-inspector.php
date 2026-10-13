@@ -206,13 +206,132 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- CUSTOM HTML -->
+                                <!-- CUSTOM HTML -->
                 <div class="element-panel" id="panel-elem-html" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CUSTOM HTML / EMBED CODE</label>
-                    <textarea id="prop-html-code" rows="6" class="widefat" placeholder="<div>Custom HTML / Embed here</div>" style="font-family:monospace;font-size:11px;"></textarea>
+                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">CUSTOM HTML / EMBED CODE</div>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">EMBED CODE / MARKUP</label>
+                    <textarea id="prop-html-code" rows="7" class="widefat wppoppop-input" placeholder="<div>Custom HTML / Embed here</div>" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-family:monospace;font-size:11px;padding:8px;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
+                    <span style="display:block;font-size:10px;color:#64748b;margin-top:4px;">Live renders HTML, iframes, SVG badges, and custom styled embeds on the canvas.</span>
+                </div>" style="font-family:monospace;font-size:11px;"></textarea>
                 </div>
 
                 <!-- VIDEO -->
-                <div class="element-panel" id="panel-elem-video" style="display:none;">
+                                <!-- DIVIDER ELEMENT -->
+                <div class="element-panel" id="panel-elem-divider" style="display:none;">
+                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">DIVIDER SETTINGS</div>
+                    
+                    <div style="margin-bottom:10px;">
+                        <label for="prop-divider-style" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">DIVIDER TYPE</label>
+                        <select id="prop-divider-style" class="widefat wppoppop-input" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
+                            <option value="solid" selected>Solid Line</option>
+                            <option value="dashed">Dashed Line</option>
+                            <option value="dotted">Dotted Line</option>
+                            <option value="double">Double Line</option>
+                            <option value="groove">Groove Line</option>
+                            <option value="ridge">Ridge Line</option>
+                        </select>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                        <div>
+                            <label for="prop-divider-weight" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">THICKNESS (PX)</label>
+                            <input type="number" id="prop-divider-weight" class="widefat wppoppop-input" min="1" max="30" value="2" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
+                        </div>
+                        <div>
+                            <label for="prop-divider-color" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">LINE COLOR</label>
+                            <input type="color" id="prop-divider-color" class="widefat wppoppop-input" value="#94a3b8" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;padding:2px;cursor:pointer;">
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                        <div>
+                            <label for="prop-divider-width-pct" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">WIDTH (%)</label>
+                            <input type="number" id="prop-divider-width-pct" class="widefat wppoppop-input" min="10" max="100" step="5" value="100" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
+                        </div>
+                        <div>
+                            <label for="prop-divider-align" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">ALIGNMENT</label>
+                            <select id="prop-divider-align" class="widefat wppoppop-input" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
+                                <option value="center" selected>Center</option>
+                                <option value="left">Left</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ICON ELEMENT -->
+                <div class="element-panel" id="panel-elem-icon" style="display:none;">
+                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">FONT AWESOME ICON</div>
+                    
+                    <!-- Live Icon Preview Card -->
+                    <div style="display:flex;align-items:center;justify-content:center;background:#0f172a;border:1px solid #334155;border-radius:6px;padding:16px;margin-bottom:12px;">
+                        <i id="prop-icon-live-preview" class="fas fa-star" style="font-size:36px;color:#38bdf8;"></i>
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label for="prop-icon-preset" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">CHOOSE ICON</label>
+                        <select id="prop-icon-preset" class="widefat wppoppop-input" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
+                            <optgroup label="Popular">
+                                <option value="fas fa-star" selected>Star (★)</option>
+                                <option value="fas fa-heart">Heart (♥)</option>
+                                <option value="fas fa-check">Checkmark (✔)</option>
+                                <option value="fas fa-check-circle">Check Circle</option>
+                                <option value="fas fa-times">Close / Times (✖)</option>
+                                <option value="fas fa-fire">Fire / Hot</option>
+                                <option value="fas fa-bolt">Lightning Bolt</option>
+                                <option value="fas fa-gift">Gift Box</option>
+                                <option value="fas fa-bell">Notification Bell</option>
+                                <option value="fas fa-thumbs-up">Thumbs Up</option>
+                            </optgroup>
+                            <optgroup label="Commerce & Badges">
+                                <option value="fas fa-shopping-cart">Shopping Cart</option>
+                                <option value="fas fa-tag">Discount Tag</option>
+                                <option value="fas fa-percent">Percent (%)</option>
+                                <option value="fas fa-dollar-sign">Dollar Sign ($)</option>
+                                <option value="fas fa-crown">VIP Crown</option>
+                                <option value="fas fa-award">Award Badge</option>
+                                <option value="fas fa-gem">Diamond Gem</option>
+                                <option value="fas fa-shield-alt">Security Shield</option>
+                                <option value="fas fa-lock">Padlock</option>
+                            </optgroup>
+                            <optgroup label="Communication & Media">
+                                <option value="fas fa-envelope">Email Envelope</option>
+                                <option value="fas fa-phone">Phone Call</option>
+                                <option value="fas fa-comment">Chat Comment</option>
+                                <option value="fas fa-paper-plane">Paper Plane</option>
+                                <option value="fas fa-play">Play Video</option>
+                                <option value="fas fa-bullhorn">Announcement Bullhorn</option>
+                            </optgroup>
+                            <optgroup label="Arrows & Navigation">
+                                <option value="fas fa-arrow-right">Arrow Right (&rarr;)</option>
+                                <option value="fas fa-arrow-down">Arrow Down (&darr;)</option>
+                                <option value="fas fa-chevron-right">Chevron Right</option>
+                                <option value="fas fa-rocket">Rocket Launch</option>
+                            </optgroup>
+                            <optgroup label="Custom">
+                                <option value="custom">-- Custom Icon Class --</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label for="prop-icon-class" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">FONT AWESOME CLASS</label>
+                        <input type="text" id="prop-icon-class" class="widefat wppoppop-input" placeholder="e.g. fas fa-star" value="fas fa-star" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;font-family:monospace;border-radius:4px;padding:4px 8px;">
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                        <div>
+                            <label for="prop-icon-size" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">ICON SIZE (PX)</label>
+                            <input type="number" id="prop-icon-size" class="widefat wppoppop-input" min="12" max="180" value="36" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
+                        </div>
+                        <div>
+                            <label for="prop-icon-color" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">ICON COLOR</label>
+                            <input type="color" id="prop-icon-color" class="widefat wppoppop-input" value="#38bdf8" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;padding:2px;cursor:pointer;">
+                        </div>
+                    </div>
+                </div>
+
+<div class="element-panel" id="panel-elem-video" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">VIDEO URL (YOUTUBE / VIMEO / MP4)</label>
                     <input type="url" id="prop-video-url" class="widefat" placeholder="https://www.youtube.com/watch?v=..." style="font-size:12px;margin-bottom:8px;">
                     <div style="display:flex;gap:12px;align-items:center;margin-top:6px;">

@@ -366,6 +366,26 @@ class WpPopPop_Front_Renderer {
         $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
 
         switch ($type) {
+            case 'divider':
+                $d_style = !empty($el['dividerStyle']) ? sanitize_text_field($el['dividerStyle']) : 'solid';
+                $d_weight = !empty($el['dividerWeight']) ? intval($el['dividerWeight']) : 2;
+                if ($d_style === 'double' && $d_weight < 3) $d_weight = 4;
+                $d_color = !empty($el['dividerColor']) ? sanitize_text_field($el['dividerColor']) : '#94a3b8';
+                $d_pct = !empty($el['dividerWidthPct']) ? intval($el['dividerWidthPct']) : 100;
+                $d_align = !empty($el['dividerAlign']) ? sanitize_text_field($el['dividerAlign']) : 'center';
+                $margin = 'margin:0 auto;';
+                if ($d_align === 'left') $margin = 'margin:0 auto 0 0;';
+                if ($d_align === 'right') $margin = 'margin:0 0 0 auto;';
+                $inner_html = '<div style="width:100%;height:100%;display:flex;align-items:center;box-sizing:border-box;"><hr style="width:' . $d_pct . '%;border:none;border-top:' . $d_weight . 'px ' . esc_attr($d_style) . ' ' . esc_attr($d_color) . ';' . $margin . '" /></div>';
+                break;
+
+            case 'icon':
+                $i_class = !empty($el['iconClass']) ? sanitize_text_field($el['iconClass']) : (!empty($el['content']) ? sanitize_text_field($el['content']) : 'fas fa-star');
+                $i_color = !empty($el['iconColor']) ? sanitize_text_field($el['iconColor']) : '#38bdf8';
+                $i_size = !empty($el['iconSize']) ? intval($el['iconSize']) : 36;
+                $inner_html = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' . esc_attr($i_color) . ';font-size:' . $i_size . 'px;"><i class="' . esc_attr($i_class) . '"></i></div>';
+                break;
+
             case 'text':
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 

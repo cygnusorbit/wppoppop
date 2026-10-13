@@ -739,6 +739,74 @@
     },
 
     bindInputs: function() {
+        var self = this;
+        var getActiveEl = function() {
+            var core = window.WpPopPopBuilderCore;
+            var activeId = core && core.state ? core.state.activeId : null;
+            if (!activeId) return null;
+            var elements = (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') ? window.WpPopPopBuilderCanvas.getActiveElements() : [];
+            return elements.find(function(e) { return e.id === activeId; }) || null;
+        };
+
+        // HTML / Embed Code Live Sync
+        $(document).off('input.wppoppop_html change.wppoppop_html', '#prop-html-code')
+            .on('input.wppoppop_html change.wppoppop_html', '#prop-html-code', function() {
+                var el = getActiveEl();
+                if (!el) return;
+                var val = $(this).val();
+                el.content = val;
+                el.htmlCode = val;
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+        // Divider Live Sync
+        $(document).off('change.wppoppop_div input.wppoppop_div', '#prop-divider-style, #prop-divider-weight, #prop-divider-color, #prop-divider-width-pct, #prop-divider-align')
+            .on('change.wppoppop_div input.wppoppop_div', '#prop-divider-style, #prop-divider-weight, #prop-divider-color, #prop-divider-width-pct, #prop-divider-align', function() {
+                var el = getActiveEl();
+                if (!el) return;
+                el.dividerStyle = $('#prop-divider-style').val();
+                el.dividerWeight = parseInt($('#prop-divider-weight').val(), 10) || 2;
+                el.dividerColor = $('#prop-divider-color').val();
+                el.dividerWidthPct = parseInt($('#prop-divider-width-pct').val(), 10) || 100;
+                el.dividerAlign = $('#prop-divider-align').val();
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+        // Icon Preset & Class Live Sync
+        $(document).off('change.wppoppop_icon_preset', '#prop-icon-preset').on('change.wppoppop_icon_preset', '#prop-icon-preset', function() {
+            var val = $(this).val();
+            if (val !== 'custom') {
+                $('#prop-icon-class').val(val).trigger('input');
+            }
+        });
+
+        $(document).off('input.wppoppop_icon change.wppoppop_icon', '#prop-icon-class, #prop-icon-size, #prop-icon-color')
+            .on('input.wppoppop_icon change.wppoppop_icon', '#prop-icon-class, #prop-icon-size, #prop-icon-color', function() {
+                var el = getActiveEl();
+                if (!el) return;
+                var iClass = $('#prop-icon-class').val().trim() || 'fas fa-star';
+                var iSize = parseInt($('#prop-icon-size').val(), 10) || 36;
+                var iColor = $('#prop-icon-color').val() || '#38bdf8';
+
+                el.iconClass = iClass;
+                el.content = iClass;
+                el.iconSize = iSize;
+                el.iconColor = iColor;
+
+                $('#prop-icon-live-preview').attr('class', iClass).css({
+                    color: iColor,
+                    fontSize: iSize + 'px'
+                });
+
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
         this.bindStyleLogicSync();
         this.bindButtonStateTabs();
         this.bindBoxShadowBuilder();

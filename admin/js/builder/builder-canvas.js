@@ -832,8 +832,59 @@
                     return '<iframe src="' + embedSrc + '" style="width:100%;height:100%;border:0;pointer-events:none;border-radius:inherit;" allow="autoplay; encrypted-media"></iframe>';
                 }
                 return '<div class="wppoppop-video-placeholder" style="width:100%;height:100%;background:#1e293b;color:#94a3b8;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;border-radius:inherit;"><span class="dashicons dashicons-video-alt3" style="font-size:32px;width:32px;height:32px;margin-bottom:8px;"></span><span>Video Embed</span></div>';
-            case 'html':
-                    return '<div style="width:100%;height:100%;overflow:hidden;font-size:11px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">' + (el.content || '<strong>Custom HTML Block</strong>') + '</div>';
+                            case 'html':
+                    var rawHtml = (el.content !== undefined && el.content !== '') ? el.content : (el.htmlCode || '');
+                    if (!rawHtml || !rawHtml.trim()) {
+                        return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1e293b;border:1px dashed #475569;color:#94a3b8;font-size:11px;font-family:monospace;padding:8px;box-sizing:border-box;text-align:center;">&lt;/&gt; Empty HTML Element (Click to Edit)</div>';
+                    }
+                    return '<div class="wppoppop-custom-html-stage" style="width:100%;height:100%;overflow:auto;box-sizing:border-box;">' + rawHtml + '</div>';
+
+                case 'divider':
+                    var dStyle = el.dividerStyle || 'solid';
+                    var dWeight = parseInt(el.dividerWeight || 2, 10);
+                    if (dStyle === 'double' && dWeight < 3) dWeight = 4;
+                    var dColor = el.dividerColor || el.color || '#94a3b8';
+                    var dPct = parseInt(el.dividerWidthPct || 100, 10);
+                    var dAlign = el.dividerAlign || 'center';
+                    var marginStyle = 'margin: 0 auto;';
+                    if (dAlign === 'left') marginStyle = 'margin: 0 auto 0 0;';
+                    if (dAlign === 'right') marginStyle = 'margin: 0 0 0 auto;';
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;box-sizing:border-box;padding:0 4px;">' +
+                           '<hr style="width:' + dPct + '%;border:none;border-top:' + dWeight + 'px ' + dStyle + ' ' + dColor + ';' + marginStyle + 'padding:0;" />' +
+                           '</div>';
+
+                case 'icon':
+                    var iClass = el.iconClass || el.content || 'fas fa-star';
+                    if (iClass.indexOf('fa') === 0 && iClass.indexOf(' ') === -1) {
+                        iClass = 'fas ' + iClass;
+                    }
+                    var iColor = el.iconColor || el.color || '#38bdf8';
+                    var iSize = parseInt(el.iconSize || 36, 10);
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' + iColor + ';font-size:' + iSize + 'px;"><i class="' + iClass + '"></i></div>';
+
+                case 'divider':
+                    var dStyle = el.dividerStyle || 'solid';
+                    var dWeight = parseInt(el.dividerWeight || 2, 10);
+                    if (dStyle === 'double' && dWeight < 3) dWeight = 4;
+                    var dColor = el.dividerColor || el.color || '#94a3b8';
+                    var dPct = parseInt(el.dividerWidthPct || 100, 10);
+                    var dAlign = el.dividerAlign || 'center';
+                    var marginStyle = 'margin: 0 auto;';
+                    if (dAlign === 'left') marginStyle = 'margin: 0 auto 0 0;';
+                    if (dAlign === 'right') marginStyle = 'margin: 0 0 0 auto;';
+
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;box-sizing:border-box;padding:0 4px;">' +
+                           '<hr style="width:' + dPct + '%;border:none;border-top:' + dWeight + 'px ' + dStyle + ' ' + dColor + ';' + marginStyle + 'padding:0;" />' +
+                           '</div>';
+
+                case 'icon':
+                    var iClass = el.iconClass || el.content || 'fas fa-star';
+                    if (iClass.indexOf('fa') === 0 && iClass.indexOf(' ') === -1) {
+                        iClass = 'fas ' + iClass;
+                    }
+                    var iColor = el.iconColor || el.color || '#38bdf8';
+                    var iSize = parseInt(el.iconSize || 36, 10);
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';color:' + iColor + ';font-size:' + iSize + 'px;"><i class="' + iClass + '"></i></div>';
                 default:
                     return '<div style="padding:6px;font-size:12px;">' + label + '</div>';
             }
