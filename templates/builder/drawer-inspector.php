@@ -357,10 +357,9 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
         </div>
-                    </div>
 
                     <!-- Element #2: Paragraph -->
-                    <div id="panel-elem-paragraph" class="wppoppop-elem-panel" style="display:none;">
+                    <div id="panel-elem-paragraph" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
                             <label for="prop-paragraph-text" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PARAGRAPH BODY</label>
                             <textarea id="prop-paragraph-text" class="wppoppop-input" rows="4" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
@@ -368,7 +367,7 @@ if (!defined('ABSPATH')) {
                     </div>
 
                     <!-- Element #3: Text Field -->
-                    <div id="panel-elem-textfield" class="wppoppop-elem-panel" style="display:none;">
+                    <div id="panel-elem-textfield" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
                             <label for="prop-textfield-placeholder" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                             <input type="text" id="prop-textfield-placeholder" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
@@ -376,7 +375,7 @@ if (!defined('ABSPATH')) {
                     </div>
 
                     <!-- Element #4: Vector Shape Settings -->
-                    <div id="panel-elem-shape" class="wppoppop-elem-panel" style="display:none;">
+                    <div id="panel-elem-shape" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin:8px 0 6px 0;border-bottom:1px solid #334155;padding-bottom:4px;">SHAPE GEOMETRY &amp; OUTLINE</div>
                         
                         <div class="wppoppop-prop-group" style="margin-bottom:10px;">
@@ -426,12 +425,13 @@ if (!defined('ABSPATH')) {
                     </div>
 
                     <!-- General Content Fallback -->
-                    <div id="panel-elem-general" class="wppoppop-elem-panel">
+                    <div id="panel-elem-general" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
                             <label for="prop-content" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">ELEMENT CONTENT / LABEL</label>
                             <textarea id="prop-content" class="wppoppop-input" rows="3" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
                         </div>
                     </div>
+                </div>
                 </div>
 
                 <!-- Position & Dimensions -->
