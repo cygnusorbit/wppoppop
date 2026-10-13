@@ -272,7 +272,142 @@
                 });
         },
 
+        bindWorkspacePan: function() {
+            var self = this;
+            var isSpaceDown = false;
+            var isPanning = false;
+            var startX = 0, startY = 0;
+            var startPanX = 0, startPanY = 0;
+            var hasPanned = false;
+
+            if (!self.state.pan) {
+                self.state.pan = { x: 0, y: 0 };
+            }
+
+            // Keyboard spacebar detection (safely ignores focused inputs/textareas)
+            $(document).off('keydown.wppoppop_pan').on('keydown.wppoppop_pan', function(e) {
+                if (e.which === 32 || e.code === 'Space') {
+                    var $target = $(e.target);
+                    if ($target.is('input, textarea, select, [contenteditable="true"]') || $target.closest('.note-editor, .element-panel').length) {
+                        return; // Let user type normal space in text fields
+                    }
+                    e.preventDefault();
+                    if (isSpaceDown) return;
+                    isSpaceDown = true;
+                    $('body').addClass('wppoppop-space-held');
+                }
+            });
+
+            $(document).off('keyup.wppoppop_pan').on('keyup.wppoppop_pan', function(e) {
+                if (e.which === 32 || e.code === 'Space') {
+                    var $target = $(e.target);
+                    if ($target.is('input, textarea, select, [contenteditable="true"]') || $target.closest('.note-editor, .element-panel').length) {
+                        return;
+                    }
+                    isSpaceDown = false;
+                    isPanning = false;
+                    $('body').removeClass('wppoppop-space-held wppoppop-is-panning');
+                }
+            });
+
+            $(window).off('blur.wppoppop_pan').on('blur.wppoppop_pan', function() {
+                isSpaceDown = false;
+                isPanning = false;
+                $('body').removeClass('wppoppop-space-held wppoppop-is-panning');
+            });
+
+            // Mouse pan gesture
+            $(document).off('mousedown.wppoppop_pan').on('mousedown.wppoppop_pan', function(e) {
+                if (!isSpaceDown) return;
+                var $ws = $(e.target).closest('.wppoppop-builder-workspace');
+                if (!$ws.length) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                isPanning = true;
+                hasPanned = false;
+                startX = e.clientX;
+                startY = e.clientY;
+                startPanX = self.state.pan ? self.state.pan.x : 0;
+                startPanY = self.state.pan ? self.state.pan.y : 0;
+
+                $('body').addClass('wppoppop-is-panning');
+            });
+
+            $(document).off('mousemove.wppoppop_pan').on('mousemove.wppoppop_pan', function(e) {
+                if (!isPanning || !isSpaceDown) return;
+                e.preventDefault();
+
+                var dx = e.clientX - startX;
+                var dy = e.clientY - startY;
+
+                if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                    hasPanned = true;
+                }
+
+                self.state.pan.x = Math.round(startPanX + dx);
+                self.state.pan.y = Math.round(startPanY + dy);
+                self.updateCanvasTransform();
+            });
+
+            $(document).off('mouseup.wppoppop_pan').on('mouseup.wppoppop_pan', function(e) {
+                if (isPanning) {
+                    isPanning = false;
+                    $('body').removeClass('wppoppop-is-panning');
+
+                    if (hasPanned) {
+                        var blockClick = function(ev) {
+                            ev.stopPropagation();
+                            ev.preventDefault();
+                            $(document).off('click.wppoppop_pan_block', blockClick);
+                        };
+                        $(document).on('click.wppoppop_pan_block', blockClick);
+                        setTimeout(function() {
+                            $(document).off('click.wppoppop_pan_block', blockClick);
+                        }, 60);
+                    }
+                }
+            });
+        },
+
+        updateCanvasTransform: function() {
+            var zoom = (this.state && this.state.zoom) ? this.state.zoom : 1;
+            if (!this.state.zoom && $('#wppoppop-zoom-select').length) {
+                var zVal = parseFloat($('#wppoppop-zoom-select').val());
+                if (!isNaN(zVal) && zVal > 0) {
+                    zoom = zVal <= 3 ? zVal : (zVal / 100);
+                }
+            }
+            var pan = (this.state && this.state.pan) ? this.state.pan : { x: 0, y: 0 };
+            var transformVal = 'translate(' + pan.x + 'px, ' + pan.y + 'px) scale(' + zoom + ')';
+
+            var $box = $('#wppoppop-canvas-box');
+            if ($box.length) {
+                $box.css({
+                    'transform': transformVal,
+                    '-webkit-transform': transformVal,
+                    'transform-origin': 'center center'
+                });
+            }
+
+            // Shift checkerboard pattern synchronously with mouse drag
+            var $ws = $('.wppoppop-builder-workspace');
+            if ($ws.length) {
+                var ox = ((pan.x % 16) + 16) % 16;
+                var oy = ((pan.y % 16) + 16) % 16;
+                $ws.css('background-position',
+                    ox + 'px ' + oy + 'px, ' +
+                    ox + 'px ' + (oy + 8) + 'px, ' +
+                    (ox + 8) + 'px ' + (oy - 8) + 'px, ' +
+                    (ox - 8) + 'px ' + oy + 'px'
+                );
+            }
+        },
+
         init: function() {
+            this.bindWorkspacePan();
+            this.updateCanvasTransform();
         this.initThemeMode();
         this.bindModalEvents();
             this.bindCanvasTabs();

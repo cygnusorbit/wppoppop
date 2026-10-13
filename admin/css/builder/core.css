@@ -1848,3 +1848,38 @@ body.theme-light #wppoppop-canvas-box,
     justify-content: flex-end !important;
     user-select: none !important;
 }
+
+/* ==========================================================================
+   Spacebar Pan / Hand Tool Engine (Workspace Freeform Movement)
+   ========================================================================== */
+
+/* Space key held: Hand icon (grab) across entire workspace and stage */
+body.wppoppop-space-held,
+body.wppoppop-space-held .wppoppop-builder-workspace,
+body.wppoppop-space-held .wppoppop-builder-workspace *,
+body.wppoppop-space-held #wppoppop-canvas-box,
+body.wppoppop-space-held #wppoppop-canvas-box * {
+    cursor: grab !important;
+    cursor: -webkit-grab !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* While space is held, shield layer drag/resize interactions so workspace pans cleanly */
+body.wppoppop-space-held .wppoppop-canvas-item,
+body.wppoppop-space-held .ui-resizable-handle,
+body.wppoppop-space-held #wppoppop-canvas-corner-handle {
+    pointer-events: none !important;
+}
+
+/* Mouse down active panning: Hand grabbing icon */
+body.wppoppop-is-panning,
+body.wppoppop-is-panning .wppoppop-builder-workspace,
+body.wppoppop-is-panning .wppoppop-builder-workspace *,
+body.wppoppop-is-panning #wppoppop-canvas-box,
+body.wppoppop-is-panning #wppoppop-canvas-box * {
+    cursor: grabbing !important;
+    cursor: -webkit-grabbing !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
