@@ -388,6 +388,89 @@ if (!$data || !isset($data['meta'])) {
             $clean['customClass'] = $clean['custom_css_class'];
         }
 
+        
+        // Form Family Data & Advanced Tab Lifecycle Persistence
+        if (isset($el['defaultValue'])) $clean['defaultValue'] = sanitize_text_field($el['defaultValue']);
+        if (isset($el['dynamicDefault'])) $clean['dynamicDefault'] = !empty($el['dynamicDefault']);
+        if (isset($el['paramName'])) $clean['paramName'] = sanitize_key($el['paramName']);
+        if (isset($el['readOnly'])) $clean['readOnly'] = !empty($el['readOnly']);
+        if (isset($el['saveToDb'])) $clean['saveToDb'] = !empty($el['saveToDb']);
+        if (isset($el['fieldId'])) $clean['fieldId'] = sanitize_html_class($el['fieldId']);
+        if (isset($el['inputMask'])) $clean['inputMask'] = sanitize_text_field($el['inputMask']);
+        if (isset($el['customAttrs'])) $clean['customAttrs'] = sanitize_text_field($el['customAttrs']);
+        if (isset($el['filters']) && is_array($el['filters'])) {
+            $clean['filters'] = array_values(array_map('sanitize_key', $el['filters']));
+        }
+        if (isset($el['validators']) && is_array($el['validators'])) {
+            $clean['validators'] = array_values(array_map('sanitize_key', $el['validators']));
+        }
+
+        
+        // Phase 2: Media Family (Elements 1-9 & 26 Submit) Decomposed Properties Whitelist
+        if (isset($el['shapeType'])) $clean['shapeType'] = sanitize_key($el['shapeType']);
+        if (isset($el['rotate'])) $clean['rotate'] = intval($el['rotate']);
+        if (isset($el['transparentFill'])) $clean['transparentFill'] = !empty($el['transparentFill']);
+        if (isset($el['objectFit'])) $clean['objectFit'] = sanitize_key($el['objectFit']);
+        if (isset($el['alt'])) $clean['alt'] = sanitize_text_field($el['alt']);
+        if (isset($el['linkUrl'])) $clean['linkUrl'] = esc_url_raw($el['linkUrl']);
+        if (isset($el['linkBlank'])) $clean['linkBlank'] = !empty($el['linkBlank']);
+        if (isset($el['videoProvider'])) $clean['videoProvider'] = sanitize_key($el['videoProvider']);
+        if (isset($el['aspectRatio'])) $clean['aspectRatio'] = sanitize_text_field($el['aspectRatio']);
+        if (isset($el['videoUrl'])) $clean['videoUrl'] = esc_url_raw($el['videoUrl']);
+        if (isset($el['videoAutoplay'])) $clean['videoAutoplay'] = !empty($el['videoAutoplay']);
+        if (isset($el['videoMute'])) $clean['videoMute'] = !empty($el['videoMute']);
+        if (isset($el['videoLoop'])) $clean['videoLoop'] = !empty($el['videoLoop']);
+        if (isset($el['videoControls'])) $clean['videoControls'] = !empty($el['videoControls']);
+        if (isset($el['tag'])) $clean['tag'] = sanitize_key($el['tag']);
+        if (isset($el['textTransform'])) $clean['textTransform'] = sanitize_key($el['textTransform']);
+        if (isset($el['overflow'])) $clean['overflow'] = sanitize_key($el['overflow']);
+        if (isset($el['closeAction'])) $clean['closeAction'] = sanitize_key($el['closeAction']);
+        if (isset($el['cookieDays'])) $clean['cookieDays'] = intval($el['cookieDays']);
+        if (isset($el['iconClass'])) $clean['iconClass'] = sanitize_text_field($el['iconClass']);
+        if (isset($el['iconSize'])) $clean['iconSize'] = intval($el['iconSize']);
+        if (isset($el['progressPercent'])) $clean['progressPercent'] = max(0, min(100, intval($el['progressPercent'])));
+        if (isset($el['progressColor'])) $clean['progressColor'] = sanitize_hex_color($el['progressColor']);
+        if (isset($el['progressStriped'])) $clean['progressStriped'] = !empty($el['progressStriped']);
+        if (isset($el['progressAnimated'])) $clean['progressAnimated'] = !empty($el['progressAnimated']);
+        if (isset($el['buttonAction'])) $clean['buttonAction'] = sanitize_key($el['buttonAction']);
+        if (isset($el['submitAction'])) $clean['submitAction'] = sanitize_key($el['submitAction']);
+        if (isset($el['loadingText'])) $clean['loadingText'] = sanitize_text_field($el['loadingText']);
+        if (isset($el['redirectUrl'])) $clean['redirectUrl'] = esc_url_raw($el['redirectUrl']);
+
+        
+        // Phase 3: Form Family Core Inputs (Elements 10-17) Decomposed Properties Whitelist
+        if (isset($el['autocomplete'])) $clean['autocomplete'] = sanitize_text_field($el['autocomplete']);
+        if (isset($el['maxLength'])) $clean['maxLength'] = intval($el['maxLength']);
+        if (isset($el['emailValidationMode'])) $clean['emailValidationMode'] = sanitize_key($el['emailValidationMode']);
+        if (isset($el['min'])) $clean['min'] = floatval($el['min']);
+        if (isset($el['max'])) $clean['max'] = floatval($el['max']);
+        if (isset($el['step'])) $clean['step'] = floatval($el['step']);
+        if (isset($el['phonePrefix'])) $clean['phonePrefix'] = sanitize_text_field($el['phonePrefix']);
+        if (isset($el['rows'])) $clean['rows'] = max(1, min(30, intval($el['rows'])));
+        if (isset($el['layout'])) $clean['layout'] = sanitize_key($el['layout']);
+        if (isset($el['termsUrl'])) $clean['termsUrl'] = esc_url_raw($el['termsUrl']);
+        if (isset($el['checkedDefault'])) $clean['checkedDefault'] = !empty($el['checkedDefault']);
+
+        
+        // Phase 4: Form Family Selectors & Pickers (Elements 18-25) Decomposed Properties Whitelist
+        if (isset($el['maxSelect'])) $clean['maxSelect'] = max(1, intval($el['maxSelect']));
+        if (isset($el['columns'])) $clean['columns'] = max(1, min(6, intval($el['columns'])));
+        if (isset($el['multiSelect'])) $clean['multiSelect'] = !empty($el['multiSelect']);
+        if (isset($el['activeColor'])) $clean['activeColor'] = sanitize_hex_color($el['activeColor']);
+        if (isset($el['dateFormat'])) $clean['dateFormat'] = sanitize_text_field($el['dateFormat']);
+        if (isset($el['minDate'])) $clean['minDate'] = sanitize_text_field($el['minDate']);
+        if (isset($el['maxDate'])) $clean['maxDate'] = sanitize_text_field($el['maxDate']);
+        if (isset($el['timeFormat'])) $clean['timeFormat'] = sanitize_key($el['timeFormat']);
+        if (isset($el['timeStep'])) $clean['timeStep'] = max(1, intval($el['timeStep']));
+        if (isset($el['allowedExtensions'])) $clean['allowedExtensions'] = sanitize_text_field($el['allowedExtensions']);
+        if (isset($el['maxFileSize'])) $clean['maxFileSize'] = max(1, intval($el['maxFileSize']));
+        if (isset($el['multiUpload'])) $clean['multiUpload'] = !empty($el['multiUpload']);
+        if (isset($el['minLength'])) $clean['minLength'] = max(0, intval($el['minLength']));
+        if (isset($el['showEyeToggle'])) $clean['showEyeToggle'] = !empty($el['showEyeToggle']);
+        if (isset($el['ratingMax']))$clean['ratingMax'] = in_array(intval($el['ratingMax']), array(5, 10), true) ? intval($el['ratingMax']) : 5;
+        if (isset($el['ratingShape'])) $clean['ratingShape'] = sanitize_key($el['ratingShape']);
+        if (isset($el['ratingColor'])) $clean['ratingColor'] = sanitize_hex_color($el['ratingColor']);
+
         return $clean;
     }
 

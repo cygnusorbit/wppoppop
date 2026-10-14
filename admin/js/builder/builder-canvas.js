@@ -821,11 +821,14 @@
                 case 'textfield':
                     return '<input type="text" placeholder="' + (el.content || 'Enter text...') + '" style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
                 case 'image':
-                var imgSrc = el.imageUrl || el.src || (window.wppoppop_vars ? window.wppoppop_vars.plugin_url + 'assets/images/placeholder.svg' : '');
-                var imgFit = el.imageFit || el.objectFit || 'cover';
-                var imgAlt = el.imageAlt || el.alt || '';
-                return '<img src="' + imgSrc + '" alt="' + imgAlt + '" style="width:100%;height:100%;object-fit:' + imgFit + ';display:block;pointer-events:none;border-radius:inherit;" />';
-            case 'video':
+                    var imgSrc = el.imageUrl || el.src || el.url || (el.content && String(el.content).indexOf('http') === 0 ? el.content : '');
+                    var imgFit = el.objectFit || el.imageFit || 'cover';
+                    var imgAlt = el.imageAlt || el.alt || 'Popup Image';
+                    if (imgSrc) {
+                        return '<img src="' + imgSrc + '" alt="' + imgAlt.replace(/"/g, '&quot;') + '" style="width:100%;height:100%;object-fit:' + imgFit + ';display:block;border-radius:inherit;pointer-events:none;" />';
+                    }
+                    return '<div style="width:100%;height:100%;background:#e2e8f0;border:1px dashed #94a3b8;display:flex;align-items:center;justify-content:center;color:#475569;font-size:12px;font-weight:600;border-radius:inherit;"><span class="dashicons dashicons-format-image" style="font-size:20px;width:20px;height:20px;margin-right:6px;"></span>Image</div>';
+                case 'video':
                 var vUrl = el.videoUrl || el.url || '';
                 var embedSrc = self.parseVideoEmbed ? self.parseVideoEmbed(vUrl, el.videoAutoplay, el.videoMute, el.videoControls) : vUrl;
                 if (embedSrc) {
@@ -950,7 +953,7 @@
                 'dropdown': 'select',
                 'radio': 'radios',
                 'checkbox': 'checkboxes',
-                'text': 'paragraph'
+                'text': 'text'
             };
             return map[rawType] || rawType;
         };

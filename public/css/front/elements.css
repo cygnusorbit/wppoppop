@@ -585,3 +585,35 @@ button::-moz-focus-inner {
     box-sizing: border-box !important;
     width: 100% !important;
 }
+
+/* WPPOPPOP_PHASE5_DECOMPOSED_26_CSS: Cross-Browser Styles for 26 Decomposed Elements */
+.wppoppop-form-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.wppoppop-form-input:focus {
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25);
+}
+.wppoppop-choice-card {
+    transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.wppoppop-choice-card:hover {
+    transform: translateY(-1px);
+}
+.wppoppop-Choice-card.is-selected,
+.wppoppop-choice-card.is-selected {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+.wppoppop-rating-glyph {
+    transition: transform 0.12s ease, color 0.12s ease;
+}
+.wppoppop-rating-glyph:hover {
+    transform: scale(1.18);
+}
+

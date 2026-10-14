@@ -387,6 +387,12 @@
     },
 
     open: function(id) {
+            if (window.WpPopPopElementsRegistry) {
+                var _regEl = window.WpPopPopElementsRegistry.resolveElement(id);
+                if (_regEl) {
+                    window.WpPopPopElementsRegistry.hydrateElement(_regEl, this);
+                }
+            }
         var self = this;
         if (!id) return;
         self.activeId = id;
@@ -2257,3 +2263,722 @@
         }
     };
 })(jQuery);
+
+/* === WPPOPPOP_SELF_CONTAINED_5TAB_ENGINE_START === */
+(function(window, $) {
+    'use strict';
+
+    var MEDIA_FAMILY_3_TABS = [
+        'shape', 'rectangle', 'square',
+        'image', 'video',
+        'label', 'title', 'paragraph',
+        'html', 'close', 'close_icon',
+        'icon', 'fontawesome', 'progress',
+        'button', 'link', 'link_btn', 'step_btn',
+        'submit'
+    ];
+
+    var FORM_FAMILY_5_TABS = [
+        'text', 'textfield', 'text_field',
+        'email', 'number', 'phone', 'tel',
+        'textarea', 'select', 'dropdown',
+        'checkbox', 'checkboxes', 'radio', 'radios',
+        'multiselect', 'imageselect', 'tile',
+        'date', 'time', 'upload', 'file',
+        'password', 'rating'
+    ];
+
+    function getCanonicalFamily(rawType) {
+        var t = String(rawType || '').toLowerCase().trim();
+        if (FORM_FAMILY_5_TABS.indexOf(t) !== -1) {
+            return 'form';
+        }
+        return 'media';
+    }
+
+    function resolveActiveElement(idOrEl) {
+        if (idOrEl && typeof idOrEl === 'object' && idOrEl.type) {
+            return idOrEl;
+        }
+        var insp = window.WpPopPopBuilderInspector;
+        var rawId = (idOrEl !== undefined && idOrEl !== null && typeof idOrEl !== 'object')
+            ? String(idOrEl)
+            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
+                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+            ));
+        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            if (Array.isArray(els)) {
+                var found = els.find(function(e) {
+                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
+                });
+                if (found) return found;
+            }
+        }
+        var $sel =$('.wppoppop-canvas-item.selected, .wppoppop-canvas-item.wppoppop-selected, .wppoppop-element.selected').first();
+        if ($sel.length) {
+            return {
+                id: $sel.attr('data-id') || cleanId,
+                type: $sel.attr('data-type') ||$sel.attr('data-element-type') || ''
+            };
+        }
+        return null;
+    }
+
+    function ensureFiveTabHeaderDOM() {
+        var $logicBtn =$('#wppoppop-inspector-drawer [data-tab="logic"]').first();
+        if (!$logicBtn.length) return;
+        var $bar =$logicBtn.parent();
+        var cls = ($logicBtn.attr('class') || 'wppoppop-insp-tab').replace(/\bactive\b/g, '').trim();
+
+        if (!$bar.find('[data-tab="data"]').length) {
+            $('<button type="button" id="insp-tab-nav-data" data-tab="data">DATA</button>')
+                .attr('class', cls + ' wppoppop-form-family-tab')
+                .insertAfter($logicBtn);
+        }
+        if (!$bar.find('[data-tab="advanced"]').length) {
+            $('<button type="button" id="insp-tab-nav-advanced" data-tab="advanced">ADVANCED</button>')
+                .attr('class', cls + ' wppoppop-form-family-tab')
+                .insertAfter($bar.find('[data-tab="data"]'));
+        }
+    }
+
+    function renderBadgePills(selector, list, kind) {
+        var $box =$(selector);
+        if (!$box.length) return;
+        $box.empty();
+        (Array.isArray(list) ? list : []).forEach(function(item) {
+            $('<span class="wppoppop-adv-badge" />')
+                .attr('data-kind', kind)
+                .attr('data-val', item)
+                .css({
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '3px 9px',
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    color: '#fff',
+                    background: '#c2185b',
+                    borderRadius: '12px',
+                    cursor: 'pointer'
+                })
+                .text(item + ' ×')
+                .appendTo($box);
+        });
+    }
+
+    function applyFamilyRouting(elOrType) {
+        ensureFiveTabHeaderDOM();
+        var el = (elOrType && typeof elOrType === 'object') ? elOrType : resolveActiveElement(elOrType);
+        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
+        if (!type) {
+            var layerTitle = String($('#prop-layer-name').val() || '').toLowerCase().trim();
+            var m = layerTitle.match(/^([a-z_]+)/);
+            if (m) type = m[1];
+        }
+
+        var family = getCanonicalFamily(type);
+        var isForm = (family === 'form');
+
+        // 1. Toggle 3-Tab (Media) vs 5-Tab (Form) in Header
+        $('#wppoppop-inspector-drawer [data-tab="data"], #wppoppop-inspector-drawer [data-tab="advanced"]').each(function() {
+            if (isForm) {
+                this.style.setProperty('display', 'inline-flex', 'important');
+                this.style.setProperty('align-items', 'center', 'important');
+                this.style.setProperty('justify-content', 'center', 'important');
+                this.style.setProperty('flex', '1', 'important');
+            } else {
+                this.style.setProperty('display', 'none', 'important');
+            }
+        });
+
+        // 2. Ensure Element 10 (`text` / `textfield`) shows its decomposed Form Input panel
+        if (type === 'text' || type === 'textfield' || type === 'text_field') {
+            $('#panel-elem-paragraph-legacy, #panel-elem-paragraph, #panel-elem-title').hide();
+            $('#panel-elem-text, #panel-elem-textfield').first().show();
+        }
+
+        // 3. Auto-fallback to Content tab if switching from Form (on Data/Advanced) to Media
+        if (!isForm) {
+            var $act =$('#wppoppop-inspector-drawer [data-tab].active');
+            var curTab = $act.attr('data-tab') || '';
+            if (curTab === 'data' || curTab === 'advanced') {
+                $('#wppoppop-inspector-drawer [data-tab="content"], #wppoppop-inspector-drawer [data-tab="basic"]').first().trigger('click');
+            }
+        }
+
+        // 4. Hydrate Form Family Data & Advanced tabs
+        if (el && isForm) {
+            if (!Array.isArray(el.filters)) el.filters = ['trim'];
+            if (!Array.isArray(el.validators)) {
+                el.validators = (type === 'email') ? ['email'] : [];
+                if (el.required && el.validators.indexOf('required') === -1) el.validators.push('required');
+            }
+            $('#prop-data-default').val(el.defaultValue || '');
+            $('#prop-data-dynamic-default').prop('checked', !!el.dynamicDefault);
+            $('#prop-data-param-name').val(el.paramName || '');
+            $('#prop-data-param-wrap').toggle(!!el.dynamicDefault);
+            $('#prop-data-readonly').prop('checked', !!el.readOnly);
+            $('#prop-data-save-db').prop('checked', el.saveToDb !== false);
+
+            $('#prop-adv-field-id').val(el.fieldId || el.fieldName || el.id || '');
+            $('#prop-adv-input-mask').val(el.inputMask || '');
+            renderBadgePills('#wppoppop-adv-filters-list', el.filters, 'filter');
+            renderBadgePills('#wppoppop-adv-validators-list', el.validators, 'validator');
+        }
+    }
+
+    function hookInspectorLifecycle() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp._pureDecomposedHooked) return;
+        insp._pureDecomposedHooked = true;
+
+        var origOpen = insp.open;
+        insp.open = function(id) {
+            var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
+            applyFamilyRouting(id);
+            setTimeout(function() { applyFamilyRouting(id); }, 20);
+            return res;
+        };
+
+        var origShowPanel = insp.showElementPanel;
+        if (typeof origShowPanel === 'function') {
+            insp.showElementPanel = function(type) {
+                var res = origShowPanel.apply(this, arguments);
+                applyFamilyRouting(type);
+                return res;
+            };
+        }
+
+        var origSwitchTab = insp.switchTab;
+        insp.switchTab = function(tab) {
+            var t = String(tab || 'content').toLowerCase();
+            if (typeof origSwitchTab === 'function') {
+                origSwitchTab.apply(this, arguments);
+            }
+            if (t === 'data' || t === 'advanced') {
+                $('#wppoppop-inspector-drawer [data-tab]').removeClass('active');
+                $('#wppoppop-inspector-drawer [data-tab="' + t + '"]').addClass('active');
+                $('#wppoppop-inspector-drawer .wppoppop-insp-content, #wppoppop-inspector-drawer .wppoppop-insp-tab-content, #wppoppop-inspector-drawer .wppoppop-tab-pane, #insp-tab-basic, #insp-tab-content, #insp-tab-settings, #insp-tab-style, #insp-tab-logic, #insp-tab-data, #insp-tab-advanced').removeClass('active').hide();
+                $('#insp-tab-' + t).addClass('active').show();
+            } else {
+                $('#insp-tab-data, #insp-tab-advanced').removeClass('active').hide();
+            }
+        };
+
+        $(document).off('click.wppoppopPureTab').on('click.wppoppopPureTab', '#wppoppop-inspector-drawer [data-tab]', function(e) {
+            var tabKey = $(this).attr('data-tab');
+            if (tabKey === 'data' || tabKey === 'advanced') {
+                e.preventDefault();
+                e.stopPropagation();
+                insp.switchTab(tabKey);
+            } else {
+                $('#insp-tab-data, #insp-tab-advanced').removeClass('active').hide();
+            }
+        });
+
+        $(document).off('click.wppoppopPureSelect').on('click.wppoppopPureSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
+            var t = $(this).attr('data-type') ||$(this).data('type') || '';
+            applyFamilyRouting(t);
+            setTimeout(function() { applyFamilyRouting(t); }, 30);
+        });
+    }
+
+    $(function() {
+        hookInspectorLifecycle();
+        setTimeout(hookInspectorLifecycle, 100);
+    });
+    hookInspectorLifecycle();
+})(window, jQuery);
+/* === WPPOPPOP_SELF_CONTAINED_5TAB_ENGINE_END === */
+
+/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_START === */
+(function(window, $) {
+    'use strict';
+
+    var MEDIA_PANEL_MAP = {
+        'shape': '#panel-elem-shape',
+        'rectangle': '#panel-elem-shape',
+        'square': '#panel-elem-shape',
+        'image': '#panel-elem-image',
+        'video': '#panel-elem-video',
+        'label': '#panel-elem-label',
+        'title': '#panel-elem-label',
+        'paragraph': '#panel-elem-label',
+        'html': '#panel-elem-html',
+        'close': '#panel-elem-close',
+        'close_icon': '#panel-elem-close',
+        'icon': '#panel-elem-icon',
+        'fontawesome': '#panel-elem-icon',
+        'progress': '#panel-elem-progress',
+        'button': '#panel-elem-button',
+        'link': '#panel-elem-button',
+        'link_btn': '#panel-elem-button',
+        'step': '#panel-elem-button',
+        'step_btn': '#panel-elem-button',
+        'submit': '#panel-elem-submit',
+        'submit_btn': '#panel-elem-submit'
+    };
+
+    var TEXT_BEARING_MEDIA = ['label', 'title', 'paragraph', 'html', 'button', 'link', 'link_btn', 'step_btn', 'submit', 'submit_btn', 'progress', 'close', 'close_icon'];
+    var HOVER_BUTTON_MEDIA = ['button', 'link', 'link_btn', 'step_btn', 'submit', 'submit_btn'];
+
+    function getActiveStageElement(idOrObj) {
+        if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
+        var insp = window.WpPopPopBuilderInspector;
+        var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
+            ? String(idOrObj)
+            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
+                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+            ));
+        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            if (Array.isArray(els)) {
+                var found = els.find(function(e) {
+                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
+                });
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    function hydrateMediaModule(elOrType) {
+        var el = (elOrType && typeof elOrType === 'object') ? elOrType : getActiveStageElement(elOrType);
+        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
+        if (!type) return;
+
+        // If this is one of the 10 Media Family elements, hide legacy panels & show its standalone decomposed module
+        var targetPanel = MEDIA_PANEL_MAP[type];
+        if (targetPanel) {
+            $('[id$="-legacy"]').hide();
+            $('.element-panel, .wppoppop-panel-specific').hide();$(targetPanel).show();
+
+            // Contextual Style Tab Isolation for Media Elements
+            var hasText = TEXT_BEARING_MEDIA.indexOf(type) !== -1;
+            var isBtn = HOVER_BUTTON_MEDIA.indexOf(type) !== -1;
+            $('#prop-line-height, #prop-letter-spacing').closest('.wppoppop-insp-row, .wppoppop-field-row, div').toggle(hasText);
+            $('#prop-btn-hover-section, #prop-btn-hover-bg').closest('.wppoppop-insp-card, div').toggle(isBtn);
+        }
+
+        if (!el || !targetPanel) return;
+
+                if (type === 'image') {
+            var hydratedUrl = el.imageUrl || el.src || el.url || el.content || '';
+            var hydratedFit = el.objectFit || el.imageFit || 'cover';
+            var hydratedAlt = el.imageAlt || el.alt || '';
+            $('#prop-image-url').val(hydratedUrl);
+            $('#prop-image-fit').val(hydratedFit);
+            $('#prop-image-alt').val(hydratedAlt);
+            if (hydratedUrl && hydratedUrl.indexOf('http') === 0) {
+                $('#prop-image-preview').attr('src', hydratedUrl).show();
+                $('#prop-image-placeholder').hide();
+            } else {
+                $('#prop-image-preview').attr('src', '').hide();
+                $('#prop-image-placeholder').show();
+            }
+        }
+
+        // Hydrate `.wppoppop-gp-bind` inputs inside the active standalone Media panel
+        $(targetPanel).find('.wppoppop-gp-bind').each(function() {
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = el[prop];
+            if (val === undefined) {
+                if (prop === 'content') val = el.label || el.titleText || el.paragraphText || el.text || '';
+                if (prop === 'tag') val = el.headingTag || el.htmlTag || 'div';
+                if (prop === 'src') val = el.imageUrl || el.url || '';
+                if (prop === 'linkUrl') val = el.url || '';
+            }
+            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
+            } else if (val !== undefined && val !== null) {
+                $inp.val(val);
+            }
+        });
+    }
+
+    function bindMediaModuleEvents() {
+        // Two-way live binding for all standalone Media `.wppoppop-gp-bind` controls
+        $(document).off('.wppoppopMediaModules').on('input.wppoppopMediaModules change.wppoppopMediaModules', '[data-elem-family="media"] .wppoppop-gp-bind', function() {
+            var el = getActiveStageElement();
+            if (!el) return;
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
+            el[prop] = val;
+
+            // Sync aliases for backward/forward compatibility across all 6 tiers
+            if (prop === 'content') {
+                el.label = val;
+                el.titleText = val;
+                el.paragraphText = val;
+                el.text = val;
+            } else if (prop === 'tag') {
+                el.headingTag = val;
+                el.htmlTag = val;
+            } else if (prop === 'src') {
+                el.imageUrl = val;
+                el.url = val;
+            } else if (prop === 'linkUrl') {
+                el.url = val;
+            } else if (prop === 'transparentFill') {
+                if (val) el.bgColor = 'transparent';
+            }
+
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                window.WpPopPopBuilderCanvas.renderCanvas();
+            }
+        });
+
+        // Native WordPress Media Library Picker for Element 2 (Image)
+        var wppoppopMediaFrame = null;
+        $(document).off('click.wppoppopWpMedia').on(
+            'click.wppoppopWpMedia',
+            '#prop-image-upload-btn, #wppoppop-btn-media-upload, .wppoppop-media-upload-trigger',
+            function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var applySelectedImage = function(url, altText) {
+                    var el = getActiveStageElement();
+                    $('#prop-image-url').val(url);
+                    if (altText !== undefined && altText !== '') {
+                        $('#prop-image-alt').val(altText);
+                    }
+                    if (url) {
+                        $('#prop-image-preview').attr('src', url).show();
+                        $('#prop-image-placeholder').hide();
+                    } else {
+                        $('#prop-image-preview').attr('src', '').hide();
+                        $('#prop-image-placeholder').show();
+                    }
+                    if (el) {
+                        el.imageUrl = url;
+                        el.src = url;
+                        el.url = url;
+                        el.content = url;
+                        if (altText !== undefined && altText !== '') {
+                            el.imageAlt = altText;
+                            el.alt = altText;
+                        }
+                        el.objectFit = $('#prop-image-fit').val() || el.objectFit || 'cover';
+                        el.imageFit = el.objectFit;
+                    }
+                    if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                        window.WpPopPopBuilderCanvas.renderCanvas();
+                    }
+                };
+
+                if (typeof window.wp !== 'undefined' && window.wp && typeof window.wp.media === 'function') {
+                    if (wppoppopMediaFrame) {
+                        wppoppopMediaFrame.open();
+                        return;
+                    }
+                    wppoppopMediaFrame = window.wp.media({
+                        title: 'Select or Upload Image',
+                        button: { text: 'Use this Image' },
+                        library: { type: 'image' },
+                        multiple: false
+                    });
+                    wppoppopMediaFrame.on('select', function() {
+                        var state = wppoppopMediaFrame.state();
+                        if (!state) return;
+                        var selection = state.get('selection');
+                        if (!selection || !selection.first()) return;
+                        var attachment = selection.first().toJSON();
+                        if (attachment && attachment.url) {
+                            applySelectedImage(attachment.url, attachment.alt || attachment.title || '');
+                        }
+                    });
+                    wppoppopMediaFrame.open();
+                } else {
+                    var fallbackUrl = window.prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
+                    if (fallbackUrl !== null) {
+                        applySelectedImage($.trim(fallbackUrl), '');
+                    }
+                }
+            }
+        );
+
+        // Remove Image Button Handler (#prop-image-remove-btn)
+        $(document).off('click.wppoppopWpMediaRemove').on(
+            'click.wppoppopWpMediaRemove',
+            '#prop-image-remove-btn, .wppoppop-media-remove-trigger',
+            function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var el = getActiveStageElement();
+                $('#prop-image-url').val('');
+                $('#prop-image-alt').val('');
+                $('#prop-image-preview').attr('src', '').hide();
+                $('#prop-image-placeholder').show();
+                if (el) {
+                    el.imageUrl = '';
+                    el.src = '';
+                    el.url = '';
+                    el.content = '';
+                }
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            }
+        );
+
+        // Live sync manual typing in #prop-image-url, #prop-image-fit, #prop-image-alt
+        $(document).off('input.wppoppopImgUrl change.wppoppopImgUrl').on(
+            'input.wppoppopImgUrl change.wppoppopImgUrl',
+            '#prop-image-url, #prop-image-fit, #prop-image-alt',
+            function() {
+                var el = getActiveStageElement();
+                var url = $.trim($('#prop-image-url').val() || '');
+                var fit = $('#prop-image-fit').val() || 'cover';
+                var alt = $('#prop-image-alt').val() || '';
+                if (url) {
+                    $('#prop-image-preview').attr('src', url).show();
+                    $('#prop-image-placeholder').hide();
+                } else {
+                    $('#prop-image-preview').attr('src', '').hide();
+                    $('#prop-image-placeholder').show();
+                }
+                if (el) {
+                    el.imageUrl = url;
+                    el.src = url;
+                    el.url = url;
+                    el.content = url;
+                    el.objectFit = fit;
+                    el.imageFit = fit;
+                    el.imageAlt = alt;
+                    el.alt = alt;
+                }
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            }
+        );
+
+        // 1-Click Icon Preset Selector for Element 7 (Font Awesome / Icon)
+        $(document).off('click.wppoppopMediaIconPreset').on('click.wppoppopMediaIconPreset', '#panel-elem-icon .wppoppop-icon-preset', function(e) {
+            e.preventDefault();
+            var iconCls = $(this).data('icon');
+            if (iconCls) {
+                $('#prop-icon-class').val(iconCls).trigger('change');
+            }
+        });
+
+        // Hook into Inspector open / showElementPanel / stage clicks
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp && !insp._phase2MediaHooked) {
+            insp._phase2MediaHooked = true;
+            var origOpen = insp.open;
+            insp.open = function(id) {
+                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
+                hydrateMediaModule(id);
+                setTimeout(function() { hydrateMediaModule(id); }, 25);
+                return res;
+            };
+            var origShow = insp.showElementPanel;
+            if (typeof origShow === 'function') {
+                insp.showElementPanel = function(type) {
+                    var res = origShow.apply(this, arguments);
+                    hydrateMediaModule(type);
+                    return res;
+                };
+            }
+        }
+
+        $(document).off('click.wppoppopMediaSelect').on('click.wppoppopMediaSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
+            var t = $(this).attr('data-type') ||$(this).data('type') || '';
+            setTimeout(function() { hydrateMediaModule(t); }, 30);
+        });
+    }
+
+    $(function() {
+        bindMediaModuleEvents();
+        setTimeout(bindMediaModuleEvents, 120);
+    });
+    bindMediaModuleEvents();
+})(window, jQuery);
+/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_END === */
+
+/* === WPPOPPOP_PHASE3_FORM_CORE_MODULES_START === */
+(function(window, $) {
+    'use strict';
+
+        var FORM_CORE_PANEL_MAP = {
+        'text': '#panel-elem-text',
+        'textfield': '#panel-elem-text',
+        'text_field': '#panel-elem-text',
+        'email': '#panel-elem-email',
+        'number': '#panel-elem-number',
+        'phone': '#panel-elem-phone',
+        'tel': '#panel-elem-phone',
+        'textarea': '#panel-elem-textarea',
+        'select': '#panel-elem-select',
+        'dropdown': '#panel-elem-select',
+        'checkbox': '#panel-elem-checkbox',
+        'checkboxes': '#panel-elem-checkbox',
+        'radio': '#panel-elem-radio',
+        'radios': '#panel-elem-radio',
+        'multiselect': '#panel-elem-multiselect',
+        'imageselect': '#panel-elem-imageselect',
+        'tile': '#panel-elem-tile',
+        'date': '#panel-elem-date',
+        'time': '#panel-elem-time',
+        'upload': '#panel-elem-upload',
+        'file': '#panel-elem-upload',
+        'password': '#panel-elem-password',
+        'rating': '#panel-elem-rating'
+    };
+
+    function getActiveFormElement(idOrObj) {
+        if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
+        var insp = window.WpPopPopBuilderInspector;
+        var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
+            ? String(idOrObj)
+            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
+                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+            ));
+        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            if (Array.isArray(els)) {
+                var found = els.find(function(e) {
+                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
+                });
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    function hydrateFormCoreModule(elOrType) {
+        var el = (elOrType && typeof elOrType === 'object') ? elOrType : getActiveFormElement(elOrType);
+        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
+        if (!type) return;
+
+        var targetPanel = FORM_CORE_PANEL_MAP[type];
+        if (!targetPanel) return;
+
+        // Hide all legacy inline panels and display only the standalone decomposed module
+        $('[id$="-legacy"]').hide();
+        $('.element-panel, .wppoppop-panel-specific').hide();$(targetPanel).show();
+
+        // Ensure Typography & Input Icons are visible in Style Tab for Form Inputs, while hiding Button Hover
+        $('#prop-line-height, #prop-letter-spacing').closest('.wppoppop-insp-row, .wppoppop-field-row, div').show();
+        $('#prop-btn-hover-section, #prop-btn-hover-bg').closest('.wppoppop-insp-card, div').hide();
+
+        if (!el) return;
+
+        // Hydrate `.wppoppop-gp-bind` inputs inside the active standalone Form Core panel
+        $(targetPanel).find('.wppoppop-gp-bind').each(function() {
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = el[prop];
+            if (val === undefined) {
+                if (prop === 'placeholder') val = el.content || '';
+                if (prop === 'fieldName') val = el.token || el.fieldId || type;
+                if (prop === 'options') val = Array.isArray(el.options) ? el.options.join(', ') : (el.options || 'Option 1, Option 2');
+                if (prop === 'min') val = el.minValue !== undefined ? el.minValue : 0;
+                if (prop === 'max') val = el.maxValue !== undefined ? el.maxValue : 100;
+                if (prop === 'step') val = el.stepValue !== undefined ? el.stepValue : 1;
+            } else if (prop === 'options' && Array.isArray(val)) {
+                val = val.join(', ');
+            }
+            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
+            } else if (val !== undefined && val !== null) {
+                $inp.val(val);
+            }
+        });
+    }
+
+    function bindFormCoreModuleEvents() {
+        $(document).off('.wppoppopFormCoreModules').on(
+            'input.wppoppopFormCoreModules change.wppoppopFormCoreModules',
+            '[data-elem-family="form"] .wppoppop-gp-bind',
+            function() {
+                var el = getActiveFormElement();
+                if (!el) return;
+                var $inp =$(this);
+                var prop = $inp.data('prop');
+                if (!prop) return;
+                var val = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
+                el[prop] = val;
+
+                // Keep aliases & 5-Tab Data/Advanced properties synchronized
+                if (prop === 'placeholder') {
+                    el.content = val;
+                } else if (prop === 'fieldName') {
+                    el.token = val;
+                    el.fieldId = val;
+                    $('#prop-adv-field-id, #prop-data-token').val(val);
+                } else if (prop === 'inputMask') {
+                    $('#prop-adv-input-mask').val(val);
+                } else if (prop === 'min') {
+                    el.minValue = val;
+                } else if (prop === 'max') {
+                    el.maxValue = val;
+                } else if (prop === 'step') {
+                    el.stepValue = val;
+                } else if (prop === 'required') {
+                    el.validators = Array.isArray(el.validators) ? el.validators : [];
+                    if (val && el.validators.indexOf('required') === -1) {
+                        el.validators.push('required');
+                    } else if (!val) {
+                        el.validators = el.validators.filter(function(x) { return x !== 'required'; });
+                    }
+                    if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.syncFamilyTabs === 'function') {
+                        window.WpPopPopBuilderInspector.syncFamilyTabs(el);
+                    }
+                }
+
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            }
+        );
+
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp && !insp._phase3FormCoreHooked) {
+            insp._phase3FormCoreHooked = true;
+            var origOpen = insp.open;
+            insp.open = function(id) {
+                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
+                hydrateFormCoreModule(id);
+                setTimeout(function() { hydrateFormCoreModule(id); }, 25);
+                return res;
+            };
+            var origShow = insp.showElementPanel;
+            if (typeof origShow === 'function') {
+                insp.showElementPanel = function(type) {
+                    var res = origShow.apply(this, arguments);
+                    hydrateFormCoreModule(type);
+                    return res;
+                };
+            }
+        }
+
+        $(document).off('click.wppoppopFormCoreSelect').on(
+            'click.wppoppopFormCoreSelect',
+            '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item',
+            function() {
+                var t = $(this).attr('data-type') ||$(this).data('type') || '';
+                setTimeout(function() { hydrateFormCoreModule(t); }, 30);
+            }
+        );
+    }
+
+    $(function() {
+        bindFormCoreModuleEvents();
+        setTimeout(bindFormCoreModuleEvents, 120);
+    });
+    bindFormCoreModuleEvents();
+})(window, jQuery);
+/* === WPPOPPOP_PHASE3_FORM_CORE_MODULES_END === */
+

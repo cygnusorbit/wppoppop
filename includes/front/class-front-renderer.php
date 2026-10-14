@@ -387,7 +387,15 @@ class WpPopPop_Front_Renderer {
                 break;
 
             case 'text':
-                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
+                
+        $decomposed_types = array('label', 'button', 'text', 'phone', 'tel', 'textarea', 'multiselect', 'imageselect', 'tile', 'time', 'upload', 'file', 'password', 'rating');$raw_el_type = isset($el['type']) ? strtolower(trim($el['type'])) : '';
+        if (in_array($raw_el_type, $decomposed_types, true) && class_exists('WpPopPop_Front_Decomposed_26')) {$decomposed_inner = WpPopPop_Front_Decomposed_26::render_element($raw_el_type,$el);
+            if ($decomposed_inner !== null) {
+                $inner_html =$decomposed_inner;
+            }
+        }
+
+        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 
             case 'image':
                 $img_src = esc_url($el['imageUrl'] ?? ($el['src'] ?? ''));

@@ -333,3 +333,220 @@
     color: #f8fafc !important;
     border-radius: 4px !important;
 }
+
+
+/* --- GreenPop Parity: Absolute Checker Area Slide-in Drawer --- */
+.wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+}
+
+#wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    height: 100% !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: 9999 !important;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    will-change: transform !important;
+}
+
+#wppoppop-inspector-drawer.is-open,
+.panel-open #wppoppop-inspector-drawer,
+.inspector-open #wppoppop-inspector-drawer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Guaranteed Absolute Checker Area Docking & Hardware-Accelerated Slide-In */
+.wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+}
+
+#wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: 99990 !important;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    will-change: transform !important;
+}
+
+#wppoppop-inspector-drawer.is-open,
+.panel-open #wppoppop-inspector-drawer,
+.inspector-open #wppoppop-inspector-drawer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    display: flex !important;
+}
+
+#wppoppop-inspector-drawer.is-closed:not(.is-open) {
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Chrome/Blink Resilient Hardware-Accelerated Drawer Transitions */
+.wppoppop-builder-workspace,
+#wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    contain: paint;
+}
+
+#wppoppop-inspector-drawer,
+.wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: 99990 !important;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.35) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    will-change: transform, visibility !important;
+}
+
+#wppoppop-inspector-drawer.is-open,
+.panel-open #wppoppop-inspector-drawer,
+.inspector-open #wppoppop-inspector-drawer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    display: flex !important;
+}
+
+#wppoppop-inspector-drawer.is-closed:not(.is-open) {
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Hardware-Accelerated Checker Area Slide-In & Layer Push Rules */
+.wppoppop-builder-workspace,
+#wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+    margin-right: 0 !important;
+}
+#wppoppop-inspector-drawer,
+#wppoppop-drawer-inspector,
+.wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    z-index: 99996 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s !important;
+}
+#wppoppop-inspector-drawer.is-open,
+#wppoppop-inspector-drawer.open,
+#wppoppop-drawer-inspector.is-open,
+.wppoppop-inspector-drawer.is-open,
+.wppoppop-builder-workspace.inspector-open #wppoppop-inspector-drawer,
+.wppoppop-builder-workspace.wppoppop-inspector-open #wppoppop-inspector-drawer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+
+/* WPPOPPOP_GUARANTEED_SLIDEIN_CSS */
+.wppoppop-builder-workspace, #wppoppop-builder-workspace {
+    position: relative !important;
+    overflow: hidden !important;
+}
+#wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    max-width: 360px !important;
+    height: 100% !important;
+    z-index: 99990 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    transform: translate3d(100%, 0, 0) !important;
+    -webkit-transform: translate3d(100%, 0, 0) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s !important;
+    -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s !important;
+}
+#wppoppop-inspector-drawer.is-open,
+#wppoppop-inspector-drawer.open,
+.panel-open #wppoppop-inspector-drawer,
+.inspector-open #wppoppop-inspector-drawer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}

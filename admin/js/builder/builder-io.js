@@ -312,3 +312,55 @@ jQuery(document).off('click.wppoppop_global_save_click', '#wppoppop-btn-save, .w
             window.WpPopPopBuilderIO.savePopup();
         }
     });
+
+/* === WPPOPPOP_PHASE5_IO_PRESAVE_FLUSH_START === */
+(function(window, $) {
+    'use strict';
+
+    function flushActiveDecomposedElement() {
+        var $drawer = $('#wppoppop-inspector-drawer');
+        if (!$drawer.length || (!$drawer.hasClass('is-open') && !$drawer.hasClass('open'))) {
+            return;
+        }
+        // Trigger change on any focused input inside the inspector drawer so two-way binders run
+        var $focused = $drawer.find('input:focus, textarea:focus, select:focus');
+        if ($focused.length) {
+            $focused.trigger('change');
+        }
+        // Explicitly flush visible .wppoppop-gp-bind controls into the active element
+        var insp = window.WpPopPopBuilderInspector;
+        var activeId = (insp && insp.activeElementId) ? String(insp.activeElementId) : (
+            window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+        );
+        var cleanId = activeId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+        if (!cleanId || !window.WpPopPopBuilderCanvas || typeof window.WpPopPopBuilderCanvas.getActiveElements !== 'function') {
+            return;
+        }
+        var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+        var el = Array.isArray(els) ? els.find(function(item) {
+            return item && (String(item.id) === cleanId || String(item.id) === activeId);
+        }) : null;
+        if (!el) return;
+
+        $drawer.find('.element-panel:visible .wppoppop-gp-bind').each(function() {
+            var $inp = $(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            el[prop] = $inp.is(':checkbox') ? $inp.is(':checked') : $inp.val();
+        });
+    }
+
+    $(function() {
+        var io = window.WpPopPopBuilderIO;
+        if (io && !io._phase5FlushWrapped && typeof io.exportConfig === 'function') {
+            io._phase5FlushWrapped = true;
+            var origExport = io.exportConfig;
+            io.exportConfig = function() {
+                try { flushActiveDecomposedElement(); } catch (e) {}
+                return origExport.apply(this, arguments);
+            };
+        }
+    });
+})(window, jQuery);
+/* === WPPOPPOP_PHASE5_IO_PRESAVE_FLUSH_END === */
+

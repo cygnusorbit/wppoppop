@@ -18,7 +18,9 @@ if (!defined('ABSPATH')) {
         <button type="button" class="wppoppop-insp-tab active" data-tab="basic" style="flex:1;background:transparent;border:none;border-bottom:2px solid #38bdf8;color:#38bdf8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">CONTENT</button>
         <button type="button" class="wppoppop-insp-tab" data-tab="style" style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">STYLE</button>
         <button type="button" class="wppoppop-insp-tab" data-tab="logic" style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">LOGIC</button>
-    </div>
+        <button type="button" class="wppoppop-insp-tab wppoppop-form-family-tab" id="insp-tab-nav-data" data-tab="data" style="display:none;flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">DATA</button>
+        <button type="button" class="wppoppop-insp-tab wppoppop-form-family-tab" id="insp-tab-nav-advanced" data-tab="advanced" style="display:none;flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">ADVANCED</button>
+        </div>
 
     <!-- Inspector Body -->
     <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;">
@@ -35,15 +37,23 @@ if (!defined('ABSPATH')) {
 
                 <!-- DYNAMIC ELEMENT-SPECIFIC SETTINGS -->
                 <div id="wppoppop-element-specific-settings">
+                <?php
+                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
+                    $wppoppop_mod_file = __DIR__ . '/elements/' . $wppoppop_mod;
+                    if (file_exists($wppoppop_mod_file)) {
+                        include $wppoppop_mod_file;
+                    }
+                }
+                ?>
 
                 <!-- TEXT / RICH CONTENT -->
-                <div class="element-panel" id="panel-elem-text" style="display:none;">
+                <div class="element-panel" id="panel-elem-paragraph-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TEXT CONTENT</label>
                     <textarea id="prop-text-content" rows="4" class="widefat" placeholder="Enter text content..." style="font-size:12px;"></textarea>
                 </div>
 
                 <!-- IMAGE -->
-                <div class="element-panel" id="panel-elem-image" style="display:none;">
+                <div class="element-panel" id="panel-elem-image-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE SOURCE URL</label>
                     <input type="text" id="prop-image-url" class="widefat" placeholder="https://..." style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE ALT TEXT</label>
@@ -58,9 +68,20 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- EMAIL FIELD -->
-                <div class="element-panel" id="panel-elem-email" style="display:none;">
+                <div class="element-panel" id="panel-elem-email-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                     <input type="text" id="prop-email-placeholder" class="widefat" placeholder="e.g. name@example.com" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:10px;font-weight:700;color:#64748b;margin:8px 0 4px;text-transform:uppercase;">AUTOCOMPLETE ATTRIBUTE</label>
+                    <select id="prop-email-autocomplete" class="widefat wppoppop-input" style="font-size:12px;margin-bottom:8px;">
+                        <option value="email">Email (email)</option>
+                        <option value="off">Disabled (off)</option>
+                        <option value="on">Enabled (on)</option>
+                        <option value="name">Full name (name)</option>
+                        <option value="given-name">First name (given-name)</option>
+                        <option value="family-name">Last name (family-name)</option>
+                        <option value="tel">Telephone (tel)</option>
+                        <option value="username">Username (username)</option>
+                    </select>
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
                     <input type="text" id="prop-email-name" class="widefat" value="email" style="font-size:12px;margin-bottom:8px;">
                     <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
@@ -69,7 +90,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- NUMBER FIELD -->
-                <div class="element-panel" id="panel-elem-number" style="display:none;">
+                <div class="element-panel" id="panel-elem-number-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                     <input type="text" id="prop-num-placeholder" class="widefat" placeholder="e.g. 10" style="font-size:12px;margin-bottom:8px;">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
@@ -94,7 +115,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- SELECT / DROPDOWN -->
-                <div class="element-panel" id="panel-elem-select" style="display:none;">
+                <div class="element-panel" id="panel-elem-select-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">OPTIONS (ONE PER LINE)</label>
                     <textarea id="prop-select-options" rows="4" class="widefat" placeholder="Option 1&#10;Option 2&#10;Option 3" style="font-size:12px;margin-bottom:8px;"></textarea>
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
@@ -108,7 +129,7 @@ if (!defined('ABSPATH')) {
                 <div class="element-panel" id="panel-elem-dropdown" style="display:none;"></div>
 
                 <!-- RADIOS -->
-                <div class="element-panel" id="panel-elem-radios" style="display:none;">
+                <div class="element-panel" id="panel-elem-radios-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RADIO OPTIONS (ONE PER LINE)</label>
                     <textarea id="prop-radio-options" rows="4" class="widefat" placeholder="Option A&#10;Option B&#10;Option C" style="font-size:12px;margin-bottom:8px;"></textarea>
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
@@ -116,10 +137,10 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- RADIO ALIAS PANEL -->
-                <div class="element-panel" id="panel-elem-radio" style="display:none;"></div>
+                <div class="element-panel" id="panel-elem-radio-legacy" style="display:none;"></div>
 
                 <!-- CHECKBOXES -->
-                <div class="element-panel" id="panel-elem-checkboxes" style="display:none;">
+                <div class="element-panel" id="panel-elem-checkboxes-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CHECKBOX LABEL</label>
                     <input type="text" id="prop-cb-label" class="widefat" value="I agree to terms" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
@@ -135,10 +156,10 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- CHECKBOX ALIAS PANEL -->
-                <div class="element-panel" id="panel-elem-checkbox" style="display:none;"></div>
+                <div class="element-panel" id="panel-elem-checkbox-legacy" style="display:none;"></div>
 
                 <!-- DATE PICKER -->
-                <div class="element-panel" id="panel-elem-date" style="display:none;">
+                <div class="element-panel" id="panel-elem-date-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                     <input type="text" id="prop-date-placeholder" class="widefat" placeholder="Select date..." style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
@@ -149,7 +170,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- PROGRESS BAR -->
-                <div class="element-panel" id="panel-elem-progress" style="display:none;">
+                <div class="element-panel" id="panel-elem-progress-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PROGRESS VALUE: <span id="prop-progress-val-num">50</span>%</label>
                     <input type="range" id="prop-progress-val" min="0" max="100" value="50" style="width:100%;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BAR FILL COLOR</label>
@@ -157,7 +178,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- FILE UPLOAD -->
-                <div class="element-panel" id="panel-elem-file" style="display:none;">
+                <div class="element-panel" id="panel-elem-file-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ALLOWED EXTENSIONS</label>
                     <input type="text" id="prop-file-extensions" class="widefat" placeholder="jpg, png, pdf, docx" value="jpg, png, pdf" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">MAX FILE SIZE (MB)</label>
@@ -170,7 +191,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- STEP BUTTON -->
-                <div class="element-panel" id="panel-elem-step_btn" style="display:none;">
+                <div class="element-panel" id="panel-elem-step_btn-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-step-label" value="Next Step &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET CANVAS NUMBER</label>
@@ -207,12 +228,12 @@ if (!defined('ABSPATH')) {
 
                 <!-- CUSTOM HTML -->
                                 <!-- CUSTOM HTML -->
-                <div class="element-panel" id="panel-elem-html" style="display:none;">
+                <div class="element-panel" id="panel-elem-html-legacy" style="display:none;">
                     <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">CUSTOM HTML / EMBED CODE</div>
                     <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">EMBED CODE / MARKUP</label>
                     <textarea id="prop-html-code" rows="7" class="widefat wppoppop-input" placeholder="<div>Custom HTML / Embed here</div>" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-family:monospace;font-size:11px;padding:8px;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
                     <span style="display:block;font-size:10px;color:#64748b;margin-top:4px;">Live renders HTML, iframes, SVG badges, and custom styled embeds on the canvas.</span>
-                </div>" style="font-family:monospace;font-size:11px;"></textarea>
+                </div></textarea>
                 </div>
 
                 <!-- VIDEO -->
@@ -260,7 +281,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- ICON ELEMENT -->
-                <div class="element-panel" id="panel-elem-icon" style="display:none;">
+                <div class="element-panel" id="panel-elem-icon-legacy" style="display:none;">
                     <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">FONT AWESOME ICON</div>
                     
                     <!-- Live Icon Preview Card -->
@@ -331,7 +352,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-<div class="element-panel" id="panel-elem-video" style="display:none;">
+<div class="element-panel" id="panel-elem-video-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">VIDEO URL (YOUTUBE / VIMEO / MP4)</label>
                     <input type="url" id="prop-video-url" class="widefat" placeholder="https://www.youtube.com/watch?v=..." style="font-size:12px;margin-bottom:8px;">
                     <div style="display:flex;gap:12px;align-items:center;margin-top:6px;">
@@ -347,7 +368,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
                 <!-- LINK / ACTION BUTTON -->
-                <div class="element-panel" id="panel-elem-link" style="display:none;">
+                <div class="element-panel" id="panel-elem-link-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON / LINK TEXT</label>
                     <input type="text" id="prop-link-label" value="Learn More &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">LINK DESTINATION URL</label>
@@ -357,7 +378,7 @@ if (!defined('ABSPATH')) {
                     </label>
                 </div>
                 <!-- CLOSE BUTTON -->
-                <div class="element-panel" id="panel-elem-close" style="display:none;">
+                <div class="element-panel" id="panel-elem-close-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE BUTTON ICON / LABEL</label>
                     <input type="text" id="prop-close-label" value="&times;" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE ACTION BEHAVIOR</label>
@@ -397,7 +418,7 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
                 <!-- RATING -->
-                <div class="element-panel" id="panel-elem-rating" style="display:none;">
+                <div class="element-panel" id="panel-elem-rating-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT STAR RATING (1-5)</label>
                     <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">STAR COLOR</label>
@@ -434,7 +455,7 @@ if (!defined('ABSPATH')) {
                     <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SUBMIT BUTTON -->
-                <div class="element-panel" id="panel-elem-submit" style="display:none;">
+                <div class="element-panel" id="panel-elem-submit-legacy" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
                     <input type="text" id="prop-submit-label" value="Submit Form" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON SUBMIT</label>
@@ -447,7 +468,7 @@ if (!defined('ABSPATH')) {
                     
                     <!-- Element #1: Title -->
                             <!-- GreenPop Parity: Title Element Dedicated Panel -->
-        <div class="element-panel" id="panel-elem-title" style="display:none;">
+        <div class="element-panel" id="panel-elem-title-legacy" style="display:none;">
             <div class="insp-group" style="margin-bottom:12px;">
                 <label class="insp-label" for="prop-title-text" style="font-weight:600;display:block;margin-bottom:4px;">Headline Text</label>
                 <textarea id="prop-title-text" class="wppoppop-input" rows="3" placeholder="Enter headline text..." style="width:100%;resize:vertical;font-size:13px;line-height:1.4;box-sizing:border-box;"></textarea>
@@ -478,7 +499,7 @@ if (!defined('ABSPATH')) {
         </div>
 
                     <!-- Element #2: Paragraph -->
-                    <div id="panel-elem-paragraph" class="element-panel wppoppop-elem-panel" style="display:none;">
+                    <div id="panel-elem-paragraph-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
                             <label for="prop-paragraph-text" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PARAGRAPH BODY</label>
                             <textarea id="prop-paragraph-text" class="wppoppop-input" rows="4" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
@@ -486,7 +507,7 @@ if (!defined('ABSPATH')) {
                     </div>
 
                     <!-- Element #3: Text Field -->
-                    <div id="panel-elem-textfield" class="element-panel wppoppop-elem-panel" style="display:none;">
+                    <div id="panel-elem-textfield-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
                             <label for="prop-textfield-placeholder" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PLACEHOLDER TEXT</label>
                             <input type="text" id="prop-textfield-placeholder" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
@@ -494,7 +515,7 @@ if (!defined('ABSPATH')) {
                     </div>
 
                     <!-- Element #4: Vector Shape Settings -->
-                    <div id="panel-elem-shape" class="element-panel wppoppop-elem-panel" style="display:none;">
+                    <div id="panel-elem-shape-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin:8px 0 6px 0;border-bottom:1px solid #334155;padding-bottom:4px;">SHAPE GEOMETRY &amp; OUTLINE</div>
                         
                         <div class="wppoppop-prop-group" style="margin-bottom:10px;">
@@ -842,3 +863,5 @@ if (!defined('ABSPATH')) {
 
     </div>
 </div>
+
+

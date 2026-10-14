@@ -154,3 +154,120 @@
     });
 
 })(window, jQuery);
+
+/* === WPPOPPOP_PHASE5_FRONT_RUNTIME_START === */
+(function(window, $) {
+    'use strict';
+
+    function ingestDynamicUrlParameters() {
+        if (typeof URLSearchParams === 'undefined') return;
+        var params = new URLSearchParams(window.location.search);
+        $('[data-dynamic-default="true"][data-param-name]').each(function() {
+            var $field =$(this);
+            var paramKey = $field.attr('data-param-name');
+            if (paramKey && params.has(paramKey)) {
+                var val = params.get(paramKey);
+                $field.val(val).trigger('change');
+            }
+        });
+    }
+
+    function applyFieldFilters(val, filterCsv) {
+        if (!filterCsv || typeof val !== 'string') return val;
+        var filters = filterCsv.split(',');
+        filters.forEach(function(f) {
+            f = $.trim(f);
+            if (f === 'trim') val = $.trim(val);
+            else if (f === 'strip_tags') val = val.replace(/<[^>]*>?/gm, '');
+            else if (f === 'lowercase') val = val.toLowerCase();
+            else if (f === 'digits') val = val.replace(/[^0-9]/g, '');
+            else if (f === 'alpha') val = val.replace(/[^a-zA-Z\s]/g, '');
+            else if (f === 'alphanumeric') val = val.replace(/[^a-zA-Z0-9\s]/g, '');
+        });
+        return val;
+    }
+
+    function bindDecomposed26Runtime() {
+        ingestDynamicUrlParameters();
+
+        // 1. Tile & Image Select Interactive Choice Cards (Elements 19 & 20)
+        $(document).off('click.wppoppopChoiceCard').on('click.wppoppopChoiceCard', '.wppoppop-choice-card', function(e) {
+            e.preventDefault();
+            var $card =$(this);
+            var $grid =$card.closest('.wppoppop-interactive-choices');
+            var isMulti = String($grid.attr('data-multi')) === 'true';
+            var actColor = $grid.attr('data-active-color') || '#0284c7';
+
+            if (!isMulti) {
+                $grid.find('.wppoppop-choice-card').removeClass('is-selected').css({
+                    borderColor: '#cbd5e1',
+                    background: '#f1f5f9',
+                    color: '#334155'
+                });
+                $card.addClass('is-selected');
+            } else {
+                $card.toggleClass('is-selected');
+            }
+
+            $grid.find('.wppoppop-choice-card.is-selected').each(function() {
+                if ($(this).hasClass('wppoppop-tile-option')) {$(this).css({ background: actColor, color: '#ffffff', borderColor: actColor });
+                } else {
+                    $(this).css({ borderColor: actColor });
+                }
+            });
+
+            var selectedVals = [];
+            $grid.find('.wppoppop-choice-card.is-selected').each(function() {
+                selectedVals.push($(this).attr('data-value'));
+            });
+            $grid.find('input[type="hidden"]').val(selectedVals.join(', ')).trigger('change');
+        });
+
+        // 2. Interactive Star / Heart / Thumb Rating (Element 25)
+        $(document).off('click.wppoppopRatingGlyph').on('click.wppoppopRatingGlyph', '.wppoppop-rating-glyph', function(e) {
+            e.preventDefault();
+            var $glyph =$(this);
+            var score = parseInt($glyph.attr('data-score'), 10) || 5;
+            var $wrap =$glyph.closest('.wppoppop-interactive-rating');
+            var actCol = $wrap.attr('data-active-color') || '#f59e0b';
+            $wrap.find('.wppoppop-rating-glyph').each(function() {
+                var s = parseInt($(this).attr('data-score'), 10) || 1;
+                $(this).css('color', s <= score ? actCol : '#cbd5e1');
+            });
+            $wrap.find('input[type="hidden"]').val(score).trigger('change');
+        });
+
+        // 3. Password Eye Reveal Toggle (Element 24)
+        $(document).off('click.wppoppopPwEye').on('click.wppoppopPwEye', '.wppoppop-pw-eye-toggle', function(e) {
+            e.preventDefault();
+            var $inp =$(this).siblings('input.wppoppop-input-password');
+            if (!$inp.length) return;
+            var curType = $inp.attr('type');$inp.attr('type', curType === 'password' ? 'text' : 'password');
+        });
+
+        // 4. File Upload Dropzone Filename Display (Element 23)
+        $(document).off('change.wppoppopFileDrop').on('change.wppoppopFileDrop', '.wppoppop-upload-dropzone input[type="file"]', function() {
+            var files = this.files;
+            if (files && files.length > 0) {
+                var names = [];
+                for (var i = 0; i < files.length; i++) names.push(files[i].name);
+                $(this).siblings('.wppoppop-upload-label-text').text(names.join(', '));
+            }
+        });
+
+        // 5. Apply Advanced Tab Sanitization Filters on blur/change
+        $(document).off('blur.wppoppopAdvFilters').on('blur.wppoppopAdvFilters', '[data-filters]', function() {
+            var $inp =$(this);
+            var filterCsv = $inp.attr('data-filters');
+            if (filterCsv && $inp.val()) {
+                $inp.val(applyFieldFilters($inp.val(), filterCsv));
+            }
+        });
+    }
+
+    $(function() {
+        bindDecomposed26Runtime();
+    });
+})(window, jQuery);
+/* === WPPOPPOP_PHASE5_FRONT_RUNTIME_END === */
+
