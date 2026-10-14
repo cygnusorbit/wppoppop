@@ -202,7 +202,351 @@
             return map[t] || t;
         },
     
-        init: function() {
+        
+    // === GREENPOP v3.0.637 LAYER SETTINGS SANITIZER & CONTEXTUAL SCOPER ===
+    
+    // === PHASE 4: PRE-SAVE DOM FLUSH FOR SANITIZED 5-TAB LAYER SETTINGS ===
+    flushActiveElement: function() { if (typeof this.flushSanitizedLayerSettings === 'function') { this.flushSanitizedLayerSettings(); } },
+    flushSanitizedLayerSettings: function() {
+        var el = null;
+        if (typeof this.getActiveEl === 'function') {
+            el = this.getActiveEl();
+        } else if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.getActiveElement === 'function') {
+            el = window.WpPopPopBuilderCore.getActiveElement();
+        }
+        if (!el) return;
+
+        // 1. Flush visible .wppoppop-gp-bind inputs inside active element panel
+        jQuery('.element-panel:visible .wppoppop-gp-bind, .wppoppop-panel-specific:visible .wppoppop-gp-bind').each(function() {
+            var $inp = jQuery(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            el[prop] = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
+        });
+
+        // 2. Flush Basic / Content shared GreenPop controls
+        if (jQuery('#prop-gp-autocomplete').length) {
+            el.autocomplete = jQuery('#prop-gp-autocomplete').val() || 'off';
+        }
+        if (jQuery('#prop-anim-in').length) {
+            el.animIn       = jQuery('#prop-anim-in').val() || 'none';
+            el.animation    = el.animIn;
+            el.animOut      = jQuery('#prop-anim-out').val() || 'none';
+            el.animDuration = parseInt(jQuery('#prop-anim-duration').val(), 10) || 1000;
+            el.animDelay    = parseInt(jQuery('#prop-anim-delay').val(), 10) || 0;
+        }
+        if (jQuery('#prop-gp-required').length && jQuery('#insp-row-gp-required').is(':visible')) {
+            el.required = jQuery('#prop-gp-required').is(':checked');
+        }
+
+        // 3. Flush Form Input Style Module (Icons, Alignment, Custom CSS Class, Inline Styles Repeater)
+        if (jQuery('#insp-section-form-input-style').length && jQuery('#insp-section-form-input-style').is(':visible')) {
+            el.iconLeft        = jQuery('#prop-input-icon-left').val() || '';
+            el.iconLeftOffset  = parseInt(jQuery('#prop-input-icon-left-offset').val(), 10) || 10;
+            el.iconRight       = jQuery('#prop-input-icon-right').val() || '';
+            el.iconRightOffset = parseInt(jQuery('#prop-input-icon-right-offset').val(), 10) || 10;
+            el.customClass     = jQuery('#prop-gp-style-css-class').val() || '';
+            el.cssClass        = el.customClass;
+
+            var stylesArr = [];
+            jQuery('#wppoppop-gp-inline-styles-list .wppoppop-gp-repeater-item').each(function() {
+                var p = jQuery.trim(jQuery(this).find('.gp-css-prop').val() || '');
+                var v = jQuery.trim(jQuery(this).find('.gp-css-val').val() || '');
+                if (p !== '' || v !== '') {
+                    stylesArr.push({ prop: p, value: v });
+                }
+            });
+            el.inlineStyles = stylesArr;
+        }
+
+        // 4. Flush Conditional Logic Repeater
+        if (jQuery('#insp-section-gp-conditional-logic').length) {
+            el.logicEnabled = jQuery('#prop-logic-enabled').is(':checked');
+            el.logicAction  = jQuery('#prop-logic-action').val() || 'show';
+            el.logicMatch   = jQuery('#prop-logic-match').val() || 'all';
+            var rulesArr = [];
+            jQuery('#wppoppop-gp-logic-rules-list .wppoppop-gp-repeater-item').each(function() {
+                var f  = jQuery.trim(jQuery(this).find('.gp-rule-field').val() || '');
+                var op = jQuery(this).find('.gp-rule-op').val() || 'is';
+                var v  = jQuery.trim(jQuery(this).find('.gp-rule-val').val() || '');
+                if (f !== '' || op === 'not_empty') {
+                    rulesArr.push({ field: f, operator: op, value: v });
+                }
+            });
+            el.logicRules = rulesArr;
+        }
+
+        // 5. Flush Data & Advanced Tabs (if present in DOM)
+        if (jQuery('#prop-data-default').length) {
+            el.defaultValue   = jQuery('#prop-data-default').val();
+        }
+        if (jQuery('#prop-data-dynamic').length) {
+            el.dynamicDefault = jQuery('#prop-data-dynamic').is(':checked');
+        }
+        if (jQuery('#prop-data-param').length) {
+            el.paramName      = jQuery('#prop-data-param').val();
+        }
+        if (jQuery('#prop-data-readonly').length) {
+            el.readOnly       = jQuery('#prop-data-readonly').is(':checked');
+        }
+        if (jQuery('#prop-data-savedb').length) {
+            el.saveToDb       = jQuery('#prop-data-savedb').is(':checked');
+        }
+        if (jQuery('#prop-adv-id').length && jQuery('#prop-adv-id').val()) {
+            el.fieldId        = jQuery('#prop-adv-id').val();
+        }
+    },
+
+    sanitizeLayerInspectorForElement: function(el) {
+        if (!el) return;
+        var rawType = String(el.type || 'label').toLowerCase();
+        var aliasMap = {
+            'title': 'label', 'paragraph': 'label', 'heading': 'label',
+            'textfield': 'text', 'phone': 'tel', 'dropdown': 'select',
+            'radios': 'radio', 'checkboxes': 'checkbox', 'file': 'upload',
+            'close_icon': 'close', 'link': 'button', 'link_btn': 'button',
+            'step': 'button', 'step_btn': 'button', 'spinner': 'number'
+        };
+        var canonical = aliasMap[rawType] || rawType;
+
+        var mediaFamily = ['shape', 'image', 'video', 'label', 'html', 'close', 'icon', 'progress', 'button', 'submit'];
+        var formFamily  = ['text', 'email', 'number', 'tel', 'textarea', 'select', 'checkbox', 'radio', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'password', 'rating'];
+        var isForm = formFamily.indexOf(canonical) !== -1;
+
+        // 1. Tab Bar Visibility: 5 Tabs for Form (10-25), 3 Tabs for Media (1-9) & Submit (26)
+        var $dataTabBtn = jQuery('.wppoppop-inspector-tabs [data-tab="tab-data"], .wppoppop-insp-tab[data-tab="tab-data"], .wppoppop-insp-tab[data-tab="data"]');
+        var $advTabBtn  = jQuery('.wppoppop-inspector-tabs [data-tab="tab-advanced"], .wppoppop-insp-tab[data-tab="tab-advanced"], .wppoppop-insp-tab[data-tab="advanced"]');
+        if (isForm) {
+            $dataTabBtn.show().css('display', 'inline-flex');
+            $advTabBtn.show().css('display', 'inline-flex');
+        } else {
+            $dataTabBtn.hide();
+            $advTabBtn.hide();
+            var activeTab = jQuery('.wppoppop-inspector-tabs .active, .wppoppop-insp-tab.active').attr('data-tab') || '';
+            if (activeTab.indexOf('data') !== -1 || activeTab.indexOf('advanced') !== -1) {
+                jQuery('.wppoppop-inspector-tabs [data-tab="tab-basic"], .wppoppop-insp-tab[data-tab="tab-basic"], .wppoppop-insp-tab[data-tab="basic"]').first().trigger('click');
+            }
+        }
+
+        // 2. Content/Basic Tab Sanitization:
+        //    Hide generic #prop-content if dedicated modular panel handles content or if element is non-text form/media
+        var usesGenericContent = (canonical === 'label');
+        jQuery('#prop-content').closest('.wppoppop-prop-row, .wppoppop-insp-card').toggle(usesGenericContent);
+
+        //    Show Autocomplete only on single-line text-like inputs
+        var hasAutocomplete = ['text', 'email', 'tel', 'password', 'number'].indexOf(canonical) !== -1;
+        jQuery('#insp-row-gp-autocomplete').toggle(hasAutocomplete);
+
+        //    Show canonical Required switch only for Form elements (10-25)
+        jQuery('#insp-row-gp-required').toggle(isForm);
+
+        //    Deduplicate any redundant Required or Token inputs inside #tab-basic or #tab-logic
+        jQuery('#insp-section-token').hide();
+        jQuery('#wppoppop-element-specific-settings .element-panel').find('input[id*="required"], input[id*="token"]').each(function() {
+            if (this.id !== 'prop-gp-required') {
+                jQuery(this).closest('.wppoppop-prop-row, .wppoppop-form-group').hide();
+            }
+        });
+
+        // 3. Style Tab Sanitization:
+        //    - Form Family (10-25): Show GreenPop Form Input Style card; hide Media Typography/Hover/Box cards
+        //      (except imageselect, tile, rating, upload which also allow custom color/box tweaks)
+        var textBearingMedia = ['label', 'button', 'submit', 'progress'];
+        var hoverCapableMedia = ['button', 'submit', 'close', 'icon'];
+        var iconSlotFormTypes = ['text', 'email', 'number', 'tel', 'date', 'time', 'password'];
+
+        if (isForm) {
+            jQuery('#insp-section-form-input-style').show();
+            jQuery('#gp-form-input-icons-row').toggle(iconSlotFormTypes.indexOf(canonical) !== -1);
+            jQuery('#insp-section-typography, #wppoppop-hover-state-card').hide();
+        } else {
+            jQuery('#insp-section-form-input-style').hide();
+            jQuery('#insp-section-typography').toggle(textBearingMedia.indexOf(canonical) !== -1);
+            jQuery('#wppoppop-hover-state-card').toggle(hoverCapableMedia.indexOf(canonical) !== -1);
+        }
+
+        // 4. Logic Tab Sanitization:
+        //    - Conditional Logic Builder is available for all 26 elements
+        //    - Click/Action Redirect URL only for actionable Media elements (button, submit, image, icon)
+        var actionableTypes = ['button', 'submit', 'image', 'icon'];
+        jQuery('#insp-section-gp-conditional-logic').show();
+        jQuery('#prop-action-url, #prop-action-target, #prop-onclick-action').closest('.wppoppop-prop-row, .wppoppop-insp-card').toggle(actionableTypes.indexOf(canonical) !== -1);
+
+        // 5. Hydrate canonical GreenPop controls from el model
+        jQuery('#prop-gp-autocomplete').val(el.autocomplete || (canonical === 'email' ? 'email' : (canonical === 'tel' ? 'tel' : 'off')));
+        jQuery('#prop-gp-required').prop('checked', !!el.required);
+        jQuery('#prop-anim-in').val(el.animIn || el.animation || 'none');
+        jQuery('#prop-anim-out').val(el.animOut || 'none');
+        jQuery('#prop-anim-duration').val(el.animDuration !== undefined ? el.animDuration : 1000);
+        jQuery('#prop-anim-delay').val(el.animDelay !== undefined ? el.animDelay : 0);
+
+        jQuery('#prop-input-icon-left').val(el.iconLeft || (canonical === 'email' ? 'fas fa-envelope' : ''));
+        jQuery('#prop-input-icon-left-offset').val(el.iconLeftOffset !== undefined ? el.iconLeftOffset : 10);
+        jQuery('#prop-input-icon-right').val(el.iconRight || '');
+        jQuery('#prop-input-icon-right-offset').val(el.iconRightOffset !== undefined ? el.iconRightOffset : 10);
+        jQuery('#prop-gp-style-css-class').val(el.customClass || el.cssClass || '');
+
+        var currentAlign = el.textAlign || 'left';
+        jQuery('#gp-form-text-align-group .wppoppop-align-seg-btn').removeClass('active');
+        jQuery('#gp-form-text-align-group .wppoppop-align-seg-btn[data-align="' + currentAlign + '"]').addClass('active');
+
+        jQuery('#prop-logic-enabled').prop('checked', !!el.logicEnabled);
+        jQuery('#wppoppop-gp-logic-rules-wrap').toggle(!!el.logicEnabled);
+        jQuery('#prop-logic-action').val(el.logicAction || 'show');
+        jQuery('#prop-logic-match').val(el.logicMatch || 'all');
+
+        // Hydrate Inline CSS Styles Repeater
+        var $stylesList = jQuery('#wppoppop-gp-inline-styles-list').empty();
+        if (Array.isArray(el.inlineStyles)) {
+            el.inlineStyles.forEach(function(item) {
+                if (!item) return;
+                var pVal = jQuery('<div>').text(item.prop || '').html();
+                var vVal = jQuery('<div>').text(item.value || '').html();
+                $stylesList.append(
+                    '<div class="wppoppop-gp-repeater-item">' +
+                    '<input type="text" class="wppoppop-input gp-css-prop" placeholder="property" value="' + pVal + '">' +
+                    '<input type="text" class="wppoppop-input gp-css-val" placeholder="value" value="' + vVal + '">' +
+                    '<button type="button" class="wppoppop-gp-btn-remove" title="Remove">&times;</button>' +
+                    '</div>'
+                );
+            });
+        }
+
+        // Hydrate Conditional Logic Rules Repeater
+        var $rulesList = jQuery('#wppoppop-gp-logic-rules-list').empty();
+        if (Array.isArray(el.logicRules)) {
+            el.logicRules.forEach(function(rule) {
+                if (!rule) return;
+                var fVal = jQuery('<div>').text(rule.field || '').html();
+                var opVal = rule.operator || 'is';
+                var rVal = jQuery('<div>').text(rule.value || '').html();
+                $rulesList.append(
+                    '<div class="wppoppop-gp-repeater-item">' +
+                    '<input type="text" class="wppoppop-input gp-rule-field" placeholder="Field token" value="' + fVal + '">' +
+                    '<select class="wppoppop-select gp-rule-op" style="width:90px;">' +
+                        '<option value="is"' + (opVal === 'is' ? ' selected' : '') + '>is</option>' +
+                        '<option value="is_not"' + (opVal === 'is_not' ? ' selected' : '') + '>is not</option>' +
+                        '<option value="contains"' + (opVal === 'contains' ? ' selected' : '') + '>contains</option>' +
+                        '<option value="not_empty"' + (opVal === 'not_empty' ? ' selected' : '') + '>not empty</option>' +
+                    '</select>' +
+                    '<input type="text" class="wppoppop-input gp-rule-val" placeholder="Value" value="' + rVal + '">' +
+                    '<button type="button" class="wppoppop-gp-btn-remove" title="Remove rule">&times;</button>' +
+                    '</div>'
+                );
+            });
+        }
+
+    },
+
+    bindSanitizedGreenPopControls: function() {
+        var self = this;
+        if (self._gpSanitizedBound) return;
+        self._gpSanitizedBound = true;
+
+        var getEl = function() {
+            if (typeof self.getActiveEl === 'function') return self.getActiveEl();
+            if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.getActiveElement === 'function') {
+                return window.WpPopPopBuilderCore.getActiveElement();
+            }
+            return null;
+        };
+
+        var syncStage = function() {
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                window.WpPopPopBuilderCanvas.renderCanvas();
+            }
+        };
+
+        // Autocomplete, Animation & Required bindings
+        jQuery(document).on('change input', '#prop-gp-autocomplete, #prop-anim-in, #prop-anim-out, #prop-anim-duration, #prop-anim-delay, #prop-gp-required', function() {
+            var el = getEl();
+            if (!el) return;
+            el.autocomplete = jQuery('#prop-gp-autocomplete').val();
+            el.animIn       = jQuery('#prop-anim-in').val();
+            el.animation    = el.animIn;
+            el.animOut      = jQuery('#prop-anim-out').val();
+            el.animDuration = parseInt(jQuery('#prop-anim-duration').val(), 10) || 1000;
+            el.animDelay    = parseInt(jQuery('#prop-anim-delay').val(), 10) || 0;
+            el.required     = jQuery('#prop-gp-required').is(':checked');
+            jQuery('#prop-required').prop('checked', el.required);
+            syncStage();
+        });
+
+        // Form Style Text Alignment Segmented Buttons
+        jQuery(document).on('click', '#gp-form-text-align-group .wppoppop-align-seg-btn', function(e) {
+            e.preventDefault();
+            var align = jQuery(this).attr('data-align') || 'left';
+            jQuery('#gp-form-text-align-group .wppoppop-align-seg-btn').removeClass('active');
+            jQuery(this).addClass('active');
+            var el = getEl();
+            if (!el) return;
+            el.textAlign = align;
+            jQuery('#prop-text-align').val(align);
+            syncStage();
+        });
+
+        // Input Icons & Custom CSS Class
+        jQuery(document).on('change input', '#prop-input-icon-left, #prop-input-icon-left-offset, #prop-input-icon-right, #prop-input-icon-right-offset, #prop-gp-style-css-class', function() {
+            var el = getEl();
+            if (!el) return;
+            el.iconLeft        = jQuery('#prop-input-icon-left').val();
+            el.iconLeftOffset  = parseInt(jQuery('#prop-input-icon-left-offset').val(), 10) || 10;
+            el.iconRight       = jQuery('#prop-input-icon-right').val();
+            el.iconRightOffset = parseInt(jQuery('#prop-input-icon-right-offset').val(), 10) || 10;
+            el.customClass     = jQuery('#prop-gp-style-css-class').val();
+            el.cssClass        = el.customClass;
+            jQuery('#prop-custom-class').val(el.customClass);
+            syncStage();
+        });
+
+        // Add Inline CSS Style Repeater Row
+        jQuery(document).on('click', '#wppoppop-btn-add-css-style', function(e) {
+            e.preventDefault();
+            var el = getEl();
+            if (!el) return;
+            el.inlineStyles = Array.isArray(el.inlineStyles) ? el.inlineStyles : [];
+            el.inlineStyles.push({ prop: '', value: '' });
+            var rowHtml = '<div class="wppoppop-gp-repeater-item">' +
+                '<input type="text" class="wppoppop-input gp-css-prop" placeholder="property (e.g. border-bottom)">' +
+                '<input type="text" class="wppoppop-input gp-css-val" placeholder="value (e.g. 2px solid #c2185b)">' +
+                '<button type="button" class="wppoppop-gp-btn-remove" title="Remove">&times;</button>' +
+                '</div>';
+            jQuery('#wppoppop-gp-inline-styles-list').append(rowHtml);
+        });
+
+        // Conditional Logic Toggle & Add Rule Repeater
+        jQuery(document).on('change', '#prop-logic-enabled, #prop-logic-action, #prop-logic-match', function() {
+            var el = getEl();
+            if (!el) return;
+            el.logicEnabled = jQuery('#prop-logic-enabled').is(':checked');
+            el.logicAction  = jQuery('#prop-logic-action').val();
+            el.logicMatch   = jQuery('#prop-logic-match').val();
+            jQuery('#wppoppop-gp-logic-rules-wrap').toggle(el.logicEnabled);
+        });
+
+        jQuery(document).on('click', '#wppoppop-btn-add-logic-rule', function(e) {
+            e.preventDefault();
+            var el = getEl();
+            if (!el) return;
+            el.logicRules = Array.isArray(el.logicRules) ? el.logicRules : [];
+            el.logicRules.push({ field: '', operator: 'is', value: '' });
+            var ruleHtml = '<div class="wppoppop-gp-repeater-item">' +
+                '<input type="text" class="wppoppop-input gp-rule-field" placeholder="Field token">' +
+                '<select class="wppoppop-select gp-rule-op" style="width:90px;"><option value="is">is</option><option value="is_not">is not</option><option value="contains">contains</option><option value="not_empty">not empty</option></select>' +
+                '<input type="text" class="wppoppop-input gp-rule-val" placeholder="Value">' +
+                '<button type="button" class="wppoppop-gp-btn-remove" title="Remove rule">&times;</button>' +
+                '</div>';
+            jQuery('#wppoppop-gp-logic-rules-list').append(ruleHtml);
+        });
+
+        jQuery(document).on('click', '.wppoppop-gp-btn-remove', function(e) {
+            e.preventDefault();
+            jQuery(this).closest('.wppoppop-gp-repeater-item').remove();
+        });
+    },
+
+    init: function() {
+        if (typeof this.bindSanitizedGreenPopControls === "function") { this.bindSanitizedGreenPopControls(); }
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
@@ -2981,4 +3325,131 @@
     bindFormCoreModuleEvents();
 })(window, jQuery);
 /* === WPPOPPOP_PHASE3_FORM_CORE_MODULES_END === */
+
+/* === WPPOPPOP_PHASE3_FORM_DECOMPOSED_MODULES_START === */
+(function(window, $) {
+    'use strict';
+
+    var FORM_PANEL_MAP = {
+        'text': '#panel-elem-text',
+        'textfield': '#panel-elem-text',
+        'text_field': '#panel-elem-text',
+        'email': '#panel-elem-email',
+        'number': '#panel-elem-number',
+        'spinner': '#panel-elem-number',
+        'phone': '#panel-elem-phone',
+        'tel': '#panel-elem-phone',
+        'textarea': '#panel-elem-textarea',
+        'select': '#panel-elem-select',
+        'dropdown': '#panel-elem-select',
+        'checkbox': '#panel-elem-checkbox',
+        'checkboxes': '#panel-elem-checkbox',
+        'radio': '#panel-elem-radio',
+        'radios': '#panel-elem-radio',
+        'multiselect': '#panel-elem-multiselect',
+        'imageselect': '#panel-elem-imageselect',
+        'tile': '#panel-elem-tile',
+        'date': '#panel-elem-date',
+        'time': '#panel-elem-time',
+        'upload': '#panel-elem-upload',
+        'file': '#panel-elem-upload',
+        'password': '#panel-elem-password',
+        'rating': '#panel-elem-rating'
+    };
+
+    function getActiveFormStageElement(idOrObj) {
+        if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
+        var insp = window.WpPopPopBuilderInspector;
+        var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
+            ? String(idOrObj)
+            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
+                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+            ));
+        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            if (Array.isArray(els)) {
+                var found = els.find(function(e) {
+                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
+                });
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    function hydrateFormModule(elOrType) {
+        var el = (elOrType && typeof elOrType === 'object') ? elOrType : getActiveFormStageElement(elOrType);
+        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
+        if (!type) return;
+
+        var targetPanel = FORM_PANEL_MAP[type];
+        if (!targetPanel) return;
+
+        $('[id$="-legacy"]').hide();
+        $('.element-panel, .wppoppop-panel-specific').hide();$(targetPanel).show();
+
+        if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.sanitizeLayerInspectorForElement === 'function' && el) {
+            window.WpPopPopBuilderInspector.sanitizeLayerInspectorForElement(el);
+        }
+
+        if (!el) return;
+
+        $(targetPanel).find('.wppoppop-gp-bind').each(function() {
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = el[prop];
+            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
+            } else if (val !== undefined && val !== null) {
+                $inp.val(val);
+            }
+        });
+    }
+
+    function bindFormModuleEvents() {
+        $(document).off('.wppoppopFormModules').on('input.wppoppopFormModules change.wppoppopFormModules', '[data-elem-family="form"] .wppoppop-gp-bind', function() {
+            var el = getActiveFormStageElement();
+            if (!el) return;
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
+            el[prop] = val;
+
+            if (prop === 'fieldName') {
+                el.token = val;
+                $('#prop-field-name, #prop-adv-id').val(val);
+            }
+
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                window.WpPopPopBuilderCanvas.renderCanvas();
+            }
+        });
+
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp && !insp._phase3FormHooked) {
+            insp._phase3FormHooked = true;
+            var origOpen = insp.open;
+            insp.open = function(id) {
+                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
+                hydrateFormModule(id);
+                setTimeout(function() { hydrateFormModule(id); }, 25);
+                return res;
+            };
+        }
+
+        $(document).off('click.wppoppopFormSelect').on('click.wppoppopFormSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
+            var t = $(this).attr('data-type') ||$(this).data('type') || '';
+            setTimeout(function() { hydrateFormModule(t); }, 30);
+        });
+    }
+
+    $(function() {
+        bindFormModuleEvents();
+        setTimeout(bindFormModuleEvents, 120);
+    });
+    bindFormModuleEvents();
+})(window, jQuery);
+/* === WPPOPPOP_PHASE3_FORM_DECOMPOSED_MODULES_END === */
 

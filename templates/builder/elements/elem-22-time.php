@@ -27,7 +27,5 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
 
-    <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">
-        <input type="checkbox" id="prop-time-required" class="wppoppop-gp-bind" data-prop="required" value="1"> Required Field
-    </label>
+    
 </div>

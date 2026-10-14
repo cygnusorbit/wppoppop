@@ -36,7 +36,68 @@ if (!defined('ABSPATH')) {
                 
 
                 <!-- DYNAMIC ELEMENT-SPECIFIC SETTINGS -->
-                <div id="wppoppop-element-specific-settings">
+                <!-- GREENPOP CANONICAL ANIMATION & REQUIRED CONTROLS -->
+            <div class="wppoppop-insp-card" id="insp-section-gp-basic-Shared">
+                <div class="wppoppop-prop-row" id="insp-row-gp-autocomplete" style="display:none; margin-bottom:10px;">
+                    <label class="wppoppop-prop-label" for="prop-gp-autocomplete"><?php esc_html_e( 'AUTOCOMPLETE ATTRIBUTE', 'wppoppop' ); ?></label>
+                    <select id="prop-gp-autocomplete" class="wppoppop-select">
+                        <option value="off"><?php esc_html_e( 'Disabled (off)', 'wppoppop' ); ?></option>
+                        <option value="on"><?php esc_html_e( 'Enabled (on)', 'wppoppop' ); ?></option>
+                        <option value="email"><?php esc_html_e( 'Email (email)', 'wppoppop' ); ?></option>
+                        <option value="name"><?php esc_html_e( 'Full name (name)', 'wppoppop' ); ?></option>
+                        <option value="given-name"><?php esc_html_e( 'First name (given-name)', 'wppoppop' ); ?></option>
+                        <option value="family-name"><?php esc_html_e( 'Last name (family-name)', 'wppoppop' ); ?></option>
+                        <option value="tel"><?php esc_html_e( 'Telephone (tel)', 'wppoppop' ); ?></option>
+                        <option value="username"><?php esc_html_e( 'Username (username)', 'wppoppop' ); ?></option>
+                    </select>
+                </div>
+
+                <div class="wppoppop-prop-row">
+                    <label class="wppoppop-prop-label"><?php esc_html_e( 'ANIMATION', 'wppoppop' ); ?></label>
+                    <div class="wppoppop-gp-2col-grid">
+                        <div class="wppoppop-gp-col">
+                            <select id="prop-anim-in" class="wppoppop-select">
+                                <option value="none"><?php esc_html_e( 'None', 'wppoppop' ); ?></option>
+                                <option value="fadeIn">fadeIn</option>
+                                <option value="fadeInUp">fadeInUp</option>
+                                <option value="fadeInDown">fadeInDown</option>
+                                <option value="zoomIn">zoomIn</option>
+                                <option value="bounceIn">bounceIn</option>
+                                <option value="slideInLeft">slideInLeft</option>
+                                <option value="slideInRight">slideInRight</option>
+                            </select>
+                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Appearance', 'wppoppop' ); ?></span>
+                        </div>
+                        <div class="wppoppop-gp-col">
+                            <select id="prop-anim-out" class="wppoppop-select">
+                                <option value="none"><?php esc_html_e( 'None', 'wppoppop' ); ?></option>
+                                <option value="fadeOut">fadeOut</option>
+                                <option value="fadeOutDown">fadeOutDown</option>
+                                <option value="zoomOut">zoomOut</option>
+                                <option value="bounceOut">bounceOut</option>
+                            </select>
+                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Disappearance', 'wppoppop' ); ?></span>
+                        </div>
+                        <div class="wppoppop-gp-col">
+                            <input type="number" id="prop-anim-duration" class="wppoppop-input" value="1000" min="0" step="50">
+                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Duration (ms)', 'wppoppop' ); ?></span>
+                        </div>
+                        <div class="wppoppop-gp-col">
+                            <input type="number" id="prop-anim-delay" class="wppoppop-input" value="0" min="0" step="50">
+                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Start delay (ms)', 'wppoppop' ); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wppoppop-prop-row wppoppop-gp-switch-row" id="insp-row-gp-required" style="display:none; margin-top:12px;">
+                    <label class="wppoppop-prop-label" for="prop-gp-required"><?php esc_html_e( 'REQUIRED', 'wppoppop' ); ?></label>
+                    <label class="wppoppop-gp-switch">
+                        <input type="checkbox" id="prop-gp-required">
+                        <span class="wppoppop-gp-slider"></span>
+                    </label>
+                </div>
+            </div>
+<div id="wppoppop-element-specific-settings">
                 <?php
                 foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
                     $wppoppop_mod_file = __DIR__ . '/elements/' . $wppoppop_mod;
@@ -126,7 +187,7 @@ if (!defined('ABSPATH')) {
                 </div>
 
                 <!-- DROPDOWN ALIAS PANEL -->
-                <div class="element-panel" id="panel-elem-dropdown" style="display:none;"></div>
+                <div class="element-panel" id="panel-elem-dropdown-legacy" style="display:none;"></div>
 
                 <!-- RADIOS -->
                 <div class="element-panel" id="panel-elem-radios-legacy" style="display:none;">

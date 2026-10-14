@@ -23,8 +23,6 @@ if (!defined('ABSPATH')) exit;
         <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">
             <input type="checkbox" id="prop-password-toggle" class="wppoppop-gp-bind" data-prop="showEyeToggle" value="1" checked> Show Reveal Eye Icon
         </label>
-        <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">
-            <input type="checkbox" id="prop-password-required" class="wppoppop-gp-bind" data-prop="required" value="1"> Required
-        </label>
+        
     </div>
 </div>

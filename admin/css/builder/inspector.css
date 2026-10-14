@@ -550,3 +550,144 @@
     visibility: visible !important;
     pointer-events: auto !important;
 }
+
+
+/* === GREENPOP v3.0.637 SANITISED LAYER SETTINGS LAYOUT & DESIGN === */
+.wppoppop-gp-notice-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(194, 24, 91, 0.12);
+    border-left: 3px solid #c2185b;
+    border-radius: 4px;
+    color: #e2e8f0;
+    font-size: 11.5px;
+    line-height: 1.45;
+}
+.wppoppop-gp-notice-banner .dashicons {
+    color: #f43f5e;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+}
+.wppoppop-gp-2col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 10px;
+}
+.wppoppop-gp-col {
+    display: flex;
+    flex-direction: column;
+}
+.wppoppop-gp-sublabel {
+    display: block;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 3px;
+    font-style: italic;
+}
+.wppoppop-align-seg-group {
+    display: inline-flex;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #0f172a;
+}
+.wppoppop-align-seg-btn {
+    background: transparent;
+    border: none;
+    border-right: 1px solid #334155;
+    color: #94a3b8;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.wppoppop-align-seg-btn:last-child {
+    border-right: none;
+}
+.wppoppop-align-seg-btn.active,
+.wppoppop-align-seg-btn:hover {
+    background: #c2185b;
+    color: #ffffff;
+}
+.wppoppop-gp-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.wppoppop-gp-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+}
+.wppoppop-gp-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.wppoppop-gp-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #334155;
+    transition: 0.2s;
+    border-radius: 20px;
+}
+.wppoppop-gp-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+.wppoppop-gp-switch input:checked + .wppoppop-gp-slider {
+    background-color: #c2185b;
+}
+.wppoppop-gp-switch input:checked + .wppoppop-gp-slider:before {
+    transform: translateX(18px);
+}
+.wppoppop-gp-repeater-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.wppoppop-gp-repeater-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.wppoppop-gp-btn-outline {
+    background: transparent;
+    border: 1px dashed #475569;
+    color: #cbd5e1;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    transition: all 0.15s ease;
+}
+.wppoppop-gp-btn-outline:hover {
+    border-color: #c2185b;
+    color: #ffffff;
+    background: rgba(194, 24, 91, 0.1);
+}
+.wppoppop-gp-btn-remove {
+    background: #334155;
+    border: none;
+    color: #f87171;
+    border-radius: 4px;
+    width: 24px;
+    height: 26px;
+    cursor: pointer;
+    font-weight: bold;
+}

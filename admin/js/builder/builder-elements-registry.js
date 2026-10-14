@@ -180,6 +180,35 @@
             }
         },
 
+                syncMediaSubRows: function(el) {
+            if (!el) return;
+            var cAction = $('#prop-close-action').val() || el.closeAction || 'close';
+            $('#prop-close-cookie-wrap').toggle(cAction === 'close_forever');
+
+            var bAction = $('#prop-button-action').val() || el.buttonAction || 'url';
+            $('#prop-button-url-wrap').toggle(bAction === 'url' || bAction === 'link');
+
+            var sAction = $('#prop-submit-action').val() || el.submitAction || 'message';
+            $('#prop-submit-msg-wrap').toggle(sAction === 'message');
+            $('#prop-submit-redir-wrap').toggle(sAction === 'redirect');
+
+            var pMode = $('#prop-progress-mode').val() || el.progressMode || 'manual';
+            $('#prop-progress-val-wrap').toggle(pMode === 'manual');
+        },
+
+                renderFormInputWithIcons: function(el, innerText) {
+            var align = el.textAlign || 'left';
+            var iLeft = $.trim(el.iconLeft || '');
+            var iRight = $.trim(el.iconRight || '');
+            var offL = parseInt(el.iconLeftOffset, 10) || 10;
+            var offR = parseInt(el.iconRightOffset, 10) || 10;
+            var padL = iLeft ? (offL + 22) : 10;
+            var padR = iRight ? (offR + 22) : 10;
+            var leftHtml = iLeft ? '<i class="' + iLeft + '" style="position:absolute;left:' + offL + 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;pointer-events:none;"></i>' : '';
+            var rightHtml = iRight ? '<i class="' + iRight + '" style="position:absolute;right:' + offR + 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;pointer-events:none;"></i>' : '';
+            return '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;padding-left:' + padL + 'px;padding-right:' + padR + 'px;text-align:' + align + ';border:1px solid #cbd5e1;border-radius:inherit;background:#ffffff;color:#475569;font-size:12px;box-sizing:border-box;pointer-events:none;">' + leftHtml + '<span style="width:100%;text-align:' + align + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + innerText + '</span>' + rightHtml + '</div>';
+        },
+
         syncFamilyTabs: function(rawType, inspector) {
             this.ensureFiveTabDOM();
             var family = this.getFamily(rawType);
@@ -201,6 +230,13 @@
             });
 
             $('#prop-display-token').closest('div').toggle(isForm);
+            // Contextual Style Tab Scoping for Media Family (Elements 1-9 & 26)
+            if (!isForm) {
+                var textMedia = ['label', 'title', 'paragraph', 'html', 'button', 'link', 'link_btn', 'step_btn', 'submit', 'progress'];
+                var hoverMedia = ['button', 'link', 'link_btn', 'step_btn', 'submit'];
+                $('#insp-section-typography').toggle(textMedia.indexOf(t) !== -1);
+                $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(t) !== -1);
+            }
 
             var activeTab = (inspector && inspector.activeTab) ? inspector.activeTab : 'basic';
             if (!isForm && (activeTab === 'data' || activeTab === 'advanced')) {
@@ -214,6 +250,7 @@
             if (!el) return;
             var t = String(el.type || 'label').toLowerCase().trim();
             this.syncFamilyTabs(t, inspector);
+            if (typeof this.syncMediaSubRows === 'function') { this.syncMediaSubRows(el); }
 
             // Ensure both #insp-tab-settings and #insp-tab-basic show when on Content/Basic tab
             var curTab = (inspector && inspector.activeTab) ? inspector.activeTab : 'basic';

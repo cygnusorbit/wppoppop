@@ -271,3 +271,65 @@
 })(window, jQuery);
 /* === WPPOPPOP_PHASE5_FRONT_RUNTIME_END === */
 
+/* === WPPOPPOP_PHASE4_RUNTIME_LOGIC_AND_DATA_START === */
+(function($) {
+    'use strict';
+
+    function applyDynamicUrlParams() {
+        if (!window.location || !window.location.search) return;
+        var params = new URLSearchParams(window.location.search);
+        $('[data-param-name]').each(function() {
+            var $el =$(this);
+            var pName = $el.attr('data-param-name');
+            if (pName && params.has(pName)) {
+                var val = params.get(pName);
+                if ($el.is('input, textarea, select')) {$el.val(val).trigger('change');
+                } else {
+                    $el.find('input, textarea, select').first().val(val).trigger('change');
+                }
+            }
+        });
+    }
+
+    function evaluateConditionalLogic($scope) {
+        var $root = ($scope && $scope.length) ?$scope : $(document);$root.find('[data-logic-enabled="1"], [data-logic-enabled="true"]').each(function() {
+            var $target =$(this);
+            var action  = $target.attr('data-logic-action') || 'show';
+            var match   = $target.attr('data-logic-match') || 'all';
+            var rawRules = $target.attr('data-logic-rules') || '[]';
+            var rules = [];
+            try { rules = JSON.parse(rawRules); } catch (e) { rules = []; }
+            if (!Array.isArray(rules) || !rules.length) return;
+
+            var results = rules.map(function(r) {
+                var fieldKey = r.field || '';
+                var op       = r.operator || 'is';
+                var expected = String(r.value || '').toLowerCase();
+                var $inp =$root.find('[name="' + fieldKey + '"], [data-field-token="' + fieldKey + '"], #' + fieldKey).first();
+                var actual = String($inp.val() || '').toLowerCase();
+
+                if (op === 'is') return actual === expected;
+                if (op === 'is_not') return actual !== expected;
+                if (op === 'contains') return actual.indexOf(expected) !== -1;
+                if (op === 'not_empty') return actual.trim() !== '';
+                return true;
+            });
+
+            var passed = (match === 'any')
+                ? results.some(function(b) { return b; })
+                : results.every(function(b) { return b; });
+
+            var shouldShow = (action === 'show') ? passed : !passed;
+            $target.toggle(shouldShow);
+        });
+    }
+
+    $(function() {
+        applyDynamicUrlParams();
+        evaluateConditionalLogic($(document));$(document).on('input change', '.wppoppop-modal input, .wppoppop-modal select, .wppoppop-modal textarea', function() {
+            evaluateConditionalLogic($(this).closest('.wppoppop-modal'));
+        });
+    });
+})(jQuery);
+/* === WPPOPPOP_PHASE4_RUNTIME_LOGIC_AND_DATA_END === */
+

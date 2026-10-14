@@ -32,8 +32,6 @@ if (!defined('ABSPATH')) exit;
         <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">
             <input type="checkbox" id="prop-tile-multi" class="wppoppop-gp-bind" data-prop="multiSelect" value="1"> Multi-Select
         </label>
-        <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">
-            <input type="checkbox" id="prop-tile-required" class="wppoppop-gp-bind" data-prop="required" value="1"> Required
-        </label>
+        
     </div>
 </div>

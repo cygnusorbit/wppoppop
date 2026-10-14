@@ -19,6 +19,14 @@
         },
 
         exportConfig: function() {
+        if (window.WpPopPopBuilderInspector) {
+            if (typeof window.WpPopPopBuilderInspector.flushSanitizedLayerSettings === "function") {
+                window.WpPopPopBuilderInspector.flushSanitizedLayerSettings();
+            }
+            if (typeof window.WpPopPopBuilderInspector.flushActiveElement === "function") {
+                window.WpPopPopBuilderInspector.flushActiveElement();
+            }
+        }
             if (typeof this.flushActiveElement === 'function') {
                 this.flushActiveElement();
             }

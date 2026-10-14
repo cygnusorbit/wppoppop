@@ -1,4 +1,4 @@
 <?php
 if (!defined('ABSPATH')) exit;
-// Form Family Core Inputs (10-17) decomposed into elem-10-text.php .. elem-17-radio.php
+// Core Form Family (10-17) sanitized into standalone elem-10-text.php .. elem-17-radio.php
 ?>
