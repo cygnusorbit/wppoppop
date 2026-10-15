@@ -1094,16 +1094,33 @@
         },
 
         bindCanvasSelection: function() {
+
             var self = this;
 
-            $(document).on('click', '.wppoppop-canvas-item', function(e) {
-                if (self.isPreview) return;
-                e.stopPropagation();
-                var id = $(this).data('id');
-                self.selectElement(id);
-            });
+            // Primary click handler (keeps existing click behavior)
+            $(document).off('click.wppoppop_canvas_select', '.wppoppop-canvas-item')
+                .on('click.wppoppop_canvas_select', '.wppoppop-canvas-item', function(e) {
+                    if (self.isPreview) return;
+                    e.stopPropagation();
+                    var id = $(this).data('id') || $(this).attr('id') || '';
+                    if (id && String(id).indexOf('el-') === 0) id = String(id).replace(/^el-/, '');
+                    self.selectElement(id);
+                });
 
-            $('#wppoppop-canvas-box').on('click', function(e) {
+            // Pointer / touch / mousedown for improved cross-browser selection and to work around draggable click suppression
+            $(document).off('pointerdown.wppoppop_canvas_select touchstart.wppoppop_canvas_select mousedown.wppoppop_canvas_select', '.wppoppop-canvas-item')
+                .on('pointerdown.wppoppop_canvas_select touchstart.wppoppop_canvas_select mousedown.wppoppop_canvas_select', '.wppoppop-canvas-item', function(e) {
+                    if (self.isPreview) return;
+                    e.stopPropagation();
+                    var $el = $(this);
+                    var id = $el.data('id') || $el.attr('id') || '';
+                    if (id && String(id).indexOf('el-') === 0) id = String(id).replace(/^el-/, '');
+                    // allow UI events (drag) to settle; immediate selection still occurs
+                    setTimeout(function() { self.selectElement(id); }, 0);
+                });
+
+            // Deselect handlers (preserve original behavior)
+            $('#wppoppop-canvas-box').off('click.wppoppop_deselect').on('click.wppoppop_deselect', function(e) {
                 if (self.isPreview) return;
                 if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-canvas-corner-handle, #wppoppop-canvas-stage-bar').length === 0) {
                     self.deselect();
@@ -1113,34 +1130,41 @@
                 }
             });
 
-            $('.wppoppop-builder-workspace').on('click', function(e) {
+            $('.wppoppop-builder-workspace').off('click.wppoppop_deselect').on('click.wppoppop_deselect', function(e) {
                 if (self.isPreview) return;
                 if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel, #wppoppop-canvas-corner-handle, .wppoppop-ribbon-bar, .wppoppop-builder-header, #wppoppop-settings-drawer, #wppoppop-canvas-box').length === 0) {
                     self.deselect();
                 }
             });
+
         },
 
         selectElement: function(id) {
-        this.selectedId = id;
-        if ($("#wppoppop-alignment-toolbar").length) {
-            $("#wppoppop-alignment-toolbar").fadeIn(120);
-        }
-        if (window.WpPopPopBuilderCore) {
-            window.WpPopPopBuilderCore.state.activeId = id;
-        }
-        $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
-        $('#el-' + id).addClass('wppoppop-selected');
 
-        if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
-            window.WpPopPopBuilderSettings.closeDrawer();
-        }
-        if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.highlightLayer === 'function') {
-            window.WpPopPopBuilderLayers.highlightLayer(id);
-        }
-        if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
-            window.WpPopPopBuilderInspector.open(id);
-        }
+            if (!id) return;
+            // Normalize many possible id shapes: '#el-xxx', 'el-xxx', 'wppoppop-el-xxx', or raw id
+            var raw = String(id || '');
+            raw = raw.replace(/^#/, '').replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+            this.selectedId = raw;
+            if ($("#wppoppop-alignment-toolbar").length) {
+                $("#wppoppop-alignment-toolbar").fadeIn(120);
+            }
+            if (window.WpPopPopBuilderCore) {
+                window.WpPopPopBuilderCore.state.activeId = raw;
+            }
+            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+            $('#el-' + raw).addClass('wppoppop-selected');
+
+            if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
+                window.WpPopPopBuilderSettings.closeDrawer();
+            }
+            if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.highlightLayer === 'function') {
+                window.WpPopPopBuilderLayers.highlightLayer(raw);
+            }
+            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+                window.WpPopPopBuilderInspector.open(raw);
+            }
+
     },
 
     deselect: function() {
