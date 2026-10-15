@@ -1,6 +1,6 @@
 /**
  * WpPopPop v3.0.637+ Decomposed Sanitized Layer Inspector Engine
- * Aligns all 26 Elements with GreenPop's 3-Tab (Media/Submit) & 5-Tab (Form) Architecture.
+ * Aligns all 26 Elements with wppoppop's 3-Tab (Media/Submit) & 5-Tab (Form) Architecture.
  * Eliminates duplicate fields, scopes Style/Logic controls per element, and fine-tunes UI.
  */
 (function($) {
@@ -97,7 +97,7 @@
             // Remove any older duplicate dynamic content zones if present
             $('#wppoppop-gp-content-module, #wppoppop-elem-isolated-content').not('#wppoppop-gp-sanitized-content').hide();
 
-            // 3. Enhance Style Tab with GreenPop Input Notice, Input Icons, Hover State Switcher, 5-Slider Shadow & Rotation
+            // 3. Enhance Style Tab with Input Notice, Input Icons, Hover State Switcher, 5-Slider Shadow & Rotation
             if (!$('#wppoppop-gp-style-enhancements').length) {
                 var styleExtraHtml = '' +
                     '<div id="wppoppop-gp-style-enhancements">' +
@@ -122,7 +122,7 @@
                                 '</div>' +
                             '</div>' +
                         '</div>' +
-                        '<!-- GreenPop Input Icons (Left / Right) -->' +
+                        '<!-- Input Icons (Left / Right) -->' +
                         '<div id="gp-style-input-icons-card" class="gp-card-section" style="display:none;">' +
                             '<div class="gp-card-header"><span>INPUT ICONS (FONT AWESOME)</span></div>' +
                             '<div class="gp-grid-2" style="margin-bottom:6px;">' +
@@ -295,7 +295,7 @@
                     '</div>' +
                 '</div>' +
                 '<div class="gp-card-section">' +
-                    '<div class="gp-card-header"><span>SANITIZATION FILTERS (GREENPOP)</span></div>' +
+                    '<div class="gp-card-header"><span>SANITIZATION FILTERS (wppoppop)</span></div>' +
                     '<p class="gp-help-note">Click to toggle pre-validation input sanitizers:</p>' +
                     '<div class="gp-pill-group" id="gp-adv-filters-group">' +
                         '<button type="button" class="gp-pill-btn" data-filter="trim">+ Trim</button>' +
@@ -307,7 +307,7 @@
                     '</div>' +
                 '</div>' +
                 '<div class="gp-card-section">' +
-                    '<div class="gp-card-header"><span>VALIDATION RULES (GREENPOP)</span></div>' +
+                    '<div class="gp-card-header"><span>VALIDATION RULES (wppoppop)</span></div>' +
                     '<p class="gp-help-note">Click to toggle server &amp; client validators:</p>' +
                     '<div class="gp-pill-group" id="gp-adv-validators-group">' +
                         '<button type="button" class="gp-pill-btn" data-validator="email">+ Email RFC</button>' +
@@ -329,7 +329,7 @@
             var cType = this.canonicalType(el.type);
             var isForm = this.isFormElement(cType);
 
-            // 1. Update Header Badge with Canonical GreenPop Label
+            // 1. Update Header Badge with Canonical Label
             $('#insp-element-type-badge').text(ELEMENT_LABELS[cType] || cType.toUpperCase());
 
             // 2. Ensure 3 Tabs for Media/Submit and 5 Tabs for Form Family
@@ -687,11 +687,11 @@
 
             html += '</div>';
 
-            // GreenPop Entrance & Timing Animation Section (Consolidated in Content Tab)
+            // Entrance & Timing Animation Section (Consolidated in Content Tab)
             var curAnim = el.animEffect || 'none';
             html += '' +
                 '<div class="gp-card-section">' +
-                    '<div class="gp-card-header"><span>APPEARANCE ANIMATION (GREENPOP)</span></div>' +
+                    '<div class="gp-card-header"><span>APPEARANCE ANIMATION (wppoppop)</span></div>' +
                     '<div style="margin-bottom:8px;">' +
                         '<label>ENTRANCE EFFECT</label>' +
                         '<select id="gp-cnt-anim-effect">' +

@@ -472,7 +472,7 @@ if (!$data || !isset($data['meta'])) {
         if (isset($el['ratingColor'])) $clean['ratingColor'] = sanitize_hex_color($el['ratingColor']);
 
         
-        // === PHASE 4: GREENPOP v3.0.637 SANITIZED 5-TAB & 3-TAB LAYER SETTINGS WHITELIST ===
+        // === PHASE 4: v3.0.637 SANITIZED 5-TAB & 3-TAB LAYER SETTINGS WHITELIST ===
         $gp_text_keys = array(
             'autocomplete', 'animIn', 'animOut', 'iconLeft', 'iconRight',
             'customClass', 'cssClass', 'customId', 'logicAction', 'logicMatch',
@@ -545,6 +545,11 @@ if (!$data || !isset($data['meta'])) {
             if ( isset( $el[$arr_k ] ) && is_array( $el[$arr_k ] ) ) {
                 $clean[$arr_k ] = array_map( 'sanitize_text_field', $el[$arr_k ] );
             }
+        }
+
+        
+        if ( class_exists( 'WpPopPop_Ajax_Element_Registry' ) && method_exists( 'WpPopPop_Ajax_Element_Registry', 'sanitize_decomposed_layer_props' ) ) {
+            $clean = WpPopPop_Ajax_Element_Registry::sanitize_decomposed_layer_props( $el,$clean );
         }
 
         return $clean;

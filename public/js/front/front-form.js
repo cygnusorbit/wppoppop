@@ -333,3 +333,47 @@
 })(jQuery);
 /* === WPPOPPOP_PHASE4_RUNTIME_LOGIC_AND_DATA_END === */
 
+/* === WPPOPPOP_PHASE4_INTERACTIVE_WIDGET_RUNTIME_START === */
+(function($) {
+    'use strict';
+
+    // 1. Password Visibility Eye Toggle on Frontend
+    $(document).on('click', '.wppoppop-pw-eye-toggle', function(e) {
+        e.preventDefault();
+        var $inp =$(this).siblings('input');
+        if ($inp.length) {
+            var cur = $inp.attr('type') === 'password' ? 'text' : 'password';$inp.attr('type', cur);
+        }
+    });
+
+    // 2. Interactive Tile & Image Select Choice Clicks on Frontend
+    $(document).on('click', '.wppoppop-tile-option, .wppoppop-imageselect-option', function() {
+        var $opt =$(this);
+        var $wrap =$opt.closest('[data-field-token], .wppoppop-form-field-wrap');
+        var isMulti = $wrap.attr('data-multi') === '1';
+        if (!isMulti) {
+            $opt.siblings().removeClass('is-selected active');
+        }
+        $opt.toggleClass('is-selected active');
+        var vals = [];
+        $wrap.find('.is-selected, .active').each(function() {
+            vals.push($(this).attr('data-value') ||$(this).text().trim());
+        });
+        $wrap.find('input[type="hidden"]').val(vals.join(', ')).trigger('change');
+    });
+
+    // 3. Interactive Star Rating Selection on Frontend
+    $(document).on('click', '.wppoppop-rating-glyph', function() {
+        var $g =$(this);
+        var score = parseInt($g.attr('data-score'), 10) || 5;
+        var $wrap =$g.closest('.wppoppop-rating-wrap');
+        var activeCol = $wrap.attr('data-active-color') || '#f59e0b';
+        $wrap.find('.wppoppop-rating-glyph').each(function() {
+            var s = parseInt($(this).attr('data-score'), 10) || 1;
+            $(this).css('color', s <= score ? activeCol : '#cbd5e1');
+        });
+        $wrap.find('input[type="hidden"]').val(score).trigger('change');
+    });
+})(jQuery);
+/* === WPPOPPOP_PHASE4_INTERACTIVE_WIDGET_RUNTIME_END === */
+

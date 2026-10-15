@@ -19,6 +19,9 @@
         },
 
         exportConfig: function() {
+        if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.flushElementFromDOM === 'function') {
+            window.WpPopPopElementsRegistry.flushElementFromDOM();
+        }
         if (window.WpPopPopBuilderInspector) {
             if (typeof window.WpPopPopBuilderInspector.flushSanitizedLayerSettings === "function") {
                 window.WpPopPopBuilderInspector.flushSanitizedLayerSettings();

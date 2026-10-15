@@ -203,7 +203,7 @@
         },
     
         
-    // === GREENPOP v3.0.637 LAYER SETTINGS SANITIZER & CONTEXTUAL SCOPER ===
+    // === v3.0.637 LAYER SETTINGS SANITIZER & CONTEXTUAL SCOPER ===
     
     // === PHASE 4: PRE-SAVE DOM FLUSH FOR SANITIZED 5-TAB LAYER SETTINGS ===
     flushActiveElement: function() { if (typeof this.flushSanitizedLayerSettings === 'function') { this.flushSanitizedLayerSettings(); } },
@@ -224,7 +224,7 @@
             el[prop] = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
         });
 
-        // 2. Flush Basic / Content shared GreenPop controls
+        // 2. Flush Basic / Content shared controls
         if (jQuery('#prop-gp-autocomplete').length) {
             el.autocomplete = jQuery('#prop-gp-autocomplete').val() || 'off';
         }
@@ -349,7 +349,7 @@
         });
 
         // 3. Style Tab Sanitization:
-        //    - Form Family (10-25): Show GreenPop Form Input Style card; hide Media Typography/Hover/Box cards
+        //    - Form Family (10-25): Show Form Input Style card; hide Media Typography/Hover/Box cards
         //      (except imageselect, tile, rating, upload which also allow custom color/box tweaks)
         var textBearingMedia = ['label', 'button', 'submit', 'progress'];
         var hoverCapableMedia = ['button', 'submit', 'close', 'icon'];
@@ -372,7 +372,7 @@
         jQuery('#insp-section-gp-conditional-logic').show();
         jQuery('#prop-action-url, #prop-action-target, #prop-onclick-action').closest('.wppoppop-prop-row, .wppoppop-insp-card').toggle(actionableTypes.indexOf(canonical) !== -1);
 
-        // 5. Hydrate canonical GreenPop controls from el model
+        // 5. Hydrate canonical controls from el model
         jQuery('#prop-gp-autocomplete').val(el.autocomplete || (canonical === 'email' ? 'email' : (canonical === 'tel' ? 'tel' : 'off')));
         jQuery('#prop-gp-required').prop('checked', !!el.required);
         jQuery('#prop-anim-in').val(el.animIn || el.animation || 'none');
@@ -438,7 +438,7 @@
 
     },
 
-    bindSanitizedGreenPopControls: function() {
+    bindSanitizedwppoppopControls: function() {
         var self = this;
         if (self._gpSanitizedBound) return;
         self._gpSanitizedBound = true;
@@ -546,7 +546,7 @@
     },
 
     init: function() {
-        if (typeof this.bindSanitizedGreenPopControls === "function") { this.bindSanitizedGreenPopControls(); }
+        if (typeof this.bindSanitizedwppoppopControls === "function") { this.bindSanitizedwppoppopControls(); }
             this.bindTabs();
             this.bindClose();
             this.bindInputs();
@@ -3452,4 +3452,548 @@
     bindFormModuleEvents();
 })(window, jQuery);
 /* === WPPOPPOP_PHASE3_FORM_DECOMPOSED_MODULES_END === */
+
+
+
+
+/* === WPPOPPOP_COORDS_ANIM_SANITY_PATCH_START === */
+(function($){
+    'use strict';
+    var GUARD = '__wppoppop_coords_anim_sanity_v1';
+
+    function enforceCoordsAnimVisibility(tab) {
+        var $drawer = $('#wppoppop-inspector-drawer');
+        if (!$drawer.length) return;
+        var activeTab = (typeof tab === 'string') ? tab : ($drawer.find('.wppoppop-insp-tab.active').data('tab') || '');
+        activeTab = String(activeTab || '').toLowerCase();
+
+        var isBasic = (activeTab === 'basic' || activeTab === 'content');
+
+        // Coordinates header -> grid detection (defensive)
+        var $coordsHeader = $drawer.find('div').filter(function() {
+            var t = $(this).text() || '';
+            return (typeof t === 'string' && t.trim().toUpperCase().indexOf('COORDINATES') === 0);
+        }).first();
+
+        var $coordsGrid = $coordsHeader.length ? $coordsHeader.next('div').first() : $drawer.find('#prop-left').closest('div').parent();
+
+        if ($coordsHeader.length) {
+            if (isBasic) { $coordsHeader.show(); } else { $coordsHeader.hide(); }
+        }
+        if ($coordsGrid.length) {
+            if (isBasic) { $coordsGrid.show(); } else { $coordsGrid.hide(); }
+        }
+
+        // Animation wrapper
+        var $animWrap = $drawer.find('#wppoppop-element-anim-wrap');
+        if ($animWrap.length) {
+            if (isBasic) { $animWrap.show(); } else { $animWrap.hide(); }
+        }
+
+        // Also ensure input fields inside these sections cannot be accidentally visible
+        var coordInputs = ['#prop-left','#prop-top','#prop-width','#prop-height'];
+        coordInputs.forEach(function(sel){
+            var $i = $drawer.find(sel);
+            if ($i.length) {
+                if (isBasic) { $i.closest('div').show(); } else { $i.closest('div').hide(); }
+            }
+        });
+    }
+
+    function attachSanityPatches() {
+        if (!window.WpPopPopBuilderInspector) return;
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp[GUARD]) return;
+        insp[GUARD] = true;
+
+        // Patch switchTab if present
+        if (typeof insp.switchTab === 'function') {
+            var origSwitch = insp.switchTab;
+            insp.switchTab = function(tab) {
+                var res = origSwitch.apply(this, arguments);
+                try { enforceCoordsAnimVisibility(tab); } catch (e) { /* safe fail */ }
+                return res;
+            };
+        }
+
+        // Patch open to run enforcement after opening
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                try { setTimeout(function(){ enforceCoordsAnimVisibility($('.wppoppop-insp-tab.active').data('tab')); }, 20); } catch(e) {}
+                return res;
+            };
+        }
+
+        // Global tab-button click fallback
+        $(document).on('click.wppoppop_coords_sanity', '.wppoppop-insp-tab', function(){
+            var tab = $(this).data('tab') || '';
+            try { setTimeout(function(){ enforceCoordsAnimVisibility(tab); }, 8); } catch(e) {}
+        });
+
+        // Run once immediately (in case inspector already open)
+        $(function(){
+            try { enforceCoordsAnimVisibility($('.wppoppop-insp-tab.active').data('tab')); } catch(e) {}
+        });
+    }
+
+    // Defer attaching until DOM ready and inspector exists
+    $(function(){
+        attachSanityPatches();
+        // try again shortly in case inspector is loaded after this script
+        setTimeout(attachSanityPatches, 120);
+    });
+
+})(jQuery);
+/* === WPPOPPOP_COORDS_ANIM_SANITY_PATCH_END === */
+
+
+
+/* === WPPOPPOP_INSPECTOR_LAYOUT_FIX_START === */
+__WPPOPPOP_INSPECTOR_LAYOUT_FIX_JS_V1__
+(function($){
+    'use strict';
+
+    var GUARD =  + JS_GUARD + r;
+
+    function setTabRolesAndPanels() {
+        var $drawer = $('#wppoppop-inspector-drawer');
+        if (!$drawer.length) return;
+
+        // Buttons -> role=tab, container -> role=tablist
+        var $tabs = $drawer.find('.wppoppop-insp-tab');
+        $tabs.attr('role', 'tab');
+        $tabs.each(function(i){
+            var $b = $(this);
+            var tabKey = $b.data('tab') || ('tab-' + i);
+            $b.attr('id', 'wppoppop-insp-tab-btn-' + tabKey);
+            $b.attr('aria-controls', 'insp-tab-' + tabKey);
+            $b.attr('aria-selected', $b.hasClass('active') ? 'true' : 'false');
+            $b.attr('tabindex', $b.hasClass('active') ? '0' : '-1');
+        });
+
+        // Panes -> role=tabpanel and link them
+        $drawer.find('.wppoppop-tab-pane').each(function(){
+            var $p = $(this);
+            var id = $p.attr('id') || '';
+            if (!id) return;
+            $p.attr('role', 'tabpanel');
+            var tabKey = id.replace(/^insp-tab-/, '');
+            $p.attr('id', id);
+            var $btn = $drawer.find('.wppoppop-insp-tab[data-tab="' + tabKey + '"]').first();
+            if ($btn.length) {
+                $p.attr('aria-labelledby', $btn.attr('id'));
+            }
+            // Toggle active class and aria-hidden
+            var isActive = $btn.length && $btn.hasClass('active');
+            if (isActive) {
+                $p.addClass('active').attr('aria-hidden', 'false');
+            } else {
+                $p.removeClass('active').attr('aria-hidden', 'true');
+            }
+        });
+    }
+
+    function enforceInspectorSizing() {
+        var $drawer = $('#wppoppop-inspector-drawer');
+        if (!$drawer.length) return;
+        var headerHeight = $drawer.find('[style*="height:48px"], .wppoppop-insp-header').outerHeight() || 48;
+        var topOffset = parseInt($drawer.css('top')) || 52;
+        var avail = window.innerHeight - (topOffset + 8); // small gap
+        $drawer.css('max-height', Math.max(200, avail) + 'px');
+        // ensure panes have proper min-height logic to make flex's min-height:0 work cross-browser
+        $drawer.find('.wppoppop-tab-pane, .wppoppop-insp-content').css({ 'min-height': 0, 'max-height': (avail - headerHeight) + 'px' });
+    }
+
+    function enforceCoordsAnimationVisibilityOnTab(tabKey) {
+        // defensive: treat "basic" and "content" as same
+        var key = (tabKey || $('.wppoppop-insp-tab.active').data('tab') || '').toString().toLowerCase();
+        var isBasic = (key === 'basic' || key === 'content');
+        var $drawer = $('#wppoppop-inspector-drawer');
+        if (!$drawer.length) return;
+
+        // animation wrapper
+        var $anim = $drawer.find('#wppoppop-element-anim-wrap');
+        if ($anim.length) {
+            if (isBasic) $anim.show(); else $anim.hide();
+        }
+
+        // coordinates inputs - ensure visible only on basic
+        var coords = ['#prop-left','#prop-top','#prop-width','#prop-height'];
+        coords.forEach(function(sel){
+            var $i = $drawer.find(sel);
+            if ($i.length) {
+                if (isBasic) {
+                    $i.closest('div').show();
+                } else {
+                    $i.closest('div').hide();
+                }
+            }
+        });
+
+        // update aria-selected
+        $drawer.find('.wppoppop-insp-tab').each(function(){
+            var $b = $(this);
+            var sel = ($b.data('tab') || '').toString().toLowerCase();
+            $b.attr('aria-selected', (sel === key) ? 'true' : 'false');
+            $b.attr('tabindex', (sel === key) ? '0' : '-1');
+        });
+
+        // update panes active/aria-hidden
+        $drawer.find('.wppoppop-tab-pane').each(function(){
+            var $p = $(this);
+            var pid = $p.attr('id') || '';
+            var pkey = pid.replace(/^insp-tab-/, '');
+            if (pkey === key) {
+                $p.addClass('active').attr('aria-hidden','false').show();
+            } else {
+                $p.removeClass('active').attr('aria-hidden','true').hide();
+            }
+        });
+    }
+
+    function attachLayoutHooks() {
+        if (!window.WpPopPopBuilderInspector) return;
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp && insp.__wpoppop_layout_fix_attached) return;
+        if (insp) insp.__wpoppop_layout_fix_attached = true;
+
+        // ensure roles/initial states
+        setTabRolesAndPanels();
+        enforceInspectorSizing();
+        enforceCoordsAnimationVisibilityOnTab();
+
+        // patch switchTab if exists
+        if (typeof insp.switchTab === 'function') {
+            var orig = insp.switchTab;
+            insp.switchTab = function(tab) {
+                var res = orig.apply(this, arguments);
+                try { setTimeout(function(){ setTabRolesAndPanels(); enforceCoordsAnimationVisibilityOnTab(tab); enforceInspectorSizing(); }, 10); } catch(e){}
+                return res;
+            };
+        }
+
+        // patch open to recompute sizing & roles after open
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                try { setTimeout(function(){ setTabRolesAndPanels(); enforceCoordsAnimationVisibilityOnTab(); enforceInspectorSizing(); }, 20); } catch(e){}
+                return res;
+            };
+        }
+
+        // fallback binding for clicks on tabs
+        $(document).off('click.wppoppop_inspector_layout').on('click.wppoppop_inspector_layout', '#wppoppop-inspector-drawer .wppoppop-insp-tab', function(e){
+            var tab = $(this).data('tab') || '';
+            setTimeout(function(){ setTabRolesAndPanels(); enforceCoordsAnimationVisibilityOnTab(tab); enforceInspectorSizing(); }, 8);
+        });
+
+        // window resize
+        $(window).on('resize.wppoppop_inspector_layout', function(){ enforceInspectorSizing(); });
+
+        // initial enforcement shortly after load (IDEMPOTENT)
+        setTimeout(function(){ setTabRolesAndPanels(); enforceCoordsAnimationVisibilityOnTab(); enforceInspectorSizing(); }, 120);
+    }
+
+    // run when DOM ready; re-run shortly in case inspector loads late
+    $(function(){
+        attachLayoutHooks();
+        setTimeout(attachLayoutHooks, 200);
+    });
+
+})(jQuery);
+/* === WPPOPPOP_INSPECTOR_LAYOUT_FIX_END === */
+
+
+
+
+/* === WPPOPPOP_LAYER_PANEL_SYNC_START === */
+__WPPOPPOP_LAYER_PANEL_SYNC_V1__
+(function($){
+    'use strict';
+
+    // Helper: highlight layer item(s) in layer panels for a given element id
+    function highlightLayerPanelItem(elementId) {
+        if (!elementId) return;
+        var selectors = [
+            '#wppoppop-floating-layers-panel .wppoppop-layer-item',
+            '#wppoppop-layers-list .wppoppop-layer-item',
+            '.wppoppop-layer-item' // fallback
+        ];
+        selectors.forEach(function(sel){
+            var $panel = $(sel).closest('div').first();
+            if (!$panel.length) return;
+        });
+
+        // Remove active class from all known layer items, then add to matching
+        $('.wppoppop-layer-item').removeClass('is-active wppoppop-layer-active inspector-layer-selected');
+        $('[data-id="' + elementId + '"], [data-element-id="' + elementId + '"], [data-id="el-' + elementId + '"]').each(function(){
+            $(this).addClass('is-active wppoppop-layer-active inspector-layer-selected');
+            // ensure it is visible / scrolled into view inside layers pane(s)
+            var $parent = $(this).closest('#wppoppop-layers-list, #wppoppop-floating-layers-panel, .wppoppop-layers-wrap');
+            if ($parent.length) {
+                try { $(this)[0].scrollIntoView({ block: 'nearest', behavior: 'auto' }); } catch(e){}
+            }
+        });
+    }
+
+    // Ensure inspector UI reflects the model values for the selected element
+    function syncInspectorToElement(elementId) {
+        if (!elementId || !window.WpPopPopBuilderInspector) return;
+        var insp = window.WpPopPopBuilderInspector;
+        // Resolve element object using existing helper if available
+        var el = null;
+        if (typeof insp.getActiveElement === 'function') {
+            el = insp.getActiveElement();
+            // getActiveElement may return null if state.activeId hasn't been updated yet, attempt fallback
+            if (!el && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+                var cur = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+                var list = window.WpPopPopBuilderCore.state.canvases ? (window.WpPopPopBuilderCore.state.canvases[cur] || []) : [];
+                for (var i = 0; i < list.length; i++) {
+                    if (String(list[i].id) === String(elementId) || String(list[i].id) === 'el-' + String(elementId)) {
+                        el = list[i];
+                        break;
+                    }
+                }
+            }
+        } else if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+            var cur2 = window.WpPopPopBuilderCore.state.currentCanvas || 1;
+            var list2 = window.WpPopPopBuilderCore.state.canvases ? (window.WpPopPopBuilderCore.state.canvases[cur2] || []) : [];
+            for (var j = 0; j < list2.length; j++) {
+                if (String(list2[j].id) === String(elementId) || String(list2[j].id) === 'el-' + String(elementId)) {
+                    el = list2[j]; break;
+                }
+            }
+        }
+
+        if (!el) return;
+
+        // Use existing inspector methods if they exist to hydrate fields
+        try {
+            if (typeof insp.syncCoordinates === 'function') insp.syncCoordinates(el);
+        } catch(e) {}
+
+        try {
+            if (typeof insp.hydrateStyleLogicFields === 'function') insp.hydrateStyleLogicFields(el);
+        } catch(e) {}
+
+        try {
+            if (typeof insp.showElementSpecificSettings === 'function') insp.showElementSpecificSettings(el);
+        } catch(e) {}
+
+        // Additional hydration to ensure inputs mirrored (defensive)
+        try {
+            if ($('#prop-left').length) $('#prop-left').val(parseInt(el.left, 10) || 0);
+            if ($('#prop-top').length) $('#prop-top').val(parseInt(el.top, 10) || 0);
+            if ($('#prop-width').length) $('#prop-width').val(parseInt(el.width, 10) || 100);
+            if ($('#prop-height').length) $('#prop-height').val(parseInt(el.height, 10) || 40);
+            if ($('#prop-layer-name').length) $('#prop-layer-name').val(el.name || el.label || '');
+            if ($('#prop-content').length) $('#prop-content').val(el.content || el.text || '');
+        } catch(e) {}
+
+        // ensure the inspector pushes history/state if needed
+        try {
+            if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                // do not create a history entry here, just ensure inspector state is consistent (no-op)
+            }
+        } catch(e){}
+    }
+
+    // Monkey-patch Inspector.open to also sync layer-panel highlight and inspector values
+    function patchInspectorOpen() {
+        if (!window.WpPopPopBuilderInspector) return;
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp.__wppoppop_layer_panel_patch_applied) return;
+        insp.__wppoppop_layer_panel_patch_applied = true;
+
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function(id) {
+                var res = origOpen.apply(this, arguments);
+                try {
+                    // element id normalization
+                    var cleanId = String(id || (this.activeId || '')).replace(/^el-/, '').replace(/^wppoppop-el-/, '');
+                    // highlight layer item(s)
+                    setTimeout(function(){
+                        highlightLayerPanelItem(cleanId);
+                        syncInspectorToElement(cleanId);
+                    }, 10);
+                } catch(e){}
+                return res;
+            };
+        }
+    }
+
+    // Ensure clicking a layer item selects it, highlights panel, and hydrates inspector
+    function bindLayerPanelClicks() {
+        $(document).off('click.wppoppop_layer_panel').on('click.wppoppop_layer_panel', '.wppoppop-layer-item', function(e){
+            e.preventDefault();
+            var $el = $(this);
+            var id = $el.attr('data-id') || $el.attr('data-element-id') || $el.data('id') || $el.data('element-id') || '';
+            if (!id) return;
+            // normalize
+            id = String(id).replace(/^el-/, '').replace(/^wppoppop-el-/, '');
+            // highlight in panels
+            highlightLayerPanelItem(id);
+            // open inspector for this element if inspector exists
+            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+                try { window.WpPopPopBuilderInspector.open(id); } catch(e){}
+            }
+            // also ensure inspector input values sync after a short delay
+            setTimeout(function(){ syncInspectorToElement(id); }, 20);
+        });
+    }
+
+    $(function(){
+        // attach patch and bindings on DOM ready and re-run shortly after to handle late loads
+        try { patchInspectorOpen(); } catch(e){}
+        try { bindLayerPanelClicks(); } catch(e){}
+        setTimeout(function(){ try { patchInspectorOpen(); bindLayerPanelClicks(); } catch(e){} }, 120);
+    });
+
+})(jQuery);
+/* === WPPOPPOP_LAYER_PANEL_SYNC_END === */
+
+/* === WPPOPPOP_WORKSPACE_MEDIA_SELECT_AND_CHECKER_GUARD_START === */
+(function(window, $) {
+    'use strict';
+
+    function extractCleanElementId($node) {
+        if (!$node || !$node.length) return '';
+        var raw = $node.attr('data-id') || $node.data('id') || $node.attr('data-element-id') || $node.attr('id') || '';
+        return String(raw).replace(/^wppoppop-el-/, '').replace(/^el-/, '').replace(/^layer-/, '');
+    }
+
+    function selectAndInspectLayer(cleanId) {
+        if (!cleanId) return;
+
+        // 1. Update core state activeId
+        if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+            window.WpPopPopBuilderCore.state.activeId = cleanId;
+        }
+
+        // 2. Highlight on Workspace Canvas (.wppoppop-canvas-item)
+        $('.wppoppop-canvas-item').removeClass('selected is-selected active');
+        var $stageItem = $('.wppoppop-canvas-item').filter(function() {
+            return extractCleanElementId($(this)) === cleanId;
+        });
+        $stageItem.addClass('selected is-selected active');
+
+        // 3. Highlight in Floating Layers Panel (.wppoppop-layer-item)
+        $('.wppoppop-layer-item').removeClass('active is-active selected');
+        var $layerRow = $('.wppoppop-layer-item').filter(function() {
+            return extractCleanElementId($(this)) === cleanId;
+        });
+        $layerRow.addClass('active is-active selected');
+
+        // 4. Allow jQuery UI draggable on button/media elements on Workspace
+        $stageItem.each(function() {
+            var $el = $(this);
+            if ($el.data('ui-draggable') || $el.data('draggable')) {
+                try { $el.draggable('option', 'cancel', '.ui-resizable-handle'); } catch (err) {}
+            }
+        });
+
+        // 5. Close Campaign Settings drawer if open so drawers don't collide
+        if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
+            window.WpPopPopBuilderSettings.closeDrawer();
+        }
+        $('#wppoppop-settings-drawer').removeClass('open is-open');
+        $('#wppoppop-settings-backdrop').fadeOut(150);
+
+        // 6. Slide in Layer Settings Inspector Drawer & Push Floating Layers Panel to right: 376px
+        var $inspDrawer = $('#wppoppop-inspector-drawer');
+        $inspDrawer.removeClass('is-closed').addClass('is-open open').css('display', 'flex');
+        $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').addClass('panel-open inspector-open');
+
+        if (window.WpPopPopBuilderInspector) {
+            window.WpPopPopBuilderInspector.activeElementId = cleanId;
+            if (typeof window.WpPopPopBuilderInspector.open === 'function') {
+                window.WpPopPopBuilderInspector.open(cleanId);
+            }
+        }
+        if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.syncInspectorForElement === 'function') {
+            window.WpPopPopElementsRegistry.syncInspectorForElement(cleanId);
+        }
+        if (window.WpPopPopBuilderLayers) {
+            if (typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+                window.WpPopPopBuilderLayers.pushForInspector(true);
+            } else if (typeof window.WpPopPopBuilderLayers.pushLayerPanel === 'function') {
+                window.WpPopPopBuilderLayers.pushLayerPanel(true);
+            } else {
+                $('#wppoppop-floating-layers-panel').css('right', '376px');
+            }
+        }
+    }
+
+    function bindWorkspaceMediaSelectionAndCheckerGuard() {
+        // A. Direct Selection of ANY Media or Form Element on the Workspace Stage
+        $(document).off('mousedown.gpStageSelect click.gpStageSelect', '.wppoppop-canvas-item')
+                   .on('mousedown.gpStageSelect click.gpStageSelect', '.wppoppop-canvas-item', function(e) {
+            if ($(e.target).hasClass('ui-resizable-handle') || $(e.target).closest('.ui-resizable-handle').length) {
+                return;
+            }
+            e.stopPropagation();
+            var cleanId = extractCleanElementId($(this));
+            if (cleanId) {
+                selectAndInspectLayer(cleanId);
+            }
+        });
+
+        // B. Direct Selection from the Floating Layers Panel
+        $(document).off('click.gpLayerRowSelect', '.wppoppop-layer-item')
+                   .on('click.gpLayerRowSelect', '.wppoppop-layer-item', function(e) {
+            if ($(e.target).closest('.wppoppop-layer-actions, .wppoppop-layer-btn, button, input').length) {
+                return;
+            }
+            e.stopPropagation();
+            var cleanId = extractCleanElementId($(this));
+            if (cleanId) {
+                selectAndInspectLayer(cleanId);
+            }
+        });
+
+        // C. Stop clicks inside Campaign Settings Drawer (#wppoppop-settings-drawer)
+        //    or Inspector Drawer (#wppoppop-inspector-drawer) from bubbling to the checker area
+        $(document).off('mousedown.gpDrawerStop click.gpDrawerStop', '#wppoppop-settings-drawer, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel')
+                   .on('mousedown.gpDrawerStop click.gpDrawerStop', '#wppoppop-settings-drawer, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel', function(e) {
+            e.stopPropagation();
+        });
+
+        // D. Clicking on the Checker Area (or empty canvas background) closes Campaign Settings
+        //    only if Campaign Settings was explicitly dismissed via its close button OR if clicking
+        //    on the checker area when no settings input is being edited
+        $(document).off('click.gpCheckerAreaClick', '.wppoppop-builder-workspace, #wppoppop-builder-workspace, #wppoppop-canvas-scroll-container, #wppoppop-canvas-box')
+                   .on('click.gpCheckerAreaClick', '.wppoppop-builder-workspace, #wppoppop-builder-workspace, #wppoppop-canvas-scroll-container, #wppoppop-canvas-box', function(e) {
+            var $t = $(e.target);
+            // Ignore clicks on stage elements, resize handles, layers panel, or drawers
+            if ($t.closest('.wppoppop-canvas-item, .ui-resizable-handle, #wppoppop-canvas-corner-handle, #wppoppop-floating-layers-panel, #wppoppop-inspector-drawer, #wppoppop-settings-drawer').length) {
+                return;
+            }
+
+            // Deselect active stage element and slide out Layer Settings Inspector
+            $('.wppoppop-canvas-item').removeClass('selected is-selected active');
+            $('.wppoppop-layer-item').removeClass('active is-active selected');
+            $('#wppoppop-inspector-drawer').removeClass('is-open open').addClass('is-closed');
+            $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').removeClass('panel-open inspector-open');
+
+            if (window.WpPopPopBuilderLayers) {
+                if (typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+                    window.WpPopPopBuilderLayers.pushForInspector(false);
+                } else {
+                    $('#wppoppop-floating-layers-panel').css('right', '16px');
+                }
+            }
+        });
+    }
+
+    $(function() {
+        bindWorkspaceMediaSelectionAndCheckerGuard();
+        setTimeout(bindWorkspaceMediaSelectionAndCheckerGuard, 150);
+    });
+    bindWorkspaceMediaSelectionAndCheckerGuard();
+})(window, jQuery);
+/* === WPPOPPOP_WORKSPACE_MEDIA_SELECT_AND_CHECKER_GUARD_END === */
 

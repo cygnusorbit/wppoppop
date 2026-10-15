@@ -376,3 +376,9 @@ body.folded .wppoppop-settings-drawer {
 .wppoppop-settings-backdrop {
     z-index: 999998 !important;
 }
+
+/* Allow interacting with checker area without closing Campaign Settings */
+#wppoppop-settings-backdrop {
+    pointer-events: none !important;
+    background: transparent !important;
+}

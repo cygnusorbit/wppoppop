@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 ?>
-<!-- TAB 4: GREENPOP DATA TAB (FORM FAMILY ELEMENTS 10-25) -->
+<!-- TAB 4: DATA TAB (FORM FAMILY ELEMENTS 10-25) -->
 <div id="insp-tab-data" class="wppoppop-insp-content wppoppop-insp-tab-content wppoppop-tab-pane" data-tab-content="data" style="display:none;padding:14px;">
     <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:14px;margin-bottom:14px;">
         <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.6px;">Data &amp; Field Binding</div>
@@ -44,7 +44,7 @@ if (!defined('ABSPATH')) exit;
     </div>
 </div>
 
-<!-- TAB 5: GREENPOP ADVANCED TAB (FORM FAMILY ELEMENTS 10-25) -->
+<!-- TAB 5: ADVANCED TAB (FORM FAMILY ELEMENTS 10-25) -->
 <div id="insp-tab-advanced" class="wppoppop-insp-content wppoppop-insp-tab-content wppoppop-tab-pane" data-tab-content="advanced" style="display:none;padding:14px;">
     <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:14px;margin-bottom:14px;">
         <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.6px;">Advanced, Filters &amp; Validators</div>

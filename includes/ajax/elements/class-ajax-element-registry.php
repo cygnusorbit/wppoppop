@@ -71,4 +71,91 @@ class WpPopPop_Ajax_Element_Registry {
         }
         return $clean;
     }
+
+    public static function sanitize_decomposed_layer_props( array $el, array $clean ) {$text_keys = array(
+            'name', 'autocomplete', 'animIn', 'animOut', 'animation',
+            'fontFamily', 'fontWeight', 'textAlign', 'color', 'bgColor',
+            'borderStyle', 'borderColor', 'shadowColor', 'hoverBg', 'hoverColor', 'hoverBorder',
+            'iconLeft', 'iconRight', 'customClass', 'cssClass', 'customId',
+            'logicAction', 'logicMatch', 'defaultValue', 'paramName',
+            'fieldId', 'fieldName', 'token', 'inputMask',
+            'shapePreset', 'strokeColor', 'src', 'imageUrl', 'alt', 'objectFit', 'imageAction', 'linkUrl',
+            'videoProvider', 'aspectRatio', 'videoUrl', 'tag', 'headingTag', 'htmlTag', 'textTransform', 'overflow',
+            'closeSymbol', 'closeAction', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor',
+            'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'redirectUrl',
+            'placeholder', 'countryCode', 'checkboxLabel', 'checkboxLayout', 'radioLayout',
+            'activeColor', 'dateFormat', 'minDate', 'maxDate', 'timeFormat', 'allowedExtensions',
+            'ratingShape', 'ratingColor'
+        );
+        foreach ( $text_keys as$k ) {
+            if ( isset( $el[$k ] ) && ! is_array( $el[$k ] ) ) {
+                $clean[$k ] = sanitize_text_field( wp_unslash( (string) $el[$k ] ) );
+            }
+        }
+
+        $html_keys = array( 'content', 'options', 'titleText', 'paragraphText', 'text', 'label' );
+        foreach ( $html_keys as$hk ) {
+            if ( isset( $el[$hk ] ) && ! is_array( $el[$hk ] ) ) {
+                $clean[$hk ] = wp_kses_post( wp_unslash( (string) $el[$hk ] ) );
+            }
+        }
+
+        $num_keys = array(
+            'x', 'y', 'left', 'top', 'width', 'height', 'w', 'h', 'opacity',
+            'fontSize', 'lineHeight', 'letterSpacing',
+            'padTop', 'padRight', 'padBottom', 'padLeft',
+            'borderWidth', 'borderRadius', 'shadowX', 'shadowY', 'shadowBlur', 'shadowSpread',
+            'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
+            'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'gotoCanvas',
+            'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
+            'maxSelect', 'columns', 'timeStep', 'maxFileSize', 'ratingMax'
+        );
+        foreach ( $num_keys as$nk ) {
+            if ( isset( $el[$nk ] ) && $el[$nk ] !== '' && ! is_array( $el[$nk ] ) ) {
+                $clean[$nk ] = is_numeric( $el[$nk ] ) ? ( strpos( (string) $el[$nk ], '.' ) !== false ? floatval( $el[$nk ] ) : intval( $el[$nk ] ) ) : 0;
+            }
+        }
+
+        $bool_keys = array(
+            'required', 'transparentFill', 'targetBlank', 'nofollow',
+            'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped',
+            'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle',
+            'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb'
+        );
+        foreach ( $bool_keys as$bk ) {
+            if ( isset( $el[$bk ] ) ) {
+                $clean[$bk ] = ! empty( $el[$bk ] ) && $el[$bk ] !== 'false';
+            }
+        }
+
+        if ( isset( $el['inlineStyles'] ) && is_array( $el['inlineStyles'] ) ) {$clean['inlineStyles'] = array();
+            foreach ( $el['inlineStyles'] as$st ) {
+                if ( is_array( $st ) ) {$clean['inlineStyles'][] = array(
+                        'prop'  => isset( $st['prop'] ) ? sanitize_text_field( $st['prop'] ) : '',
+                        'value' => isset( $st['value'] ) ? sanitize_text_field( $st['value'] ) : '',
+                    );
+                }
+            }
+        }
+
+        if ( isset( $el['logicRules'] ) && is_array( $el['logicRules'] ) ) {$clean['logicRules'] = array();
+            foreach ( $el['logicRules'] as$rl ) {
+                if ( is_array( $rl ) ) {$clean['logicRules'][] = array(
+                        'field'    => isset( $rl['field'] ) ? sanitize_text_field( $rl['field'] ) : '',
+                        'operator' => isset( $rl['operator'] ) ? sanitize_text_field( $rl['operator'] ) : 'is',
+                        'value'    => isset( $rl['value'] ) ? sanitize_text_field( $rl['value'] ) : '',
+                    );
+                }
+            }
+        }
+
+        foreach ( array( 'filters', 'validators' ) as $ak ) {
+            if ( isset( $el[$ak ] ) && is_array( $el[$ak ] ) ) {
+                $clean[$ak ] = array_values( array_map( 'sanitize_text_field', $el[$ak ] ) );
+            }
+        }
+
+        return $clean;
+    }
+
 }

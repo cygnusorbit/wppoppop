@@ -235,7 +235,7 @@
     outline-offset: 1px;
 }
 
-/* --- GreenPop Parity: Inspector Segmented Controls & Box Shadow Grid --- */
+/* --- Parity: Inspector Segmented Controls & Box Shadow Grid --- */
 .wppoppop-segmented-control {
     display: flex;
     background: #0f172a;
@@ -335,7 +335,7 @@
 }
 
 
-/* --- GreenPop Parity: Absolute Checker Area Slide-in Drawer --- */
+/* --- Parity: Absolute Checker Area Slide-in Drawer --- */
 .wppoppop-builder-workspace {
     position: relative !important;
     overflow: hidden !important;
@@ -552,7 +552,7 @@
 }
 
 
-/* === GREENPOP v3.0.637 SANITISED LAYER SETTINGS LAYOUT & DESIGN === */
+/* === v3.0.637 SANITISED LAYER SETTINGS LAYOUT & DESIGN === */
 .wppoppop-gp-notice-banner {
     display: flex;
     align-items: flex-start;
@@ -691,3 +691,170 @@
     cursor: pointer;
     font-weight: bold;
 }
+
+
+
+/* === WPPOPPOP_INSPECTOR_LAYOUT_FIX_START === */
+__WPPOPPOP_INSPECTOR_LAYOUT_FIX_CSS_V1__
+/* Ensure inspector drawer fits viewport and panes share a uniform layout */
+#wppoppop-inspector-drawer {
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    max-height: calc(100vh - 52px) !important; /* header offset */
+    overflow: hidden !important;
+}
+
+/* Tab panes: fill remaining space and scroll independently */
+.wppoppop-tab-pane,
+.wppoppop-insp-content {
+    flex: 1 1 auto !important;
+    min-height: 0 !important; /* allow flex children to shrink properly */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 0 16px 16px 16px !important;
+    background: transparent !important;
+}
+
+/* Tab visibility controlled via .active to avoid layout shift */
+.wppoppop-tab-pane { display: none !important; }
+.wppoppop-tab-pane.active { display: block !important; }
+
+/* Tab buttons accessibility and consistent sizing */
+.wppoppop-insp-tab {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Hide coordinates & animation when not on the Basic/Content tab (defensive CSS) */
+#insp-tab-style #prop-left,
+#insp-tab-style #prop-top,
+#insp-tab-style #prop-width,
+#insp-tab-style #prop-height,
+#insp-tab-logic #prop-left,
+#insp-tab-logic #prop-top,
+#insp-tab-logic #prop-width,
+#insp-tab-logic #prop-height,
+#insp-tab-data #prop-left,
+#insp-tab-data #prop-top,
+#insp-tab-data #prop-width,
+#insp-tab-data #prop-height,
+#insp-tab-advanced #prop-left,
+#insp-tab-advanced #prop-top,
+#insp-tab-advanced #prop-width,
+#insp-tab-advanced #prop-height {
+    display: none !important;
+}
+
+/* Animation wrapper: show only inside CONTENT / BASIC tab */
+#insp-tab-style #wppoppop-element-anim-wrap,
+#insp-tab-logic #wppoppop-element-anim-wrap,
+#insp-tab-data #wppoppop-element-anim-wrap,
+#insp-tab-advanced #wppoppop-element-anim-wrap {
+    display: none !important;
+}
+
+/* Keep pointer-events rules used by drag/push mechanics (preserve semantics) */
+body.wppoppop-space-held .wppoppop-canvas-item,
+body.wppoppop-space-held .ui-resizable-handle,
+body.wppoppop-space-held #wppoppop-canvas-corner-handle {
+    pointer-events: none !important;
+}
+
+/* Thin, cross-browser friendly scrollbar styling */
+.wppoppop-insp-content::-webkit-scrollbar { width: 8px; height: 8px; }
+.wppoppop-insp-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 6px; }
+.wppoppop-insp-content { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent; }
+
+/* End snippet guard */
+
+/* === WPPOPPOP_INSPECTOR_LAYOUT_FIX_END === */
+
+/* === STRICT 360PX DRAWER SLIDE-IN & WORKSPACE MEDIA ELEMENT SELECTION === */
+#wppoppop-inspector-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 360px !important;
+    max-width: 360px !important;
+    height: 100% !important;
+    background: #1e293b !important;
+    border-left: 1px solid #334155 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 99990 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s !important;
+}
+#wppoppop-inspector-drawer.is-closed,
+#wppoppop-inspector-drawer:not(.is-open):not(.open) {
+    transform: translate3d(100%, 0, 0) !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+#wppoppop-inspector-drawer.is-open,
+#wppoppop-inspector-drawer.open {
+    transform: translate3d(0, 0, 0) !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+#wppoppop-settings-drawer:not(.open):not(.is-open) {
+    transform: translate3d(-100%, 0, 0) !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+#wppoppop-settings-drawer.open,
+#wppoppop-settings-drawer.is-open {
+    transform: translate3d(0, 0, 0) !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+#wppoppop-inspector-body {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 14px !important;
+    box-sizing: border-box !important;
+    background: #1e293b !important;
+}
+#insp-tab-basic,
+#insp-tab-style,
+#insp-tab-logic,
+#insp-tab-data,
+#insp-tab-advanced {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+}
+/* Ensure all Media & Form elements on the Workspace are 100% clickable & selectable */
+.wppoppop-canvas-item {
+    pointer-events: auto !important;
+    cursor: move !important;
+    user-select: none !important;
+}
+.wppoppop-canvas-item > *:not(.ui-resizable-handle):not(.wppoppop-resize-handle),
+.wppoppop-canvas-item svg,
+.wppoppop-canvas-item path,
+.wppoppop-canvas-item rect,
+.wppoppop-canvas-item circle,
+.wppoppop-canvas-item polygon,
+.wppoppop-canvas-item img,
+.wppoppop-canvas-item iframe,
+.wppoppop-canvas-item video,
+.wppoppop-canvas-item button,
+.wppoppop-canvas-item a,
+.wppoppop-canvas-item i,
+.wppoppop-canvas-item span:not(.ui-resizable-handle) {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+}
+

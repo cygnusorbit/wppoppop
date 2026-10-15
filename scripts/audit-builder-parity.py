@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 WpPopPop Builder Parity & 6-Tier Architecture Sentinel
-Audits the complete GreenPop Parity Macro Systems across ~/Desktop/wppoppop.
+Audits the complete Parity Macro Systems across ~/Desktop/wppoppop.
 """
 import os
 import sys
@@ -20,7 +20,7 @@ def check_file(rel_path, required_strings, desc):
         if s not in content:
             errors.append(f"In {rel_path}: Missing expected token '{s}' ({desc})")
 
-print("🔍 Auditing GreenPop Macro Parity Systems in WpPopPop...")
+print("🔍 Auditing Macro Parity Systems in WpPopPop...")
 
 # Phase 1: Header Workflow & Canvas Sequence
 check_file('templates/builder/header.php', ['wppoppop-btn-undo', 'wppoppop-btn-redo', 'wppoppop-zoom-select', 'wppoppop-canvas-duplicate-btn'], 'Phase 1 Header History & Zoom')
@@ -54,5 +54,5 @@ if errors:
     sys.exit(1)
 else:
     print("✅ Parity Audit PASSED: Zero regressions detected.")
-    print("   All 6 Macro Builder Systems are fully compliant with GreenPop parity.")
+    print("   All 6 Macro Builder Systems are fully compliant with parity.")
     sys.exit(0)

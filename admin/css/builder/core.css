@@ -1529,7 +1529,7 @@ body.panel-open .wppoppop-builder-workspace,
 }
 
 
-/* --- GreenPop Parity Phase 2: Live Hover Transitions --- */
+/* --- Parity Phase 2: Live Hover Transitions --- */
 .wppoppop-element[data-has-hover="true"] {
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -1540,7 +1540,7 @@ body.panel-open .wppoppop-builder-workspace,
 }
 
 
-/* --- GreenPop Parity: Title Semantic Element Harmonization --- */
+/* --- Parity: Title Semantic Element Harmonization --- */
 .wppoppop-title-inner {
     margin: 0 !important;
     padding: 0 !important;
@@ -1555,7 +1555,7 @@ body.panel-open .wppoppop-builder-workspace,
     width: 100% !important;
 }
 
-/* --- GreenPop Parity: Header Workflow & Zoom Controls --- */
+/* --- Parity: Header Workflow & Zoom Controls --- */
 .wppoppop-header-workflow-tools {
     display: inline-flex;
     align-items: center;

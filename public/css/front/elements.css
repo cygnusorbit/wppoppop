@@ -560,7 +560,7 @@ button::-moz-focus-inner {
 }
 
 
-/* --- GreenPop Parity Phase 2: Public Hover States --- */
+/* --- Parity Phase 2: Public Hover States --- */
 .wppoppop-element[data-has-hover="true"] {
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -571,7 +571,7 @@ button::-moz-focus-inner {
 }
 
 
-/* --- GreenPop Parity: Title Semantic Element Harmonization --- */
+/* --- Parity: Title Semantic Element Harmonization --- */
 .wppoppop-title-inner {
     margin: 0 !important;
     padding: 0 !important;

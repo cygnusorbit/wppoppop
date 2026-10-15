@@ -34,7 +34,7 @@ if (!defined('ABSPATH')) {
     </div>
 </div>
 
-<!-- GreenPop Parity: Embed Code & Sharing Modal -->
+<!-- Parity: Embed Code & Sharing Modal -->
 <div class="wppoppop-modal-backdrop" id="wppoppop-modal-embed" style="display:none;">
     <div class="wppoppop-modal-dialog wppoppop-modal-embed-dialog">
         <div class="wppoppop-modal-header">
@@ -81,7 +81,7 @@ if (!defined('ABSPATH')) {
     </div>
 </div>
 
-<!-- GreenPop Parity: Sandbox Multi-Device Live Preview Modal -->
+<!-- Parity: Sandbox Multi-Device Live Preview Modal -->
 <div class="wppoppop-modal-backdrop" id="wppoppop-modal-preview" style="display:none;">
     <div class="wppoppop-modal-dialog wppoppop-modal-preview-dialog">
         <div class="wppoppop-modal-header" style="justify-content:space-between;">
