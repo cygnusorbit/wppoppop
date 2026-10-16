@@ -5,6 +5,29 @@
 (function($) {
     'use strict';
 
+    window.WpPopPopSettingsRegistry = window.WpPopPopSettingsRegistry || {
+        modules: {},
+        registerAccordion: function(id, mod) {
+            this.modules[id] = mod || {};
+        },
+        hydrateAll: function(settings) {
+            Object.keys(this.modules).forEach(function(k) {
+                if (typeof window.WpPopPopSettingsRegistry.modules[k].hydrate === 'function') {
+                    window.WpPopPopSettingsRegistry.modules[k].hydrate(settings);
+                }
+            });
+        },
+        serializeAll: function(baseSettings) {
+            var out = baseSettings || {};
+            Object.keys(this.modules).forEach(function(k) {
+                if (typeof window.WpPopPopSettingsRegistry.modules[k].serialize === 'function') {
+                    out[k] = window.WpPopPopSettingsRegistry.modules[k].serialize();
+                }
+            });
+            return out;
+        }
+    };
+
     window.WpPopPopBuilderSettings = {
         init: function() {
             this.bindDrawer();

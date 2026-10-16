@@ -3,6 +3,33 @@ import os
 import sys
 import subprocess
 
+# --- Decomposed Partial Aggregator Hook ---
+_orig_open_wppoppop = open
+def open(file, mode='r', *args, **kwargs):
+    f_obj = _orig_open_wppoppop(file, mode, *args, **kwargs)
+    if 'r' in mode and isinstance(file, str):
+        norm_f = file.replace('\\', '/')
+        if norm_f.endswith('templates/builder/drawer-settings.php'):
+            import glob as _glob, os as _os, io as _io
+            base = f_obj.read()
+            f_obj.close()
+            s_dir = _os.path.join(_os.path.dirname(file), 'settings')
+            for _af in sorted(_glob.glob(_os.path.join(s_dir, 'acc-*.php'))):
+                with _orig_open_wppoppop(_af, 'r', encoding='utf-8', errors='ignore') as _sub:
+                    base += '\n' + _sub.read()
+            return _io.StringIO(base)
+        elif norm_f.endswith('templates/builder/drawer-inspector.php'):
+            import glob as _glob, os as _os, io as _io
+            base = f_obj.read()
+            f_obj.close()
+            e_dir = _os.path.join(_os.path.dirname(file), 'elements')
+            for _ef in sorted(_glob.glob(_os.path.join(e_dir, '*.php'))):
+                with _orig_open_wppoppop(_ef, 'r', encoding='utf-8', errors='ignore') as _sub:
+                    base += '\n' + _sub.read()
+            return _io.StringIO(base)
+    return f_obj
+
+
 REPO_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 def surgical_replace(rel_path, target_block, replacement_block):

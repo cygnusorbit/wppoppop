@@ -1199,3 +1199,22 @@ window.WpPopPopCanvas = window.WpPopPopBuilderCanvas;
 window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
 })(jQuery);
+
+
+    // Autonomous Stage Node Factory Delegation Bridge (WpPopPopElementsRegistry)
+    if (window.WpPopPopBuilderCanvas && !window.WpPopPopBuilderCanvas._stageRegistryBridged) {
+        window.WpPopPopBuilderCanvas._stageRegistryBridged = true;
+        var _origBuildInner = window.WpPopPopBuilderCanvas.buildElementInnerHtml || window.WpPopPopBuilderCanvas.getElementInnerHtml;
+        if (typeof _origBuildInner === 'function') {
+            var fnName = window.WpPopPopBuilderCanvas.buildElementInnerHtml ? 'buildElementInnerHtml' : 'getElementInnerHtml';
+            window.WpPopPopBuilderCanvas[fnName] = function(el) {
+                if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.renderStage === 'function') {
+                    var customHtml = window.WpPopPopElementsRegistry.renderStage(el);
+                    if (customHtml !== null && customHtml !== undefined) {
+                        return customHtml;
+                    }
+                }
+                return _origBuildInner.apply(this, arguments);
+            };
+        }
+    }

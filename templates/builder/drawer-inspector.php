@@ -725,6 +725,7 @@ if (!defined('ABSPATH')) {
     </div>
 
         <div id="insp-tab-logic" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;background:transparent !important;padding:0;margin:0;">
+            <?php if (file_exists(__DIR__ . "/elements/tab-logic-actions.php")) { include __DIR__ . "/elements/tab-logic-actions.php"; } ?>
             <!-- Merge Tag / Token -->
             <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
                 <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">MERGE TAG / TOKEN</div>

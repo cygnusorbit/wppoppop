@@ -4,5 +4,6 @@ node_modules/
 vendor/
 .wp-env.json
 .wp-env/
+*.bak
 *.log
 ref_greenpop/
