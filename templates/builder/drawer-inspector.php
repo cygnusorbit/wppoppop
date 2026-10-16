@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
     <!-- ROW 1: TITLE BAR ONLY -->
     <header id="wppoppop-inspector-titlebar" class="wppoppop-inspector-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#090d16;border-bottom:1px solid #1e293b;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:8px;">
-            <span class="dashicons dashicons-admin-generic" style="color:#38bdf8;font-size:16px;width:16px;height:16px;"></span>
+            <span id="wppoppop-inspector-header-icon" class="dashicons dashicons-admin-generic wppoppop-insp-icon-btn" style="color:#94a3b8;font-size:16px;width:16px;height:16px;cursor:pointer;transition:color 0.15s ease;"></span>
             <span class="wppoppop-inspector-title" style="font-size:12px;font-weight:800;letter-spacing:0.05em;color:#f8fafc;text-transform:uppercase;">Layer Settings</span>
             <span id="insp-elem-type-badge" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(56,189,248,0.15);color:#38bdf8;text-transform:uppercase;">ELEMENT</span>
         </div>

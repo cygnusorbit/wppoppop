@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) exit;
     <div class="wppoppop-insp-card" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">TEXT ALIGNMENT</label>
         <div id="wppoppop-form-align-group" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-            <button type="button" class="button wppoppop-form-align-btn active" data-align="left" style="font-size:11px; font-weight:700;">Left</button>
+            <button type="button" class="button wppoppop-form-align-btn" data-align="left" style="font-size:11px; font-weight:700;">Left</button>
             <button type="button" class="button wppoppop-form-align-btn" data-align="center" style="font-size:11px; font-weight:700;">Center</button>
             <button type="button" class="button wppoppop-form-align-btn" data-align="right" style="font-size:11px; font-weight:700;">Right</button>
         </div>
@@ -44,6 +44,13 @@ if (!defined('ABSPATH')) exit;
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">OFFSET (PX)</label>
                 <input type="number" id="prop-form-icon-right-offset" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconRightOffset" min="0" max="40" value="10" style="font-size:12px;" />
             </div>
+        </div>
+        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:8px;">
+            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="✔">✔ Check</button>
+            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="🔍">🔍 Search</button>
+            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="📅">📅 Date</button>
+            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="👁">👁 Eye</button>
+            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="">✕ Clear</button>
         </div>
     </div>
 </div>

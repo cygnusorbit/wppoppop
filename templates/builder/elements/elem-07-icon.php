@@ -14,6 +14,20 @@ if (!defined('ABSPATH')) exit;
         <button type="button" class="button button-small wppoppop-icon-preset" data-icon="dashicons-awards">🏆 Award</button>
         <button type="button" class="button button-small wppoppop-icon-preset" data-icon="dashicons-megaphone">📣 Promo</button>
     </div>
+    <div id="wppoppop-icon-picker-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px;">
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-star-filled" title="Star"><span class="dashicons dashicons-star-filled" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-yes-alt" title="Check"><span class="dashicons dashicons-yes-alt" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-heart" title="Heart"><span class="dashicons dashicons-heart" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-bell" title="Bell"><span class="dashicons dashicons-bell" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-awards" title="Award"><span class="dashicons dashicons-awards" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-megaphone" title="Megaphone"><span class="dashicons dashicons-megaphone" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-location" title="Location"><span class="dashicons dashicons-location" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-cart" title="Cart"><span class="dashicons dashicons-cart" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-tag" title="Tag"><span class="dashicons dashicons-tag" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-lock" title="Lock"><span class="dashicons dashicons-lock" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-thumbs-up" title="Thumbs Up"><span class="dashicons dashicons-thumbs-up" style="pointer-events:none;"></span></button>
+        <button type="button" class="wppoppop-icon-preset wppoppop-icon-grid-btn" data-icon="dashicons-warning" title="Warning"><span class="dashicons dashicons-warning" style="pointer-events:none;"></span></button>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">ICON SIZE (PX)</label>

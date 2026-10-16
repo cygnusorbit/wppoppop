@@ -1003,3 +1003,61 @@ body.wppoppop-space-held #wppoppop-canvas-corner-handle {
     margin: 0 !important;
     box-sizing: border-box !important;
 }
+
+/* === DRAWER_INSPECTOR_ICON_ACTIVE_ONLY_ON_CLICK_START === */
+#wppoppop-inspector-drawer .wppoppop-icon-preset,
+#wppoppop-inspector-drawer .wppoppop-form-icon-preset,
+#wppoppop-inspector-drawer .wppoppop-form-align-btn,
+#wppoppop-inspector-drawer .wppoppop-icon-grid-btn,
+#wppoppop-inspector-drawer .wppoppop-checker-btn {
+    background: #090d16 !important;
+    color: #94a3b8 !important;
+    border: 1px solid #334155 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    transition: all 0.15s ease !important;
+}
+#wppoppop-inspector-drawer .wppoppop-icon-grid-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 34px !important;
+    padding: 0 !important;
+}
+#wppoppop-inspector-drawer .wppoppop-icon-preset .dashicons,
+#wppoppop-inspector-drawer .wppoppop-form-icon-preset .dashicons,
+#wppoppop-inspector-drawer .wppoppop-insp-icon-btn {
+    color: #94a3b8 !important;
+    pointer-events: none !important;
+    transition: color 0.15s ease !important;
+}
+#wppoppop-inspector-drawer #wppoppop-inspector-header-icon {
+    pointer-events: auto !important;
+}
+/* Active state ONLY when clicked (.active / .is-active) */
+#wppoppop-inspector-drawer .wppoppop-icon-preset.is-active,
+#wppoppop-inspector-drawer .wppoppop-icon-preset.active,
+#wppoppop-inspector-drawer .wppoppop-form-icon-preset.is-active,
+#wppoppop-inspector-drawer .wppoppop-form-icon-preset.active,
+#wppoppop-inspector-drawer .wppoppop-form-align-btn.is-active,
+#wppoppop-inspector-drawer .wppoppop-form-align-btn.active,
+#wppoppop-inspector-drawer .wppoppop-icon-grid-btn.is-active,
+#wppoppop-inspector-drawer .wppoppop-icon-grid-btn.active,
+#wppoppop-inspector-drawer .wppoppop-checker-btn.is-active,
+#wppoppop-inspector-drawer .wppoppop-checker-btn.active {
+    background: rgba(56, 189, 248, 0.16) !important;
+    color: #38bdf8 !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35) !important;
+}
+#wppoppop-inspector-drawer .wppoppop-icon-preset.is-active .dashicons,
+#wppoppop-inspector-drawer .wppoppop-icon-preset.active .dashicons,
+#wppoppop-inspector-drawer .wppoppop-form-icon-preset.is-active .dashicons,
+#wppoppop-inspector-drawer .wppoppop-form-icon-preset.active .dashicons,
+#wppoppop-inspector-drawer .wppoppop-insp-icon-btn.is-active,
+#wppoppop-inspector-drawer .wppoppop-insp-icon-btn.active {
+    color: #38bdf8 !important;
+}
+/* === DRAWER_INSPECTOR_ICON_ACTIVE_ONLY_ON_CLICK_END === */
