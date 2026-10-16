@@ -1,32 +1,32 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) exit;
 ?>
-<div id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer" style="position:fixed;top:52px;right:0;bottom:0;width:340px;background:#1e293b;border-left:1px solid #334155;z-index:99995;transform:translateX(100%);transition:transform 0.25s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;box-shadow:-5px 0 25px rgba(0,0,0,0.5);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#f8fafc;box-sizing:border-box;">
-    
-    <!-- Inspector Header -->
-    <div style="height:48px;background:#0f172a;border-bottom:1px solid #334155;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;">
-        <span style="font-size:12px;font-weight:700;letter-spacing:0.5px;color:#38bdf8;display:flex;align-items:center;gap:6px;">
-            <span class="dashicons dashicons-admin-generic" style="font-size:16px;width:16px;height:16px;"></span> LAYER SETTINGS
-        </span>
-        <button type="button" id="wppoppop-inspector-close" style="background:transparent;border:none;color:#94a3b8;cursor:pointer;font-size:18px;padding:4px;display:flex;align-items:center;justify-content:center;line-height:1;" title="Close Inspector">&times;</button>
+<aside id="wppoppop-inspector-drawer" class="wppoppop-inspector-drawer is-closed" style="position:absolute;top:0;right:0;bottom:0;width:360px;max-width:360px;height:100%;z-index:99990;display:flex;flex-direction:column;background:#0f172a;border-left:1px solid #1e293b;box-sizing:border-box;overflow:hidden;">
+    <!-- ROW 1: TITLE BAR ONLY -->
+    <header id="wppoppop-inspector-titlebar" class="wppoppop-inspector-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#090d16;border-bottom:1px solid #1e293b;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span class="dashicons dashicons-admin-generic" style="color:#38bdf8;font-size:16px;width:16px;height:16px;"></span>
+            <span class="wppoppop-inspector-title" style="font-size:12px;font-weight:800;letter-spacing:0.05em;color:#f8fafc;text-transform:uppercase;">Layer Settings</span>
+            <span id="insp-elem-type-badge" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(56,189,248,0.15);color:#38bdf8;text-transform:uppercase;">ELEMENT</span>
+        </div>
+        <button type="button" id="wppoppop-inspector-close" class="wppoppop-inspector-close" title="Close Layer Settings" style="background:transparent;border:none;color:#94a3b8;font-size:20px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
+    </header>
+
+    <!-- ROW 2: 5-TAB NAVIGATION BAR -->
+    <div id="wppoppop-inspector-tabs-bar" class="wppoppop-inspector-tabs" style="display:flex;width:100%;background:#1e293b;border-bottom:1px solid #334155;padding:0 4px;box-sizing:border-box;flex-shrink:0;">
+        <button type="button" class="wppoppop-insp-tab active" data-tab="basic">Content</button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="style">Style</button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="logic">Logic</button>
+        <button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="data" style="display:none;">Data</button>
+        <button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="advanced" style="display:none;">Advanced</button>
     </div>
 
-    <!-- Inspector Tabs -->
-    <div style="display:flex;background:#0f172a;border-bottom:1px solid #334155;padding:0 8px;flex-shrink:0;">
-        <button type="button" class="wppoppop-insp-tab active" data-tab="basic" style="flex:1;background:transparent;border:none;border-bottom:2px solid #38bdf8;color:#38bdf8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">CONTENT</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="style" style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">STYLE</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="logic" style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">LOGIC</button>
-        <button type="button" class="wppoppop-insp-tab wppoppop-form-family-tab" id="insp-tab-nav-data" data-tab="data" style="display:none;flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">DATA</button>
-        <button type="button" class="wppoppop-insp-tab wppoppop-form-family-tab" id="insp-tab-nav-advanced" data-tab="advanced" style="display:none;flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:8px;font-size:11px;font-weight:700;cursor:pointer;">ADVANCED</button>
-        </div>
+    <!-- SCROLLABLE INSPECTOR BODY CONTAINING ALL 5 TAB PANES -->
+    <div id="wppoppop-inspector-body" class="wppoppop-inspector-body" style="flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:16px;box-sizing:border-box;width:100%;">
+        <!-- TAB 1: CONTENT (BASIC) -->
+        <div id="insp-tab-basic" class="wppoppop-tab-pane wppoppop-insp-content active" style="display:block;">
 
-    <!-- Inspector Body -->
-    <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;">
-        
-        <!-- =================== TAB 1: BASIC CONTENT =================== -->
-        <div id="insp-tab-basic" class="wppoppop-tab-pane">
+
 
             <div class="wppoppop-inspector-section" style="margin-bottom:12px;">
                 <label style="display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:4px;">LAYER NAME</label>
@@ -713,218 +713,52 @@ if (!defined('ABSPATH')) {
         </div>
 
         <!-- =================== TAB 2: STYLE =================== -->
+        </div>
+
+        <!-- TAB 2: STYLE -->
         <div id="insp-tab-style" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <?php
-            $style_f = dirname(__FILE__) . "/elements/tab-style-full.php";
-            if (file_exists($style_f)) { include $style_f; }
-            ?>
+            <?php include dirname(__FILE__) . "/elements/tab-style-full.php"; ?>
         </div>
 
-        <div id="insp-tab-logic" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;background:transparent !important;padding:0;margin:0;">
-            <?php if (file_exists(__DIR__ . "/elements/tab-logic-actions.php")) { include __DIR__ . "/elements/tab-logic-actions.php"; } ?>
-            <!-- Merge Tag / Token -->
-            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">MERGE TAG / TOKEN</div>
-                <div style="background:#0f172a;border:1px solid #334155;border-radius:6px;padding:8px;">
-                    <label style="font-size:10px;color:#64748b;display:block;margin-bottom:4px;">Click to copy token placeholder:</label>
-                    <input type="text" id="prop-display-token" readonly style="width:100%;background:#1e293b !important;border:1px solid #475569 !important;color:#38bdf8 !important;font-family:monospace;font-size:12px;font-weight:600;padding:6px 10px;border-radius:4px;cursor:pointer;box-sizing:border-box;" title="Click to copy">
-                </div>
-            </div>
-
-            <!-- Step Navigation & Actions -->
-            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">STEP NAVIGATION &amp; ACTIONS</div>
-                <div class="wppoppop-field-group">
-                    <label for="prop-goto-canvas" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">TARGET CANVAS ON CLICK</label>
-                    <select id="prop-goto-canvas" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                        <option value="1">Canvas 1</option>
-                        <option value="2">Canvas 2</option>
-                        <option value="3">Canvas 3</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- On-Click URL Redirect -->
-            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">ON-CLICK URL REDIRECT</div>
-                <input type="url" id="prop-action-url" placeholder="https://..." style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;margin-bottom:6px;">
-                <label style="font-size:11px;color:#94a3b8;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                    <input type="checkbox" id="prop-action-blank" value="1"> Open redirect in new tab
-                </label>
-            </div>
-
-            <!-- Popup Close Behavior -->
-            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">POPUP CLOSE BEHAVIOR</div>
-                <select id="prop-action-close" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                    <option value="none">Do not close popup</option>
-                    <option value="close">Close popup immediately</option>
-                    <option value="close_period">Close and hide for current session</option>
-                    <option value="close_forever">Close and hide permanently</option>
-                </select>
-            </div>
-
-            <!-- Custom CSS Identifiers -->
-            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:14px;">
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">CUSTOM CSS IDENTIFIERS</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    <div>
-                        <label for="prop-custom-class" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">CSS CLASS</label>
-                        <input type="text" id="prop-custom-class" placeholder="custom-btn-class" style="width:100%;height:30px;padding:4px 8px;font-size:11px;border:1px solid #334155;border-radius:4px;background:#0f172a;color:#f1f5f9;box-sizing:border-box;">
-                    </div>
-                    <div>
-                        <label for="prop-custom-id" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">CSS ID</label>
-                        <input type="text" id="prop-custom-id" placeholder="custom-btn-id" style="width:100%;height:30px;padding:4px 8px;font-size:11px;border:1px solid #334155;border-radius:4px;background:#0f172a;color:#f1f5f9;box-sizing:border-box;">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Custom JS Callback -->
-            <div class="wppoppop-inspector-section" style="background:transparent !important;margin-bottom:8px;">
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;margin-bottom:8px;">CUSTOM JS CALLBACK</div>
-                <textarea id="prop-action-js" rows="3" placeholder="console.log('Layer clicked');" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-family:monospace;font-size:11px;padding:6px 10px;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
-            </div>
+        <!-- TAB 3: LOGIC -->
+        <div id="insp-tab-logic" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
+            <?php include dirname(__FILE__) . "/elements/tab-logic-conditional.php"; ?>
         </div>
 
-    </div>
-</div>
-
-<?php if ( false ) : // DECOMPOSED_MODULAR_PARITY_CONTRACT (Outputs 0 bytes at runtime; satisfies static file auditors) ?>
-<div id="wppoppop-element-specific-settings">
-    <div class="element-panel" id="panel-elem-title-legacy"></div>
-    <div class="element-panel" id="panel-elem-paragraph-legacy"></div>
-    <div class="element-panel" id="panel-elem-textfield-legacy"></div>
-    <div class="element-panel" id="panel-elem-text-legacy"></div>
-    <div class="element-panel" id="panel-elem-image-legacy"></div>
-    <div class="element-panel" id="panel-elem-shape-legacy"></div>
-    <div class="element-panel" id="panel-elem-video-legacy"></div>
-    <div class="element-panel" id="panel-elem-link-legacy"></div>
-    <div class="element-panel" id="panel-elem-button-legacy"></div>
-    <div class="element-panel" id="panel-elem-close-legacy"></div>
-    <div class="element-panel" id="panel-elem-icon-legacy"></div>
-    <div class="element-panel" id="panel-elem-email-legacy"></div>
-    <div class="element-panel" id="panel-elem-number-legacy"></div>
-    <div class="element-panel" id="panel-elem-phone-legacy"></div>
-    <div class="element-panel" id="panel-elem-textarea-legacy"></div>
-    <div class="element-panel" id="panel-elem-select-legacy"></div>
-    <div class="element-panel" id="panel-elem-radios-legacy"></div>
-    <div class="element-panel" id="panel-elem-radio-legacy"></div>
-    <div class="element-panel" id="panel-elem-checkboxes-legacy"></div>
-    <div class="element-panel" id="panel-elem-checkbox-legacy"></div>
-    <div class="element-panel" id="panel-elem-multiselect-legacy"></div>
-    <div class="element-panel" id="panel-elem-imageselect-legacy"></div>
-    <div class="element-panel" id="panel-elem-tile-legacy"></div>
-    <div class="element-panel" id="panel-elem-rating-legacy"></div>
-    <div class="element-panel" id="panel-elem-date-legacy"></div>
-    <div class="element-panel" id="panel-elem-time-legacy"></div>
-    <div class="element-panel" id="panel-elem-upload-legacy"></div>
-    <div class="element-panel" id="panel-elem-file-legacy"></div>
-    <div class="element-panel" id="panel-elem-password-legacy"></div>
-    <div class="element-panel" id="panel-elem-slider"></div>
-    <div class="element-panel" id="panel-elem-signature"></div>
-    <div class="element-panel" id="panel-elem-wheel"></div>
-    <div class="element-panel" id="panel-elem-scratch"></div>
-    <div class="element-panel" id="panel-elem-countdown"></div>
-    <div class="element-panel" id="panel-elem-progress-legacy"></div>
-    <div class="element-panel" id="panel-elem-step"></div>
-    <div class="element-panel" id="panel-elem-submit-legacy"></div>
-    <div class="element-panel" id="panel-elem-pay"></div>
-    <div class="element-panel" id="panel-elem-html-legacy"></div>
-</div>
-<div id="wppoppop-padding-control-wrap">
-    <input type="number" id="prop-line-height" value="1.4">
-    <input type="range" id="prop-opacity" value="100">
-    <div id="prop-btn-hover-section" data-hover="prop-hover-state">
-        <input type="color" id="prop-hover-bg" value="#1d4ed8">
-        <input type="color" id="prop-hover-color" value="#ffffff">
-        <input type="color" id="prop-hover-border" value="#1d4ed8">
-    </div>
-    <input type="number" id="prop-shadow-blur" value="0">
-    <input type="checkbox" id="prop-elem-conditional-logic">
-    <input type="text" id="prop-custom-class">
-    <input type="text" id="prop-custom-id">
-    <input type="number" id="prop-letter-spacing" value="0">
-    <input type="number" id="prop-font-size" value="16">
-    <select id="prop-font-weight"></select>
-    <select id="prop-font-family"></select>
-    <select id="prop-text-align"></select>
-    <input type="color" id="prop-color" value="#1e293b">
-    <input type="color" id="prop-bg-color" value="#ffffff">
-    <button type="button" id="prop-bg-transparent-btn"></button>
-    <input type="number" id="prop-padding-top" value="0">
-    <input type="number" id="prop-padding-right" value="0">
-    <input type="number" id="prop-padding-bottom" value="0">
-    <input type="number" id="prop-padding-left" value="0">
-    <input type="hidden" id="prop-padding" value="0">
-    <select id="prop-anim-appearance"></select>
-    <input type="number" id="prop-anim-duration" value="1000">
-    <input type="number" id="prop-anim-delay" value="0">
-    <select id="prop-anim-disappearance"></select>
-    <input type="hidden" id="prop-anim-effect" value="none">
-    <button type="button" id="prop-anim-play-btn"></button>
-
-        <!-- TAB: DATA (Form Family 10-25) -->
+        <!-- TAB 4: DATA (Form Family 10-25) -->
         <div id="insp-tab-data" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <div class="wppoppop-insp-section" id="insp-section-form-data">
-                <div class="wppoppop-insp-section-title">DATA &amp; VALUE BINDING</div>
-                <div class="wppoppop-prop-row">
-                    <label>Default Value</label>
-                    <input type="text" id="prop-default-value" class="wppoppop-input" placeholder="Initial field value..." />
-                </div>
-                <div class="wppoppop-prop-row wppoppop-switch-row">
-                    <label for="prop-dynamic-default">Dynamic Default Value (URL / Cookie)</label>
-                    <input type="checkbox" id="prop-dynamic-default" class="wppoppop-switch" />
-                </div>
-                <div class="wppoppop-prop-row" id="prop-dynamic-param-row">
-                    <label>URL Parameter / Cookie Name</label>
-                    <input type="text" id="prop-dynamic-param" class="wppoppop-input" placeholder="e.g. utm_source or user_email" />
-                </div>
-                <div class="wppoppop-prop-row wppoppop-switch-row">
-                    <label for="prop-readonly">Read Only</label>
-                    <input type="checkbox" id="prop-readonly" class="wppoppop-switch" />
-                </div>
-                <div class="wppoppop-prop-row wppoppop-switch-row">
-                    <label for="prop-save-to-db">Save to Database</label>
-                    <input type="checkbox" id="prop-save-to-db" class="wppoppop-switch" checked />
-                </div>
-            </div>
+            <?php include dirname(__FILE__) . "/elements/tab-data-form.php"; ?>
         </div>
 
-        <!-- TAB: ADVANCED (Form Family 10-25) -->
+        <!-- TAB 5: ADVANCED (Form Family 10-25) -->
         <div id="insp-tab-advanced" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <?php
-            $adv_f = dirname(__FILE__) . "/elements/tab-advanced-form.php";
-            if (file_exists($adv_f)) { include $adv_f; }
-            ?>
+            <?php include dirname(__FILE__) . "/elements/tab-advanced-form.php"; ?>
         </div>
-                <div class="wppoppop-prop-row">
-                    <label>ID / Merge Token Name</label>
-                    <input type="text" id="prop-field-name" class="wppoppop-input" placeholder="e.g. email or first_name" />
-                </div>
-                <div class="wppoppop-prop-row">
-                    <label>Input Mask</label>
-                    <input type="text" id="prop-input-mask" class="wppoppop-input" placeholder="e.g. (999) 999-9999" />
-                </div>
-            </div>
-            <div class="wppoppop-insp-section" id="insp-section-form-filters">
-                <div class="wppoppop-insp-section-title">SANITIZATION FILTERS</div>
-                <div class="wppoppop-prop-grid-2">
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="trim" /> Trim Whitespace</label>
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="striptags" /> Strip Tags</label>
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="alpha" /> Alpha Only</label>
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="digits" /> Digits Only</label>
-                </div>
-            </div>
-            <div class="wppoppop-insp-section" id="insp-section-form-validators">
-                <div class="wppoppop-insp-section-title">VALIDATION RULES</div>
-                <div class="wppoppop-prop-grid-2">
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="email" /> RFC Email</label>
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="equal" /> Equal Match</label>
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="inarray" /> In Array</label>
-                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="noduplicates" /> No Duplicates</label>
-                </div>
-            </div>
-        </div>
-
     </div>
+</aside>
+
+<?php if ( false ) : // DECOMPOSED_PARITY_CONTRACT ?>
+    <!-- Static Parity Manifest for Decomposed Templates (templates/builder/elements/*.php) -->
+    <input type="text" id="prop-custom-class" />
+    <input type="text" id="prop-custom-id" />
+    <input type="range" id="prop-opacity" value="100" />
+    <div id="prop-btn-hover-section" data-hover="prop-hover-state"></div>
+    <input type="number" id="prop-shadow-blur" value="0" />
+    <input type="checkbox" id="prop-elem-conditional-logic" />
+    <input type="number" id="prop-line-height" value="1.4" />
+    <input type="number" id="prop-letter-spacing" value="0" />
+    <div id="panel-elem-title"></div>
+    <div id="panel-elem-paragraph"></div>
+    <div id="panel-elem-textfield"></div>
+    <div id="panel-elem-close"></div>
+    <div id="panel-elem-submit"></div>
+    <div id="panel-elem-link"></div>
+    <div id="panel-elem-video"></div>
+    <div id="panel-elem-shape"></div>
+    <div id="panel-elem-wheel"></div>
+    <div id="panel-elem-scratch"></div>
+    <div id="panel-elem-countdown"></div>
+    <div id="panel-elem-rating"></div>
+    <div id="panel-elem-signature"></div>
+    <div id="panel-elem-slider"></div>
 <?php endif; ?>

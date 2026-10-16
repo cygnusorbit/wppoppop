@@ -306,6 +306,8 @@
             if (!$list.length) return;
 
             $list.sortable({
+                    distance: 8,
+                    cancel: 'input,button,.wppoppop-layer-action-btn,.wppoppop-layer-actions',
                 handle: '.wppoppop-layer-drag-grip',
                 axis: 'y',
                 containment: 'parent',
