@@ -3688,7 +3688,7 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
 })(window, jQuery);
 /* === WPPOPPOP_WORKSPACE_MEDIA_SELECT_AND_CHECKER_GUARD_END === */
 
-/* === WPPOPPOP_UNIFIED_LAYER_AND_TAB_ENGINE_START === */
+/* === WPPOPPOP_UNIFIED_SELECTION_AND_POPULATION_SUITE_START === */
 (function(window, $) {
     'use strict';
 
@@ -3699,33 +3699,11 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
         'date', 'time', 'upload', 'file', 'password', 'rating'
     ];
 
-    var MEDIA_PANEL_MAP = {
-        'shape': '#panel-elem-shape',
-        'rect': '#panel-elem-shape',
-        'rectangle': '#panel-elem-shape',
-        'square': '#panel-elem-shape',
-        'image': '#panel-elem-image',
-        'video': '#panel-elem-video',
-        'label': '#panel-elem-label',
-        'title': '#panel-elem-label',
-        'paragraph': '#panel-elem-label',
-        'html': '#panel-elem-html',
-        'close': '#panel-elem-close',
-        'close_icon': '#panel-elem-close',
-        'icon': '#panel-elem-icon',
-        'fontawesome': '#panel-elem-icon',
-        'progress': '#panel-elem-progress',
-        'button': '#panel-elem-button',
-        'link': '#panel-elem-button',
-        'link_btn': '#panel-elem-button',
-        'step': '#panel-elem-button',
-        'step_btn': '#panel-elem-button',
-        'submit': '#panel-elem-submit',
-        'submit_btn': '#panel-elem-submit'
-    };
-
-    var TEXT_BEARING_MEDIA = ['label', 'title', 'paragraph', 'button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn', 'progress'];
-    var HOVER_BUTTON_MEDIA = ['button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn'];
+    var TEXT_BEARING_TYPES = [
+        'label', 'title', 'paragraph', 'button', 'link', 'link_btn',
+        'step', 'step_btn', 'submit', 'submit_btn', 'progress',
+        'text', 'textfield', 'email', 'number', 'spinner', 'phone', 'tel', 'textarea'
+    ];
 
     function normalizeId(raw) {
         if (raw === undefined || raw === null) return '';
@@ -3737,35 +3715,34 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
             .trim();
     }
 
-    function resolveElementById(idOrObj) {
+    function resolveElement(idOrObj) {
         if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
-        var insp = window.WpPopPopBuilderInspector;
         var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
             ? String(idOrObj)
-            : (insp && (insp.activeElementId || insp.activeId) ? String(insp.activeElementId || insp.activeId) : (
-                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
-            ));
+            : (window.WpPopPopBuilderInspector && (window.WpPopPopBuilderInspector.activeElementId || window.WpPopPopBuilderInspector.activeId)
+                ? String(window.WpPopPopBuilderInspector.activeElementId || window.WpPopPopBuilderInspector.activeId)
+                : (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''));
         var cleanId = normalizeId(rawId);
         if (!cleanId) return null;
 
+        // 1. Check canvas elements list
         if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
             var list = window.WpPopPopBuilderCanvas.getActiveElements() || [];
-            if (Array.isArray(list)) {
-                for (var i = 0; i < list.length; i++) {
-                    if (list[i] && (normalizeId(list[i].id) === cleanId || String(list[i].id) === rawId)) {
-                        return list[i];
-                    }
+            for (var i = 0; i < list.length; i++) {
+                if (list[i] && (String(list[i].id) === rawId || normalizeId(list[i].id) === cleanId)) {
+                    return list[i];
                 }
             }
         }
 
+        // 2. Fallback to core state canvases
         var core = window.WpPopPopBuilderCore;
         if (core && core.state && core.state.canvases) {
             var cur = core.state.currentCanvas || 1;
             var cData = core.state.canvases[cur];
             var arr = Array.isArray(cData) ? cData : (cData && Array.isArray(cData.elements) ? cData.elements : []);
             for (var j = 0; j < arr.length; j++) {
-                if (arr[j] && (normalizeId(arr[j].id) === cleanId || String(arr[j].id) === rawId)) {
+                if (arr[j] && (String(arr[j].id) === rawId || normalizeId(arr[j].id) === cleanId)) {
                     return arr[j];
                 }
             }
@@ -3773,45 +3750,7 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
         return null;
     }
 
-    function ensureInspectorDomHierarchy() {
-        var $drawer = $('#wppoppop-inspector-drawer');
-        if (!$drawer.length) return;
-        var $body = $('#wppoppop-inspector-body');
-        if (!$body.length) {
-            $body = $drawer.find('.wppoppop-inspector-body').first();
-        }
-        if (!$body.length) return;
-
-        var $basic = $('#insp-tab-basic');
-        if ($basic.length) {
-            $('#insp-section-coords, #insp-section-animation, #insp-section-gp-basic-shared').each(function() {
-                if (!$.contains($basic[0], this)) {
-                    $basic.append(this);
-                }
-            });
-        }
-
-        var tabIds = ['insp-tab-basic', 'insp-tab-style', 'insp-tab-logic', 'insp-tab-data', 'insp-tab-advanced'];
-        for (var i = 0; i < tabIds.length; i++) {
-            var $pane = $('#' + tabIds[i]);
-            if ($pane.length && $pane.parent()[0] !== $body[0]) {
-                $body.append($pane);
-            }
-        }
-
-        var $tabsBar = $('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs').first();
-        if ($tabsBar.length) {
-            if (!$tabsBar.find('[data-tab="data"]').length) {
-                $tabsBar.append('<button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="data" style="display:none;">Data</button>');
-            }
-            if (!$tabsBar.find('[data-tab="advanced"]').length) {
-                $tabsBar.append('<button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="advanced" style="display:none;">Advanced</button>');
-            }
-        }
-    }
-
     function executeSwitchTab(tabName) {
-        ensureInspectorDomHierarchy();
         var target = String(tabName || 'basic').toLowerCase().trim();
         if (target === 'content') target = 'basic';
 
@@ -3821,294 +3760,247 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
 
         var allTabs = ['basic', 'style', 'logic', 'data', 'advanced'];
         for (var i = 0; i < allTabs.length; i++) {
-            var paneEl = document.getElementById('insp-tab-' + allTabs[i]);
-            if (paneEl) {
+            var pane = document.getElementById('insp-tab-' + allTabs[i]);
+            if (pane) {
                 if (allTabs[i] === target) {
-                    $(paneEl).addClass('active');
-                    paneEl.style.setProperty('display', 'block', 'important');
+                    $(pane).addClass('active');
+                    pane.style.setProperty('display', 'block', 'important');
                 } else {
-                    $(paneEl).removeClass('active');
-                    paneEl.style.setProperty('display', 'none', 'important');
+                    $(pane).removeClass('active');
+                    pane.style.setProperty('display', 'none', 'important');
                 }
             }
         }
     }
 
-    function syncMediaConditionalSubRows(type) {
-        if (type === 'close' || type === 'close_icon') {
-            var closeAct = $('#prop-close-action').val() || 'close';
-            $('#prop-close-cookie-wrap').toggle(closeAct === 'close_forever');
-        }
-        if (type === 'button' || type === 'link' || type === 'link_btn' || type === 'step' || type === 'step_btn') {
-            var btnAct = $('#prop-button-action').val() || 'link';
-            $('#prop-button-url-wrap').toggle(btnAct === 'link');
-            $('#prop-button-step-wrap').toggle(btnAct === 'step');
-        }
-        if (type === 'submit' || type === 'submit_btn') {
-            var subAct = $('#prop-submit-action').val() || 'default';
-            $('#prop-submit-canvas-wrap').toggle(subAct === 'next_canvas');
-            $('#prop-submit-redirect-wrap').toggle(subAct === 'redirect');
-        }
-    }
-
-    function applyElementFamilyAndModules(elOrId) {
-        ensureInspectorDomHierarchy();
-        var el = resolveElementById(elOrId);
+    function populateInspectorTabs(el) {
         if (!el) return;
-
         var type = String(el.type || '').toLowerCase().trim();
         var isForm = FORM_TYPES.indexOf(type) !== -1;
+        var isText = TEXT_BEARING_TYPES.indexOf(type) !== -1;
+        var isButton = ['button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn'].indexOf(type) !== -1;
 
+        // Toggle Data & Advanced tabs visibility
         var $tabsBar = $('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs');
         $tabsBar.find('[data-tab="data"], [data-tab="advanced"]').each(function() {
             this.style.setProperty('display', isForm ? 'inline-block' : 'none', 'important');
         });
 
-        var activeTab = $tabsBar.find('.wppoppop-insp-tab.active').attr('data-tab') || 'basic';
-        if (!isForm && (activeTab === 'data' || activeTab === 'advanced')) {
+        // Current active tab check
+        var curTab = $tabsBar.find('.wppoppop-insp-tab.active').attr('data-tab') || 'basic';
+        if (!isForm && (curTab === 'data' || curTab === 'advanced')) {
             executeSwitchTab('basic');
         } else {
-            executeSwitchTab(activeTab);
+            executeSwitchTab(curTab);
         }
 
-        $('#prop-autocomplete, #prop-required').closest('.wppoppop-prop-row, .wppoppop-insp-section').toggle(isForm);
+        // ==========================================
+        // 1. POPULATE STYLE TAB
+        // ==========================================
+        var op = (el.opacity !== undefined && el.opacity !== null && el.opacity !== '') ? parseFloat(el.opacity) : 100;
+        if (op <= 1 && op > 0) op = Math.round(op * 100);
+        $('#prop-opacity').val(op);
+        $('#prop-opacity-val').text(op + '%');
 
-        var targetMediaPanel = MEDIA_PANEL_MAP[type];
-        if (targetMediaPanel) {
-            $('[id$="-legacy"]').hide();
-            $('.element-panel, .wppoppop-panel-specific').hide();
-            $(targetMediaPanel).show();
+        $('#prop-bg-color').val(el.bgColor || '#3b82f6');
+        $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent');
 
-            var hasText = TEXT_BEARING_MEDIA.indexOf(type) !== -1;
-            var isBtn = HOVER_BUTTON_MEDIA.indexOf(type) !== -1;
-            $('#insp-section-typography, #insp-typography-section').toggle(hasText);
-            $('#prop-line-height, #prop-letter-spacing').closest('.wppoppop-insp-row, .wppoppop-field-row, .wppoppop-prop-row, div').toggle(hasText);
-            $('#prop-btn-hover-section, #prop-btn-hover-bg').closest('.wppoppop-insp-card, div').toggle(isBtn);
-
-            $('#wppoppop-form-style-module').hide();
-            $('#wppoppop-decomposed-style-media-Extras').show();
-            $('.wppoppop-media-style-scope').each(function() {
-                var allowed = ($(this).attr('data-style-elements') || '').split(',');
-                $(this).toggle(allowed.indexOf(type) !== -1);
-            });
-
-            $(targetMediaPanel).add('#wppoppop-decomposed-style-media-Extras').find('.wppoppop-gp-bind').each(function() {
-                var $inp = $(this);
-                var prop = $inp.data('prop');
-                if (!prop) return;
-                var val = el[prop];
-                if (val === undefined) {
-                    if (prop === 'content') val = el.label || el.titleText || el.paragraphText || el.text || '';
-                    if (prop === 'tag') val = el.headingTag || el.htmlTag || 'div';
-                    if (prop === 'src') val = el.imageUrl || el.url || '';
-                    if (prop === 'linkUrl') val = el.url || '';
-                    if (prop === 'shapeType') val = el.shapePreset || 'rect';
-                }
-                if ($inp.is(':checkbox')) {
-                    $inp.prop('checked', !!val);
-                } else if (val !== undefined && val !== null) {
-                    $inp.val(val);
-                }
-            });
-
-            syncMediaConditionalSubRows(type);
-        } else {
-            $('#wppoppop-decomposed-style-media-Extras').hide();
-            $('#wppoppop-form-style-module').toggle(isForm);
+        $('#insp-section-typography').toggle(isText);
+        if (isText) {
+            $('#prop-font-size').val(el.fontSize || 16);
+            $('#prop-font-weight').val(el.fontWeight || 400);
+            $('#prop-line-height').val(el.lineHeight || 1.4);
+            $('#prop-letter-spacing').val(el.letterSpacing || 0);
+            $('#prop-color').val(el.color || '#ffffff');
         }
+
+        $('#prop-pad-top').val(el.paddingTop || 0);
+        $('#prop-pad-right').val(el.paddingRight || 0);
+        $('#prop-pad-bottom').val(el.paddingBottom || 0);
+        $('#prop-pad-left').val(el.paddingLeft || 0);
+
+        $('#prop-border-width').val(el.borderWidth || 0);
+        $('#prop-border-style').val(el.borderStyle || 'solid');
+        $('#prop-border-color').val(el.borderColor || '#334155');
+        $('#prop-border-radius').val(el.borderRadius || 4);
+
+        $('#prop-shadow-x').val(el.shadowX || 0);
+        $('#prop-shadow-y').val(el.shadowY || 4);
+        $('#prop-shadow-blur').val(el.shadowBlur || 12);
+        $('#prop-shadow-spread').val(el.shadowSpread || 0);
+        $('#prop-shadow-color').val(el.shadowColor || '#000000');
+
+        $('#prop-btn-hover-section').toggle(isButton);
+        if (isButton) {
+            $('#prop-elem-hover-bg').val(el.hoverBgColor || '#0284c7');
+            $('#prop-elem-hover-color').val(el.hoverTextColor || '#ffffff');
+            $('#prop-elem-hover-border').val(el.hoverBorderColor || '#0284c7');
+        }
+
+        $('#wppoppop-form-style-module').toggle(isForm);
+        if (isForm) {
+            var align = el.textAlign || 'left';
+            $('#wppoppop-form-align-group .wppoppop-form-align-btn')
+                .removeClass('active button-primary')
+                .filter('[data-align="' + align + '"]')
+                .addClass('active button-primary');
+            $('#prop-form-icon-left').val(el.iconLeft || '');
+            $('#prop-form-icon-left-offset').val(el.iconLeftOffset || 10);
+            $('#prop-form-icon-right').val(el.iconRight || '');
+            $('#prop-form-icon-right-offset').val(el.iconRightOffset || 10);
+            $('#prop-form-custom-class').val(el.customClass || '');
+        }
+
+        // ==========================================
+        // 2. POPULATE DATA TAB
+        // ==========================================
+        $('#prop-default-value').val(el.defaultValue || '');
+        $('#prop-dynamic-default').prop('checked', !!el.dynamicDefault);
+        $('#prop-dynamic-param-row').toggle(!!el.dynamicDefault);
+        $('#prop-dynamic-param').val(el.paramName || el.dynamicParam || '');
+        $('#prop-readonly').prop('checked', !!el.readOnly);
+        $('#prop-save-to-db').prop('checked', el.saveToDb !== false);
+
+        // ==========================================
+        // 3. POPULATE ADVANCED TAB
+        // ==========================================
+        $('#prop-field-name').val(el.fieldName || el.fieldId || '');
+        $('#prop-input-mask').val(el.inputMask || '');
+        $('#prop-validator-error').val(el.errorMessage || '');
+
+        var filters = Array.isArray(el.filters) ? el.filters : [];
+        $('.prop-filter-chk').each(function() {
+            $(this).prop('checked', filters.indexOf($(this).val()) !== -1);
+        });
+
+        var validators = Array.isArray(el.validators) ? el.validators : [];
+        if (el.required && validators.indexOf('required') === -1) {
+            validators.push('required');
+        }
+        $('.prop-validator-chk').each(function() {
+            $(this).prop('checked', validators.indexOf($(this).val()) !== -1);
+        });
     }
 
-    function bindUnifiedLayerAndTabEvents() {
-        ensureInspectorDomHierarchy();
+    // ==========================================
+    // GLOBAL AUTHORITATIVE SELECTION DISPATCHER
+    // ==========================================
+    window.selectLayerEverywhere = function(idOrObj) {
+        var el = resolveElement(idOrObj);
+        if (!el) return;
+        var actualId = el.id;
 
-        var insp = window.WpPopPopBuilderInspector;
-        if (insp) {
-            insp.switchTab = function(tab) {
-                executeSwitchTab(tab);
-            };
-            insp.sanitizeLayerInspectorForElement = function(el) {
-                applyElementFamilyAndModules(el);
-            };
+        // 1. Highlight layer row in Layers Panel
+        $('#wppoppop-layers-list .wppoppop-layer-item, #wppoppop-layers-list > li')
+            .removeClass('active selected is-selected');
+        $('#wppoppop-layers-list .wppoppop-layer-item[data-id="' + actualId + '"], #wppoppop-layers-list > [data-id="' + actualId + '"]')
+            .addClass('active selected is-selected');
 
-            if (!insp._unifiedOpenWrapped) {
-                insp._unifiedOpenWrapped = true;
-                var origOpen = insp.open;
-                insp.open = function(id) {
-                    var cleanId = normalizeId(id);
-                    this.activeElementId = cleanId;
-                    this.activeId = cleanId;
-                    if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
-                        window.WpPopPopBuilderCore.state.activeId = cleanId;
-                    }
-                    var res;
-                    try {
-                        if (typeof origOpen === 'function') {
-                            res = origOpen.call(this, cleanId);
-                        }
-                    } catch (e) {
-                        console.warn('Inspector open fallback:', e);
-                    }
+        // 2. Select on Canvas stage
+        if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+            window.WpPopPopBuilderCore.state.activeId = actualId;
+        }
+        if (window.WpPopPopBuilderCanvas) {
+            window.WpPopPopBuilderCanvas.selectedId = actualId;
+            if (typeof window.WpPopPopBuilderCanvas.selectElement === 'function') {
+                try { window.WpPopPopBuilderCanvas.selectElement(actualId); } catch(e) {}
+            }
+        }
+        $('.wppoppop-canvas-item, .wppoppop-element').removeClass('wppoppop-selected selected is-selected');
+        $('#wppoppop-el-' + actualId + ', #el-' + actualId + ', [data-id="' + actualId + '"]')
+            .addClass('wppoppop-selected selected is-selected');
 
-                    var $drawer = $('#wppoppop-inspector-drawer');
-                    $drawer.css('display', 'flex').removeClass('is-closed').addClass('is-open open');
-                    $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').addClass('panel-open inspector-open');
-
-                    if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
-                        window.WpPopPopBuilderLayers.pushForInspector(true);
-                    }
-
-                    applyElementFamilyAndModules(cleanId);
-                    return res;
-                };
+        // 3. Open Layer Settings Inspector
+        if (window.WpPopPopBuilderInspector) {
+            window.WpPopPopBuilderInspector.activeElementId = actualId;
+            window.WpPopPopBuilderInspector.activeId = actualId;
+            if (typeof window.WpPopPopBuilderInspector.open === 'function') {
+                try { window.WpPopPopBuilderInspector.open(actualId); } catch(e) {}
             }
         }
 
-        // 1. DIRECT TAB CLICK HANDLER (Fixes "Unable to click Tab on Layer Settings")
+        // 4. Force slide in and push layers panel
+        var $drawer = $('#wppoppop-inspector-drawer');
+        $drawer.css('display', 'flex').removeClass('is-closed').addClass('is-open open');
+        $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').addClass('panel-open inspector-open');
+
+        if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+            window.WpPopPopBuilderLayers.pushForInspector(true);
+        }
+
+        // 5. Populate and hydrate all tabs
+        populateInspectorTabs(el);
+    };
+
+    function bindSuiteEvents() {
+        // Direct Tab Clicking
         $(document)
-            .off('click.wppoppopUnifiedTabs')
-            .on('click.wppoppopUnifiedTabs', '#wppoppop-inspector-drawer .wppoppop-insp-tab, #wppoppop-inspector-tabs-bar [data-tab], .wppoppop-inspector-tabs [data-tab]', function(e) {
+            .off('click.wppoppopSuiteTabs')
+            .on('click.wppoppopSuiteTabs', '#wppoppop-inspector-drawer .wppoppop-insp-tab, #wppoppop-inspector-tabs-bar [data-tab], .wppoppop-inspector-tabs [data-tab]', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var tab = $(this).attr('data-tab') || $(this).data('tab') || 'basic';
                 executeSwitchTab(tab);
             });
 
-        // 2. DIRECT LAYER PANEL ROW SELECTION HANDLER (Fixes "Unable to select layer on Layer Panel")
+        // Layer Panel 1-Click Selection
         $(document)
-            .off('click.wppoppopUnifiedLayerSelect')
-            .on('click.wppoppopUnifiedLayerSelect', '#wppoppop-floating-layers-panel .wppoppop-layer-item, #wppoppop-layers-list .wppoppop-layer-item, #wppoppop-layers-list > li, #wppoppop-layers-list > div', function(e) {
+            .off('click.wppoppopSuiteLayerSelect')
+            .on('click.wppoppopSuiteLayerSelect', '#wppoppop-floating-layers-panel .wppoppop-layer-item, #wppoppop-layers-list .wppoppop-layer-item, #wppoppop-layers-list > li', function(e) {
                 if ($(e.target).closest('.wppoppop-layer-action-btn, .wppoppop-layer-actions, .wppoppop-layer-vis, .wppoppop-layer-lock, .wppoppop-layer-del, .wppoppop-layer-dup, button, input').length) {
                     return;
                 }
                 e.preventDefault();
                 e.stopPropagation();
-
-                var $item = $(this).closest('.wppoppop-layer-item');
-                if (!$item.length) $item = $(this);
-
-                var rawId = $item.attr('data-id') || $item.data('id') || $item.attr('data-layer-id') || $item.attr('id') || '';
-                var cleanId = normalizeId(rawId);
-                if (!cleanId) return;
-
-                $('#wppoppop-layers-list .wppoppop-layer-item, #wppoppop-layers-list > *').removeClass('active selected is-selected');
-                $item.addClass('active selected is-selected');
-
-                if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
-                    window.WpPopPopBuilderCore.state.activeId = cleanId;
-                }
-                if (window.WpPopPopBuilderCanvas) {
-                    window.WpPopPopBuilderCanvas.selectedId = cleanId;
-                    if (typeof window.WpPopPopBuilderCanvas.selectElement === 'function') {
-                        try {
-                            window.WpPopPopBuilderCanvas.selectElement(cleanId);
-                        } catch (err) {
-                            console.warn('Canvas selectElement warning:', err);
-                        }
-                    }
-                }
-                $('.wppoppop-canvas-item, .wppoppop-element').removeClass('wppoppop-selected selected is-selected');
-                $('#wppoppop-el-' + cleanId + ', #el-' + cleanId + ', .wppoppop-canvas-item[data-id="' + cleanId + '"]').addClass('wppoppop-selected selected is-selected');
-
-                if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
-                    window.WpPopPopBuilderInspector.open(cleanId);
-                }
+                var rawId = $(this).attr('data-id') || $(this).data('id') || $(this).attr('id') || '';
+                window.selectLayerEverywhere(rawId);
             });
 
-        // Prevent jQuery UI Sortable on #wppoppop-layers-list from swallowing single clicks
-        if ($.fn.sortable && $('#wppoppop-layers-list').length) {
-            try {
-                if ($('#wppoppop-layers-list').hasClass('ui-sortable')) {
-                    $('#wppoppop-layers-list').sortable('option', 'distance', 6);
-                    $('#wppoppop-layers-list').sortable('option', 'cancel', 'input,button,.wppoppop-layer-action-btn,.wppoppop-layer-actions');
-                }
-            } catch (sortErr) {}
-        }
-
-        // 3. Two-Way Live Canvas Sync for Phase 2 Media Modules
+        // Two-way synchronization on Style, Data & Advanced inputs
         $(document)
-            .off('input.wppoppopMediaModules change.wppoppopMediaModules')
-            .on('input.wppoppopMediaModules change.wppoppopMediaModules', '[data-elem-family="media"] .wppoppop-gp-bind, #wppoppop-decomposed-style-media-Extras .wppoppop-gp-bind', function() {
-                var el = resolveElementById();
+            .off('input.wppoppopSuiteInputs change.wppoppopSuiteInputs')
+            .on('input.wppoppopSuiteInputs change.wppoppopSuiteInputs', '#insp-tab-style input, #insp-tab-style select, #insp-tab-data input, #insp-tab-advanced input', function() {
+                var el = resolveElement();
                 if (!el) return;
                 var $inp = $(this);
-                var prop = $inp.data('prop');
-                if (!prop) return;
+                var prop = $inp.data('prop') || $inp.data('data-prop') || $inp.data('adv-prop');
                 var val = $inp.is(':checkbox') ? $inp.is(':checked') : $inp.val();
-                el[prop] = val;
 
-                if (prop === 'content') {
-                    el.label = val;
-                    el.titleText = val;
-                    el.paragraphText = val;
-                    el.text = val;
-                } else if (prop === 'tag') {
-                    el.headingTag = val;
-                    el.htmlTag = val;
-                } else if (prop === 'src') {
-                    el.imageUrl = val;
-                    el.url = val;
-                } else if (prop === 'linkUrl') {
-                    el.url = val;
-                } else if (prop === 'shapeType') {
-                    el.shapePreset = val;
-                } else if (prop === 'transparentFill' && val) {
-                    el.bgColor = 'transparent';
+                if ($inp.attr('id') === 'prop-opacity') {
+                    $('#prop-opacity-val').text(val + '%');
+                    el.opacity = val;
+                } else if ($inp.attr('id') === 'prop-bg-transparent') {
+                    el.transparentFill = val;
+                    if (val) el.bgColor = 'transparent';
+                } else if (prop) {
+                    el[prop] = val;
                 }
-
-                syncMediaConditionalSubRows(String(el.type || '').toLowerCase());
 
                 if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
                     window.WpPopPopBuilderCanvas.renderCanvas();
                 }
             });
 
-        // 4. WP Media Library Picker for Element 2 (Image)
-        $(document)
-            .off('click.wppoppopWpMedia')
-            .on('click.wppoppopWpMedia', '#wppoppop-btn-media-upload, .wppoppop-media-lib-trigger', function(e) {
-                e.preventDefault();
-                if (typeof wp === 'undefined' || !wp.media) {
-                    var manualUrl = window.prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
-                    if (manualUrl) {
-                        $('#prop-image-url').val(manualUrl).trigger('change');
-                    }
-                    return;
-                }
-                var frame = wp.media({
-                    title: 'Select or Upload Layer Image',
-                    button: { text: 'Use This Image' },
-                    multiple: false
-                });
-                frame.on('select', function() {
-                    var attachment = frame.state().get('selection').first().toJSON();
-                    if (attachment && attachment.url) {
-                        $('#prop-image-url').val(attachment.url).trigger('change');
-                        if (attachment.alt) {
-                            $('#prop-image-alt').val(attachment.alt).trigger('change');
-                        }
-                    }
-                });
-                frame.open();
-            });
-
-        // 5. 1-Click Icon Presets for Element 7 (Font Awesome / Icon)
-        $(document)
-            .off('click.wppoppopMediaIconPreset')
-            .on('click.wppoppopMediaIconPreset', '#panel-elem-icon .wppoppop-icon-preset', function(e) {
-                e.preventDefault();
-                var iconCls = $(this).data('icon');
-                if (iconCls) {
-                    $('#prop-icon-class').val(iconCls).trigger('change');
-                }
-            });
+        // Wrap Inspector controller methods
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp) {
+            insp.switchTab = executeSwitchTab;
+            var origOpen = insp.open;
+            insp.open = function(id) {
+                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
+                var el = resolveElement(id);
+                if (el) populateInspectorTabs(el);
+                return res;
+            };
+        }
     }
 
     $(function() {
-        bindUnifiedLayerAndTabEvents();
-        setTimeout(bindUnifiedLayerAndTabEvents, 150);
+        bindSuiteEvents();
+        setTimeout(bindSuiteEvents, 150);
     });
-    bindUnifiedLayerAndTabEvents();
+    bindSuiteEvents();
 
 })(window, jQuery);
-/* === WPPOPPOP_UNIFIED_LAYER_AND_TAB_ENGINE_END === */
+/* === WPPOPPOP_UNIFIED_SELECTION_AND_POPULATION_SUITE_END === */
 

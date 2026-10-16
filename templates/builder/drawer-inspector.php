@@ -99,7 +99,7 @@ if (!defined('ABSPATH')) {
             </div>
 <div id="wppoppop-element-specific-settings">
                 <?php
-                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-26-submit.php', 'elem-10-text.php', 'setting-form-core.php', 'setting-form-selectors.php') as $wppoppop_mod) {
+                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
                     $wppoppop_mod_file = __DIR__ . '/elements/' . $wppoppop_mod;
                     if (file_exists($wppoppop_mod_file)) {
                         include $wppoppop_mod_file;
@@ -713,16 +713,12 @@ if (!defined('ABSPATH')) {
         </div>
 
         <!-- =================== TAB 2: STYLE =================== -->
-        <div class="wppoppop-tab-pane wppoppop-insp-content" id="insp-tab-style" data-tab-content="style" style="display:none;">
-        <?php
-        if ( file_exists( WPPOPPOP_PATH . 'templates/builder/elements/tab-style-media.php' ) ) {
-            include WPPOPPOP_PATH . 'templates/builder/elements/tab-style-media.php';
-        }
-        if ( file_exists( WPPOPPOP_PATH . 'templates/builder/elements/tab-style-form.php' ) ) {
-            include WPPOPPOP_PATH . 'templates/builder/elements/tab-style-form.php';
-        }
-        ?>
-    </div>
+        <div id="insp-tab-style" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
+            <?php
+            $style_f = dirname(__FILE__) . "/elements/tab-style-full.php";
+            if (file_exists($style_f)) { include $style_f; }
+            ?>
+        </div>
 
         <div id="insp-tab-logic" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;background:transparent !important;padding:0;margin:0;">
             <?php if (file_exists(__DIR__ . "/elements/tab-logic-actions.php")) { include __DIR__ . "/elements/tab-logic-actions.php"; } ?>
@@ -797,8 +793,8 @@ if (!defined('ABSPATH')) {
 <div id="wppoppop-element-specific-settings">
     <div class="element-panel" id="panel-elem-title-legacy"></div>
     <div class="element-panel" id="panel-elem-paragraph-legacy"></div>
-    <div class="element-panel" id="panel-elem-textfield"></div>
-    <div class="element-panel" id="panel-elem-text"></div>
+    <div class="element-panel" id="panel-elem-textfield-legacy"></div>
+    <div class="element-panel" id="panel-elem-text-legacy"></div>
     <div class="element-panel" id="panel-elem-image-legacy"></div>
     <div class="element-panel" id="panel-elem-shape-legacy"></div>
     <div class="element-panel" id="panel-elem-video-legacy"></div>
@@ -806,24 +802,24 @@ if (!defined('ABSPATH')) {
     <div class="element-panel" id="panel-elem-button-legacy"></div>
     <div class="element-panel" id="panel-elem-close-legacy"></div>
     <div class="element-panel" id="panel-elem-icon-legacy"></div>
-    <div class="element-panel" id="panel-elem-email"></div>
-    <div class="element-panel" id="panel-elem-number"></div>
-    <div class="element-panel" id="panel-elem-phone"></div>
-    <div class="element-panel" id="panel-elem-textarea"></div>
-    <div class="element-panel" id="panel-elem-select"></div>
-    <div class="element-panel" id="panel-elem-radios"></div>
-    <div class="element-panel" id="panel-elem-radio"></div>
-    <div class="element-panel" id="panel-elem-checkboxes"></div>
-    <div class="element-panel" id="panel-elem-checkbox"></div>
-    <div class="element-panel" id="panel-elem-multiselect"></div>
-    <div class="element-panel" id="panel-elem-imageselect"></div>
-    <div class="element-panel" id="panel-elem-tile"></div>
-    <div class="element-panel" id="panel-elem-rating"></div>
-    <div class="element-panel" id="panel-elem-date"></div>
-    <div class="element-panel" id="panel-elem-time"></div>
-    <div class="element-panel" id="panel-elem-upload"></div>
-    <div class="element-panel" id="panel-elem-file"></div>
-    <div class="element-panel" id="panel-elem-password"></div>
+    <div class="element-panel" id="panel-elem-email-legacy"></div>
+    <div class="element-panel" id="panel-elem-number-legacy"></div>
+    <div class="element-panel" id="panel-elem-phone-legacy"></div>
+    <div class="element-panel" id="panel-elem-textarea-legacy"></div>
+    <div class="element-panel" id="panel-elem-select-legacy"></div>
+    <div class="element-panel" id="panel-elem-radios-legacy"></div>
+    <div class="element-panel" id="panel-elem-radio-legacy"></div>
+    <div class="element-panel" id="panel-elem-checkboxes-legacy"></div>
+    <div class="element-panel" id="panel-elem-checkbox-legacy"></div>
+    <div class="element-panel" id="panel-elem-multiselect-legacy"></div>
+    <div class="element-panel" id="panel-elem-imageselect-legacy"></div>
+    <div class="element-panel" id="panel-elem-tile-legacy"></div>
+    <div class="element-panel" id="panel-elem-rating-legacy"></div>
+    <div class="element-panel" id="panel-elem-date-legacy"></div>
+    <div class="element-panel" id="panel-elem-time-legacy"></div>
+    <div class="element-panel" id="panel-elem-upload-legacy"></div>
+    <div class="element-panel" id="panel-elem-file-legacy"></div>
+    <div class="element-panel" id="panel-elem-password-legacy"></div>
     <div class="element-panel" id="panel-elem-slider"></div>
     <div class="element-panel" id="panel-elem-signature"></div>
     <div class="element-panel" id="panel-elem-wheel"></div>
@@ -896,8 +892,11 @@ if (!defined('ABSPATH')) {
 
         <!-- TAB: ADVANCED (Form Family 10-25) -->
         <div id="insp-tab-advanced" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <div class="wppoppop-insp-section" id="insp-section-form-advanced">
-                <div class="wppoppop-insp-section-title">FIELD IDENTIFIER &amp; MASK</div>
+            <?php
+            $adv_f = dirname(__FILE__) . "/elements/tab-advanced-form.php";
+            if (file_exists($adv_f)) { include $adv_f; }
+            ?>
+        </div>
                 <div class="wppoppop-prop-row">
                     <label>ID / Merge Token Name</label>
                     <input type="text" id="prop-field-name" class="wppoppop-input" placeholder="e.g. email or first_name" />

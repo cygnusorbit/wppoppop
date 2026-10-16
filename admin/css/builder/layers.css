@@ -353,3 +353,20 @@
     width: calc(100% - 20px) !important;
     outline: none !important;
 }
+
+
+/* wppoppop-layer-item-pointer-repair */
+#wppoppop-floating-layers-panel {
+    z-index: 100005 !important;
+    pointer-events: auto !important;
+}
+#wppoppop-layers-list .wppoppop-layer-item {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    user-select: none !important;
+}
+#wppoppop-layers-list .wppoppop-layer-item.active,
+#wppoppop-layers-list .wppoppop-layer-item.selected {
+    background: rgba(56, 189, 248, 0.18) !important;
+    border-color: #38bdf8 !important;
+}

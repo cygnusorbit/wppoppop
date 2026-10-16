@@ -1,40 +1,42 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 ?>
-<!-- DECOMPOSED TAB MODULE: ADVANCED TAB (Form Family Elements 10-25) -->
-<div class="wppoppop-insp-card" id="insp-section-gp-advanced-form" style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
-    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">Field ID, Filters &amp; Validators</div>
-
-    <div class="wppoppop-prop-row" style="margin-bottom:12px;">
-        <label class="wppoppop-prop-label" for="prop-adv-id" style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">ID / MERGE TOKEN NAME</label>
-        <input type="text" id="prop-adv-id" class="widefat wppoppop-input" placeholder="e.g. email or first_name" style="font-size:12px;">
-        <span class="wppoppop-gp-sublabel">Use in confirmation messages or webhooks as {id}.</span>
+<div class="wppoppop-insp-section" id="insp-section-form-advanced" style="margin-bottom:12px;">
+    <div class="wppoppop-insp-section-title">FIELD IDENTIFIER &amp; MASK</div>
+    <div class="wppoppop-prop-row" style="margin-bottom:10px;">
+        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">ID / Merge Token Name</label>
+        <input type="text" id="prop-field-name" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="fieldName" placeholder="e.g. email or first_name" style="font-size:12px;" />
+        <small style="font-size:10px; color:#64748b; display:block; margin-top:3px;">Usable as <code>{field_name}</code> merge token in webhooks and emails.</small>
     </div>
-
-    <div class="wppoppop-prop-row" id="insp-row-adv-mask" style="margin-bottom:12px;">
-        <label class="wppoppop-prop-label" for="prop-adv-mask" style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">INPUT MASK</label>
-        <input type="text" id="prop-adv-mask" class="widefat wppoppop-input" placeholder="e.g. (999) 999-9999" style="font-size:12px;">
+    <div class="wppoppop-prop-row">
+        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Input Mask</label>
+        <input type="text" id="prop-input-mask" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="inputMask" placeholder="e.g. (999) 999-9999" style="font-size:12px;" />
     </div>
+</div>
 
-    <div class="wppoppop-prop-row" style="margin-bottom:12px;padding-top:8px;border-top:1px solid #1e293b;">
-        <label class="wppoppop-prop-label" style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;">FILTERS (PRE-SUBMISSION SANITIZATION)</label>
-        <div class="wppoppop-gp-2col-grid" id="wppoppop-adv-filters-group">
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-filter" value="trim" checked> Trim whitespace</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-filter" value="strip_tags"> Strip HTML tags</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-filter" value="alpha"> Alpha only</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-filter" value="alnum"> Alphanumeric</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-filter" value="digits"> Digits only</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-filter" value="lowercase"> Lowercase</label>
-        </div>
+<div class="wppoppop-insp-section" id="insp-section-form-filters" style="margin-bottom:12px;">
+    <div class="wppoppop-insp-section-title">SANITIZATION FILTERS</div>
+    <div class="wppoppop-prop-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-filter-chk" value="trim" /> Trim Whitespace</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-filter-chk" value="striptags" /> Strip Tags</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-filter-chk" value="alpha" /> Alpha Only</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-filter-chk" value="digits" /> Digits Only</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-filter-chk" value="lowercase" /> Lowercase</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-filter-chk" value="uppercase" /> Uppercase</label>
     </div>
+</div>
 
-    <div class="wppoppop-prop-row" style="padding-top:8px;border-top:1px solid #1e293b;">
-        <label class="wppoppop-prop-label" style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;">VALIDATORS</label>
-        <div class="wppoppop-gp-2col-grid" id="wppoppop-adv-validators-group">
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-validator" value="email"> Valid Email (RFC)</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-validator" value="no_duplicates"> No Duplicates</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-validator" value="in_array"> In Options Array</label>
-            <label style="font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:6px;"><input type="checkbox" class="gp-adv-validator" value="url"> Valid URL</label>
-        </div>
+<div class="wppoppop-insp-section" id="insp-section-form-validators">
+    <div class="wppoppop-insp-section-title">VALIDATION RULES</div>
+    <div class="wppoppop-prop-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-validator-chk" value="required" /> Required *</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-validator-chk" value="email" /> RFC Email</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-validator-chk" value="equal" /> Equal Match</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-validator-chk" value="inarray" /> In Array</label>
+        <label class="wppoppop-check-label" style="font-size:11px; color:#cbd5e1; cursor:pointer;"><input type="checkbox" class="prop-validator-chk" value="noduplicates" /> No Duplicates</label>
+    </div>
+    <div class="wppoppop-prop-row">
+        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Custom Error Message</label>
+        <input type="text" id="prop-validator-error" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="errorMessage" placeholder="Please enter a valid value..." style="font-size:12px;" />
     </div>
 </div>
