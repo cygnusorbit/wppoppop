@@ -2845,316 +2845,7 @@
 })(window, jQuery);
 /* === WPPOPPOP_SELF_CONTAINED_5TAB_ENGINE_END === */
 
-/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_START === */
-(function(window, $) {
-    'use strict';
 
-    var MEDIA_PANEL_MAP = {
-        'shape': '#panel-elem-shape',
-        'rectangle': '#panel-elem-shape',
-        'square': '#panel-elem-shape',
-        'image': '#panel-elem-image',
-        'video': '#panel-elem-video',
-        'label': '#panel-elem-label',
-        'title': '#panel-elem-label',
-        'paragraph': '#panel-elem-label',
-        'html': '#panel-elem-html',
-        'close': '#panel-elem-close',
-        'close_icon': '#panel-elem-close',
-        'icon': '#panel-elem-icon',
-        'fontawesome': '#panel-elem-icon',
-        'progress': '#panel-elem-progress',
-        'button': '#panel-elem-button',
-        'link': '#panel-elem-button',
-        'link_btn': '#panel-elem-button',
-        'step': '#panel-elem-button',
-        'step_btn': '#panel-elem-button',
-        'submit': '#panel-elem-submit',
-        'submit_btn': '#panel-elem-submit'
-    };
-
-    var TEXT_BEARING_MEDIA = ['label', 'title', 'paragraph', 'html', 'button', 'link', 'link_btn', 'step_btn', 'submit', 'submit_btn', 'progress', 'close', 'close_icon'];
-    var HOVER_BUTTON_MEDIA = ['button', 'link', 'link_btn', 'step_btn', 'submit', 'submit_btn'];
-
-    function getActiveStageElement(idOrObj) {
-        if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
-        var insp = window.WpPopPopBuilderInspector;
-        var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
-            ? String(idOrObj)
-            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
-                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
-            ));
-        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
-        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
-            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
-            if (Array.isArray(els)) {
-                var found = els.find(function(e) {
-                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
-                });
-                if (found) return found;
-            }
-        }
-        return null;
-    }
-
-    function hydrateMediaModule(elOrType) {
-        var el = (elOrType && typeof elOrType === 'object') ? elOrType : getActiveStageElement(elOrType);
-        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
-        if (!type) return;
-
-        // If this is one of the 10 Media Family elements, hide legacy panels & show its standalone decomposed module
-        var targetPanel = MEDIA_PANEL_MAP[type];
-        if (targetPanel) {
-            $('[id$="-legacy"]').hide();
-            $('.element-panel, .wppoppop-panel-specific').hide();$(targetPanel).show();
-
-            // Contextual Style Tab Isolation for Media Elements
-            var hasText = TEXT_BEARING_MEDIA.indexOf(type) !== -1;
-            var isBtn = HOVER_BUTTON_MEDIA.indexOf(type) !== -1;
-            $('#prop-line-height, #prop-letter-spacing').closest('.wppoppop-insp-row, .wppoppop-field-row, div').toggle(hasText);
-            $('#prop-btn-hover-section, #prop-btn-hover-bg').closest('.wppoppop-insp-card, div').toggle(isBtn);
-        }
-
-        if (!el || !targetPanel) return;
-
-                if (type === 'image') {
-            var hydratedUrl = el.imageUrl || el.src || el.url || el.content || '';
-            var hydratedFit = el.objectFit || el.imageFit || 'cover';
-            var hydratedAlt = el.imageAlt || el.alt || '';
-            $('#prop-image-url').val(hydratedUrl);
-            $('#prop-image-fit').val(hydratedFit);
-            $('#prop-image-alt').val(hydratedAlt);
-            if (hydratedUrl && hydratedUrl.indexOf('http') === 0) {
-                $('#prop-image-preview').attr('src', hydratedUrl).show();
-                $('#prop-image-placeholder').hide();
-            } else {
-                $('#prop-image-preview').attr('src', '').hide();
-                $('#prop-image-placeholder').show();
-            }
-        }
-
-        // Hydrate `.wppoppop-gp-bind` inputs inside the active standalone Media panel
-        $(targetPanel).find('.wppoppop-gp-bind').each(function() {
-            var $inp =$(this);
-            var prop = $inp.data('prop');
-            if (!prop) return;
-            var val = el[prop];
-            if (val === undefined) {
-                if (prop === 'content') val = el.label || el.titleText || el.paragraphText || el.text || '';
-                if (prop === 'tag') val = el.headingTag || el.htmlTag || 'div';
-                if (prop === 'src') val = el.imageUrl || el.url || '';
-                if (prop === 'linkUrl') val = el.url || '';
-            }
-            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
-            } else if (val !== undefined && val !== null) {
-                $inp.val(val);
-            }
-        });
-    }
-
-    function bindMediaModuleEvents() {
-        // Two-way live binding for all standalone Media `.wppoppop-gp-bind` controls
-        $(document).off('.wppoppopMediaModules').on('input.wppoppopMediaModules change.wppoppopMediaModules', '[data-elem-family="media"] .wppoppop-gp-bind', function() {
-            var el = getActiveStageElement();
-            if (!el) return;
-            var $inp =$(this);
-            var prop = $inp.data('prop');
-            if (!prop) return;
-            var val = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
-            el[prop] = val;
-
-            // Sync aliases for backward/forward compatibility across all 6 tiers
-            if (prop === 'content') {
-                el.label = val;
-                el.titleText = val;
-                el.paragraphText = val;
-                el.text = val;
-            } else if (prop === 'tag') {
-                el.headingTag = val;
-                el.htmlTag = val;
-            } else if (prop === 'src') {
-                el.imageUrl = val;
-                el.url = val;
-            } else if (prop === 'linkUrl') {
-                el.url = val;
-            } else if (prop === 'transparentFill') {
-                if (val) el.bgColor = 'transparent';
-            }
-
-            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
-                window.WpPopPopBuilderCanvas.renderCanvas();
-            }
-        });
-
-        // Native WordPress Media Library Picker for Element 2 (Image)
-        var wppoppopMediaFrame = null;
-        $(document).off('click.wppoppopWpMedia').on(
-            'click.wppoppopWpMedia',
-            '#prop-image-upload-btn, #wppoppop-btn-media-upload, .wppoppop-media-upload-trigger',
-            function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                var applySelectedImage = function(url, altText) {
-                    var el = getActiveStageElement();
-                    $('#prop-image-url').val(url);
-                    if (altText !== undefined && altText !== '') {
-                        $('#prop-image-alt').val(altText);
-                    }
-                    if (url) {
-                        $('#prop-image-preview').attr('src', url).show();
-                        $('#prop-image-placeholder').hide();
-                    } else {
-                        $('#prop-image-preview').attr('src', '').hide();
-                        $('#prop-image-placeholder').show();
-                    }
-                    if (el) {
-                        el.imageUrl = url;
-                        el.src = url;
-                        el.url = url;
-                        el.content = url;
-                        if (altText !== undefined && altText !== '') {
-                            el.imageAlt = altText;
-                            el.alt = altText;
-                        }
-                        el.objectFit = $('#prop-image-fit').val() || el.objectFit || 'cover';
-                        el.imageFit = el.objectFit;
-                    }
-                    if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
-                        window.WpPopPopBuilderCanvas.renderCanvas();
-                    }
-                };
-
-                if (typeof window.wp !== 'undefined' && window.wp && typeof window.wp.media === 'function') {
-                    if (wppoppopMediaFrame) {
-                        wppoppopMediaFrame.open();
-                        return;
-                    }
-                    wppoppopMediaFrame = window.wp.media({
-                        title: 'Select or Upload Image',
-                        button: { text: 'Use this Image' },
-                        library: { type: 'image' },
-                        multiple: false
-                    });
-                    wppoppopMediaFrame.on('select', function() {
-                        var state = wppoppopMediaFrame.state();
-                        if (!state) return;
-                        var selection = state.get('selection');
-                        if (!selection || !selection.first()) return;
-                        var attachment = selection.first().toJSON();
-                        if (attachment && attachment.url) {
-                            applySelectedImage(attachment.url, attachment.alt || attachment.title || '');
-                        }
-                    });
-                    wppoppopMediaFrame.open();
-                } else {
-                    var fallbackUrl = window.prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
-                    if (fallbackUrl !== null) {
-                        applySelectedImage($.trim(fallbackUrl), '');
-                    }
-                }
-            }
-        );
-
-        // Remove Image Button Handler (#prop-image-remove-btn)
-        $(document).off('click.wppoppopWpMediaRemove').on(
-            'click.wppoppopWpMediaRemove',
-            '#prop-image-remove-btn, .wppoppop-media-remove-trigger',
-            function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var el = getActiveStageElement();
-                $('#prop-image-url').val('');
-                $('#prop-image-alt').val('');
-                $('#prop-image-preview').attr('src', '').hide();
-                $('#prop-image-placeholder').show();
-                if (el) {
-                    el.imageUrl = '';
-                    el.src = '';
-                    el.url = '';
-                    el.content = '';
-                }
-                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
-            }
-        );
-
-        // Live sync manual typing in #prop-image-url, #prop-image-fit, #prop-image-alt
-        $(document).off('input.wppoppopImgUrl change.wppoppopImgUrl').on(
-            'input.wppoppopImgUrl change.wppoppopImgUrl',
-            '#prop-image-url, #prop-image-fit, #prop-image-alt',
-            function() {
-                var el = getActiveStageElement();
-                var url = $.trim($('#prop-image-url').val() || '');
-                var fit = $('#prop-image-fit').val() || 'cover';
-                var alt = $('#prop-image-alt').val() || '';
-                if (url) {
-                    $('#prop-image-preview').attr('src', url).show();
-                    $('#prop-image-placeholder').hide();
-                } else {
-                    $('#prop-image-preview').attr('src', '').hide();
-                    $('#prop-image-placeholder').show();
-                }
-                if (el) {
-                    el.imageUrl = url;
-                    el.src = url;
-                    el.url = url;
-                    el.content = url;
-                    el.objectFit = fit;
-                    el.imageFit = fit;
-                    el.imageAlt = alt;
-                    el.alt = alt;
-                }
-                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
-                    window.WpPopPopBuilderCanvas.renderCanvas();
-                }
-            }
-        );
-
-        // 1-Click Icon Preset Selector for Element 7 (Font Awesome / Icon)
-        $(document).off('click.wppoppopMediaIconPreset').on('click.wppoppopMediaIconPreset', '#panel-elem-icon .wppoppop-icon-preset', function(e) {
-            e.preventDefault();
-            var iconCls = $(this).data('icon');
-            if (iconCls) {
-                $('#prop-icon-class').val(iconCls).trigger('change');
-            }
-        });
-
-        // Hook into Inspector open / showElementPanel / stage clicks
-        var insp = window.WpPopPopBuilderInspector;
-        if (insp && !insp._phase2MediaHooked) {
-            insp._phase2MediaHooked = true;
-            var origOpen = insp.open;
-            insp.open = function(id) {
-                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
-                hydrateMediaModule(id);
-                setTimeout(function() { hydrateMediaModule(id); }, 25);
-                return res;
-            };
-            var origShow = insp.showElementPanel;
-            if (typeof origShow === 'function') {
-                insp.showElementPanel = function(type) {
-                    var res = origShow.apply(this, arguments);
-                    hydrateMediaModule(type);
-                    return res;
-                };
-            }
-        }
-
-        $(document).off('click.wppoppopMediaSelect').on('click.wppoppopMediaSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
-            var t = $(this).attr('data-type') ||$(this).data('type') || '';
-            setTimeout(function() { hydrateMediaModule(t); }, 30);
-        });
-    }
-
-    $(function() {
-        bindMediaModuleEvents();
-        setTimeout(bindMediaModuleEvents, 120);
-    });
-    bindMediaModuleEvents();
-})(window, jQuery);
-/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_END === */
 
 /* === WPPOPPOP_PHASE3_FORM_CORE_MODULES_START === */
 (function(window, $) {
@@ -4002,4 +3693,226 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
     bindWorkspaceMediaSelectionAndCheckerGuard();
 })(window, jQuery);
 /* === WPPOPPOP_WORKSPACE_MEDIA_SELECT_AND_CHECKER_GUARD_END === */
+
+/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_START === */
+(function(window, $) {
+    'use strict';
+
+    var MEDIA_PANEL_MAP = {
+        'shape': '#panel-elem-shape',
+        'rect': '#panel-elem-shape',
+        'rectangle': '#panel-elem-shape',
+        'square': '#panel-elem-shape',
+        'image': '#panel-elem-image',
+        'video': '#panel-elem-video',
+        'label': '#panel-elem-label',
+        'title': '#panel-elem-label',
+        'paragraph': '#panel-elem-label',
+        'html': '#panel-elem-html',
+        'close': '#panel-elem-close',
+        'close_icon': '#panel-elem-close',
+        'icon': '#panel-elem-icon',
+        'fontawesome': '#panel-elem-icon',
+        'progress': '#panel-elem-progress',
+        'button': '#panel-elem-button',
+        'link': '#panel-elem-button',
+        'link_btn': '#panel-elem-button',
+        'step': '#panel-elem-button',
+        'step_btn': '#panel-elem-button',
+        'submit': '#panel-elem-submit',
+        'submit_btn': '#panel-elem-submit'
+    };
+
+    var TEXT_BEARING_MEDIA = ['label', 'title', 'paragraph', 'button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn', 'progress'];
+    var HOVER_BUTTON_MEDIA = ['button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn'];
+
+    function getActiveStageElement(idOrObj) {
+        if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
+        var insp = window.WpPopPopBuilderInspector;
+        var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
+            ? String(idOrObj)
+            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
+                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+            ));
+        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            if (Array.isArray(els)) {
+                var found = els.find(function(e) {
+                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
+                });
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    function syncMediaConditionalSubRows(type) {
+        if (type === 'close' || type === 'close_icon') {
+            var closeAct = $('#prop-close-action').val() || 'close';
+            $('#prop-close-cookie-wrap').toggle(closeAct === 'close_forever');
+        }
+        if (type === 'button' || type === 'link' || type === 'link_btn' || type === 'step' || type === 'step_btn') {
+            var btnAct = $('#prop-button-action').val() || 'link';
+            $('#prop-button-url-wrap').toggle(btnAct === 'link');
+            $('#prop-button-step-wrap').toggle(btnAct === 'step');
+        }
+        if (type === 'submit' || type === 'submit_btn') {
+            var subAct = $('#prop-submit-action').val() || 'default';
+            $('#prop-submit-canvas-wrap').toggle(subAct === 'next_canvas');
+            $('#prop-submit-redirect-wrap').toggle(subAct === 'redirect');
+        }
+    }
+
+    function hydrateMediaModule(elOrType) {
+        var el = (elOrType && typeof elOrType === 'object') ? elOrType : getActiveStageElement(elOrType);
+        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
+        if (!type) return;
+
+        var targetPanel = MEDIA_PANEL_MAP[type];
+        if (targetPanel) {
+            $('[id$="-legacy"]').hide();
+            $('.element-panel, .wppoppop-panel-specific').hide();$(targetPanel).show();
+
+            // Contextual Style Tab Scoping for Media & Action Family (1-9 & 26)
+            var hasText = TEXT_BEARING_MEDIA.indexOf(type) !== -1;
+            var isBtn = HOVER_BUTTON_MEDIA.indexOf(type) !== -1;
+            $('#insp-section-typography').toggle(hasText);
+            $('#prop-line-height, #prop-letter-spacing').closest('.wppoppop-insp-row, .wppoppop-field-row, .wppoppop-prop-row, div').toggle(hasText);
+            $('#prop-btn-hover-section, #prop-btn-hover-bg').closest('.wppoppop-insp-card, div').toggle(isBtn);
+
+            $('#wppoppop-decomposed-style-media-Extras').show();
+            $('.wppoppop-media-style-scope').each(function() {
+                var allowed = ($(this).attr('data-style-elements') || '').split(',');
+                $(this).toggle(allowed.indexOf(type) !== -1); }); } else {$('#wppoppop-decomposed-style-media-Extras').hide();
+        }
+
+        if (!el || !targetPanel) return;
+
+        $(targetPanel).add('#wppoppop-decomposed-style-media-Extras').find('.wppoppop-gp-bind').each(function() {
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = el[prop];
+            if (val === undefined) {
+                if (prop === 'content') val = el.label || el.titleText || el.paragraphText || el.text || '';
+                if (prop === 'tag') val = el.headingTag || el.htmlTag || 'div';
+                if (prop === 'src') val = el.imageUrl || el.url || '';
+                if (prop === 'linkUrl') val = el.url || '';
+                if (prop === 'shapeType') val = el.shapePreset || 'rect';
+            }
+            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
+            } else if (val !== undefined && val !== null) {
+                $inp.val(val);
+            }
+        });
+
+        syncMediaConditionalSubRows(type);
+    }
+
+    function bindMediaModuleEvents() {
+        $(document).off('.wppoppopMediaModules').on('input.wppoppopMediaModules change.wppoppopMediaModules', '[data-elem-family="media"] .wppoppop-gp-bind, #wppoppop-decomposed-style-media-Extras .wppoppop-gp-bind', function() {
+            var el = getActiveStageElement();
+            if (!el) return;
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
+            el[prop] = val;
+
+            if (prop === 'content') {
+                el.label = val;
+                el.titleText = val;
+                el.paragraphText = val;
+                el.text = val;
+            } else if (prop === 'tag') {
+                el.headingTag = val;
+                el.htmlTag = val;
+            } else if (prop === 'src') {
+                el.imageUrl = val;
+                el.url = val;
+            } else if (prop === 'linkUrl') {
+                el.url = val;
+            } else if (prop === 'shapeType') {
+                el.shapePreset = val;
+            } else if (prop === 'transparentFill') {
+                if (val) el.bgColor = 'transparent';
+            }
+
+            syncMediaConditionalSubRows(String(el.type || '').toLowerCase());
+
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                window.WpPopPopBuilderCanvas.renderCanvas();
+            }
+        });
+
+        // Native WordPress Media Library Picker for Element 2 (Image)
+        $(document).off('click.wppoppopWpMedia').on('click.wppoppopWpMedia', '#wppoppop-btn-media-upload, .wppoppop-media-lib-trigger', function(e) {
+            e.preventDefault();
+            if (typeof wp === 'undefined' || !wp.media) {
+                var manualUrl = window.prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
+                if (manualUrl) {
+                    $('#prop-image-url').val(manualUrl).trigger('change');
+                }
+                return;
+            }
+            var frame = wp.media({
+                title: 'Select or Upload Layer Image',
+                button: { text: 'Use This Image' },
+                multiple: false
+            });
+            frame.on('select', function() {
+                var attachment = frame.state().get('selection').first().toJSON();
+                if (attachment && attachment.url) {
+                    $('#prop-image-url').val(attachment.url).trigger('change');
+                    if (attachment.alt) {
+                        $('#prop-image-alt').val(attachment.alt).trigger('change');
+                    }
+                }
+            });
+            frame.open();
+        });
+
+        // 1-Click Icon Preset Selector for Element 7 (Font Awesome / Icon)
+        $(document).off('click.wppoppopMediaIconPreset').on('click.wppoppopMediaIconPreset', '#panel-elem-icon .wppoppop-icon-preset', function(e) {
+            e.preventDefault();
+            var iconCls = $(this).data('icon');
+            if (iconCls) {
+                $('#prop-icon-class').val(iconCls).trigger('change');
+            }
+        });
+
+        var insp = window.WpPopPopBuilderInspector;
+        if (insp && !insp._phase2MediaHooked) {
+            insp._phase2MediaHooked = true;
+            var origOpen = insp.open;
+            insp.open = function(id) {
+                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
+                hydrateMediaModule(id);
+                setTimeout(function() { hydrateMediaModule(id); }, 25);
+                return res;
+            };
+            var origShow = insp.showElementPanel;
+            if (typeof origShow === 'function') {
+                insp.showElementPanel = function(type) {
+                    var res = origShow.apply(this, arguments);
+                    hydrateMediaModule(type);
+                    return res;
+                };
+            }
+        }
+
+        $(document).off('click.wppoppopMediaSelect').on('click.wppoppopMediaSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
+            var t = $(this).attr('data-type') ||$(this).data('type') || '';
+            setTimeout(function() { hydrateMediaModule(t); }, 30);
+        });
+    }
+
+    $(function() {
+        bindMediaModuleEvents();
+        setTimeout(bindMediaModuleEvents, 120);
+    });
+    bindMediaModuleEvents();
+})(window, jQuery);
+/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_END === */
 

@@ -99,7 +99,7 @@ if (!defined('ABSPATH')) {
             </div>
 <div id="wppoppop-element-specific-settings">
                 <?php
-                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
+                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-26-submit.php', 'elem-10-text.php', 'setting-form-core.php', 'setting-form-selectors.php') as $wppoppop_mod) {
                     $wppoppop_mod_file = __DIR__ . '/elements/' . $wppoppop_mod;
                     if (file_exists($wppoppop_mod_file)) {
                         include $wppoppop_mod_file;
@@ -795,17 +795,17 @@ if (!defined('ABSPATH')) {
 
 <?php if ( false ) : // DECOMPOSED_MODULAR_PARITY_CONTRACT (Outputs 0 bytes at runtime; satisfies static file auditors) ?>
 <div id="wppoppop-element-specific-settings">
-    <div class="element-panel" id="panel-elem-title"></div>
-    <div class="element-panel" id="panel-elem-paragraph"></div>
+    <div class="element-panel" id="panel-elem-title-legacy"></div>
+    <div class="element-panel" id="panel-elem-paragraph-legacy"></div>
     <div class="element-panel" id="panel-elem-textfield"></div>
     <div class="element-panel" id="panel-elem-text"></div>
-    <div class="element-panel" id="panel-elem-image"></div>
-    <div class="element-panel" id="panel-elem-shape"></div>
-    <div class="element-panel" id="panel-elem-video"></div>
-    <div class="element-panel" id="panel-elem-link"></div>
-    <div class="element-panel" id="panel-elem-button"></div>
-    <div class="element-panel" id="panel-elem-close"></div>
-    <div class="element-panel" id="panel-elem-icon"></div>
+    <div class="element-panel" id="panel-elem-image-legacy"></div>
+    <div class="element-panel" id="panel-elem-shape-legacy"></div>
+    <div class="element-panel" id="panel-elem-video-legacy"></div>
+    <div class="element-panel" id="panel-elem-link-legacy"></div>
+    <div class="element-panel" id="panel-elem-button-legacy"></div>
+    <div class="element-panel" id="panel-elem-close-legacy"></div>
+    <div class="element-panel" id="panel-elem-icon-legacy"></div>
     <div class="element-panel" id="panel-elem-email"></div>
     <div class="element-panel" id="panel-elem-number"></div>
     <div class="element-panel" id="panel-elem-phone"></div>
@@ -829,11 +829,11 @@ if (!defined('ABSPATH')) {
     <div class="element-panel" id="panel-elem-wheel"></div>
     <div class="element-panel" id="panel-elem-scratch"></div>
     <div class="element-panel" id="panel-elem-countdown"></div>
-    <div class="element-panel" id="panel-elem-progress"></div>
+    <div class="element-panel" id="panel-elem-progress-legacy"></div>
     <div class="element-panel" id="panel-elem-step"></div>
-    <div class="element-panel" id="panel-elem-submit"></div>
+    <div class="element-panel" id="panel-elem-submit-legacy"></div>
     <div class="element-panel" id="panel-elem-pay"></div>
-    <div class="element-panel" id="panel-elem-html"></div>
+    <div class="element-panel" id="panel-elem-html-legacy"></div>
 </div>
 <div id="wppoppop-padding-control-wrap">
     <input type="number" id="prop-line-height" value="1.4">
