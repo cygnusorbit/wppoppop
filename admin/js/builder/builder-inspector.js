@@ -565,15 +565,9 @@
         },
 
         switchTab: function(tab) {
-            var target = tab || 'basic';
-            $('#wppoppop-inspector-tabs-bar .wppoppop-insp-tab, .wppoppop-inspector-tabs .wppoppop-insp-tab')
-                .removeClass('active')
-                .filter('[data-tab="' + target + '"]')
-                .addClass('active');
-            $('#insp-tab-basic, #insp-tab-style, #insp-tab-logic, #insp-tab-data, #insp-tab-advanced')
-                .removeClass('active')
-                .hide();
-            $('#insp-tab-' + target).addClass('active').show();
+        $('.wppoppop-insp-tab').removeClass('active').css({
+            'border-bottom': '2px solid transparent',
+            'color': '#94a3b8'
         });
         $('.wppoppop-insp-tab[data-tab="' + tab + '"]').addClass('active').css({
             'border-bottom': '2px solid #38bdf8',
@@ -3694,9 +3688,16 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
 })(window, jQuery);
 /* === WPPOPPOP_WORKSPACE_MEDIA_SELECT_AND_CHECKER_GUARD_END === */
 
-/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_START === */
+/* === WPPOPPOP_UNIFIED_LAYER_AND_TAB_ENGINE_START === */
 (function(window, $) {
     'use strict';
+
+    var FORM_TYPES = [
+        'text', 'textfield', 'email', 'number', 'spinner', 'phone', 'tel',
+        'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
+        'radio', 'radios', 'multiselect', 'imageselect', 'tile',
+        'date', 'time', 'upload', 'file', 'password', 'rating'
+    ];
 
     var MEDIA_PANEL_MAP = {
         'shape': '#panel-elem-shape',
@@ -3726,25 +3727,111 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
     var TEXT_BEARING_MEDIA = ['label', 'title', 'paragraph', 'button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn', 'progress'];
     var HOVER_BUTTON_MEDIA = ['button', 'link', 'link_btn', 'step', 'step_btn', 'submit', 'submit_btn'];
 
-    function getActiveStageElement(idOrObj) {
+    function normalizeId(raw) {
+        if (raw === undefined || raw === null) return '';
+        return String(raw)
+            .replace(/^wppoppop-layer-/, '')
+            .replace(/^layer-/, '')
+            .replace(/^wppoppop-el-/, '')
+            .replace(/^el-/, '')
+            .trim();
+    }
+
+    function resolveElementById(idOrObj) {
         if (idOrObj && typeof idOrObj === 'object' && idOrObj.type) return idOrObj;
         var insp = window.WpPopPopBuilderInspector;
         var rawId = (idOrObj !== undefined && idOrObj !== null && typeof idOrObj !== 'object')
             ? String(idOrObj)
-            : (insp && insp.activeElementId ? String(insp.activeElementId) : (
+            : (insp && (insp.activeElementId || insp.activeId) ? String(insp.activeElementId || insp.activeId) : (
                 window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
             ));
-        var cleanId = rawId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+        var cleanId = normalizeId(rawId);
+        if (!cleanId) return null;
+
         if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
-            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
-            if (Array.isArray(els)) {
-                var found = els.find(function(e) {
-                    return e && (String(e.id) === cleanId || String(e.id) === rawId);
-                });
-                if (found) return found;
+            var list = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            if (Array.isArray(list)) {
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i] && (normalizeId(list[i].id) === cleanId || String(list[i].id) === rawId)) {
+                        return list[i];
+                    }
+                }
+            }
+        }
+
+        var core = window.WpPopPopBuilderCore;
+        if (core && core.state && core.state.canvases) {
+            var cur = core.state.currentCanvas || 1;
+            var cData = core.state.canvases[cur];
+            var arr = Array.isArray(cData) ? cData : (cData && Array.isArray(cData.elements) ? cData.elements : []);
+            for (var j = 0; j < arr.length; j++) {
+                if (arr[j] && (normalizeId(arr[j].id) === cleanId || String(arr[j].id) === rawId)) {
+                    return arr[j];
+                }
             }
         }
         return null;
+    }
+
+    function ensureInspectorDomHierarchy() {
+        var $drawer = $('#wppoppop-inspector-drawer');
+        if (!$drawer.length) return;
+        var $body = $('#wppoppop-inspector-body');
+        if (!$body.length) {
+            $body = $drawer.find('.wppoppop-inspector-body').first();
+        }
+        if (!$body.length) return;
+
+        var $basic = $('#insp-tab-basic');
+        if ($basic.length) {
+            $('#insp-section-coords, #insp-section-animation, #insp-section-gp-basic-shared').each(function() {
+                if (!$.contains($basic[0], this)) {
+                    $basic.append(this);
+                }
+            });
+        }
+
+        var tabIds = ['insp-tab-basic', 'insp-tab-style', 'insp-tab-logic', 'insp-tab-data', 'insp-tab-advanced'];
+        for (var i = 0; i < tabIds.length; i++) {
+            var $pane = $('#' + tabIds[i]);
+            if ($pane.length && $pane.parent()[0] !== $body[0]) {
+                $body.append($pane);
+            }
+        }
+
+        var $tabsBar = $('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs').first();
+        if ($tabsBar.length) {
+            if (!$tabsBar.find('[data-tab="data"]').length) {
+                $tabsBar.append('<button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="data" style="display:none;">Data</button>');
+            }
+            if (!$tabsBar.find('[data-tab="advanced"]').length) {
+                $tabsBar.append('<button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="advanced" style="display:none;">Advanced</button>');
+            }
+        }
+    }
+
+    function executeSwitchTab(tabName) {
+        ensureInspectorDomHierarchy();
+        var target = String(tabName || 'basic').toLowerCase().trim();
+        if (target === 'content') target = 'basic';
+
+        var $tabsBar = $('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs');
+        $tabsBar.find('.wppoppop-insp-tab, [data-tab]').removeClass('active');
+        $tabsBar.find('[data-tab="' + target + '"]').addClass('active');
+
+        var allTabs = ['basic', 'style', 'logic', 'data', 'advanced'];
+        for (var i = 0; i < allTabs.length; i++) {
+            var paneEl = document.getElementById('insp-tab-' + allTabs[i]);
+            if (paneEl) {
+                if (allTabs[i] === target) {
+                    $(paneEl).addClass('active');
+                    paneEl.style.setProperty('display', 'block', 'important');
+                } else {
+                    $(paneEl).removeClass('active');
+                    paneEl.style.setProperty('display', 'none', 'important');
+                }
+            }
+        }
     }
 
     function syncMediaConditionalSubRows(type) {
@@ -3764,155 +3851,264 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
         }
     }
 
-    function hydrateMediaModule(elOrType) {
-        var el = (elOrType && typeof elOrType === 'object') ? elOrType : getActiveStageElement(elOrType);
-        var type = (el && el.type) ? String(el.type).toLowerCase().trim() : (typeof elOrType === 'string' ? elOrType.toLowerCase().trim() : '');
-        if (!type) return;
+    function applyElementFamilyAndModules(elOrId) {
+        ensureInspectorDomHierarchy();
+        var el = resolveElementById(elOrId);
+        if (!el) return;
 
-        var targetPanel = MEDIA_PANEL_MAP[type];
-        if (targetPanel) {
+        var type = String(el.type || '').toLowerCase().trim();
+        var isForm = FORM_TYPES.indexOf(type) !== -1;
+
+        var $tabsBar = $('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs');
+        $tabsBar.find('[data-tab="data"], [data-tab="advanced"]').each(function() {
+            this.style.setProperty('display', isForm ? 'inline-block' : 'none', 'important');
+        });
+
+        var activeTab = $tabsBar.find('.wppoppop-insp-tab.active').attr('data-tab') || 'basic';
+        if (!isForm && (activeTab === 'data' || activeTab === 'advanced')) {
+            executeSwitchTab('basic');
+        } else {
+            executeSwitchTab(activeTab);
+        }
+
+        $('#prop-autocomplete, #prop-required').closest('.wppoppop-prop-row, .wppoppop-insp-section').toggle(isForm);
+
+        var targetMediaPanel = MEDIA_PANEL_MAP[type];
+        if (targetMediaPanel) {
             $('[id$="-legacy"]').hide();
-            $('.element-panel, .wppoppop-panel-specific').hide();$(targetPanel).show();
+            $('.element-panel, .wppoppop-panel-specific').hide();
+            $(targetMediaPanel).show();
 
-            // Contextual Style Tab Scoping for Media & Action Family (1-9 & 26)
             var hasText = TEXT_BEARING_MEDIA.indexOf(type) !== -1;
             var isBtn = HOVER_BUTTON_MEDIA.indexOf(type) !== -1;
-            $('#insp-section-typography').toggle(hasText);
+            $('#insp-section-typography, #insp-typography-section').toggle(hasText);
             $('#prop-line-height, #prop-letter-spacing').closest('.wppoppop-insp-row, .wppoppop-field-row, .wppoppop-prop-row, div').toggle(hasText);
             $('#prop-btn-hover-section, #prop-btn-hover-bg').closest('.wppoppop-insp-card, div').toggle(isBtn);
 
+            $('#wppoppop-form-style-module').hide();
             $('#wppoppop-decomposed-style-media-Extras').show();
             $('.wppoppop-media-style-scope').each(function() {
                 var allowed = ($(this).attr('data-style-elements') || '').split(',');
-                $(this).toggle(allowed.indexOf(type) !== -1); }); } else {$('#wppoppop-decomposed-style-media-Extras').hide();
+                $(this).toggle(allowed.indexOf(type) !== -1);
+            });
+
+            $(targetMediaPanel).add('#wppoppop-decomposed-style-media-Extras').find('.wppoppop-gp-bind').each(function() {
+                var $inp = $(this);
+                var prop = $inp.data('prop');
+                if (!prop) return;
+                var val = el[prop];
+                if (val === undefined) {
+                    if (prop === 'content') val = el.label || el.titleText || el.paragraphText || el.text || '';
+                    if (prop === 'tag') val = el.headingTag || el.htmlTag || 'div';
+                    if (prop === 'src') val = el.imageUrl || el.url || '';
+                    if (prop === 'linkUrl') val = el.url || '';
+                    if (prop === 'shapeType') val = el.shapePreset || 'rect';
+                }
+                if ($inp.is(':checkbox')) {
+                    $inp.prop('checked', !!val);
+                } else if (val !== undefined && val !== null) {
+                    $inp.val(val);
+                }
+            });
+
+            syncMediaConditionalSubRows(type);
+        } else {
+            $('#wppoppop-decomposed-style-media-Extras').hide();
+            $('#wppoppop-form-style-module').toggle(isForm);
         }
-
-        if (!el || !targetPanel) return;
-
-        $(targetPanel).add('#wppoppop-decomposed-style-media-Extras').find('.wppoppop-gp-bind').each(function() {
-            var $inp =$(this);
-            var prop = $inp.data('prop');
-            if (!prop) return;
-            var val = el[prop];
-            if (val === undefined) {
-                if (prop === 'content') val = el.label || el.titleText || el.paragraphText || el.text || '';
-                if (prop === 'tag') val = el.headingTag || el.htmlTag || 'div';
-                if (prop === 'src') val = el.imageUrl || el.url || '';
-                if (prop === 'linkUrl') val = el.url || '';
-                if (prop === 'shapeType') val = el.shapePreset || 'rect';
-            }
-            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
-            } else if (val !== undefined && val !== null) {
-                $inp.val(val);
-            }
-        });
-
-        syncMediaConditionalSubRows(type);
     }
 
-    function bindMediaModuleEvents() {
-        $(document).off('.wppoppopMediaModules').on('input.wppoppopMediaModules change.wppoppopMediaModules', '[data-elem-family="media"] .wppoppop-gp-bind, #wppoppop-decomposed-style-media-Extras .wppoppop-gp-bind', function() {
-            var el = getActiveStageElement();
-            if (!el) return;
-            var $inp =$(this);
-            var prop = $inp.data('prop');
-            if (!prop) return;
-            var val = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
-            el[prop] = val;
-
-            if (prop === 'content') {
-                el.label = val;
-                el.titleText = val;
-                el.paragraphText = val;
-                el.text = val;
-            } else if (prop === 'tag') {
-                el.headingTag = val;
-                el.htmlTag = val;
-            } else if (prop === 'src') {
-                el.imageUrl = val;
-                el.url = val;
-            } else if (prop === 'linkUrl') {
-                el.url = val;
-            } else if (prop === 'shapeType') {
-                el.shapePreset = val;
-            } else if (prop === 'transparentFill') {
-                if (val) el.bgColor = 'transparent';
-            }
-
-            syncMediaConditionalSubRows(String(el.type || '').toLowerCase());
-
-            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
-                window.WpPopPopBuilderCanvas.renderCanvas();
-            }
-        });
-
-        // Native WordPress Media Library Picker for Element 2 (Image)
-        $(document).off('click.wppoppopWpMedia').on('click.wppoppopWpMedia', '#wppoppop-btn-media-upload, .wppoppop-media-lib-trigger', function(e) {
-            e.preventDefault();
-            if (typeof wp === 'undefined' || !wp.media) {
-                var manualUrl = window.prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
-                if (manualUrl) {
-                    $('#prop-image-url').val(manualUrl).trigger('change');
-                }
-                return;
-            }
-            var frame = wp.media({
-                title: 'Select or Upload Layer Image',
-                button: { text: 'Use This Image' },
-                multiple: false
-            });
-            frame.on('select', function() {
-                var attachment = frame.state().get('selection').first().toJSON();
-                if (attachment && attachment.url) {
-                    $('#prop-image-url').val(attachment.url).trigger('change');
-                    if (attachment.alt) {
-                        $('#prop-image-alt').val(attachment.alt).trigger('change');
-                    }
-                }
-            });
-            frame.open();
-        });
-
-        // 1-Click Icon Preset Selector for Element 7 (Font Awesome / Icon)
-        $(document).off('click.wppoppopMediaIconPreset').on('click.wppoppopMediaIconPreset', '#panel-elem-icon .wppoppop-icon-preset', function(e) {
-            e.preventDefault();
-            var iconCls = $(this).data('icon');
-            if (iconCls) {
-                $('#prop-icon-class').val(iconCls).trigger('change');
-            }
-        });
+    function bindUnifiedLayerAndTabEvents() {
+        ensureInspectorDomHierarchy();
 
         var insp = window.WpPopPopBuilderInspector;
-        if (insp && !insp._phase2MediaHooked) {
-            insp._phase2MediaHooked = true;
-            var origOpen = insp.open;
-            insp.open = function(id) {
-                var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
-                hydrateMediaModule(id);
-                setTimeout(function() { hydrateMediaModule(id); }, 25);
-                return res;
+        if (insp) {
+            insp.switchTab = function(tab) {
+                executeSwitchTab(tab);
             };
-            var origShow = insp.showElementPanel;
-            if (typeof origShow === 'function') {
-                insp.showElementPanel = function(type) {
-                    var res = origShow.apply(this, arguments);
-                    hydrateMediaModule(type);
+            insp.sanitizeLayerInspectorForElement = function(el) {
+                applyElementFamilyAndModules(el);
+            };
+
+            if (!insp._unifiedOpenWrapped) {
+                insp._unifiedOpenWrapped = true;
+                var origOpen = insp.open;
+                insp.open = function(id) {
+                    var cleanId = normalizeId(id);
+                    this.activeElementId = cleanId;
+                    this.activeId = cleanId;
+                    if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+                        window.WpPopPopBuilderCore.state.activeId = cleanId;
+                    }
+                    var res;
+                    try {
+                        if (typeof origOpen === 'function') {
+                            res = origOpen.call(this, cleanId);
+                        }
+                    } catch (e) {
+                        console.warn('Inspector open fallback:', e);
+                    }
+
+                    var $drawer = $('#wppoppop-inspector-drawer');
+                    $drawer.css('display', 'flex').removeClass('is-closed').addClass('is-open open');
+                    $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').addClass('panel-open inspector-open');
+
+                    if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
+                        window.WpPopPopBuilderLayers.pushForInspector(true);
+                    }
+
+                    applyElementFamilyAndModules(cleanId);
                     return res;
                 };
             }
         }
 
-        $(document).off('click.wppoppopMediaSelect').on('click.wppoppopMediaSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
-            var t = $(this).attr('data-type') ||$(this).data('type') || '';
-            setTimeout(function() { hydrateMediaModule(t); }, 30);
-        });
+        // 1. DIRECT TAB CLICK HANDLER (Fixes "Unable to click Tab on Layer Settings")
+        $(document)
+            .off('click.wppoppopUnifiedTabs')
+            .on('click.wppoppopUnifiedTabs', '#wppoppop-inspector-drawer .wppoppop-insp-tab, #wppoppop-inspector-tabs-bar [data-tab], .wppoppop-inspector-tabs [data-tab]', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var tab = $(this).attr('data-tab') || $(this).data('tab') || 'basic';
+                executeSwitchTab(tab);
+            });
+
+        // 2. DIRECT LAYER PANEL ROW SELECTION HANDLER (Fixes "Unable to select layer on Layer Panel")
+        $(document)
+            .off('click.wppoppopUnifiedLayerSelect')
+            .on('click.wppoppopUnifiedLayerSelect', '#wppoppop-floating-layers-panel .wppoppop-layer-item, #wppoppop-layers-list .wppoppop-layer-item, #wppoppop-layers-list > li, #wppoppop-layers-list > div', function(e) {
+                if ($(e.target).closest('.wppoppop-layer-action-btn, .wppoppop-layer-actions, .wppoppop-layer-vis, .wppoppop-layer-lock, .wppoppop-layer-del, .wppoppop-layer-dup, button, input').length) {
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+
+                var $item = $(this).closest('.wppoppop-layer-item');
+                if (!$item.length) $item = $(this);
+
+                var rawId = $item.attr('data-id') || $item.data('id') || $item.attr('data-layer-id') || $item.attr('id') || '';
+                var cleanId = normalizeId(rawId);
+                if (!cleanId) return;
+
+                $('#wppoppop-layers-list .wppoppop-layer-item, #wppoppop-layers-list > *').removeClass('active selected is-selected');
+                $item.addClass('active selected is-selected');
+
+                if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) {
+                    window.WpPopPopBuilderCore.state.activeId = cleanId;
+                }
+                if (window.WpPopPopBuilderCanvas) {
+                    window.WpPopPopBuilderCanvas.selectedId = cleanId;
+                    if (typeof window.WpPopPopBuilderCanvas.selectElement === 'function') {
+                        try {
+                            window.WpPopPopBuilderCanvas.selectElement(cleanId);
+                        } catch (err) {
+                            console.warn('Canvas selectElement warning:', err);
+                        }
+                    }
+                }
+                $('.wppoppop-canvas-item, .wppoppop-element').removeClass('wppoppop-selected selected is-selected');
+                $('#wppoppop-el-' + cleanId + ', #el-' + cleanId + ', .wppoppop-canvas-item[data-id="' + cleanId + '"]').addClass('wppoppop-selected selected is-selected');
+
+                if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+                    window.WpPopPopBuilderInspector.open(cleanId);
+                }
+            });
+
+        // Prevent jQuery UI Sortable on #wppoppop-layers-list from swallowing single clicks
+        if ($.fn.sortable && $('#wppoppop-layers-list').length) {
+            try {
+                if ($('#wppoppop-layers-list').hasClass('ui-sortable')) {
+                    $('#wppoppop-layers-list').sortable('option', 'distance', 6);
+                    $('#wppoppop-layers-list').sortable('option', 'cancel', 'input,button,.wppoppop-layer-action-btn,.wppoppop-layer-actions');
+                }
+            } catch (sortErr) {}
+        }
+
+        // 3. Two-Way Live Canvas Sync for Phase 2 Media Modules
+        $(document)
+            .off('input.wppoppopMediaModules change.wppoppopMediaModules')
+            .on('input.wppoppopMediaModules change.wppoppopMediaModules', '[data-elem-family="media"] .wppoppop-gp-bind, #wppoppop-decomposed-style-media-Extras .wppoppop-gp-bind', function() {
+                var el = resolveElementById();
+                if (!el) return;
+                var $inp = $(this);
+                var prop = $inp.data('prop');
+                if (!prop) return;
+                var val = $inp.is(':checkbox') ? $inp.is(':checked') : $inp.val();
+                el[prop] = val;
+
+                if (prop === 'content') {
+                    el.label = val;
+                    el.titleText = val;
+                    el.paragraphText = val;
+                    el.text = val;
+                } else if (prop === 'tag') {
+                    el.headingTag = val;
+                    el.htmlTag = val;
+                } else if (prop === 'src') {
+                    el.imageUrl = val;
+                    el.url = val;
+                } else if (prop === 'linkUrl') {
+                    el.url = val;
+                } else if (prop === 'shapeType') {
+                    el.shapePreset = val;
+                } else if (prop === 'transparentFill' && val) {
+                    el.bgColor = 'transparent';
+                }
+
+                syncMediaConditionalSubRows(String(el.type || '').toLowerCase());
+
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+            });
+
+        // 4. WP Media Library Picker for Element 2 (Image)
+        $(document)
+            .off('click.wppoppopWpMedia')
+            .on('click.wppoppopWpMedia', '#wppoppop-btn-media-upload, .wppoppop-media-lib-trigger', function(e) {
+                e.preventDefault();
+                if (typeof wp === 'undefined' || !wp.media) {
+                    var manualUrl = window.prompt('Enter Image URL:', $('#prop-image-url').val() || 'https://');
+                    if (manualUrl) {
+                        $('#prop-image-url').val(manualUrl).trigger('change');
+                    }
+                    return;
+                }
+                var frame = wp.media({
+                    title: 'Select or Upload Layer Image',
+                    button: { text: 'Use This Image' },
+                    multiple: false
+                });
+                frame.on('select', function() {
+                    var attachment = frame.state().get('selection').first().toJSON();
+                    if (attachment && attachment.url) {
+                        $('#prop-image-url').val(attachment.url).trigger('change');
+                        if (attachment.alt) {
+                            $('#prop-image-alt').val(attachment.alt).trigger('change');
+                        }
+                    }
+                });
+                frame.open();
+            });
+
+        // 5. 1-Click Icon Presets for Element 7 (Font Awesome / Icon)
+        $(document)
+            .off('click.wppoppopMediaIconPreset')
+            .on('click.wppoppopMediaIconPreset', '#panel-elem-icon .wppoppop-icon-preset', function(e) {
+                e.preventDefault();
+                var iconCls = $(this).data('icon');
+                if (iconCls) {
+                    $('#prop-icon-class').val(iconCls).trigger('change');
+                }
+            });
     }
 
     $(function() {
-        bindMediaModuleEvents();
-        setTimeout(bindMediaModuleEvents, 120);
+        bindUnifiedLayerAndTabEvents();
+        setTimeout(bindUnifiedLayerAndTabEvents, 150);
     });
-    bindMediaModuleEvents();
+    bindUnifiedLayerAndTabEvents();
+
 })(window, jQuery);
-/* === WPPOPPOP_PHASE2_MEDIA_DECOMPOSED_MODULES_END === */
+/* === WPPOPPOP_UNIFIED_LAYER_AND_TAB_ENGINE_END === */
 
