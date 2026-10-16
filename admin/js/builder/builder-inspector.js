@@ -565,9 +565,15 @@
         },
 
         switchTab: function(tab) {
-        $('.wppoppop-insp-tab').removeClass('active').css({
-            'border-bottom': '2px solid transparent',
-            'color': '#94a3b8'
+            var target = tab || 'basic';
+            $('#wppoppop-inspector-tabs-bar .wppoppop-insp-tab, .wppoppop-inspector-tabs .wppoppop-insp-tab')
+                .removeClass('active')
+                .filter('[data-tab="' + target + '"]')
+                .addClass('active');
+            $('#insp-tab-basic, #insp-tab-style, #insp-tab-logic, #insp-tab-data, #insp-tab-advanced')
+                .removeClass('active')
+                .hide();
+            $('#insp-tab-' + target).addClass('active').show();
         });
         $('.wppoppop-insp-tab[data-tab="' + tab + '"]').addClass('active').css({
             'border-bottom': '2px solid #38bdf8',

@@ -866,5 +866,66 @@ if (!defined('ABSPATH')) {
     <select id="prop-anim-disappearance"></select>
     <input type="hidden" id="prop-anim-effect" value="none">
     <button type="button" id="prop-anim-play-btn"></button>
-</div>
+
+        <!-- TAB: DATA (Form Family 10-25) -->
+        <div id="insp-tab-data" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
+            <div class="wppoppop-insp-section" id="insp-section-form-data">
+                <div class="wppoppop-insp-section-title">DATA &amp; VALUE BINDING</div>
+                <div class="wppoppop-prop-row">
+                    <label>Default Value</label>
+                    <input type="text" id="prop-default-value" class="wppoppop-input" placeholder="Initial field value..." />
+                </div>
+                <div class="wppoppop-prop-row wppoppop-switch-row">
+                    <label for="prop-dynamic-default">Dynamic Default Value (URL / Cookie)</label>
+                    <input type="checkbox" id="prop-dynamic-default" class="wppoppop-switch" />
+                </div>
+                <div class="wppoppop-prop-row" id="prop-dynamic-param-row">
+                    <label>URL Parameter / Cookie Name</label>
+                    <input type="text" id="prop-dynamic-param" class="wppoppop-input" placeholder="e.g. utm_source or user_email" />
+                </div>
+                <div class="wppoppop-prop-row wppoppop-switch-row">
+                    <label for="prop-readonly">Read Only</label>
+                    <input type="checkbox" id="prop-readonly" class="wppoppop-switch" />
+                </div>
+                <div class="wppoppop-prop-row wppoppop-switch-row">
+                    <label for="prop-save-to-db">Save to Database</label>
+                    <input type="checkbox" id="prop-save-to-db" class="wppoppop-switch" checked />
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: ADVANCED (Form Family 10-25) -->
+        <div id="insp-tab-advanced" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
+            <div class="wppoppop-insp-section" id="insp-section-form-advanced">
+                <div class="wppoppop-insp-section-title">FIELD IDENTIFIER &amp; MASK</div>
+                <div class="wppoppop-prop-row">
+                    <label>ID / Merge Token Name</label>
+                    <input type="text" id="prop-field-name" class="wppoppop-input" placeholder="e.g. email or first_name" />
+                </div>
+                <div class="wppoppop-prop-row">
+                    <label>Input Mask</label>
+                    <input type="text" id="prop-input-mask" class="wppoppop-input" placeholder="e.g. (999) 999-9999" />
+                </div>
+            </div>
+            <div class="wppoppop-insp-section" id="insp-section-form-filters">
+                <div class="wppoppop-insp-section-title">SANITIZATION FILTERS</div>
+                <div class="wppoppop-prop-grid-2">
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="trim" /> Trim Whitespace</label>
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="striptags" /> Strip Tags</label>
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="alpha" /> Alpha Only</label>
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-filter-chk" value="digits" /> Digits Only</label>
+                </div>
+            </div>
+            <div class="wppoppop-insp-section" id="insp-section-form-validators">
+                <div class="wppoppop-insp-section-title">VALIDATION RULES</div>
+                <div class="wppoppop-prop-grid-2">
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="email" /> RFC Email</label>
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="equal" /> Equal Match</label>
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="inarray" /> In Array</label>
+                    <label class="wppoppop-check-label"><input type="checkbox" class="prop-validator-chk" value="noduplicates" /> No Duplicates</label>
+                </div>
+            </div>
+        </div>
+
+    </div>
 <?php endif; ?>
