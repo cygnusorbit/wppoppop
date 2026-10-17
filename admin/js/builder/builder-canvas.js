@@ -596,6 +596,13 @@
             }
         },
 
+        playAllElementsEntranceAnimation: function() {
+            var self = this;
+            this.getActiveElements().forEach(function(el) {
+                self.playElementAnimation(el.id, el.animIn || el.animation);
+            });
+        },
+
         playElementAnimation: function(id, anim) {
             if (!anim || anim === 'none') return;
             var $el = $('#el-' + id);
@@ -802,6 +809,12 @@
         },
 
         getInnerMarkup: function(el) {
+            if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.renderStage === 'function') {
+                var markup = window.WpPopPopElementsRegistry.renderStage(el);
+                if (markup !== null && markup !== undefined) {
+                    return markup;
+                }
+            }
             var label = el.content || el.name || 'Element';
             var align = el.textAlign || 'left';
             var jAlign = (align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start'));
@@ -830,7 +843,7 @@
                     return '<div style="width:100%;height:100%;background:#e2e8f0;border:1px dashed #94a3b8;display:flex;align-items:center;justify-content:center;color:#475569;font-size:12px;font-weight:600;border-radius:inherit;"><span class="dashicons dashicons-format-image" style="font-size:20px;width:20px;height:20px;margin-right:6px;"></span>Image</div>';
                 case 'video':
                 var vUrl = el.videoUrl || el.url || '';
-                var embedSrc = self.parseVideoEmbed ? self.parseVideoEmbed(vUrl, el.videoAutoplay, el.videoMute, el.videoControls) : vUrl;
+                var embedSrc = this.parseVideoEmbed(vUrl, el.videoAutoplay, el.videoMute, el.videoControls);
                 if (embedSrc) {
                     return '<iframe src="' + embedSrc + '" style="width:100%;height:100%;border:0;pointer-events:none;border-radius:inherit;" allow="autoplay; encrypted-media"></iframe>';
                 }
@@ -865,29 +878,6 @@
                     var iSize = parseInt(el.iconSize || 36, 10);
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' + iColor + ';font-size:' + iSize + 'px;"><i class="' + iClass + '"></i></div>';
 
-                case 'divider':
-                    var dStyle = el.dividerStyle || 'solid';
-                    var dWeight = parseInt(el.dividerWeight || 2, 10);
-                    if (dStyle === 'double' && dWeight < 3) dWeight = 4;
-                    var dColor = el.dividerColor || el.color || '#94a3b8';
-                    var dPct = parseInt(el.dividerWidthPct || 100, 10);
-                    var dAlign = el.dividerAlign || 'center';
-                    var marginStyle = 'margin: 0 auto;';
-                    if (dAlign === 'left') marginStyle = 'margin: 0 auto 0 0;';
-                    if (dAlign === 'right') marginStyle = 'margin: 0 0 0 auto;';
-
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;box-sizing:border-box;padding:0 4px;">' +
-                           '<hr style="width:' + dPct + '%;border:none;border-top:' + dWeight + 'px ' + dStyle + ' ' + dColor + ';' + marginStyle + 'padding:0;" />' +
-                           '</div>';
-
-                case 'icon':
-                    var iClass = el.iconClass || el.content || 'fas fa-star';
-                    if (iClass.indexOf('fa') === 0 && iClass.indexOf(' ') === -1) {
-                        iClass = 'fas ' + iClass;
-                    }
-                    var iColor = el.iconColor || el.color || '#38bdf8';
-                    var iSize = parseInt(el.iconSize || 36, 10);
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';color:' + iColor + ';font-size:' + iSize + 'px;"><i class="' + iClass + '"></i></div>';
                 default:
                     return '<div style="padding:6px;font-size:12px;">' + label + '</div>';
             }
@@ -1166,56 +1156,37 @@
                 window.WpPopPopBuilderInspector.open(raw);
             }
 
-    },
+        },
 
-    deselect: function() {
-        this.selectedId = null;
-        if ($("#wppoppop-alignment-toolbar").length) {
-            $("#wppoppop-alignment-toolbar").fadeOut(120);
-        }
-        $("#wppoppop-guide-v, #wppoppop-guide-h").hide();
-        if (window.WpPopPopBuilderCore) {
-            window.WpPopPopBuilderCore.state.activeId = null;
-        }
-        $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
-        if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.close === 'function') {
-            window.WpPopPopBuilderInspector.close();
-        }
-        if (window.WpPopPopBuilderLayers) {
-            $('.wppoppop-layer-item').removeClass('active');
-        }
-    },
+        deselect: function() {
+            this.selectedId = null;
+            if ($("#wppoppop-alignment-toolbar").length) {
+                $("#wppoppop-alignment-toolbar").fadeOut(120);
+            }
+            $("#wppoppop-guide-v, #wppoppop-guide-h").hide();
+            if (window.WpPopPopBuilderCore) {
+                window.WpPopPopBuilderCore.state.activeId = null;
+            }
+            $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.close === 'function') {
+                window.WpPopPopBuilderInspector.close();
+            }
+            if (window.WpPopPopBuilderLayers) {
+                $('.wppoppop-layer-item').removeClass('active');
+            }
+        },
 
-    deleteActiveElement: function() {
-        var core = window.WpPopPopBuilderCore;
-        if (!core || !core.state || !core.state.activeId) return;
-        if (typeof this.deleteElement === 'function') {
-            this.deleteElement(core.state.activeId);
+        deleteActiveElement: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state || !core.state.activeId) return;
+            if (typeof this.deleteElement === 'function') {
+                this.deleteElement(core.state.activeId);
+            }
         }
-    }
-};
+    };
 
 // Global namespace aliases
 window.WpPopPopCanvas = window.WpPopPopBuilderCanvas;
 window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
 })(jQuery);
-
-
-    // Autonomous Stage Node Factory Delegation Bridge (WpPopPopElementsRegistry)
-    if (window.WpPopPopBuilderCanvas && !window.WpPopPopBuilderCanvas._stageRegistryBridged) {
-        window.WpPopPopBuilderCanvas._stageRegistryBridged = true;
-        var _origBuildInner = window.WpPopPopBuilderCanvas.buildElementInnerHtml || window.WpPopPopBuilderCanvas.getElementInnerHtml;
-        if (typeof _origBuildInner === 'function') {
-            var fnName = window.WpPopPopBuilderCanvas.buildElementInnerHtml ? 'buildElementInnerHtml' : 'getElementInnerHtml';
-            window.WpPopPopBuilderCanvas[fnName] = function(el) {
-                if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.renderStage === 'function') {
-                    var customHtml = window.WpPopPopElementsRegistry.renderStage(el);
-                    if (customHtml !== null && customHtml !== undefined) {
-                        return customHtml;
-                    }
-                }
-                return _origBuildInner.apply(this, arguments);
-            };
-        }
-    }

@@ -135,8 +135,6 @@
                 }
             });
 
-        var self = this;
-
         // Header Embed Button
         $('#wppoppop-btn-embed, #wppoppop-btn-shortcode').off('click.wppoppop_embed').on('click.wppoppop_embed', function(e) {
             e.preventDefault();
@@ -226,11 +224,9 @@
 
             // Delete / Backspace (Active element)
             if ((e.key === 'Delete' || e.key === 'Backspace') && !isInput) {
-                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.deleteActiveElement === 'function') {
-                    if (window.WpPopPopBuilderCanvas.activeId) {
-                        e.preventDefault();
-                        window.WpPopPopBuilderCanvas.deleteActiveElement();
-                    }
+                if (self.state.activeId && window.WpPopPopBuilderLayers) {
+                    e.preventDefault();
+                    window.WpPopPopBuilderLayers.deleteLayer(self.state.activeId);
                 }
             }
         });
@@ -408,8 +404,8 @@
         init: function() {
             this.bindWorkspacePan();
             this.updateCanvasTransform();
-        this.initThemeMode();
-        this.bindModalEvents();
+            this.initThemeMode();
+            this.bindModalEvents();
             this.bindCanvasTabs();
             this.bindViewportToggles();
             this.bindKeyboardShortcuts();
@@ -597,14 +593,11 @@
                 var w = meta.width || 640;
                 var h = meta.height || 400;
                 var $box = $('#wppoppop-canvas-box');
-            if ($box.length) {
-                $box.css({ width: w + 'px', height: h + 'px' });
-                $box[0].style.setProperty('width', w + 'px', 'important');
-                $box[0].style.setProperty('height', h + 'px', 'important');
-            }
-            if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.applyActiveCanvasBackground === 'function') {
-                window.WpPopPopBuilderSettings.applyActiveCanvasBackground();
-            }
+                if ($box.length) {
+                    $box.css({ width: w + 'px', height: h + 'px' });
+                    $box[0].style.setProperty('width', w + 'px', 'important');
+                    $box[0].style.setProperty('height', h + 'px', 'important');
+                }
                 $('#quick-box-width, #set-canvas-width').val(w);
                 $('#quick-box-height, #set-canvas-height').val(h);
             }
@@ -701,29 +694,6 @@
                 this.renderCanvasTabs();
                 this.switchCanvas(this.state.currentCanvas);
             } catch(e) {}
-        },
-
-        bindKeyboardShortcuts: function() {
-            var self = this;
-            $(document).on('keydown', function(e) {
-                if ($(e.target).is('input, textarea, select')) {
-                    return;
-                }
-                if ((e.metaKey || e.ctrlKey) && e.which === 90 && !e.shiftKey) {
-                    e.preventDefault();
-                    self.undo();
-                }
-                if (((e.metaKey || e.ctrlKey) && e.which === 89) || ((e.metaKey || e.ctrlKey) && e.shiftKey && e.which === 90)) {
-                    e.preventDefault();
-                    self.redo();
-                }
-                if ((e.which === 46 || e.which === 8) && self.state.activeId) {
-                    e.preventDefault();
-                    if (window.WpPopPopBuilderLayers) {
-                        window.WpPopPopBuilderLayers.deleteLayer(self.state.activeId);
-                    }
-                }
-            });
         }
     };
 })(jQuery);

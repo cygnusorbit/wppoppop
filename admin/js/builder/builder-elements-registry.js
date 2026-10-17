@@ -234,8 +234,8 @@
             if (!isForm) {
                 var textMedia = ['label', 'title', 'paragraph', 'html', 'button', 'link', 'link_btn', 'step_btn', 'submit', 'progress'];
                 var hoverMedia = ['button', 'link', 'link_btn', 'step_btn', 'submit'];
-                $('#insp-section-typography').toggle(textMedia.indexOf(t) !== -1);
-                $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(t) !== -1);
+                $('#insp-section-typography').toggle(textMedia.indexOf(rawType) !== -1);
+                $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(rawType) !== -1);
             }
 
             var activeTab = (inspector && inspector.activeTab) ? inspector.activeTab : 'basic';
@@ -2112,10 +2112,10 @@
         $('#prop-letter-spacing').val(el.letterSpacing || 0);
         $('#prop-color').val(el.color || '#ffffff');
 
-        $('#prop-pad-top').val(parseInt(el.paddingTop, 10) || 0);
-        $('#prop-pad-right').val(parseInt(el.paddingRight, 10) || 0);
-        $('#prop-pad-bottom').val(parseInt(el.paddingBottom, 10) || 0);
-        $('#prop-pad-left').val(parseInt(el.paddingLeft, 10) || 0);
+        $('#prop-pad-top').val(parseInt(el.paddingTop !== undefined ? el.paddingTop : el.padding, 10) || 0);
+        $('#prop-pad-right').val(parseInt(el.paddingRight !== undefined ? el.paddingRight : el.padding, 10) || 0);
+        $('#prop-pad-bottom').val(parseInt(el.paddingBottom !== undefined ? el.paddingBottom : el.padding, 10) || 0);
+        $('#prop-pad-left').val(parseInt(el.paddingLeft !== undefined ? el.paddingLeft : el.padding, 10) || 0);
 
         $('#prop-border-width').val(parseInt(el.borderWidth, 10) || 0);
         $('#prop-border-style').val(el.borderStyle || 'solid');
@@ -2488,4 +2488,3 @@
 
 })(window, jQuery);
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
-
