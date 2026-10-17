@@ -422,10 +422,11 @@
                 e.stopPropagation();
                 var $btn = $(this);
                 $('#wppoppop-layers-list .wppoppop-layer-action-btn').not($btn).removeClass('is-clicked');
-                $btn.addClass('is-clicked');
+                var wasOn = $btn.hasClass('is-clicked');
+                $btn.toggleClass('is-clicked', !wasOn);
                 var kind = $btn.hasClass('wppoppop-layer-btn-lock') ? 'lock' :
                            ($btn.hasClass('wppoppop-layer-btn-vis') ? 'vis' : null);
-                self._lastAction = kind ? { id: String($btn.attr('data-id')), kind: kind } : null;
+                self._lastAction = (kind && !wasOn) ? { id: String($btn.attr('data-id')), kind: kind } : null;
             });
 
             // 3. Lock / Unlock

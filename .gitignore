@@ -5,5 +5,10 @@ vendor/
 .wp-env.json
 .wp-env/
 *.bak
+*.bak-layerfx
+*.bak-layerfx1
+*.bak-layerfx2
+*.bak-layerfx3
+*.bak-layerfx4
 *.log
 ref_greenpop/
