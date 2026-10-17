@@ -2285,6 +2285,11 @@
                     var rawId = layerRow.getAttribute('data-id') || layerRow.getAttribute('data-layer-id') || layerRow.getAttribute('data-el-id') || layerRow.id || '';
                     if (rawId) {
                         window.selectLayerEverywhere(rawId);
+                        try {
+                            if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.openLayerInspector === 'function') {
+                                window.WpPopPopBuilderLayers.openLayerInspector(rawId);
+                            }
+                        } catch (errOpen) {}
                     }
                     return;
                 }

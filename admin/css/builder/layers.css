@@ -377,3 +377,66 @@
     color: #c2185b;
     background: #fdf2f8;
 }
+
+
+/* wppoppop-layer-action-gray-default */
+/* Gray by default in every browser; colour only when activated */
+#wppoppop-layers-list .wppoppop-layer-action-btn,
+#wppoppop-layers-list .wppoppop-layer-actions button {
+    color: #94a3b8 !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#wppoppop-layers-list .wppoppop-layer-item.active .wppoppop-layer-action-btn:not(.is-clicked):not(.is-active),
+#wppoppop-layers-list .wppoppop-layer-action-btn:focus:not(.is-clicked):not(.is-active),
+#wppoppop-layers-list .wppoppop-layer-action-btn:active:not(.is-clicked):not(.is-active) {
+    color: #94a3b8 !important;
+    background: transparent !important;
+}
+#wppoppop-layers-list .wppoppop-layer-action-btn:hover:not(.is-clicked) {
+    color: #1e293b !important;
+    background: #e2e8f0 !important;
+}
+#wppoppop-layers-list .wppoppop-layer-action-btn.is-clicked,
+#wppoppop-layers-list .wppoppop-layer-action-btn.is-active {
+    color: #c2185b !important;
+    background: #fdf2f8 !important;
+}
+
+
+/* wppoppop-layer-icons-click-only */
+/* Beats core.css amber/red persistent states: colour only on the clicked icon */
+html body #wppoppop-layers-list .wppoppop-layer-item .wppoppop-layer-action-btn:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-item.active .wppoppop-layer-action-btn:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-item.is-locked .wppoppop-layer-btn-lock:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-item.is-hidden .wppoppop-layer-btn-vis:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-btn-lock.active:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-btn-lock.is-active:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-btn-vis.active:not(.is-clicked),
+html body #wppoppop-layers-list .wppoppop-layer-btn-vis.is-active:not(.is-clicked) {
+    color: #94a3b8 !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+html body #wppoppop-layers-list .wppoppop-layer-action-btn:not(.is-clicked) .dashicons {
+    color: #94a3b8 !important;
+}
+html body #wppoppop-layers-list .wppoppop-layer-btn-lock.is-clicked,
+html body #wppoppop-layers-list .wppoppop-layer-btn-lock.is-clicked .dashicons {
+    color: #f59e0b !important;
+}
+html body #wppoppop-layers-list .wppoppop-layer-btn-vis.is-clicked,
+html body #wppoppop-layers-list .wppoppop-layer-btn-vis.is-clicked .dashicons {
+    color: #ef4444 !important;
+}
+html body #wppoppop-layers-list .wppoppop-layer-btn-duplicate.is-clicked,
+html body #wppoppop-layers-list .wppoppop-layer-btn-del.is-clicked,
+html body #wppoppop-layers-list .wppoppop-layer-btn-duplicate.is-clicked .dashicons,
+html body #wppoppop-layers-list .wppoppop-layer-btn-del.is-clicked .dashicons {
+    color: #c2185b !important;
+}

@@ -240,8 +240,8 @@
                     '<div class="wppoppop-layer-title wppoppop-layer-title-editable" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
                     '<div class="wppoppop-layer-actions">' +
                         '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-duplicate" title="Duplicate Layer" data-id="' + el.id + '"><span class="dashicons dashicons-admin-page"></span></button>' +
-                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-lock" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
-                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-vis" title="' + (isHidden ? 'Show Layer' : 'Hide Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-lock' + (isLocked ? ' is-active' : '') + '" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
+                        '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-vis' + (isHidden ? ' is-active' : '') + '" title="' + (isHidden ? 'Show Layer' : 'Hide Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isHidden ? 'dashicons-hidden' : 'dashicons-visibility') + '"></span></button>' +
                         '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-del" title="Delete Layer" data-id="' + el.id + '"><span class="dashicons dashicons-trash"></span></button>' +
                     '</div>';
 
@@ -250,6 +250,11 @@
             });
 
             this.bindSortable();
+
+            if (this._lastAction) {
+                var la = this._lastAction;
+                $('#layer-item-' + la.id + ' .wppoppop-layer-btn-' + la.kind).addClass('is-clicked');
+            }
         },
 
         getLayerIcon: function(type) {
@@ -408,6 +413,7 @@
                 var id = $(this).attr('data-id');
                 if (!id) return;
                 $('#wppoppop-layers-list .wppoppop-layer-action-btn').removeClass('is-clicked');
+                self._lastAction = null;
                 self.openLayerInspector(id);
             });
 
@@ -417,6 +423,9 @@
                 var $btn = $(this);
                 $('#wppoppop-layers-list .wppoppop-layer-action-btn').not($btn).removeClass('is-clicked');
                 $btn.addClass('is-clicked');
+                var kind = $btn.hasClass('wppoppop-layer-btn-lock') ? 'lock' :
+                           ($btn.hasClass('wppoppop-layer-btn-vis') ? 'vis' : null);
+                self._lastAction = kind ? { id: String($btn.attr('data-id')), kind: kind } : null;
             });
 
             // 3. Lock / Unlock
@@ -459,6 +468,13 @@
             var reg = window.WpPopPopElementsRegistry;
             if (reg && typeof reg.forceSlideInDrawer === 'function') {
                 reg.forceSlideInDrawer(true);
+            } else {
+                var $drawer = $('#wppoppop-inspector-drawer');
+                if ($drawer.length) {
+                    $drawer.removeClass('is-closed closed').addClass('is-open open').css('display', 'flex');
+                    $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').addClass('panel-open inspector-open');
+                    this.pushForInspector(true);
+                }
             }
             $('.wppoppop-layer-item').removeClass('active');
             $('#layer-item-' + clean).addClass('active');

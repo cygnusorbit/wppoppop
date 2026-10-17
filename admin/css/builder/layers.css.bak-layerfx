@@ -1,0 +1,379 @@
+/* ==========================================================================
+   WpPopPop Visual Builder: Floating Draggable Magenta LAYERS Panel
+   Compact Layer Actions (30% Reduced Footprint)
+   ========================================================================== */
+
+#wppoppop-floating-layers-panel,
+.wppoppop-floating-layers-panel {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 250px;
+    max-width: calc(100vw - 32px);
+    height: auto;
+    max-height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 100000 !important;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+    touch-action: none;
+    transition: width 0.2s ease, max-height 0.2s ease;
+}
+
+#wppoppop-layers-header {
+    background: #c2185b;
+    color: #ffffff;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    flex-shrink: 0;
+    height: 36px;
+    box-sizing: border-box;
+}
+
+#wppoppop-layers-header:active {
+    cursor: grabbing;
+}
+
+.wppoppop-layers-title-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wppoppop-layers-ctrls-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#wppoppop-layers-count {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+#wppoppop-layers-toggle-collapse {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+#wppoppop-layers-toggle-collapse .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+}
+
+.wppoppop-floating-layers-panel.collapsed #wppoppop-layers-list {
+    display: none !important;
+}
+
+.wppoppop-floating-layers-panel.collapsed #wppoppop-layers-toggle-collapse .dashicons {
+    transform: rotate(180deg);
+}
+
+#wppoppop-layers-list {
+    flex: 1 1 auto;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-sizing: border-box;
+    background: #ffffff;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #ffffff;
+    -webkit-overflow-scrolling: touch;
+}
+
+#wppoppop-layers-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+#wppoppop-layers-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.wppoppop-layer-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #1e293b;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    gap: 6px;
+}
+
+.wppoppop-layer-item:hover {
+    background: #f1f5f9;
+}
+
+.wppoppop-layer-item.active {
+    background: #fdf2f8;
+    border-color: #f472b6;
+    color: #be185d;
+    font-weight: 600;
+}
+
+.wppoppop-layer-drag-grip,
+.wppoppop-layer-grip {
+    color: #94a3b8;
+    cursor: grab;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wppoppop-layer-drag-grip .dashicons,
+.wppoppop-layer-grip .dashicons {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+}
+
+.wppoppop-layer-icon {
+    color: #64748b;
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wppoppop-layer-icon .dashicons {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    line-height: 13px;
+}
+
+.wppoppop-layer-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 2px;
+    font-size: 11px;
+    min-width: 0;
+}
+
+/* Layer Actions: 30% Smaller Footprint (From 20px down to 14px) */
+.wppoppop-layer-actions {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.wppoppop-layer-actions button,
+.wppoppop-layer-action-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+    line-height: 1;
+    border-radius: 2px;
+    box-sizing: border-box;
+    transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.wppoppop-layer-actions button:hover,
+.wppoppop-layer-action-btn:hover {
+    color: #1e293b;
+    background: #e2e8f0;
+}
+
+.wppoppop-layer-actions button.active,
+.wppoppop-layer-action-btn.active {
+    color: #c2185b;
+}
+
+.wppoppop-layer-actions button.wppoppop-layer-btn-del:hover,
+.wppoppop-layer-action-btn.btn-del:hover {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+/* 30% Scaled Dashicons: 10px glyphs (70% of standard 14px) */
+.wppoppop-layer-actions button .dashicons,
+.wppoppop-layer-action-btn .dashicons {
+    font-size: 10px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+}
+
+.wppoppop-layer-drop-placeholder {
+    height: 2px;
+    background: #2563eb;
+    margin: 2px 0;
+    border-radius: 1px;
+}
+
+@media screen and (max-width: 782px) {
+    #wppoppop-floating-layers-panel,
+    .wppoppop-floating-layers-panel {
+        top: 10px;
+        right: 10px;
+        width: 220px;
+    }
+}
+
+/* --- Parity: Floating Layers Panel Toolbar, Search & Inline Rename --- */
+.wppoppop-layers-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+.wppoppop-layers-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+.wppoppop-layers-search-wrap .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #64748b;
+}
+.wppoppop-layers-search-wrap input {
+    background: transparent !important;
+    border: none !important;
+    color: #f8fafc !important;
+    font-size: 11px !important;
+    padding: 2px 0 !important;
+    width: 100%;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.wppoppop-layers-search-wrap input::placeholder {
+    color: #64748b;
+}
+.wppoppop-layers-bulk-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.wppoppop-btn-icon-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.wppoppop-btn-icon-sm:hover {
+    background: #334155;
+    color: #38bdf8;
+    border-color: #38bdf8;
+}
+.wppoppop-btn-icon-sm .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+.wppoppop-layer-title-editable {
+    cursor: text;
+    user-select: none;
+    transition: color 0.15s ease;
+}
+.wppoppop-layer-title-editable:hover {
+    color: #38bdf8;
+}
+.wppoppop-layer-rename-input {
+    background: #0f172a !important;
+    border: 1px solid #38bdf8 !important;
+    border-radius: 3px !important;
+    color: #f8fafc !important;
+    font-size: 12px !important;
+    padding: 1px 4px !important;
+    width: calc(100% - 20px) !important;
+    outline: none !important;
+}
+
+
+/* wppoppop-layer-item-pointer-repair */
+#wppoppop-floating-layers-panel {
+    z-index: 100005 !important;
+    pointer-events: auto !important;
+}
+#wppoppop-layers-list .wppoppop-layer-item {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    user-select: none !important;
+}
+#wppoppop-layers-list .wppoppop-layer-item.active,
+#wppoppop-layers-list .wppoppop-layer-item.selected {
+    background: rgba(56, 189, 248, 0.18) !important;
+    border-color: #38bdf8 !important;
+}
+
+/* Action icons: gray by default, magenta only on the clicked icon */
+.wppoppop-layer-action-btn.is-clicked,
+.wppoppop-layer-actions button.is-clicked {
+    color: #c2185b;
+    background: #fdf2f8;
+}
