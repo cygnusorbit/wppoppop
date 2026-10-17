@@ -59,9 +59,19 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['altText']))            $clean['altText']            = sanitize_text_field($el['altText']);
         if (isset($el['objectFit']))          $clean['objectFit']          = sanitize_text_field($el['objectFit']);
         if (isset($el['videoUrl']))           $clean['videoUrl']           = esc_url_raw($el['videoUrl']);
-        if (isset($el['videoAutoplay']))      $clean['videoAutoplay']      = (bool)$el['videoAutoplay'];
-        if (isset($el['videoMute']))          $clean['videoMute']          = (bool)$el['videoMute'];
-        if (isset($el['videoLoop']))          $clean['videoLoop']          = (bool)$el['videoLoop'];
+        if (isset($el['videoAutoplay'])) $clean['videoAutoplay'] = !in_array($el['videoAutoplay'], array(false, 'false', '0', 0, '', null, 'off'), true);
+        if (isset($el['videoMute'])) $clean['videoMute'] = !in_array($el['videoMute'], array(false, 'false', '0', 0, '', null, 'off'), true);
+        if (isset($el['videoLoop'])) $clean['videoLoop'] = !in_array($el['videoLoop'], array(false, 'false', '0', 0, '', null, 'off'), true);
+        // WPPOPPOP_VIDEO_WHITELIST_V2
+        $wppoppop_vbool = function ($v) { return !in_array($v, array(false, 'false', '0', 0, '', null, 'off'), true); };
+        foreach (array('autoplay' => 'videoAutoplay', 'mute' => 'videoMute', 'muted' => 'videoMute', 'loop' => 'videoLoop', 'controls' => 'videoControls') as $wppoppop_src => $wppoppop_dst) {
+            if (isset($el[$wppoppop_src]) && !is_array($el[$wppoppop_src]) && !isset($clean[$wppoppop_dst])) {
+                $clean[$wppoppop_dst] = $wppoppop_vbool($el[$wppoppop_src]);
+            }
+        }
+        if (isset($el['videoControls']) && !is_array($el['videoControls'])) $clean['videoControls'] = $wppoppop_vbool($el['videoControls']);
+        if (isset($el['videoProvider']) && in_array($el['videoProvider'], array('youtube', 'vimeo', 'mp4'), true)) $clean['videoProvider'] = $el['videoProvider'];
+        if (isset($el['aspectRatio']) && !in_array($el['aspectRatio'], array('16:9', '4:3', '1:1', '9:16'), true)) unset($el['aspectRatio']);
         if (isset($el['aspectRatio']))        $clean['aspectRatio']        = sanitize_text_field($el['aspectRatio']);
         if (isset($el['shapePreset']))        $clean['shapePreset']        = sanitize_key($el['shapePreset']);
         if (isset($el['shapeFill']))          $clean['shapeFill']          = sanitize_hex_color($el['shapeFill']) ?: sanitize_text_field($el['shapeFill']);

@@ -64,48 +64,59 @@ class WpPopPop_Front_Element_Media {
     }
 
     public static function render_video(array $el, array $config = []) {
-        $raw_url = !empty($el['videoUrl']) ? trim($el['videoUrl']) : (!empty($el['content']) ? trim($el['content']) : '');
-        $autoplay = !empty($el['videoAutoplay']) ? 1 : 0;
-        $mute = !empty($el['videoMute']) || $autoplay ? 1 : 0;
-        $loop = !empty($el['videoLoop']) ? 1 : 0;
+        // WPPOPPOP_VIDEO_RENDER_V2
+        $truthy = function ($keys, $default = false) use ($el) {
+            foreach ($keys as $k) {
+                if (array_key_exists($k, $el)) {
+                    $v = $el[$k];
+                    if ($v === false || $v === 'false' || $v === '0' || $v === 0 || $v === '' || $v === null) { return false; }
+                    return true;
+                }
+            }
+            return $default;
+        };
 
-        if (empty($raw_url)) {
+        $raw_url = '';
+        foreach (array('videoUrl', 'content', 'url', 'src') as $k) {
+            if (!empty($el[$k]) && is_string($el[$k])) { $raw_url = trim($el[$k]); break; }
+        }
+        if ($raw_url === '') {
             return '';
         }
 
-        // YouTube Embed
-        if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]+)/', $raw_url, $m)) {
-            $embed_src = 'https://www.youtube.com/embed/' . $m[1] . '?enablejsapi=1';
-            if ($autoplay) $embed_src .= '&autoplay=1&mute=1';
-            if ($loop) $embed_src .= '&loop=1&playlist=' . $m[1];
+        $autoplay = $truthy(array('videoAutoplay', 'autoplay')) ? 1 : 0;
+        $mute     = ($autoplay || $truthy(array('videoMute', 'mute', 'muted'))) ? 1 : 0;
+        $loop     = $truthy(array('videoLoop', 'loop')) ? 1 : 0;
+        $controls = $truthy(array('videoControls', 'controls'), true) ? 1 : 0;
 
-            return sprintf(
-                '<iframe src="%1$s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:inherit;border-radius:inherit;display:block;"></iframe>',
-                esc_url($embed_src)
-            );
+        $frame_style = 'width:100%;height:100%;border:0;border-radius:inherit;display:block;';
+
+        // YouTube
+        if (preg_match('~(?:youtu\.be/|youtube(?:-nocookie)?\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/|v/))([A-Za-z0-9_-]{11})~', $raw_url, $m)) {
+            $src = 'https://www.youtube.com/embed/' . $m[1] . '?enablejsapi=1&playsinline=1&rel=0'
+                 . '&autoplay=' . $autoplay . '&mute=' . $mute . '&controls=' . $controls;
+            if ($loop) { $src .= '&loop=1&playlist=' . $m[1]; }
+            return '<iframe src="' . esc_url($src) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="' . esc_attr($frame_style) . '"></iframe>';
         }
 
-        // Vimeo Embed
-        if (preg_match('/vimeo\.com\/(?:video\/)?([0-9]+)/', $raw_url, $m)) {
-            $embed_src = 'https://player.vimeo.com/video/' . $m[1] . '?';
-            if ($autoplay) $embed_src .= '&autoplay=1&muted=1';
-            if ($loop) $embed_src .= '&loop=1';
-
-            return sprintf(
-                '<iframe src="%1$s" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:inherit;border-radius:inherit;display:block;"></iframe>',
-                esc_url($embed_src)
-            );
+        // Vimeo
+        if (preg_match('~vimeo\.com/(?:video/|channels/[^/]+/|groups/[^/]+/videos/)?([0-9]+)~', $raw_url, $m)) {
+            $src = 'https://player.vimeo.com/video/' . $m[1] . '?playsinline=1'
+                 . '&autoplay=' . $autoplay . '&muted=' . $mute . '&loop=' . $loop . '&controls=' . $controls;
+            return '<iframe src="' . esc_url($src) . '" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" style="' . esc_attr($frame_style) . '"></iframe>';
         }
 
-        // HTML5 Self-Hosted Video
-        $auto_attr = $autoplay ? 'autoplay muted' : '';
-        $loop_attr = $loop ? 'loop' : '';
-        return sprintf(
-            '<video src="%1$s" %2$s %3$s controls style="width:100%;height:100%;object-fit:cover;border:inherit;border-radius:inherit;display:block;"></video>',
-            esc_url($raw_url),
-            $auto_attr,
-            $loop_attr
-        );
+        // HTML5 / self-hosted
+        $url = esc_url($raw_url);
+        if (!$url) {
+            return '';
+        }
+        $attrs  = ' playsinline webkit-playsinline preload="metadata"';
+        $attrs .= $controls ? ' controls' : '';
+        $attrs .= $autoplay ? ' autoplay' : '';
+        $attrs .= $mute ? ' muted' : '';
+        $attrs .= $loop ? ' loop' : '';
+        return '<video src="' . $url . '"' . $attrs . ' style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;background:#000;"></video>';
     }
 
     public static function render_shape(array $el, array $config = []) {

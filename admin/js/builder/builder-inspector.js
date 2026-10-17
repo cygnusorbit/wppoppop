@@ -907,8 +907,12 @@
             $('#prop-image-url').val(el.url || el.src || '');
             $('#prop-image-alt').val(el.alt || '');
         } else if (canonicalType === 'video') {
-            $('#prop-video-url').val(el.url || el.src || '');
-            $('#prop-video-autoplay').prop('checked', !!el.autoplay);
+            $('#prop-video-url').val(el.videoUrl || el.content || el.url || el.src || '');
+            $('#prop-video-autoplay').prop('checked', !!(el.videoAutoplay || el.autoplay));
+            $('#prop-video-mute').prop('checked', !!(el.videoMute || el.mute));
+            $('#prop-video-loop').prop('checked', !!(el.videoLoop || el.loop));
+            $('#prop-video-provider').val(el.videoProvider || 'youtube');
+            $('#prop-video-aspect').val(el.aspectRatio || '16:9');
         }
 
         // 7. General Appearance, Coordinates & Dimensions

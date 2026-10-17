@@ -891,10 +891,10 @@
                         el.aspectRatio = $('#gp-cnt-video-ratio').val();
                         el.videoUrl = $('#gp-cnt-video-url').val();
                         el.content = el.videoUrl;
-                        el.autoplay = $('#gp-cnt-video-autoplay').is(':checked');
-                        el.mute = $('#gp-cnt-video-mute').is(':checked');
-                        el.loop = $('#gp-cnt-video-loop').is(':checked');
-                        el.controls = $('#gp-cnt-video-controls').is(':checked');
+                        el.autoplay = $('#gp-cnt-video-autoplay').is(':checked'); el.videoAutoplay = el.autoplay;
+                        el.mute = $('#gp-cnt-video-mute').is(':checked'); el.videoMute = el.mute;
+                        el.loop = $('#gp-cnt-video-loop').is(':checked'); el.videoLoop = el.loop;
+                        el.controls = $('#gp-cnt-video-controls').is(':checked'); el.videoControls = el.controls;
                         break;
                     case 'label':
                         el.content = $('#gp-cnt-label-text').val();
