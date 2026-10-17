@@ -12,3 +12,4 @@ vendor/
 *.bak-layerfx4
 *.log
 ref_greenpop/
+.patch-backups/

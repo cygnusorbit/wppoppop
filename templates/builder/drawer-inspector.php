@@ -47,7 +47,7 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <div class="wppoppop-prop-row">
-                    <label class="wppoppop-prop-label"><?php esc_html_e( 'ANIMATION', 'wppoppop' ); ?></label>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><label class="wppoppop-prop-label" style="margin:0;"><?php esc_html_e( 'ANIMATION', 'wppoppop' ); ?></label><button type="button" id="wppoppop-btn-play-elem-anim" class="button button-small" style="background:#1e293b;border:1px solid #334155;color:#38bdf8;font-size:10px;height:22px;padding:0 8px;cursor:pointer;">&#9654; Play</button></div>
                     <div class="wppoppop-gp-2col-grid">
                         <div class="wppoppop-gp-col">
                             <select id="prop-anim-in" class="wppoppop-select">
@@ -101,48 +101,9 @@ if (!defined('ABSPATH')) exit;
                 }
                 ?>
 
-                <!-- TEXT / RICH CONTENT -->
-                <div class="element-panel" id="panel-elem-paragraph-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TEXT CONTENT</label>
-                    <textarea id="prop-text-content" rows="4" class="widefat" placeholder="Enter text content..." style="font-size:12px;"></textarea>
-                </div>
-
-                <!-- IMAGE -->
-                <div class="element-panel" id="panel-elem-image-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE SOURCE URL</label>
-                    <input type="text" id="prop-image-url" class="widefat" placeholder="https://..." style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">IMAGE ALT TEXT</label>
-                    <input type="text" id="prop-image-alt" class="widefat" placeholder="Image description for accessibility" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">OBJECT FIT</label>
-                    <select id="prop-image-fit" class="widefat" style="font-size:12px;">
-                        <option value="cover" selected>Cover (Clip to container)</option>
-                        <option value="contain">Contain (Full aspect)</option>
-                        <option value="fill">Fill (Stretch)</option>
-                        <option value="none">Original Scale</option>
-                    </select>
-                </div>
+<!-- IMAGE -->
 
                 <!-- EMAIL FIELD -->
-                <div class="element-panel" id="panel-elem-email-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
-                    <input type="text" id="prop-email-placeholder" class="widefat" placeholder="e.g. name@example.com" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:10px;font-weight:700;color:#64748b;margin:8px 0 4px;text-transform:uppercase;">AUTOCOMPLETE ATTRIBUTE</label>
-                    <select id="prop-email-autocomplete" class="widefat wppoppop-input" style="font-size:12px;margin-bottom:8px;">
-                        <option value="email">Email (email)</option>
-                        <option value="off">Disabled (off)</option>
-                        <option value="on">Enabled (on)</option>
-                        <option value="name">Full name (name)</option>
-                        <option value="given-name">First name (given-name)</option>
-                        <option value="family-name">Last name (family-name)</option>
-                        <option value="tel">Telephone (tel)</option>
-                        <option value="username">Username (username)</option>
-                    </select>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
-                    <input type="text" id="prop-email-name" class="widefat" value="email" style="font-size:12px;margin-bottom:8px;">
-                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                        <input type="checkbox" id="prop-email-required" value="1" checked> Required Field
-                    </label>
-                </div>
 
                 <!-- NUMBER FIELD -->
                 <div class="element-panel" id="panel-elem-number-legacy" style="display:none;">
@@ -170,29 +131,12 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <!-- SELECT / DROPDOWN -->
-                <div class="element-panel" id="panel-elem-select-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">OPTIONS (ONE PER LINE)</label>
-                    <textarea id="prop-select-options" rows="4" class="widefat" placeholder="Option 1&#10;Option 2&#10;Option 3" style="font-size:12px;margin-bottom:8px;"></textarea>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
-                    <input type="text" id="prop-select-name" class="widefat" value="select_field" style="font-size:12px;margin-bottom:8px;">
-                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                        <input type="checkbox" id="prop-select-required" value="1"> Required Field
-                    </label>
-                </div>
 
                 <!-- DROPDOWN ALIAS PANEL -->
-                <div class="element-panel" id="panel-elem-dropdown-legacy" style="display:none;"></div>
 
                 <!-- RADIOS -->
-                <div class="element-panel" id="panel-elem-radios-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">RADIO OPTIONS (ONE PER LINE)</label>
-                    <textarea id="prop-radio-options" rows="4" class="widefat" placeholder="Option A&#10;Option B&#10;Option C" style="font-size:12px;margin-bottom:8px;"></textarea>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
-                    <input type="text" id="prop-radio-name" class="widefat" value="radio_group" style="font-size:12px;">
-                </div>
 
                 <!-- RADIO ALIAS PANEL -->
-                <div class="element-panel" id="panel-elem-radio-legacy" style="display:none;"></div>
 
                 <!-- CHECKBOXES -->
                 <div class="element-panel" id="panel-elem-checkboxes-legacy" style="display:none;">
@@ -214,15 +158,6 @@ if (!defined('ABSPATH')) exit;
                 <div class="element-panel" id="panel-elem-checkbox-legacy" style="display:none;"></div>
 
                 <!-- DATE PICKER -->
-                <div class="element-panel" id="panel-elem-date-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
-                    <input type="text" id="prop-date-placeholder" class="widefat" placeholder="Select date..." style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
-                    <input type="text" id="prop-date-name" class="widefat" value="date_field" style="font-size:12px;margin-bottom:8px;">
-                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                        <input type="checkbox" id="prop-date-required" value="1"> Required Field
-                    </label>
-                </div>
 
                 <!-- PROGRESS BAR -->
                 <div class="element-panel" id="panel-elem-progress-legacy" style="display:none;">
@@ -282,17 +217,8 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <!-- CUSTOM HTML -->
-                                <!-- CUSTOM HTML -->
-                <div class="element-panel" id="panel-elem-html-legacy" style="display:none;">
-                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">CUSTOM HTML / EMBED CODE</div>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">EMBED CODE / MARKUP</label>
-                    <textarea id="prop-html-code" rows="7" class="widefat wppoppop-input" placeholder="<div>Custom HTML / Embed here</div>" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-family:monospace;font-size:11px;padding:8px;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
-                    <span style="display:block;font-size:10px;color:#64748b;margin-top:4px;">Live renders HTML, iframes, SVG badges, and custom styled embeds on the canvas.</span>
-                </div></textarea>
-                </div>
 
-                <!-- VIDEO -->
-                                <!-- DIVIDER ELEMENT -->
+                <!-- DIVIDER ELEMENT -->
                 <div class="element-panel" id="panel-elem-divider" style="display:none;">
                     <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">DIVIDER SETTINGS</div>
                     
@@ -336,113 +262,9 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <!-- ICON ELEMENT -->
-                <div class="element-panel" id="panel-elem-icon-legacy" style="display:none;">
-                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">FONT AWESOME ICON</div>
-                    
-                    <!-- Live Icon Preview Card -->
-                    <div style="display:flex;align-items:center;justify-content:center;background:#0f172a;border:1px solid #334155;border-radius:6px;padding:16px;margin-bottom:12px;">
-                        <i id="prop-icon-live-preview" class="fas fa-star" style="font-size:36px;color:#38bdf8;"></i>
-                    </div>
 
-                    <div style="margin-bottom:10px;">
-                        <label for="prop-icon-preset" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">CHOOSE ICON</label>
-                        <select id="prop-icon-preset" class="widefat wppoppop-input" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
-                            <optgroup label="Popular">
-                                <option value="fas fa-star" selected>Star (★)</option>
-                                <option value="fas fa-heart">Heart (♥)</option>
-                                <option value="fas fa-check">Checkmark (✔)</option>
-                                <option value="fas fa-check-circle">Check Circle</option>
-                                <option value="fas fa-times">Close / Times (✖)</option>
-                                <option value="fas fa-fire">Fire / Hot</option>
-                                <option value="fas fa-bolt">Lightning Bolt</option>
-                                <option value="fas fa-gift">Gift Box</option>
-                                <option value="fas fa-bell">Notification Bell</option>
-                                <option value="fas fa-thumbs-up">Thumbs Up</option>
-                            </optgroup>
-                            <optgroup label="Commerce & Badges">
-                                <option value="fas fa-shopping-cart">Shopping Cart</option>
-                                <option value="fas fa-tag">Discount Tag</option>
-                                <option value="fas fa-percent">Percent (%)</option>
-                                <option value="fas fa-dollar-sign">Dollar Sign ($)</option>
-                                <option value="fas fa-crown">VIP Crown</option>
-                                <option value="fas fa-award">Award Badge</option>
-                                <option value="fas fa-gem">Diamond Gem</option>
-                                <option value="fas fa-shield-alt">Security Shield</option>
-                                <option value="fas fa-lock">Padlock</option>
-                            </optgroup>
-                            <optgroup label="Communication & Media">
-                                <option value="fas fa-envelope">Email Envelope</option>
-                                <option value="fas fa-phone">Phone Call</option>
-                                <option value="fas fa-comment">Chat Comment</option>
-                                <option value="fas fa-paper-plane">Paper Plane</option>
-                                <option value="fas fa-play">Play Video</option>
-                                <option value="fas fa-bullhorn">Announcement Bullhorn</option>
-                            </optgroup>
-                            <optgroup label="Arrows & Navigation">
-                                <option value="fas fa-arrow-right">Arrow Right (&rarr;)</option>
-                                <option value="fas fa-arrow-down">Arrow Down (&darr;)</option>
-                                <option value="fas fa-chevron-right">Chevron Right</option>
-                                <option value="fas fa-rocket">Rocket Launch</option>
-                            </optgroup>
-                            <optgroup label="Custom">
-                                <option value="custom">-- Custom Icon Class --</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom:10px;">
-                        <label for="prop-icon-class" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">FONT AWESOME CLASS</label>
-                        <input type="text" id="prop-icon-class" class="widefat wppoppop-input" placeholder="e.g. fas fa-star" value="fas fa-star" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;font-family:monospace;border-radius:4px;padding:4px 8px;">
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-                        <div>
-                            <label for="prop-icon-size" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">ICON SIZE (PX)</label>
-                            <input type="number" id="prop-icon-size" class="widefat wppoppop-input" min="12" max="180" value="36" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
-                        </div>
-                        <div>
-                            <label for="prop-icon-color" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">ICON COLOR</label>
-                            <input type="color" id="prop-icon-color" class="widefat wppoppop-input" value="#38bdf8" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;padding:2px;cursor:pointer;">
-                        </div>
-                    </div>
-                </div>
-
-<div class="element-panel" id="panel-elem-video-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">VIDEO URL (YOUTUBE / VIMEO / MP4)</label>
-                    <input type="url" id="prop-video-url" class="widefat" placeholder="https://www.youtube.com/watch?v=..." style="font-size:12px;margin-bottom:8px;">
-                    <div style="display:flex;gap:12px;align-items:center;margin-top:6px;">
-                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                            <input type="checkbox" id="prop-video-autoplay" value="1"> Autoplay
-                        </label>
-                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                            <input type="checkbox" id="prop-video-controls" value="1" checked> Controls
-                        </label>
-                        <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                            <input type="checkbox" id="prop-video-loop" value="1"> Loop
-                        </label>
-                    </div>
-                </div>
                 <!-- LINK / ACTION BUTTON -->
-                <div class="element-panel" id="panel-elem-link-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON / LINK TEXT</label>
-                    <input type="text" id="prop-link-label" value="Learn More &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">LINK DESTINATION URL</label>
-                    <input type="url" id="prop-link-url" placeholder="https://..." class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                        <input type="checkbox" id="prop-link-target-blank" value="1" checked> Open in New Tab
-                    </label>
-                </div>
                 <!-- CLOSE BUTTON -->
-                <div class="element-panel" id="panel-elem-close-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE BUTTON ICON / LABEL</label>
-                    <input type="text" id="prop-close-label" value="&times;" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLOSE ACTION BEHAVIOR</label>
-                    <select id="prop-close-action" class="widefat" style="font-size:12px;">
-                        <option value="close">Close popup immediately</option>
-                        <option value="close_period">Close and hide for current session</option>
-                        <option value="close_forever">Close and hide permanently</option>
-                    </select>
-                </div>
                 <!-- WHEEL -->
                 <div class="element-panel" id="panel-elem-wheel" style="display:none;">
                     <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRIZE SLICES (COMMA SEPARATED)</label>
@@ -510,56 +332,11 @@ if (!defined('ABSPATH')) exit;
                     <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SUBMIT BUTTON -->
-                <div class="element-panel" id="panel-elem-submit-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
-                    <input type="text" id="prop-submit-label" value="Submit Form" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON SUBMIT</label>
-                    <select id="prop-submit-action" class="widefat" style="font-size:12px;">
-                        <option value="default">Save Lead & Close</option>
-                        <option value="next_canvas">Save Lead & Advance to Next Canvas</option>
-                        <option value="redirect">Save Lead & Redirect URL</option>
-                    </select>
-                </div>
                     
                     <!-- Element #1: Title -->
                             <!-- Parity: Title Element Dedicated Panel -->
-        <div class="element-panel" id="panel-elem-title-legacy" style="display:none;">
-            <div class="insp-group" style="margin-bottom:12px;">
-                <label class="insp-label" for="prop-title-text" style="font-weight:600;display:block;margin-bottom:4px;">Headline Text</label>
-                <textarea id="prop-title-text" class="wppoppop-input" rows="3" placeholder="Enter headline text..." style="width:100%;resize:vertical;font-size:13px;line-height:1.4;box-sizing:border-box;"></textarea>
-            </div>
-            <div class="insp-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-                <div>
-                    <label class="insp-label" for="prop-title-tag" style="font-weight:600;display:block;margin-bottom:4px;">Heading Tag</label>
-                    <select id="prop-title-tag" class="wppoppop-select" style="width:100%;height:30px;font-size:12px;">
-                        <option value="h1">H1 - Page Main</option>
-                        <option value="h2" selected>H2 - Section</option>
-                        <option value="h3">H3 - Subheading</option>
-                        <option value="h4">H4 - Small Heading</option>
-                        <option value="h5">H5 - Minor Heading</option>
-                        <option value="h6">H6 - Caption Heading</option>
-                        <option value="div">DIV - Generic</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="insp-label" for="prop-title-transform" style="font-weight:600;display:block;margin-bottom:4px;">Text Transform</label>
-                    <select id="prop-title-transform" class="wppoppop-select" style="width:100%;height:30px;font-size:12px;">
-                        <option value="none">None (Default)</option>
-                        <option value="uppercase">UPPERCASE</option>
-                        <option value="lowercase">lowercase</option>
-                        <option value="capitalize">Capitalize</option>
-                    </select>
-                </div>
-            </div>
-        </div>
 
                     <!-- Element #2: Paragraph -->
-                    <div id="panel-elem-paragraph-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
-                        <div class="wppoppop-prop-group">
-                            <label for="prop-paragraph-text" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PARAGRAPH BODY</label>
-                            <textarea id="prop-paragraph-text" class="wppoppop-input" rows="4" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
-                        </div>
-                    </div>
 
                     <!-- Element #3: Text Field -->
                     <div id="panel-elem-textfield-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
@@ -570,54 +347,6 @@ if (!defined('ABSPATH')) exit;
                     </div>
 
                     <!-- Element #4: Vector Shape Settings -->
-                    <div id="panel-elem-shape-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
-                        <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin:8px 0 6px 0;border-bottom:1px solid #334155;padding-bottom:4px;">SHAPE GEOMETRY &amp; OUTLINE</div>
-                        
-                        <div class="wppoppop-prop-group" style="margin-bottom:10px;">
-                            <label for="prop-shape-preset" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PRESET SHAPE</label>
-                            <select id="prop-shape-preset" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                                <option value="circle">Circle</option>
-                                <option value="square">Square</option>
-                                <option value="rounded_rect">Rounded Rectangle</option>
-                                <option value="star">Star (5-Point)</option>
-                                <option value="triangle">Triangle</option>
-                                <option value="diamond">Diamond</option>
-                                <option value="heart">Heart</option>
-                                <option value="hexagon">Hexagon</option>
-                                <option value="octagon">Octagon</option>
-                                <option value="shield">Shield</option>
-                                <option value="cross">Cross</option>
-                            </select>
-                        </div>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                            <div class="wppoppop-prop-group">
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                                    <label for="prop-shape-fill" style="font-size:11px;font-weight:700;color:#94a3b8;margin:0;">FILL COLOR</label>
-                                    <button type="button" id="prop-shape-fill-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Fill" aria-label="Transparent Fill"></button>
-                                </div>
-                                <input type="color" id="prop-shape-fill" class="wppoppop-input" value="#3b82f6" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
-                            </div>
-                            <div class="wppoppop-prop-group">
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                                    <label for="prop-shape-stroke" style="font-size:11px;font-weight:700;color:#94a3b8;margin:0;">STROKE COLOR</label>
-                                    <button type="button" id="prop-shape-stroke-transparent-btn" class="wppoppop-checker-btn" title="Set Transparent Stroke" aria-label="Transparent Stroke"></button>
-                                </div>
-                                <input type="color" id="prop-shape-stroke" class="wppoppop-input" value="#1d4ed8" style="width:100%;height:32px;padding:2px;background:#0f172a;border:1px solid #334155;border-radius:4px;cursor:pointer;box-sizing:border-box;">
-                            </div>
-                        </div>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                            <div class="wppoppop-prop-group">
-                                <label for="prop-shape-stroke-width" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">STROKE (PX)</label>
-                                <input type="number" id="prop-shape-stroke-width" class="wppoppop-input" min="0" max="30" value="2" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                            </div>
-                            <div class="wppoppop-prop-group">
-                                <label for="prop-shape-rotate" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">ROTATION (°)</label>
-                                <input type="number" id="prop-shape-rotate" class="wppoppop-input" min="0" max="360" value="0" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- General Content Fallback -->
                     <div id="panel-elem-general" class="element-panel wppoppop-elem-panel" style="display:none;">
@@ -650,60 +379,6 @@ if (!defined('ABSPATH')) exit;
                     </div>
                 </div>
                             <!-- =================== ELEMENT ANIMATION (CONTENT TAB) =================== -->
-                <div id="wppoppop-element-anim-wrap" style="margin-top:14px;border-top:1px solid #334155;padding-top:10px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-                        <span style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;letter-spacing:0.5px;">ANIMATION</span>
-                        <span style="font-size:9px;color:#94a3b8;background:#1e293b;border:1px solid #334155;padding:1px 6px;border-radius:4px;">Animate.css</span>
-                    </div>
-                    <div>
-                        <label for="prop-animation" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">APPEARANCE EFFECT</label>
-                        <div style="display:flex;gap:8px;align-items:center;">
-                            <select id="prop-animation" class="wppoppop-input" style="flex:1;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                                <option value="none">None</option>
-                                <option value="fade">Fade In</option>
-                                <option value="bounceIn">Bounce In</option>
-                                <option value="bounceInLeft">Bounce In Left</option>
-                                <option value="bounceInRight">Bounce In Right</option>
-                                <option value="bounce">Bounce</option>
-                                <option value="tada">Tada</option>
-                                <option value="rubberBand">RubberBand</option>
-                                <option value="slideDown">Slide Down</option>
-                                <option value="slideUp">Slide Up</option>
-                                <option value="slideLeft">Slide Left</option>
-                                <option value="slideRight">Slide Right</option>
-                                <option value="zoomIn">Zoom In</option>
-                                <option value="flipIn">Flip In</option>
-                                <option value="pulse">Pulse</option>
-                                <option value="shake">Shake</option>
-                            </select>
-                            <button type="button" id="prop-anim-play-btn" style="background:#2563eb;border:none;color:#ffffff;padding:6px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;" title="Test Element Animation">&#9654; Play</button>
-                        </div>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
-                        <div>
-                            <label for="prop-anim-duration" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">DURATION (MS)</label>
-                            <input type="number" id="prop-anim-duration" class="wppoppop-input" value="1000" step="50" min="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
-                        </div>
-                        <div>
-                            <label for="prop-anim-delay" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">START DELAY (MS)</label>
-                            <input type="number" id="prop-anim-delay" class="wppoppop-input" value="0" step="50" min="0" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
-                        </div>
-                    </div>
-
-                    <div style="margin-top:8px;">
-                        <label for="prop-anim-disappearance" style="font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">DISAPPEARANCE / EXIT</label>
-                        <select id="prop-anim-disappearance" class="wppoppop-input" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
-                            <option value="none">None</option>
-                            <option value="fade">Fade</option>
-                            <option value="slideDown">Slide Down</option>
-                            <option value="slideUp">Slide Up</option>
-                            <option value="slideLeft">Slide Left</option>
-                            <option value="slideRight">Slide Right</option>
-                            <option value="zoomOut">Zoom Out</option>
-                        </select>
-                    </div>
-                </div>
         </div>
 
        

@@ -205,14 +205,14 @@
             var self = this;
 
             // Element Inspector Play Button
-            $(document).off('click.wppoppop_anim_el_play', '#prop-anim-play-btn, #prop-anim-play, .wppoppop-anim-play-btn')
-                       .on('click.wppoppop_anim_el_play', '#prop-anim-play-btn, #prop-anim-play, .wppoppop-anim-play-btn', function(e) {
+            $(document).off('click.wppoppop_anim_el_play', '#wppoppop-btn-play-elem-anim, #prop-anim-play-btn, #prop-anim-play, .wppoppop-anim-play-btn')
+                       .on('click.wppoppop_anim_el_play', '#wppoppop-btn-play-elem-anim, #prop-anim-play-btn, #prop-anim-play, .wppoppop-anim-play-btn', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var activeId = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.activeId) ||
                                ($('#insp-active-element-id').val()) ||
                                ($('.wppoppop-canvas-item.is-selected').data('id'));
-                var effect = $('#prop-anim-appearance').val() || $('#prop-animation').val();
+                var effect = $('#prop-anim-in').val() || $('#prop-anim-appearance').val();
                 var duration = $('#prop-anim-duration').val();
                 var delay = $('#prop-anim-delay').val();
                 if (activeId) {
@@ -221,8 +221,8 @@
             });
 
             // Element Inspector Dropdown Change preview
-            $(document).off('change.wppoppop_anim_el_select', '#prop-anim-appearance, #prop-animation')
-                       .on('change.wppoppop_anim_el_select', '#prop-anim-appearance, #prop-animation', function(e) {
+            $(document).off('change.wppoppop_anim_el_select', '#prop-anim-in, #prop-anim-appearance')
+                       .on('change.wppoppop_anim_el_select', '#prop-anim-in, #prop-anim-appearance', function(e) {
                 var activeId = (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.activeId) ||
                                ($('#insp-active-element-id').val()) ||
                                ($('.wppoppop-canvas-item.is-selected').data('id'));

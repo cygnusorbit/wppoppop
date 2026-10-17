@@ -77,7 +77,7 @@
 
     bindAnimationPlayControls: function() {
         var self = this;
-        $(document).off('click.wppoppop_anim_play').on('click.wppoppop_anim_play', '#prop-anim-play-btn, #prop-anim-replay-btn, #prop-anim-test-btn, .wppoppop-anim-play-btn', function(e) {
+        $(document).off('click.wppoppop_anim_play').on('click.wppoppop_anim_play', '#wppoppop-btn-play-elem-anim, #prop-anim-play-btn, #prop-anim-replay-btn, #prop-anim-test-btn, .wppoppop-anim-play-btn', function(e) {
             e.preventDefault();
             var core = window.WpPopPopBuilderCore;
             var activeId = (core && core.state) ? core.state.activeId : null;
@@ -99,7 +99,7 @@
                 activeEl = list.find(function(el) { return el.id === activeId; });
             }
 
-            var effect = $('#prop-anim-appearance').val() || $('#prop-animation').val() || $('#prop-anim-effect').val();
+            var effect = $('#prop-anim-in').val() || $('#prop-anim-appearance').val() || $('#prop-anim-effect').val();
             if (!effect || effect === 'none') {
                 if (activeEl) {
                     effect = activeEl.anim_appearance || activeEl.animEffect || activeEl.animation || activeEl.anim_effect;
@@ -117,7 +117,7 @@
             }
         });
 
-        $(document).off('change.wppoppop_anim_sel').on('change.wppoppop_anim_sel', '#prop-anim-appearance, #prop-animation, #prop-anim-effect', function() {
+        $(document).off('change.wppoppop_anim_sel').on('change.wppoppop_anim_sel', '#prop-anim-in, #prop-anim-appearance, #prop-anim-effect', function() {
             var val = $(this).val();
             if (val && val !== 'none') {
                 var core = window.WpPopPopBuilderCore;
@@ -947,15 +947,12 @@
         if ($('#prop-color').length && el.color) $('#prop-color').val(el.color);
         if ($('#prop-bg-color').length && el.bgColor) $('#prop-bg-color').val(el.bgColor);
 
-        // Animation
-        if ($('#prop-anim-appearance').length) {
-            $('#prop-anim-appearance').val(el.anim_appearance || el.animation || el.animEffect || 'none');
-        }
-        if ($('#prop-anim-duration').length) {
-            $('#prop-anim-duration').val(el.anim_duration || el.duration || 1000);
-        }
-        if ($('#prop-anim-delay').length) {
-            $('#prop-anim-delay').val(el.anim_delay || el.delay || 0);
+        // Animation (canonical keys: animIn / animOut / animDuration / animDelay)
+        if ($('#prop-anim-in').length) {
+            $('#prop-anim-in').val(el.animIn || el.animation || 'none');
+            $('#prop-anim-out').val(el.animOut || 'none');
+            $('#prop-anim-duration').val(el.animDuration !== undefined && el.animDuration !== '' ? el.animDuration : 1000);
+            $('#prop-anim-delay').val(el.animDelay !== undefined && el.animDelay !== '' ? el.animDelay : 0);
         }
     },
 
