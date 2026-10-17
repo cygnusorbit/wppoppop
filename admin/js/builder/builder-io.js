@@ -86,6 +86,11 @@
                 $btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Saving...');
 
                 var core = window.WpPopPopBuilderCore;
+                try {
+                    if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.flushElementFromDOM === 'function') { window.WpPopPopElementsRegistry.flushElementFromDOM(); }
+                    if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.flushSanitizedLayerSettings === 'function') { window.WpPopPopBuilderInspector.flushSanitizedLayerSettings(); }
+                    self.flushActiveElement();
+                } catch (flushErr) {}
                 var settings = window.WpPopPopBuilderSettings ? window.WpPopPopBuilderSettings.getSettings() : {};
 
                 
@@ -169,8 +174,8 @@
                 if (core) {
                     core.state.canvases = { 1: [], 2: [] };
                     core.state.canvasMeta = {
-                        1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fade', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fade', logic_enabled: false },
-                        2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fade', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fade', logic_enabled: false }
+                        1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fadeOut', logic_enabled: false },
+                        2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fadeOut', logic_enabled: false }
                     };
                     core.renderCanvasTabs();
                     core.switchCanvas(1);
@@ -230,17 +235,17 @@
                                         grad_color1: (cfg.settings && cfg.settings.box && cfg.settings.box.grad_color1) || '#3b82f6',
                                         grad_color2: (cfg.settings && cfg.settings.box && cfg.settings.box.grad_color2) || '#1d4ed8',
                                         grad_angle: (cfg.settings && cfg.settings.box && cfg.settings.box.grad_angle) || 135,
-                                        anim_appearance: 'fade',
+                                        anim_appearance: 'fadeIn',
                                         anim_duration: 1000,
                                         anim_delay: 0,
-                                        anim_disappearance: 'fade',
+                                        anim_disappearance: 'fadeOut',
                                         logic_enabled: false
                                     };
                                 } else {
-                                    if (!core.state.canvasMeta[k].anim_appearance) core.state.canvasMeta[k].anim_appearance = 'fade';
+                                    if (!core.state.canvasMeta[k].anim_appearance || core.state.canvasMeta[k].anim_appearance === 'fade') core.state.canvasMeta[k].anim_appearance = 'fadeIn';
                                     if (core.state.canvasMeta[k].anim_duration === undefined) core.state.canvasMeta[k].anim_duration = 1000;
                                     if (core.state.canvasMeta[k].anim_delay === undefined) core.state.canvasMeta[k].anim_delay = 0;
-                                    if (!core.state.canvasMeta[k].anim_disappearance) core.state.canvasMeta[k].anim_disappearance = 'fade';
+                                    if (!core.state.canvasMeta[k].anim_disappearance || core.state.canvasMeta[k].anim_disappearance === 'fade') core.state.canvasMeta[k].anim_disappearance = 'fadeOut';
                                 }
                             });
 

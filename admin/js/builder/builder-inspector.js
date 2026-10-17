@@ -244,6 +244,7 @@
             el.animOut      = jQuery('#prop-anim-out').val() || 'none';
             el.animDuration = parseInt(jQuery('#prop-anim-duration').val(), 10) || 1000;
             el.animDelay    = parseInt(jQuery('#prop-anim-delay').val(), 10) || 0;
+            if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.syncAliases(el); }
         }
         if (jQuery('#prop-gp-required').length && jQuery('#insp-row-gp-required').is(':visible')) {
             el.required = jQuery('#prop-gp-required').is(':checked');
@@ -385,8 +386,8 @@
         // 5. Hydrate canonical controls from el model
         jQuery('#prop-gp-autocomplete').val(el.autocomplete || (canonical === 'email' ? 'email' : (canonical === 'tel' ? 'tel' : 'off')));
         jQuery('#prop-gp-required').prop('checked', !!el.required);
-        jQuery('#prop-anim-in').val(el.animIn || el.animation || 'none');
-        jQuery('#prop-anim-out').val(el.animOut || 'none');
+        jQuery('#prop-anim-in').val(el.animIn || el.anim_appearance || el.animation || 'none');
+        jQuery('#prop-anim-out').val(el.animOut || el.anim_disappearance || 'none');
         jQuery('#prop-anim-duration').val(el.animDuration !== undefined ? el.animDuration : 1000);
         jQuery('#prop-anim-delay').val(el.animDelay !== undefined ? el.animDelay : 0);
 
@@ -477,6 +478,7 @@
             el.animOut      = jQuery('#prop-anim-out').val();
             el.animDuration = parseInt(jQuery('#prop-anim-duration').val(), 10) || 1000;
             el.animDelay    = parseInt(jQuery('#prop-anim-delay').val(), 10) || 0;
+            if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.syncAliases(el); }
             el.required     = jQuery('#prop-gp-required').is(':checked');
             jQuery('#prop-required').prop('checked', el.required);
             syncStage();
@@ -562,7 +564,7 @@
             this.bindInputs();
             this.bindLayerNameInputEvents();
             this.bindInspectorCloseEvents();
-            this.bindAnimationPlayControls();
+            /* animation preview handled by WpPopPopBuilderAnimation */
         },
 
         bindTabs: function() {
@@ -949,8 +951,8 @@
 
         // Animation (canonical keys: animIn / animOut / animDuration / animDelay)
         if ($('#prop-anim-in').length) {
-            $('#prop-anim-in').val(el.animIn || el.animation || 'none');
-            $('#prop-anim-out').val(el.animOut || 'none');
+            $('#prop-anim-in').val(el.animIn || el.anim_appearance || el.animation || 'none');
+            $('#prop-anim-out').val(el.animOut || el.anim_disappearance || 'none');
             $('#prop-anim-duration').val(el.animDuration !== undefined && el.animDuration !== '' ? el.animDuration : 1000);
             $('#prop-anim-delay').val(el.animDelay !== undefined && el.animDelay !== '' ? el.animDelay : 0);
         }

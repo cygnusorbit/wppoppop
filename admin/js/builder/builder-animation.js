@@ -30,11 +30,21 @@
             return 'wppoppop-fx-' + (map[e] || e);
         },
 
+        syncAliases: function(el) {
+            if (!el) return el;
+            var eff = el.animIn || el.animation || 'none';
+            el.anim_appearance = eff; el.animEffect = eff; el.anim_effect = eff;
+            el.anim_disappearance = el.animOut || 'none';
+            if (el.animDuration !== undefined) el.anim_duration = el.animDuration;
+            if (el.animDelay !== undefined) el.anim_delay = el.animDelay;
+            return el;
+        },
+
         normalizeAliases: function(el) {
             if (!el || typeof el !== 'object') return { effect: 'none', duration: 1000, delay: 0, disappearance: 'none' };
-            var eff = el.anim_appearance || el.animation || el.animEffect || el.anim_effect || 'none';
-            var dur = parseInt(el.anim_duration || el.duration || 1000, 10);
-            var del = parseInt(el.anim_delay || el.delay || 0, 10);
+            var eff = el.animIn || el.anim_appearance || el.animation || el.animEffect || el.anim_effect || 'none';
+            var dur = parseInt(el.animDuration || el.anim_duration || el.duration || 1000, 10);
+            var del = parseInt(el.animDelay || el.anim_delay || el.delay || 0, 10);
             var dis = el.anim_disappearance || el.disappearance || 'none';
             el.anim_appearance = eff;
             el.animation = eff;

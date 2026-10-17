@@ -584,10 +584,10 @@
         getSettings: function() {
             return {
                 animation: {
-                    appearance: $('#set-canvas-anim-appearance, #set-anim-appearance').val() || 'fade',
+                    appearance: $('#set-canvas-anim-appearance, #set-anim-appearance').val() || 'fadeIn',
                     duration: parseInt($('#set-canvas-anim-duration, #set-anim-duration').val(), 10) || 1000,
                     delay: parseInt($('#set-canvas-anim-delay, #set-anim-delay').val(), 10) || 0,
-                    disappearance: $('#set-canvas-anim-disappearance, #set-anim-disappearance').val() || 'fade'
+                    disappearance: $('#set-canvas-anim-disappearance, #set-anim-disappearance').val() || 'fadeOut'
                 },
                 box: {
                     width: parseInt($('#set-canvas-width').val(), 10) || 640,
@@ -698,5 +698,31 @@ if (settings.triggers) {
                 $('#set-quiz-confetti').prop('checked', !!settings.quiz.confetti);
             }
         }
+    };
+})(jQuery);
+
+
+/* WPPOPPOP_SETTINGS_EXTRA */
+(function($) {
+    'use strict';
+    var S = window.WpPopPopBuilderSettings;
+    if (!S || S._extraWrapped) return;
+    S._extraWrapped = true;
+    var origGet = S.getSettings, origSet = S.setSettings;
+    S.getSettings = function() {
+        var out = origGet.apply(this, arguments) || {};
+        var core = window.WpPopPopBuilderCore;
+        var st = (core && core.state && core.state.settings) || {};
+        out.exit_intent_sensitivity = parseInt($('#set-exit-intent-sensitivity').val(), 10) || st.exit_intent_sensitivity || 20;
+        out.scroll_depth = parseInt($('#set-trigger-scroll-depth').val(), 10) || st.scroll_depth || 50;
+        return out;
+    };
+    S.setSettings = function(settings) {
+        var r = origSet.apply(this, arguments);
+        if (settings) {
+            if (settings.exit_intent_sensitivity) $('#set-exit-intent-sensitivity').val(settings.exit_intent_sensitivity);
+            if (settings.scroll_depth) $('#set-trigger-scroll-depth').val(settings.scroll_depth);
+        }
+        return r;
     };
 })(jQuery);

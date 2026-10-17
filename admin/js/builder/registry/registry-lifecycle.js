@@ -50,6 +50,7 @@
             el.animOut      = $('#prop-anim-out').val() || 'none';
             el.animDuration = parseInt($('#prop-anim-duration').val(), 10) || 1000;
             el.animDelay    = parseInt($('#prop-anim-delay').val(), 10) || 0;
+            if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.syncAliases(el); }
         }
         if (isForm && $('#prop-gp-required').length) {
             el.required = $('#prop-gp-required').is(':checked');

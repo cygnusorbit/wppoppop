@@ -27,6 +27,16 @@ class WpPopPop_Front_Renderer {
         $canvas_meta = $config['canvasMeta'] ?? $config['canvas_meta'] ?? [];
         $encoded_config = esc_attr(wp_json_encode($config));
 
+        $trg = (isset($config['settings']['triggers']) && is_array($config['settings']['triggers'])) ? $config['settings']['triggers'] : [];
+        $trg_on = function ($k) use ($trg) { return !empty($trg[$k]) && $trg[$k] !== 'false' && $trg[$k] !== '0'; };
+        $trg_attrs = '';
+        if ($trg_on('load'))   { $trg_attrs .= ' data-trigger-load="1" data-trigger-load-delay="' . max(0, intval($trg['load_delay'] ?? 0)) . '"'; }
+        if ($trg_on('exit'))   { $trg_attrs .= ' data-trigger-exit="1" data-exit-sens="' . max(1, intval($config['settings']['exit_intent_sensitivity'] ?? 20)) . '"'; }
+        if ($trg_on('scroll')) { $trg_attrs .= ' data-trigger-scroll="' . max(1, min(100, intval($trg['scroll_val'] ?? ($config['settings']['scroll_depth'] ?? 50)))) . '"'; }
+        if ($trg_on('adblock')) { $trg_attrs .= ' data-trigger-adblock="1"'; }
+        if ($trg_on('backbutton') || $trg_on('back')) { $trg_attrs .= ' data-trigger-back="1"'; }
+        if ($trg_on('idle'))   { $trg_attrs .= ' data-trigger-idle="' . max(1, intval($trg['idle_seconds'] ?? ($trg['idle_time'] ?? 15))) . '"'; }
+
         // Settings Integrations
         $default_font   = function_exists('wppoppop_get_setting') ? wppoppop_get_setting('default_font', 'inherit') : 'inherit';
         $show_watermark = function_exists('wppoppop_get_setting') ? (bool) wppoppop_get_setting('powered_by_badge', false) : false;
@@ -64,7 +74,7 @@ class WpPopPop_Front_Renderer {
         <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo $preload_class; ?>"
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
-             data-config="<?php echo $encoded_config; ?>"
+             data-config="<?php echo $encoded_config; ?>"<?php echo $trg_attrs; ?>
              style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);"
              aria-hidden="true"
              role="dialog">

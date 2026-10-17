@@ -190,6 +190,7 @@
         // 3. Animation Play Button on Content Tab
         $(document).off('click.p1PlayAnim', '#wppoppop-btn-play-elem-anim')
                    .on('click.p1PlayAnim', '#wppoppop-btn-play-elem-anim', function(e) {
+            return; /* handled by WpPopPopBuilderAnimation */
             e.preventDefault();
             var el = Reg.resolveElement();
             if (!el) return;

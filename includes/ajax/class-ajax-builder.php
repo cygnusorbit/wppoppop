@@ -52,6 +52,12 @@ class WpPopPop_Ajax_Builder {
             wp_send_json_error(['message' => 'Malformed JSON definition.']);
         }
 
+        $wppoppop_obj = json_decode($data_raw);
+        if (is_object($wppoppop_obj) || is_array($wppoppop_obj)) {
+            $wppoppop_enc = wp_json_encode($this->sanitize_anim_payload($wppoppop_obj));
+            if (is_string($wppoppop_enc) && $wppoppop_enc !== '') { $data_raw = $wppoppop_enc; }
+        }
+
         $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE uid = %s", $uid));
 
         if ($existing) {
@@ -61,6 +67,28 @@ class WpPopPop_Ajax_Builder {
         }
 
         wp_send_json_success(['uid' => $uid, 'message' => 'Popup configuration saved successfully!']);
+    }
+
+    private function sanitize_anim_payload($node) {
+        if (is_object($node)) {
+            foreach (get_object_vars($node) as $k => $v) { $node->$k = $this->sanitize_anim_value($k, $v); }
+            return $node;
+        }
+        if (is_array($node)) {
+            foreach ($node as $k => $v) { $node[$k] = $this->sanitize_anim_value($k, $v); }
+        }
+        return $node;
+    }
+
+    private function sanitize_anim_value($k, $v) {
+        static $txt = array('anim_appearance', 'anim_disappearance', 'anim_effect', 'animEffect', 'animation', 'animIn', 'animOut');
+        static $int = array('anim_duration', 'anim_delay', 'animDuration', 'animDelay');
+        if (is_scalar($v) || $v === null) {
+            if (in_array($k, $txt, true)) { return preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $v); }
+            if (in_array($k, $int, true)) { return max(0, intval($v)); }
+            return $v;
+        }
+        return $this->sanitize_anim_payload($v);
     }
 
     public function load_popup() {
@@ -492,7 +520,7 @@ if (!$data || !isset($data['meta'])) {
         }
 
         $gp_int_keys = array(
-            'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
+            'animDuration', 'animDelay', 'anim_duration', 'anim_delay', 'iconLeftOffset', 'iconRightOffset',
             'rotate', 'iconSize', 'cookieDays', 'progressValue',
             'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
             'maxSelect', 'columns', 'timeStep', 'maxFileSize', 'ratingMax'

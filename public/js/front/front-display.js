@@ -104,7 +104,15 @@
                     }
                 } catch(e) {}
 
-                self.show(uid);
+                var hasLoad = $wrap.attr('data-trigger-load') === '1';
+                var hasOther = $wrap.is('[data-trigger-exit],[data-trigger-scroll],[data-trigger-back],[data-trigger-idle]');
+                if (!hasLoad && hasOther) return;
+                var loadDelay = hasLoad ? (parseFloat($wrap.attr('data-trigger-load-delay')) || 0) * 1000 : 0;
+                if (loadDelay > 0) {
+                    setTimeout(function() { self.show(uid); }, loadDelay);
+                } else {
+                    self.show(uid);
+                }
             });
         },
 
@@ -283,7 +291,34 @@
         }
     };
 
+    window.WpPopPopFront = window.WpPopPopFront || {};
+    if (!window.WpPopPopFront.Modal) {
+        window.WpPopPopFront.Modal = {
+            isSuppressed: function(uid) {
+                try { return !!localStorage.getItem('wppoppop_dismissed_' + uid); } catch (e) { return false; }
+            },
+            open: function(uid) {
+                if (!uid || this.isSuppressed(uid)) return;
+                var $w = window.WpPopPopFrontDisplay.getPopupWrap(uid);
+                if (!$w.length || $w.is(':visible')) return;
+                window.WpPopPopFrontDisplay.show(uid);
+            },
+            close: function(uid) { window.WpPopPopFrontDisplay.close(uid); }
+        };
+    }
+
     $(document).ready(function() {
+        var T = window.WpPopPopFront.Triggers;
+        if (T && typeof T.init === 'function' && !T._wppoppopInit) {
+            var origInit = T.init;
+            T.init = function() {
+                if (T._wppoppopInited) return;
+                T._wppoppopInited = true;
+                return origInit.apply(T, arguments);
+            };
+            T._wppoppopInit = true;
+            T.init();
+        }
         window.WpPopPopFrontDisplay.init();
     });
 
