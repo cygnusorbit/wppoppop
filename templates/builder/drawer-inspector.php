@@ -46,42 +46,7 @@ if (!defined('ABSPATH')) exit;
                     </select>
                 </div>
 
-                <div class="wppoppop-prop-row">
-                    <label class="wppoppop-prop-label"><?php esc_html_e( 'ANIMATION', 'wppoppop' ); ?></label>
-                    <div class="wppoppop-gp-2col-grid">
-                        <div class="wppoppop-gp-col">
-                            <select id="prop-anim-in" class="wppoppop-select">
-                                <option value="none"><?php esc_html_e( 'None', 'wppoppop' ); ?></option>
-                                <option value="fadeIn">fadeIn</option>
-                                <option value="fadeInUp">fadeInUp</option>
-                                <option value="fadeInDown">fadeInDown</option>
-                                <option value="zoomIn">zoomIn</option>
-                                <option value="bounceIn">bounceIn</option>
-                                <option value="slideInLeft">slideInLeft</option>
-                                <option value="slideInRight">slideInRight</option>
-                            </select>
-                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Appearance', 'wppoppop' ); ?></span>
-                        </div>
-                        <div class="wppoppop-gp-col">
-                            <select id="prop-anim-out" class="wppoppop-select">
-                                <option value="none"><?php esc_html_e( 'None', 'wppoppop' ); ?></option>
-                                <option value="fadeOut">fadeOut</option>
-                                <option value="fadeOutDown">fadeOutDown</option>
-                                <option value="zoomOut">zoomOut</option>
-                                <option value="bounceOut">bounceOut</option>
-                            </select>
-                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Disappearance', 'wppoppop' ); ?></span>
-                        </div>
-                        <div class="wppoppop-gp-col">
-                            <input type="number" id="prop-anim-duration" class="wppoppop-input" value="1000" min="0" step="50">
-                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Duration (ms)', 'wppoppop' ); ?></span>
-                        </div>
-                        <div class="wppoppop-gp-col">
-                            <input type="number" id="prop-anim-delay" class="wppoppop-input" value="0" min="0" step="50">
-                            <span class="wppoppop-gp-sublabel"><?php esc_html_e( 'Start delay (ms)', 'wppoppop' ); ?></span>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div class="wppoppop-prop-row wppoppop-gp-switch-row" id="insp-row-gp-required" style="display:none; margin-top:12px;">
                     <label class="wppoppop-prop-label" for="prop-gp-required"><?php esc_html_e( 'REQUIRED', 'wppoppop' ); ?></label>
@@ -288,7 +253,7 @@ if (!defined('ABSPATH')) exit;
                     <label style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">EMBED CODE / MARKUP</label>
                     <textarea id="prop-html-code" rows="7" class="widefat wppoppop-input" placeholder="<div>Custom HTML / Embed here</div>" style="width:100%;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-family:monospace;font-size:11px;padding:8px;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
                     <span style="display:block;font-size:10px;color:#64748b;margin-top:4px;">Live renders HTML, iframes, SVG badges, and custom styled embeds on the canvas.</span>
-                </div></textarea>
+                </div>
                 </div>
 
                 <!-- VIDEO -->

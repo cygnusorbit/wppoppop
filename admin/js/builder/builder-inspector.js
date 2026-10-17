@@ -19,6 +19,91 @@
     'use strict';
 
     window.WpPopPopBuilderInspector = {
+    normalizeInspectorTabsAndBounds: function(activeTab) {
+        var $ = window.jQuery;
+        if (!$) return;
+
+        // 1. Remove any duplicate Data / Advanced tab buttons next to "Layer Settings" title
+        $('#wppoppop-inspector-titlebar').find('[data-tab], .wppoppop-insp-tab, .wppoppop-tab-btn').remove();
+        $('.wppoppop-inspector-title').siblings('[data-tab], .wppoppop-insp-tab, .wppoppop-tab-btn').remove();
+        $('#wppoppop-inspector-close').siblings('[data-tab], .wppoppop-insp-tab, .wppoppop-tab-btn').remove();
+
+        // Deduplicate tab buttons inside the actual tab bar (#wppoppop-inspector-tabs-bar)
+        var seenTabs = {};
+        $('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs').not('#wppoppop-inspector-titlebar').find('[data-tab]').each(function() {
+            var t = $(this).attr('data-tab');
+            if (seenTabs[t]) {
+                $(this).remove();
+            } else {
+                seenTabs[t] = true;
+            }
+        });
+
+        // 2. Ensure COORDINATES & BOUNDS and ANIMATION live strictly inside #insp-tab-basic
+        var $basicPane = $('#insp-tab-basic');
+        if ($basicPane.length) {
+            var $coordInputs = $('#prop-pos-top, #prop-y, #prop-pos-left, #prop-x');
+            $coordInputs.each(function() {
+                var $card = $(this).closest('.wppoppop-inspector-card, .wppoppop-inspector-section, .wppoppop-prop-group');
+                if ($card.length && !$card.closest('#insp-tab-basic').length) {
+                    $basicPane.append($card);
+                }
+            });
+
+            var $animInputs = $('#prop-anim-appearance, #prop-anim-in, #prop-anim-duration, #wppoppop-element-anim-wrap');
+            $animInputs.each(function() {
+                var $card = $(this).closest('#wppoppop-element-anim-wrap, .wppoppop-inspector-card, .wppoppop-inspector-section, .wppoppop-prop-group');
+                if ($card.length && !$card.closest('#insp-tab-basic').length) {
+                    $basicPane.append($card);
+                }
+            });
+
+            // Remove any duplicate Coordinates & Bounds or Animation sections across all tabs
+            var coordCards = [];
+            $('#wppoppop-inspector-body').find('.wppoppop-inspector-card, .wppoppop-inspector-section, .wppoppop-prop-group').each(function() {
+                var txt = ($(this).find('h4, .wppoppop-section-title, .wppoppop-card-title, label').first().text() || '').toUpperCase();
+                if (txt.indexOf('COORDINATES & BOUNDS') !== -1 || txt.indexOf('COORDINATES') !== -1) {
+                    coordCards.push($(this));
+                }
+            });
+            for (var i = 1; i < coordCards.length; i++) {
+                coordCards[i].remove();
+            }
+
+            var animCards = [];
+            $('#wppoppop-inspector-body').find('#wppoppop-element-anim-wrap, .wppoppop-inspector-card, .wppoppop-inspector-section, .wppoppop-prop-group').each(function() {
+                var txt = ($(this).find('h4, .wppoppop-section-title, .wppoppop-card-title').first().text() || '').toUpperCase();
+                if (txt.indexOf('ANIMATION') !== -1 || $(this).attr('id') === 'wppoppop-element-anim-wrap') {
+                    // Avoid pushing parent + child of the same animation card
+                    var isChild = false;
+                    for (var k = 0; k < animCards.length; k++) {
+                        if ($.contains(animCards[k][0], this) || $.contains(this, animCards[k][0])) {
+                            isChild = true;
+                            break;
+                        }
+                    }
+                    if (!isChild) animCards.push($(this));
+                }
+            });
+            for (var j = 1; j < animCards.length; j++) {
+                animCards[j].remove();
+            }
+        }
+
+        // 3. Enforce strict tab pane visibility so inactive tabs (and Content's Coordinates/Animation) hide completely
+        var curTab = activeTab || $('#wppoppop-inspector-tabs-bar [data-tab].active, .wppoppop-inspector-tabs [data-tab].active').attr('data-tab') || 'basic';
+        if (curTab === 'content') curTab = 'basic';
+        var targetId = 'insp-tab-' + curTab;
+
+        $('#wppoppop-inspector-body > .wppoppop-tab-pane, #wppoppop-inspector-body > .wppoppop-insp-content, #insp-tab-basic, #insp-tab-style, #insp-tab-logic, #insp-tab-data, #insp-tab-advanced').each(function() {
+            if (this.id === targetId) {
+                $(this).addClass('active').css('display', 'block');
+            } else {
+                $(this).removeClass('active').css('display', 'none');
+            }
+        });
+    },
+
 /* --- Per-Layer Instance Settings Parity --- */
     getInstanceElement: function() {
         var core = window.WpPopPopBuilderCore;
@@ -575,6 +660,7 @@
         },
 
         switchTab: function(tab) {
+        if (this.normalizeInspectorTabsAndBounds) { this.normalizeInspectorTabsAndBounds(tab); }
         $('.wppoppop-insp-tab').removeClass('active').css({
             'border-bottom': '2px solid transparent',
             'color': '#94a3b8'
@@ -741,6 +827,10 @@
     },
 
     open: function(id) {
+        if (this.normalizeInspectorTabsAndBounds) { this.normalizeInspectorTabsAndBounds(); }
+        // Purge any rogue tab buttons from header titlebar
+        $('#wppoppop-inspector-titlebar .wppoppop-insp-tab, .wppoppop-inspector-header .wppoppop-insp-tab, #wppoppop-inspector-titlebar [data-tab]').remove();
+    
             if (window.WpPopPopElementsRegistry) {
                 var _regEl = window.WpPopPopElementsRegistry.resolveElement(id);
                 if (_regEl) {

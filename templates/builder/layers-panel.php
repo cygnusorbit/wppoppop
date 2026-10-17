@@ -17,7 +17,11 @@ if (!defined('ABSPATH')) {
                 <span class="dashicons dashicons-arrow-up-alt2"></span>
             </button>
         </div>
-    <!-- Phase 5: Layers Panel Toolbar, Search & Bulk Actions -->
+    
+
+    </div>
+    
+        <!-- Phase 5: Layers Panel Toolbar, Search & Bulk Actions -->
     <div class="wppoppop-layers-panel-toolbar" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #0f172a; border-bottom: 1px solid #1e293b; gap: 6px;">
         <div class="wppoppop-layers-search-wrap" style="display: flex; align-items: center; flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 4px; padding: 0 6px;">
             <span class="dashicons dashicons-search" style="font-size: 13px; width: 13px; height: 13px; line-height: 1; color: #64748b; margin-right: 4px;"></span>
@@ -32,9 +36,6 @@ if (!defined('ABSPATH')) {
             </button>
         </div>
     </div>
-
-    </div>
-    
     <div id="wppoppop-layers-list">
         <!-- Dynamically rendered and sortable layer items -->
     </div>

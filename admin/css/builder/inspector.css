@@ -1061,3 +1061,31 @@ body.wppoppop-space-held #wppoppop-canvas-corner-handle {
     color: #38bdf8 !important;
 }
 /* === DRAWER_INSPECTOR_ICON_ACTIVE_ONLY_ON_CLICK_END === */
+
+/* Layer Settings Header Tab Guard */
+.wppoppop-inspector-header .wppoppop-insp-tab,
+#wppoppop-inspector-titlebar .wppoppop-insp-tab,
+.wppoppop-inspector-header [data-tab],
+#wppoppop-inspector-titlebar [data-tab] {
+    display: none !important;
+}
+
+/* --- Titlebar vs Tab Bar Isolation & Content-Only Bounds/Animation Guard --- */
+#wppoppop-inspector-titlebar [data-tab],
+#wppoppop-inspector-titlebar .wppoppop-insp-tab,
+.wppoppop-inspector-title ~ [data-tab] {
+    display: none !important;
+}
+#wppoppop-inspector-tabs-bar {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+}
+#wppoppop-inspector-body > .wppoppop-tab-pane:not(.active),
+#wppoppop-inspector-body > .wppoppop-insp-content:not(.active) {
+    display: none !important;
+}
+#wppoppop-inspector-body > .wppoppop-tab-pane.active,
+#wppoppop-inspector-body > .wppoppop-insp-content.active {
+    display: block !important;
+}
