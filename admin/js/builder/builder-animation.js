@@ -303,6 +303,89 @@
         }
     };
 
+
+    /* UNIFIED_FX_LIST: one list + one engine for canvas and layers */
+    var FX_IN = {
+        'Attention': ['bounce','flash','pulse','rubberBand','shakeX','shakeY','headShake','swing','tada','wobble','jello','heartBeat','flip'],
+        'Back': ['backInDown','backInLeft','backInRight','backInUp'],
+        'Bouncing': ['bounceIn','bounceInDown','bounceInLeft','bounceInRight','bounceInUp'],
+        'Fading': ['fadeIn','fadeInDown','fadeInDownBig','fadeInLeft','fadeInLeftBig','fadeInRight','fadeInRightBig','fadeInUp','fadeInUpBig','fadeInTopLeft','fadeInTopRight','fadeInBottomLeft','fadeInBottomRight'],
+        'Flippers': ['flipInX','flipInY'],
+        'Lightspeed': ['lightSpeedInRight','lightSpeedInLeft'],
+        'Rotating': ['rotateIn','rotateInDownLeft','rotateInDownRight','rotateInUpLeft','rotateInUpRight'],
+        'Specials': ['jackInTheBox','rollIn'],
+        'Zooming': ['zoomIn','zoomInDown','zoomInLeft','zoomInRight','zoomInUp'],
+        'Sliding': ['slideInDown','slideInLeft','slideInRight','slideInUp']
+    };
+    var FX_OUT = {
+        'Back': ['backOutDown','backOutLeft','backOutRight','backOutUp'],
+        'Bouncing': ['bounceOut','bounceOutDown','bounceOutLeft','bounceOutRight','bounceOutUp'],
+        'Fading': ['fadeOut','fadeOutDown','fadeOutDownBig','fadeOutLeft','fadeOutLeftBig','fadeOutRight','fadeOutRightBig','fadeOutUp','fadeOutUpBig','fadeOutTopLeft','fadeOutTopRight','fadeOutBottomLeft','fadeOutBottomRight'],
+        'Flippers': ['flipOutX','flipOutY'],
+        'Lightspeed': ['lightSpeedOutRight','lightSpeedOutLeft'],
+        'Rotating': ['rotateOut','rotateOutDownLeft','rotateOutDownRight','rotateOutUpLeft','rotateOutUpRight'],
+        'Specials': ['hinge','rollOut'],
+        'Zooming': ['zoomOut','zoomOutDown','zoomOutLeft','zoomOutRight','zoomOutUp'],
+        'Sliding': ['slideOutDown','slideOutLeft','slideOutRight','slideOutUp']
+    };
+    var SEL_IN  = '#set-canvas-anim-appearance, #set-anim-appearance, #prop-anim-in';
+    var SEL_OUT = '#set-canvas-anim-disappearance, #set-anim-disappearance, #prop-anim-out';
+
+    function fillSelect($sel, groups) {
+        $sel.each(function() {
+            var $s = $(this);
+            if ($s.data('fxFilled')) return;
+            var cur = $s.val();
+            var legacy = { fade: 'fadeIn', slideDown: 'slideInDown', slideUp: 'slideInUp', slideLeft: 'slideInRight', slideRight: 'slideInLeft', zoom: 'zoomIn' };
+            if (cur && legacy[cur] && groups === FX_IN) cur = legacy[cur];
+            if (cur === 'fade' && groups === FX_OUT) cur = 'fadeOut';
+            var known = false;
+            var $frag = $('<div></div>');
+            $frag.append($('<option></option>').attr('value', 'none').text('None'));
+            Object.keys(groups).forEach(function(g) {
+                var $og = $('<optgroup></optgroup>').attr('label', g);
+                groups[g].forEach(function(n) {
+                    if (n === cur) known = true;
+                    $og.append($('<option></option>').attr('value', n).text(n));
+                });
+                $frag.append($og);
+            });
+            $s.empty().append($frag.children());
+            if (cur && cur !== 'none' && !known) {
+                $s.append($('<option></option>').attr('value', cur).text(cur));
+            }
+            $s.val(cur || 'none');
+            $s.data('fxFilled', true);
+        });
+    }
+
+    WpPopPopBuilderAnimation.populateSelects = function() {
+        fillSelect($(SEL_IN), FX_IN);
+        fillSelect($(SEL_OUT), FX_OUT);
+    };
+
+    WpPopPopBuilderAnimation.playCanvas = function(effect, duration, delay) {
+        var $box = $('#wppoppop-canvas-box');
+        if (!$box.length) return;
+        var core = window.WpPopPopBuilderCore;
+        var meta = {};
+        if (core && core.state) {
+            var c = core.state.currentCanvas || 1;
+            meta = (core.state.canvasMeta && core.state.canvasMeta[c]) || {};
+        }
+        if (!effect) effect = meta.anim_appearance;
+        if (typeof duration === 'undefined' || duration === '') duration = meta.anim_duration;
+        if (typeof delay === 'undefined' || delay === '') delay = meta.anim_delay;
+        if (!effect || effect === 'none') return;
+        return this.playElement($box, effect, duration, delay);
+    };
+
+    $(function() {
+        WpPopPopBuilderAnimation.populateSelects();
+        setTimeout(WpPopPopBuilderAnimation.populateSelects, 400);
+        setTimeout(WpPopPopBuilderAnimation.populateSelects, 1200);
+    });
+
     window.WpPopPopBuilderAnimation = WpPopPopBuilderAnimation;
 
     $(document).ready(function() {

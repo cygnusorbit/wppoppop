@@ -122,7 +122,7 @@
 
             $wrap.data('wppoppopClosing', false);
             $wrap.stop(true, true).fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
-            this.playCanvasIn($wrap.find('.wppoppop-canvas-active').first());
+            this.playCanvasIn($wrap.find('.wppoppop-canvas-active').first(), $wrap.find('.wppoppop-box').first());
 
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_impression', { popup_uid: uid });
@@ -144,10 +144,10 @@
             outDur = Math.min(outDur, 800);
 
             if (outFx && $c.length) {
-                this.runFx($c, outFx, outDur, 0, true);
+                this.runFx($wrap.find('.wppoppop-box').first(), outFx, outDur, 0, true);
                 setTimeout(function() {
                     $wrap.fadeOut(150).attr('aria-hidden', 'true');
-                    self.clearFx($c);
+                    self.clearFx($wrap.find('.wppoppop-box').first());
                 }, outDur + 20);
             } else {
                 $wrap.fadeOut(200).attr('aria-hidden', 'true');
@@ -209,7 +209,7 @@
             node.style.animationName = '';
         },
 
-        playCanvasIn: function($c) {
+        playCanvasIn: function($c, $target) {
             var self = this;
             if (!$c || !$c.length) return;
             var eff = this.fxName($c.attr('data-anim-appearance'), 'in');
@@ -217,7 +217,7 @@
             var del = parseInt($c.attr('data-anim-delay'), 10);
             if (isNaN(dur) || dur <= 0) dur = 1000;
             if (isNaN(del) || del < 0) del = 0;
-            if (eff) this.runFx($c, eff, dur, del, false);
+            if (eff) this.runFx(($target && $target.length) ? $target : $c, eff, dur, del, false);
             var offset = eff ? (del + dur) : 0;
             $c.find('.wppoppop-layer-item.wppoppop-fx-run').each(function() {
                 var own = this.getAttribute('data-fx-delay');
