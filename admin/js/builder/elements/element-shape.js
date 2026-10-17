@@ -18,7 +18,13 @@
         hexagon: '<polygon points="50,6 90,28 90,72 50,94 10,72 10,28"/>',
         octagon: '<polygon points="32,6 68,6 94,32 94,68 68,94 32,94 6,68 6,32"/>',
         shield: '<path d="M50 6 L90 20 L90 54 C90 74 50 94 50 94 C50 94 10 74 10 54 L10 20 Z"/>',
-        cross: '<polygon points="36,6 64,6 64,36 94,36 94,64 64,64 64,94 36,94 36,64 6,64 6,36 36,36"/>'
+        cross: '<polygon points="36,6 64,6 64,36 94,36 94,64 64,64 64,94 36,94 36,64 6,64 6,36 36,36"/>',
+        rectangle: '<rect x="2" y="2" width="96" height="96"/>',
+        rect: '<rect x="2" y="2" width="96" height="96"/>',
+        rounded: '<rect x="2" y="2" width="96" height="96" rx="16" ry="16"/>',
+        pill: '<rect x="2" y="15" width="96" height="70" rx="35" ry="35"/>',
+        pentagon: '<polygon points="50,3 97,38 79,94 21,94 3,38"/>',
+        badge: '<polygon points="50,2 62,13 78,10 83,25 97,33 93,49 99,64 86,74 83,90 67,91 56,99 44,91 28,90 25,74 12,64 18,49 14,33 28,25 33,10 48,13"/>'
     };
 
     window.WpPopPopElements.register('shape', {
@@ -40,12 +46,12 @@
         renderStage: function(el) {
             var preset = el.shapePreset || el.shape_preset || 'circle';
             var geom = PRESET_SVGS[preset] || PRESET_SVGS.circle;
-            var fill = el.shapeFill || el.shape_fill || '#3b82f6';
-            var stroke = el.shapeStroke || el.shape_stroke || '#1d4ed8';
-            var strokeW = (el.shapeStrokeWidth !== undefined) ? el.shapeStrokeWidth : 2;
+            var fill = el.transparentFill ? 'none' : (el.bgColor || el.shapeFill || el.shape_fill || '#3b82f6');
+            var stroke = el.strokeColor || el.shapeStroke || el.shape_stroke || '#1d4ed8';
+            var strokeW = (el.strokeWidth !== undefined) ? el.strokeWidth : ((el.shapeStrokeWidth !== undefined) ? el.shapeStrokeWidth : 0);
             var rot = parseInt(el.shapeRotate || el.shape_rotate || 0, 10);
 
-            var rotStyle = rot ? 'transform:rotate(' + rot + 'deg);transform-origin:center;' : '';
+            var rotStyle = ''; // rotation applied once on the stage node
 
             return '<svg viewBox="0 0 100 100" style="width:100%;height:100%;display:block;overflow:visible;' + rotStyle + '" ' +
                 'fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + strokeW + '" vector-effect="non-scaling-stroke">' +

@@ -878,7 +878,7 @@
 
                 switch (cType) {
                     case 'shape':
-                        el.shapePreset = $('#gp-cnt-shape-preset').val();
+                        if ($('#gp-cnt-shape-preset').length) { el.shapePreset = $('#gp-cnt-shape-preset').val(); }
                         break;
                     case 'image':
                         el.imageUrl = $('#gp-cnt-image-url').val();

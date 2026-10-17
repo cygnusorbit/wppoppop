@@ -25,7 +25,7 @@
         renderStage: function(el) {
             var style = el.dividerStyle || 'solid';
             var color = el.dividerColor || '#cbd5e1';
-            var thick = (el.dividerThickness !== undefined) ? el.dividerThickness : 2;
+            var thick = (el.dividerWeight !== undefined) ? el.dividerWeight : ((el.dividerThickness !== undefined) ? el.dividerThickness : 2);
             var isVert = (el.dividerOrientation === 'vertical');
 
             if (isVert) {
@@ -42,7 +42,7 @@
         renderSettings: function(el, $container) {
             var style = el.dividerStyle || 'solid';
             var color = el.dividerColor || '#cbd5e1';
-            var thick = (el.dividerThickness !== undefined) ? el.dividerThickness : 2;
+            var thick = (el.dividerWeight !== undefined) ? el.dividerWeight : ((el.dividerThickness !== undefined) ? el.dividerThickness : 2);
             var orient = el.dividerOrientation || 'horizontal';
 
             var html = '<div class="element-panel">' +

@@ -26,6 +26,11 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['shapeStroke']))        $clean['shapeStroke']        = sanitize_hex_color($el['shapeStroke']) ?: sanitize_text_field($el['shapeStroke']);
         if (isset($el['shapeStrokeWidth']))   $clean['shapeStrokeWidth']   = intval($el['shapeStrokeWidth']);
         if (isset($el['shapeRotate']))        $clean['shapeRotate']        = intval($el['shapeRotate']);
+        if (isset($el['strokeWidth']))        $clean['strokeWidth']        = max(0, intval($el['strokeWidth']));
+        if (isset($el['strokeColor']))        $clean['strokeColor']        = sanitize_hex_color($el['strokeColor']) ?: sanitize_text_field($el['strokeColor']);
+        if (isset($el['rotate']))             $clean['rotate']             = intval($el['rotate']);
+        if (isset($el['bgColor']))            $clean['bgColor']            = sanitize_hex_color($el['bgColor']) ?: sanitize_text_field($el['bgColor']);
+        if (isset($el['transparentFill']))    $clean['transparentFill']    = !empty($el['transparentFill']) && $el['transparentFill'] !== 'false';
         if (isset($el['dividerStyle']))       $clean['dividerStyle']       = sanitize_text_field($el['dividerStyle']);
         if (isset($el['dividerColor']))       $clean['dividerColor']       = sanitize_hex_color($el['dividerColor']) ?: sanitize_text_field($el['dividerColor']);
         if (isset($el['dividerThickness']))   $clean['dividerThickness']   = intval($el['dividerThickness']);
@@ -33,6 +38,10 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['iconGlyph']))          $clean['iconGlyph']          = sanitize_text_field($el['iconGlyph']);
         if (isset($el['iconSize']))           $clean['iconSize']           = intval($el['iconSize']);
         if (isset($el['iconColor']))          $clean['iconColor']          = sanitize_hex_color($el['iconColor']) ?: sanitize_text_field($el['iconColor']);
+        if (isset($el['dividerWeight']))      $clean['dividerWeight']      = max(1, intval($el['dividerWeight']));
+        if (isset($el['dividerWidthPct']))    $clean['dividerWidthPct']    = min(100, max(1, intval($el['dividerWidthPct'])));
+        if (isset($el['dividerAlign']))       $clean['dividerAlign']       = in_array($el['dividerAlign'], array('left','center','right'), true) ? $el['dividerAlign'] : 'center';
+        if (isset($el['iconClass']))          $clean['iconClass']          = sanitize_text_field($el['iconClass']);
         return $clean;
     }
 }

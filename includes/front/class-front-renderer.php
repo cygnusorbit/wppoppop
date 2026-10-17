@@ -143,7 +143,7 @@ class WpPopPop_Front_Renderer {
 
     private function render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate) {
         $preset = !empty($preset) ? sanitize_key($preset) : 'circle';
-        $fill = !empty($fill) ? esc_attr($fill) : '#3b82f6';
+        $fill = !empty($fill) ? esc_attr($fill) : '#3b82f6'; // 'none' allowed for transparent fill
         $stroke = !empty($stroke) ? esc_attr($stroke) : 'transparent';
         $stroke_width = intval($stroke_width);
         $rotate = intval($rotate);
@@ -185,80 +185,23 @@ class WpPopPop_Front_Renderer {
             case 'cross':
                 $path = sprintf('<polygon points="36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
                 break;
+            case 'rectangle':
+            case 'rect':
+                $path = sprintf('<rect x="2" y="2" width="96" height="96" fill="%s" %s />', $fill, $s_attr);
+                break;
+            case 'rounded':
+                $path = sprintf('<rect x="2" y="2" width="96" height="96" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
+                break;
+            case 'pill':
+                $path = sprintf('<rect x="2" y="15" width="96" height="70" rx="35" ry="35" fill="%s" %s />', $fill, $s_attr);
+                break;
+            case 'pentagon':
+                $path = sprintf('<polygon points="50,3 97,38 79,94 21,94 3,38" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
+            case 'badge':
+                $path = sprintf('<polygon points="50,2 62,13 78,10 83,25 97,33 93,49 99,64 86,74 83,90 67,91 56,99 44,91 28,90 25,74 12,64 18,49 14,33 28,25 33,10 48,13" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
+                break;
             case 'circle':
-            
-            /* --- 26-ELEMENT COMPLETE FRONTEND FORM RENDERING --- */
-            case 'number':
-                $ph = esc_attr($el['placeholder'] ?? '0');
-                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'number_field'));
-                $min = isset($el['min']) ? ' min="' . esc_attr($el['min']) . '"' : '';
-                $max = isset($el['max']) ? ' max="' . esc_attr($el['max']) . '"' : '';
-                $step = isset($el['step']) ? ' step="' . esc_attr($el['step']) . '"' : '';
-                $req = !empty($el['required']) ? ' required' : '';
-                $inner_html = "<input type=\"number\" name=\"{$fn}\" placeholder=\"{$ph}\"{$min}{$max}{$step}{$req} class=\"wppoppop-front-input\" style=\"width:100%;height:100%;box-sizing:border-box;border-radius:inherit;padding:8px 12px;font:inherit;border:1px solid #cbd5e1;\" />";
-                break;
-
-            case 'select':
-            case 'dropdown':
-                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'select_field'));
-                $req = !empty($el['required']) ? ' required' : '';
-                $opts = $el['options'] ?? ['Option 1', 'Option 2', 'Option 3'];
-                if (is_string($opts)) { $opts = explode("\n", $opts); }
-                $opt_html = '';
-                foreach ($opts as $op) {
-                    $op = trim($op);
-                    if ($op !== '') { $opt_html .= '<option value="' . esc_attr($op) . '">' . esc_html($op) . '</option>'; }
-                }
-                $inner_html = "<select name=\"{$fn}\"{$req} class=\"wppoppop-front-select\" style=\"width:100%;height:100%;box-sizing:border-box;border-radius:inherit;padding:6px 12px;font:inherit;border:1px solid #cbd5e1;\">{$opt_html}</select>";
-                break;
-
-            case 'radios':
-            case 'radio':
-                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'radio_group'));
-                $opts = $el['options'] ?? ['Option A', 'Option B'];
-                if (is_string($opts)) { $opts = explode("\n", $opts); }
-                $opt_html = '<div style=\"display:flex;flex-direction:column;gap:6px;width:100%;justify-content:center;height:100%;\">';
-                foreach ($opts as $idx => $op) {
-                    $op = trim($op);
-                    if ($op !== '') {
-                        $opt_html .= '<label style=\"font-size:13px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;\"><input type=\"radio\" name=\"' . $fn . '\" value=\"' . esc_attr($op) . '\" style=\"cursor:pointer;\">' . esc_html($op) . '</label>';
-                    }
-                }
-                $opt_html .= '</div>';
-                $inner_html = $opt_html;
-                break;
-
-            case 'checkboxes':
-            case 'checkbox':
-                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'terms_agreement'));
-                $lbl = esc_html($el['label'] ?? ($el['checkboxLabel'] ?? 'I agree to terms'));
-                $chk = !empty($el['checked']) ? ' checked' : '';
-                $req = !empty($el['required']) ? ' required' : '';
-                $inner_html = "<label style=\"display:inline-flex;align-items:center;gap:8px;font-size:13px;height:100%;width:100%;cursor:pointer;\"><input type=\"checkbox\" name=\"{$fn}\" value=\"1\"{$chk}{$req} style=\"cursor:pointer;\"> {$lbl}</label>";
-                break;
-
-            case 'date':
-                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'date_field'));
-                $ph = esc_attr($el['placeholder'] ?? 'Select date...');
-                $req = !empty($el['required']) ? ' required' : '';
-                $inner_html = "<input type=\"date\" name=\"{$fn}\" placeholder=\"{$ph}\"{$req} class=\"wppoppop-front-input\" style=\"width:100%;height:100%;box-sizing:border-box;border-radius:inherit;padding:8px 12px;font:inherit;border:1px solid #cbd5e1;\" />";
-                break;
-
-            case 'file':
-                $fn = esc_attr($el['fieldName'] ?? ($el['name'] ?? 'attachment'));
-                $ext = esc_attr($el['allowedExtensions'] ?? 'jpg,png,pdf');
-                $req = !empty($el['required']) ? ' required' : '';
-                $inner_html = "<input type=\"file\" name=\"{$fn}\" accept=\".{$ext}\"{$req} class=\"wppoppop-front-file\" style=\"width:100%;height:100%;box-sizing:border-box;font:inherit;\" />";
-                break;
-
-            case 'pay':
-                $lbl = esc_html($el['label'] ?? ($el['text'] ?? 'Pay Now'));
-                $amt = esc_attr($el['amount'] ?? '19.99');
-                $cur = esc_attr($el['currency'] ?? 'USD');
-                $gw = esc_attr($el['gateway'] ?? 'stripe');
-                $inner_html = "<button type=\"button\" class=\"wppoppop-pay-btn\" data-amount=\"{$amt}\" data-currency=\"{$cur}\" data-gateway=\"{$gw}\" style=\"width:100%;height:100%;background:#10b981;color:#fff;border:0;border-radius:inherit;font-weight:700;font-size:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;\"><span>{$lbl} ({$amt} {$cur})</span></button>";
-                break;
-
             default:
                 $path = sprintf('<ellipse cx="50" cy="50" rx="46" ry="46" fill="%s" %s />', $fill, $s_attr);
                 break;
@@ -288,9 +231,9 @@ class WpPopPop_Front_Renderer {
 
         // Dynamic Button Hover Style Injection
         $hover_style_tag = '';
-        $hover_bg = !empty($el['hoverBg']) ? $el['hoverBg'] : (!empty($el['btnHoverBg']) ? $el['btnHoverBg'] : '');
-        $hover_color = !empty($el['hoverColor']) ? $el['hoverColor'] : (!empty($el['btnHoverColor']) ? $el['btnHoverColor'] : '');
-        $hover_border = !empty($el['hoverBorder']) ? $el['hoverBorder'] : (!empty($el['btnHoverBorder']) ? $el['btnHoverBorder'] : '');
+        $hover_bg = !empty($el['hoverBg']) ? $el['hoverBg'] : (!empty($el['btnHoverBg']) ? $el['btnHoverBg'] : (!empty($el['hoverBgColor']) ? $el['hoverBgColor'] : ''));
+        $hover_color = !empty($el['hoverColor']) ? $el['hoverColor'] : (!empty($el['btnHoverColor']) ? $el['btnHoverColor'] : (!empty($el['hoverTextColor']) ? $el['hoverTextColor'] : ''));
+        $hover_border = !empty($el['hoverBorder']) ? $el['hoverBorder'] : (!empty($el['btnHoverBorder']) ? $el['btnHoverBorder'] : (!empty($el['hoverBorderColor']) ? $el['hoverBorderColor'] : ''));
         if (!empty($hover_bg) || !empty($hover_color) || !empty($hover_border)) {
             $hover_rules = '';
             if (!empty($hover_bg)) $hover_rules .= 'background-color: ' . esc_attr($hover_bg) . ' !important;';
@@ -298,6 +241,9 @@ class WpPopPop_Front_Renderer {
             if (!empty($hover_border)) $hover_rules .= 'border-color: ' . esc_attr($hover_border) . ' !important;';
             $hover_style_tag = '<style>#el-' . $el_id . ':hover, #el-' . $el_id . ' button:hover, #el-' . $el_id . ' a:hover { ' . $hover_rules . ' }</style>';
         }
+        $type = $el['type'] ?? 'text';
+        $wrapper_styles = array();
+        $wrapper_classes = array();
         // Phase 2: Opacity, Custom Class & Button Hover Properties
         if (isset($el['opacity']) && $el['opacity'] !== '' && $el['opacity'] !== null) {
             $wrapper_styles[] = 'opacity:' . (floatval($el['opacity']) / 100) . ';';
@@ -357,7 +303,10 @@ class WpPopPop_Front_Renderer {
             $style[] = "padding:{$pad_top}px {$pad_right}px {$pad_bottom}px {$pad_left}px";
         }
 
-        $shape_rot = intval($el['shapeRotate'] ?? ($el['rotate'] ?? ($el['rotation'] ?? 0)));
+        $shape_rot = 0;
+        foreach (array('rotate', 'shapeRotate', 'rotation') as $rk) {
+            if (!empty($el[$rk])) { $shape_rot = intval($el[$rk]); break; }
+        }
         if ($shape_rot !== 0) {
             $style[] = "transform:rotate({$shape_rot}deg)";
         }
@@ -410,6 +359,8 @@ class WpPopPop_Front_Renderer {
             }
         }
 
+        if (isset($inner_html) && $inner_html !== '') { return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '">' . $inner_html . '</div>'; }
+
         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 
             case 'image':
@@ -420,10 +371,10 @@ class WpPopPop_Front_Renderer {
                 break;
             case 'shape':
                 $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'circle');
-                $fill = esc_attr($el['bgColor'] ?? '#3b82f6');
-                $stroke = esc_attr($el['borderColor'] ?? 'transparent');
-                $stroke_width = intval($el['borderWidth'] ?? 0);
-                $rotate = intval($el['rotation'] ?? 0);
+                $fill = !empty($el['transparentFill']) ? 'none' : esc_attr(!empty($el['bgColor']) ? $el['bgColor'] : (!empty($el['shapeFill']) ? $el['shapeFill'] : '#3b82f6'));
+                $stroke = esc_attr(!empty($el['strokeColor']) ? $el['strokeColor'] : (!empty($el['shapeStroke']) ? $el['shapeStroke'] : 'transparent'));
+                $stroke_width = intval($el['strokeWidth'] ?? ($el['shapeStrokeWidth'] ?? 0));
+                $rotate = !empty($el['rotate']) ? intval($el['rotate']) : (!empty($el['shapeRotate']) ? intval($el['shapeRotate']) : intval($el['rotation'] ?? 0));
                 $svg = $this->render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate);
                 $shape_style = [
                     'position:absolute',
@@ -515,5 +466,6 @@ class WpPopPop_Front_Renderer {
             default:
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '">' . esc_html($content) . '</div>';
         }
+        return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '">' . (isset($inner_html) ? $inner_html : '') . $hover_style_tag . '</div>';
     }
 }

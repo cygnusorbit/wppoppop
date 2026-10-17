@@ -112,7 +112,7 @@ class WpPopPop_Front_Element_Media {
     public static function render_divider(array $el, array $config = []) {
         $style = !empty($el['dividerStyle']) ? esc_attr($el['dividerStyle']) : 'solid';
         $color = !empty($el['dividerColor']) ? esc_attr($el['dividerColor']) : '#cbd5e1';
-        $thick = isset($el['dividerThickness']) ? intval($el['dividerThickness']) : 2;
+        $thick = isset($el['dividerWeight']) ? intval($el['dividerWeight']) : (isset($el['dividerThickness']) ? intval($el['dividerThickness']) : 2);
         $is_vert = (!empty($el['dividerOrientation']) && $el['dividerOrientation'] === 'vertical');
 
         if ($is_vert) {
