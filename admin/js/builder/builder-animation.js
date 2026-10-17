@@ -19,6 +19,17 @@
             return 'anim-' + e;
         },
 
+        resolveFxName: function(effect) {
+            if (!effect || effect === 'none') return '';
+            var e = String(effect).trim().replace(/^animate__/, '').replace(/^wppoppop-anim-/, '').replace(/^anim-/, '');
+            var map = {
+                fade: 'fadeIn', slideDown: 'slideInDown', slideUp: 'slideInUp',
+                slideLeft: 'slideInRight', slideRight: 'slideInLeft',
+                zoom: 'zoomIn', flip: 'flipInX', bounceInLeft: 'bounceInLeft'
+            };
+            return 'wppoppop-fx-' + (map[e] || e);
+        },
+
         normalizeAliases: function(el) {
             if (!el || typeof el !== 'object') return { effect: 'none', duration: 1000, delay: 0, disappearance: 'none' };
             var eff = el.anim_appearance || el.animation || el.animEffect || el.anim_effect || 'none';
@@ -82,7 +93,7 @@
 
             var classAttr = $node.attr('class') || '';
             var filteredClasses = classAttr.split(/\s+/).filter(function(cls) {
-                return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/);
+                return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/) && !cls.match(/^wppoppop-fx-/);
             }).join(' ');
             $node.attr('class', filteredClasses);
 
@@ -99,13 +110,14 @@
                 '-webkit-animation-fill-mode': 'both'
             });
 
-            $node.addClass(baseClass + ' wppoppop-anim-' + cleanClass + ' animate__' + cleanClass);
+            $node.addClass('wppoppop-fx-run ' + WpPopPopBuilderAnimation.resolveFxName(effect));
+            $node.css({'animation-name': WpPopPopBuilderAnimation.resolveFxName(effect), '-webkit-animation-name': WpPopPopBuilderAnimation.resolveFxName(effect)});
 
             var totalTime = duration + delay + 80;
             clearTimeout($node.data('wppoppop_anim_timer'));
             var timer = setTimeout(function() {
                 var currentClasses = ($node.attr('class') || '').split(/\s+/).filter(function(cls) {
-                    return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/);
+                    return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/) && !cls.match(/^wppoppop-fx-/);
                 }).join(' ');
                 $node.attr('class', currentClasses);
                 $node.css({
@@ -114,7 +126,7 @@
                     'animation-delay': '',
                     '-webkit-animation-delay': '',
                     'animation-fill-mode': '',
-                    '-webkit-animation-fill-mode': ''
+                    '-webkit-animation-fill-mode': '', 'animation-name': '', '-webkit-animation-name': ''
                 });
             }, totalTime);
             $node.data('wppoppop_anim_timer', timer);
@@ -145,7 +157,7 @@
 
             var classAttr = $box.attr('class') || '';
             var filteredClasses = classAttr.split(/\s+/).filter(function(cls) {
-                return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/);
+                return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/) && !cls.match(/^wppoppop-fx-/);
             }).join(' ');
             $box.attr('class', filteredClasses);
 
@@ -162,13 +174,14 @@
                 '-webkit-animation-fill-mode': 'both'
             });
 
-            $box.addClass(baseClass + ' wppoppop-anim-' + cleanClass + ' animate__' + cleanClass);
+            $box.addClass('wppoppop-fx-run ' + WpPopPopBuilderAnimation.resolveFxName(effect));
+            $box.css({'animation-name': WpPopPopBuilderAnimation.resolveFxName(effect), '-webkit-animation-name': WpPopPopBuilderAnimation.resolveFxName(effect)});
 
             var totalTime = duration + delay + 80;
             clearTimeout($box.data('wppoppop_anim_timer'));
             var timer = setTimeout(function() {
                 var cur = ($box.attr('class') || '').split(/\s+/).filter(function(cls) {
-                    return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/);
+                    return !cls.match(/^anim-/) && !cls.match(/^wppoppop-anim-/) && !cls.match(/^animate__/) && !cls.match(/^wppoppop-fx-/);
                 }).join(' ');
                 $box.attr('class', cur);
                 $box.css({
@@ -177,7 +190,7 @@
                     'animation-delay': '',
                     '-webkit-animation-delay': '',
                     'animation-fill-mode': '',
-                    '-webkit-animation-fill-mode': ''
+                    '-webkit-animation-fill-mode': '', 'animation-name': '', '-webkit-animation-name': ''
                 });
             }, totalTime);
             $box.data('wppoppop_anim_timer', timer);

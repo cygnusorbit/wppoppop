@@ -332,19 +332,29 @@ class WpPopPop_Front_Renderer {
 
         $style_attr = esc_attr(implode(';', $style));
                 $anim_name = '';
-        foreach (array('animIn', 'animation', 'animEffect') as $anim_key) {
+        $fx_map = array('fade' => 'fadeIn', 'slideDown' => 'slideInDown', 'slideUp' => 'slideInUp', 'slideLeft' => 'slideInRight', 'slideRight' => 'slideInLeft', 'zoom' => 'zoomIn', 'flip' => 'flipInX');
+        foreach (array('anim_appearance', 'animIn', 'animation', 'animEffect', 'anim_effect') as $anim_key) {
             if (!empty($el[$anim_key]) && $el[$anim_key] !== 'none') {
-                $anim_name = sanitize_html_class($el[$anim_key]);
+                $raw_fx = preg_replace('/^(animate__|wppoppop-anim-|anim-)/', '', (string) $el[$anim_key]);
+                $raw_fx = sanitize_html_class($raw_fx);
+                $anim_name = isset($fx_map[$raw_fx]) ? $fx_map[$raw_fx] : $raw_fx;
                 break;
             }
         }
-        $anim_class = ($anim_name !== '') ? 'animate__animated animate__' . $anim_name : '';
+        $anim_class = ($anim_name !== '') ? 'wppoppop-fx-run wppoppop-fx-' . $anim_name : '';
         $anim_style = '';
         if ($anim_class !== '') {
-            $a_dur = isset($el['animDuration']) ? max(0, intval($el['animDuration'])) : 0;
-            $a_del = isset($el['animDelay']) ? max(0, intval($el['animDelay'])) : 0;
-            if ($a_dur > 0) { $anim_style .= ';--animate-duration:' . $a_dur . 'ms;-webkit-animation-duration:' . $a_dur . 'ms;animation-duration:' . $a_dur . 'ms'; }
-            if ($a_del > 0) { $anim_style .= ';-webkit-animation-delay:' . $a_del . 'ms;animation-delay:' . $a_del . 'ms'; }
+            $a_dur = 1000;
+            foreach (array('anim_duration', 'animDuration', 'duration') as $dk) {
+                if (isset($el[$dk]) && $el[$dk] !== '' && is_numeric($el[$dk])) { $a_dur = max(0, intval($el[$dk])); break; }
+            }
+            $a_del = 0;
+            foreach (array('anim_delay', 'animDelay', 'delay') as $dk) {
+                if (isset($el[$dk]) && $el[$dk] !== '' && is_numeric($el[$dk])) { $a_del = max(0, intval($el[$dk])); break; }
+            }
+            if ($a_dur < 1) { $a_dur = 1; }
+            $anim_style .= ';-webkit-animation-duration:' . $a_dur . 'ms;animation-duration:' . $a_dur . 'ms';
+            $anim_style .= ';-webkit-animation-delay:' . $a_del . 'ms;animation-delay:' . $a_del . 'ms';
         }
         $style_attr = esc_attr(implode(';', $style) . $anim_style);
 

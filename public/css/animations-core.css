@@ -1,0 +1,174 @@
+/* WpPopPop self-contained animation set (no vendor dependency). Generated. */
+@-webkit-keyframes wppoppop-fx-backInDown{0%{-webkit-transform:translate3d(0,-100%,0) scale(.7);opacity:.7}80%{-webkit-transform:scale(.7);opacity:.7}100%{-webkit-transform:none;opacity:1}}
+@keyframes wppoppop-fx-backInDown{0%{transform:translate3d(0,-100%,0) scale(.7);opacity:.7}80%{transform:scale(.7);opacity:.7}100%{transform:none;opacity:1}}
+.wppoppop-fx-backInDown{-webkit-animation-name:wppoppop-fx-backInDown;animation-name:wppoppop-fx-backInDown;}
+@-webkit-keyframes wppoppop-fx-backInLeft{0%{-webkit-transform:translate3d(-100%,0,0) scale(.7);opacity:.7}80%{-webkit-transform:scale(.7);opacity:.7}100%{-webkit-transform:none;opacity:1}}
+@keyframes wppoppop-fx-backInLeft{0%{transform:translate3d(-100%,0,0) scale(.7);opacity:.7}80%{transform:scale(.7);opacity:.7}100%{transform:none;opacity:1}}
+.wppoppop-fx-backInLeft{-webkit-animation-name:wppoppop-fx-backInLeft;animation-name:wppoppop-fx-backInLeft;}
+@-webkit-keyframes wppoppop-fx-backInRight{0%{-webkit-transform:translate3d(100%,0,0) scale(.7);opacity:.7}80%{-webkit-transform:scale(.7);opacity:.7}100%{-webkit-transform:none;opacity:1}}
+@keyframes wppoppop-fx-backInRight{0%{transform:translate3d(100%,0,0) scale(.7);opacity:.7}80%{transform:scale(.7);opacity:.7}100%{transform:none;opacity:1}}
+.wppoppop-fx-backInRight{-webkit-animation-name:wppoppop-fx-backInRight;animation-name:wppoppop-fx-backInRight;}
+@-webkit-keyframes wppoppop-fx-backInUp{0%{-webkit-transform:translate3d(0,100%,0) scale(.7);opacity:.7}80%{-webkit-transform:scale(.7);opacity:.7}100%{-webkit-transform:none;opacity:1}}
+@keyframes wppoppop-fx-backInUp{0%{transform:translate3d(0,100%,0) scale(.7);opacity:.7}80%{transform:scale(.7);opacity:.7}100%{transform:none;opacity:1}}
+.wppoppop-fx-backInUp{-webkit-animation-name:wppoppop-fx-backInUp;animation-name:wppoppop-fx-backInUp;}
+@-webkit-keyframes wppoppop-fx-bounce{0%,20%,53%,to{-webkit-transform:translate3d(0,0,0)}40%,43%{-webkit-transform:translate3d(0,-30px,0)}70%{-webkit-transform:translate3d(0,-15px,0)}90%{-webkit-transform:translate3d(0,-4px,0)}}
+@keyframes wppoppop-fx-bounce{0%,20%,53%,to{transform:translate3d(0,0,0)}40%,43%{transform:translate3d(0,-30px,0)}70%{transform:translate3d(0,-15px,0)}90%{transform:translate3d(0,-4px,0)}}
+.wppoppop-fx-bounce{-webkit-animation-name:wppoppop-fx-bounce;animation-name:wppoppop-fx-bounce;}
+@-webkit-keyframes wppoppop-fx-bounceIn{0%{opacity:0;-webkit-transform:scale3d(.3,.3,.3)}20%{-webkit-transform:scale3d(1.1,1.1,1.1)}40%{-webkit-transform:scale3d(.9,.9,.9)}60%{opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03)}80%{-webkit-transform:scale3d(.97,.97,.97)}100%{opacity:1;-webkit-transform:none}}
+@keyframes wppoppop-fx-bounceIn{0%{opacity:0;transform:scale3d(.3,.3,.3)}20%{transform:scale3d(1.1,1.1,1.1)}40%{transform:scale3d(.9,.9,.9)}60%{opacity:1;transform:scale3d(1.03,1.03,1.03)}80%{transform:scale3d(.97,.97,.97)}100%{opacity:1;transform:none}}
+.wppoppop-fx-bounceIn{-webkit-animation-name:wppoppop-fx-bounceIn;animation-name:wppoppop-fx-bounceIn;}
+@-webkit-keyframes wppoppop-fx-bounceInDown{0%{opacity:0;-webkit-transform:translate3d(0,-3000px,0)}60%{opacity:1;-webkit-transform:translate3d(0,25px,0)}75%{-webkit-transform:translate3d(0,-10px,0)}90%{-webkit-transform:translate3d(0,5px,0)}100%{-webkit-transform:none}}
+@keyframes wppoppop-fx-bounceInDown{0%{opacity:0;transform:translate3d(0,-3000px,0)}60%{opacity:1;transform:translate3d(0,25px,0)}75%{transform:translate3d(0,-10px,0)}90%{transform:translate3d(0,5px,0)}100%{transform:none}}
+.wppoppop-fx-bounceInDown{-webkit-animation-name:wppoppop-fx-bounceInDown;animation-name:wppoppop-fx-bounceInDown;}
+@-webkit-keyframes wppoppop-fx-bounceInLeft{0%{opacity:0;-webkit-transform:translate3d(-3000px,0,0)}60%{opacity:1;-webkit-transform:translate3d(25px,0,0)}75%{-webkit-transform:translate3d(-10px,0,0)}90%{-webkit-transform:translate3d(5px,0,0)}100%{-webkit-transform:none}}
+@keyframes wppoppop-fx-bounceInLeft{0%{opacity:0;transform:translate3d(-3000px,0,0)}60%{opacity:1;transform:translate3d(25px,0,0)}75%{transform:translate3d(-10px,0,0)}90%{transform:translate3d(5px,0,0)}100%{transform:none}}
+.wppoppop-fx-bounceInLeft{-webkit-animation-name:wppoppop-fx-bounceInLeft;animation-name:wppoppop-fx-bounceInLeft;}
+@-webkit-keyframes wppoppop-fx-bounceInRight{0%{opacity:0;-webkit-transform:translate3d(3000px,0,0)}60%{opacity:1;-webkit-transform:translate3d(-25px,0,0)}75%{-webkit-transform:translate3d(10px,0,0)}90%{-webkit-transform:translate3d(-5px,0,0)}100%{-webkit-transform:none}}
+@keyframes wppoppop-fx-bounceInRight{0%{opacity:0;transform:translate3d(3000px,0,0)}60%{opacity:1;transform:translate3d(-25px,0,0)}75%{transform:translate3d(10px,0,0)}90%{transform:translate3d(-5px,0,0)}100%{transform:none}}
+.wppoppop-fx-bounceInRight{-webkit-animation-name:wppoppop-fx-bounceInRight;animation-name:wppoppop-fx-bounceInRight;}
+@-webkit-keyframes wppoppop-fx-bounceInUp{0%{opacity:0;-webkit-transform:translate3d(0,3000px,0)}60%{opacity:1;-webkit-transform:translate3d(0,-25px,0)}75%{-webkit-transform:translate3d(0,-10px,0)}90%{-webkit-transform:translate3d(0,5px,0)}100%{-webkit-transform:none}}
+@keyframes wppoppop-fx-bounceInUp{0%{opacity:0;transform:translate3d(0,3000px,0)}60%{opacity:1;transform:translate3d(0,-25px,0)}75%{transform:translate3d(0,-10px,0)}90%{transform:translate3d(0,5px,0)}100%{transform:none}}
+.wppoppop-fx-bounceInUp{-webkit-animation-name:wppoppop-fx-bounceInUp;animation-name:wppoppop-fx-bounceInUp;}
+@-webkit-keyframes wppoppop-fx-bounceOut{20%{-webkit-transform:scale3d(.9,.9,.9)}50%,55%{opacity:1;-webkit-transform:scale3d(1.1,1.1,1.1)}100%{opacity:0;-webkit-transform:scale3d(.3,.3,.3)}}
+@keyframes wppoppop-fx-bounceOut{20%{transform:scale3d(.9,.9,.9)}50%,55%{opacity:1;transform:scale3d(1.1,1.1,1.1)}100%{opacity:0;transform:scale3d(.3,.3,.3)}}
+.wppoppop-fx-bounceOut{-webkit-animation-name:wppoppop-fx-bounceOut;animation-name:wppoppop-fx-bounceOut;}
+@-webkit-keyframes wppoppop-fx-bounceOutDown{20%{-webkit-transform:translate3d(0,10px,0)}100%{opacity:0;-webkit-transform:translate3d(0,3000px,0)}}
+@keyframes wppoppop-fx-bounceOutDown{20%{transform:translate3d(0,10px,0)}100%{opacity:0;transform:translate3d(0,3000px,0)}}
+.wppoppop-fx-bounceOutDown{-webkit-animation-name:wppoppop-fx-bounceOutDown;animation-name:wppoppop-fx-bounceOutDown;}
+@-webkit-keyframes wppoppop-fx-bounceOutLeft{20%{opacity:1;-webkit-transform:translate3d(20px,0,0)}100%{opacity:0;-webkit-transform:translate3d(-2000px,0,0)}}
+@keyframes wppoppop-fx-bounceOutLeft{20%{opacity:1;transform:translate3d(20px,0,0)}100%{opacity:0;transform:translate3d(-2000px,0,0)}}
+.wppoppop-fx-bounceOutLeft{-webkit-animation-name:wppoppop-fx-bounceOutLeft;animation-name:wppoppop-fx-bounceOutLeft;}
+@-webkit-keyframes wppoppop-fx-bounceOutRight{20%{opacity:1;-webkit-transform:translate3d(-20px,0,0)}100%{opacity:0;-webkit-transform:translate3d(2000px,0,0)}}
+@keyframes wppoppop-fx-bounceOutRight{20%{opacity:1;transform:translate3d(-20px,0,0)}100%{opacity:0;transform:translate3d(2000px,0,0)}}
+.wppoppop-fx-bounceOutRight{-webkit-animation-name:wppoppop-fx-bounceOutRight;animation-name:wppoppop-fx-bounceOutRight;}
+@-webkit-keyframes wppoppop-fx-bounceOutUp{20%{-webkit-transform:translate3d(0,-10px,0)}100%{opacity:0;-webkit-transform:translate3d(0,-2000px,0)}}
+@keyframes wppoppop-fx-bounceOutUp{20%{transform:translate3d(0,-10px,0)}100%{opacity:0;transform:translate3d(0,-2000px,0)}}
+.wppoppop-fx-bounceOutUp{-webkit-animation-name:wppoppop-fx-bounceOutUp;animation-name:wppoppop-fx-bounceOutUp;}
+@-webkit-keyframes wppoppop-fx-fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes wppoppop-fx-fadeIn{from{opacity:0}to{opacity:1}}
+.wppoppop-fx-fadeIn{-webkit-animation-name:wppoppop-fx-fadeIn;animation-name:wppoppop-fx-fadeIn;}
+@-webkit-keyframes wppoppop-fx-fadeInDown{from{opacity:0;-webkit-transform:translate3d(0,-40px,0)}to{opacity:1;-webkit-transform:none}}
+@keyframes wppoppop-fx-fadeInDown{from{opacity:0;transform:translate3d(0,-40px,0)}to{opacity:1;transform:none}}
+.wppoppop-fx-fadeInDown{-webkit-animation-name:wppoppop-fx-fadeInDown;animation-name:wppoppop-fx-fadeInDown;}
+@-webkit-keyframes wppoppop-fx-fadeInLeft{from{opacity:0;-webkit-transform:translate3d(-40px,0,0)}to{opacity:1;-webkit-transform:none}}
+@keyframes wppoppop-fx-fadeInLeft{from{opacity:0;transform:translate3d(-40px,0,0)}to{opacity:1;transform:none}}
+.wppoppop-fx-fadeInLeft{-webkit-animation-name:wppoppop-fx-fadeInLeft;animation-name:wppoppop-fx-fadeInLeft;}
+@-webkit-keyframes wppoppop-fx-fadeInRight{from{opacity:0;-webkit-transform:translate3d(40px,0,0)}to{opacity:1;-webkit-transform:none}}
+@keyframes wppoppop-fx-fadeInRight{from{opacity:0;transform:translate3d(40px,0,0)}to{opacity:1;transform:none}}
+.wppoppop-fx-fadeInRight{-webkit-animation-name:wppoppop-fx-fadeInRight;animation-name:wppoppop-fx-fadeInRight;}
+@-webkit-keyframes wppoppop-fx-fadeInUp{from{opacity:0;-webkit-transform:translate3d(0,40px,0)}to{opacity:1;-webkit-transform:none}}
+@keyframes wppoppop-fx-fadeInUp{from{opacity:0;transform:translate3d(0,40px,0)}to{opacity:1;transform:none}}
+.wppoppop-fx-fadeInUp{-webkit-animation-name:wppoppop-fx-fadeInUp;animation-name:wppoppop-fx-fadeInUp;}
+@-webkit-keyframes wppoppop-fx-fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes wppoppop-fx-fadeOut{from{opacity:1}to{opacity:0}}
+.wppoppop-fx-fadeOut{-webkit-animation-name:wppoppop-fx-fadeOut;animation-name:wppoppop-fx-fadeOut;}
+@-webkit-keyframes wppoppop-fx-fadeOutDown{from{opacity:1;-webkit-transform:none}to{opacity:0;-webkit-transform:translate3d(0,40px,0)}}
+@keyframes wppoppop-fx-fadeOutDown{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(0,40px,0)}}
+.wppoppop-fx-fadeOutDown{-webkit-animation-name:wppoppop-fx-fadeOutDown;animation-name:wppoppop-fx-fadeOutDown;}
+@-webkit-keyframes wppoppop-fx-fadeOutLeft{from{opacity:1;-webkit-transform:none}to{opacity:0;-webkit-transform:translate3d(-40px,0,0)}}
+@keyframes wppoppop-fx-fadeOutLeft{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(-40px,0,0)}}
+.wppoppop-fx-fadeOutLeft{-webkit-animation-name:wppoppop-fx-fadeOutLeft;animation-name:wppoppop-fx-fadeOutLeft;}
+@-webkit-keyframes wppoppop-fx-fadeOutRight{from{opacity:1;-webkit-transform:none}to{opacity:0;-webkit-transform:translate3d(40px,0,0)}}
+@keyframes wppoppop-fx-fadeOutRight{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(40px,0,0)}}
+.wppoppop-fx-fadeOutRight{-webkit-animation-name:wppoppop-fx-fadeOutRight;animation-name:wppoppop-fx-fadeOutRight;}
+@-webkit-keyframes wppoppop-fx-fadeOutUp{from{opacity:1;-webkit-transform:none}to{opacity:0;-webkit-transform:translate3d(0,-40px,0)}}
+@keyframes wppoppop-fx-fadeOutUp{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(0,-40px,0)}}
+.wppoppop-fx-fadeOutUp{-webkit-animation-name:wppoppop-fx-fadeOutUp;animation-name:wppoppop-fx-fadeOutUp;}
+@-webkit-keyframes wppoppop-fx-flash{from,50%,to{opacity:1}25%,75%{opacity:0}}
+@keyframes wppoppop-fx-flash{from,50%,to{opacity:1}25%,75%{opacity:0}}
+.wppoppop-fx-flash{-webkit-animation-name:wppoppop-fx-flash;animation-name:wppoppop-fx-flash;}
+@-webkit-keyframes wppoppop-fx-flipInX{from{-webkit-transform:perspective(400px) rotate3d(1,0,0,90deg);opacity:0}60%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-15deg);opacity:1}80%{-webkit-transform:perspective(400px) rotate3d(1,0,0,5deg)}to{-webkit-transform:perspective(400px)}}
+@keyframes wppoppop-fx-flipInX{from{transform:perspective(400px) rotate3d(1,0,0,90deg);opacity:0}60%{transform:perspective(400px) rotate3d(1,0,0,-15deg);opacity:1}80%{transform:perspective(400px) rotate3d(1,0,0,5deg)}to{transform:perspective(400px)}}
+.wppoppop-fx-flipInX{-webkit-animation-name:wppoppop-fx-flipInX;animation-name:wppoppop-fx-flipInX;}
+@-webkit-keyframes wppoppop-fx-flipInY{from{-webkit-transform:perspective(400px) rotate3d(0,1,0,90deg);opacity:0}60%{-webkit-transform:perspective(400px) rotate3d(0,1,0,-15deg);opacity:1}80%{-webkit-transform:perspective(400px) rotate3d(0,1,0,5deg)}to{-webkit-transform:perspective(400px)}}
+@keyframes wppoppop-fx-flipInY{from{transform:perspective(400px) rotate3d(0,1,0,90deg);opacity:0}60%{transform:perspective(400px) rotate3d(0,1,0,-15deg);opacity:1}80%{transform:perspective(400px) rotate3d(0,1,0,5deg)}to{transform:perspective(400px)}}
+.wppoppop-fx-flipInY{-webkit-animation-name:wppoppop-fx-flipInY;animation-name:wppoppop-fx-flipInY;}
+@-webkit-keyframes wppoppop-fx-heartBeat{0%{-webkit-transform:scale(1)}14%{-webkit-transform:scale(1.3)}28%{-webkit-transform:scale(1)}42%{-webkit-transform:scale(1.3)}70%{-webkit-transform:scale(1)}}
+@keyframes wppoppop-fx-heartBeat{0%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.3)}70%{transform:scale(1)}}
+.wppoppop-fx-heartBeat{-webkit-animation-name:wppoppop-fx-heartBeat;animation-name:wppoppop-fx-heartBeat;}
+@-webkit-keyframes wppoppop-fx-jello{from,11.1%,to{-webkit-transform:translate3d(0,0,0)}22.2%{-webkit-transform:skewX(-12.5deg) skewY(-12.5deg)}33.3%{-webkit-transform:skewX(6.25deg) skewY(6.25deg)}44.4%{-webkit-transform:skewX(-3.125deg) skewY(-3.125deg)}55.5%{-webkit-transform:skewX(1.5625deg) skewY(1.5625deg)}66.6%{-webkit-transform:skewX(-.78125deg) skewY(-.78125deg)}77.7%{-webkit-transform:skewX(.390625deg) skewY(.390625deg)}88.8%{-webkit-transform:skewX(-.1953125deg) skewY(-.1953125deg)}}
+@keyframes wppoppop-fx-jello{from,11.1%,to{transform:translate3d(0,0,0)}22.2%{transform:skewX(-12.5deg) skewY(-12.5deg)}33.3%{transform:skewX(6.25deg) skewY(6.25deg)}44.4%{transform:skewX(-3.125deg) skewY(-3.125deg)}55.5%{transform:skewX(1.5625deg) skewY(1.5625deg)}66.6%{transform:skewX(-.78125deg) skewY(-.78125deg)}77.7%{transform:skewX(.390625deg) skewY(.390625deg)}88.8%{transform:skewX(-.1953125deg) skewY(-.1953125deg)}}
+.wppoppop-fx-jello{-webkit-animation-name:wppoppop-fx-jello;animation-name:wppoppop-fx-jello;}
+@-webkit-keyframes wppoppop-fx-lightSpeedInLeft{from{-webkit-transform:translate3d(-100%,0,0) skewX(30deg);opacity:0}60%{-webkit-transform:skewX(-20deg);opacity:1}80%{-webkit-transform:skewX(5deg)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-lightSpeedInLeft{from{transform:translate3d(-100%,0,0) skewX(30deg);opacity:0}60%{transform:skewX(-20deg);opacity:1}80%{transform:skewX(5deg)}to{transform:none}}
+.wppoppop-fx-lightSpeedInLeft{-webkit-animation-name:wppoppop-fx-lightSpeedInLeft;animation-name:wppoppop-fx-lightSpeedInLeft;}
+@-webkit-keyframes wppoppop-fx-lightSpeedInRight{from{-webkit-transform:translate3d(100%,0,0) skewX(-30deg);opacity:0}60%{-webkit-transform:skewX(20deg);opacity:1}80%{-webkit-transform:skewX(-5deg)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-lightSpeedInRight{from{transform:translate3d(100%,0,0) skewX(-30deg);opacity:0}60%{transform:skewX(20deg);opacity:1}80%{transform:skewX(-5deg)}to{transform:none}}
+.wppoppop-fx-lightSpeedInRight{-webkit-animation-name:wppoppop-fx-lightSpeedInRight;animation-name:wppoppop-fx-lightSpeedInRight;}
+@-webkit-keyframes wppoppop-fx-pulse{from{-webkit-transform:scale3d(1,1,1)}50%{-webkit-transform:scale3d(1.05,1.05,1.05)}to{-webkit-transform:scale3d(1,1,1)}}
+@keyframes wppoppop-fx-pulse{from{transform:scale3d(1,1,1)}50%{transform:scale3d(1.05,1.05,1.05)}to{transform:scale3d(1,1,1)}}
+.wppoppop-fx-pulse{-webkit-animation-name:wppoppop-fx-pulse;animation-name:wppoppop-fx-pulse;}
+@-webkit-keyframes wppoppop-fx-rotateIn{from{-webkit-transform:rotate(-200deg);opacity:0}to{-webkit-transform:none;opacity:1}}
+@keyframes wppoppop-fx-rotateIn{from{transform:rotate(-200deg);opacity:0}to{transform:none;opacity:1}}
+.wppoppop-fx-rotateIn{-webkit-animation-name:wppoppop-fx-rotateIn;animation-name:wppoppop-fx-rotateIn;}
+@-webkit-keyframes wppoppop-fx-rubberBand{from{-webkit-transform:scale3d(1,1,1)}30%{-webkit-transform:scale3d(1.25,.75,1)}40%{-webkit-transform:scale3d(.75,1.25,1)}50%{-webkit-transform:scale3d(1.15,.85,1)}65%{-webkit-transform:scale3d(.95,1.05,1)}75%{-webkit-transform:scale3d(1.05,.95,1)}to{-webkit-transform:scale3d(1,1,1)}}
+@keyframes wppoppop-fx-rubberBand{from{transform:scale3d(1,1,1)}30%{transform:scale3d(1.25,.75,1)}40%{transform:scale3d(.75,1.25,1)}50%{transform:scale3d(1.15,.85,1)}65%{transform:scale3d(.95,1.05,1)}75%{transform:scale3d(1.05,.95,1)}to{transform:scale3d(1,1,1)}}
+.wppoppop-fx-rubberBand{-webkit-animation-name:wppoppop-fx-rubberBand;animation-name:wppoppop-fx-rubberBand;}
+@-webkit-keyframes wppoppop-fx-shake{from,to{-webkit-transform:translate3d(0,0,0)}10%,30%,50%,70%,90%{-webkit-transform:translate3d(-10px,0,0)}20%,40%,60%,80%{-webkit-transform:translate3d(10px,0,0)}}
+@keyframes wppoppop-fx-shake{from,to{transform:translate3d(0,0,0)}10%,30%,50%,70%,90%{transform:translate3d(-10px,0,0)}20%,40%,60%,80%{transform:translate3d(10px,0,0)}}
+.wppoppop-fx-shake{-webkit-animation-name:wppoppop-fx-shake;animation-name:wppoppop-fx-shake;}
+@-webkit-keyframes wppoppop-fx-slideInDown{from{-webkit-transform:translate3d(0,-100%,0);visibility:visible}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-slideInDown{from{transform:translate3d(0,-100%,0);visibility:visible}to{transform:none}}
+.wppoppop-fx-slideInDown{-webkit-animation-name:wppoppop-fx-slideInDown;animation-name:wppoppop-fx-slideInDown;}
+@-webkit-keyframes wppoppop-fx-slideInLeft{from{-webkit-transform:translate3d(-100%,0,0);visibility:visible}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-slideInLeft{from{transform:translate3d(-100%,0,0);visibility:visible}to{transform:none}}
+.wppoppop-fx-slideInLeft{-webkit-animation-name:wppoppop-fx-slideInLeft;animation-name:wppoppop-fx-slideInLeft;}
+@-webkit-keyframes wppoppop-fx-slideInRight{from{-webkit-transform:translate3d(100%,0,0);visibility:visible}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-slideInRight{from{transform:translate3d(100%,0,0);visibility:visible}to{transform:none}}
+.wppoppop-fx-slideInRight{-webkit-animation-name:wppoppop-fx-slideInRight;animation-name:wppoppop-fx-slideInRight;}
+@-webkit-keyframes wppoppop-fx-slideInUp{from{-webkit-transform:translate3d(0,100%,0);visibility:visible}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-slideInUp{from{transform:translate3d(0,100%,0);visibility:visible}to{transform:none}}
+.wppoppop-fx-slideInUp{-webkit-animation-name:wppoppop-fx-slideInUp;animation-name:wppoppop-fx-slideInUp;}
+@-webkit-keyframes wppoppop-fx-slideOutDown{from{-webkit-transform:none}to{visibility:hidden;-webkit-transform:translate3d(0,-100%,0)}}
+@keyframes wppoppop-fx-slideOutDown{from{transform:none}to{visibility:hidden;transform:translate3d(0,-100%,0)}}
+.wppoppop-fx-slideOutDown{-webkit-animation-name:wppoppop-fx-slideOutDown;animation-name:wppoppop-fx-slideOutDown;}
+@-webkit-keyframes wppoppop-fx-slideOutLeft{from{-webkit-transform:none}to{visibility:hidden;-webkit-transform:translate3d(-100%,0,0)}}
+@keyframes wppoppop-fx-slideOutLeft{from{transform:none}to{visibility:hidden;transform:translate3d(-100%,0,0)}}
+.wppoppop-fx-slideOutLeft{-webkit-animation-name:wppoppop-fx-slideOutLeft;animation-name:wppoppop-fx-slideOutLeft;}
+@-webkit-keyframes wppoppop-fx-slideOutRight{from{-webkit-transform:none}to{visibility:hidden;-webkit-transform:translate3d(100%,0,0)}}
+@keyframes wppoppop-fx-slideOutRight{from{transform:none}to{visibility:hidden;transform:translate3d(100%,0,0)}}
+.wppoppop-fx-slideOutRight{-webkit-animation-name:wppoppop-fx-slideOutRight;animation-name:wppoppop-fx-slideOutRight;}
+@-webkit-keyframes wppoppop-fx-slideOutUp{from{-webkit-transform:none}to{visibility:hidden;-webkit-transform:translate3d(0,100%,0)}}
+@keyframes wppoppop-fx-slideOutUp{from{transform:none}to{visibility:hidden;transform:translate3d(0,100%,0)}}
+.wppoppop-fx-slideOutUp{-webkit-animation-name:wppoppop-fx-slideOutUp;animation-name:wppoppop-fx-slideOutUp;}
+@-webkit-keyframes wppoppop-fx-swing{20%{-webkit-transform:rotate3d(0,0,1,15deg)}40%{-webkit-transform:rotate3d(0,0,1,-10deg)}60%{-webkit-transform:rotate3d(0,0,1,5deg)}80%{-webkit-transform:rotate3d(0,0,1,-5deg)}to{-webkit-transform:rotate3d(0,0,1,0deg)}}
+@keyframes wppoppop-fx-swing{20%{transform:rotate3d(0,0,1,15deg)}40%{transform:rotate3d(0,0,1,-10deg)}60%{transform:rotate3d(0,0,1,5deg)}80%{transform:rotate3d(0,0,1,-5deg)}to{transform:rotate3d(0,0,1,0deg)}}
+.wppoppop-fx-swing{-webkit-animation-name:wppoppop-fx-swing;animation-name:wppoppop-fx-swing;}
+@-webkit-keyframes wppoppop-fx-tada{from{-webkit-transform:scale3d(1,1,1)}10%,20%{-webkit-transform:scale3d(.9,.9,.9) rotate3d(0,0,1,-3deg)}30%,50%,70%,90%{-webkit-transform:scale3d(1.1,1.1,1.1) rotate3d(0,0,1,3deg)}40%,60%,80%{-webkit-transform:scale3d(1.1,1.1,1.1) rotate3d(0,0,1,-3deg)}to{-webkit-transform:scale3d(1,1,1)}}
+@keyframes wppoppop-fx-tada{from{transform:scale3d(1,1,1)}10%,20%{transform:scale3d(.9,.9,.9) rotate3d(0,0,1,-3deg)}30%,50%,70%,90%{transform:scale3d(1.1,1.1,1.1) rotate3d(0,0,1,3deg)}40%,60%,80%{transform:scale3d(1.1,1.1,1.1) rotate3d(0,0,1,-3deg)}to{transform:scale3d(1,1,1)}}
+.wppoppop-fx-tada{-webkit-animation-name:wppoppop-fx-tada;animation-name:wppoppop-fx-tada;}
+@-webkit-keyframes wppoppop-fx-wobble{from{-webkit-transform:none}15%{-webkit-transform:translate3d(-25%,0,0) rotate3d(0,0,1,-5deg)}30%{-webkit-transform:translate3d(20%,0,0) rotate3d(0,0,1,3deg)}45%{-webkit-transform:translate3d(-15%,0,0) rotate3d(0,0,1,-3deg)}60%{-webkit-transform:translate3d(10%,0,0) rotate3d(0,0,1,2deg)}75%{-webkit-transform:translate3d(-5%,0,0) rotate3d(0,0,1,-1deg)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-wobble{from{transform:none}15%{transform:translate3d(-25%,0,0) rotate3d(0,0,1,-5deg)}30%{transform:translate3d(20%,0,0) rotate3d(0,0,1,3deg)}45%{transform:translate3d(-15%,0,0) rotate3d(0,0,1,-3deg)}60%{transform:translate3d(10%,0,0) rotate3d(0,0,1,2deg)}75%{transform:translate3d(-5%,0,0) rotate3d(0,0,1,-1deg)}to{transform:none}}
+.wppoppop-fx-wobble{-webkit-animation-name:wppoppop-fx-wobble;animation-name:wppoppop-fx-wobble;}
+@-webkit-keyframes wppoppop-fx-zoomIn{from{opacity:0;-webkit-transform:scale3d(.3,.3,.3)}50%{opacity:1}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-zoomIn{from{opacity:0;transform:scale3d(.3,.3,.3)}50%{opacity:1}to{transform:none}}
+.wppoppop-fx-zoomIn{-webkit-animation-name:wppoppop-fx-zoomIn;animation-name:wppoppop-fx-zoomIn;}
+@-webkit-keyframes wppoppop-fx-zoomInDown{from{opacity:0;-webkit-transform:scale3d(.1,.1,.1) translate3d(0,-1000px,0)}60%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-zoomInDown{from{opacity:0;transform:scale3d(.1,.1,.1) translate3d(0,-1000px,0)}60%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{transform:none}}
+.wppoppop-fx-zoomInDown{-webkit-animation-name:wppoppop-fx-zoomInDown;animation-name:wppoppop-fx-zoomInDown;}
+@-webkit-keyframes wppoppop-fx-zoomInLeft{from{opacity:0;-webkit-transform:scale3d(.1,.1,.1) translate3d(-1000px,0,0)}60%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-zoomInLeft{from{opacity:0;transform:scale3d(.1,.1,.1) translate3d(-1000px,0,0)}60%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{transform:none}}
+.wppoppop-fx-zoomInLeft{-webkit-animation-name:wppoppop-fx-zoomInLeft;animation-name:wppoppop-fx-zoomInLeft;}
+@-webkit-keyframes wppoppop-fx-zoomInRight{from{opacity:0;-webkit-transform:scale3d(.1,.1,.1) translate3d(1000px,0,0)}60%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-zoomInRight{from{opacity:0;transform:scale3d(.1,.1,.1) translate3d(1000px,0,0)}60%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{transform:none}}
+.wppoppop-fx-zoomInRight{-webkit-animation-name:wppoppop-fx-zoomInRight;animation-name:wppoppop-fx-zoomInRight;}
+@-webkit-keyframes wppoppop-fx-zoomInUp{from{opacity:0;-webkit-transform:scale3d(.1,.1,.1) translate3d(0,1000px,0)}60%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{-webkit-transform:none}}
+@keyframes wppoppop-fx-zoomInUp{from{opacity:0;transform:scale3d(.1,.1,.1) translate3d(0,1000px,0)}60%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{transform:none}}
+.wppoppop-fx-zoomInUp{-webkit-animation-name:wppoppop-fx-zoomInUp;animation-name:wppoppop-fx-zoomInUp;}
+@-webkit-keyframes wppoppop-fx-zoomOut{from{opacity:1}50%{opacity:0;-webkit-transform:scale3d(.3,.3,.3)}to{opacity:0}}
+@keyframes wppoppop-fx-zoomOut{from{opacity:1}50%{opacity:0;transform:scale3d(.3,.3,.3)}to{opacity:0}}
+.wppoppop-fx-zoomOut{-webkit-animation-name:wppoppop-fx-zoomOut;animation-name:wppoppop-fx-zoomOut;}
+@-webkit-keyframes wppoppop-fx-zoomOutDown{40%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;-webkit-transform:scale(.1) translate3d(0,-1000px,0)}}
+@keyframes wppoppop-fx-zoomOutDown{40%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;transform:scale(.1) translate3d(0,-1000px,0)}}
+.wppoppop-fx-zoomOutDown{-webkit-animation-name:wppoppop-fx-zoomOutDown;animation-name:wppoppop-fx-zoomOutDown;}
+@-webkit-keyframes wppoppop-fx-zoomOutLeft{40%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;-webkit-transform:scale(.1) translate3d(-1000px,0,0)}}
+@keyframes wppoppop-fx-zoomOutLeft{40%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;transform:scale(.1) translate3d(-1000px,0,0)}}
+.wppoppop-fx-zoomOutLeft{-webkit-animation-name:wppoppop-fx-zoomOutLeft;animation-name:wppoppop-fx-zoomOutLeft;}
+@-webkit-keyframes wppoppop-fx-zoomOutRight{40%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;-webkit-transform:scale(.1) translate3d(1000px,0,0)}}
+@keyframes wppoppop-fx-zoomOutRight{40%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;transform:scale(.1) translate3d(1000px,0,0)}}
+.wppoppop-fx-zoomOutRight{-webkit-animation-name:wppoppop-fx-zoomOutRight;animation-name:wppoppop-fx-zoomOutRight;}
+@-webkit-keyframes wppoppop-fx-zoomOutUp{40%{opacity:1;-webkit-transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;-webkit-transform:scale(.1) translate3d(0,1000px,0)}}
+@keyframes wppoppop-fx-zoomOutUp{40%{opacity:1;transform:scale3d(.475,.475,.475) translate3d(0,0,0)}to{opacity:0;transform:scale(.1) translate3d(0,1000px,0)}}
+.wppoppop-fx-zoomOutUp{-webkit-animation-name:wppoppop-fx-zoomOutUp;animation-name:wppoppop-fx-zoomOutUp;}
+.wppoppop-fx-run{-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-backface-visibility:hidden;backface-visibility:hidden;}
+@media (prefers-reduced-motion:reduce){.wppoppop-fx-run{animation-duration:1ms!important;}}

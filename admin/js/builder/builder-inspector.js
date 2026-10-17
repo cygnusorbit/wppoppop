@@ -106,7 +106,7 @@
                 }
             }
             if (!effect || effect === 'none') {
-                effect = 'bounce';
+                return;
             }
 
             var duration = parseInt($('#prop-anim-duration').val(), 10) || 1000;

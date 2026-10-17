@@ -40,9 +40,7 @@ class WpPopPop_Front_Display {
 
         wp_enqueue_style('wppoppop-front-css', WPPOPPOP_URL . 'public/css/front/modal.css', [], $asset_version);
         wp_enqueue_style('wppoppop-front-anim-css', WPPOPPOP_URL . 'public/css/front/animations.css', ['wppoppop-front-css'], $asset_version);
-        if (file_exists(WPPOPPOP_PATH . 'public/css/vendor/animate.min.css')) {
-            wp_enqueue_style('wppoppop-animate-css', WPPOPPOP_URL . 'public/css/vendor/animate.min.css', [], '4.1.1');
-        }
+        wp_enqueue_style('wppoppop-animations-core-css', WPPOPPOP_URL . 'public/css/animations-core.css', ['wppoppop-front-anim-css'], $asset_version);
         wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
 

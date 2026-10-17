@@ -296,6 +296,9 @@
 
     playAnimation: function(id, effect, duration, delay) {
         if (!effect || effect === 'none') return;
+        if (window.WpPopPopBuilderAnimation && typeof window.WpPopPopBuilderAnimation.playElement === 'function') {
+            return window.WpPopPopBuilderAnimation.playElement(id, effect, duration, delay);
+        }
         duration = parseInt(duration, 10) || 1000;
         delay = parseInt(delay, 10) || 0;
 

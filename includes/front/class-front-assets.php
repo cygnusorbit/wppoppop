@@ -16,6 +16,7 @@ class WpPopPop_Front_Assets {
             wp_enqueue_style('animate-css', WPPOPPOP_URL . 'public/css/vendor/animate.min.css', [], '4.1.1');
             $wppoppop_css_deps[] = 'animate-css';
         }
+        wp_enqueue_style('wppoppop-animations-core-css', WPPOPPOP_URL . 'public/css/animations-core.css', [], WPPOPPOP_VERSION);
         wp_enqueue_style('wppoppop-front-css', WPPOPPOP_URL . 'public/css/wppoppop-front.css', $wppoppop_css_deps, WPPOPPOP_VERSION);
 
         wp_enqueue_script('wppoppop-front-display-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery'], WPPOPPOP_VERSION, true);

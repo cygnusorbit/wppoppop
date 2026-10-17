@@ -72,6 +72,7 @@
                 var $next = $popup.find('[data-canvas="' + targetIdx + '"], [data-screen="' + targetIdx + '"], [data-canvas-index="' + targetIdx + '"]');
                 if ($next.length) {
                     $next.addClass('wppoppop-canvas-active wppoppop-screen-active active').fadeIn(200);
+                    self.playCanvasIn($next);
                 }
             });
 
@@ -87,7 +88,7 @@
         },
 
         getPopupWrap: function(uid) {
-            return $('#wppoppop-popup-' + uid + ', #wppoppop-wrap-' + uid + ', [data-uid="' + uid + '"]');
+            return $('#wppoppop-popup-' + uid + ', #wppoppop-wrap-' + uid).first();
         },
 
         evaluateTriggers: function() {
@@ -111,7 +112,9 @@
             var $wrap = this.getPopupWrap(uid);
             if (!$wrap.length) return;
 
-            $wrap.fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
+            $wrap.data('wppoppopClosing', false);
+            $wrap.stop(true, true).fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
+            this.playCanvasIn($wrap.find('.wppoppop-canvas-active').first());
 
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_impression', { popup_uid: uid });
@@ -122,7 +125,25 @@
             var $wrap = this.getPopupWrap(uid);
             if (!$wrap.length) return;
 
-            $wrap.fadeOut(200).attr('aria-hidden', 'true');
+            if ($wrap.data('wppoppopClosing')) return;
+            $wrap.data('wppoppopClosing', true);
+
+            var self = this;
+            var $c = $wrap.find('.wppoppop-canvas-active').first();
+            var outFx = this.fxName($c.attr('data-anim-disappearance'), 'out');
+            var outDur = parseInt($c.attr('data-anim-duration'), 10);
+            if (isNaN(outDur) || outDur <= 0) outDur = 500;
+            outDur = Math.min(outDur, 800);
+
+            if (outFx && $c.length) {
+                this.runFx($c, outFx, outDur, 0, true);
+                setTimeout(function() {
+                    $wrap.fadeOut(150).attr('aria-hidden', 'true');
+                    self.clearFx($c);
+                }, outDur + 20);
+            } else {
+                $wrap.fadeOut(200).attr('aria-hidden', 'true');
+            }
 
             try {
                 localStorage.setItem('wppoppop_dismissed_' + uid, Date.now());
@@ -131,6 +152,65 @@
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_close', { popup_uid: uid });
             }
+        },
+
+        fxName: function(effect, dir) {
+            if (!effect || effect === 'none') return '';
+            var e = String(effect).replace(/^animate__/, '').replace(/^wppoppop-anim-/, '').replace(/^anim-/, '').replace(/^wppoppop-fx-/, '');
+            var inMap = { fade: 'fadeIn', slideDown: 'slideInDown', slideUp: 'slideInUp', slideLeft: 'slideInRight', slideRight: 'slideInLeft', zoom: 'zoomIn', flip: 'flipInX' };
+            var outMap = { fade: 'fadeOut', slideDown: 'slideOutDown', slideUp: 'slideOutUp', slideLeft: 'slideOutLeft', slideRight: 'slideOutRight', zoom: 'zoomOut' };
+            var map = (dir === 'out') ? outMap : inMap;
+            return 'wppoppop-fx-' + (map[e] || e);
+        },
+
+        clearFx: function($n) {
+            $n.each(function() {
+                this.className = this.className.replace(/(^|\s)wppoppop-fx-\S+/g, '');
+                this.style.animationName = '';
+                this.style.webkitAnimationName = '';
+                this.style.animationDuration = '';
+                this.style.webkitAnimationDuration = '';
+                this.style.animationDelay = '';
+                this.style.webkitAnimationDelay = '';
+                this.style.animationFillMode = '';
+                this.style.webkitAnimationFillMode = '';
+            });
+        },
+
+        runFx: function($n, fxClass, dur, del, keep) {
+            var self = this;
+            if (!$n.length || !fxClass) return;
+            self.clearFx($n);
+            void $n[0].offsetWidth;
+            $n.css({
+                'animation-duration': dur + 'ms', '-webkit-animation-duration': dur + 'ms',
+                'animation-delay': del + 'ms', '-webkit-animation-delay': del + 'ms',
+                'animation-fill-mode': 'both', '-webkit-animation-fill-mode': 'both'
+            }).addClass('wppoppop-fx-run ' + fxClass);
+            clearTimeout($n.data('wppoppopFxTimer'));
+            if (!keep) {
+                $n.data('wppoppopFxTimer', setTimeout(function() { self.clearFx($n); }, dur + del + 100));
+            }
+        },
+
+        restartFx: function(node) {
+            node.style.webkitAnimationName = 'none';
+            node.style.animationName = 'none';
+            void node.offsetWidth;
+            node.style.webkitAnimationName = '';
+            node.style.animationName = '';
+        },
+
+        playCanvasIn: function($c) {
+            var self = this;
+            if (!$c || !$c.length) return;
+            var eff = this.fxName($c.attr('data-anim-appearance'), 'in');
+            var dur = parseInt($c.attr('data-anim-duration'), 10);
+            var del = parseInt($c.attr('data-anim-delay'), 10);
+            if (isNaN(dur) || dur <= 0) dur = 1000;
+            if (isNaN(del) || del < 0) del = 0;
+            if (eff) this.runFx($c, eff, dur, del, false);
+            $c.find('.wppoppop-fx-run').each(function() { self.restartFx(this); });
         },
 
         dispatchGA: function(eventName, params) {
