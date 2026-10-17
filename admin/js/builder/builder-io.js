@@ -7,32 +7,63 @@
 
     window.WpPopPopBuilderIO = {
         flushActiveElement: function() {
-            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.flushActiveElement === 'function') {
-                try { window.WpPopPopBuilderInspector.flushActiveElement(); } catch(e) {}
+            $('input:focus, textarea:focus, select:focus').trigger('change').trigger('blur');
+            if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.flushElementFromDOM === 'function') {
+                window.WpPopPopElementsRegistry.flushElementFromDOM();
+            }
+            var inspector = window.WpPopPopBuilderInspector;
+            if (inspector) {
+                if (typeof inspector.flushActiveElement === 'function') {
+                    inspector.flushActiveElement();
+                } else if (typeof inspector.flushSanitizedLayerSettings === 'function') {
+                    inspector.flushSanitizedLayerSettings();
+                }
             }
             if (typeof this.flushActiveInputs === 'function') {
-                try { this.flushActiveInputs(); } catch(e) {}
+                this.flushActiveInputs();
             }
-            if (window.jQuery) {
-                window.jQuery('input:focus, textarea:focus, select:focus').trigger('change').trigger('blur');
+
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state) return;
+            var curCanvas = core.state.currentCanvas || 1;
+            if (!core.state.canvasMeta) core.state.canvasMeta = {};
+            if (!core.state.canvasMeta[curCanvas]) core.state.canvasMeta[curCanvas] = {};
+            var curCanvasMeta = core.state.canvasMeta[curCanvas];
+
+            var liveAnimApp = $('#set-canvas-anim-appearance, #set-anim-appearance').val();
+            if (liveAnimApp) curCanvasMeta.anim_appearance = liveAnimApp;
+
+            var liveAnimDur = $('#set-canvas-anim-duration, #set-anim-duration').val();
+            if (liveAnimDur !== undefined && liveAnimDur !== '' && !isNaN(liveAnimDur)) {
+                curCanvasMeta.anim_duration = parseInt(liveAnimDur, 10);
+            }
+
+            var liveAnimDel = $('#set-canvas-anim-delay, #set-anim-delay').val();
+            if (liveAnimDel !== undefined && liveAnimDel !== '' && !isNaN(liveAnimDel)) {
+                curCanvasMeta.anim_delay = parseInt(liveAnimDel, 10);
+            }
+
+            var liveAnimDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
+            if (liveAnimDis) curCanvasMeta.anim_disappearance = liveAnimDis;
+
+            if ($('#prop-padding-top, #prop-pad-top').length && core.state.activeId && core.state.canvases) {
+                var cleanId = String(core.state.activeId).replace(/^#/, '').replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+                var activeModel = (core.state.canvases[curCanvas] || []).find(function(it) {
+                    return String(it.id).replace(/^el-/, '') === cleanId;
+                });
+                if (activeModel) {
+                    ['Top', 'Right', 'Bottom', 'Left'].forEach(function(side) {
+                        var value = Math.max(0, parseInt($('#prop-padding-' + side.toLowerCase() + ', #prop-pad-' + side.toLowerCase()).val(), 10) || 0);
+                        activeModel['padding' + side] = value;
+                        activeModel['padding_' + side.toLowerCase()] = value;
+                    });
+                    activeModel.padding = activeModel.paddingTop;
+                }
             }
         },
 
         exportConfig: function() {
-        if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.flushElementFromDOM === 'function') {
-            window.WpPopPopElementsRegistry.flushElementFromDOM();
-        }
-        if (window.WpPopPopBuilderInspector) {
-            if (typeof window.WpPopPopBuilderInspector.flushSanitizedLayerSettings === "function") {
-                window.WpPopPopBuilderInspector.flushSanitizedLayerSettings();
-            }
-            if (typeof window.WpPopPopBuilderInspector.flushActiveElement === "function") {
-                window.WpPopPopBuilderInspector.flushActiveElement();
-            }
-        }
-            if (typeof this.flushActiveElement === 'function') {
-                this.flushActiveElement();
-            }
+            this.flushActiveElement();
             if (typeof this.exportPopup === 'function') {
                 return this.exportPopup();
             }
@@ -40,10 +71,10 @@
             if (!core || !core.state) return {};
             return {
                 id: core.state.id || (window.jQuery ? window.jQuery('#wppoppop-builder-uid').val() : 0) || 0,
-                title: core.state.title || (window.jQuery ? window.jQuery('#wppoppop-popup-title-input').val() : '') || 'Untitled Popup',
-                canvases: JSON.parse(JSON.stringify(core.state.canvases || { 1: [] })),
+                title: $('#wppoppop-builder-title').val() || core.state.title || $('#wppoppop-popup-title-input').val() || 'Untitled Campaign',
+                canvases: JSON.parse(JSON.stringify(core.state.canvases || { 1: [], 2: [] })),
                 canvasMeta: JSON.parse(JSON.stringify(core.state.canvasMeta || {})),
-                settings: JSON.parse(JSON.stringify(core.state.settings || {}))
+                settings: window.WpPopPopBuilderSettings ? window.WpPopPopBuilderSettings.getSettings() : JSON.parse(JSON.stringify(core.state.settings || {}))
             };
         },
 
@@ -78,98 +109,17 @@
 
         bindSave: function() {
             var self = this;
-            $('#wppoppop-btn-save').on('click', function(e) {
+            $(document).off('click.wppoppop_save', '#wppoppop-btn-save, .wppoppop-btn-save')
+                .on('click.wppoppop_save', '#wppoppop-btn-save, .wppoppop-btn-save', function(e) {
                 e.preventDefault();
                 var $btn = $(this);
                 var origText = $btn.html();
 
                 $btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Saving...');
 
-                var core = window.WpPopPopBuilderCore;
-                var settings = window.WpPopPopBuilderSettings ? window.WpPopPopBuilderSettings.getSettings() : {};
-
-                
-        // Pre-export active canvas animation synchronization
-        if (core && core.state) {
-            var curCanvas = core.state.currentCanvas || 1;
-            if (!core.state.canvasMeta) core.state.canvasMeta = {};
-            if (!core.state.canvasMeta[curCanvas]) core.state.canvasMeta[curCanvas] = {};
-            var curCanvasMeta = core.state.canvasMeta[curCanvas];
-
-            var liveAnimApp = $('#set-canvas-anim-appearance, #set-anim-appearance').val();
-            if (liveAnimApp) curCanvasMeta.anim_appearance = liveAnimApp;
-
-            var liveAnimDur = $('#set-canvas-anim-duration, #set-anim-duration').val();
-            if (liveAnimDur !== undefined && liveAnimDur !== '' && !isNaN(liveAnimDur)) {
-                curCanvasMeta.anim_duration = parseInt(liveAnimDur, 10);
-            }
-
-            var liveAnimDel = $('#set-canvas-anim-delay, #set-anim-delay').val();
-            if (liveAnimDel !== undefined && liveAnimDel !== '' && !isNaN(liveAnimDel)) {
-                curCanvasMeta.anim_delay = parseInt(liveAnimDel, 10);
-            }
-
-            var liveAnimDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
-            if (liveAnimDis) curCanvasMeta.anim_disappearance = liveAnimDis;
-        }
-
-        // Pre-save flush: commit active directional padding inputs directly before serialization
-            if ($('#prop-padding-top').length) {
-                var activeId = core.state.activeId;
-                if (activeId && core.state.canvases) {
-                    var curCanvas = core.state.currentCanvas || 1;
-                    var cElements = core.state.canvases[curCanvas] || [];
-                    var activeModel = cElements.find(function(it) { return String(it.id) === String(activeId); });
-                    if (activeModel) {
-                        activeModel.paddingTop = Math.max(0, parseInt($('#prop-padding-top').val(), 10) || 0);
-                        activeModel.paddingRight = Math.max(0, parseInt($('#prop-padding-right').val(), 10) || 0);
-                        activeModel.paddingBottom = Math.max(0, parseInt($('#prop-padding-bottom').val(), 10) || 0);
-                        activeModel.paddingLeft = Math.max(0, parseInt($('#prop-padding-left').val(), 10) || 0);
-                        activeModel.padding_top = activeModel.paddingTop;
-                        activeModel.padding_right = activeModel.paddingRight;
-                        activeModel.padding_bottom = activeModel.paddingBottom;
-                        activeModel.padding_left = activeModel.paddingLeft;
-                        activeModel.padding = activeModel.paddingTop;
-                    }
-                }
-            }
-
-            // Pre-save DOM-to-Model Flush: commit active directional padding inputs directly before serialization
-            if ($('#prop-padding-top').length) {
-                var activeRawId = core.state.activeId;
-                if (activeRawId && core.state.canvases) {
-                    var cleanId = String(activeRawId).replace(/^el-/, '');
-                    var curCanvas = core.state.currentCanvas || 1;
-                    var cElements = core.state.canvases[curCanvas] || [];
-                    var activeModel = cElements.find(function(it) {
-                        return String(it.id).replace(/^el-/, '') === cleanId;
-                    });
-                    if (activeModel) {
-                        var pt = Math.max(0, parseInt($('#prop-padding-top').val(), 10) || 0);
-                        var pr = Math.max(0, parseInt($('#prop-padding-right').val(), 10) || 0);
-                        var pb = Math.max(0, parseInt($('#prop-padding-bottom').val(), 10) || 0);
-                        var pl = Math.max(0, parseInt($('#prop-padding-left').val(), 10) || 0);
-                        activeModel.paddingTop = pt;
-                        activeModel.paddingRight = pr;
-                        activeModel.paddingBottom = pb;
-                        activeModel.paddingLeft = pl;
-                        activeModel.padding_top = pt;
-                        activeModel.padding_right = pr;
-                        activeModel.padding_bottom = pb;
-                        activeModel.padding_left = pl;
-                        activeModel.padding = pt;
-                    }
-                }
-            }
-
-            var payload = {
-                    canvases: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
-                    screens: (core && core.state && core.state.canvases) ? core.state.canvases : { 1: [], 2: [] },
-                    canvasMeta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
-                    canvas_meta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
-                    settings: settings,
-                    title: $('#wppoppop-builder-title').val() || 'Untitled Campaign'
-                };
+                var payload = self.exportConfig();
+                payload.screens = payload.canvases;
+                payload.canvas_meta = payload.canvasMeta;
 
                 var serialized = JSON.stringify(payload);
                 var postData = {
@@ -207,6 +157,33 @@
                         $btn.prop('disabled', false).html(origText);
                     }
                 });
+            });
+        },
+
+        flushActiveInputs: function() {
+            var $drawer = $('#wppoppop-inspector-drawer');
+            if (!$drawer.length || (!$drawer.hasClass('is-open') && !$drawer.hasClass('open'))) {
+                return;
+            }
+            var insp = window.WpPopPopBuilderInspector;
+            var activeId = (insp && insp.activeElementId) ? String(insp.activeElementId) : (
+                window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
+            );
+            var cleanId = activeId.replace(/^#/, '').replace(/^wppoppop-el-/, '').replace(/^el-/, '');
+            if (!cleanId || !window.WpPopPopBuilderCanvas || typeof window.WpPopPopBuilderCanvas.getActiveElements !== 'function') {
+                return;
+            }
+            var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+            var el = Array.isArray(els) ? els.find(function(item) {
+                return item && (String(item.id) === cleanId || String(item.id) === activeId);
+            }) : null;
+            if (!el) return;
+
+            $drawer.find('.element-panel:visible .wppoppop-gp-bind').each(function() {
+                var $inp = $(this);
+                var prop = $inp.data('prop');
+                if (!prop) return;
+                el[prop] = $inp.is(':checkbox') ? $inp.is(':checked') : $inp.val();
             });
         },
 
@@ -314,64 +291,3 @@
         }
     };
 })(jQuery);
-
-// Delegated click handler for Save Popup button
-jQuery(document).off('click.wppoppop_global_save_click', '#wppoppop-btn-save, .wppoppop-btn-save')
-    .on('click.wppoppop_global_save_click', '#wppoppop-btn-save, .wppoppop-btn-save', function(e) {
-        e.preventDefault();
-        if (window.WpPopPopBuilderIO && typeof window.WpPopPopBuilderIO.savePopup === 'function') {
-            window.WpPopPopBuilderIO.savePopup();
-        }
-    });
-
-/* === WPPOPPOP_PHASE5_IO_PRESAVE_FLUSH_START === */
-(function(window, $) {
-    'use strict';
-
-    function flushActiveDecomposedElement() {
-        var $drawer = $('#wppoppop-inspector-drawer');
-        if (!$drawer.length || (!$drawer.hasClass('is-open') && !$drawer.hasClass('open'))) {
-            return;
-        }
-        // Trigger change on any focused input inside the inspector drawer so two-way binders run
-        var $focused = $drawer.find('input:focus, textarea:focus, select:focus');
-        if ($focused.length) {
-            $focused.trigger('change');
-        }
-        // Explicitly flush visible .wppoppop-gp-bind controls into the active element
-        var insp = window.WpPopPopBuilderInspector;
-        var activeId = (insp && insp.activeElementId) ? String(insp.activeElementId) : (
-            window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state ? String(window.WpPopPopBuilderCore.state.activeId || '') : ''
-        );
-        var cleanId = activeId.replace(/^wppoppop-el-/, '').replace(/^el-/, '');
-        if (!cleanId || !window.WpPopPopBuilderCanvas || typeof window.WpPopPopBuilderCanvas.getActiveElements !== 'function') {
-            return;
-        }
-        var els = window.WpPopPopBuilderCanvas.getActiveElements() || [];
-        var el = Array.isArray(els) ? els.find(function(item) {
-            return item && (String(item.id) === cleanId || String(item.id) === activeId);
-        }) : null;
-        if (!el) return;
-
-        $drawer.find('.element-panel:visible .wppoppop-gp-bind').each(function() {
-            var $inp = $(this);
-            var prop = $inp.data('prop');
-            if (!prop) return;
-            el[prop] = $inp.is(':checkbox') ? $inp.is(':checked') : $inp.val();
-        });
-    }
-
-    $(function() {
-        var io = window.WpPopPopBuilderIO;
-        if (io && !io._phase5FlushWrapped && typeof io.exportConfig === 'function') {
-            io._phase5FlushWrapped = true;
-            var origExport = io.exportConfig;
-            io.exportConfig = function() {
-                try { flushActiveDecomposedElement(); } catch (e) {}
-                return origExport.apply(this, arguments);
-            };
-        }
-    });
-})(window, jQuery);
-/* === WPPOPPOP_PHASE5_IO_PRESAVE_FLUSH_END === */
-

@@ -96,6 +96,23 @@ if "wppoppop_builder_nonce" not in ajax_code or "wppoppop_admin_nonce" not in aj
 
 ok("AJAX security gate verified (inclusive dual-nonce verification active).")
 
+print_step("Suite 4: Builder JavaScript Regressions")
+has_node = subprocess.run(["which", "node"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode == 0
+if has_node:
+    builder_dir = os.path.join(BASE_DIR, "admin", "js", "builder")
+    for root, _, files in os.walk(builder_dir):
+        for name in files:
+            if name.endswith(".js"):
+                result = subprocess.run(["node", "--check", os.path.join(root, name)], capture_output=True, text=True)
+                if result.returncode != 0:
+                    fail(result.stderr or result.stdout)
+    result = subprocess.run(["node", os.path.join(BASE_DIR, "scripts", "test-builder.js")], capture_output=True, text=True)
+    if result.returncode != 0:
+        fail(result.stderr or result.stdout)
+    ok(result.stdout.strip())
+else:
+    print("[SKIP] Node.js is unavailable; builder JavaScript checks were not run.")
+
 print("\n\033[92m=====================================================")
 print("ALL VERIFICATION SUITES PASSED! Zero regressions found.")
 print("=====================================================\033[0m")

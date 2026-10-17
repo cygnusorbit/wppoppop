@@ -234,8 +234,8 @@
             if (!isForm) {
                 var textMedia = ['label', 'title', 'paragraph', 'html', 'button', 'link', 'link_btn', 'step_btn', 'submit', 'progress'];
                 var hoverMedia = ['button', 'link', 'link_btn', 'step_btn', 'submit'];
-                $('#insp-section-typography').toggle(textMedia.indexOf(t) !== -1);
-                $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(t) !== -1);
+                $('#insp-section-typography').toggle(textMedia.indexOf(rawType) !== -1);
+                $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(rawType) !== -1);
             }
 
             var activeTab = (inspector && inspector.activeTab) ? inspector.activeTab : 'basic';
@@ -2488,4 +2488,3 @@
 
 })(window, jQuery);
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
-

@@ -3342,11 +3342,8 @@
 
 
 /* === WPPOPPOP_INSPECTOR_LAYOUT_FIX_START === */
-__WPPOPPOP_INSPECTOR_LAYOUT_FIX_JS_V1__
 (function($){
     'use strict';
-
-    var GUARD =  + JS_GUARD + r;
 
     function setTabRolesAndPanels() {
         var $drawer = $('#wppoppop-inspector-drawer');
@@ -3501,7 +3498,6 @@ __WPPOPPOP_INSPECTOR_LAYOUT_FIX_JS_V1__
 
 
 /* === WPPOPPOP_LAYER_PANEL_SYNC_START === */
-__WPPOPPOP_LAYER_PANEL_SYNC_V1__
 (function($){
     'use strict';
 
@@ -4878,4 +4874,3 @@ __WPPOPPOP_LAYER_PANEL_SYNC_V1__
 
 })(window, jQuery);
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
-
