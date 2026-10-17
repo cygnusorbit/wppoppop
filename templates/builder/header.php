@@ -69,6 +69,13 @@ if (!defined('ABSPATH')) {
             <option value="1.25">125%</option>
             <option value="fit">Fit</option>
         </select>
+        <div class="wppoppop-snap-group" role="group" aria-label="Snapping">
+<label class="wppoppop-snap-switch" title="Snap to other objects' edges and centers (hold Alt to bypass)">
+                <input type="checkbox" id="wppoppop-snap-object" class="wppoppop-snap-toggle" data-snap="object">
+                <span class="wppoppop-snap-slider" aria-hidden="true"></span>
+                <span class="wppoppop-snap-text">Snap Object</span>
+            </label>
+        </div>
         <button type="button" class="wppoppop-btn wppoppop-btn-secondary" id="wppoppop-btn-preview">Preview</button>
         <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>
         <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save">Save Popup</button>

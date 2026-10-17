@@ -22,3 +22,25 @@
     margin-right: 0 !important;
     width: 100% !important;
 }
+
+/* WPPOPPOP_EDIT_DOTTED: dotted element outline only in edit mode */
+.wppoppop-builder-workspace:not(.is-preview-mode) .wppoppop-canvas-item:not(.wppoppop-selected) {
+    outline: 1px dotted rgba(100, 116, 139, 0.85);
+    outline-offset: 0;
+}
+.wppoppop-builder-workspace.is-preview-mode .wppoppop-canvas-item,
+body.wppoppop-preview-locked .wppoppop-canvas-item {
+    outline: none !important;
+}
+
+/* Snap-to-grid slide switches */
+.wppoppop-snap-group { display: inline-flex; align-items: center; gap: 10px; margin-right: 8px; }
+.wppoppop-snap-switch { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; margin: 0; font-size: 11px; font-weight: 600; user-select: none; -webkit-user-select: none; }
+.wppoppop-snap-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.wppoppop-snap-slider { position: relative; width: 28px; height: 16px; border-radius: 16px; background: #94a3b8; transition: background 0.15s ease; flex-shrink: 0; }
+.wppoppop-snap-slider::before { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #ffffff; -webkit-transition: -webkit-transform 0.15s ease; transition: transform 0.15s ease; }
+.wppoppop-snap-switch input:checked + .wppoppop-snap-slider { background: #2563eb; }
+.wppoppop-snap-switch input:checked + .wppoppop-snap-slider::before { -webkit-transform: translateX(12px); transform: translateX(12px); }
+.wppoppop-snap-switch input:focus + .wppoppop-snap-slider { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35); }
+body.wppoppop-preview-locked .wppoppop-snap-group { pointer-events: none; opacity: 0.45; }
+.wppoppop-snap-text { white-space: nowrap; }

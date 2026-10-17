@@ -512,6 +512,7 @@
             this.bindCanvasCornerResize();
             this.bindRibbonTools();
             this.bindCanvasSelection();
+            this.bindSnapControls();
             this.bindPreviewModeControls();
         },
 
@@ -930,6 +931,89 @@
             if (gy !== null) { $gh.css({ top: gy + 'px', display: 'block' }); } else { $gh.hide(); }
         },
 
+        // WPPOPPOP_SNAP_OBJECTS: snap-to-object toggle (hold Alt to bypass)
+        snapObjects: false,
+
+        setSnapObjects: function(on) {
+            this.snapObjects = !!on;
+            try { window.localStorage.setItem('wppoppop_snap_objects', on ? '1' : '0'); } catch (e) {}
+            this.syncSnapUI();
+        },
+
+        syncSnapUI: function() {
+            $('#wppoppop-snap-object').prop('checked', !!this.snapObjects);
+        },
+
+        bindSnapControls: function() {
+            var self = this;
+            var o = '0';
+            try { o = window.localStorage.getItem('wppoppop_snap_objects'); } catch (e) {}
+            self.snapObjects = (o === '1');
+            self.syncSnapUI();
+            $(document).off('change.wppoppop_snap', '.wppoppop-snap-toggle')
+                .on('change.wppoppop_snap', '.wppoppop-snap-toggle', function() {
+                    self.setSnapObjects(this.checked);
+                });
+        },
+
+        snapToObjects: function(event, ui, $node, el) {
+            if (!this.snapObjects || !ui || !ui.position || !$node || !$node[0]) return;
+            if (event && event.altKey) return;
+            var boxEl = $('#wppoppop-canvas-box')[0];
+            if (!boxEl) return;
+            var $gv = $('#wppoppop-guide-v');
+            var $gh = $('#wppoppop-guide-h');
+            var boxW = boxEl.clientWidth;
+            var boxH = boxEl.clientHeight;
+            var elW = $node[0].offsetWidth;
+            var elH = $node[0].offsetHeight;
+            var T = 6;
+            var x = Math.round(ui.position.left);
+            var y = Math.round(ui.position.top);
+
+            // canvas-edge snap has priority: leave those axes alone
+            var lockX = (x === 0) || (x + elW === boxW);
+            var lockY = (y === 0) || (y + elH === boxH);
+
+            var tx = [], ty = [];
+            var others = this.getActiveElements();
+            for (var i = 0; i < others.length; i++) {
+                var o = others[i];
+                if (!o || o.id === el.id || o.hidden) continue;
+                var n = document.getElementById('el-' + o.id);
+                var oL = parseFloat(o.left); if (isNaN(oL)) oL = 0;
+                var oT = parseFloat(o.top);  if (isNaN(oT)) oT = 0;
+                var oW = n ? n.offsetWidth : (parseFloat(o.width) || 0);
+                var oH = n ? n.offsetHeight : (parseFloat(o.height) || 0);
+                tx.push(oL, Math.round(oL + oW / 2), oL + oW);
+                ty.push(oT, Math.round(oT + oH / 2), oT + oH);
+            }
+
+            var best = function(pos, size, targets) {
+                var out = null, bestD = T + 1;
+                var pts = [[pos, 0], [pos + Math.round(size / 2), Math.round(size / 2)], [pos + size, size]];
+                for (var a = 0; a < pts.length; a++) {
+                    for (var b = 0; b < targets.length; b++) {
+                        var d = Math.abs(pts[a][0] - targets[b]);
+                        if (d < bestD) { bestD = d; out = { pos: targets[b] - pts[a][1], guide: targets[b] }; }
+                    }
+                }
+                return out;
+            };
+
+            var gx = null, gy = null;
+            if (!lockX) {
+                var rx = best(x, elW, tx);
+                if (rx) { ui.position.left = rx.pos; gx = rx.guide; }
+            }
+            if (!lockY) {
+                var ry = best(y, elH, ty);
+                if (ry) { ui.position.top = ry.pos; gy = ry.guide; }
+            }
+            if (gx !== null) { $gv.css({ left: gx + 'px', display: 'block' }); }
+            if (gy !== null) { $gh.css({ top: gy + 'px', display: 'block' }); }
+        },
+
         attachInteractions: function($node, el) {
             var self = this;
             if (el.locked) {
@@ -941,6 +1025,7 @@
                 containment: self.getContainment(),
                 drag: function(event, ui) {
                     self.snapToCanvasEdges(event, ui, $node);
+                    self.snapToObjects(event, ui, $node, el);
                     el.top = ui.position.top;
                     el.left = ui.position.left;
                     if (window.WpPopPopBuilderInspector) {
