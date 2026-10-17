@@ -3910,10 +3910,10 @@
             $('#prop-color').val(el.color || '#ffffff');
         }
 
-        $('#prop-pad-top').val(el.paddingTop || 0);
-        $('#prop-pad-right').val(el.paddingRight || 0);
-        $('#prop-pad-bottom').val(el.paddingBottom || 0);
-        $('#prop-pad-left').val(el.paddingLeft || 0);
+        $('#prop-pad-top').val(el.paddingTop !== undefined ? el.paddingTop : (el.padding || 0));
+        $('#prop-pad-right').val(el.paddingRight !== undefined ? el.paddingRight : (el.padding || 0));
+        $('#prop-pad-bottom').val(el.paddingBottom !== undefined ? el.paddingBottom : (el.padding || 0));
+        $('#prop-pad-left').val(el.paddingLeft !== undefined ? el.paddingLeft : (el.padding || 0));
 
         $('#prop-border-width').val(el.borderWidth || 0);
         $('#prop-border-style').val(el.borderStyle || 'solid');
@@ -4499,10 +4499,10 @@
         $('#prop-letter-spacing').val(el.letterSpacing || 0);
         $('#prop-color').val(el.color || '#ffffff');
 
-        $('#prop-pad-top').val(parseInt(el.paddingTop, 10) || 0);
-        $('#prop-pad-right').val(parseInt(el.paddingRight, 10) || 0);
-        $('#prop-pad-bottom').val(parseInt(el.paddingBottom, 10) || 0);
-        $('#prop-pad-left').val(parseInt(el.paddingLeft, 10) || 0);
+        $('#prop-pad-top').val(parseInt(el.paddingTop !== undefined ? el.paddingTop : el.padding, 10) || 0);
+        $('#prop-pad-right').val(parseInt(el.paddingRight !== undefined ? el.paddingRight : el.padding, 10) || 0);
+        $('#prop-pad-bottom').val(parseInt(el.paddingBottom !== undefined ? el.paddingBottom : el.padding, 10) || 0);
+        $('#prop-pad-left').val(parseInt(el.paddingLeft !== undefined ? el.paddingLeft : el.padding, 10) || 0);
 
         $('#prop-border-width').val(parseInt(el.borderWidth, 10) || 0);
         $('#prop-border-style').val(el.borderStyle || 'solid');

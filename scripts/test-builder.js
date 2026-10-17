@@ -207,12 +207,24 @@ const empty = new Proxy({ length: 0 }, {
         return () => empty;
     }
 });
+const hydratedValues = new Map();
 const isolated = vm.createContext({
-    jQuery: () => empty, document: {}, setTimeout() {}, setInterval() {}, addEventListener() {}
+    jQuery: selector => new Proxy(empty, {
+        get(target, key) {
+            if (key === 'val') return value => { hydratedValues.set(selector, value); return empty; };
+            return target[key];
+        }
+    }),
+    document: { getElementById() { return null; } }, setTimeout() {}, setInterval() {}, addEventListener() {}
 });
 isolated.window = isolated;
 for (const file of ['builder-inspector.js', 'builder-elements-registry.js']) {
     vm.runInContext(fs.readFileSync(path.join(builderDir, file), 'utf8'), isolated, { filename: file });
+    isolated.WpPopPopBuilderInspector.sanitizeLayerInspectorForElement({ type: 'title', padding: 8, paddingLeft: 0 });
+    assert.equal(hydratedValues.get('#prop-pad-top'), 8);
+    assert.equal(hydratedValues.get('#prop-pad-right'), 8);
+    assert.equal(hydratedValues.get('#prop-pad-bottom'), 8);
+    assert.equal(hydratedValues.get('#prop-pad-left'), 0);
 }
 for (const type of ['title', 'image', 'button', 'text']) {
     isolated.WpPopPopElementsRegistry.syncFamilyTabs(type, {});
