@@ -7,6 +7,10 @@ if (!class_exists('WpPopPop_Libraries')) {
     require_once WPPOPPOP_PATH . 'includes/class-wppoppop-libraries.php';
 }
 
+if (!class_exists('WpPopPop_Front_Shortcode')) {
+    require_once WPPOPPOP_PATH . 'includes/front/class-front-shortcode.php';
+}
+
 class WpPopPop_Front_Display {
     protected $targeting;
     protected $renderer;
@@ -19,6 +23,7 @@ class WpPopPop_Front_Display {
         add_action('wp_head', [$this, 'print_custom_head_assets'], 99);
         add_action('wp_footer', [$this, 'print_custom_footer_assets'], 99);
         add_action('wp_footer', [$this, 'render_popups'], 50);
+        new WpPopPop_Front_Shortcode($renderer);
     }
 
     protected function is_execution_allowed() {
@@ -160,6 +165,9 @@ class WpPopPop_Front_Display {
         $preload_popups = (bool) wppoppop_get_setting('preload_popups', false);
 
         foreach ($popups as $popup) {
+            if (WpPopPop_Front_Shortcode::is_inline_rendered($popup->uid)) {
+                continue;
+            }
             if ($this->targeting->is_eligible($popup)) {
                 $wppoppop_raw_cfg = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');
                 $config = $wppoppop_raw_cfg !== '' ? json_decode($wppoppop_raw_cfg, true) : [];

@@ -286,3 +286,79 @@
     border-radius: 8px;
     min-height: 540px;
 }
+
+
+/* ---- Embed modal: guides & notice ---- */
+.wppoppop-embed-notice {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #fbbf24;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+.wppoppop-embed-guide {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid #334155;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #cbd5e1;
+    max-height: 260px;
+    overflow-y: auto;
+}
+.wppoppop-embed-guide h4 {
+    margin: 10px 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #38bdf8;
+}
+.wppoppop-embed-guide h4:first-child { margin-top: 0; }
+.wppoppop-embed-guide ol,
+.wppoppop-embed-guide ul { margin: 0 0 4px 18px; padding: 0; }
+.wppoppop-embed-guide ol { list-style: decimal; }
+.wppoppop-embed-guide ul { list-style: disc; }
+.wppoppop-embed-guide li { margin: 0 0 4px; }
+.wppoppop-embed-guide code {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #38bdf8;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+.wppoppop-embed-guide code.wppoppop-embed-ex {
+    display: block;
+    margin-top: 4px;
+    padding: 5px 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    -webkit-user-select: all;
+    -moz-user-select: all;
+    user-select: all;
+}
+.wppoppop-btn-copy.copied { color: #34d399; }
+.theme-light .wppoppop-embed-guide { background: #f8fafc; border-color: #e2e8f0; color: #334155; }
+.theme-light .wppoppop-embed-guide code { background: #ffffff; border-color: #e2e8f0; color: #0369a1; }
+.theme-light .wppoppop-embed-guide h4 { color: #0369a1; }
+.theme-light .wppoppop-embed-notice { color: #92400e; }
+
+
+/* ---- Embed modal: close button right ---- */
+.wppoppop-modal-header {
+    justify-content: space-between;
+}
+.wppoppop-modal-header h3 {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.wppoppop-modal-header .wppoppop-modal-close {
+    flex: 0 0 auto;
+    margin-left: auto;
+    order: 2;
+}

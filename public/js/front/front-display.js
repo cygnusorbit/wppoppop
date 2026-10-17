@@ -319,6 +319,64 @@
         };
     }
 
+    // ---- Public JavaScript API + universal click triggers ----
+    (function() {
+        var D = window.WpPopPopFrontDisplay;
+
+        function norm(uid) { return String(uid == null ? '' : uid).replace(/^\s+|\s+$/g, ''); }
+        function wrap(uid) { return D.getPopupWrap(uid); }
+        function clearDismissed(uid) { try { localStorage.removeItem('wppoppop_dismissed_' + uid); } catch (e) {} }
+
+        window.WpPopPop = {
+            show: function(uid) {
+                uid = norm(uid);
+                if (!uid) return false;
+                var $w = wrap(uid);
+                if (!$w.length) {
+                    if (window.console && console.warn) console.warn('[WpPopPop] Popup not found on this page: ' + uid);
+                    return false;
+                }
+                clearDismissed(uid);
+                if ($w.is(':visible')) return true;
+                D.show(uid);
+                return true;
+            },
+            hide: function(uid) {
+                uid = norm(uid);
+                var $w = wrap(uid);
+                if (!uid || !$w.length || !$w.is(':visible')) return false;
+                D.close(uid);
+                return true;
+            },
+            isOpen: function(uid) {
+                var $w = wrap(norm(uid));
+                return !!($w.length && $w.is(':visible'));
+            },
+            toggle: function(uid) {
+                return this.isOpen(uid) ? this.hide(uid) : this.show(uid);
+            },
+            list: function() {
+                var out = [];
+                $('.wppoppop-popup-wrap[data-uid]').each(function() { out.push($(this).attr('data-uid')); });
+                return out;
+            }
+        };
+
+        $(document).off('click.wppoppopApi').on('click.wppoppopApi',
+            '.wppoppop-trigger, .wppoppop-trigger-btn, .wppoppop-open-btn, [data-wppoppop-id], [data-target-uid], a[href^="#wppoppop-"]',
+            function(e) {
+                var $t = $(this);
+                var uid = $t.attr('data-wppoppop-id') || $t.attr('data-target-uid') || '';
+                if (!uid) {
+                    var h = $t.attr('href') || '';
+                    if (h.indexOf('#wppoppop-') === 0) uid = h.slice(10);
+                }
+                if (!uid) return;
+                e.preventDefault();
+                window.WpPopPop.show(uid);
+            });
+    })();
+
     $(document).ready(function() {
         var T = window.WpPopPopFront.Triggers;
         if (T && typeof T.init === 'function' && !T._wppoppopInit) {
