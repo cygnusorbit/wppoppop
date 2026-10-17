@@ -343,7 +343,7 @@ class WpPopPop_Front_Renderer {
         $style_attr = esc_attr(implode(';', $style));
                 $anim_name = '';
         $fx_map = array('fade' => 'fadeIn', 'slideDown' => 'slideInDown', 'slideUp' => 'slideInUp', 'slideLeft' => 'slideInRight', 'slideRight' => 'slideInLeft', 'zoom' => 'zoomIn', 'flip' => 'flipInX');
-        foreach (array('anim_appearance', 'animIn', 'animation', 'animEffect', 'anim_effect') as $anim_key) {
+        foreach (array('animIn', 'anim_appearance', 'animation', 'animEffect', 'anim_effect') as $anim_key) {
             if (!empty($el[$anim_key]) && $el[$anim_key] !== 'none') {
                 $raw_fx = preg_replace('/^(animate__|wppoppop-anim-|anim-)/', '', (string) $el[$anim_key]);
                 $raw_fx = sanitize_html_class($raw_fx);
@@ -355,11 +355,11 @@ class WpPopPop_Front_Renderer {
         $anim_style = '';
         if ($anim_class !== '') {
             $a_dur = 1000;
-            foreach (array('anim_duration', 'animDuration', 'duration') as $dk) {
+            foreach (array('animDuration', 'anim_duration', 'duration') as $dk) {
                 if (isset($el[$dk]) && $el[$dk] !== '' && is_numeric($el[$dk])) { $a_dur = max(0, intval($el[$dk])); break; }
             }
             $a_del = 0;
-            foreach (array('anim_delay', 'animDelay', 'delay') as $dk) {
+            foreach (array('animDelay', 'anim_delay', 'delay') as $dk) {
                 if (isset($el[$dk]) && $el[$dk] !== '' && is_numeric($el[$dk])) { $a_del = max(0, intval($el[$dk])); break; }
             }
             if ($a_dur < 1) { $a_dur = 1; }

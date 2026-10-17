@@ -297,3 +297,6 @@
 @-webkit-keyframes wppoppop-fx-shakeY{from,to{-webkit-transform:translate3d(0,0,0)}10%,30%,50%,70%,90%{-webkit-transform:translate3d(0,-10px,0)}20%,40%,60%,80%{-webkit-transform:translate3d(0,10px,0)}}
 @keyframes wppoppop-fx-shakeY{from,to{transform:translate3d(0,0,0)}10%,30%,50%,70%,90%{transform:translate3d(0,-10px,0)}20%,40%,60%,80%{transform:translate3d(0,10px,0)}}
 .wppoppop-fx-shakeY{-webkit-animation-name:wppoppop-fx-shakeY;animation-name:wppoppop-fx-shakeY;}
+
+/* FX-LAYER-FILL */
+.wppoppop-layer-item.wppoppop-fx-run,.wppoppop-canvas-item.wppoppop-fx-run{-webkit-animation-fill-mode:backwards;animation-fill-mode:backwards;}

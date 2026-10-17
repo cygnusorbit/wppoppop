@@ -218,7 +218,18 @@
             if (isNaN(dur) || dur <= 0) dur = 1000;
             if (isNaN(del) || del < 0) del = 0;
             if (eff) this.runFx($c, eff, dur, del, false);
-            $c.find('.wppoppop-fx-run').each(function() { self.restartFx(this); });
+            var offset = eff ? (del + dur) : 0;
+            $c.find('.wppoppop-layer-item.wppoppop-fx-run').each(function() {
+                var own = this.getAttribute('data-fx-delay');
+                if (own === null) {
+                    own = parseInt(this.style.animationDelay || this.style.webkitAnimationDelay, 10) || 0;
+                    this.setAttribute('data-fx-delay', own);
+                }
+                var d = (parseInt(own, 10) || 0) + offset;
+                this.style.webkitAnimationDelay = d + 'ms';
+                this.style.animationDelay = d + 'ms';
+                self.restartFx(this);
+            });
         },
 
         dispatchGA: function(eventName, params) {

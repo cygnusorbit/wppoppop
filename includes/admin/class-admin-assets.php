@@ -57,6 +57,7 @@ class WpPopPop_Admin_Assets {
             // Enqueue active typography & Font Awesome for builder stage
             WpPopPop_Libraries::enqueue_builder_libraries();
             wp_enqueue_style('wppoppop-animations-core-css', WPPOPPOP_URL . 'public/css/animations-core.css', [], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION : '1.0'));
+            wp_enqueue_script('wppoppop-builder-animation-js', WPPOPPOP_URL . 'admin/js/builder/builder-animation.js', ['jquery', 'wppoppop-builder-core-js'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
 
             if (function_exists('wp_enqueue_media')) { wp_enqueue_media(); }
         wp_enqueue_script('wppoppop-builder-core-js', WPPOPPOP_URL . 'admin/js/builder/builder-core.js', ['jquery'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
@@ -82,7 +83,7 @@ class WpPopPop_Admin_Assets {
                 'wppoppop-builder-inspector-js',
                 'wppoppop-builder-settings-js',
                 'wppoppop-builder-modals-js',
-                'wppoppop-builder-io-js', 'wppoppop-builder-elements-registry'
+                'wppoppop-builder-io-js', 'wppoppop-builder-elements-registry', 'wppoppop-builder-animation-js'
             ], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
 
             $builder_payload = array_merge($shared_payload, [

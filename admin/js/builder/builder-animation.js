@@ -214,12 +214,20 @@
             elements.forEach(function(el) {
                 var norm = self.normalizeAliases(el);
                 if (norm.effect && norm.effect !== 'none') {
-                    self.playElement(el.id, norm.effect, norm.duration, norm.delay);
+                    var cm = (window.WpPopPopBuilderCore.state.canvasMeta && window.WpPopPopBuilderCore.state.canvasMeta[c]) || {};
+                    var off = 0;
+                    if (cm.anim_appearance && cm.anim_appearance !== 'none') {
+                        off = (parseInt(cm.anim_delay, 10) || 0) + (parseInt(cm.anim_duration, 10) || 1000);
+                    }
+                    self.playElement(el.id, norm.effect, norm.duration, norm.delay + off);
                 }
             });
         },
 
         replayPreview: function() {
+            var nowTs = Date.now();
+            if (this._lastReplay && nowTs - this._lastReplay < 400) return;
+            this._lastReplay = nowTs;
             this.playCanvas();
             this.playAllElements();
         },

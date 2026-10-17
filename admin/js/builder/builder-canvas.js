@@ -578,6 +578,7 @@
         },
 
         playCanvasEntranceAnimation: function() {
+            if (window.WpPopPopBuilderAnimation) { return window.WpPopPopBuilderAnimation.playCanvas(); }
             var core = window.WpPopPopBuilderCore;
             if (!core) return;
             var cur = core.state.currentCanvas || 1;
@@ -600,6 +601,7 @@
         },
 
         playElementAnimation: function(id, anim) {
+            if (window.WpPopPopBuilderAnimation) { return window.WpPopPopBuilderAnimation.playElement(id, anim); }
             if (!anim || anim === 'none') return;
             var $el = $('#el-' + id);
             $el.removeClass('anim-fade anim-bounce anim-tada anim-rubberBand anim-slideDown anim-slideUp anim-zoomIn');
