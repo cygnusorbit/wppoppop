@@ -7,6 +7,30 @@ if (!defined('ABSPATH')) exit;
  */
 class WpPopPop_Front_Decomposed_26 {
 
+    public static function resolve_wp_tokens(string $content): string {
+        if (strpos($content, '{{') === false) return $content;
+        $user = function_exists('wp_get_current_user') ? wp_get_current_user() : null;
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
+        $page_url = isset($_SERVER['REQUEST_URI']) ? home_url(sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']))) : home_url('/');
+        $values = array(
+            'record-id'     => '',
+            'ip'            => $ip,
+            'user-agent'    => $ua,
+            'date'          => function_exists('wp_date') ? wp_date(get_option('date_format')) : date_i18n(get_option('date_format')),
+            'time'          => function_exists('wp_date') ? wp_date(get_option('time_format')) : date_i18n(get_option('time_format')),
+            'wp-user-login' => ($user && $user->exists()) ? $user->user_login : '',
+            'wp-user-email' => ($user && $user->exists()) ? $user->user_email : '',
+            'url'           => $page_url,
+            'page-title'    => wp_strip_all_tags(get_the_title()),
+        );
+        $map = array();
+        foreach ($values as $slug => $val) {
+            $map['{{' . $slug . '}}'] = '<span class="wppoppop-const wppoppop-const-' . $slug . '" data-token="' . esc_attr($slug) . '">' . esc_html($val) . '</span>';
+        }
+        return strtr($content, $map);
+    }
+
     public static function build_data_attrs(array $el): string {
         $attrs = '';
         if (!empty($el['dynamicDefault']) && !empty($el['paramName'])) {
@@ -56,6 +80,12 @@ class WpPopPop_Front_Decomposed_26 {
                 $tag = (!empty($el['tag']) && in_array(strtolower($el['tag']), $allowed_tags, true)) ? strtolower($el['tag']) : 'div';
                 $tf = !empty($el['textTransform']) ? 'text-transform:' . esc_attr($el['textTransform']) . ';' : '';
                 $content = isset($el['content']) ? wp_kses_post($el['content']) : '';
+                $content = self::resolve_wp_tokens($content);
+                $label_url = !empty($el['url']) ? esc_url($el['url']) : '';
+                if ($label_url !== '') {
+                    $blank_on = !empty($el['targetBlank']) && $el['targetBlank'] !== 'false';
+                    $content = '<a class="wppoppop-label-link" href="' . $label_url . '"' . ($blank_on ? ' target="_blank" rel="noopener noreferrer"' : '') . ' style="color:inherit;text-decoration:inherit;display:block;width:100%;">' . $content . '</a>';
+                }
                 return '<' . $tag . ' class="wppoppop-front-label" style="margin:0;width:100%;height:100%;display:flex;align-items:center;' . $tf . '">' . $content . '</' . $tag . '>';
 
             case 'button':

@@ -23,15 +23,6 @@
     width: 100% !important;
 }
 
-/* WPPOPPOP_EDIT_DOTTED: dotted element outline only in edit mode */
-.wppoppop-builder-workspace:not(.is-preview-mode) .wppoppop-canvas-item:not(.wppoppop-selected) {
-    outline: 1px dotted rgba(100, 116, 139, 0.85);
-    outline-offset: 0;
-}
-.wppoppop-builder-workspace.is-preview-mode .wppoppop-canvas-item,
-body.wppoppop-preview-locked .wppoppop-canvas-item {
-    outline: none !important;
-}
 
 /* Snap-to-grid slide switches */
 .wppoppop-snap-group { display: inline-flex; align-items: center; gap: 10px; margin-right: 8px; }

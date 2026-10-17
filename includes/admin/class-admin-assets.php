@@ -64,7 +64,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-builder-canvas-js', WPPOPPOP_URL . 'admin/js/builder/builder-canvas.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'wppoppop-builder-core-js', 'jquery-ui-droppable'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
             wp_enqueue_script('wppoppop-builder-layers-js', WPPOPPOP_URL . 'admin/js/builder/builder-layers.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-builder-core-js'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
             wp_enqueue_script('wppoppop-builder-inspector-js', WPPOPPOP_URL . 'admin/js/builder/builder-inspector.js', ['jquery', 'wppoppop-builder-core-js'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
-        $wppoppop_reg_mods = array('registry-core', 'registry-style', 'registry-media', 'registry-form', 'registry-lifecycle', 'registry-compat', 'registry-inspector', 'registry-icons');
+        $wppoppop_reg_mods = array('registry-core', 'registry-style', 'registry-media', 'registry-label', 'registry-form', 'registry-lifecycle', 'registry-compat', 'registry-inspector', 'registry-icons');
         $wppoppop_reg_prev = array('jquery');
         foreach ($wppoppop_reg_mods as $wppoppop_reg_i => $wppoppop_reg_m) {
             $wppoppop_reg_h = ($wppoppop_reg_i === count($wppoppop_reg_mods) - 1) ? 'wppoppop-builder-elements-registry' : 'wppoppop-' . $wppoppop_reg_m;

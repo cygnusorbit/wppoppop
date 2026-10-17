@@ -10,6 +10,19 @@
             this.initWheels();
             this.initScratchCards();
             this.initSignatures();
+            this.initTokens();
+        },
+
+        initTokens: function() {
+            var map = {
+                "url": window.location.href,
+                "page-title": document.title,
+                "user-agent": navigator.userAgent
+            };
+            $(".wppoppop-const").each(function() {
+                var k = $(this).attr("data-token");
+                if (map.hasOwnProperty(k) && map[k]) { $(this).text(map[k]); }
+            });
         },
 
         initCountdowns: function() {
@@ -203,4 +216,5 @@
     };
 
     window.WpPopPopFront.Elements = Elements;
+    $(function() { Elements.initTokens(); });
 })(window, jQuery);

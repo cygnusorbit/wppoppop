@@ -2055,3 +2055,28 @@ body.wppoppop-is-panning #wppoppop-canvas-box * {
     overflow: visible !important;
 }
 .wppoppop-builder-workspace { overflow: visible; }
+
+/* WPPOPPOP_ALWAYS_DOTTED: dotted element outline always visible in the editor, hidden in preview */
+.wppoppop-canvas-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px dotted rgba(100, 116, 139, 0.9);
+    pointer-events: none;
+    box-sizing: border-box;
+    border-radius: inherit;
+    z-index: 5;
+}
+.wppoppop-canvas-item.wppoppop-selected::after {
+    border-color: rgba(37, 99, 235, 0.95);
+}
+.is-preview-mode .wppoppop-canvas-item::after,
+.wppoppop-builder-workspace.is-preview-mode .wppoppop-canvas-item::after,
+body.wppoppop-preview-locked .wppoppop-canvas-item::after {
+    display: none !important;
+    content: none !important;
+    border: 0 !important;
+}
