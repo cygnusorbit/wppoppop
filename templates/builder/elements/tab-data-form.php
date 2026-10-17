@@ -1,9 +1,9 @@
 <?php
 if (!defined('ABSPATH')) exit;
 ?>
-<!-- GREENPOP DATA & VALUE BINDING SUITE -->
+<!-- DATA & VALUE BINDING SUITE -->
 <div class="wppoppop-insp-section" id="insp-section-form-data" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">DATA &amp; VALUE BINDING (GREENPOP)</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">DATA &amp; VALUE BINDING</div>
     <div style="margin-bottom:10px;">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Default Value</label>
         <input type="text" id="prop-default-value" class="widefat wppoppop-input wppoppop-data-bind" data-data-prop="defaultValue" placeholder="Initial field value..." style="font-size:12px;" />

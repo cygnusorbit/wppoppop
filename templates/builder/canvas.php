@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
     <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
 
     <!-- Visual Canvas Box Stage with Dedicated Corner Drag Grip -->
-        <!-- GreenPop Parity Phase 3: Stage Alignment Toolbar -->
+        <!-- Parity Phase 3: Stage Alignment Toolbar -->
     <div id="wppoppop-alignment-toolbar" class="wppoppop-alignment-toolbar" style="display:none;">
         <button type="button" class="wppoppop-align-btn" data-align="left" title="Align Left">
             <span class="dashicons dashicons-align-left"></span>

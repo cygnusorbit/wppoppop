@@ -335,7 +335,7 @@
         });
 
         // 5. Add dual-contract keyframe classes
-        $node.addClass('animate__animated animate__' + cleanEffect + ' anim-' + cleanEffect + ' wppoppop-anim-' + cleanEffect);
+        $node.addClass('animate__animated animate__' + cleanEffect);
 
         // 6. Reset styles after playback to keep element interactive
         clearTimeout($node.data('wppoppop_anim_cleanup_timer'));

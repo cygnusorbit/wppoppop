@@ -1,9 +1,9 @@
 <?php
 if (!defined('ABSPATH')) exit;
 ?>
-<!-- GREENPOP ADVANCED FIELD IDENTIFIER, FILTERS & VALIDATORS SUITE -->
+<!-- ADVANCED FIELD IDENTIFIER, FILTERS & VALIDATORS SUITE -->
 <div class="wppoppop-insp-section" id="insp-section-form-advanced" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">FIELD IDENTIFIER &amp; INPUT MASK (GREENPOP)</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">FIELD IDENTIFIER &amp; INPUT MASK</div>
     <div style="margin-bottom:10px;">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">ID / Merge Token Name</label>
         <input type="text" id="prop-field-name" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="fieldName" placeholder="e.g. email or first_name" style="font-size:12px;" />
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) exit;
 </div>
 
 <div class="wppoppop-insp-section" id="insp-section-form-filters" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">SANITIZATION FILTERS (GREENPOP)</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">SANITIZATION FILTERS</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
         <label style="font-size:11px; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" class="prop-filter-chk" value="trim" /> Trim Whitespace</label>
         <label style="font-size:11px; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" class="prop-filter-chk" value="striptags" /> Strip Tags</label>
@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) exit;
 </div>
 
 <div class="wppoppop-insp-section" id="insp-section-form-validators" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">VALIDATION RULES (GREENPOP)</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">VALIDATION RULES</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
         <label style="font-size:11px; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" class="prop-validator-chk" value="required" /> Required *</label>
         <label style="font-size:11px; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" class="prop-validator-chk" value="email" /> RFC Email</label>

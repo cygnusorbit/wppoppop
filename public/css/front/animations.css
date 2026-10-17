@@ -188,3 +188,34 @@
     -webkit-animation: wppoppopPulse 1.8s infinite ease-in-out;
     animation: wppoppopPulse 1.8s infinite ease-in-out;
 }
+
+/* === WPPOPPOP_LAYER_ANIM_SET_START === */
+@-webkit-keyframes wppoppopLfadeIn{from{opacity:0;}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLfadeIn{from{opacity:0;}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-fadeIn{-webkit-animation:wppoppopLfadeIn 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLfadeIn 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLfadeInUp{from{opacity:0;-webkit-transform:translate3d(0px,30px,0);transform:translate3d(0px,30px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLfadeInUp{from{opacity:0;-webkit-transform:translate3d(0px,30px,0);transform:translate3d(0px,30px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-fadeInUp{-webkit-animation:wppoppopLfadeInUp 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLfadeInUp 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLfadeInDown{from{opacity:0;-webkit-transform:translate3d(0px,-30px,0);transform:translate3d(0px,-30px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLfadeInDown{from{opacity:0;-webkit-transform:translate3d(0px,-30px,0);transform:translate3d(0px,-30px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-fadeInDown{-webkit-animation:wppoppopLfadeInDown 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLfadeInDown 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLfadeInLeft{from{opacity:0;-webkit-transform:translate3d(-30px,0px,0);transform:translate3d(-30px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLfadeInLeft{from{opacity:0;-webkit-transform:translate3d(-30px,0px,0);transform:translate3d(-30px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-fadeInLeft{-webkit-animation:wppoppopLfadeInLeft 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLfadeInLeft 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLfadeInRight{from{opacity:0;-webkit-transform:translate3d(30px,0px,0);transform:translate3d(30px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLfadeInRight{from{opacity:0;-webkit-transform:translate3d(30px,0px,0);transform:translate3d(30px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-fadeInRight{-webkit-animation:wppoppopLfadeInRight 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLfadeInRight 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLslideInUp{from{opacity:0;-webkit-transform:translate3d(0px,40px,0);transform:translate3d(0px,40px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLslideInUp{from{opacity:0;-webkit-transform:translate3d(0px,40px,0);transform:translate3d(0px,40px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-slideInUp{-webkit-animation:wppoppopLslideInUp 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLslideInUp 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLslideInDown{from{opacity:0;-webkit-transform:translate3d(0px,-40px,0);transform:translate3d(0px,-40px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLslideInDown{from{opacity:0;-webkit-transform:translate3d(0px,-40px,0);transform:translate3d(0px,-40px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-slideInDown{-webkit-animation:wppoppopLslideInDown 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLslideInDown 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLslideInLeft{from{opacity:0;-webkit-transform:translate3d(-60px,0px,0);transform:translate3d(-60px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLslideInLeft{from{opacity:0;-webkit-transform:translate3d(-60px,0px,0);transform:translate3d(-60px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-slideInLeft{-webkit-animation:wppoppopLslideInLeft 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLslideInLeft 1s cubic-bezier(0.16,1,0.3,1) both;}
+@-webkit-keyframes wppoppopLslideInRight{from{opacity:0;-webkit-transform:translate3d(60px,0px,0);transform:translate3d(60px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+@keyframes wppoppopLslideInRight{from{opacity:0;-webkit-transform:translate3d(60px,0px,0);transform:translate3d(60px,0px,0);}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}}
+.anim-slideInRight{-webkit-animation:wppoppopLslideInRight 1s cubic-bezier(0.16,1,0.3,1) both;animation:wppoppopLslideInRight 1s cubic-bezier(0.16,1,0.3,1) both;}
+@media (prefers-reduced-motion:reduce){[class*="anim-"]{-webkit-animation:none !important;animation:none !important;}}
+/* === WPPOPPOP_LAYER_ANIM_SET_END === */

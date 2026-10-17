@@ -10,15 +10,20 @@ class WpPopPop_Front_Assets {
 
     public function enqueue_front_assets() {
         // Enqueue Animate.css Library
-        wp_enqueue_style('animate-css', WPPOPPOP_URL . 'public/css/vendor/animate.min.css', [], '4.1.1');
-        wp_enqueue_style('wppoppop-front-css', WPPOPPOP_URL . 'public/css/wppoppop-front.css', ['animate-css'], WPPOPPOP_VERSION);
+        $wppoppop_root = trailingslashit(dirname(__DIR__, 2));
+        $wppoppop_css_deps = [];
+        if (file_exists($wppoppop_root . 'public/css/vendor/animate.min.css')) {
+            wp_enqueue_style('animate-css', WPPOPPOP_URL . 'public/css/vendor/animate.min.css', [], '4.1.1');
+            $wppoppop_css_deps[] = 'animate-css';
+        }
+        wp_enqueue_style('wppoppop-front-css', WPPOPPOP_URL . 'public/css/wppoppop-front.css', $wppoppop_css_deps, WPPOPPOP_VERSION);
 
         wp_enqueue_script('wppoppop-front-display-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-gamification-js', WPPOPPOP_URL . 'public/js/front/front-gamification.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-logic-js', WPPOPPOP_URL . 'public/js/front/front-logic.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], WPPOPPOP_VERSION, true);
-        wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/front/wppoppop-front.js', [
+        wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . (file_exists($wppoppop_root . 'public/js/front/wppoppop-front.js') ? 'public/js/front/wppoppop-front.js' : 'public/js/wppoppop-front.js'), [
             'jquery',
             'wppoppop-front-display-js',
             'wppoppop-front-gamification-js',

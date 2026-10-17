@@ -990,10 +990,12 @@
                 }
 
                 // Sync consolidated Animation settings
-                el.animEffect = $('#gp-cnt-anim-effect').val() || 'none';
-                el.animDuration = parseInt($('#gp-cnt-anim-duration').val(), 10) || 600;
-                el.animDelay = parseInt($('#gp-cnt-anim-delay').val(), 10) || 0;
-                $('#prop-anim-effect').val(el.animEffect);
+                if ($('#gp-cnt-anim-effect').length) {
+                    el.animEffect = $('#gp-cnt-anim-effect').val() || 'none';
+                    el.animDuration = parseInt($('#gp-cnt-anim-duration').val(), 10) || 600;
+                    el.animDelay = parseInt($('#gp-cnt-anim-delay').val(), 10) || 0;
+                    $('#prop-anim-effect').val(el.animEffect);
+                }
 
                 window.WpPopPopBuilderCanvas.renderCanvas();
             });

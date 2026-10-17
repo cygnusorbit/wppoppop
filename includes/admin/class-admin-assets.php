@@ -56,6 +56,9 @@ class WpPopPop_Admin_Assets {
 
             // Enqueue active typography & Font Awesome for builder stage
             WpPopPop_Libraries::enqueue_builder_libraries();
+            if (file_exists(WPPOPPOP_PATH . 'public/css/vendor/animate.min.css')) {
+                wp_enqueue_style('wppoppop-animate-css', WPPOPPOP_URL . 'public/css/vendor/animate.min.css', [], '4.1.1');
+            }
 
             if (function_exists('wp_enqueue_media')) { wp_enqueue_media(); }
         wp_enqueue_script('wppoppop-builder-core-js', WPPOPPOP_URL . 'admin/js/builder/builder-core.js', ['jquery'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);

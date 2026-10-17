@@ -1,9 +1,9 @@
 <?php
 if (!defined('ABSPATH')) exit;
 ?>
-<!-- GREENPOP CONDITIONAL LOGIC & ACTION ROUTING SUITE -->
+<!-- CONDITIONAL LOGIC & ACTION ROUTING SUITE -->
 <div class="wppoppop-insp-section" id="insp-section-conditional-logic" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">CONDITIONAL LOGIC (GREENPOP)</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">CONDITIONAL LOGIC</div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <label for="prop-logic-enabled" style="font-size:11px; font-weight:700; color:#e2e8f0; margin:0; cursor:pointer;">Enable Conditional Logic</label>
         <input type="checkbox" id="prop-logic-enabled" class="wppoppop-switch wppoppop-logic-bind" data-logic-prop="logicEnabled" />

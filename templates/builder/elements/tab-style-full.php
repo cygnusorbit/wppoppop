@@ -1,11 +1,11 @@
 <?php
 if (!defined('ABSPATH')) exit;
 ?>
-<!-- GREENPOP + WPPOPPOP UNIFIED STYLE TAB SUITE -->
-<!-- A. GREENPOP FORM INPUT STYLE MODULE (Form Family 10-25) -->
+<!-- WPPOPPOP UNIFIED STYLE TAB SUITE -->
+<!-- A. FORM INPUT STYLE MODULE (Form Family 10-25) -->
 <div id="wppoppop-form-style-module" class="wppoppop-insp-section" style="display:none; margin-bottom:14px;">
     <div style="background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.35); border-radius:6px; padding:10px 12px; margin-bottom:12px; font-size:11px; color:#bae6fd; line-height:1.45;">
-        <strong style="color:#38bdf8; display:block; margin-bottom:2px;">GREENPOP INPUT STYLING</strong>
+        <strong style="color:#38bdf8; display:block; margin-bottom:2px;">INPUT STYLING</strong>
         Base input styling is inherited from <strong>Popup Settings &raquo; Style &raquo; Inputs</strong>. Configure per-layer alignment, left/right icons, and CSS overrides below.
     </div>
     <div class="wppoppop-insp-card" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
     <div id="wppoppop-form-icons-card" class="wppoppop-insp-card" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">INPUT ICONS &amp; OFFSETS (GREENPOP)</div>
+        <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">INPUT ICONS &amp; OFFSETS</div>
         <div style="display:grid; grid-template-columns:2fr 1fr; gap:8px; margin-bottom:8px;">
             <div>
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">LEFT ICON</label>
@@ -212,9 +212,9 @@ if (!defined('ABSPATH')) exit;
     </div>
 </div>
 
-<!-- I. GREENPOP CUSTOM CSS CLASS & INLINE CSS STYLES REPEATER (+ Add a style) -->
+<!-- I. CUSTOM CSS CLASS & INLINE CSS STYLES REPEATER (+ Add a style) -->
 <div class="wppoppop-insp-section" id="insp-section-custom-css" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">CUSTOM CSS &amp; INLINE STYLES (GREENPOP)</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">CUSTOM CSS &amp; INLINE STYLES</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
         <div>
             <label for="prop-custom-class" style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">CUSTOM CSS CLASS</label>

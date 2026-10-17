@@ -363,7 +363,22 @@ class WpPopPop_Front_Renderer {
         }
 
         $style_attr = esc_attr(implode(';', $style));
-        $anim_class = !empty($el['animEffect']) && $el['animEffect'] !== 'none' ? 'anim-' . esc_attr($el['animEffect']) : '';
+                $anim_name = '';
+        foreach (array('animIn', 'animation', 'animEffect') as $anim_key) {
+            if (!empty($el[$anim_key]) && $el[$anim_key] !== 'none') {
+                $anim_name = sanitize_html_class($el[$anim_key]);
+                break;
+            }
+        }
+        $anim_class = ($anim_name !== '') ? 'animate__animated animate__' . $anim_name : '';
+        $anim_style = '';
+        if ($anim_class !== '') {
+            $a_dur = isset($el['animDuration']) ? max(0, intval($el['animDuration'])) : 0;
+            $a_del = isset($el['animDelay']) ? max(0, intval($el['animDelay'])) : 0;
+            if ($a_dur > 0) { $anim_style .= ';--animate-duration:' . $a_dur . 'ms;-webkit-animation-duration:' . $a_dur . 'ms;animation-duration:' . $a_dur . 'ms'; }
+            if ($a_del > 0) { $anim_style .= ';-webkit-animation-delay:' . $a_del . 'ms;animation-delay:' . $a_del . 'ms'; }
+        }
+        $style_attr = esc_attr(implode(';', $style) . $anim_style);
 
         switch ($type) {
             case 'divider':
@@ -420,7 +435,7 @@ class WpPopPop_Front_Renderer {
                     "opacity:{$opac}",
                     'box-sizing:border-box'
                 ];
-                $shape_style_attr = esc_attr(implode(';', $shape_style));
+                $shape_style_attr = esc_attr(implode(';', $shape_style) . $anim_style);
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-shape ' . $anim_class . '" style="' . $shape_style_attr . '">' . $svg . '</div>';
 
             case 'email':
