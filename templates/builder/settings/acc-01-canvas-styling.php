@@ -182,6 +182,14 @@ if (!defined('ABSPATH')) {
                                 </div>
                             </div>
 
+                            <!-- Disappearance on/off switch -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 8px;">
+                                <label for="set-canvas-anim-exit-enable" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;">Play disappearance on close</label>
+                                <span class="wppoppop-ovf-switch">
+                                    <input type="checkbox" id="set-canvas-anim-exit-enable" value="1" role="switch" aria-label="Play disappearance animation when the canvas closes" checked>
+                                    <span class="wppoppop-ovf-track"></span>
+                                </span>
+                            </div>
                             <!-- Disappearance Dropdown (Animate.css Exits) -->
                             <div style="margin-bottom:4px;">
                                 <select id="set-canvas-anim-disappearance" class="widefat" style="font-size:12px;height:34px;">

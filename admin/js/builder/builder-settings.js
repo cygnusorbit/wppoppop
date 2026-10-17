@@ -726,3 +726,54 @@ if (settings.triggers) {
         return r;
     };
 })(jQuery);
+
+
+/* WPPOPPOP_EXIT_TOGGLE */
+(function($) {
+    'use strict';
+    var S = window.WpPopPopBuilderSettings;
+    if (!S) return;
+
+    function isOn(meta) {
+        var v = meta ? meta.anim_exit_enabled : undefined;
+        return !(v === false || v === 0 || v === '0' || v === 'false');
+    }
+
+    function applyExitUi(on) {
+        var $sel = $('#set-canvas-anim-disappearance, #set-anim-disappearance');
+        $('#set-canvas-anim-exit-enable').prop('checked', !!on);
+        $sel.prop('disabled', !on).attr('aria-disabled', on ? 'false' : 'true');
+        $sel.parent().css({ opacity: on ? '' : '0.45', transition: 'opacity .15s ease' });
+    }
+
+    if (!S._exitToggleWrapped) {
+        S._exitToggleWrapped = true;
+        var origSync = S.syncCurrentCanvasSettings;
+        S.syncCurrentCanvasSettings = function() {
+            var r = typeof origSync === 'function' ? origSync.apply(this, arguments) : undefined;
+            var core = window.WpPopPopBuilderCore;
+            if (core && core.state) {
+                var cur = core.state.currentCanvas || 1;
+                applyExitUi(isOn(core.state.canvasMeta && core.state.canvasMeta[cur]));
+            }
+            return r;
+        };
+    }
+
+    $(document).off('change.wppoppopExitToggle', '#set-canvas-anim-exit-enable')
+        .on('change.wppoppopExitToggle', '#set-canvas-anim-exit-enable', function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state) return;
+            var cur = core.state.currentCanvas || 1;
+            if (!core.state.canvasMeta) core.state.canvasMeta = {};
+            if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+            var on = $(this).is(':checked');
+            core.state.canvasMeta[cur].anim_exit_enabled = on;
+            applyExitUi(on);
+            if (typeof core.pushHistory === 'function') core.pushHistory();
+        });
+
+    $(function() {
+        setTimeout(function() { if (S.syncCurrentCanvasSettings) S.syncCurrentCanvasSettings(); }, 300);
+    });
+})(jQuery);

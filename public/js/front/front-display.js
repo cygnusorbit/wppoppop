@@ -138,7 +138,8 @@
 
             var self = this;
             var $c = $wrap.find('.wppoppop-canvas-active').first();
-            var outFx = this.fxName($c.attr('data-anim-disappearance'), 'out');
+            var exitOn = $c.attr('data-anim-exit') !== '0';
+            var outFx = exitOn ? this.fxName($c.attr('data-anim-disappearance'), 'out') : '';
             var outDur = parseInt($c.attr('data-anim-duration'), 10);
             if (isNaN(outDur) || outDur <= 0) outDur = 500;
             outDur = Math.min(outDur, 800);
@@ -150,7 +151,7 @@
                     self.clearFx($wrap.find('.wppoppop-box').first());
                 }, outDur + 20);
             } else {
-                $wrap.fadeOut(200).attr('aria-hidden', 'true');
+                $wrap[exitOn ? 'fadeOut' : 'hide'](exitOn ? 200 : 0).attr('aria-hidden', 'true');
             }
 
             try {
