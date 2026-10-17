@@ -19,6 +19,16 @@
     'use strict';
 
     window.WpPopPopBuilderInspector = {
+/* --- Per-Layer Instance Settings Parity --- */
+    getInstanceElement: function() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state || !core.state.canvases) return null;
+        var cur = core.state.currentCanvas || 1;
+        var elements = core.state.canvases[cur] || [];
+        var activeId = core.state.activeId;
+        return elements.find(function(e) { return String(e.id) === String(activeId); });
+    },
+
         bindAdvancedStylingInputs: function() {
         var self = this;
 

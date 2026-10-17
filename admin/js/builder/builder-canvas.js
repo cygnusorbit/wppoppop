@@ -1044,7 +1044,8 @@
                 goto_canvas: 2,
                 goto_screen: 2,
                 locked: false,
-                hidden: false
+                hidden: false,
+                custom_settings: {}
             };
 
             if (type === 'shape') {

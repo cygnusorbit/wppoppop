@@ -5,35 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <div class="wppoppop-builder-workspace">
 
-    <!-- Phase 3: Alignment & Distribution Toolbar -->
-    <div class="wppoppop-alignment-toolbar" id="wppoppop-alignment-toolbar">
-        <button type="button" class="wppoppop-align-btn" data-align="left" title="Align Left">
-            <span class="dashicons dashicons-align-left"></span>
-        </button>
-        <button type="button" class="wppoppop-align-btn" data-align="center" title="Align Center (Horizontal)">
-            <span class="dashicons dashicons-align-center"></span>
-        </button>
-        <button type="button" class="wppoppop-align-btn" data-align="right" title="Align Right">
-            <span class="dashicons dashicons-align-right"></span>
-        </button>
-        <span class="wppoppop-align-separator"></span>
-        <button type="button" class="wppoppop-align-btn" data-align="top" title="Align Top">
-            <span class="dashicons dashicons-arrow-up-alt"></span>
-        </button>
-        <button type="button" class="wppoppop-align-btn" data-align="middle" title="Align Middle (Vertical)">
-            <span class="dashicons dashicons-image-flip-vertical"></span>
-        </button>
-        <button type="button" class="wppoppop-align-btn" data-align="bottom" title="Align Bottom">
-            <span class="dashicons dashicons-arrow-down-alt"></span>
-        </button>
-        <span class="wppoppop-align-separator"></span>
-        <button type="button" class="wppoppop-align-btn" data-align="distribute_h" title="Distribute Horizontally">
-            <span class="dashicons dashicons-leftright"></span>
-        </button>
-        <button type="button" class="wppoppop-align-btn" data-align="distribute_v" title="Distribute Vertically">
-            <span class="dashicons dashicons-sort"></span>
-        </button>
-    </div>
+   
     <!-- Floating Workspace Preview Control Bar (Active during Preview Mode) -->
     <div id="wppoppop-workspace-preview-bar" class="wppoppop-workspace-preview-bar">
         <span class="wppoppop-preview-badge">
@@ -47,6 +19,36 @@ if (!defined('ABSPATH')) {
     <?php include WPPOPPOP_PATH . 'templates/builder/layers-panel.php'; ?>
 
     <!-- Visual Canvas Box Stage with Dedicated Corner Drag Grip -->
+        <!-- GreenPop Parity Phase 3: Stage Alignment Toolbar -->
+    <div id="wppoppop-alignment-toolbar" class="wppoppop-alignment-toolbar" style="display:none;">
+        <button type="button" class="wppoppop-align-btn" data-align="left" title="Align Left">
+            <span class="dashicons dashicons-align-left"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn" data-align="center" title="Align Center (Horizontal)">
+            <span class="dashicons dashicons-align-center"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn" data-align="right" title="Align Right">
+            <span class="dashicons dashicons-align-right"></span>
+        </button>
+        <span class="wppoppop-toolbar-sep wppoppop-align-separator"></span>
+        <button type="button" class="wppoppop-align-btn" data-align="top" title="Align Top">
+            <span class="dashicons dashicons-arrow-up-alt2"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn" data-align="middle" title="Align Middle (Vertical)">
+            <span class="dashicons dashicons-menu"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn" data-align="bottom" title="Align Bottom">
+            <span class="dashicons dashicons-arrow-down-alt2"></span>
+        </button>
+        <span class="wppoppop-toolbar-sep wppoppop-align-separator"></span>
+        <button type="button" class="wppoppop-align-btn" data-align="distribute-h" title="Distribute Horizontally">
+            <span class="dashicons dashicons-leftright"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn" data-align="distribute-v" title="Distribute Vertically">
+            <span class="dashicons dashicons-sort"></span>
+        </button>
+    </div>
+
     <div id="wppoppop-canvas-box">
         <!-- Phase 3: Magnetic Smart Snap Crosshair Guides -->
         <div id="wppoppop-guide-v" class="wppoppop-smart-guide wppoppop-guide-v" style="display:none;"></div>

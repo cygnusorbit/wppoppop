@@ -6,8 +6,7 @@ if (!defined('ABSPATH')) exit;
     <header id="wppoppop-inspector-titlebar" class="wppoppop-inspector-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#090d16;border-bottom:1px solid #1e293b;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:8px;">
             <span id="wppoppop-inspector-header-icon" class="dashicons dashicons-admin-generic wppoppop-insp-icon-btn" style="color:#94a3b8;font-size:16px;width:16px;height:16px;cursor:pointer;transition:color 0.15s ease;"></span>
-            <span class="wppoppop-inspector-title" style="font-size:12px;font-weight:800;letter-spacing:0.05em;color:#f8fafc;text-transform:uppercase;">Layer Settings</span>
-            <span id="insp-elem-type-badge" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(56,189,248,0.15);color:#38bdf8;text-transform:uppercase;">ELEMENT</span>
+            <span class="wppoppop-inspector-title" style="font-size:12px;font-weight:800;letter-spacing:0.05em;color:#f8fafc;text-transform:uppercase;">Layer Settings</span>  
         </div>
         <button type="button" id="wppoppop-inspector-close" class="wppoppop-inspector-close" title="Close Layer Settings" style="background:transparent;border:none;color:#94a3b8;font-size:20px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
     </header>
@@ -25,16 +24,11 @@ if (!defined('ABSPATH')) exit;
     <div id="wppoppop-inspector-body" class="wppoppop-inspector-body" style="flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:16px;box-sizing:border-box;width:100%;">
         <!-- TAB 1: CONTENT (BASIC) -->
         <div id="insp-tab-basic" class="wppoppop-tab-pane wppoppop-insp-content active" style="display:block;">
-
-
-
             <div class="wppoppop-inspector-section" style="margin-bottom:12px;">
                 <label style="display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:4px;">LAYER NAME</label>
                 <input type="text" id="prop-layer-name" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
             </div>
             <div style="display:flex;flex-direction:column;gap:12px;">
-                
-
                 <!-- DYNAMIC ELEMENT-SPECIFIC SETTINGS -->
                 <!-- CANONICAL ANIMATION & REQUIRED CONTROLS -->
             <div class="wppoppop-insp-card" id="insp-section-gp-basic-Shared">
@@ -712,28 +706,7 @@ if (!defined('ABSPATH')) exit;
                 </div>
         </div>
 
-        <!-- =================== TAB 2: STYLE =================== -->
-        </div>
-
-        <!-- TAB 2: STYLE -->
-        <div id="insp-tab-style" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <?php include dirname(__FILE__) . "/elements/tab-style-full.php"; ?>
-        </div>
-
-        <!-- TAB 3: LOGIC -->
-        <div id="insp-tab-logic" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <?php include dirname(__FILE__) . "/elements/tab-logic-conditional.php"; ?>
-        </div>
-
-        <!-- TAB 4: DATA (Form Family 10-25) -->
-        <div id="insp-tab-data" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <?php include dirname(__FILE__) . "/elements/tab-data-form.php"; ?>
-        </div>
-
-        <!-- TAB 5: ADVANCED (Form Family 10-25) -->
-        <div id="insp-tab-advanced" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
-            <?php include dirname(__FILE__) . "/elements/tab-advanced-form.php"; ?>
-        </div>
+       
     </div>
 </aside>
 

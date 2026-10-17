@@ -81,29 +81,4 @@ if (!defined('ABSPATH')) {
     </div>
 </div>
 
-<!-- Parity: Sandbox Multi-Device Live Preview Modal -->
-<div class="wppoppop-modal-backdrop" id="wppoppop-modal-preview" style="display:none;">
-    <div class="wppoppop-modal-dialog wppoppop-modal-preview-dialog">
-        <div class="wppoppop-modal-header" style="justify-content:space-between;">
-            <div class="wppoppop-preview-device-switcher">
-                <button type="button" class="wppoppop-device-btn active" data-device="desktop" title="Desktop View (100%)">
-                    <span class="dashicons dashicons-desktop"></span> <?php esc_html_e('Desktop', 'wppoppop'); ?>
-                </button>
-                <button type="button" class="wppoppop-device-btn" data-device="tablet" title="Tablet View (768px)">
-                    <span class="dashicons dashicons-tablet"></span> <?php esc_html_e('Tablet', 'wppoppop'); ?>
-                </button>
-                <button type="button" class="wppoppop-device-btn" data-device="mobile" title="Mobile View (375px)">
-                    <span class="dashicons dashicons-smartphone"></span> <?php esc_html_e('Mobile', 'wppoppop'); ?>
-                </button>
-            </div>
-            <button type="button" class="wppoppop-modal-close" data-modal="wppoppop-modal-preview">&times;</button>
-        </div>
-        <div class="wppoppop-preview-stage-container">
-            <div class="wppoppop-preview-viewport-wrapper device-desktop" id="wppoppop-preview-viewport">
-                <div class="wppoppop-preview-render-root" id="wppoppop-preview-render-root">
-                    <!-- Cloned stage renders live here -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
