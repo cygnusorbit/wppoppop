@@ -210,11 +210,30 @@
             $('#set-canvas-grad-color2').val(meta.grad_color2 || '#1d4ed8');
             $('#set-canvas-grad-angle').val(meta.grad_angle || 135);
 
+            // WPPOPPOP_CANVAS_OVERFLOW: per-canvas overflow, auto-close & logic hydration
+            var ovOn = (meta.allow_overflow === true || meta.allow_overflow === 1 || meta.allow_overflow === '1' || meta.allow_overflow === 'true');
+            $('#set-canvas-allow-overflow').prop('checked', ovOn);
+            this.applyCanvasOverflow(ovOn);
+
+            var acVal = parseInt(meta.autoclose_delay !== undefined ? meta.autoclose_delay : meta.autoclose, 10);
+            $('#set-canvas-autoclose').val(isNaN(acVal) ? 0 : acVal);
+
+            try {
+                this.populateLogicFieldOptions();
+                $('#set-canvas-logic-enable').prop('checked', !!meta.logic_enabled);
+                if (meta.logic_field) $('#set-canvas-logic-field').val(meta.logic_field);
+                $('#set-canvas-logic-operator').val(meta.logic_operator || 'equals');
+                $('#set-canvas-logic-val').val(meta.logic_value || '');
+                $('#set-canvas-logic-action').val(meta.logic_action || 'show');
+                this.checkConditionalLogicEligibility();
+                $('#set-canvas-logic-rules-panel').toggle($('#set-canvas-logic-enable').is(':checked') && !$('#set-canvas-logic-enable').prop('disabled'));
+            } catch (e) {}
+
             // 4. Sync Canvas Animation Settings
-            var animApp = meta.anim_appearance || 'fade';
+            var animApp = (!meta.anim_appearance || meta.anim_appearance === 'fade') ? 'fadeIn' : meta.anim_appearance;
             var animDur = (meta.anim_duration !== undefined && meta.anim_duration !== '') ? parseInt(meta.anim_duration, 10) : 1000;
             var animDel = (meta.anim_delay !== undefined && meta.anim_delay !== '') ? parseInt(meta.anim_delay, 10) : 0;
-            var animDis = meta.anim_disappearance || 'fade';
+            var animDis = (!meta.anim_disappearance || meta.anim_disappearance === 'fade') ? 'fadeOut' : meta.anim_disappearance;
 
             $('#set-canvas-anim-appearance, #set-anim-appearance').val(animApp);
             $('#set-canvas-anim-duration, #set-anim-duration').val(animDur);
@@ -306,6 +325,16 @@
                 if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.settings) {
                     window.WpPopPopBuilderCore.state.settings.scroll_depth = val;
                 }
+            });
+            $(document).off('change.wppoppop_ovf', '#set-canvas-allow-overflow').on('change.wppoppop_ovf', '#set-canvas-allow-overflow', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                var on = $(this).is(':checked');
+                core.state.canvasMeta[cur].allow_overflow = on;
+                self.applyCanvasOverflow(on);
+                core.pushHistory();
             });
             // Play Canvas Animation on Demand
             $(document).on('click', '#set-canvas-anim-play', function(e) {
@@ -494,20 +523,20 @@
                 $box.css({ background: 'transparent' });
                 $('#set-canvas-bg-transparent-btn').addClass('active').attr('aria-pressed', 'true');
                 $('#set-canvas-solid-wrap').show();
-                $('#set-canvas-grad-wrap').hide();
+                $('#set-canvas-gradient-wrap').hide();
             } else {
                 $box.removeClass('wppoppop-canvas-transparent');
                 $('#set-canvas-bg-transparent-btn').removeClass('active').attr('aria-pressed', 'false');
                 if (meta.bg_mode === 'gradient') {
                     $('#set-canvas-solid-wrap').hide();
-                    $('#set-canvas-grad-wrap').show();
+                    $('#set-canvas-gradient-wrap').show();
                     var col1 = meta.grad_color1 || '#3b82f6';
                     var col2 = meta.grad_color2 || '#1d4ed8';
                     var angle = meta.grad_angle || 135;
                     $box.css({ background: 'linear-gradient(' + angle + 'deg, ' + col1 + ', ' + col2 + ')' });
                 } else {
                     $('#set-canvas-solid-wrap').show();
-                    $('#set-canvas-grad-wrap').hide();
+                    $('#set-canvas-gradient-wrap').hide();
                     $box.css({ background: meta.bg_color || '#ffffff' });
                 }
             }
@@ -526,7 +555,7 @@
                 if (!meta) return;
                 var isEnabled = $(this).is(':checked');
                 meta.logic_enabled = isEnabled;
-                $('#set-canvas-logic-rules-panel').slideToggle(150, isEnabled);
+                $('#set-canvas-logic-rules-panel')[isEnabled ? 'slideDown' : 'slideUp'](150);
             });
 
             $('#set-canvas-logic-field, #set-canvas-logic-operator, #set-canvas-logic-val, #set-canvas-logic-action').on('input change', function() {
@@ -537,6 +566,17 @@
                 meta.logic_value = $('#set-canvas-logic-val').val();
                 meta.logic_action = $('#set-canvas-logic-action').val();
             });
+        },
+
+        applyCanvasOverflow: function(on) {
+            on = !!on;
+            $('#wppoppop-canvas-elements-root').toggleClass('wppoppop-canvas-clip', !on);
+            $('#wppoppop-canvas-box').toggleClass('wppoppop-canvas-overflow-on', on);
+            $('#set-canvas-overflow-state').text(on ? 'ON' : 'OFF');
+            // WPPOPPOP_OVERFLOW_REFRESH: unlock / lock drag + resize containment on live layers
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.refreshInteractionContainment === 'function') {
+                window.WpPopPopBuilderCanvas.refreshInteractionContainment();
+            }
         },
 
         bindLiveStyle: function() {},

@@ -713,8 +713,8 @@
                 .attr('id', 'el-' + el.id)
                 .attr('data-id', el.id)
                 .css({
-                    top: (el.top || 20) + 'px',
-                    left: (el.left || 20) + 'px',
+                    top: ((el.top === undefined || el.top === null || el.top === '' || isNaN(parseFloat(el.top))) ? 20 : parseFloat(el.top)) + 'px',
+                    left: ((el.left === undefined || el.left === null || el.left === '' || isNaN(parseFloat(el.left))) ? 20 : parseFloat(el.left)) + 'px',
                     width: (el.width || 180) + 'px',
                     height: (el.height || 42) + 'px',
                     zIndex: el.zIndex || 10,
@@ -871,6 +871,60 @@
             }
         },
 
+        // WPPOPPOP_OVERFLOW_CONTAINMENT: per-canvas overflow aware containment
+        isOverflowAllowed: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state) return false;
+            var cur = core.state.currentCanvas || 1;
+            var m = (core.state.canvasMeta && core.state.canvasMeta[cur]) || {};
+            return (m.allow_overflow === true || m.allow_overflow === 1 || m.allow_overflow === '1' || m.allow_overflow === 'true');
+        },
+
+        getContainment: function() {
+            return this.isOverflowAllowed() ? false : '#wppoppop-canvas-elements-root';
+        },
+
+        refreshInteractionContainment: function() {
+            var c = this.getContainment();
+            $('#wppoppop-canvas-elements-root').children().each(function() {
+                var $n = $(this);
+                if ($n.data('ui-draggable') || $n.data('uiDraggable')) { try { $n.draggable('option', 'containment', c); } catch (e) {} }
+                if ($n.data('ui-resizable') || $n.data('uiResizable')) { try { $n.resizable('option', 'containment', c); } catch (e) {} }
+            });
+        },
+
+        // WPPOPPOP_EDGE_SNAP: magnetic snap to the canvas edges (hold Alt to disable)
+        snapToCanvasEdges: function(event, ui, $node) {
+            var $box = $('#wppoppop-canvas-box');
+            var boxEl = $box[0];
+            if (!boxEl || !ui || !ui.position || !$node || !$node[0]) return;
+            var $gv = $('#wppoppop-guide-v');
+            var $gh = $('#wppoppop-guide-h');
+            if (event && event.altKey) { $gv.hide(); $gh.hide(); return; }
+
+            var boxW = boxEl.clientWidth;
+            var boxH = boxEl.clientHeight;
+            var elW = $node[0].offsetWidth;
+            var elH = $node[0].offsetHeight;
+            var T = 10;
+
+            var x = Math.round(ui.position.left);
+            var y = Math.round(ui.position.top);
+            var gx = null, gy = null;
+
+            if (Math.abs(x) <= T) { x = 0; gx = 0; }
+            else if (Math.abs((x + elW) - boxW) <= T) { x = boxW - elW; gx = boxW; }
+
+            if (Math.abs(y) <= T) { y = 0; gy = 0; }
+            else if (Math.abs((y + elH) - boxH) <= T) { y = boxH - elH; gy = boxH; }
+
+            ui.position.left = x;
+            ui.position.top = y;
+
+            if (gx !== null) { $gv.css({ left: gx + 'px', display: 'block' }); } else { $gv.hide(); }
+            if (gy !== null) { $gh.css({ top: gy + 'px', display: 'block' }); } else { $gh.hide(); }
+        },
+
         attachInteractions: function($node, el) {
             var self = this;
             if (el.locked) {
@@ -879,9 +933,9 @@
             }
 
             $node.draggable({
-                containment: '#wppoppop-canvas-elements-root',
-                grid: [10, 10],
+                containment: self.getContainment(),
                 drag: function(event, ui) {
+                    self.snapToCanvasEdges(event, ui, $node);
                     el.top = ui.position.top;
                     el.left = ui.position.left;
                     if (window.WpPopPopBuilderInspector) {
@@ -898,8 +952,12 @@
                 }
             });
 
+            $node.on('dragstop.wppoppopSnap', function() {
+                $('#wppoppop-guide-v, #wppoppop-guide-h').hide();
+            });
+
             $node.resizable({
-                containment: '#wppoppop-canvas-elements-root',
+                containment: self.getContainment(),
                 handles: 'se',
                 resize: function(event, ui) {
                     el.width = ui.size.width;
@@ -986,8 +1044,10 @@
                     var dropX = Math.round((e.pageX - boxOffset.left) / scale);
                     var dropY = Math.round((e.pageY - boxOffset.top) / scale);
 
-                    dropX = Math.max(0, Math.min(dropX, $box.outerWidth() - 50));
-                    dropY = Math.max(0, Math.min(dropY, $box.outerHeight() - 30));
+                    if (!self.isOverflowAllowed()) {
+                        dropX = Math.max(0, Math.min(dropX, $box.outerWidth() - 50));
+                        dropY = Math.max(0, Math.min(dropY, $box.outerHeight() - 30));
+                    }
 
                     self.addElement(type, dropX, dropY);
                 }
@@ -995,7 +1055,7 @@
         }
     },
 
-    addElement: function(type) {
+    addElement: function(type, spawnX, spawnY) {
             var elements = this.getActiveElements();
             var id = 'layer_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
             var nextZ = elements.length ? Math.max.apply(null, elements.map(function(e) { return e.zIndex || 10; })) + 1 : 10;
@@ -1004,8 +1064,8 @@
                 id: id,
                 type: type,
                 name: type.toUpperCase() + ' ' + (elements.length + 1),
-                top: 50 + (elements.length * 15) % 150,
-                left: 50 + (elements.length * 15) % 200,
+                top: (typeof spawnY === 'number' && !isNaN(spawnY)) ? spawnY : (50 + (elements.length * 15) % 150),
+                left: (typeof spawnX === 'number' && !isNaN(spawnX)) ? spawnX : (50 + (elements.length * 15) % 200),
                 width: (type === 'shape') ? 120 : ((type === 'text' || type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
                 height: (type === 'shape') ? 120 : ((type === 'text' || type === 'signature') ? 60 : 42),
                 zIndex: nextZ,

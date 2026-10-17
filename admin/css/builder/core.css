@@ -2038,3 +2038,20 @@ body.wppoppop-is-panning #wppoppop-canvas-box * {
     margin: 0 auto 2px auto !important;
 }
 
+
+
+/* WPPOPPOP_CANVAS_OVERFLOW: clip layers to canvas unless overflow is allowed */
+#wppoppop-canvas-elements-root.wppoppop-canvas-clip {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow: hidden;
+}
+#wppoppop-canvas-box.wppoppop-canvas-overflow-on { overflow: visible; }
+
+
+/* WPPOPPOP_OVERFLOW_VISIBLE_V2 */
+#wppoppop-canvas-box.wppoppop-canvas-overflow-on,
+#wppoppop-canvas-box.wppoppop-canvas-overflow-on #wppoppop-canvas-elements-root {
+    overflow: visible !important;
+}
+.wppoppop-builder-workspace { overflow: visible; }

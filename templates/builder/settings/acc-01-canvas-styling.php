@@ -44,6 +44,27 @@ if (!defined('ABSPATH')) {
                                 </div>
                             </div>
                         </div>
+                        <!-- Canvas Overflow Toggle (WPPOPPOP_CANVAS_OVERFLOW) -->
+                        <style>
+                            .wppoppop-ovf-switch{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;}
+                            .wppoppop-ovf-switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2;}
+                            .wppoppop-ovf-track{position:absolute;inset:0;background:#94a3b8;border-radius:22px;transition:background .18s ease;-webkit-transition:background .18s ease;}
+                            .wppoppop-ovf-track:before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .18s ease;-webkit-transition:-webkit-transform .18s ease;}
+                            .wppoppop-ovf-switch input:checked + .wppoppop-ovf-track{background:#2563eb;}
+                            .wppoppop-ovf-switch input:checked + .wppoppop-ovf-track:before{-webkit-transform:translateX(18px);transform:translateX(18px);}
+                            .wppoppop-ovf-switch input:focus-visible + .wppoppop-ovf-track{outline:2px solid #93c5fd;outline-offset:2px;}
+                        </style>
+                        <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                                <label for="set-canvas-allow-overflow" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;">ALLOW CANVAS ELEMENT OVERFLOW <span id="set-canvas-overflow-state" style="color:#2563eb;">OFF</span></label>
+                                <span class="wppoppop-ovf-switch">
+                                    <input type="checkbox" id="set-canvas-allow-overflow" value="1" role="switch" aria-label="Allow canvas element overflow">
+                                    <span class="wppoppop-ovf-track"></span>
+                                </span>
+                            </div>
+                            <span style="font-size:10px;color:#64748b;display:block;margin-top:4px;">ON: elements may extend beyond the canvas edges (visible). OFF: anything outside the canvas is clipped.</span>
+                        </div>
+
                         <!-- Phase 4: Canvas Auto-Close Countdown -->
                         <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
                             <label for="set-canvas-autoclose" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">AUTO-CLOSE COUNTDOWN (SECONDS)</label>

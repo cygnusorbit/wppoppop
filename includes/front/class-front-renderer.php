@@ -38,6 +38,22 @@ class WpPopPop_Front_Renderer {
         }
         ";
 
+        // WPPOPPOP_CANVAS_OVERFLOW: let the box show overflow only when a canvas allows it
+        $wppoppop_any_overflow = false;
+        if (is_array($canvas_meta)) {
+            foreach ($canvas_meta as $wppoppop_cm_chk) {
+                if (is_array($wppoppop_cm_chk) && !empty($wppoppop_cm_chk['allow_overflow']) && $wppoppop_cm_chk['allow_overflow'] !== 'false') {
+                    $wppoppop_any_overflow = true;
+                    break;
+                }
+            }
+        }
+        if ($wppoppop_any_overflow) {
+            $custom_inline_css .= "
+        #wppoppop-popup-{$uid} .wppoppop-box { overflow: visible !important; }
+        ";
+        }
+
         if ($minify_css && function_exists('wppoppop_minify_css')) {
             $custom_inline_css = wppoppop_minify_css($custom_inline_css);
         }
@@ -85,6 +101,8 @@ class WpPopPop_Front_Renderer {
                     $c_anim_dur = intval($cm['anim_duration'] ?? 1000);
                     $c_anim_del = intval($cm['anim_delay'] ?? 0);
                     $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
+                    $c_allow_ovf = !empty($cm['allow_overflow']) && $cm['allow_overflow'] !== 'false';
+                    $c_overflow_style = $c_allow_ovf ? 'overflow:visible;' : 'overflow:hidden;';
 
                     $c_bg_mode = $cm['bg_mode'] ?? 'solid';
                     $c_bg_color = $cm['bg_color'] ?? '';
@@ -112,7 +130,8 @@ class WpPopPop_Front_Renderer {
                          data-anim-duration="<?php echo $c_anim_dur; ?>"
                          data-anim-delay="<?php echo $c_anim_del; ?>"
                          data-anim-disappearance="<?php echo $c_anim_dis; ?>"
-                         style="<?php echo esc_attr($display_style . $c_bg_style); ?>width:100%;min-height:<?php echo esc_attr($c_height); ?>px;position:relative;">
+                         data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
+                         style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style); ?>width:100%;min-height:<?php echo esc_attr($c_height); ?>px;position:relative;">
 
                         <div class="wppoppop-canvas-content">
                             <?php 
