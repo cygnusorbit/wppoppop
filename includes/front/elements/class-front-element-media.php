@@ -29,20 +29,38 @@ class WpPopPop_Front_Element_Media {
     }
 
     public static function render_image(array $el, array $config = []) {
-        $url = !empty($el['imgUrl']) ? esc_url($el['imgUrl']) : (!empty($el['content']) ? esc_url($el['content']) : '');
-        $alt = !empty($el['altText']) ? esc_attr($el['altText']) : 'Popup Image';
-        $fit = !empty($el['objectFit']) ? esc_attr($el['objectFit']) : 'cover';
-
+        // WPPOPPOP_IMAGE_RENDER_V2
+        $raw = '';
+        foreach (array('imgUrl', 'imageUrl', 'src', 'content') as $k) {
+            if (!empty($el[$k]) && is_string($el[$k])) { $raw = trim($el[$k]); break; }
+        }
+        $url = $raw !== '' ? esc_url($raw) : '';
         if (!$url) {
             return '';
         }
 
-        return sprintf(
-            '<img src="%1$s" alt="%2$s" style="width:100%;height:100%;object-fit:%3$s;border:inherit;border-radius:inherit;display:block;">',
+        $alt_raw = '';
+        foreach (array('altText', 'alt', 'imageAlt') as $k) {
+            if (isset($el[$k]) && is_string($el[$k]) && $el[$k] !== '') { $alt_raw = $el[$k]; break; }
+        }
+        $alt = esc_attr($alt_raw);
+
+        $fit_raw = !empty($el['objectFit']) ? $el['objectFit'] : (!empty($el['imageFit']) ? $el['imageFit'] : 'cover');
+        $fit = in_array($fit_raw, array('cover', 'contain', 'fill', 'none', 'scale-down'), true) ? $fit_raw : 'cover';
+
+        $img = sprintf(
+            '<img src="%1$s" alt="%2$s" loading="lazy" draggable="false" style="width:100%%;height:100%%;object-fit:%3$s;border:inherit;border-radius:inherit;display:block;">',
             $url,
             $alt,
-            $fit
+            esc_attr($fit)
         );
+
+        $link = !empty($el['linkUrl']) && is_string($el['linkUrl']) ? esc_url($el['linkUrl']) : '';
+        if ($link) {
+            $blank = !empty($el['targetBlank']) && $el['targetBlank'] !== 'false';
+            $img = '<a href="' . $link . '"' . ($blank ? ' target="_blank" rel="noopener noreferrer"' : '') . ' style="display:block;width:100%;height:100%;">' . $img . '</a>';
+        }
+        return $img;
     }
 
     public static function render_video(array $el, array $config = []) {

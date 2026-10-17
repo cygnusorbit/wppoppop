@@ -477,7 +477,7 @@ if (!$data || !isset($data['meta'])) {
             'autocomplete', 'animIn', 'animOut', 'iconLeft', 'iconRight',
             'customClass', 'cssClass', 'customId', 'logicAction', 'logicMatch',
             'defaultValue', 'paramName', 'fieldId', 'fieldName', 'token',
-            'shapePreset', 'src', 'alt', 'objectFit', 'videoProvider',
+            'shapePreset', 'alt', 'objectFit', 'videoProvider',
             'aspectRatio', 'videoUrl', 'tag', 'textTransform', 'overflow',
             'closeSymbol', 'closeAction', 'iconClass', 'progressMode',
             'buttonAction', 'url', 'loadingText', 'submitAction',

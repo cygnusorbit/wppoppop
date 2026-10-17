@@ -9,3 +9,7 @@
 @import url("builder/inspector.css");
 @import url("builder/settings.css");
 @import url("builder/modals.css");
+
+/* WPPOPPOP_MEDIA_MODAL_ZINDEX */
+.media-modal{z-index:2147483000 !important;}
+.media-modal-backdrop{z-index:2146999999 !important;}

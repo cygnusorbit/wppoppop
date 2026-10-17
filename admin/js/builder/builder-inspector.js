@@ -1418,7 +1418,10 @@
                 var el = resolveEl();
                 if (el) {
                     el.imageFit = $('#prop-image-fit').val();
+                    el.objectFit = el.imageFit;
                     el.imageAlt = $('#prop-image-alt').val();
+                    el.alt = el.imageAlt;
+                    el.altText = el.imageAlt;
                     if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
                 }
             });

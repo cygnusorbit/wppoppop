@@ -364,9 +364,10 @@ class WpPopPop_Front_Renderer {
         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 
             case 'image':
-                $img_src = esc_url($el['imageUrl'] ?? ($el['src'] ?? ''));
-                $img_fit = esc_attr($el['imageFit'] ?? ($el['objectFit'] ?? 'cover'));
-                $img_alt = esc_attr($el['imageAlt'] ?? ($el['alt'] ?? ''));
+                $img_src = esc_url($el['imgUrl'] ?? ($el['imageUrl'] ?? ($el['src'] ?? ($el['content'] ?? ''))));
+                $img_fit_raw = $el['objectFit'] ?? ($el['imageFit'] ?? 'cover');
+                $img_fit = esc_attr(in_array($img_fit_raw, array('cover', 'contain', 'fill', 'none', 'scale-down'), true) ? $img_fit_raw : 'cover');
+                $img_alt = esc_attr($el['altText'] ?? ($el['alt'] ?? ($el['imageAlt'] ?? '')));
                 $inner_html = "<img src=\"{$img_src}\" alt=\"{$img_alt}\" style=\"width:100%;height:100%;object-fit:{$img_fit};display:block;border-radius:inherit;\" />";
                 break;
             case 'shape':

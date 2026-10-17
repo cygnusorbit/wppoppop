@@ -13,6 +13,48 @@ class WpPopPop_Ajax_Element_Media {
     }
 
     public static function sanitize_media(array $el, array $clean) {
+        // === WPPOPPOP_IMAGE_LIFECYCLE_SANITIZE ===
+        $wppoppop_img_url = '';
+        foreach (array('src', 'imageUrl', 'imgUrl') as $wppoppop_k) {
+            if (isset($el[$wppoppop_k]) && !is_array($el[$wppoppop_k])) {
+                $wppoppop_v = esc_url_raw(trim(wp_unslash((string) $el[$wppoppop_k])));
+                if ($wppoppop_v !== '' && $wppoppop_img_url === '') {
+                    $wppoppop_img_url = $wppoppop_v;
+                }
+            }
+        }
+        if ($wppoppop_img_url !== '' || isset($el['src']) || isset($el['imageUrl']) || isset($el['imgUrl'])) {
+            $clean['src']      = $wppoppop_img_url;
+            $clean['imageUrl'] = $wppoppop_img_url;
+            $clean['imgUrl']   = $wppoppop_img_url;
+        }
+        if (isset($el['linkUrl']) && !is_array($el['linkUrl'])) {
+            $clean['linkUrl'] = esc_url_raw(trim(wp_unslash((string) $el['linkUrl'])));
+        }
+        $wppoppop_alt = null;
+        foreach (array('alt', 'altText', 'imageAlt') as $wppoppop_k) {
+            if (isset($el[$wppoppop_k]) && !is_array($el[$wppoppop_k])) {
+                $wppoppop_alt = sanitize_text_field(wp_unslash((string) $el[$wppoppop_k]));
+                break;
+            }
+        }
+        if ($wppoppop_alt !== null) {
+            $clean['alt'] = $wppoppop_alt;
+            $clean['altText'] = $wppoppop_alt;
+            $clean['imageAlt'] = $wppoppop_alt;
+        }
+        $wppoppop_fit_ok = array('cover', 'contain', 'fill', 'none', 'scale-down');
+        foreach (array('objectFit', 'imageFit') as $wppoppop_k) {
+            if (isset($el[$wppoppop_k]) && !is_array($el[$wppoppop_k])) {
+                $wppoppop_fit = sanitize_text_field((string) $el[$wppoppop_k]);
+                if (in_array($wppoppop_fit, $wppoppop_fit_ok, true)) {
+                    $clean['objectFit'] = $wppoppop_fit;
+                    $clean['imageFit']  = $wppoppop_fit;
+                    break;
+                }
+            }
+        }
+        // === END WPPOPPOP_IMAGE_LIFECYCLE_SANITIZE ===
         if (isset($el['imgUrl']))             $clean['imgUrl']             = esc_url_raw($el['imgUrl']);
         if (isset($el['altText']))            $clean['altText']            = sanitize_text_field($el['altText']);
         if (isset($el['objectFit']))          $clean['objectFit']          = sanitize_text_field($el['objectFit']);

@@ -79,7 +79,7 @@ class WpPopPop_Ajax_Element_Registry {
             'iconLeft', 'iconRight', 'customClass', 'cssClass', 'customId',
             'logicAction', 'logicMatch', 'defaultValue', 'paramName',
             'fieldId', 'fieldName', 'token', 'inputMask',
-            'shapePreset', 'strokeColor', 'src', 'imageUrl', 'alt', 'objectFit', 'imageAction', 'linkUrl',
+            'shapePreset', 'strokeColor', 'alt', 'objectFit', 'imageAction',
             'videoProvider', 'aspectRatio', 'videoUrl', 'tag', 'headingTag', 'htmlTag', 'textTransform', 'overflow',
             'closeSymbol', 'closeAction', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor',
             'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'redirectUrl',
