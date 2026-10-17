@@ -26,7 +26,10 @@ class WpPopPop_Front_Decomposed_26 {
         );
         $map = array();
         foreach ($values as $slug => $val) {
-            $map['{{' . $slug . '}}'] = '<span class="wppoppop-const wppoppop-const-' . $slug . '" data-token="' . esc_attr($slug) . '">' . esc_html($val) . '</span>';
+            $fmt_attr = '';
+            if ($slug === 'date') { $fmt_attr = ' data-format="' . esc_attr(get_option('date_format')) . '"'; }
+            if ($slug === 'time') { $fmt_attr = ' data-format="' . esc_attr(get_option('time_format')) . '"'; }
+            $map['{{' . $slug . '}}'] = '<span class="wppoppop-const wppoppop-const-' . $slug . '" data-token="' . esc_attr($slug) . '"' . $fmt_attr . '>' . esc_html($val) . '</span>';
         }
         return strtr($content, $map);
     }

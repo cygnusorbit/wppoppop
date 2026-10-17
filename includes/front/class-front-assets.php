@@ -24,13 +24,15 @@ class WpPopPop_Front_Assets {
         wp_enqueue_script('wppoppop-front-logic-js', WPPOPPOP_URL . 'public/js/front/front-logic.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], WPPOPPOP_VERSION, true);
+        wp_enqueue_script('wppoppop-front-tokens-js', WPPOPPOP_URL . 'public/js/front/front-tokens.js', ['jquery'], WPPOPPOP_VERSION, true);
         wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . (file_exists($wppoppop_root . 'public/js/front/wppoppop-front.js') ? 'public/js/front/wppoppop-front.js' : 'public/js/wppoppop-front.js'), [
             'jquery',
             'wppoppop-front-display-js',
             'wppoppop-front-gamification-js',
             'wppoppop-front-logic-js',
             'wppoppop-front-form-js',
-            'wppoppop-front-triggers-js'
+            'wppoppop-front-triggers-js',
+            'wppoppop-front-tokens-js'
         ], WPPOPPOP_VERSION, true);
 
         wp_localize_script('wppoppop-front-js', 'wppoppop_front_vars', [

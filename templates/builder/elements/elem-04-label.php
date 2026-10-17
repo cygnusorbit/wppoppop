@@ -10,9 +10,9 @@ if (!defined('ABSPATH')) exit;
         <div id="wppoppop-label-token-menu" role="menu" style="display:none;position:absolute;right:0;top:26px;z-index:100000;min-width:190px;max-height:240px;overflow-y:auto;background:#0f172a;border:1px solid #334155;border-radius:6px;box-shadow:0 10px 25px rgba(0,0,0,.45);text-align:left;"></div>
     </div>
     <textarea id="prop-label-content" rows="3" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="content" placeholder="Enter headline or body label..." style="margin-bottom:10px;font-size:12px;"></textarea>
-    <input type="hidden" id="prop-title-text" class="wppoppop-gp-bind" data-prop="content">
-    <input type="hidden" id="prop-paragraph-text" class="wppoppop-gp-bind" data-prop="content">
-    <input type="hidden" id="prop-text-content" class="wppoppop-gp-bind" data-prop="content">
+    <input type="hidden" id="prop-title-text" class="wppoppop-gp-alias" data-prop="content">
+    <input type="hidden" id="prop-paragraph-text" class="wppoppop-gp-alias" data-prop="content">
+    <input type="hidden" id="prop-text-content" class="wppoppop-gp-alias" data-prop="content">
     <div style="margin-bottom:10px;">
         <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">URL</label>
         <input type="text" id="prop-label-url" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="url" placeholder="https://" style="font-size:12px;margin-bottom:8px;">
@@ -34,9 +34,9 @@ if (!defined('ABSPATH')) exit;
                 <option value="h5">Heading H5</option>
                 <option value="h6">Heading H6</option>
             </select>
-            <input type="hidden" id="prop-title-tag" class="wppoppop-gp-bind" data-prop="tag">
-            <input type="hidden" id="prop-paragraph-tag" class="wppoppop-gp-bind" data-prop="tag">
-            <input type="hidden" id="prop-text-tag" class="wppoppop-gp-bind" data-prop="tag">
+            <input type="hidden" id="prop-title-tag" class="wppoppop-gp-alias" data-prop="tag">
+            <input type="hidden" id="prop-paragraph-tag" class="wppoppop-gp-alias" data-prop="tag">
+            <input type="hidden" id="prop-text-tag" class="wppoppop-gp-alias" data-prop="tag">
         </div>
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">TEXT TRANSFORM</label>
@@ -46,7 +46,7 @@ if (!defined('ABSPATH')) exit;
                 <option value="lowercase">lowercase</option>
                 <option value="capitalize">Capitalize Words</option>
             </select>
-            <input type="hidden" id="prop-title-transform" class="wppoppop-gp-bind" data-prop="textTransform">
+            <input type="hidden" id="prop-title-transform" class="wppoppop-gp-alias" data-prop="textTransform">
         </div>
     </div>
 </div>
