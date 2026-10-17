@@ -129,7 +129,7 @@ class WpPopPop_Front_Element_Media {
         $rot_style = $rot ? 'transform:rotate(' . $rot . 'deg);transform-origin:center;' : '';
 
         return sprintf(
-            '<svg viewBox="0 0 100 100" style="width:100%;height:100%;display:block;overflow:visible;%1$s" fill="%2$s" stroke="%3$s" stroke-width="%4$d" vector-effect="non-scaling-stroke">%5$s</svg>',
+            '<svg viewBox="0 0 100 100" style="width:100%%;height:100%%;display:block;overflow:visible;%1$s" fill="%2$s" stroke="%3$s" stroke-width="%4$d" vector-effect="non-scaling-stroke">%5$s</svg>',
             $rot_style,
             $fill,
             $stroke,
@@ -146,7 +146,7 @@ class WpPopPop_Front_Element_Media {
 
         if ($is_vert) {
             return sprintf(
-                '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;"><div style="height:100%%;border-left:%1$dpx %2$s %3$s;"></div></div>',
+                '<div style="width:100%%;height:100%%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;"><div style="height:100%%;border-left:%1$dpx %2$s %3$s;"></div></div>',
                 $thick,
                 $style,
                 $color
@@ -154,7 +154,7 @@ class WpPopPop_Front_Element_Media {
         }
 
         return sprintf(
-            '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;"><div style="width:100%%;border-top:%1$dpx %2$s %3$s;"></div></div>',
+            '<div style="width:100%%;height:100%%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;"><div style="width:100%%;border-top:%1$dpx %2$s %3$s;"></div></div>',
             $thick,
             $style,
             $color
@@ -167,7 +167,7 @@ class WpPopPop_Front_Element_Media {
         $color = !empty($el['iconColor']) ? esc_attr($el['iconColor']) : '#3b82f6';
 
         return sprintf(
-            '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;"><span class="dashicons %1$s" style="font-size:%2$dpx;width:%2$dpx;height:%2$dpx;line-height:1;display:flex;align-items:center;justify-content:center;color:%3$s;"></span></div>',
+            '<div style="width:100%%;height:100%%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;"><span class="dashicons %1$s" style="font-size:%2$dpx;width:%2$dpx;height:%2$dpx;line-height:1;display:flex;align-items:center;justify-content:center;color:%3$s;"></span></div>',
             $glyph,
             $size,
             $color

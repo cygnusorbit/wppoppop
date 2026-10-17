@@ -139,6 +139,9 @@ class WpPopPop_Front_Display {
     }
 
     public function render_popups() {
+        if (apply_filters('wppoppop_suppress_front_popups', false)) {
+            return;
+        }
         if (!$this->is_execution_allowed()) {
             return;
         }
@@ -158,7 +161,8 @@ class WpPopPop_Front_Display {
 
         foreach ($popups as $popup) {
             if ($this->targeting->is_eligible($popup)) {
-                $config = !empty($popup->config) ? json_decode($popup->config, true) : [];
+                $wppoppop_raw_cfg = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');
+                $config = $wppoppop_raw_cfg !== '' ? json_decode($wppoppop_raw_cfg, true) : [];
                 if (!is_array($config)) {
                     $config = [];
                 }

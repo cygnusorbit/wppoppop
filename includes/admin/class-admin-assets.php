@@ -86,6 +86,8 @@ class WpPopPop_Admin_Assets {
                 'wppoppop-builder-io-js', 'wppoppop-builder-elements-registry', 'wppoppop-builder-animation-js'
             ], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
 
+            wp_enqueue_script('wppoppop-builder-preview-js', WPPOPPOP_URL . 'admin/js/builder/builder-preview.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js', 'wppoppop-builder-io-js'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
+
             $builder_payload = array_merge($shared_payload, [
                 'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
                 'custom_fonts' => WpPopPop_Libraries::get_custom_font_families()
@@ -94,6 +96,7 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-builder-inspector-js', 'wppoppop_custom_fonts', WpPopPop_Libraries::get_custom_font_families());
             wp_localize_script('wppoppop-builder-io-js', 'wppoppop_vars', $builder_payload);
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', $builder_payload);
+            wp_localize_script('wppoppop-builder-preview-js', 'wppoppop_vars', $builder_payload);
         }
 
         // 3. Settings Assets

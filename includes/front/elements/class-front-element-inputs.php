@@ -26,7 +26,7 @@ class WpPopPop_Front_Element_Inputs {
         $required = !empty($el['required']) ? 'required' : '';
 
         return sprintf(
-            '<input type="text" name="%1$s" placeholder="%2$s" value="%3$s" %4$s class="wppoppop-front-input" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-family:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
+            '<input type="text" name="%1$s" placeholder="%2$s" value="%3$s" %4$s class="wppoppop-front-input" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-family:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
             esc_attr($field_name),
             $placeholder,
             $default_val,
@@ -41,7 +41,7 @@ class WpPopPop_Front_Element_Inputs {
         $required = isset($el['required']) && !$el['required'] ? '' : 'required';
 
         return sprintf(
-            '<input type="email" name="%1$s" placeholder="%2$s" value="%3$s" %4$s class="wppoppop-front-input" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-family:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
+            '<input type="email" name="%1$s" placeholder="%2$s" value="%3$s" %4$s class="wppoppop-front-input" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-family:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
             esc_attr($field_name),
             $placeholder,
             $default_val,
@@ -59,7 +59,7 @@ class WpPopPop_Front_Element_Inputs {
         $required = !empty($el['required']) ? 'required' : '';
 
         return sprintf(
-            '<input type="number" name="%1$s" min="%2$s" max="%3$s" step="%4$s" value="%5$s" placeholder="%6$s" %7$s class="wppoppop-front-input" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
+            '<input type="number" name="%1$s" min="%2$s" max="%3$s" step="%4$s" value="%5$s" placeholder="%6$s" %7$s class="wppoppop-front-input" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
             esc_attr($field_name),
             $min,
             $max,
@@ -79,7 +79,7 @@ class WpPopPop_Front_Element_Inputs {
         $items = strpos($raw, "\n") !== false ? explode("\n", $raw) : explode(',', $raw);
 
         $html = sprintf(
-            '<select name="%1$s" %2$s class="wppoppop-front-select" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
+            '<select name="%1$s" %2$s class="wppoppop-front-select" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
             esc_attr($field_name),
             $required
         );
@@ -109,7 +109,7 @@ class WpPopPop_Front_Element_Inputs {
         $items = strpos($raw, "\n") !== false ? explode("\n", $raw) : explode(',', $raw);
 
         $html = sprintf(
-            '<div class="wppoppop-front-radios" style="display:flex;flex-direction:%1$s;gap:%2$s;align-items:%3$s;width:100%;height:100%;padding:0 8px;box-sizing:border-box;">',
+            '<div class="wppoppop-front-radios" style="display:flex;flex-direction:%1$s;gap:%2$s;align-items:%3$s;width:100%%;height:100%%;padding:0 8px;box-sizing:border-box;">',
             $flex_dir,
             $gap,
             $is_stacked ? 'flex-start' : 'center'
@@ -139,7 +139,7 @@ class WpPopPop_Front_Element_Inputs {
         $required = !empty($el['required']) ? 'required' : '';
 
         return sprintf(
-            '<label class="wppoppop-front-checkbox" style="display:flex;align-items:center;gap:8px;cursor:pointer;width:100%;height:100%;padding:0 8px;box-sizing:border-box;"><input type="checkbox" name="%1$s" value="1"%2$s %3$s> <span style="line-height:1.2;">%4$s</span></label>',
+            '<label class="wppoppop-front-checkbox" style="display:flex;align-items:center;gap:8px;cursor:pointer;width:100%%;height:100%%;padding:0 8px;box-sizing:border-box;"><input type="checkbox" name="%1$s" value="1"%2$s %3$s> <span style="line-height:1.2;">%4$s</span></label>',
             esc_attr($field_name),
             $checked,
             $required,
@@ -156,7 +156,7 @@ class WpPopPop_Front_Element_Inputs {
         $required = !empty($el['required']) ? 'required' : '';
 
         return sprintf(
-            '<input type="text" name="%1$s" placeholder="%2$s" data-format="%3$s" data-min="%4$s" data-max="%5$s" %6$s class="wppoppop-front-date wppoppop-datepicker" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
+            '<input type="text" name="%1$s" placeholder="%2$s" data-format="%3$s" data-min="%4$s" data-max="%5$s" %6$s class="wppoppop-front-date wppoppop-datepicker" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;padding:0 12px;box-sizing:border-box;outline:none;">',
             esc_attr($field_name),
             $placeholder,
             $format,
@@ -174,7 +174,7 @@ class WpPopPop_Front_Element_Inputs {
         $required = !empty($el['required']) ? 'required' : '';
 
         return sprintf(
-            '<div class="wppoppop-front-file-wrap" style="position:relative;width:100%;height:100%;overflow:hidden;border:inherit;border-radius:inherit;background:inherit;color:inherit;"><input type="file" name="%1$s" accept="%2$s" data-max-size="%3$s" %4$s style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2;"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;box-sizing:border-box;pointer-events:none;"><span>📁</span> <span>%5$s</span> <small style="opacity:0.75;font-size:10px;">(%2$s)</small></div></div>',
+            '<div class="wppoppop-front-file-wrap" style="position:relative;width:100%%;height:100%%;overflow:hidden;border:inherit;border-radius:inherit;background:inherit;color:inherit;"><input type="file" name="%1$s" accept="%2$s" data-max-size="%3$s" %4$s style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%%;height:100%%;z-index:2;"><div style="width:100%%;height:100%%;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;box-sizing:border-box;pointer-events:none;"><span>📁</span> <span>%5$s</span> <small style="opacity:0.75;font-size:10px;">(%2$s)</small></div></div>',
             esc_attr($field_name),
             $exts,
             $max_size,

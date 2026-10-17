@@ -25,7 +25,7 @@ class WpPopPop_Front_Element_Actions {
         $redirect = !empty($el['redirect_url']) ? esc_url($el['redirect_url']) : '';
 
         return sprintf(
-            '<button type="submit" class="wppoppop-submit-btn" data-action="%1$s" data-redirect="%2$s" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 16px;box-sizing:border-box;outline:none;">%3$s</button>',
+            '<button type="submit" class="wppoppop-submit-btn" data-action="%1$s" data-redirect="%2$s" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 16px;box-sizing:border-box;outline:none;">%3$s</button>',
             $action,
             $redirect,
             wp_kses_post($label)
@@ -37,7 +37,7 @@ class WpPopPop_Front_Element_Actions {
         $target = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : (!empty($el['goto_screen']) ? intval($el['goto_screen']) : 2);
 
         return sprintf(
-            '<button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="%1$d" data-goto-screen="%1$d" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 16px;box-sizing:border-box;outline:none;">%2$s</button>',
+            '<button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="%1$d" data-goto-screen="%1$d" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 16px;box-sizing:border-box;outline:none;">%2$s</button>',
             $target,
             wp_kses_post($label)
         );
@@ -50,7 +50,7 @@ class WpPopPop_Front_Element_Actions {
         $rel = !empty($el['nofollow']) ? 'rel="nofollow noopener"' : 'rel="noopener"';
 
         return sprintf(
-            '<a href="%1$s" target="%2$s" %3$s class="wppoppop-link-btn" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;text-decoration:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 16px;box-sizing:border-box;">%4$s</a>',
+            '<a href="%1$s" target="%2$s" %3$s class="wppoppop-link-btn" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;text-decoration:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 16px;box-sizing:border-box;">%4$s</a>',
             $url,
             $target,
             $rel,
@@ -66,7 +66,7 @@ class WpPopPop_Front_Element_Actions {
         $item_desc = !empty($el['item_desc']) ? esc_attr($el['item_desc']) : 'Popup Order';
 
         return sprintf(
-            '<button type="button" class="wppoppop-pay-btn" data-gateway="%1$s" data-amount="%2$s" data-currency="%3$s" data-desc="%4$s" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;box-sizing:border-box;outline:none;"><span>💳</span> <span>%5$s</span></button>',
+            '<button type="button" class="wppoppop-pay-btn" data-gateway="%1$s" data-amount="%2$s" data-currency="%3$s" data-desc="%4$s" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;box-sizing:border-box;outline:none;"><span>💳</span> <span>%5$s</span></button>',
             $gateway,
             $amount,
             $currency,
@@ -87,7 +87,7 @@ class WpPopPop_Front_Element_Actions {
         $size = !empty($el['icon_size']) ? intval($el['icon_size']) : 22;
 
         return sprintf(
-            '<button type="button" class="wppoppop-close-btn wppoppop-close-trigger" data-close-action="%1$s" data-cookie-days="%2$d" style="width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:%3$dpx;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;outline:none;-webkit-appearance:none;appearance:none;border:none;">%4$s</button>',
+            '<button type="button" class="wppoppop-close-btn wppoppop-close-trigger" data-close-action="%1$s" data-cookie-days="%2$d" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:%3$dpx;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;outline:none;-webkit-appearance:none;appearance:none;border:none;">%4$s</button>',
             $action,
             $cookie_days,
             $size,

@@ -23,7 +23,7 @@ class WpPopPop_Front_Element_Typography {
         $letter_spacing = isset($el['letterSpacing']) && $el['letterSpacing'] !== '' ? esc_attr($el['letterSpacing']) : 'inherit';
 
         return sprintf(
-            '<%1$s class="wppoppop-front-title" style="margin:0;padding:0;width:100%;height:100%;font-size:inherit;font-weight:inherit;color:inherit;text-align:%2$s;text-transform:%3$s;line-height:%4$s;letter-spacing:%5$s;display:flex;align-items:center;">%6$s</%1$s>',
+            '<%1$s class="wppoppop-front-title" style="margin:0;padding:0;width:100%%;height:100%%;font-size:inherit;font-weight:inherit;color:inherit;text-align:%2$s;text-transform:%3$s;line-height:%4$s;letter-spacing:%5$s;display:flex;align-items:center;">%6$s</%1$s>',
             $tag,
             $align,
             $transform,
@@ -43,7 +43,7 @@ class WpPopPop_Front_Element_Typography {
         $letter_spacing = isset($el['letterSpacing']) && $el['letterSpacing'] !== '' ? esc_attr($el['letterSpacing']) : 'inherit';
 
         return sprintf(
-            '<%1$s class="wppoppop-front-text" style="margin:0;padding:0;width:100%;height:100%;font-size:inherit;font-weight:inherit;color:inherit;text-align:inherit;line-height:%2$s;letter-spacing:%3$s;word-break:break-word;">%4$s</%1$s>',
+            '<%1$s class="wppoppop-front-text" style="margin:0;padding:0;width:100%%;height:100%%;font-size:inherit;font-weight:inherit;color:inherit;text-align:inherit;line-height:%2$s;letter-spacing:%3$s;word-break:break-word;">%4$s</%1$s>',
             $tag,
             $line_height,
             $letter_spacing,

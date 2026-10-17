@@ -11,15 +11,18 @@ class WpPopPop_Front {
     protected $targeting;
     protected $renderer;
     protected $display;
+    protected $preview;
 
     public function __construct() {
         require_once WPPOPPOP_PATH . 'includes/front/class-front-targeting.php';
         require_once WPPOPPOP_PATH . 'includes/front/class-front-renderer.php';
         require_once WPPOPPOP_PATH . 'includes/front/class-front-display.php';
+        require_once WPPOPPOP_PATH . 'includes/front/class-front-preview.php';
 
         $this->targeting = new WpPopPop_Front_Targeting();
         $this->renderer  = new WpPopPop_Front_Renderer();
         $this->display   = new WpPopPop_Front_Display($this->targeting, $this->renderer);
+        $this->preview   = new WpPopPop_Front_Preview($this->renderer);
     }
 
     /**

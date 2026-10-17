@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 class WpPopPop_Front_Renderer {
 
     public function render_popup_markup($uid, array $config, $is_inline = false, $preload = false) {
-        $box = $config['box'] ?? [];
+        $box = $config['box'] ?? ($config['settings']['box'] ?? []);
         $width = intval($box['width'] ?? 640);
         $height = intval($box['height'] ?? 400);
         $bg_mode = $box['bg_mode'] ?? 'solid';
@@ -179,7 +179,7 @@ class WpPopPop_Front_Renderer {
         $rotate = intval($rotate);
 
         $rot_css = $rotate ? sprintf('transform:rotate(%ddeg);-webkit-transform:rotate(%ddeg);', $rotate, $rotate) : '';
-        $svg_style = sprintf('width:100%;height:100%;display:block;overflow:visible;%s', $rot_css);
+        $svg_style = sprintf('width:100%%;height:100%%;display:block;overflow:visible;%s', $rot_css);
         $s_attr = ($stroke_width > 0 && $stroke !== 'transparent') 
             ? sprintf('stroke="%s" stroke-width="%d" vector-effect="non-scaling-stroke"', $stroke, $stroke_width) 
             : '';
@@ -403,6 +403,12 @@ class WpPopPop_Front_Renderer {
 
         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 
+            case 'video':
+                if (!class_exists('WpPopPop_Front_Element_Media')) {
+                    require_once WPPOPPOP_PATH . 'includes/front/elements/class-front-element-media.php';
+                }
+                $wppoppop_v_inner = WpPopPop_Front_Element_Media::render_video($el);
+                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-video ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">' . $wppoppop_v_inner . '</div>';
             case 'image':
                 $img_src = esc_url($el['imgUrl'] ?? ($el['imageUrl'] ?? ($el['src'] ?? ($el['content'] ?? ''))));
                 $img_fit_raw = $el['objectFit'] ?? ($el['imageFit'] ?? 'cover');

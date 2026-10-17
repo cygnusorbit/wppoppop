@@ -18,7 +18,8 @@ class WpPopPop_Front_Targeting {
             return false;
         }
 
-        $config = !empty($popup->config) ? json_decode($popup->config, true) : [];
+        $wppoppop_raw_cfg = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');
+        $config = $wppoppop_raw_cfg !== '' ? json_decode($wppoppop_raw_cfg, true) : [];
         if (!is_array($config)) {
             $config = [];
         }
