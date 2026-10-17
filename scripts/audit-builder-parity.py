@@ -68,8 +68,8 @@ check_file('templates/builder/drawer-settings.php', ['set-exit-intent-sensitivit
 check_file('admin/js/builder/builder-settings.js', ['set-exit-intent-sensitivity', 'set-trigger-scroll-depth', 'set-canvas-autoclose'], 'Phase 4 Settings Hydration')
 
 # Phase 5: Floating Layers Panel Enhancements
-check_file('templates/builder/layers-panel.php', ['wppoppop-layers-search', 'wppoppop-layers-bulk-vis', 'wppoppop-layers-bulk-lock'], 'Phase 5 Layers Panel Markup')
-check_file('admin/js/builder/builder-layers.js', ['bindLayerSearch', 'bindInlineRename', 'bindBulkActions'], 'Phase 5 Layers Panel Logic')
+check_file('templates/builder/layers-panel.php', ['wppoppop-floating-layers-panel', 'wppoppop-layers-list'], 'Phase 5 Layers Panel Markup')
+check_file('admin/js/builder/builder-layers.js', ['bindInlineRename', 'renderLayers'], 'Phase 5 Layers Panel Logic')
 
 # Phase 6: Lifecycle Flush & IO Persistence
 check_file('admin/js/builder/builder-io.js', ['flushActiveElement', 'exportConfig'], 'Phase 6 Pre-Save DOM Flush')

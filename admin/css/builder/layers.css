@@ -370,3 +370,24 @@
     background: rgba(56, 189, 248, 0.18) !important;
     border-color: #38bdf8 !important;
 }
+
+/* Fix: action icons stay gray when a layer row is selected */
+.wppoppop-layer-item.active .wppoppop-layer-action-btn,
+.wppoppop-layer-item.active .wppoppop-layer-actions button {
+    color: #e2e8f0;
+}
+.wppoppop-layer-item.active .wppoppop-layer-action-btn:hover,
+.wppoppop-layer-item.active .wppoppop-layer-actions button:hover {
+    color: #1e293b;
+    background: #e2e8f0;
+}
+.wppoppop-layer-item.active .wppoppop-layer-btn-lock.active,
+.wppoppop-layer-item.active .wppoppop-layer-btn-lock.is-active,
+.wppoppop-layer-item.is-locked .wppoppop-layer-btn-lock {
+    color: #f59e0b;
+}
+.wppoppop-layer-item.active .wppoppop-layer-btn-vis.active,
+.wppoppop-layer-item.active .wppoppop-layer-btn-vis.is-active,
+.wppoppop-layer-item.is-hidden .wppoppop-layer-btn-vis {
+    color: #ef4444;
+}

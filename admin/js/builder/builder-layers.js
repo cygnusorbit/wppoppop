@@ -170,9 +170,7 @@
             this.bindPanelInteractions();
             this.bindEvents();
         this.renderLayers();
-        this.bindLayerSearch();
         this.bindInlineRename();
-        this.bindBulkActions();
         },
 
         bindPanelInteractions: function() {
