@@ -237,7 +237,7 @@
                 var itemHtml = 
                     '<div class="wppoppop-layer-drag-grip" title="Drag to reorder layer depth"><span class="dashicons dashicons-menu"></span></div>' +
                     '<div class="wppoppop-layer-icon"><span class="dashicons ' + iconClass + '"></span></div>' +
-                    '<div class="wppoppop-layer-title wppoppop-layer-title-editable" title="Double-click to rename" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
+                    '<div class="wppoppop-layer-title wppoppop-layer-title-editable" title="' + self.escapeHtml(layerTitle) + '">' + self.escapeHtml(layerTitle) + '</div>' +
                     '<div class="wppoppop-layer-actions">' +
                         '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-duplicate" title="Duplicate Layer" data-id="' + el.id + '"><span class="dashicons dashicons-admin-page"></span></button>' +
                         '<button type="button" class="wppoppop-layer-action-btn wppoppop-layer-btn-lock" title="' + (isLocked ? 'Unlock Layer' : 'Lock Layer') + '" data-id="' + el.id + '"><span class="dashicons ' + (isLocked ? 'dashicons-lock' : 'dashicons-unlock') + '"></span></button>' +
@@ -400,57 +400,68 @@
         },
 
         bindEvents: function() {
-        $(document).off('click.wppoppop_layer_row').on('click.wppoppop_layer_row', '.wppoppop-layer-item, #wppoppop-layers-list li', function(e) {
-            if ($(e.target).closest('.wppoppop-layer-actions, input, button').length) return;
-            var id = $(this).data('id') || $(this).attr('data-id') || $(this).attr('data-element-id');
-            if (id) {
-                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.selectElement === 'function') {
-                    window.WpPopPopBuilderCanvas.selectElement(id);
-                }
-                if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
-                    window.WpPopPopBuilderInspector.open(id);
-                }
-            }
-        });
-
             var self = this;
 
-            // 1. Layer item selection
-            $(document).off('click.layerSelect', '.wppoppop-layer-item').on('click.layerSelect', '.wppoppop-layer-item', function(e) {
-                if ($(e.target).closest('button, .wppoppop-layer-drag-grip').length) return;
+            // 1. Row click -> select on stage + slide in Layer Settings drawer
+            $(document).off('click.wppoppop_layer_row').on('click.wppoppop_layer_row', '.wppoppop-layer-item', function(e) {
+                if ($(e.target).closest('.wppoppop-layer-actions, .wppoppop-layer-drag-grip, input, button').length) return;
                 var id = $(this).attr('data-id');
-                if (window.WpPopPopBuilderCanvas) {
-                    window.WpPopPopBuilderCanvas.selectElement(id);
-                }
+                if (!id) return;
+                $('#wppoppop-layers-list .wppoppop-layer-action-btn').removeClass('is-clicked');
+                self.openLayerInspector(id);
             });
 
-            // 2. Lock / Unlock button
+            // 2. Action icon highlight: only the icon that was clicked turns active
+            $(document).off('click.wppoppop_layer_btnactive').on('click.wppoppop_layer_btnactive', '.wppoppop-layer-action-btn', function(e) {
+                e.stopPropagation();
+                var $btn = $(this);
+                $('#wppoppop-layers-list .wppoppop-layer-action-btn').not($btn).removeClass('is-clicked');
+                $btn.addClass('is-clicked');
+            });
+
+            // 3. Lock / Unlock
             $(document).off('click.layerLock', '.wppoppop-layer-btn-lock').on('click.layerLock', '.wppoppop-layer-btn-lock', function(e) {
                 e.stopPropagation();
-                var id = $(this).attr('data-id');
-                self.toggleLock(id);
+                self.toggleLock($(this).attr('data-id'));
             });
 
-            // 3. Visibility button
+            // 4. Visibility
             $(document).off('click.layerVis', '.wppoppop-layer-btn-vis').on('click.layerVis', '.wppoppop-layer-btn-vis', function(e) {
                 e.stopPropagation();
-                var id = $(this).attr('data-id');
-                self.toggleVisibility(id);
+                self.toggleVisibility($(this).attr('data-id'));
             });
 
-            // 4. Duplicate button
+            // 5. Duplicate
             $(document).off('click.layerDup', '.wppoppop-layer-btn-duplicate').on('click.layerDup', '.wppoppop-layer-btn-duplicate', function(e) {
                 e.stopPropagation();
-                var id = $(this).attr('data-id');
-                self.duplicateLayer(id);
+                self.duplicateLayer($(this).attr('data-id'));
             });
 
-            // 5. Delete button
+            // 6. Delete
             $(document).off('click.layerDel', '.wppoppop-layer-btn-del').on('click.layerDel', '.wppoppop-layer-btn-del', function(e) {
                 e.stopPropagation();
-                var id = $(this).attr('data-id');
-                self.deleteLayer(id);
+                self.deleteLayer($(this).attr('data-id'));
             });
+        },
+
+        openLayerInspector: function(id) {
+            var clean = String(id).replace(/^(wppoppop-el-|el-)/, '');
+            var core = window.WpPopPopBuilderCore;
+            if (core && core.state) {
+                core.state.activeId = clean;
+            }
+            if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.selectElement === 'function') {
+                window.WpPopPopBuilderCanvas.selectElement(clean);
+            }
+            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+                window.WpPopPopBuilderInspector.open(clean);
+            }
+            var reg = window.WpPopPopElementsRegistry;
+            if (reg && typeof reg.forceSlideInDrawer === 'function') {
+                reg.forceSlideInDrawer(true);
+            }
+            $('.wppoppop-layer-item').removeClass('active');
+            $('#layer-item-' + clean).addClass('active');
         },
 
         highlightLayer: function(id) {

@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div id="wppoppop-floating-layers-panel" class="wppoppop-floating-layers-panel" style="z-index:100000;">
+<div id="wppoppop-floating-layers-panel" class="wppoppop-floating-layers-panel">
 
     
     
@@ -26,8 +26,3 @@ if (!defined('ABSPATH')) {
         <!-- Dynamically rendered and sortable layer items -->
     </div>
 </div>
-
-
-    <div class="wppoppop-layer-template-stub" style="display:none;" aria-hidden="true">
-        <span class="wppoppop-layer-title wppoppop-layer-title-editable">Layer Title</span>
-    </div>

@@ -3252,11 +3252,11 @@
 
 
 /* === WPPOPPOP_INSPECTOR_LAYOUT_FIX_START === */
-__WPPOPPOP_INSPECTOR_LAYOUT_FIX_JS_V1__
+
 (function($){
     'use strict';
 
-    var GUARD =  + JS_GUARD + r;
+    var GUARD = '__wppoppop_layout_fix_v1';
 
     function setTabRolesAndPanels() {
         var $drawer = $('#wppoppop-inspector-drawer');
@@ -3411,7 +3411,7 @@ __WPPOPPOP_INSPECTOR_LAYOUT_FIX_JS_V1__
 
 
 /* === WPPOPPOP_LAYER_PANEL_SYNC_START === */
-__WPPOPPOP_LAYER_PANEL_SYNC_V1__
+
 (function($){
     'use strict';
 
