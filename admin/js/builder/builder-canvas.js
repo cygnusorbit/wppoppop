@@ -515,7 +515,7 @@
         bindPreviewModeControls: function() {
             var self = this;
 
-            $('#wppoppop-btn-preview').on('click', function(e) {
+            $('#wppoppop-btn-preview').off('click.wppoppop_preview_toggle').on('click.wppoppop_preview_toggle', function(e) {
                 e.preventDefault();
                 if (self.isPreview) {
                     self.exitPreviewMode();
@@ -627,6 +627,7 @@
             var $box = $('#wppoppop-canvas-box');
             var $handle = $('#wppoppop-canvas-corner-handle');
 
+            if (!$handle.length || !$box.length) return;
             $handle.off('mousedown.canvasCorner pointerdown.canvasCorner').on('mousedown.canvasCorner pointerdown.canvasCorner', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -865,29 +866,6 @@
                     var iSize = parseInt(el.iconSize || 36, 10);
                     return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' + iColor + ';font-size:' + iSize + 'px;"><i class="' + iClass + '"></i></div>';
 
-                case 'divider':
-                    var dStyle = el.dividerStyle || 'solid';
-                    var dWeight = parseInt(el.dividerWeight || 2, 10);
-                    if (dStyle === 'double' && dWeight < 3) dWeight = 4;
-                    var dColor = el.dividerColor || el.color || '#94a3b8';
-                    var dPct = parseInt(el.dividerWidthPct || 100, 10);
-                    var dAlign = el.dividerAlign || 'center';
-                    var marginStyle = 'margin: 0 auto;';
-                    if (dAlign === 'left') marginStyle = 'margin: 0 auto 0 0;';
-                    if (dAlign === 'right') marginStyle = 'margin: 0 0 0 auto;';
-
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;box-sizing:border-box;padding:0 4px;">' +
-                           '<hr style="width:' + dPct + '%;border:none;border-top:' + dWeight + 'px ' + dStyle + ' ' + dColor + ';' + marginStyle + 'padding:0;" />' +
-                           '</div>';
-
-                case 'icon':
-                    var iClass = el.iconClass || el.content || 'fas fa-star';
-                    if (iClass.indexOf('fa') === 0 && iClass.indexOf(' ') === -1) {
-                        iClass = 'fas ' + iClass;
-                    }
-                    var iColor = el.iconColor || el.color || '#38bdf8';
-                    var iSize = parseInt(el.iconSize || 36, 10);
-                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justifyVal + ';color:' + iColor + ';font-size:' + iSize + 'px;"><i class="' + iClass + '"></i></div>';
                 default:
                     return '<div style="padding:6px;font-size:12px;">' + label + '</div>';
             }
@@ -1201,21 +1179,3 @@ window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
 })(jQuery);
 
-
-    // Autonomous Stage Node Factory Delegation Bridge (WpPopPopElementsRegistry)
-    if (window.WpPopPopBuilderCanvas && !window.WpPopPopBuilderCanvas._stageRegistryBridged) {
-        window.WpPopPopBuilderCanvas._stageRegistryBridged = true;
-        var _origBuildInner = window.WpPopPopBuilderCanvas.buildElementInnerHtml || window.WpPopPopBuilderCanvas.getElementInnerHtml;
-        if (typeof _origBuildInner === 'function') {
-            var fnName = window.WpPopPopBuilderCanvas.buildElementInnerHtml ? 'buildElementInnerHtml' : 'getElementInnerHtml';
-            window.WpPopPopBuilderCanvas[fnName] = function(el) {
-                if (window.WpPopPopElementsRegistry && typeof window.WpPopPopElementsRegistry.renderStage === 'function') {
-                    var customHtml = window.WpPopPopElementsRegistry.renderStage(el);
-                    if (customHtml !== null && customHtml !== undefined) {
-                        return customHtml;
-                    }
-                }
-                return _origBuildInner.apply(this, arguments);
-            };
-        }
-    }

@@ -408,8 +408,8 @@
         init: function() {
             this.bindWorkspacePan();
             this.updateCanvasTransform();
-        this.initThemeMode();
-        this.bindModalEvents();
+            this.initThemeMode();
+            this.bindModalEvents();
             this.bindCanvasTabs();
             this.bindViewportToggles();
             this.bindKeyboardShortcuts();
@@ -539,8 +539,6 @@
                 height: 400,
                 bg_mode: 'solid',
                 bg_transparent: true,
-                bg_color: 'transparent',
-                bg_mode: 'solid',
                 bg_color: '#ffffff',
                 grad_color1: '#3b82f6',
                 grad_color2: '#1d4ed8',
