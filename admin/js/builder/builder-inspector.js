@@ -2740,7 +2740,8 @@
                 this.style.setProperty('display', 'inline-flex', 'important');
                 this.style.setProperty('align-items', 'center', 'important');
                 this.style.setProperty('justify-content', 'center', 'important');
-                this.style.setProperty('flex', '1', 'important');
+                this.style.setProperty('flex', '1 1 0', 'important');
+                this.style.setProperty('min-width', '0', 'important');
             } else {
                 this.style.setProperty('display', 'none', 'important');
             }

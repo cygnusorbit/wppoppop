@@ -73,7 +73,9 @@
         ensureFiveTabDOM: function() {
             var $drawer = $('#wppoppop-inspector-drawer');
             if (!$drawer.length) return;
-            var $header = $drawer.find('.wppoppop-inspector-header, .wppoppop-inspector-tabs').first();
+            // Purge stray Data/Advanced buttons that were injected into the title header (next to the X button)
+            $drawer.find('.wppoppop-inspector-header [data-tab], header [data-tab]').not('#wppoppop-inspector-tabs-bar [data-tab]').remove();
+            var $header = $drawer.find('#wppoppop-inspector-tabs-bar, .wppoppop-inspector-tabs').first();
             if ($header.length) {
                 // Rename Basic to Content and hide redundant Settings tab button
                 var $basicBtn = $header.find('[data-tab="basic"], [data-tab="content"]').first();
@@ -84,10 +86,10 @@
 
                 // Inject Data & Advanced tab buttons if missing from header
                 if (!$header.find('[data-tab="data"]').length) {
-                    $('<button type="button" class="wppoppop-insp-tab wppoppop-insp-tab-btn wppoppop-form-family-tab" id="insp-tab-nav-data" data-tab="data" style="display:none;flex:1;background:transparent;border:none;color:#94a3b8;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;cursor:pointer;height:100%;padding:0 2px;">Data</button>').appendTo($header);
+                    $('<button type="button" class="wppoppop-insp-tab wppoppop-insp-tab-btn wppoppop-form-family-tab" id="insp-tab-nav-data" data-tab="data" style="display:none;">Data</button>').appendTo($header);
                 }
                 if (!$header.find('[data-tab="advanced"]').length) {
-                    $('<button type="button" class="wppoppop-insp-tab wppoppop-insp-tab-btn wppoppop-form-family-tab" id="insp-tab-nav-advanced" data-tab="advanced" style="display:none;flex:1;background:transparent;border:none;color:#94a3b8;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;cursor:pointer;height:100%;padding:0 2px;">Advanced</button>').appendTo($header);
+                    $('<button type="button" class="wppoppop-insp-tab wppoppop-insp-tab-btn wppoppop-form-family-tab" id="insp-tab-nav-advanced" data-tab="advanced" style="display:none;">Advanced</button>').appendTo($header);
                 }
             }
             // Ensure #insp-tab-data and #insp-tab-advanced panes sit inside .wppoppop-inspector-body

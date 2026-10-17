@@ -1061,3 +1061,37 @@ body.wppoppop-space-held #wppoppop-canvas-corner-handle {
     color: #38bdf8 !important;
 }
 /* === DRAWER_INSPECTOR_ICON_ACTIVE_ONLY_ON_CLICK_END === */
+
+
+/* === WPPOPPOP 5-TAB SINGLE ROW FIX === */
+#wppoppop-inspector-tabs-bar,
+.wppoppop-inspector-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    overflow: hidden !important;
+}
+#wppoppop-inspector-tabs-bar .wppoppop-insp-tab,
+.wppoppop-inspector-tabs .wppoppop-insp-tab {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    height: auto !important;
+    padding: 9px 2px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none;
+    appearance: none;
+}
+#wppoppop-inspector-tabs-bar .wppoppop-insp-tab[style*="display: none"],
+.wppoppop-inspector-tabs .wppoppop-insp-tab[style*="display: none"] {
+    display: none !important;
+}
+/* Safety: never show tab buttons inside the title header */
+.wppoppop-inspector-header .wppoppop-insp-tab { display: none !important; }
