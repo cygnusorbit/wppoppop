@@ -506,6 +506,26 @@ if (!defined('ABSPATH')) exit;
         </div>
 
        
+    
+        <!-- TABS 2-5: DECOMPOSED PANES (templates/builder/elements/tab-*.php) -->
+        <?php
+        $wppoppop_tab_panes = array(
+            'style'    => 'tab-style-full.php',
+            'logic'    => 'tab-logic-conditional.php',
+            'data'     => 'tab-data-form.php',
+            'advanced' => 'tab-advanced-form.php',
+        );
+        foreach ( $wppoppop_tab_panes as $wppoppop_tab_key => $wppoppop_tab_file ) :
+            ?>
+        <div id="insp-tab-<?php echo esc_attr( $wppoppop_tab_key ); ?>" class="wppoppop-tab-pane wppoppop-insp-content" style="display:none;">
+            <?php
+            $wppoppop_tab_path = __DIR__ . '/elements/' . $wppoppop_tab_file;
+            if ( file_exists( $wppoppop_tab_path ) ) {
+                include $wppoppop_tab_path;
+            }
+            ?>
+        </div>
+        <?php endforeach; ?>
     </div>
 </aside>
 
