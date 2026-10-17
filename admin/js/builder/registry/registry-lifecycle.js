@@ -1,0 +1,192 @@
+/**
+ * WpPopPop Builder Registry Module: registry-lifecycle
+ * Split from builder-elements-registry.js (load order matters; see class-admin-assets.php)
+ */
+/* === WPPOPPOP_PHASE4_AUTONOMOUS_LIFECYCLE_START === */
+(function(window, $) {
+    'use strict';
+
+    window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    var Reg = window.WpPopPopElementsRegistry;
+
+    Reg.flushElementFromDOM = function(targetEl) {
+        var el = targetEl || (typeof Reg.resolveElement === 'function' ? Reg.resolveElement() : null);
+        if (!el) return null;
+
+        var rawType = String(el.type || 'label').toLowerCase().trim();
+        var canonical = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[rawType]) ? Reg.ALIAS_MAP[rawType] : rawType;
+        var isForm = Reg.FORM_FAMILY && Reg.FORM_FAMILY.indexOf(canonical) !== -1;
+
+        // 1. Flush Layer Name & Geometry (X, Y, W, H)
+        var $nameInp =$('#prop-layer-name, #prop-name').first();
+        if ($nameInp.length &&$nameInp.val()) {
+            el.name = $nameInp.val();
+        }
+        var $xInp =$('#prop-x, #prop-pos-left').first();
+        var $yInp =$('#prop-y, #prop-pos-top').first();
+        var $wInp =$('#prop-w, #prop-size-width').first();
+        var $hInp =$('#prop-h, #prop-size-height').first();
+        if ($xInp.length && $xInp.val() !== '') { el.x = parseInt($xInp.val(), 10) || 0; el.left = el.x; }
+        if ($yInp.length && $yInp.val() !== '') { el.y = parseInt($yInp.val(), 10) || 0; el.top = el.y; }
+        if ($wInp.length && $wInp.val() !== '') { el.width = Math.max(16, parseInt($wInp.val(), 10) || 160); el.w = el.width; }
+        if ($hInp.length && $hInp.val() !== '') { el.height = Math.max(16, parseInt($hInp.val(), 10) || 44); el.h = el.height; }
+
+        // 2. Flush Active Element-Specific Panel (.wppoppop-gp-bind)
+        var panelSel = (Reg.PANEL_MAP && Reg.PANEL_MAP[canonical]) ? Reg.PANEL_MAP[canonical] : ('#panel-elem-' + canonical);
+        $(panelSel).find('.wppoppop-gp-bind').each(function() {
+            var $inp =$(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            el[prop] = $inp.is(':checkbox') ? $inp.is(':checked') :$inp.val();
+        });
+
+        // 3. Flush Shared Content Footer (Autocomplete, Animation, Required)
+        if ($('#prop-gp-autocomplete').length) {
+            el.autocomplete = $('#prop-gp-autocomplete').val() || 'off';
+        }
+        if ($('#prop-anim-in').length) {
+            el.animIn       = $('#prop-anim-in').val() || 'none';
+            el.animation    = el.animIn;
+            el.animOut      = $('#prop-anim-out').val() || 'none';
+            el.animDuration = parseInt($('#prop-anim-duration').val(), 10) || 1000;
+            el.animDelay    = parseInt($('#prop-anim-delay').val(), 10) || 0;
+        }
+        if (isForm && $('#prop-gp-required').length) {
+            el.required = $('#prop-gp-required').is(':checked');
+        }
+
+        // 4. Flush Style Tab (Media Suite + Form Input Style Suite + Inline CSS Repeater)
+        if (!isForm && $('#insp-section-media-style-suite').length) {
+            var op = parseInt($('#prop-opacity').val(), 10);
+            if (!isNaN(op)) el.opacity = op;
+            el.fontFamily    = $('#prop-font-family').val() || 'inherit';
+            el.fontSize      = parseInt($('#prop-font-size').val(), 10) || 16;
+            el.fontWeight    = $('#prop-font-weight').val() || '400';
+            el.lineHeight    = parseFloat($('#prop-line-height').val()) || 1.4;
+            el.letterSpacing = parseFloat($('#prop-letter-spacing').val()) || 0;
+            el.textAlign     = $('#prop-text-align').val() || 'left';
+            el.color         = $('#prop-color').val() || '#1e293b';
+            if (!(canonical === 'shape' && !el.bgColor)) { el.bgColor       = $('#prop-bg-color').val() || '#ffffff'; }
+            el.padTop        = parseInt($('#prop-pad-top').val(), 10) || 0;
+            el.padRight      = parseInt($('#prop-pad-right').val(), 10) || 0;
+            el.padBottom     = parseInt($('#prop-pad-bottom').val(), 10) || 0;
+            el.padLeft       = parseInt($('#prop-pad-left').val(), 10) || 0;
+            el.borderWidth   = parseInt($('#prop-border-width').val(), 10) || 0;
+            el.borderStyle   = $('#prop-border-style').val() || 'none';
+            el.borderRadius  = parseInt($('#prop-border-radius').val(), 10) || 0;
+            el.borderColor   = $('#prop-border-color').val() || '#cbd5e1';
+            el.shadowX       = parseInt($('#prop-shadow-x').val(), 10) || 0;
+            el.shadowY       = parseInt($('#prop-shadow-y').val(), 10) || 0;
+            el.shadowBlur    = parseInt($('#prop-shadow-blur').val(), 10) || 0;
+            el.shadowSpread  = parseInt($('#prop-shadow-spread').val(), 10) || 0;
+            el.shadowColor   = $('#prop-shadow-color').val() || 'rgba(0,0,0,0.15)';
+            el.hoverBg       = $('#prop-hover-bg').val() || '#1d4ed8';
+            el.hoverColor    = $('#prop-hover-color').val() || '#ffffff';
+            el.hoverBorder   = $('#prop-hover-border').val() || '#1d4ed8';
+        }
+
+        if (isForm) {
+            var $activeAlign =$('#gp-form-text-align-group .wppoppop-align-seg-btn.active');
+            if ($activeAlign.length) {
+                el.textAlign = $activeAlign.attr('data-align') || 'left';
+            }
+            el.iconLeft        = $('#prop-input-icon-left').val() || '';
+            el.iconLeftOffset  = parseInt($('#prop-input-icon-left-offset').val(), 10) || 10;
+            el.iconRight       = $('#prop-input-icon-right').val() || '';
+            el.iconRightOffset = parseInt($('#prop-input-icon-right-offset').val(), 10) || 10;
+        }
+
+        if ($('#prop-gp-style-css-class').length) {
+            el.customClass = $('#prop-gp-style-css-class').val() || '';
+            el.cssClass    = el.customClass;
+        }
+
+        var stylesArr = [];
+        $('#wppoppop-gp-inline-styles-list .wppoppop-gp-repeater-item').each(function() {
+            var p = $.trim($(this).find('.gp-css-prop').val() || '');
+            var v = $.trim($(this).find('.gp-css-val').val() || '');
+            if (p || v) stylesArr.push({ prop: p, value: v });
+        });
+        el.inlineStyles = stylesArr;
+
+        // 5. Flush Conditional Logic Repeater
+        if ($('#prop-logic-enabled').length) {
+            el.logicEnabled = $('#prop-logic-enabled').is(':checked');
+            el.logicAction  = $('#prop-logic-action').val() || 'show';
+            el.logicMatch   = $('#prop-logic-match').val() || 'all';
+            var rulesArr = [];
+            $('#wppoppop-gp-logic-rules-list .wppoppop-gp-repeater-item').each(function() {
+                var f  = $.trim($(this).find('.gp-rule-field').val() || '');
+                var op = $(this).find('.gp-rule-op').val() || 'is';
+                var v  = $.trim($(this).find('.gp-rule-val').val() || '');
+                if (f || op === 'not_empty') {
+                    rulesArr.push({ field: f, operator: op, value: v });
+                }
+            });
+            el.logicRules = rulesArr;
+        }
+
+        // 6. Flush Form Data & Advanced Tabs
+        if (isForm) {
+            el.defaultValue   = $('#prop-data-default').val() || '';
+            el.dynamicDefault = $('#prop-data-dynamic').is(':checked');
+            el.paramName      = $('#prop-data-param').val() || '';
+            el.readOnly       = $('#prop-data-readonly').is(':checked');
+            el.saveToDb       = $('#prop-data-savedb').is(':checked');
+            el.fieldId        = $('#prop-adv-id').val() || el.id || '';
+            el.fieldName      = el.fieldId;
+            el.token          = el.fieldId;
+            el.inputMask      = $('#prop-adv-mask').val() || '';
+
+            var fArr = [];
+            $('.gp-adv-filter:checked').each(function() { fArr.push($(this).val()); });
+            el.filters = fArr;
+
+            var vArr = [];
+            $('.gp-adv-validator:checked').each(function() { vArr.push($(this).val()); });
+            el.validators = vArr;
+        }
+
+        return el;
+    };
+
+    Reg.refreshAllStageElements = function() {
+        if (!window.WpPopPopBuilderCanvas || typeof window.WpPopPopBuilderCanvas.getActiveElements !== 'function') {
+            return;
+        }
+        var list = window.WpPopPopBuilderCanvas.getActiveElements() || [];
+        for (var i = 0; i < list.length; i++) {
+            var item = list[i];
+            if (!item || !item.type) continue;
+            var rawT = String(item.type).toLowerCase().trim();
+            var canT = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[rawT]) ? Reg.ALIAS_MAP[rawT] : rawT;
+            if (Reg.FORM_FAMILY && Reg.FORM_FAMILY.indexOf(canT) !== -1) {
+                if (typeof Reg.renderFormElementStage === 'function') Reg.renderFormElementStage(item);
+            } else {
+                if (typeof Reg.renderMediaElementStage === 'function') Reg.renderMediaElementStage(item);
+            }
+        }
+    };
+
+    function bindPhase4LifecycleHooks() {
+        if (window.WpPopPopBuilderCanvas && !window.WpPopPopBuilderCanvas._phase4StageHooked) {
+            window.WpPopPopBuilderCanvas._phase4StageHooked = true;
+            var origRenderCanvas = window.WpPopPopBuilderCanvas.renderCanvas;
+            if (typeof origRenderCanvas === 'function') {
+                window.WpPopPopBuilderCanvas.renderCanvas = function() {
+                    var res = origRenderCanvas.apply(this, arguments);
+                    Reg.refreshAllStageElements();
+                    return res;
+                };
+            }
+        }
+        setTimeout(function() { Reg.refreshAllStageElements(); }, 180);
+    }
+
+    $(function() {
+        bindPhase4LifecycleHooks();
+        setTimeout(bindPhase4LifecycleHooks, 250);
+    });
+    bindPhase4LifecycleHooks();
+})(window, jQuery);
+/* === WPPOPPOP_PHASE4_AUTONOMOUS_LIFECYCLE_END === */

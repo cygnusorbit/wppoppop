@@ -46,7 +46,7 @@
         renderStage: function(el) {
             var preset = el.shapePreset || el.shape_preset || 'circle';
             var geom = PRESET_SVGS[preset] || PRESET_SVGS.circle;
-            var fill = el.transparentFill ? 'none' : (el.bgColor || el.shapeFill || el.shape_fill || '#3b82f6');
+            var fill = el.shapeNoFill ? 'none' : (el.shapeFill || el.shape_fill || '#3b82f6');
             var stroke = el.strokeColor || el.shapeStroke || el.shape_stroke || '#1d4ed8';
             var strokeW = (el.strokeWidth !== undefined) ? el.strokeWidth : ((el.shapeStrokeWidth !== undefined) ? el.shapeStrokeWidth : 0);
             var rot = parseInt(el.shapeRotate || el.shape_rotate || 0, 10);

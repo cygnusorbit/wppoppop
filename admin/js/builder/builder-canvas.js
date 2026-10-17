@@ -738,7 +738,7 @@
             if (el.letterSpacing) $div.css('letterSpacing', el.letterSpacing + 'px');
             if (el.textAlign) $div.css('textAlign', el.textAlign);
             if (el.color) $div.css('color', el.color);
-            if (el.bgColor) $div.css('backgroundColor', el.bgColor);
+            if (el.bgColor && !el.transparentFill) $div.css('backgroundColor', el.bgColor);
 
             $div.html(this.getInnerMarkup(el));
 

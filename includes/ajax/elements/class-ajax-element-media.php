@@ -26,6 +26,7 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['shapeStroke']))        $clean['shapeStroke']        = sanitize_hex_color($el['shapeStroke']) ?: sanitize_text_field($el['shapeStroke']);
         if (isset($el['shapeStrokeWidth']))   $clean['shapeStrokeWidth']   = intval($el['shapeStrokeWidth']);
         if (isset($el['shapeRotate']))        $clean['shapeRotate']        = intval($el['shapeRotate']);
+        if (isset($el['shapeNoFill']))        $clean['shapeNoFill']        = !empty($el['shapeNoFill']) && $el['shapeNoFill'] !== 'false';
         if (isset($el['strokeWidth']))        $clean['strokeWidth']        = max(0, intval($el['strokeWidth']));
         if (isset($el['strokeColor']))        $clean['strokeColor']        = sanitize_hex_color($el['strokeColor']) ?: sanitize_text_field($el['strokeColor']);
         if (isset($el['rotate']))             $clean['rotate']             = intval($el['rotate']);

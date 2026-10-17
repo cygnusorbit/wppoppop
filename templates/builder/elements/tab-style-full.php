@@ -64,9 +64,9 @@ if (!defined('ABSPATH')) exit;
     </div>
 </div>
 
-<!-- C. BACKGROUND / FILL COLOR -->
+<!-- C. BACKGROUND COLOR (layer box) -->
 <div class="wppoppop-insp-section" id="insp-section-bg-color" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">BACKGROUND / FILL COLOR</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">BACKGROUND COLOR</div>
     <div style="display:flex; align-items:center; gap:10px;">
         <input type="color" id="prop-bg-color" class="widefat wppoppop-gp-bind" data-prop="bgColor" value="#3b82f6" style="height:34px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:6px; cursor:pointer; flex:1;" />
         <label style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#cbd5e1; cursor:pointer; white-space:nowrap;">

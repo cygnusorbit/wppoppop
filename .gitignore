@@ -13,3 +13,7 @@ vendor/
 *.log
 ref_greenpop/
 .patch-backups/
+*.bak
+*.backup-*
+*.guardian.bak
+*.bak-*

@@ -371,7 +371,7 @@ class WpPopPop_Front_Renderer {
                 break;
             case 'shape':
                 $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'circle');
-                $fill = !empty($el['transparentFill']) ? 'none' : esc_attr(!empty($el['bgColor']) ? $el['bgColor'] : (!empty($el['shapeFill']) ? $el['shapeFill'] : '#3b82f6'));
+                $fill = !empty($el['shapeNoFill']) ? 'none' : esc_attr(!empty($el['shapeFill']) ? $el['shapeFill'] : '#3b82f6');
                 $stroke = esc_attr(!empty($el['strokeColor']) ? $el['strokeColor'] : (!empty($el['shapeStroke']) ? $el['shapeStroke'] : 'transparent'));
                 $stroke_width = intval($el['strokeWidth'] ?? ($el['shapeStrokeWidth'] ?? 0));
                 $rotate = !empty($el['rotate']) ? intval($el['rotate']) : (!empty($el['shapeRotate']) ? intval($el['shapeRotate']) : intval($el['rotation'] ?? 0));
@@ -386,6 +386,8 @@ class WpPopPop_Front_Renderer {
                     "opacity:{$opac}",
                     'box-sizing:border-box'
                 ];
+                if (!empty($el['bgColor']) && empty($el['transparentFill'])) { $shape_style[] = 'background-color:' . sanitize_text_field($el['bgColor']); }
+                $shape_style[] = 'border-radius:' . $bRad . 'px';
                 $shape_style_attr = esc_attr(implode(';', $shape_style) . $anim_style);
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-shape ' . $anim_class . '" style="' . $shape_style_attr . '">' . $svg . '</div>';
 

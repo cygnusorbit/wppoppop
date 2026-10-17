@@ -1,0 +1,239 @@
+/**
+ * WpPopPop Builder Registry Module: registry-media
+ * Split from builder-elements-registry.js (load order matters; see class-admin-assets.php)
+ */
+/* === WPPOPPOP_PHASE2_MEDIA_FIELD_VERIFICATION_START === */
+(function(window, $) {
+    'use strict';
+
+    window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    var Reg = window.WpPopPopElementsRegistry;
+
+    var SVG_SHAPE_PATHS = {
+        'rectangle': '<rect x="2" y="2" width="96" height="96" rx="0" />',
+        'rect':      '<rect x="2" y="2" width="96" height="96" rx="0" />',
+        'square':    '<rect x="2" y="2" width="96" height="96" rx="0" />',
+        'rounded':   '<rect x="2" y="2" width="96" height="96" rx="16" />',
+        'circle':    '<circle cx="50" cy="50" r="48" />',
+        'pill':      '<rect x="2" y="15" width="96" height="70" rx="35" />',
+        'triangle':  '<polygon points="50,4 96,96 4,96" />',
+        'diamond':   '<polygon points="50,2 98,50 50,98 2,50" />',
+        'star':      '<polygon points="50,3 63,36 98,38 70,60 79,95 50,75 21,95 30,60 2,38 37,36" />',
+        'heart':     '<path d="M50,88 C50,88 10,60 10,32 C10,16 23,6 37,6 C45,6 50,12 50,18 C50,12 55,6 63,6 C77,6 90,16 90,32 C90,60 50,88 50,88 Z" />',
+        'pentagon':  '<polygon points="50,3 97,38 79,94 21,94 3,38" />',
+        'hexagon':   '<polygon points="25,5 75,5 98,50 75,95 25,95 2,50" />',
+        'badge':     '<polygon points="50,2 62,13 78,10 83,25 97,33 93,49 99,64 86,74 83,90 67,91 56,99 44,91 28,90 25,74 12,64 18,49 14,33 28,25 33,10 48,13" />'
+    };
+
+    Reg.syncMediaSubRows = function(el) {
+        if (!el) return;
+        var imgAct = $('#prop-image-action').val() || el.imageAction || 'none';
+        $('#prop-image-link-wrap').toggle(imgAct === 'url');
+
+        var cAct = $('#prop-close-action').val() || el.closeAction || 'close';
+        $('#prop-close-cookie-wrap').toggle(cAct === 'close_forever');
+
+        var pMode = $('#prop-progress-mode').val() || el.progressMode || 'manual';
+        $('#prop-progress-val-wrap').toggle(pMode === 'manual');
+
+        var bAct = $('#prop-button-action').val() || el.buttonAction || 'url';
+        $('#prop-button-url-wrap').toggle(bAct === 'url' || bAct === 'link');
+        $('#prop-button-goto-wrap').toggle(bAct === 'goto_canvas' || bAct === 'step');
+
+        var sAct = $('#prop-submit-action').val() || el.submitAction || 'message';
+        $('#prop-submit-msg-wrap').toggle(sAct === 'message');
+        $('#prop-submit-goto-wrap').toggle(sAct === 'goto_canvas');
+        $('#prop-submit-redir-wrap').toggle(sAct === 'redirect');
+    };
+
+    Reg.renderMediaElementStage = function(el) {
+        if (!el) return;
+        var $node = (typeof Reg.getStageNode === 'function') ? Reg.getStageNode(el) : $();
+        if (!$node || !$node.length) return;
+
+        var rawType = String(el.type || 'label').toLowerCase().trim();
+        var canonical = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[rawType]) ? Reg.ALIAS_MAP[rawType] : rawType;
+
+        var $handles = $node.children('.ui-resizable-handle, .wppoppop-resize-handle').detach();
+        var innerHtml = null;
+
+        if (canonical === 'shape') {
+            var preset = el.shapePreset || 'rectangle';
+            var svgInner = SVG_SHAPE_PATHS[preset] || SVG_SHAPE_PATHS['rectangle'];
+            var fillCol = el.shapeNoFill ? 'none' : (el.shapeFill || '#3b82f6');
+            var stWidth = parseInt(el.strokeWidth, 10) || 0;
+            var stCol   = el.strokeColor || '#0284c7';
+            var rot     = parseInt(el.rotate, 10) || 0;
+            $node.css({ 'transform': 'rotate(' + rot + 'deg)' });
+            innerHtml = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;display:block;pointer-events:none;overflow:visible;" fill="' + fillCol + '" stroke="' + (stWidth > 0 ? stCol : 'none') + '" stroke-width="' + stWidth + '">' + svgInner + '</svg>';
+        } else if (canonical === 'image') {
+            var src = $.trim(el.src || el.imageUrl || '');
+            var alt = $('<div>').text(el.alt || 'Image').html();
+            var fit = el.objectFit || 'contain';
+            if (src) {
+                innerHtml = '<img src="' + src + '" alt="' + alt + '" style="width:100%;height:100%;object-fit:' + fit + ';display:block;border-radius:inherit;pointer-events:none;">';
+            } else {
+                innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1e293b;color:#94a3b8;font-size:11px;border:1px dashed #475569;border-radius:inherit;pointer-events:none;"><span class="dashicons dashicons-format-image" style="font-size:24px;width:24px;height:24px;margin-bottom:4px;"></span><span>Select Image</span></div>';
+            }
+        } else if (canonical === 'video') {
+            var prov = (el.videoProvider || 'youtube').toUpperCase();
+            var ratio = el.aspectRatio || '16:9';
+            var vUrl = $('<div>').text(el.videoUrl || 'No video URL set').html();
+            var badges = [];
+            if (el.autoplay) badges.push('Autoplay');
+            if (el.muted) badges.push('Muted');
+            if (el.loop) badges.push('Loop');
+            innerHtml = '<div style="width:100%;height:100%;background:#0f172a;color:#f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #334155;border-radius:inherit;padding:8px;box-sizing:border-box;pointer-events:none;text-align:center;">' +
+                '<span class="dashicons dashicons-video-alt3" style="font-size:28px;width:28px;height:28px;color:#f43f5e;margin-bottom:4px;"></span>' +
+                '<div style="font-size:11px;font-weight:700;">' + prov + ' (' + ratio + ')</div>' +
+                '<div style="font-size:10px;color:#94a3b8;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vUrl + '</div>' +
+                (badges.length ? '<div style="font-size:9px;color:#38bdf8;margin-top:3px;">' + badges.join(' / ') + '</div>' : '') +
+                '</div>';
+        } else if (canonical === 'label') {
+            var tag = (el.tag || el.headingTag || 'div').toLowerCase();
+            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].indexOf(tag) === -1) tag = 'div';
+            var txt = el.content !== undefined ? el.content : (el.titleText || el.paragraphText || el.text || 'Label Text');
+            var tf  = el.textTransform || 'none';
+            innerHtml = '<' + tag + ' class="wppoppop-stage-label-inner" style="margin:0;padding:0;width:100%;height:100%;text-transform:' + tf + ';font:inherit;color:inherit;line-height:inherit;letter-spacing:inherit;text-align:inherit;pointer-events:none;">' + txt + '</' + tag + '>';
+        } else if (canonical === 'html') {
+            var hTag = (el.tag === 'span') ? 'span' : 'div';
+            var ovf  = el.overflow || 'hidden';
+            var rawCode = el.content || '<div style="padding:8px;color:#64748b;font-size:12px;">Custom HTML Block</div>';
+            innerHtml = '<' + hTag + ' style="width:100%;height:100%;overflow:' + ovf + ';pointer-events:none;">' + rawCode + '</' + hTag + '>';
+        } else if (canonical === 'close') {
+            var sym = el.closeSymbol || 'times';
+            var cSize = parseInt(el.iconSize, 10) || 20;
+            var glyphMarkup = '&times;';
+            if (sym === 'text_close') {
+                glyphMarkup = '<span style="font-size:' + Math.max(10, Math.round(cSize * 0.65)) + 'px;font-weight:700;letter-spacing:0.5px;">CLOSE</span>';
+            } else if (sym.indexOf('dashicons-') === 0) {
+                glyphMarkup = '<span class="dashicons ' + sym + '" style="font-size:' + cSize + 'px;width:' + cSize + 'px;height:' + cSize + 'px;"></span>';
+            } else {
+                glyphMarkup = '<span style="font-size:' + cSize + 'px;line-height:1;">&times;</span>';
+            }
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;">' + glyphMarkup + '</div>';
+        } else if (canonical === 'icon') {
+            var iCls = $.trim(el.iconClass || 'dashicons-star-filled');
+            var iSize = parseInt(el.iconSize, 10) || 36;
+            var iRot  = parseInt(el.rotate, 10) || 0;
+            var fullCls = (iCls.indexOf('dashicons-') === 0 && iCls.indexOf('dashicons ') === -1) ? ('dashicons ' + iCls) : iCls;
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform:rotate(' + iRot + 'deg);pointer-events:none;">' +
+                '<i class="' + fullCls + '" style="font-size:' + iSize + 'px;width:' + iSize + 'px;height:' + iSize + 'px;line-height:1;display:inline-flex;align-items:center;justify-content:center;"></i>' +
+                '</div>';
+        } else if (canonical === 'progress') {
+            var pct = Math.min(100, Math.max(0, parseInt(el.progressValue !== undefined ? el.progressValue : 65, 10)));
+            var fCol = el.fillColor || '#c2185b';
+            var tCol = el.trackColor || '#334155';
+            var showPct = (el.showPercentLabel !== false);
+            var lblText = $.trim(el.progressLabel || '');
+            var stripeCss = el.striped ? 'background-image:linear-gradient(45deg,rgba(255,255,255,.18) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.18) 75%,transparent 75%,transparent);background-size:20px 20px;' : '';
+            var badgeText = lblText ? (lblText + (showPct ? ' (' + pct + '%)' : '')) : (showPct ? (pct + '%') : '');
+            innerHtml = '<div style="width:100%;height:100%;background:' + tCol + ';border-radius:inherit;overflow:hidden;position:relative;display:flex;align-items:center;pointer-events:none;">' +
+                '<div style="width:' + pct + '%;height:100%;background-color:' + fCol + ';' + stripeCss + 'transition:width 0.2s ease;"></div>' +
+                (badgeText ? '<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,0.45);">' + $('<div>').text(badgeText).html() + '</span>' : '') +
+                '</div>';
+        } else if (canonical === 'button' || canonical === 'submit') {
+            var bTxt = el.content !== undefined ? el.content : (canonical === 'submit' ? 'Submit Form' : 'Click Here');
+            var bIco = $.trim(el.buttonIcon || '');
+            var icoHtml = '';
+            if (bIco) {
+                var icoFull = (bIco.indexOf('dashicons-') === 0 && bIco.indexOf('dashicons ') === -1) ? ('dashicons ' + bIco) : bIco;
+                icoHtml = '<i class="' + icoFull + '" style="margin-right:6px;font-size:14px;"></i>';
+            }
+            $node.css({
+                '--wppoppop-hover-bg': el.hoverBg || '#1d4ed8',
+                '--wppoppop-hover-color': el.hoverColor || '#ffffff',
+                '--wppoppop-hover-border': el.hoverBorder || '#1d4ed8'
+            });
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;font:inherit;color:inherit;">' +
+                icoHtml + '<span>' + $('<div>').text(bTxt).html() + '</span>' +
+                '</div>';
+        }
+
+        if (innerHtml !== null) {
+            $node.html(innerHtml).append($handles);
+        }
+        if (typeof Reg.applyStyleToStageNode === 'function') {
+            Reg.applyStyleToStageNode(el);
+        }
+    };
+
+    function bindPhase2MediaVerification() {
+        var prevSync = Reg.syncInspectorForElement;
+        if (typeof prevSync === 'function' && !Reg._phase2MediaSyncHooked) {
+            Reg._phase2MediaSyncHooked = true;
+            Reg.syncInspectorForElement = function(idOrEl) {
+                prevSync.apply(this, arguments);
+                var el = Reg.resolveElement(idOrEl);
+                if (el) {
+                    Reg.syncMediaSubRows(el);
+                }
+            };
+        }
+
+        $(document).off('input.p2MediaBind change.p2MediaBind', '[data-elem-family="media"] .wppoppop-gp-bind')
+                   .on('input.p2MediaBind change.p2MediaBind', '[data-elem-family="media"] .wppoppop-gp-bind', function() {
+            var el = Reg.resolveElement();
+            if (!el) return;
+            var $inp = $(this);
+            var prop = $inp.data('prop');
+            if (!prop) return;
+            var val = $inp.is(':checkbox') ? $inp.is(':checked') : $inp.val();
+            el[prop] = val;
+
+            if (prop === 'content') {
+                el.label = val;
+                el.titleText = val;
+                el.paragraphText = val;
+                el.text = val;
+            } else if (prop === 'src') {
+                el.imageUrl = val;
+            } else if (prop === 'tag') {
+                el.headingTag = val;
+                el.htmlTag = val;
+            } else if (prop === 'gotoCanvas') {
+                el.goto_canvas = parseInt(val, 10) || 2;
+            }
+
+            Reg.syncMediaSubRows(el);
+            Reg.renderMediaElementStage(el);
+        });
+
+        $(document).off('click.p2IconPreset', '.wppoppop-icon-preset')
+                   .on('click.p2IconPreset', '.wppoppop-icon-preset', function(e) {
+            e.preventDefault();
+            var iconCls = $(this).attr('data-icon') || '';
+            if (iconCls) {
+                $('#prop-icon-class').val(iconCls).trigger('change');
+            }
+        });
+
+        $(document).off('click.p2MediaLib', '#prop-image-media-btn')
+                   .on('click.p2MediaLib', '#prop-image-media-btn', function(e) {
+            e.preventDefault();
+            if (!window.wp || !window.wp.media) return;
+            var frame = window.wp.media({
+                title: 'Select or Upload Image',
+                button: { text: 'Use Image' },
+                multiple: false
+            });
+            frame.on('select', function() {
+                var attachment = frame.state().get('selection').first().toJSON();
+                if (attachment && attachment.url) {
+                    $('#prop-image-url').val(attachment.url).trigger('change');
+                    if (attachment.alt && !$('#prop-image-alt').val()) {
+                        $('#prop-image-alt').val(attachment.alt).trigger('change');
+                    }
+                }
+            });
+            frame.open();
+        });
+    }
+
+    $(function() {
+        bindPhase2MediaVerification();
+        setTimeout(bindPhase2MediaVerification, 120);
+    });
+    bindPhase2MediaVerification();
+})(window, jQuery);
+/* === WPPOPPOP_PHASE2_MEDIA_FIELD_VERIFICATION_END === */

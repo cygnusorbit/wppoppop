@@ -3811,7 +3811,7 @@
         $('#prop-opacity-val').text(op + '%');
 
         $('#prop-bg-color').val(el.bgColor || '#3b82f6');
-        $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent');
+        $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent' || (type === 'shape' && !el.bgColor));
 
         $('#insp-section-typography').toggle(isText);
         if (isText) {
@@ -4398,10 +4398,16 @@
             });
         }
 
+        if (type === 'shape') {
+            $('#prop-shape-fill').val(el.shapeFill || '#3b82f6');
+            $('#prop-shape-transparent').prop('checked', !!el.shapeNoFill);
+        }
+
         // 3. STYLE TAB (#insp-tab-style)
         $('#wppoppop-form-style-module').toggle(isForm);
         $('#prop-btn-hover-section').toggle(isButton);
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
+        $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
 
         var op = (el.opacity !== undefined && el.opacity !== null && el.opacity !== '') ? parseFloat(el.opacity) : 100;
         if (op <= 1 && op > 0) op = Math.round(op * 100);
@@ -4409,7 +4415,7 @@
         $('#prop-opacity-val').text(op + '%');
 
         $('#prop-bg-color').val((el.bgColor && el.bgColor !== 'transparent') ? el.bgColor : '#3b82f6');
-        $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent');
+        $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent' || (type === 'shape' && !el.bgColor));
         $('#prop-font-size').val(parseInt(el.fontSize, 10) || 16);
         $('#prop-font-weight').val(el.fontWeight || '400');
         $('#prop-line-height').val(el.lineHeight || 1.4);
