@@ -5254,7 +5254,11 @@
         'close':      ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
         'close_icon': ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
         'icon':       ['insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
-        'fontawesome':['insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css']
+        'fontawesome':['insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
+        'button':     ['insp-section-opacity', 'insp-section-custom-css'],
+        'link':       ['insp-section-opacity', 'insp-section-custom-css'],
+        'link_btn':   ['insp-section-opacity', 'insp-section-custom-css'],
+        'step_btn':   ['insp-section-opacity', 'insp-section-custom-css']
     };
 
     var STYLE_ID = 'wppoppop-style-trim-v2';
@@ -5982,3 +5986,60 @@
     $(function(){sched();});
 })(window,jQuery);
 /* === WPPOPPOP_PROGRESS_MODE_END === */
+
+
+/* === WPPOPPOP_BUTTON_START === */
+(function(window,$){
+    'use strict';
+    var BTN=['button','link','link_btn'];
+    function cid(r){return String(r||'').replace(/^wppoppop-el-/,'').replace(/^el-/,'').trim();}
+    function activeEl(){
+        var c=window.WpPopPopBuilderCore; if(!c||!c.state)return null;
+        var id=cid(c.state.activeId); if(!id)return null;
+        var l=(c.state.canvases&&c.state.canvases[c.state.currentCanvas||1])||[];
+        for(var i=0;i<l.length;i++){ if(l[i]&&cid(l[i].id)===id) return l[i]; }
+        return null;
+    }
+    function isBtn(el){return !!el&&BTN.indexOf(String(el.type||'').toLowerCase())!==-1;}
+    function T(v){return v===true||v==='true'||v===1||v==='1'||v==='on';}
+    function rows(el){
+        var a=$('#prop-button-action').val()||(el&&el.buttonAction)||'link';
+        $('#prop-button-url-wrap').css('display',(a==='link'||a==='url')?'':'none');
+        $('#prop-button-step-wrap').css('display',(a==='step'||a==='goto_canvas')?'':'none');
+    }
+    function run(){
+        var el=activeEl(); if(!isBtn(el)) return;
+        var changed=false;
+        if(el.content===undefined||el.content===null){ el.content='Click Here'; changed=true; }
+        if(!el.buttonAction) el.buttonAction='link';
+        $('#prop-button-label, #prop-link-text').val(el.content);
+        $('#prop-button-action').val(el.buttonAction);
+        $('#prop-link-url').val(el.linkUrl||el.url||'');
+        $('#prop-goto-canvas').val(el.goto_canvas||2);
+        $('#prop-link-blank').prop('checked',T(el.linkBlank!==undefined?el.linkBlank:el.targetBlank));
+        $('#prop-link-nofollow').prop('checked',T(el.nofollow));
+        rows(el);
+        if(changed&&window.WpPopPopBuilderCanvas&&window.WpPopPopBuilderCanvas.renderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+    }
+    function sched(){[0,60,200,350,700,1200].forEach(function(ms){setTimeout(run,ms);});}
+    $(document).off('change.wppBtn input.wppBtn','#prop-button-action,#prop-link-blank,#prop-link-nofollow,#prop-link-url,#prop-logic-click-action')
+      .on('change.wppBtn input.wppBtn','#prop-button-action,#prop-link-blank,#prop-link-nofollow,#prop-link-url,#prop-logic-click-action',function(){
+        var el=activeEl(); if(!isBtn(el)) return;
+        if(this.id==='prop-button-action'||this.id==='prop-logic-click-action'){
+            el.buttonAction=$(this).val(); $('#prop-button-action,#prop-logic-click-action').val(el.buttonAction); rows(el);
+        } else if(this.id==='prop-link-blank'){
+            el.linkBlank=$(this).is(':checked'); el.targetBlank=el.linkBlank;
+        } else if(this.id==='prop-link-nofollow'){
+            el.nofollow=$(this).is(':checked');
+        } else if(this.id==='prop-link-url'){
+            el.linkUrl=$.trim($(this).val()); el.url=el.linkUrl;
+        }
+        if(window.WpPopPopBuilderCore&&window.WpPopPopBuilderCore.pushHistory&&this.type!=='text') window.WpPopPopBuilderCore.pushHistory('Change Button');
+    });
+    window.addEventListener('click',function(e){
+        var t=e.target;
+        if(t&&t.closest&&t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) sched();
+    },true);
+    $(function(){sched();});
+})(window,jQuery);
+/* === WPPOPPOP_BUTTON_END === */

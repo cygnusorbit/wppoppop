@@ -559,8 +559,54 @@ class WpPopPop_Front_Renderer {
                 $btn_text = !empty($content) ? esc_html($content) : 'Next Canvas &rarr;';
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="' . esc_attr($target_canvas) . '" data-goto-screen="' . esc_attr($target_canvas) . '" data-goto="' . esc_attr($target_canvas) . '" style="width:100%;height:100%;background:#2563eb;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
 
-            case 'submit':
             case 'button':
+            case 'link':
+            case 'link_btn':
+                /* WPPOPPOP_BUTTON_CASE: honour label, click action, new tab, nofollow and visual style */
+                $bt_label = (isset($el['content']) && trim((string) $el['content']) !== '') ? esc_html($el['content']) : 'Click Here';
+                $bt_act = isset($el['buttonAction']) ? (string) $el['buttonAction'] : 'link';
+                if ($bt_act === 'url') { $bt_act = 'link'; }
+                if ($bt_act === 'goto_canvas') { $bt_act = 'step'; }
+                $bt_on = function ($keys) use ($el) {
+                    foreach ($keys as $k) { if (isset($el[$k])) { return !empty($el[$k]) && $el[$k] !== 'false' && $el[$k] !== '0'; } }
+                    return false;
+                };
+                $bt_blank = $bt_on(array('linkBlank', 'targetBlank'));
+                $bt_nofollow = $bt_on(array('nofollow'));
+                $bt_url = !empty($el['linkUrl']) ? esc_url($el['linkUrl']) : (!empty($el['url']) ? esc_url($el['url']) : '#');
+                if ($bt_url === '') { $bt_url = '#'; }
+                $bt_step = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : (!empty($el['goto_screen']) ? intval($el['goto_screen']) : 2);
+                $bt_x = array();
+                if (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) { $bt_x[] = 'font-weight:' . $el['fontWeight']; }
+                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $bt_x[] = 'letter-spacing:' . floatval($el['letterSpacing']) . 'px'; }
+                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $bt_x[] = 'line-height:' . floatval($el['lineHeight']); }
+                if (!empty($el['borderWidth']) && intval($el['borderWidth']) > 0) {
+                    $bt_bs = (!empty($el['borderStyle']) && in_array($el['borderStyle'], array('solid', 'dashed', 'dotted', 'double'), true)) ? $el['borderStyle'] : 'solid';
+                    $bt_bc = (!empty($el['borderColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', $el['borderColor'])) ? $el['borderColor'] : '#334155';
+                    $bt_x[] = 'border:' . intval($el['borderWidth']) . 'px ' . $bt_bs . ' ' . $bt_bc;
+                }
+                if (!empty($box_shadow_val)) { $bt_x[] = 'box-shadow:' . $box_shadow_val; }
+                $bt_just = 'center';
+                if (!empty($el['textAlign'])) {
+                    if ($el['textAlign'] === 'left') { $bt_just = 'flex-start'; }
+                    elseif ($el['textAlign'] === 'right') { $bt_just = 'flex-end'; }
+                }
+                $bt_x[] = 'transition:background-color .15s ease,color .15s ease,border-color .15s ease';
+                $bt_wrap_style = esc_attr(implode(';', $style) . $anim_style . ';' . implode(';', $bt_x));
+                $bt_in = 'width:100%;height:100%;display:flex;align-items:center;justify-content:' . $bt_just . ';box-sizing:border-box;margin:0;padding:0 12px;border:inherit;border-radius:inherit;background:inherit;color:inherit;font:inherit;letter-spacing:inherit;line-height:inherit;text-decoration:none;cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;';
+                if ($bt_act === 'step') {
+                    $bt_html = '<button type="button" class="wppoppop-front-btn wppoppop-next-canvas-btn wppoppop-next-screen-btn" data-goto-canvas="' . $bt_step . '" data-goto-screen="' . $bt_step . '" data-goto="' . $bt_step . '" style="' . $bt_in . '">' . $bt_label . '</button>';
+                } elseif ($bt_act === 'close') {
+                    $bt_html = '<button type="button" class="wppoppop-front-btn wppoppop-close-trigger" data-close-action="close" style="' . $bt_in . '">' . $bt_label . '</button>';
+                } else {
+                    $bt_rel = array();
+                    if ($bt_blank) { $bt_rel[] = 'noopener'; $bt_rel[] = 'noreferrer'; }
+                    if ($bt_nofollow) { $bt_rel[] = 'nofollow'; }
+                    $bt_html = '<a href="' . $bt_url . '" class="wppoppop-front-btn wppoppop-link-btn"' . ($bt_blank ? ' target="_blank"' : '') . (!empty($bt_rel) ? ' rel="' . esc_attr(implode(' ', $bt_rel)) . '"' : '') . ' style="' . $bt_in . '">' . $bt_label . '</a>';
+                }
+                return '<div id="el-' . $el_id . '" class="wppoppop-layer-item wppoppop-element wppoppop-front-element wppoppop-el-button ' . $anim_class . '" style="' . $bt_wrap_style . '">' . $bt_html . $hover_style_tag . '</div>';
+
+            case 'submit':
                 $btn_text = !empty($content) ? esc_html($content) : 'Submit Form';
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-button ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-submit-trigger wppoppop-submit-btn" style="width:100%;height:100%;background:#c2185b;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
 

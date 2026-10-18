@@ -106,7 +106,7 @@ class WpPopPop_Ajax_Element_Registry {
             'padTop', 'padRight', 'padBottom', 'padLeft',
             'borderWidth', 'borderRadius', 'shadowX', 'shadowY', 'shadowBlur', 'shadowSpread',
             'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
-            'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas',
+            'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas', 'goto_canvas', 'goto_screen',
             'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
             'maxSelect', 'columns', 'timeStep', 'maxFileSize', 'ratingMax'
         );
@@ -117,7 +117,7 @@ class WpPopPop_Ajax_Element_Registry {
         }
 
         $bool_keys = array(
-            'required', 'transparentFill', 'targetBlank', 'nofollow',
+            'required', 'transparentFill', 'targetBlank', 'linkBlank', 'nofollow',
             'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped', 'progressStriped', 'progressAnimated',
             'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle',
             'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied'

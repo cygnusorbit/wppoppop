@@ -495,3 +495,26 @@
     setInterval(update, 1000);   /* covers popups opening later and canvas fade transitions */
 })(window, document);
 /* === WPPOPPOP_PROGRESS_RUNTIME_END === */
+
+
+/* === WPPOPPOP_BUTTON_CLOSE_START === */
+(function(window, document) {
+    'use strict';
+    if (window.__wppBtnCloseBound) return;
+    window.__wppBtnCloseBound = true;
+    document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var btn = t.closest('.wppoppop-front-btn.wppoppop-close-trigger');
+        if (!btn) return;
+        e.preventDefault();
+        var wrap = btn.closest('.wppoppop-popup-wrap');
+        var uid = wrap ? wrap.getAttribute('data-uid') : '';
+        if (window.WpPopPopFrontDisplay && typeof window.WpPopPopFrontDisplay.close === 'function' && uid) {
+            window.WpPopPopFrontDisplay.close(uid);
+        } else if (wrap) {
+            wrap.style.display = 'none';
+        }
+    }, false);
+})(window, document);
+/* === WPPOPPOP_BUTTON_CLOSE_END === */
