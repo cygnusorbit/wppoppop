@@ -2,6 +2,17 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <!-- WPPOPPOP UNIFIED STYLE TAB SUITE -->
+<!-- WPPOPPOP_TF_STYLE_LEAN: Text Field hides generic style cards -->
+<style>
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-opacity,
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-bg-color,
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-typography,
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-padding,
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-border,
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-shadow,
+#insp-tab-style.wppoppop-tf-style-lean #insp-section-custom-css { display: none !important; }
+</style>
+
 <!-- A. FORM INPUT STYLE MODULE (Form Family 10-25) -->
 <div id="wppoppop-form-style-module" class="wppoppop-insp-section" style="display:none; margin-bottom:14px;">
     <div style="background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.35); border-radius:6px; padding:10px 12px; margin-bottom:12px; font-size:11px; color:#bae6fd; line-height:1.45;">
