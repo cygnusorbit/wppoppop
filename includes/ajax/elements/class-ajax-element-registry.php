@@ -85,7 +85,7 @@ class WpPopPop_Ajax_Element_Registry {
             'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'redirectUrl',
             'placeholder', 'countryCode', 'checkboxLabel', 'checkboxLayout', 'radioLayout',
             'activeColor', 'dateFormat', 'minDate', 'maxDate', 'timeFormat', 'allowedExtensions',
-            'ratingShape', 'ratingColor', 'requiredMessage'
+            'ratingShape', 'ratingColor', 'requiredMessage', 'errorMessage', 'validatorEqual', 'validatorList'
         );
         foreach ( $text_keys as$k ) {
             if ( isset( $el[$k ] ) && ! is_array( $el[$k ] ) ) {

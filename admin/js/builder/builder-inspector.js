@@ -304,6 +304,25 @@
         if (jQuery('#prop-data-savedb').length) {
             el.saveToDb       = jQuery('#prop-data-savedb').is(':checked');
         }
+        /* WPPOPPOP_ADV_TAB: flush */
+        if (jQuery('#prop-field-name').length) {
+            var advName = jQuery.trim(jQuery('#prop-field-name').val() || '').replace(/[^A-Za-z0-9_-]/g, '');
+            el.fieldName = advName; el.fieldId = advName; el.token = advName;
+        }
+        if (jQuery('#prop-input-mask').length) { el.inputMask = jQuery.trim(jQuery('#prop-input-mask').val() || ''); }
+        if (jQuery('.prop-filter-chk').length) {
+            var fArr2 = [];
+            jQuery('.prop-filter-chk:checked').each(function() { fArr2.push(jQuery(this).val()); });
+            el.filters = fArr2;
+        }
+        if (jQuery('.prop-validator-chk').length) {
+            var vArr2 = [];
+            jQuery('.prop-validator-chk:checked').each(function() { vArr2.push(jQuery(this).val()); });
+            el.validators = vArr2;
+            el.errorMessage = jQuery('#prop-validator-error').val() || '';
+            el.validatorEqual = jQuery('#prop-validator-equal').val() || '';
+            el.validatorList = jQuery('#prop-validator-list').val() || '';
+        }
         if (jQuery('#prop-adv-id').length && jQuery('#prop-adv-id').val()) {
             el.fieldId        = jQuery('#prop-adv-id').val();
         }
@@ -3885,6 +3904,12 @@
         $('#prop-field-name').val(el.fieldName || el.fieldId || '');
         $('#prop-input-mask').val(el.inputMask || '');
         $('#prop-validator-error').val(el.errorMessage || '');
+        /* WPPOPPOP_ADV_TAB: hydrate */
+        $('#prop-validator-equal').val(el.validatorEqual || '');
+        $('#prop-validator-list').val(el.validatorList || '');
+        var advV = Array.isArray(el.validators) ? el.validators : [];
+        $('#wppoppop-val-extra-equal').toggle(advV.indexOf('equal') !== -1);
+        $('#wppoppop-val-extra-inarray').toggle(advV.indexOf('inarray') !== -1);
         /* WPPOPPOP_REQ_MSG: hydrate */
         $('#insp-row-gp-required').toggle(isForm);
         $('#prop-gp-required').prop('checked', !!el.required);
@@ -4522,6 +4547,12 @@
         $('#prop-field-name').val(el.fieldName || el.fieldId || '');
         $('#prop-input-mask').val(el.inputMask || '');
         $('#prop-validator-error').val(el.errorMessage || '');
+        /* WPPOPPOP_ADV_TAB: hydrate */
+        $('#prop-validator-equal').val(el.validatorEqual || '');
+        $('#prop-validator-list').val(el.validatorList || '');
+        var advV = Array.isArray(el.validators) ? el.validators : [];
+        $('#wppoppop-val-extra-equal').toggle(advV.indexOf('equal') !== -1);
+        $('#wppoppop-val-extra-inarray').toggle(advV.indexOf('inarray') !== -1);
         /* WPPOPPOP_REQ_MSG: hydrate */
         $('#insp-row-gp-required').toggle(isForm);
         $('#prop-gp-required').prop('checked', !!el.required);

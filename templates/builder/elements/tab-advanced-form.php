@@ -36,6 +36,14 @@ if (!defined('ABSPATH')) exit;
         <label style="font-size:11px; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" class="prop-validator-chk" value="inarray" /> In Array</label>
         <label style="font-size:11px; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" class="prop-validator-chk" value="noduplicates" /> No Duplicates</label>
     </div>
+    <div id="wppoppop-val-extra-equal" class="wppoppop-val-extra" style="display:none; margin-bottom:10px;">
+        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Equal Match &mdash; Value Must Equal</label>
+        <input type="text" id="prop-validator-equal" class="widefat wppoppop-input" placeholder="Exact value, e.g. YES" style="font-size:12px;" />
+    </div>
+    <div id="wppoppop-val-extra-inarray" class="wppoppop-val-extra" style="display:none; margin-bottom:10px;">
+        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">In Array &mdash; Allowed Values (comma separated)</label>
+        <input type="text" id="prop-validator-list" class="widefat wppoppop-input" placeholder="red, green, blue" style="font-size:12px;" />
+    </div>
     <div>
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Custom Validation Error Message</label>
         <input type="text" id="prop-validator-error" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="errorMessage" placeholder="Please enter a valid value..." style="font-size:12px;" />

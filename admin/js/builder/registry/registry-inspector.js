@@ -493,6 +493,12 @@
         $('#prop-field-name').val(el.fieldName || el.fieldId || '');
         $('#prop-input-mask').val(el.inputMask || '');
         $('#prop-validator-error').val(el.errorMessage || '');
+        /* WPPOPPOP_ADV_TAB: hydrate */
+        $('#prop-validator-equal').val(el.validatorEqual || '');
+        $('#prop-validator-list').val(el.validatorList || '');
+        var advV = Array.isArray(el.validators) ? el.validators : [];
+        $('#wppoppop-val-extra-equal').toggle(advV.indexOf('equal') !== -1);
+        $('#wppoppop-val-extra-inarray').toggle(advV.indexOf('inarray') !== -1);
         /* WPPOPPOP_REQ_MSG: hydrate */
         $('#insp-row-gp-required').toggle(isForm);
         $('#prop-gp-required').prop('checked', !!el.required);
@@ -756,6 +762,45 @@
                 el.requiredMessage = $(this).val();
             }
         });
+
+    /* === WPPOPPOP_ADV_TAB: live === */
+    function advCollect(el) {
+        if ($('#prop-field-name').length) {
+            var nm = $.trim($('#prop-field-name').val() || '').replace(/[^A-Za-z0-9_-]/g, '');
+            el.fieldName = nm; el.fieldId = nm; el.token = nm;
+        }
+        if ($('#prop-input-mask').length) { el.inputMask = $.trim($('#prop-input-mask').val() || ''); }
+        var f = [], v = [];
+        $('.prop-filter-chk:checked').each(function() { f.push($(this).val()); });
+        $('.prop-validator-chk:checked').each(function() { v.push($(this).val()); });
+        el.filters = f; el.validators = v;
+        el.errorMessage = $('#prop-validator-error').val() || '';
+        el.validatorEqual = $('#prop-validator-equal').val() || '';
+        el.validatorList = $('#prop-validator-list').val() || '';
+        $('#wppoppop-val-extra-equal').toggle(v.indexOf('equal') !== -1);
+        $('#wppoppop-val-extra-inarray').toggle(v.indexOf('inarray') !== -1);
+    }
+    $(document).off('input.wppAdv change.wppAdv', '#prop-field-name, #prop-input-mask, .prop-filter-chk, .prop-validator-chk, #prop-validator-error, #prop-validator-equal, #prop-validator-list')
+        .on('input.wppAdv change.wppAdv', '#prop-field-name, #prop-input-mask, .prop-filter-chk, .prop-validator-chk, #prop-validator-error, #prop-validator-equal, #prop-validator-list', function(e) {
+            var el = resolveElement();
+            if (!el) return;
+            if (this.id === 'prop-field-name' && e.type === 'change') {
+                $(this).val($.trim($(this).val() || '').replace(/[^A-Za-z0-9_-]/g, ''));
+            }
+            advCollect(el);
+            if ($(this).is('.prop-validator-chk[value="required"]')) {
+                el.required = $(this).is(':checked');
+                $('#prop-gp-required').prop('checked', el.required);
+                $('#insp-row-gp-required-msg').toggle(!!el.required);
+            }
+        });
+    $(document).off('change.wppAdvReq', '#prop-gp-required')
+        .on('change.wppAdvReq', '#prop-gp-required', function() {
+            $('.prop-validator-chk[value="required"]').prop('checked', $(this).is(':checked'));
+            var el = resolveElement();
+            if (el) advCollect(el);
+        });
+    /* === /WPPOPPOP_ADV_TAB: live === */
 
 })(window, jQuery);
 /* === WPPOPPOP_MASTER_LAYER_INSPECTOR_AND_LAYER_ENGINE_END === */

@@ -377,3 +377,141 @@
 })(jQuery);
 /* === WPPOPPOP_PHASE4_INTERACTIVE_WIDGET_RUNTIME_END === */
 
+/* === WPPOPPOP_ADV_RUNTIME_START === */
+(function($) {
+    'use strict';
+    if (window.__wppAdvRuntime) return;
+    window.__wppAdvRuntime = true;
+
+    function slot(c) { return c === '9' || c === 'a' || c === '*'; }
+    function slotOk(m, ch) {
+        if (m === '9') return /[0-9]/.test(ch);
+        if (m === 'a') return /[A-Za-z]/.test(ch);
+        return /[A-Za-z0-9]/.test(ch);
+    }
+    function applyMask(val, mask) {
+        var out = '', vi = 0;
+        for (var mi = 0; mi < mask.length && vi < val.length; mi++) {
+            var m = mask.charAt(mi);
+            if (slot(m)) {
+                var found = false;
+                while (vi < val.length) {
+                    var ch = val.charAt(vi++);
+                    if (slotOk(m, ch)) { out += ch; found = true; break; }
+                }
+                if (!found) break;
+            } else {
+                out += m;
+                if (val.charAt(vi) === m) vi++;
+            }
+        }
+        return out;
+    }
+    function applyFilters(val, csv, live) {
+        var f = String(csv || '').split(','), v = String(val);
+        if (f.indexOf('striptags') !== -1) v = v.replace(/<[^>]*>?/g, '');
+        if (f.indexOf('alpha') !== -1) v = v.replace(/[^A-Za-z\s]/g, '');
+        if (f.indexOf('digits') !== -1) v = v.replace(/\D/g, '');
+        if (f.indexOf('lowercase') !== -1) v = v.toLowerCase();
+        if (f.indexOf('uppercase') !== -1) v = v.toUpperCase();
+        if (!live && f.indexOf('trim') !== -1) v = $.trim(v);
+        return v;
+    }
+
+    document.addEventListener('focusin', function(e) {
+        var t = e.target;
+        if (!t || !t.getAttribute) return;
+        var mask = t.getAttribute('data-input-mask');
+        if (mask && (!t.maxLength || t.maxLength < 1 || t.maxLength > mask.length)) { t.maxLength = mask.length; }
+    }, true);
+
+    document.addEventListener('input', function(e) {
+        var t = e.target;
+        if (!t || !t.getAttribute || typeof t.value !== 'string') return;
+        var mask = t.getAttribute('data-input-mask'), fil = t.getAttribute('data-filters');
+        if (!mask && !fil) return;
+        var v = t.value, n = v;
+        if (fil) n = applyFilters(n, fil, true);
+        if (mask) n = applyMask(n, mask);
+        if (n !== v) t.value = n;
+    }, true);
+
+    document.addEventListener('focusout', function(e) {
+        var t = e.target;
+        if (!t || !t.getAttribute || typeof t.value !== 'string') return;
+        var fil = t.getAttribute('data-filters');
+        if (!fil) return;
+        var n = applyFilters(t.value, fil, false);
+        if (n !== t.value) t.value = n;
+    }, true);
+
+    function bubble($f, msg) {
+        $('.wppoppop-error-bubble').remove();
+        var $b = $('<div class="wppoppop-error-bubble"></div>').text(msg);
+        $('body').append($b);
+        var off = $f.offset() || { top: 0, left: 0 };
+        $b.css({ position: 'absolute', top: (off.top - $b.outerHeight() - 8) + 'px', left: off.left + 'px',
+            background: '#ef4444', color: '#ffffff', padding: '6px 12px', borderRadius: '4px', fontSize: '12px',
+            fontWeight: '600', zIndex: 9999999, boxShadow: '0 4px 12px rgba(239,68,68,0.3)' });
+        try { $f.trigger('focus'); } catch (err) {}
+        setTimeout(function() { $b.fadeOut(300, function() { $b.remove(); }); }, 3500);
+    }
+
+    function validate($p) {
+        var bad = null, msg = '';
+        var $all = $p.find('input, textarea, select');
+        $all.each(function() {
+            var t = this, $f = $(t);
+            if (t.type === 'hidden' || t.type === 'button' || t.type === 'submit' || !$f.is(':visible')) return;
+            var csv = t.getAttribute('data-filters');
+            if (csv && typeof t.value === 'string') {
+                var nv = applyFilters(t.value, csv, false);
+                if (nv !== t.value) t.value = nv;
+            }
+            var rules = String(t.getAttribute('data-validators') || '').split(',').filter(Boolean);
+            var req = t.hasAttribute('required') || rules.indexOf('required') !== -1;
+            var v = $f.is(':checkbox') ? ($f.is(':checked') ? '1' : '') : $f.val();
+            v = Array.isArray(v) ? v.join(',') : String(v == null ? '' : v);
+            var custom = t.getAttribute('data-invalid-msg');
+            function fail(m) { bad = $f; msg = m; return false; }
+            if (!v) {
+                if (req) return fail(t.getAttribute('data-error-msg') || custom || 'This field is required.');
+                return;
+            }
+            if (rules.indexOf('email') !== -1 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+                return fail(custom || 'Please enter a valid email address.');
+            }
+            if (rules.indexOf('equal') !== -1) {
+                var eq = t.getAttribute('data-equal-value');
+                if (eq !== null && v !== eq) return fail(custom || 'Value does not match.');
+            }
+            if (rules.indexOf('inarray') !== -1) {
+                var list = String(t.getAttribute('data-in-list') || '').split(',').map(function(x) { return $.trim(x).toLowerCase(); }).filter(Boolean);
+                if (list.length && list.indexOf(v.toLowerCase()) === -1) return fail(custom || 'Value is not in the allowed list.');
+            }
+            if (rules.indexOf('noduplicates') !== -1) {
+                var dup = false;
+                $all.each(function() {
+                    if (this === t || this.type === 'hidden' || this.type === 'checkbox' || this.type === 'radio' || this.type === 'file') return;
+                    if (!$(this).is(':visible')) return;
+                    if (String($(this).val() || '').toLowerCase() === v.toLowerCase()) { dup = true; return false; }
+                });
+                if (dup) return fail(custom || 'This value is already used in another field.');
+            }
+        });
+        return bad ? { field: bad, msg: msg } : null;
+    }
+
+    document.addEventListener('click', function(e) {
+        var btn = (e.target && e.target.closest) ? e.target.closest('.wppoppop-submit-trigger') : null;
+        if (!btn) return;
+        var popup = btn.closest('.wppoppop-popup-wrap') || document.body;
+        var res = validate($(popup));
+        if (res) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            bubble(res.field, res.msg);
+        }
+    }, true);
+})(jQuery);
+/* === WPPOPPOP_ADV_RUNTIME_END === */

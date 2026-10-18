@@ -54,6 +54,15 @@ class WpPopPop_Front_Decomposed_26 {
         if (!empty($el['validators']) && is_array($el['validators'])) {
             $attrs .= ' data-validators="' . esc_attr(implode(',', $el['validators'])) . '"';
         }
+        if (isset($el['errorMessage']) && $el['errorMessage'] !== '') {
+            $attrs .= ' data-invalid-msg="' . esc_attr($el['errorMessage']) . '"';
+        }
+        if (isset($el['validatorEqual']) && $el['validatorEqual'] !== '') {
+            $attrs .= ' data-equal-value="' . esc_attr($el['validatorEqual']) . '"';
+        }
+        if (!empty($el['validatorList'])) {
+            $attrs .= ' data-in-list="' . esc_attr($el['validatorList']) . '"';
+        }
         if (!empty($el['required'])) {
             $attrs .= ' required="required" aria-required="true"';
         }
