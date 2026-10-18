@@ -107,7 +107,7 @@ class WpPopPop_Front_Decomposed_26 {
 
             case 'text':
                 /* WPPOPPOP_TF_FRONT: typeable input + icons + alignment + unique name */
-                $tf_val   = ($default_val !== '') ? $default_val : (isset($el['content']) ? (string) $el['content'] : '');
+                $tf_val   = $default_val; /* WPPOPPOP_TF_VALUE: never seed from layer content */
                 $tf_name  = ($field_name === 'text') ? ('text_' . substr(sanitize_key((string) (isset($el['id']) ? $el['id'] : uniqid())), -6)) : $field_name;
                 $tf_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
                 $tf_icons = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));

@@ -62,8 +62,6 @@
                     if (isNaN(gT)) gT = parseInt($(gNode).css('top'), 10);
                     if (!isNaN(gL)) { gEl.left = gL; gEl.x = gL; }
                     if (!isNaN(gT)) { gEl.top = gT; gEl.y = gT; }
-                    gEl.width = gNode.offsetWidth;  gEl.w = gEl.width;
-                    gEl.height = gNode.offsetHeight; gEl.h = gEl.height;
                 }
             }
         },

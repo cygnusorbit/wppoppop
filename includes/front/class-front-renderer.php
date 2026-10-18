@@ -432,7 +432,12 @@ class WpPopPop_Front_Renderer {
             }
         }
 
-        if (isset($inner_html) && $inner_html !== '') { return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '">' . $inner_html . '</div>'; }
+        if (isset($inner_html) && $inner_html !== '') {
+            /* WPPOPPOP_TF_NOPAD_FRONT: Text Field wrapper never carries padding (input fills the layer box) */
+            $tf_wrap_pad = ($raw_el_type === 'text') ? ';padding:0!important' : '';
+            $tf_wrap_cls = ($raw_el_type === 'text') ? ' wppoppop-el-textfield' : '';
+            return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text' . $tf_wrap_cls . ' ' . $anim_class . '" style="' . $style_attr . $tf_wrap_pad . '">' . $inner_html . '</div>';
+        }
 
         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '"><span class="wppoppop-text-render">' . wp_kses_post($content) . '</span></div>';
 
