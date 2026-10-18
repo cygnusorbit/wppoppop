@@ -101,6 +101,11 @@ class WpPopPop_Front_Preview {
         // Preview shows ONLY the previewed popup.
         add_filter('wppoppop_suppress_front_popups', '__return_true');
         add_action('wp_footer', [$this, 'render'], 60);
+        /* WPPOPPOP_PREVIEW_ICON_CSS: admin bar is off in frame mode, so load icon fonts explicitly */
+        add_action('wp_enqueue_scripts', function () {
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', array(), '6.5.1');
+        }, 20);
     }
 
     /**

@@ -5128,6 +5128,113 @@
 })(window, jQuery);
 /* === WPPOPPOP_FA_ICON_CONTROLS_END === */
 
+/* === WPPOPPOP_FA_PREVIEW_RENDER_START === */
+/* Font Awesome / Vector Icon stage preview.
+   1. Loads Font Awesome CSS in the builder when the page does not already have it.
+   2. Uses one icon renderer for icon/fontawesome layers (Dashicons or Font Awesome classes).
+   3. Re-applies itself so later registry wrappers cannot replace it. */
+(function(window, $) {
+    'use strict';
+
+    var TYPES = ['icon', 'fontawesome'];
+    var FA_HREF = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
+    var FA_LINK_ID = 'wppoppop-fa-css';
+    var DEFAULT_CLASS = 'fas fa-star';
+
+    function hasFontAwesomeCss() {
+        if (window.FontAwesome) return true;
+        var links = document.querySelectorAll('link[rel="stylesheet"]');
+        for (var i = 0; i < links.length; i++) {
+            if (/font-?awesome|fontawesome/i.test(links[i].href || '')) return true;
+        }
+        return false;
+    }
+
+    function ensureFontAwesome(onReady) {
+        if (hasFontAwesomeCss()) { if (onReady) onReady(); return; }
+        if (document.getElementById(FA_LINK_ID)) return;
+        var link = document.createElement('link');
+        link.id = FA_LINK_ID;
+        link.rel = 'stylesheet';
+        link.href = FA_HREF;
+        link.crossOrigin = 'anonymous';
+        link.onload = function() { if (onReady) onReady(); };
+        (document.head || document.documentElement).appendChild(link);
+    }
+
+    function normalizeClass(raw) {
+        var c = $.trim(String(raw || ''));
+        if (!c) return DEFAULT_CLASS;
+        if (c.indexOf('dashicons-') === 0) return 'dashicons ' + c;
+        if (c.indexOf('dashicons ') === 0) return c;
+        if (/^(fa|fas|far|fab|fal|fad|fa-solid|fa-regular|fa-brands)\b/.test(c)) {
+            // "fa-star" alone -> "fas fa-star"
+            if (c.indexOf(' ') === -1 && c.indexOf('fa-') === 0) return 'fas ' + c;
+            return c;
+        }
+        // Bare glyph text or emoji: render as text, not an icon class
+        return null;
+    }
+
+    function iconMarkup(el) {
+        var raw = el.iconClass || el.content || '';
+        var cls = normalizeClass(raw);
+        var color = el.iconColor || el.color || '#38bdf8';
+        var size = parseInt(el.iconSize, 10) || 36;
+        var rot = parseInt(el.rotate, 10) || 0;
+        var inner;
+        if (cls === null) {
+            inner = '<span style="font-size:' + size + 'px;line-height:1;">' + $('<div>').text(raw).html() + '</span>';
+        } else {
+            inner = '<i class="' + cls.replace(/"/g, '') + '" style="font-size:' + size + 'px;line-height:1;color:' + color + ';"></i>';
+        }
+        return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' + color +
+               ';transform:rotate(' + rot + 'deg);pointer-events:none;">' + inner + '</div>';
+    }
+
+    function wrapCanvasMarkup() {
+        var canvas = window.WpPopPopBuilderCanvas;
+        if (!canvas || typeof canvas.getInnerMarkup !== 'function') return false;
+        if (canvas.getInnerMarkup.__wppoppopFaWrapped) return true;
+        var orig = canvas.getInnerMarkup;
+        var wrapped = function(el) {
+            if (el && TYPES.indexOf(String(el.type || '').toLowerCase().trim()) !== -1) {
+                return iconMarkup(el);
+            }
+            return orig.apply(this, arguments);
+        };
+        wrapped.__wppoppopFaWrapped = true;
+        canvas.getInnerMarkup = wrapped;
+        return true;
+    }
+
+    function rerender() {
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+            window.WpPopPopBuilderCanvas.renderCanvas();
+        }
+    }
+
+    $(function() {
+        ensureFontAwesome(function() { rerender(); });
+        var tries = 0;
+        var timer = setInterval(function() {
+            tries++;
+            var ok = wrapCanvasMarkup();
+            if (ok) rerender();
+            if (ok && tries > 2) clearInterval(timer);
+            if (tries > 60) clearInterval(timer);
+        }, 250);
+        // Keep the wrapper in place if the registry re-wraps the canvas later
+        setInterval(function() {
+            var canvas = window.WpPopPopBuilderCanvas;
+            if (canvas && typeof canvas.getInnerMarkup === 'function' && !canvas.getInnerMarkup.__wppoppopFaWrapped) {
+                if (wrapCanvasMarkup()) rerender();
+            }
+        }, 1000);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_FA_PREVIEW_RENDER_END === */
+
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
 /* WPPOPPOP_MEDIA_STYLE_TRIM_V2: per-type Style-tab section trim.
    Hides via a stylesheet keyed on <html data-wppoppop-trim-type="...">, so jQuery .show()

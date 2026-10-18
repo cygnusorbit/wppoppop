@@ -384,10 +384,37 @@ class WpPopPop_Front_Renderer {
                 break;
 
             case 'icon':
-                $i_class = !empty($el['iconClass']) ? sanitize_text_field($el['iconClass']) : (!empty($el['content']) ? sanitize_text_field($el['content']) : 'fas fa-star');
-                $i_color = !empty($el['iconColor']) ? sanitize_text_field($el['iconColor']) : '#38bdf8';
+            case 'fontawesome':
+                /* WPPOPPOP_ICON_CASE_V2: normalise class, load icon CSS, size the glyph */
+                $i_raw = !empty($el['iconClass']) ? $el['iconClass'] : (!empty($el['iconGlyph']) ? $el['iconGlyph'] : (!empty($el['content']) ? $el['content'] : 'dashicons-star-filled'));
+                $i_tokens = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', trim((string) $i_raw)))));
+                if (empty($i_tokens)) { $i_tokens = array('dashicons-star-filled'); }
+                $i_is_dash = false; $i_is_fa = false; $i_has_base = false;
+                foreach ($i_tokens as $i_t) {
+                    if (strpos($i_t, 'dashicons-') === 0 || $i_t === 'dashicons') { $i_is_dash = true; }
+                    if (preg_match('/^(fa|fas|far|fab|fal|fad|fa-solid|fa-regular|fa-brands)$/', $i_t) || strpos($i_t, 'fa-') === 0) { $i_is_fa = true; }
+                    if (in_array($i_t, array('dashicons','fa','fas','far','fab','fal','fad','fa-solid','fa-regular','fa-brands'), true)) { $i_has_base = true; }
+                }
+                if ($i_is_dash && !in_array('dashicons', $i_tokens, true)) { array_unshift($i_tokens, 'dashicons'); }
+                elseif ($i_is_fa && !$i_has_base) { array_unshift($i_tokens, 'fas'); }
+                /* WPPOPPOP_ICON_CSS_INLINE: footer enqueue is too late, print the link next to the icon once */
+                static $wppoppop_dash_css_done = false, $wppoppop_fa_css_done = false;
+                $i_css_links = '';
+                if ($i_is_dash && !$wppoppop_dash_css_done) {
+                    $wppoppop_dash_css_done = true;
+                    $i_css_links .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />';
+                }
+                if ($i_is_fa && !$wppoppop_fa_css_done) {
+                    $wppoppop_fa_css_done = true;
+                    $i_css_links .= '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                }
+                $i_color = !empty($el['iconColor']) ? sanitize_text_field($el['iconColor']) : (!empty($el['color']) ? sanitize_text_field($el['color']) : '#38bdf8');
                 $i_size = !empty($el['iconSize']) ? intval($el['iconSize']) : 36;
-                $inner_html = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' . esc_attr($i_color) . ';font-size:' . $i_size . 'px;"><i class="' . esc_attr($i_class) . '"></i></div>';
+                $i_rot = !empty($el['rotate']) ? intval($el['rotate']) : 0;
+                $i_rot_css = $i_rot ? 'transform:rotate(' . $i_rot . 'deg);' : '';
+                $i_box = $i_is_dash ? ('width:' . $i_size . 'px;height:' . $i_size . 'px;') : '';
+                $inner_html = $i_css_links . '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' . esc_attr($i_color) . ';pointer-events:none;">'
+                    . '<i class="' . esc_attr(implode(' ', $i_tokens)) . '" aria-hidden="true" style="font-size:' . $i_size . 'px;' . $i_box . 'line-height:1;display:inline-block;' . $i_rot_css . '"></i></div>';
                 break;
 
             case 'label':

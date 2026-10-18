@@ -412,11 +412,20 @@
                             var tf = el.textTransform ? 'text-transform:' + el.textTransform + ';' : '';
                             return '<' + tag + ' style="margin:0;width:100%;height:100%;display:flex;align-items:center;' + tf + '">' + txt + '</' + tag + '>';
                         }
-                        if (t === 'icon') {
-                            var cls = el.iconClass || 'dashicons-star-filled';
-                            var sz = parseInt(el.iconSize, 10) || 36;
-                            var rot = parseInt(el.rotate, 10) || 0;
-                            return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><span class="dashicons ' + cls + '" style="font-size:' + sz + 'px;width:' + sz + 'px;height:' + sz + 'px;transform:rotate(' + rot + 'deg);"></span></div>';
+                        if (t === 'icon') { /* WPPOPPOP_FA_REGISTRY_ICON_FIX */
+                            var iCls = $.trim(el.iconClass || el.content || 'dashicons-star-filled');
+                            var iSz = parseInt(el.iconSize, 10) || 36;
+                            var iRot = parseInt(el.rotate, 10) || 0;
+                            var iCol = el.iconColor || el.color || '#38bdf8';
+                            var iIsFa = /^(fa|fas|far|fab|fal|fad|fa-solid|fa-regular|fa-brands)(\s|$)|^fa-/.test(iCls);
+                            var iFull;
+                            if (iIsFa) {
+                                iFull = (iCls.indexOf('fa-') === 0 && iCls.indexOf(' ') === -1) ? ('fas ' + iCls) : iCls;
+                            } else {
+                                iFull = (iCls.indexOf('dashicons ') === 0) ? iCls : ('dashicons ' + (iCls.indexOf('dashicons-') === 0 ? iCls : 'dashicons-' + iCls));
+                            }
+                            return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' + iCol + ';transform:rotate(' + iRot + 'deg);pointer-events:none;">' +
+                                '<i class="' + iFull.replace(/"/g, '') + '" style="font-size:' + iSz + 'px;line-height:1;display:inline-block;"></i></div>';
                         }
                         if (t === 'button') {
                             var bTxt = el.content || el.label || 'Click Here';
