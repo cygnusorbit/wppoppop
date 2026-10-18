@@ -518,7 +518,35 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-countdown-timer ' . $anim_class . '" data-seconds="900" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;background:#1e293b;color:#f8fafc;font-family:monospace;font-weight:700;font-size:16px;"><span class="cd-mins">15</span>&nbsp;:&nbsp;<span class="cd-secs">00</span></div>';
 
             case 'progress':
-                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';background:#e2e8f0;overflow:hidden;"><div class="wppoppop-progress-fill" style="width:50%;height:100%;background:#2563eb;transition:width 0.3s ease;"></div></div>';
+                /* WPPOPPOP_PROGRESS_CASE: real value / colours / stripes / label */
+                $pg_pct = 65;
+                foreach (array('progressValue', 'progressPercent', 'progressVal') as $pg_k) {
+                    if (isset($el[$pg_k]) && $el[$pg_k] !== '' && is_numeric($el[$pg_k])) { $pg_pct = max(0, min(100, (int) round((float) $el[$pg_k]))); break; }
+                }
+                $pg_on = function ($keys, $def) use ($el) {
+                    foreach ($keys as $k) { if (isset($el[$k])) { return !empty($el[$k]) && $el[$k] !== 'false' && $el[$k] !== '0'; } }
+                    return $def;
+                };
+                $pg_hex = function ($v, $d) { return (is_string($v) && preg_match('/^#[0-9a-fA-F]{3,8}$/', $v)) ? $v : $d; };
+                $pg_fill = $pg_hex(!empty($el['fillColor']) ? $el['fillColor'] : (!empty($el['progressColor']) ? $el['progressColor'] : ''), '#10b981');
+                $pg_track = $pg_hex(!empty($el['trackColor']) ? $el['trackColor'] : '', '#334155');
+                $pg_striped = $pg_on(array('progressStriped', 'striped'), false);
+                $pg_anim = $pg_striped && $pg_on(array('progressAnimated'), false);
+                $pg_showpct = $pg_on(array('showPercentLabel'), true);
+                $pg_lbl = isset($el['progressLabel']) ? trim((string) $el['progressLabel']) : '';
+                $pg_badge = $pg_lbl !== '' ? ($pg_lbl . ($pg_showpct ? ' (' . $pg_pct . '%)' : '')) : ($pg_showpct ? ($pg_pct . '%') : '');
+                $pg_stripe = $pg_striped ? 'background-image:linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.2) 75%,transparent 75%,transparent);background-size:20px 20px;' : '';
+                static $pg_css_done = false;
+                $pg_css = '';
+                if (!$pg_css_done) {
+                    $pg_css_done = true;
+                    $pg_css = '<style>@-webkit-keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}@keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}.wppoppop-prog-anim{-webkit-animation:wppProgStripe 1s linear infinite;animation:wppProgStripe 1s linear infinite}</style>';
+                }
+                return $pg_css . '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-progress ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">'
+                    . '<div style="width:100%;height:100%;background:' . esc_attr($pg_track) . ';border-radius:inherit;overflow:hidden;position:relative;display:flex;align-items:center;">'
+                    . '<div class="wppoppop-progress-fill' . ($pg_anim ? ' wppoppop-prog-anim' : '') . '" style="width:' . $pg_pct . '%;height:100%;background-color:' . esc_attr($pg_fill) . ';' . $pg_stripe . 'transition:width .3s ease;"></div>'
+                    . ($pg_badge !== '' ? '<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);">' . esc_html($pg_badge) . '</span>' : '')
+                    . '</div></div>';
 
             case 'file':
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;border:1px dashed #cbd5e1;"><input type="file" name="uploaded_file" style="font-size:11px;width:95%;"></div>';

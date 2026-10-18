@@ -5847,3 +5847,103 @@
     $(function(){sched();});
 })(window,jQuery);
 /* === WPPOPPOP_CLOSE_GLYPH_COLOR_END === */
+
+
+/* === WPPOPPOP_PROGRESS_START === */
+(function(window,$){
+    'use strict';
+    function cid(r){return String(r||'').replace(/^wppoppop-el-/,'').replace(/^el-/,'').trim();}
+    function list(){var c=window.WpPopPopBuilderCore;return (c&&c.state&&c.state.canvases&&c.state.canvases[c.state.currentCanvas||1])||[];}
+    function activeEl(){
+        var c=window.WpPopPopBuilderCore; if(!c||!c.state)return null;
+        var id=cid(c.state.activeId); if(!id)return null;
+        var l=list(); for(var i=0;i<l.length;i++){ if(l[i]&&cid(l[i].id)===id) return l[i]; }
+        return null;
+    }
+    function isProg(el){return !!el&&String(el.type||'').toLowerCase()==='progress';}
+    function T(v){return v===true||v==='true'||v===1||v==='1'||v==='on';}
+    function hex(v,d){return /^#[0-9a-f]{3,8}$/i.test(v||'')?v:d;}
+    function num(el){
+        var ks=['progressValue','progressPercent','progressVal'];
+        for(var i=0;i<ks.length;i++){var n=parseFloat(el[ks[i]]); if(!isNaN(n)) return Math.max(0,Math.min(100,Math.round(n)));}
+        return 65;
+    }
+    function flag(el,keys,def){for(var i=0;i<keys.length;i++){if(el[keys[i]]!==undefined) return T(el[keys[i]]);} return def;}
+
+    if(!document.getElementById('wpp-prog-css')){
+        $('head').append('<style id="wpp-prog-css">@-webkit-keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}@keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}.wppoppop-prog-anim{-webkit-animation:wppProgStripe 1s linear infinite;animation:wppProgStripe 1s linear infinite}</style>');
+    }
+
+    function html(el){
+        var pct=num(el);
+        var fill=hex(el.fillColor||el.progressColor,'#10b981');
+        var track=hex(el.trackColor,'#334155');
+        var striped=flag(el,['progressStriped','striped'],false);
+        var anim=striped&&flag(el,['progressAnimated'],false);
+        var showPct=flag(el,['showPercentLabel'],true);
+        var lbl=$.trim(el.progressLabel||'');
+        var badge=lbl?(lbl+(showPct?' ('+pct+'%)':'')):(showPct?(pct+'%'):'');
+        var stripe=striped?'background-image:linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.2) 75%,transparent 75%,transparent);background-size:20px 20px;':'';
+        return '<div style="width:100%;height:100%;background:'+track+';border-radius:inherit;overflow:hidden;position:relative;display:flex;align-items:center;pointer-events:none;">'+
+            '<div class="wppoppop-progress-fill'+(anim?' wppoppop-prog-anim':'')+'" style="width:'+pct+'%;height:100%;background-color:'+fill+';'+stripe+'transition:width .2s ease;"></div>'+
+            (badge?'<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);">'+$('<div>').text(badge).html()+'</span>':'')+
+            '</div>';
+    }
+    function node(el){
+        var id=cid(el.id);
+        return $('#canvas-elem-'+id+', #wppoppop-el-'+id+', #el-'+id+', .wppoppop-canvas-item[data-id="'+el.id+'"]').first();
+    }
+    function paint(el){
+        var $n=node(el); if(!$n.length) return;
+        var $h=$n.children('.ui-resizable-handle, .wppoppop-resize-handle').detach();
+        $n.html(html(el)).append($h);
+    }
+    function paintAll(){list().forEach(function(e){ if(isProg(e)) paint(e); });}
+
+    function wrap(){
+        var cv=window.WpPopPopBuilderCanvas;
+        if(cv&&!cv.__progWrapped&&typeof cv.renderCanvas==='function'){
+            cv.__progWrapped=true; var o=cv.renderCanvas;
+            cv.renderCanvas=function(){var r=o.apply(this,arguments); try{paintAll();}catch(e){} return r;};
+        }
+        var R=window.WpPopPopElementsRegistry;
+        if(R&&!R.__progWrapped&&typeof R.renderMediaElementStage==='function'){
+            R.__progWrapped=true; var o2=R.renderMediaElementStage;
+            R.renderMediaElementStage=function(el){var r=o2.apply(this,arguments); try{ if(isProg(el)) paint(el);}catch(e){} return r;};
+        }
+    }
+
+    function hydrate(){
+        var el=activeEl(); if(!isProg(el)) return;
+        $('#prop-progress-percent').val(num(el));
+        $('#prop-progress-color').val(hex(el.fillColor||el.progressColor,'#10b981'));
+        $('#prop-progress-track').val(hex(el.trackColor,'#334155'));
+        $('#prop-progress-label').val(el.progressLabel||'');
+        $('#prop-progress-striped').prop('checked',flag(el,['progressStriped','striped'],false));
+        $('#prop-progress-animated').prop('checked',flag(el,['progressAnimated'],false));
+        $('#prop-progress-showpct').prop('checked',flag(el,['showPercentLabel'],true));
+    }
+    function sched(){[0,60,200,350,700,1200].forEach(function(ms){setTimeout(function(){wrap();hydrate();paintAll();},ms);});}
+
+    $(document).off('input.wppProg change.wppProg')
+      .on('input.wppProg change.wppProg','#prop-progress-percent,#prop-progress-color,#prop-progress-track,#prop-progress-label,#prop-progress-striped,#prop-progress-animated,#prop-progress-showpct',function(e){
+        var el=activeEl(); if(!isProg(el)) return;
+        var p=parseInt($('#prop-progress-percent').val(),10); if(isNaN(p)) p=0; p=Math.max(0,Math.min(100,p));
+        el.progressValue=p; el.progressPercent=p; el.progressVal=p;
+        var c=$('#prop-progress-color').val(); el.progressColor=c; el.fillColor=c;
+        el.trackColor=$('#prop-progress-track').val();
+        el.progressLabel=$('#prop-progress-label').val();
+        var st=$('#prop-progress-striped').is(':checked'); el.progressStriped=st; el.striped=st;
+        el.progressAnimated=$('#prop-progress-animated').is(':checked');
+        el.showPercentLabel=$('#prop-progress-showpct').is(':checked');
+        paint(el);
+        if(e.type==='change'&&window.WpPopPopBuilderCore&&window.WpPopPopBuilderCore.pushHistory) window.WpPopPopBuilderCore.pushHistory('Change Progress Bar');
+    });
+
+    window.addEventListener('click',function(e){
+        var t=e.target;
+        if(t&&t.closest&&t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) sched();
+    },true);
+    $(function(){wrap();setTimeout(wrap,150);setTimeout(wrap,450);sched();});
+})(window,jQuery);
+/* === WPPOPPOP_PROGRESS_END === */

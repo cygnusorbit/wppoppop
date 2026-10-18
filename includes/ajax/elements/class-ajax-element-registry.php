@@ -81,7 +81,7 @@ class WpPopPop_Ajax_Element_Registry {
             'fieldId', 'fieldName', 'token', 'inputMask',
             'shapePreset', 'strokeColor', 'alt', 'objectFit', 'imageAction',
             'videoProvider', 'aspectRatio', 'videoUrl', 'tag', 'headingTag', 'htmlTag', 'textTransform', 'overflow',
-            'closeSymbol', 'closeAction', 'closeGlyph', 'hoverBgColor', 'hoverTextColor', 'hoverBorderColor', 'hoverBg', 'hoverColor', 'hoverBorder', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor',
+            'closeSymbol', 'closeAction', 'closeGlyph', 'hoverBgColor', 'hoverTextColor', 'hoverBorderColor', 'hoverBg', 'hoverColor', 'hoverBorder', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor', 'progressColor',
             'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'redirectUrl',
             'placeholder', 'countryCode', 'checkboxLabel', 'checkboxLayout', 'radioLayout',
             'activeColor', 'dateFormat', 'minDate', 'maxDate', 'timeFormat', 'allowedExtensions',
@@ -106,7 +106,7 @@ class WpPopPop_Ajax_Element_Registry {
             'padTop', 'padRight', 'padBottom', 'padLeft',
             'borderWidth', 'borderRadius', 'shadowX', 'shadowY', 'shadowBlur', 'shadowSpread',
             'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
-            'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'gotoCanvas',
+            'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas',
             'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
             'maxSelect', 'columns', 'timeStep', 'maxFileSize', 'ratingMax'
         );
@@ -118,7 +118,7 @@ class WpPopPop_Ajax_Element_Registry {
 
         $bool_keys = array(
             'required', 'transparentFill', 'targetBlank', 'nofollow',
-            'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped',
+            'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped', 'progressStriped', 'progressAnimated',
             'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle',
             'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied'
         );
