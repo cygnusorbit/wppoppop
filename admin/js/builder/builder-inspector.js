@@ -252,10 +252,10 @@
 
         // 3. Flush Form Input Style Module (Icons, Alignment, Custom CSS Class, Inline Styles Repeater)
         if (jQuery('#insp-section-form-input-style').length && jQuery('#insp-section-form-input-style').is(':visible')) {
-            el.iconLeft        = jQuery('#prop-input-icon-left').val() || '';
-            el.iconLeftOffset  = parseInt(jQuery('#prop-input-icon-left-offset').val(), 10) || 10;
-            el.iconRight       = jQuery('#prop-input-icon-right').val() || '';
-            el.iconRightOffset = parseInt(jQuery('#prop-input-icon-right-offset').val(), 10) || 10;
+            el.iconLeft        = jQuery('#prop-form-icon-left').val() || '';
+            el.iconLeftOffset  = (isNaN(parseInt(jQuery('#prop-form-icon-left-offset').val(), 10)) ? 10 : parseInt(jQuery('#prop-form-icon-left-offset').val(), 10));
+            el.iconRight       = jQuery('#prop-form-icon-right').val() || '';
+            el.iconRightOffset = (isNaN(parseInt(jQuery('#prop-form-icon-right-offset').val(), 10)) ? 10 : parseInt(jQuery('#prop-form-icon-right-offset').val(), 10));
             el.customClass     = jQuery('#prop-gp-style-css-class').val() || '';
             el.cssClass        = el.customClass;
 
@@ -391,10 +391,10 @@
         jQuery('#prop-anim-duration').val(el.animDuration !== undefined ? el.animDuration : 1000);
         jQuery('#prop-anim-delay').val(el.animDelay !== undefined ? el.animDelay : 0);
 
-        jQuery('#prop-input-icon-left').val(el.iconLeft || (canonical === 'email' ? 'fas fa-envelope' : ''));
-        jQuery('#prop-input-icon-left-offset').val(el.iconLeftOffset !== undefined ? el.iconLeftOffset : 10);
-        jQuery('#prop-input-icon-right').val(el.iconRight || '');
-        jQuery('#prop-input-icon-right-offset').val(el.iconRightOffset !== undefined ? el.iconRightOffset : 10);
+        jQuery('#prop-form-icon-left').val(el.iconLeft || (canonical === 'email' ? 'fas fa-envelope' : ''));
+        jQuery('#prop-form-icon-left-offset').val(el.iconLeftOffset !== undefined ? el.iconLeftOffset : 10);
+        jQuery('#prop-form-icon-right').val(el.iconRight || '');
+        jQuery('#prop-form-icon-right-offset').val(el.iconRightOffset !== undefined ? el.iconRightOffset : 10);
         jQuery('#prop-gp-style-css-class').val(el.customClass || el.cssClass || '');
 
         var currentAlign = el.textAlign || 'left';
@@ -498,13 +498,13 @@
         });
 
         // Input Icons & Custom CSS Class
-        jQuery(document).on('change input', '#prop-input-icon-left, #prop-input-icon-left-offset, #prop-input-icon-right, #prop-input-icon-right-offset, #prop-gp-style-css-class', function() {
+        jQuery(document).on('change input', '#prop-form-icon-left, #prop-form-icon-left-offset, #prop-form-icon-right, #prop-form-icon-right-offset, #prop-gp-style-css-class', function() {
             var el = getEl();
             if (!el) return;
-            el.iconLeft        = jQuery('#prop-input-icon-left').val();
-            el.iconLeftOffset  = parseInt(jQuery('#prop-input-icon-left-offset').val(), 10) || 10;
-            el.iconRight       = jQuery('#prop-input-icon-right').val();
-            el.iconRightOffset = parseInt(jQuery('#prop-input-icon-right-offset').val(), 10) || 10;
+            el.iconLeft        = jQuery('#prop-form-icon-left').val();
+            el.iconLeftOffset  = (isNaN(parseInt(jQuery('#prop-form-icon-left-offset').val(), 10)) ? 10 : parseInt(jQuery('#prop-form-icon-left-offset').val(), 10));
+            el.iconRight       = jQuery('#prop-form-icon-right').val();
+            el.iconRightOffset = (isNaN(parseInt(jQuery('#prop-form-icon-right-offset').val(), 10)) ? 10 : parseInt(jQuery('#prop-form-icon-right-offset').val(), 10));
             el.customClass     = jQuery('#prop-gp-style-css-class').val();
             el.cssClass        = el.customClass;
             jQuery('#prop-custom-class').val(el.customClass);

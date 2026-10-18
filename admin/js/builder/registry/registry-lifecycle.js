@@ -91,10 +91,10 @@
             if ($activeAlign.length) {
                 el.textAlign = $activeAlign.attr('data-align') || 'left';
             }
-            el.iconLeft        = $('#prop-input-icon-left').val() || '';
-            el.iconLeftOffset  = parseInt($('#prop-input-icon-left-offset').val(), 10) || 10;
-            el.iconRight       = $('#prop-input-icon-right').val() || '';
-            el.iconRightOffset = parseInt($('#prop-input-icon-right-offset').val(), 10) || 10;
+            el.iconLeft        = $('#prop-form-icon-left').val() || '';
+            el.iconLeftOffset  = (isNaN(parseInt($('#prop-form-icon-left-offset').val(), 10)) ? 10 : parseInt($('#prop-form-icon-left-offset').val(), 10));
+            el.iconRight       = $('#prop-form-icon-right').val() || '';
+            el.iconRightOffset = (isNaN(parseInt($('#prop-form-icon-right-offset').val(), 10)) ? 10 : parseInt($('#prop-form-icon-right-offset').val(), 10));
         }
 
         if ($('#prop-gp-style-css-class').length) {

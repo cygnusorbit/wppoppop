@@ -20,6 +20,23 @@ if (!defined('ABSPATH')) exit;
                 <option value="given-name">First Name (given-name)</option>
                 <option value="family-name">Last Name (family-name)</option>
                 <option value="organization">Company (organization)</option>
+                <option value="honorific-prefix">Title / Prefix (honorific-prefix)</option>
+                <option value="additional-name">Middle Name (additional-name)</option>
+                <option value="nickname">Nickname (nickname)</option>
+                <option value="username">Username (username)</option>
+                <option value="organization-title">Job Title (organization-title)</option>
+                <option value="email">Email Address (email)</option>
+                <option value="tel">Telephone (tel)</option>
+                <option value="street-address">Street Address (street-address)</option>
+                <option value="address-line1">Address Line 1 (address-line1)</option>
+                <option value="address-line2">Address Line 2 (address-line2)</option>
+                <option value="address-level2">City (address-level2)</option>
+                <option value="address-level1">State / Province (address-level1)</option>
+                <option value="postal-code">ZIP / Postal Code (postal-code)</option>
+                <option value="country-name">Country (country-name)</option>
+                <option value="bday">Birthday (bday)</option>
+                <option value="url">Website URL (url)</option>
+                <option value="one-time-code">One-Time Code (one-time-code)</option>
             </select>
         </div>
     </div>

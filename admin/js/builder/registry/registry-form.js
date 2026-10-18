@@ -24,6 +24,9 @@
 
     function formatIconTag(cls, posStyle) {
         var c = $.trim(cls || '');
+        if (c && !/^[A-Za-z][A-Za-z0-9 _-]*$/.test(c)) {
+            return '<span aria-hidden="true" style="' + posStyle + 'color:#64748b;font-size:14px;line-height:1;pointer-events:none;">' + $('<div>').text(c).html() + '</span>';
+        }
         if (!c) return '';
         var full = (c.indexOf('dashicons-') === 0 && c.indexOf('dashicons ') === -1) ? ('dashicons ' + c) : c;
         return '<i class="' + full + '" style="' + posStyle + 'color:#64748b;font-size:14px;width:14px;height:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;pointer-events:none;"></i>';
@@ -47,8 +50,8 @@
 
         var iLeft  = $.trim(el.iconLeft || (canonical === 'email' ? 'dashicons-email' : (canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? 'dashicons-lock' : '')))));
         var iRight = $.trim(el.iconRight || '');
-        var offL   = parseInt(el.iconLeftOffset, 10) || 10;
-        var offR   = parseInt(el.iconRightOffset, 10) || 10;
+        var offL   = (isNaN(parseInt(el.iconLeftOffset, 10)) ? 10 : parseInt(el.iconLeftOffset, 10));
+        var offR   = (isNaN(parseInt(el.iconRightOffset, 10)) ? 10 : parseInt(el.iconRightOffset, 10));
         var padL   = iLeft ? (offL + 22) : 12;
         var padR   = iRight ? (offR + 22) : 12;
 
@@ -218,6 +221,10 @@
         if (typeof Reg.applyStyleToStageNode === 'function') {
             Reg.applyStyleToStageNode(el);
         }
+        /* WPPOPPOP_TF_NOPAD */
+        if (canonical === 'text' && $node[0]) {
+            $node[0].style.setProperty('padding', '0', 'important');
+        }
     };
 
     function bindPhase3FormVerification() {
@@ -236,8 +243,8 @@
 
         // 2. Re-render Form Element Stage when Style Icons/Alignment, Required, Data Default/ReadOnly, or Advanced Mask change
         var crossTabSelectors = [
-            '#prop-gp-required', '#prop-input-icon-left', '#prop-input-icon-left-offset',
-            '#prop-input-icon-right', '#prop-input-icon-right-offset', '#prop-gp-style-css-class',
+            '#prop-gp-required', '#prop-form-icon-left', '#prop-form-icon-left-offset',
+            '#prop-form-icon-right', '#prop-form-icon-right-offset', '#prop-gp-style-css-class',
             '#prop-data-default', '#prop-data-readonly', '#prop-adv-id', '#prop-adv-mask'
         ].join(', ');
 
