@@ -493,6 +493,11 @@
         $('#prop-field-name').val(el.fieldName || el.fieldId || '');
         $('#prop-input-mask').val(el.inputMask || '');
         $('#prop-validator-error').val(el.errorMessage || '');
+        /* WPPOPPOP_REQ_MSG: hydrate */
+        $('#insp-row-gp-required').toggle(isForm);
+        $('#prop-gp-required').prop('checked', !!el.required);
+        $('#prop-gp-required-msg').val(el.requiredMessage || '');
+        $('#insp-row-gp-required-msg').toggle(isForm && !!el.required);
 
         var filters = Array.isArray(el.filters) ? el.filters : [];
         $('.prop-filter-chk').each(function() {
@@ -738,6 +743,19 @@
         return false;
     };
     /* === /WPPOPPOP_PANEL_GUARD === */
+
+    /* WPPOPPOP_REQ_MSG: live */
+    $(document).off('input.wppReqMsg change.wppReqMsg', '#prop-gp-required, #prop-gp-required-msg')
+        .on('input.wppReqMsg change.wppReqMsg', '#prop-gp-required, #prop-gp-required-msg', function() {
+            var el = resolveElement();
+            if (!el) return;
+            if (this.id === 'prop-gp-required') {
+                el.required = $(this).is(':checked');
+                $('#insp-row-gp-required-msg').toggle(!!el.required);
+            } else {
+                el.requiredMessage = $(this).val();
+            }
+        });
 
 })(window, jQuery);
 /* === WPPOPPOP_MASTER_LAYER_INSPECTOR_AND_LAYER_ENGINE_END === */

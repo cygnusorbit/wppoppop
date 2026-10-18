@@ -41,7 +41,7 @@
         });
 
         // 3. Flush Shared Content Footer (Autocomplete, Animation, Required)
-        if ($('#prop-gp-autocomplete').length) {
+        if ($('#prop-gp-autocomplete').length && $('#insp-row-gp-autocomplete').is(':visible')) { /* WPPOPPOP_AC_GUARD */
             el.autocomplete = $('#prop-gp-autocomplete').val() || 'off';
         }
         if ($('#prop-anim-in').length) {
@@ -54,6 +54,7 @@
         }
         if (isForm && $('#prop-gp-required').length) {
             el.required = $('#prop-gp-required').is(':checked');
+            if ($('#prop-gp-required-msg').length) { el.requiredMessage = $('#prop-gp-required-msg').val() || ''; } /* WPPOPPOP_REQ_MSG: flush */
         }
 
         // 4. Flush Style Tab (Media Suite + Form Input Style Suite + Inline CSS Repeater)

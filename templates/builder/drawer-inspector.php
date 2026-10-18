@@ -208,11 +208,16 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <div class="wppoppop-prop-row wppoppop-gp-switch-row" id="insp-row-gp-required" style="display:none; margin-top:12px;">
-                    <label class="wppoppop-prop-label" for="prop-gp-required"><?php esc_html_e( 'REQUIRED', 'wppoppop' ); ?></label>
+                    <label class="wppoppop-prop-label" for="prop-gp-required"><?php esc_html_e( 'REQUIRED', 'wppoppop' ); ?> <span class="dashicons dashicons-editor-help" title="<?php echo esc_attr__( 'Visitors must fill this field before submitting.', 'wppoppop' ); ?>" style="font-size:15px;width:15px;height:15px;vertical-align:middle;color:#94a3b8;"></span></label>
                     <label class="wppoppop-gp-switch">
                         <input type="checkbox" id="prop-gp-required">
                         <span class="wppoppop-gp-slider"></span>
                     </label>
+                </div>
+                <div class="wppoppop-prop-row" id="insp-row-gp-required-msg" style="display:none; margin-top:10px;">
+                    <label class="wppoppop-prop-label" for="prop-gp-required-msg" style="color:#c2185b;font-weight:700;"><?php esc_html_e( 'ERROR MESSAGE', 'wppoppop' ); ?></label>
+                    <input type="text" id="prop-gp-required-msg" class="widefat wppoppop-input" placeholder="<?php echo esc_attr__( 'This field is required.', 'wppoppop' ); ?>" style="font-size:12px;">
+                    <em style="display:block;font-size:11px;color:#94a3b8;margin-top:4px;"><?php esc_html_e( 'Default message: This field is required.', 'wppoppop' ); ?></em>
                 </div>
             </div>
 <div id="wppoppop-element-specific-settings">

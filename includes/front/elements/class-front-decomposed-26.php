@@ -57,6 +57,9 @@ class WpPopPop_Front_Decomposed_26 {
         if (!empty($el['required'])) {
             $attrs .= ' required="required" aria-required="true"';
         }
+        if (!empty($el['required']) && !empty($el['requiredMessage'])) {
+            $attrs .= ' data-error-msg="' . esc_attr($el['requiredMessage']) . '"';
+        }
         if (!empty($el['autocomplete'])) {
             $attrs .= ' autocomplete="' . esc_attr($el['autocomplete']) . '"';
         }

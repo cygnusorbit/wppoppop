@@ -235,7 +235,7 @@
         });
 
         // 2. Flush Basic / Content shared controls
-        if (jQuery('#prop-gp-autocomplete').length) {
+        if (jQuery('#prop-gp-autocomplete').length && jQuery('#insp-row-gp-autocomplete').is(':visible')) { /* WPPOPPOP_AC_GUARD */
             el.autocomplete = jQuery('#prop-gp-autocomplete').val() || 'off';
         }
         if (jQuery('#prop-anim-in').length) {
@@ -248,6 +248,7 @@
         }
         if (jQuery('#prop-gp-required').length && jQuery('#insp-row-gp-required').is(':visible')) {
             el.required = jQuery('#prop-gp-required').is(':checked');
+            if (jQuery('#prop-gp-required-msg').length) { el.requiredMessage = jQuery('#prop-gp-required-msg').val() || ''; } /* WPPOPPOP_REQ_MSG: flush */
         }
 
         // 3. Flush Form Input Style Module (Icons, Alignment, Custom CSS Class, Inline Styles Repeater)
@@ -345,7 +346,7 @@
         jQuery('#prop-content').closest('.wppoppop-prop-row, .wppoppop-insp-card').toggle(usesGenericContent);
 
         //    Show Autocomplete only on single-line text-like inputs
-        var hasAutocomplete = ['text', 'email', 'tel', 'password', 'number'].indexOf(canonical) !== -1;
+        var hasAutocomplete = ['email', 'tel', 'password', 'number'].indexOf(canonical) !== -1; /* WPPOPPOP_AC_GUARD: text uses its own panel select */
         jQuery('#insp-row-gp-autocomplete').toggle(hasAutocomplete);
 
         //    Show canonical Required switch only for Form elements (10-25)
@@ -472,7 +473,7 @@
         jQuery(document).on('change input', '#prop-gp-autocomplete, #prop-anim-in, #prop-anim-out, #prop-anim-duration, #prop-anim-delay, #prop-gp-required', function() {
             var el = getEl();
             if (!el) return;
-            el.autocomplete = jQuery('#prop-gp-autocomplete').val();
+            if (jQuery('#insp-row-gp-autocomplete').is(':visible')) { el.autocomplete = jQuery('#prop-gp-autocomplete').val(); } /* WPPOPPOP_AC_GUARD */
             el.animIn       = jQuery('#prop-anim-in').val();
             el.animation    = el.animIn;
             el.animOut      = jQuery('#prop-anim-out').val();
@@ -3884,6 +3885,11 @@
         $('#prop-field-name').val(el.fieldName || el.fieldId || '');
         $('#prop-input-mask').val(el.inputMask || '');
         $('#prop-validator-error').val(el.errorMessage || '');
+        /* WPPOPPOP_REQ_MSG: hydrate */
+        $('#insp-row-gp-required').toggle(isForm);
+        $('#prop-gp-required').prop('checked', !!el.required);
+        $('#prop-gp-required-msg').val(el.requiredMessage || '');
+        $('#insp-row-gp-required-msg').toggle(isForm && !!el.required);
 
         var filters = Array.isArray(el.filters) ? el.filters : [];
         $('.prop-filter-chk').each(function() {
@@ -4516,6 +4522,11 @@
         $('#prop-field-name').val(el.fieldName || el.fieldId || '');
         $('#prop-input-mask').val(el.inputMask || '');
         $('#prop-validator-error').val(el.errorMessage || '');
+        /* WPPOPPOP_REQ_MSG: hydrate */
+        $('#insp-row-gp-required').toggle(isForm);
+        $('#prop-gp-required').prop('checked', !!el.required);
+        $('#prop-gp-required-msg').val(el.requiredMessage || '');
+        $('#insp-row-gp-required-msg').toggle(isForm && !!el.required);
 
         var filters = Array.isArray(el.filters) ? el.filters : [];
         $('.prop-filter-chk').each(function() {

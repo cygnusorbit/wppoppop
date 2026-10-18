@@ -521,7 +521,7 @@ if (!$data || !isset($data['meta'])) {
             'buttonAction', 'url', 'loadingText', 'submitAction',
             'confirmMessage', 'redirectUrl', 'countryCode', 'checkboxLabel',
             'radioLayout', 'dateFormat', 'minDate', 'maxDate', 'timeFormat',
-            'allowedExtensions', 'activeColor', 'ratingShape', 'ratingColor'
+            'allowedExtensions', 'activeColor', 'ratingShape', 'ratingColor', 'requiredMessage'
         );
         foreach ( $gp_text_keys as$gk ) {
             if ( isset( $el[$gk ] ) && ! is_array( $el[$gk ] ) ) {

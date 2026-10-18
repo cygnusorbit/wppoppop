@@ -106,6 +106,18 @@
                 }
             });
 
+            /* WPPOPPOP_REQ_MSG: native required inputs with custom message */
+            $popup.find('input[required], select[required], textarea[required]').each(function() {
+                var $f = $(this);
+                var v = $f.val();
+                var empty = !v || (Array.isArray(v) && !v.length) || ($f.is(':checkbox') && !$f.is(':checked'));
+                if (empty && $f.is(':visible')) {
+                    self.showErrorBubble($f, $f.attr('data-error-msg') || 'This field is required.');
+                    isValid = false;
+                    return false;
+                }
+            });
+
             if (!isValid) return false;
 
             // Email format & Disposable Domain Validation
