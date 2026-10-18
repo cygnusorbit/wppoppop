@@ -277,6 +277,9 @@ class WpPopPop_Front_Renderer {
             $hover_style_tag = '<style>#el-' . $el_id . ':hover, #el-' . $el_id . ' button:hover, #el-' . $el_id . ' a:hover { ' . $hover_rules . ' }</style>';
         }
         $type = $el['type'] ?? 'text';
+        /* WPPOPPOP_AC_ATTR */
+        $wppoppop_ac_val = !empty($el['autocomplete']) ? preg_replace('/[^a-z0-9 \-]/', '', strtolower((string) $el['autocomplete'])) : '';
+        $wppoppop_ac_attr = $wppoppop_ac_val !== '' ? ' autocomplete="' . esc_attr($wppoppop_ac_val) . '"' : '';
         $wrapper_styles = array();
         $wrapper_classes = array();
         // Phase 2: Opacity, Custom Class & Button Hover Properties
@@ -478,11 +481,11 @@ class WpPopPop_Front_Renderer {
 
             case 'email':
                 $ph = !empty($content) ? esc_attr($content) : 'Enter your email...';
-                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email ' . $anim_class . '" style="' . $style_attr . '"><input type="email" name="email" class="wppoppop-field-email" placeholder="' . $ph . '" required style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
+                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email ' . $anim_class . '" style="' . $style_attr . '"><input type="email" name="email"' . $wppoppop_ac_attr . ' class="wppoppop-field-email" placeholder="' . $ph . '" required style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
             case 'number':
                 $ph = !empty($content) ? esc_attr($content) : 'Enter number...';
-                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="number" name="number_field" placeholder="' . $ph . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
+                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="number" name="number_field"' . $wppoppop_ac_attr . ' placeholder="' . $ph . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
             case 'select':
                 $opts = array_map('trim', explode(',', $content ?: 'Option 1, Option 2'));

@@ -346,7 +346,7 @@
         jQuery('#prop-content').closest('.wppoppop-prop-row, .wppoppop-insp-card').toggle(usesGenericContent);
 
         //    Show Autocomplete only on single-line text-like inputs
-        var hasAutocomplete = ['email', 'tel', 'password', 'number'].indexOf(canonical) !== -1; /* WPPOPPOP_AC_GUARD: text uses its own panel select */
+        var hasAutocomplete = false; /* WPPOPPOP_AC_OWN_PANELS: every type uses its own panel select */
         jQuery('#insp-row-gp-autocomplete').toggle(hasAutocomplete);
 
         //    Show canonical Required switch only for Form elements (10-25)
