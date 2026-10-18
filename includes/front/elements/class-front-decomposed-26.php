@@ -277,7 +277,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $cb_checked = !empty($el['checkedDefault']) && $el['checkedDefault'] !== 'false' && $el['checkedDefault'] !== '0';
                 $cb_multi = count($cb_items) > 1;
                 $cb_ty = '';
-                if (!empty($el['fontSize']) && is_numeric($el['fontSize'])) { $cb_ty .= 'font-size:' . intval($el['fontSize']) . 'px;'; }
+                $cb_ty .= 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
                 if (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) { $cb_ty .= 'font-weight:' . $el['fontWeight'] . ';'; }
                 if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $cb_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
                 if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $cb_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
@@ -300,6 +300,34 @@ class WpPopPop_Front_Decomposed_26 {
                         . '<span>' . $cb_text . '</span></label>';
                 }
                 return '<div class="wppoppop-checkbox-group" style="width:100%;height:100%;display:flex;flex-direction:' . ($cb_row ? 'row' : 'column') . ';flex-wrap:wrap;align-items:' . ($cb_row ? 'center' : $cb_j) . ';justify-content:' . ($cb_row ? $cb_j : 'center') . ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:auto;' . $cb_ty . '">' . $cb_html . '</div>';
+
+            case 'radio':
+            case 'radios':
+                /* WPPOPPOP_RADIO_FRONT: real radio group, layout, unselected by default, required on the group */
+                $rd_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : '';
+                $rd_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $rd_raw)), 'strlen'));
+                if (empty($rd_items)) { $rd_items = array('Choice A', 'Choice B', 'Choice C'); }
+                $rd_lay = strtolower((string) (isset($el['layout']) ? $el['layout'] : (isset($el['radioLayout']) ? $el['radioLayout'] : 'vertical')));
+                $rd_row = in_array($rd_lay, array('horizontal', 'inline', 'row'), true);
+                $rd_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $rd_j = ($rd_al === 'center') ? 'center' : (($rd_al === 'right') ? 'flex-end' : 'flex-start');
+                $rd_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
+                if (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) { $rd_ty .= 'font-weight:' . $el['fontWeight'] . ';'; }
+                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $rd_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
+                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $rd_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
+                if (!empty($el['color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['color'])) { $rd_ty .= 'color:' . $el['color'] . ';'; }
+                if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit' && preg_match('/^[A-Za-z0-9 ,\'"-]+$/', (string) $el['fontFamily'])) { $rd_ty .= 'font-family:' . esc_attr($el['fontFamily']) . ';'; }
+                $rd_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                $rd_html = '';
+                foreach ($rd_items as $rd_i => $rd_label) {
+                    $rd_id = $field_id . '-' . $rd_i;
+                    $rd_attr = ($rd_i === 0) ? $rd_data : preg_replace('/\srequired="required"|\saria-required="true"|\sdata-error-msg="[^"]*"/', '', $rd_data);
+                    $rd_html .= '<label for="' . esc_attr($rd_id) . '" style="display:inline-flex;align-items:center;gap:8px;font-size:inherit;color:inherit;cursor:pointer;line-height:inherit;">'
+                        . '<input type="radio" id="' . esc_attr($rd_id) . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($rd_label) . '" class="wppoppop-form-input wppoppop-input-radio"' . (($default_val !== '' && $default_val === $rd_label) ? ' checked' : '') . $rd_attr
+                        . ' style="width:16px;height:16px;margin:0;flex-shrink:0;cursor:pointer;pointer-events:auto;" />'
+                        . '<span>' . esc_html($rd_label) . '</span></label>';
+                }
+                return '<div class="wppoppop-radio-group" role="radiogroup" style="width:100%;height:100%;display:flex;flex-direction:' . ($rd_row ? 'row' : 'column') . ';flex-wrap:wrap;align-items:' . ($rd_row ? 'center' : $rd_j) . ';justify-content:' . ($rd_row ? $rd_j : 'center') . ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:auto;' . $rd_ty . '">' . $rd_html . '</div>';
 
             case 'textarea':
                 /* WPPOPPOP_TEXTAREA_FRONT: alignment + rows min-height + live counter */

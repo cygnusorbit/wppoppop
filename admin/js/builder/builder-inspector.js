@@ -888,8 +888,8 @@
         }
 
         // Show matching contextual panel in Basic Tab
-        $('.element-panel').hide();
-        var $activePanel = $('#panel-elem-' + canonicalType);
+        var $activePanel = $('#panel-elem-' + canonicalType); /* WPPOPPOP_PANEL_NOHIDE */
+        $('.element-panel').not($activePanel).hide();
         if (!$activePanel.length && canonicalType === 'paragraph') $activePanel = $('#panel-elem-text');
         if (!$activePanel.length && canonicalType === 'dropdown') $activePanel = $('#panel-elem-select');
         if (!$activePanel.length && canonicalType === 'radio') $activePanel = $('#panel-elem-radios');
@@ -963,7 +963,7 @@
 
         // Typography
         if ($('#prop-font-family').length && el.fontFamily) $('#prop-font-family').val(el.fontFamily);
-        if ($('#prop-font-size').length && el.fontSize) $('#prop-font-size').val(parseInt(el.fontSize, 10) || 16);
+        if ($('#prop-font-size').length && el.fontSize) $('#prop-font-size').val(parseInt(el.fontSize, 10) || ((type === 'checkbox' || type === 'checkboxes' || type === 'radio' || type === 'radios') ? 12 : 16));
         if ($('#prop-font-weight').length && el.fontWeight) $('#prop-font-weight').val(el.fontWeight);
         if ($('#prop-text-align').length && el.textAlign) $('#prop-text-align').val(el.textAlign);
         if ($('#prop-line-height').length && el.lineHeight) $('#prop-line-height').val(el.lineHeight);
@@ -4474,7 +4474,12 @@
             $('#prop-phone-autocomplete').val('tel');
         }
         if (type === 'checkbox' || type === 'checkboxes') { $('#prop-checkbox-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_CHECKBOX_LAYOUT */
+        if (type === 'radio' || type === 'radios') { $('#prop-radio-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_RADIO_LAYOUT */
         if ((type === 'checkbox' || type === 'checkboxes') && !el.bgColor) { /* WPPOPPOP_CB_BG */
+            $('#prop-bg-color').val('#ffffff');
+            $('#prop-bg-transparent').prop('checked', true);
+        }
+        if ((type === 'radio' || type === 'radios') && !el.bgColor) { /* WPPOPPOP_RADIO_BG */
             $('#prop-bg-color').val('#ffffff');
             $('#prop-bg-transparent').prop('checked', true);
         }
@@ -4488,6 +4493,7 @@
         $('#prop-btn-hover-section').toggle(isButton);
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
         $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
+        $('#insp-tab-style').toggleClass('wppoppop-rd-style', ['radio', 'radios'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_RD_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-cb-style', ['checkbox', 'checkboxes'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_CB_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
 
@@ -4515,8 +4521,8 @@
         $('#prop-border-radius').val(parseInt(el.borderRadius, 10) || 4);
 
         $('#prop-shadow-x').val(parseInt(el.shadowX, 10) || 0);
-        $('#prop-shadow-y').val(parseInt(el.shadowY, 10) || 4);
-        $('#prop-shadow-blur').val(parseInt(el.shadowBlur, 10) || 12);
+        $('#prop-shadow-y').val(parseInt(el.shadowY, 10) || 0);
+        $('#prop-shadow-blur').val(parseInt(el.shadowBlur, 10) || 0);
         $('#prop-shadow-spread').val(parseInt(el.shadowSpread, 10) || 0);
         $('#prop-shadow-color').val(el.shadowColor || '#000000');
 

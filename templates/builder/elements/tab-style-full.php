@@ -2,6 +2,18 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <!-- WPPOPPOP UNIFIED STYLE TAB SUITE -->
+<!-- WPPOPPOP_RD_STYLE: Radio hides everything except Alignment and Typography -->
+<style>
+#insp-tab-style.wppoppop-rd-style #wppoppop-form-icons-card,
+#insp-tab-style.wppoppop-rd-style #insp-section-opacity,
+#insp-tab-style.wppoppop-rd-style #insp-section-bg-color,
+#insp-tab-style.wppoppop-rd-style #insp-section-padding,
+#insp-tab-style.wppoppop-rd-style #insp-section-border,
+#insp-tab-style.wppoppop-rd-style #insp-section-shadow,
+#insp-tab-style.wppoppop-rd-style #insp-section-custom-css { display: none !important; }
+#insp-tab-style.wppoppop-rd-style #insp-section-typography { display: block !important; }
+</style>
+
 <!-- WPPOPPOP_CB_STYLE: Checkbox hides all style cards except Typography -->
 <style>
 #insp-tab-style.wppoppop-cb-style #wppoppop-form-icons-card,
@@ -185,13 +197,13 @@ if (!defined('ABSPATH')) exit;
         </div>
         <div>
             <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">OFFSET Y (PX)</label>
-            <input type="number" id="prop-shadow-y" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shadowY" min="-50" max="50" value="4" style="font-size:12px;" />
+            <input type="number" id="prop-shadow-y" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shadowY" min="-50" max="50" value="0" style="font-size:12px;" />
         </div>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
         <div>
             <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">BLUR</label>
-            <input type="number" id="prop-shadow-blur" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shadowBlur" min="0" max="100" value="12" style="font-size:12px;" />
+            <input type="number" id="prop-shadow-blur" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shadowBlur" min="0" max="100" value="0" style="font-size:12px;" />
         </div>
         <div>
             <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">SPREAD</label>

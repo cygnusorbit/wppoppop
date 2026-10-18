@@ -419,7 +419,12 @@
             $('#prop-phone-autocomplete').val('tel');
         }
         if (type === 'checkbox' || type === 'checkboxes') { $('#prop-checkbox-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_CHECKBOX_LAYOUT */
+        if (type === 'radio' || type === 'radios') { $('#prop-radio-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_RADIO_LAYOUT */
         if ((type === 'checkbox' || type === 'checkboxes') && !el.bgColor) { /* WPPOPPOP_CB_BG */
+            $('#prop-bg-color').val('#ffffff');
+            $('#prop-bg-transparent').prop('checked', true);
+        }
+        if ((type === 'radio' || type === 'radios') && !el.bgColor) { /* WPPOPPOP_RADIO_BG */
             $('#prop-bg-color').val('#ffffff');
             $('#prop-bg-transparent').prop('checked', true);
         }
@@ -433,6 +438,7 @@
         $('#prop-btn-hover-section').toggle(isButton);
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
         $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
+        $('#insp-tab-style').toggleClass('wppoppop-rd-style', ['radio', 'radios'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_RD_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-cb-style', ['checkbox', 'checkboxes'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_CB_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
 
@@ -443,7 +449,7 @@
 
         $('#prop-bg-color').val((el.bgColor && el.bgColor !== 'transparent') ? el.bgColor : '#3b82f6');
         $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent' || (type === 'shape' && !el.bgColor));
-        $('#prop-font-size').val(parseInt(el.fontSize, 10) || 16);
+        $('#prop-font-size').val(parseInt(el.fontSize, 10) || ((type === 'checkbox' || type === 'checkboxes' || type === 'radio' || type === 'radios') ? 12 : 16));
         $('#prop-font-weight').val(el.fontWeight || '400');
         $('#prop-line-height').val(el.lineHeight || 1.4);
         $('#prop-letter-spacing').val(el.letterSpacing || 0);
@@ -460,8 +466,8 @@
         $('#prop-border-radius').val(parseInt(el.borderRadius, 10) || 4);
 
         $('#prop-shadow-x').val(parseInt(el.shadowX, 10) || 0);
-        $('#prop-shadow-y').val(parseInt(el.shadowY, 10) || 4);
-        $('#prop-shadow-blur').val(parseInt(el.shadowBlur, 10) || 12);
+        $('#prop-shadow-y').val(parseInt(el.shadowY, 10) || 0);
+        $('#prop-shadow-blur').val(parseInt(el.shadowBlur, 10) || 0);
         $('#prop-shadow-spread').val(parseInt(el.shadowSpread, 10) || 0);
         $('#prop-shadow-color').val(el.shadowColor || '#000000');
 
@@ -746,17 +752,15 @@
     /* === /WPPOPPOP_LOGIC_RULE_SYNC === */
 
     /* === WPPOPPOP_PANEL_GUARD === */
+    /* WPPOPPOP_PANEL_GUARD_V2: true when the right panel is already the only one showing, any element type */
     window.__wppPanelSettled = function(typeOrId) {
+        var t = String(typeOrId || '').toLowerCase().trim();
+        var el = resolveElement(typeOrId);
+        if (el && el.type) { t = String(el.type).toLowerCase().trim(); }
+        var sel = MEDIA_PANEL_MAP[t];
+        if (!sel) { return false; }
         var $vis = $('#wppoppop-inspector-drawer .wppoppop-panel-specific:visible');
-        var t = String(typeOrId || '').toLowerCase();
-        if (t !== 'text' && t !== 'textfield' && t !== 'email' && t !== 'number' && t !== 'phone' && t !== 'tel') {
-            var el = resolveElement(typeOrId);
-            t = el ? String(el.type || '').toLowerCase() : t;
-        }
-        if (t === 'text' || t === 'textfield' || t === 'email' || t === 'number' || t === 'phone' || t === 'tel') {
-            return $vis.length === 1 && $vis.is(t === 'email' ? '#panel-elem-email' : (t === 'number' ? '#panel-elem-number' : ((t === 'phone' || t === 'tel') ? '#panel-elem-phone' : '#panel-elem-text')));
-        }
-        return false;
+        return $vis.length === 1 && $vis.is(sel);
     };
     /* === /WPPOPPOP_PANEL_GUARD === */
 

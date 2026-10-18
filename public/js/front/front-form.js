@@ -470,7 +470,7 @@
             }
             var rules = String(t.getAttribute('data-validators') || '').split(',').filter(Boolean);
             var req = t.hasAttribute('required') || rules.indexOf('required') !== -1;
-            var v = $f.is(':checkbox') ? ($f.is(':checked') ? '1' : '') : $f.val();
+            var v = $f.is(':checkbox') ? ($f.is(':checked') ? '1' : '') : ((t.type === 'radio') ? ($p.find('input[type="radio"][name="' + t.name + '"]:checked').length ? '1' : '') : $f.val()); /* WPPOPPOP_RADIO_REQ */
             v = Array.isArray(v) ? v.join(',') : String(v == null ? '' : v);
             var custom = t.getAttribute('data-invalid-msg');
             function fail(m) { bad = $f; msg = m; return false; }

@@ -252,7 +252,7 @@ class WpPopPop_Front_Renderer {
         
         // Build Box Shadow style
         $box_shadow_val = !empty($el['boxShadow']) ? $el['boxShadow'] : '';
-        if (empty($box_shadow_val) && (!empty($el['shadowBlur']) || !empty($el['shadowSpread']) || !empty($el['shadowColor']))) {
+        if (empty($box_shadow_val) && (!empty($el['shadowBlur']) || !empty($el['shadowSpread']) || !empty($el['shadowX']) || !empty($el['shadowY']))) {
             $sx = isset($el['shadowX']) ? intval($el['shadowX']) : 0;
             $sy = isset($el['shadowY']) ? intval($el['shadowY']) : 0;
             $sb = isset($el['shadowBlur']) ? intval($el['shadowBlur']) : 0;
@@ -530,7 +530,19 @@ class WpPopPop_Front_Renderer {
                 $html .= '</select></div>';
                 return $html;
 
+            case 'radio':
             case 'radios':
+                /* WPPOPPOP_RADIO_DECOMPOSED */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_rd_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_rd_file)) { require_once $wppoppop_rd_file; }
+                }
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_rd_inner = WpPopPop_Front_Decomposed_26::render_element('radio', $el);
+                    if ($wppoppop_rd_inner !== null && $wppoppop_rd_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-radio ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_rd_inner . '</div>';
+                    }
+                }
                 $items = array_map('trim', explode(',', $content ?: 'Choice A, Choice B'));
                 $html = '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;gap:12px;font-size:12px;">';
                 foreach ($items as $idx => $it) {

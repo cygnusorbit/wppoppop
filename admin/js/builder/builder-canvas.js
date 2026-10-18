@@ -1208,6 +1208,8 @@
             }
 
             if (type === 'textarea') { newEl.height = 100; newEl.h = 100; if (!newEl.rows) { newEl.rows = 4; } } /* WPPOPPOP_TEXTAREA_H100 */
+            if (type === 'checkbox' || type === 'checkboxes') { newEl.width = 300; newEl.w = 300; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_CHECKBOX_DEFAULTS */
+            if (type === 'radio' || type === 'radios') { newEl.width = 100; newEl.w = 100; newEl.height = 100; newEl.h = 100; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_RADIO_DEFAULTS */
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();

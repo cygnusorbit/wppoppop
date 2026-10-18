@@ -98,7 +98,7 @@
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(sDisp).html() + reqStar + '</span>' +
                 '<span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;width:16px;height:16px;color:#64748b;"></span>' +
                 '</div>';
-        } else if (canonical === 'checkbox') {
+        } else if (canonical === 'checkbox' || canonical === 'checkboxes') {
             /* WPPOPPOP_CHECKBOX_STAGE_V2 */
             var cbOpts = parseOptionsList(el.optionsList || el.options, []);
             if (!cbOpts.length) { cbOpts = [el.checkboxLabel || 'I agree to the Terms and Privacy Policy']; }
@@ -106,7 +106,7 @@
             var cbLay = String(el.layout || el.checkboxLayout || 'vertical').toLowerCase();
             var cbRow = (cbLay === 'horizontal' || cbLay === 'inline' || cbLay === 'row');
             var cbJ = align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start');
-            var cbTxt = 'font-size:' + (parseInt(el.fontSize, 10) || 13) + 'px;' +
+            var cbTxt = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;' +
                 'font-weight:' + (el.fontWeight || '400') + ';' +
                 'line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';' +
                 'letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;' +
@@ -119,17 +119,26 @@
                     '<span>' + $('<div>').text(opt).html() + (idx === 0 && el.termsUrl ? ' <u style="color:#0284c7;">(view)</u>' : '') + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (cbRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (cbRow ? 'center' : cbJ) + ';justify-content:' + (cbRow ? cbJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + cbItemsHtml + '</div>';
-        } else if (canonical === 'radio') {
-            var rOpts = parseOptionsList(el.options, ['Choice A', 'Choice B', 'Choice C']);
-            var rDir  = (el.radioLayout === 'vertical') ? 'column' : 'row';
+        } else if (canonical === 'radio' || canonical === 'radios') {
+            /* WPPOPPOP_RADIO_STAGE_V2 */
+            var rOpts = parseOptionsList(el.optionsList || el.options, ['Choice A', 'Choice B', 'Choice C']);
+            var rLay = String(el.layout || el.radioLayout || 'vertical').toLowerCase();
+            var rRow = (rLay === 'horizontal' || rLay === 'inline' || rLay === 'row');
+            var rJ = align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start');
+            var rTxt = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;' +
+                'font-weight:' + (el.fontWeight || '400') + ';' +
+                'line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';' +
+                'letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;' +
+                'color:' + (el.color || '#1e293b') + ';' +
+                ((el.fontFamily && el.fontFamily !== 'inherit') ? 'font-family:' + String(el.fontFamily).replace(/["<>]/g, '') + ';' : '');
             var rHtml = rOpts.map(function(opt, idx) {
-                var isSel = defVal ? (opt.toLowerCase() === defVal.toLowerCase()) : (idx === 0);
-                return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#1e293b;">' +
-                    '<span style="width:14px;height:14px;border-radius:50%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;">' +
-                    (isSel ? '<span style="width:7px;height:7px;border-radius:50%;background:#c2185b;"></span>' : '') +
-                    '</span>' + $('<div>').text(opt).html() + '</span>';
+                var isSel = defVal ? (opt.toLowerCase() === defVal.toLowerCase()) : false;
+                return '<span style="display:inline-flex;align-items:center;gap:8px;' + rTxt + '">' +
+                    '<span style="width:16px;height:16px;border-radius:50%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;flex-shrink:0;">' +
+                    (isSel ? '<span style="width:8px;height:8px;border-radius:50%;background:#c2185b;"></span>' : '') +
+                    '</span><span>' + $('<div>').text(opt).html() + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
-            innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + rDir + ';flex-wrap:wrap;align-items:center;gap:10px;padding:4px 6px;box-sizing:border-box;pointer-events:none;">' + rHtml + '</div>';
+            innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (rRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (rRow ? 'center' : rJ) + ';justify-content:' + (rRow ? rJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + rHtml + '</div>';
         } else if (canonical === 'multiselect') {
             var mOpts = parseOptionsList(el.options, ['Marketing', 'Design', 'Development']);
             var maxS  = parseInt(el.maxSelect, 10) || 0;
@@ -222,7 +231,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };
