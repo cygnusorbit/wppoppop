@@ -849,6 +849,12 @@
                     }
                     return '<div class="wppoppop-custom-html-stage" style="width:100%;height:100%;overflow:auto;box-sizing:border-box;">' + rawHtml + '</div>';
 
+                case 'button':
+                case 'link':
+                case 'link_btn':
+                    var btLabel = (el.content !== undefined && el.content !== null && String(el.content).replace(/\s+/g, '') !== '') ? el.content : 'Click Here';
+                    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font:inherit;color:inherit;letter-spacing:inherit;pointer-events:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 12px;box-sizing:border-box;">' + String(btLabel).replace(/</g, '&lt;') + '</div>';
+
                 case 'divider':
                     var dStyle = el.dividerStyle || 'solid';
                     var dWeight = parseInt(el.dividerWeight || 2, 10);
@@ -1177,6 +1183,21 @@
                 custom_settings: {}
             };
 
+            if (type === 'button' || type === 'link' || type === 'link_btn') { /* WPPOPPOP_BUTTON_DEFAULTS */
+                newEl.bgColor = '#2563eb';
+                newEl.color = '#ffffff';
+                newEl.fontWeight = '600';
+                newEl.fontSize = 14;
+                newEl.borderRadius = 6;
+                newEl.textAlign = 'center';
+                newEl.buttonAction = 'link';
+                newEl.linkBlank = false;
+                newEl.nofollow = false;
+                newEl.hoverBgColor = '#1d4ed8';
+                newEl.hoverTextColor = '#ffffff';
+                newEl.hoverBorderColor = '#1d4ed8';
+            }
+
             if (type === 'shape') {
                 newEl.shapePreset = 'circle';
                 newEl.shapeFill = '#3b82f6';
@@ -1216,6 +1237,9 @@
                 case 'date': return '2026-10-10';
                 case 'step':
                 case 'step_btn': return 'Next Canvas &rarr;';
+                case 'button':
+                case 'link':
+                case 'link_btn': return 'Click Here';
                 case 'submit': return 'Claim Offer Now';
                 case 'pay': return 'Complete Checkout ($19.99)';
                 case 'html': return '<p>Custom <strong>HTML block</strong></p>';

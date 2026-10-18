@@ -32,6 +32,8 @@ if (!defined('ABSPATH')) exit;
 #panel-elem-button label.wpp-sw input[type=checkbox]:checked + .wpp-sw-track::after{transform:translateX(16px)}
 #panel-elem-button label.wpp-sw input[type=checkbox]:focus-visible + .wpp-sw-track{box-shadow:0 0 0 2px #38bdf8}
 #panel-elem-button label.wpp-sw > span:last-child{flex:1 1 auto;display:block}
+#panel-elem-button label.wpp-sw,#panel-elem-button label.wpp-sw span{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif !important;font-size:12px !important;font-weight:500 !important;letter-spacing:0 !important;text-transform:none !important}
+#panel-elem-button label.wpp-sw code{font-family:inherit !important;font-size:inherit !important;font-weight:700 !important;background:transparent !important;padding:0 !important;margin:0 !important;color:#38bdf8 !important}
 </style>
 
         <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">DESTINATION URL</label>
