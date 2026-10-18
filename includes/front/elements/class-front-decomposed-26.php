@@ -60,6 +60,9 @@ class WpPopPop_Front_Decomposed_26 {
         if (!empty($el['required']) && !empty($el['requiredMessage'])) {
             $attrs .= ' data-error-msg="' . esc_attr($el['requiredMessage']) . '"';
         }
+        if (!empty($el['blockDisposable']) && $el['blockDisposable'] !== 'false' && $el['blockDisposable'] !== '0') {
+            $attrs .= ' data-block-disposable="1"';
+        }
         if (!empty($el['autocomplete'])) {
             $attrs .= ' autocomplete="' . esc_attr($el['autocomplete']) . '"';
         }
@@ -109,9 +112,11 @@ class WpPopPop_Front_Decomposed_26 {
                 return '<a href="' . $url . '" class="wppoppop-front-btn wppoppop-link-btn"' . $blank . ' style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;">' . $btn_label . '</a>';
 
             case 'text':
-                /* WPPOPPOP_TF_FRONT: typeable input + icons + alignment + unique name */
+            case 'email':
+                /* WPPOPPOP_EMAIL_MIRROR */ /* WPPOPPOP_TF_FRONT: typeable input + icons + alignment + unique name */
                 $tf_val   = $default_val; /* WPPOPPOP_TF_VALUE: never seed from layer content */
-                $tf_name  = ($field_name === 'text') ? ('text_' . substr(sanitize_key((string) (isset($el['id']) ? $el['id'] : uniqid())), -6)) : $field_name;
+                $tf_name  = ($t === 'email') ? $field_name : (($field_name === 'text') ? ('text_' . substr(sanitize_key((string) (isset($el['id']) ? $el['id'] : uniqid())), -6)) : $field_name);
+                $tf_nm_attr = ($t === 'email' && $tf_name === 'email') ? 'email' : 'fields[' . esc_attr($tf_name) . ']';
                 $tf_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
                 $tf_icons = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
                 foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $tf_key => $tf_side) {
@@ -139,7 +144,7 @@ class WpPopPop_Front_Decomposed_26 {
                 };
                 return $tf_css . '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
                     . $tf_ico('left')
-                    . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($tf_name) . ']" data-field-name="' . esc_attr($tf_name) . '" value="' . esc_attr($tf_val) . '" placeholder="' . esc_attr($placeholder ?: 'Enter text...') . '" class="wppoppop-form-input wppoppop-input-text"' . $data_attrs
+                    . '<input type="' . ($t === 'email' ? 'email' : 'text') . '" id="' . $field_id . '" name="' . $tf_nm_attr . '" data-field-name="' . esc_attr($tf_name) . '" value="' . esc_attr($tf_val) . '" placeholder="' . esc_attr($placeholder ?: ($t === 'email' ? 'Enter your email...' : 'Enter text...')) . '" class="wppoppop-form-input wppoppop-input-text' . ($t === 'email' ? ' wppoppop-field-email' : '') . '"' . $data_attrs
                     . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $tf_pr . 'px 0 ' . $tf_pl . 'px;text-align:' . esc_attr($tf_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;" />'
                     . $tf_ico('right')
                     . '</div>';

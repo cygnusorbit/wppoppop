@@ -48,7 +48,7 @@
         var reqStar = el.required ? ' <span style="color:#f43f5e;font-weight:700;">*</span>' : '';
         var roBadge = el.readOnly ? '<span style="font-size:9px;background:#e2e8f0;color:#475569;padding:1px 4px;border-radius:3px;margin-left:6px;flex-shrink:0;">RO</span>' : '';
 
-        var iLeft  = $.trim(el.iconLeft || (canonical === 'email' ? 'dashicons-email' : (canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? 'dashicons-lock' : '')))));
+        var iLeft  = $.trim(el.iconLeft || ((canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? 'dashicons-lock' : '')))));
         var iRight = $.trim(el.iconRight || '');
         var offL   = (isNaN(parseInt(el.iconLeftOffset, 10)) ? 10 : parseInt(el.iconLeftOffset, 10));
         var offR   = (isNaN(parseInt(el.iconRightOffset, 10)) ? 10 : parseInt(el.iconRightOffset, 10));
@@ -222,7 +222,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if (canonical === 'text' && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };

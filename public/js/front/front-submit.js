@@ -125,12 +125,12 @@
             if ($emailInput.length) {
                 var emailVal = $emailInput.val().trim();
                 var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(emailVal)) {
+                if ((emailVal !== '' || $emailInput.first().is('[required]')) && !emailRegex.test(emailVal)) { /* WPPOPPOP_EMAIL_JS */
                     self.showErrorBubble($emailInput, 'Please enter a valid email address.');
                     return false;
                 }
                 var domain = emailVal.split('@')[1] ? emailVal.split('@')[1].toLowerCase() : '';
-                if (disposableDomains.indexOf(domain) !== -1) {
+                if ($emailInput.first().attr('data-block-disposable') === '1' && disposableDomains.indexOf(domain) !== -1) {
                     self.showErrorBubble($emailInput, 'Disposable and temporary email addresses are not allowed.');
                     return false;
                 }

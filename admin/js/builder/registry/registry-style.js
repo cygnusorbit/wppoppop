@@ -115,7 +115,7 @@
             var $c = $(this).closest('.wppoppop-insp-card, .wppoppop-insp-section');
             return ($c.length && !$c.is('#wppoppop-form-icons-card')) ? $c[0] : this;
         });
-        if (canonical === 'text' || canonical === 'textfield') {
+        if (canonical === 'text' || canonical === 'textfield' || canonical === 'email') {
             $tfNodes.attr('data-tf-hidden', '1').hide();
         } else {
             $tfNodes.filter('[data-tf-hidden]').removeAttr('data-tf-hidden').show();

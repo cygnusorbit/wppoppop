@@ -546,7 +546,7 @@ if (!$data || !isset($data['meta'])) {
             'controls', 'showPercentLabel', 'striped', 'targetBlank',
             'nofollow', 'checkedDefault', 'multiSelect', 'multiple',
             'showEyeToggle', 'logicEnabled', 'dynamicDefault',
-            'readOnly', 'saveToDb'
+            'readOnly', 'saveToDb', 'blockDisposable'
         );
         foreach ( $gp_bool_keys as$bk ) {
             if ( isset( $el[$bk ] ) ) {

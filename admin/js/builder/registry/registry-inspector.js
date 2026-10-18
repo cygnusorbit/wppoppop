@@ -424,7 +424,7 @@
         $('#prop-btn-hover-section').toggle(isButton);
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
         $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
-        $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
+        $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield', 'email'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
 
         var op = (el.opacity !== undefined && el.opacity !== null && el.opacity !== '') ? parseFloat(el.opacity) : 100;
         if (op <= 1 && op > 0) op = Math.round(op * 100);
@@ -733,12 +733,12 @@
     window.__wppPanelSettled = function(typeOrId) {
         var $vis = $('#wppoppop-inspector-drawer .wppoppop-panel-specific:visible');
         var t = String(typeOrId || '').toLowerCase();
-        if (t !== 'text' && t !== 'textfield') {
+        if (t !== 'text' && t !== 'textfield' && t !== 'email') {
             var el = resolveElement(typeOrId);
             t = el ? String(el.type || '').toLowerCase() : t;
         }
-        if (t === 'text' || t === 'textfield') {
-            return $vis.length === 1 && $vis.is('#panel-elem-text');
+        if (t === 'text' || t === 'textfield' || t === 'email') {
+            return $vis.length === 1 && $vis.is(t === 'email' ? '#panel-elem-email' : '#panel-elem-text');
         }
         return false;
     };

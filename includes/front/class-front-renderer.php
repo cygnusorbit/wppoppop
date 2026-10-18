@@ -480,6 +480,17 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-shape ' . $anim_class . '" style="' . $shape_style_attr . '">' . $svg . '</div>';
 
             case 'email':
+                /* WPPOPPOP_EMAIL_DECOMPOSED */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_em_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_em_file)) { require_once $wppoppop_em_file; }
+                }
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_em_inner = WpPopPop_Front_Decomposed_26::render_element('email', $el);
+                    if ($wppoppop_em_inner !== null && $wppoppop_em_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email wppoppop-el-textfield ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_em_inner . '</div>';
+                    }
+                }
                 $ph = !empty($content) ? esc_attr($content) : 'Enter your email...';
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email ' . $anim_class . '" style="' . $style_attr . '"><input type="email" name="email"' . $wppoppop_ac_attr . ' class="wppoppop-field-email" placeholder="' . $ph . '" required style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
