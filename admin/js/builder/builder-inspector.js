@@ -4810,5 +4810,104 @@
     bindIconActiveOnlyOnClick();
 
 })(window, jQuery);
+
+/* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
+/* Per-type Style-tab section trim (Image, Shape, Video).
+   Visibility only: DOM, IDs and data-prop bindings are untouched. */
+(function(window, $) {
+    'use strict';
+
+    var HIDE_MAP = {
+        'image':     ['insp-section-typography', 'insp-section-custom-css', 'insp-section-bg-color'],
+        'shape':     ['insp-section-typography', 'insp-section-custom-css'],
+        'rect':      ['insp-section-typography', 'insp-section-custom-css'],
+        'rectangle': ['insp-section-typography', 'insp-section-custom-css'],
+        'square':    ['insp-section-typography', 'insp-section-custom-css'],
+        'video':     ['insp-section-opacity', 'insp-section-bg-color', 'insp-section-custom-css']
+    };
+
+    var ALL_MANAGED = ['insp-section-typography', 'insp-section-custom-css',
+                       'insp-section-opacity', 'insp-section-bg-color'];
+
+    function cleanId(raw) {
+        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
+    }
+
+    function getActiveType() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state) return '';
+        var activeId = cleanId(core.state.activeId);
+        if (!activeId) return '';
+        var cur = core.state.currentCanvas || 1;
+        var list = (core.state.canvases && core.state.canvases[cur]) || [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && cleanId(list[i].id) === activeId) {
+                return String(list[i].type || '').toLowerCase().trim();
+            }
+        }
+        return '';
+    }
+
+    function applyMediaStyleTrim() {
+        var hideIds = HIDE_MAP[getActiveType()] || [];
+        for (var i = 0; i < ALL_MANAGED.length; i++) {
+            var node = document.getElementById(ALL_MANAGED[i]);
+            if (!node) continue;
+            if (hideIds.indexOf(ALL_MANAGED[i]) !== -1) {
+                node.style.setProperty('display', 'none', 'important');
+            } else if (node.style.getPropertyPriority('display') === 'important') {
+                node.style.removeProperty('display');
+            }
+        }
+    }
+
+    function scheduleTrim() {
+        applyMediaStyleTrim();
+        setTimeout(applyMediaStyleTrim, 0);
+        setTimeout(applyMediaStyleTrim, 60);
+        setTimeout(applyMediaStyleTrim, 200);
+    }
+
+    function hookInspector() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp.__wppoppopMediaTrimHooked) return;
+        insp.__wppoppopMediaTrimHooked = true;
+
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                scheduleTrim();
+                return res;
+            };
+        }
+        if (typeof insp.switchTab === 'function') {
+            var origSwitch = insp.switchTab;
+            insp.switchTab = function() {
+                var res = origSwitch.apply(this, arguments);
+                scheduleTrim();
+                return res;
+            };
+        }
+    }
+
+    // Capture phase: runs even when other handlers call stopPropagation()
+    window.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        if (t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) {
+            scheduleTrim();
+        }
+    }, true);
+
+    $(function() {
+        hookInspector();
+        scheduleTrim();
+        setTimeout(hookInspector, 150);
+        setTimeout(hookInspector, 450);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_MEDIA_STYLE_TRIM_END === */
+
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
 
