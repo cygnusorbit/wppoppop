@@ -390,6 +390,7 @@ class WpPopPop_Front_Renderer {
                 $inner_html = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:' . esc_attr($i_color) . ';font-size:' . $i_size . 'px;"><i class="' . esc_attr($i_class) . '"></i></div>';
                 break;
 
+            case 'label':
             case 'text':
                 
         $decomposed_types = array('label', 'button', 'text', 'phone', 'tel', 'textarea', 'multiselect', 'imageselect', 'tile', 'time', 'upload', 'file', 'password', 'rating');$raw_el_type = isset($el['type']) ? strtolower(trim($el['type'])) : '';

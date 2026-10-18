@@ -48,7 +48,54 @@
         return (v && v.current_user) ? v.current_user : {};
     }
 
+    var TOKEN_NAMES = 'record-id|ip|user-agent|date|time|wp-user-login|wp-user-email|url|page-title';
+    var TOKEN_SPLIT = new RegExp('(\\{\\{(?:' + TOKEN_NAMES + ')\\}\\})', 'g');
+    var TOKEN_ONE = new RegExp('^\\{\\{(' + TOKEN_NAMES + ')\\}\\}$');
+    var SKIP = /^(SCRIPT|STYLE|TEXTAREA|NOSCRIPT|INPUT|SELECT|OPTION)$/;
+
+    function wpFormats() {
+        var v = window.wppoppop_front_vars || {};
+        return { date: v.date_format || 'F j, Y', time: v.time_format || 'g:i a' };
+    }
+
+    // Fallback: wrap any raw {{token}} text left in the popup markup
+    function scanText() {
+        var roots = document.querySelectorAll('.wppoppop-popup-wrap');
+        var f = wpFormats();
+        for (var r = 0; r < roots.length; r++) {
+            var root = roots[r];
+            if ((root.textContent || '').indexOf('{{') === -1) continue;
+            var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+            var found = [];
+            while (walker.nextNode()) {
+                var t = walker.currentNode;
+                if (t.nodeValue.indexOf('{{') !== -1 && t.parentNode && !SKIP.test(t.parentNode.nodeName)) found.push(t);
+            }
+            for (var i = 0; i < found.length; i++) {
+                var node = found[i];
+                var parts = node.nodeValue.split(TOKEN_SPLIT);
+                if (parts.length < 2) continue;
+                var frag = document.createDocumentFragment();
+                for (var p = 0; p < parts.length; p++) {
+                    var m = parts[p].match(TOKEN_ONE);
+                    if (m) {
+                        var span = document.createElement('span');
+                        span.className = 'wppoppop-const wppoppop-const-' + m[1];
+                        span.setAttribute('data-token', m[1]);
+                        if (m[1] === 'date') span.setAttribute('data-format', f.date);
+                        if (m[1] === 'time') span.setAttribute('data-format', f.time);
+                        frag.appendChild(span);
+                    } else if (parts[p] !== '') {
+                        frag.appendChild(document.createTextNode(parts[p]));
+                    }
+                }
+                node.parentNode.replaceChild(frag, node);
+            }
+        }
+    }
+
     function refresh() {
+        scanText();
         var nodes = document.querySelectorAll('.wppoppop-const');
         if (!nodes.length) return;
         var now = new Date();
@@ -57,8 +104,8 @@
             var n = nodes[i];
             var k = n.getAttribute('data-token');
             var val = null;
-            if (k === 'date') val = fmt(n.getAttribute('data-format') || 'F j, Y', now);
-            else if (k === 'time') val = fmt(n.getAttribute('data-format') || 'g:i a', now);
+            if (k === 'date') val = fmt(n.getAttribute('data-format') || wpFormats().date, now);
+            else if (k === 'time') val = fmt(n.getAttribute('data-format') || wpFormats().time, now);
             else if (k === 'url') val = window.location.href;
             else if (k === 'page-title') val = document.title;
             else if (k === 'user-agent') val = navigator.userAgent;

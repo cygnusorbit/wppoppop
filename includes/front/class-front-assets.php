@@ -40,6 +40,8 @@ class WpPopPop_Front_Assets {
             'rest_url'     => esc_url_raw(rest_url('wppoppop/v1/')),
             'nonce'        => wp_create_nonce('wppoppop_front_nonce'),
             'cookie_epoch' => get_option('wppoppop_cookie_epoch', 1),
+            'date_format'  => get_option('date_format'),
+            'time_format'  => get_option('time_format'),
             'current_user' => [
                 'logged_in' => is_user_logged_in(),
                 'email'     => is_user_logged_in() ? wp_get_current_user()->user_email : '',
