@@ -70,20 +70,18 @@
                 '</div>';
         } else if (canonical === 'number') {
             var nPh = defVal || el.placeholder || '0';
-            var minV = el.min !== undefined ? el.min : 0;
-            var maxV = el.max !== undefined ? el.max : 100;
+            var minV = (el.minValue !== undefined && el.minValue !== '') ? el.minValue : (el.min !== undefined ? el.min : 0);
+            var maxV = (el.maxValue !== undefined && el.maxValue !== '') ? el.maxValue : (el.max !== undefined ? el.max : 100);
             innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;">' + $('<div>').text(nPh).html() + reqStar + '</span>' +
-                '<span style="font-size:9px;color:#94a3b8;margin-right:6px;">[' + minV + '–' + maxV + ']</span>' +
+                (el.unitSuffix ? '<span style="font-size:11px;color:#64748b;margin-right:6px;">' + $('<div>').text(el.unitSuffix).html() + '</span>' : '') + '<span style="font-size:9px;color:#94a3b8;margin-right:6px;">[' + minV + '–' + maxV + ']</span>' +
                 '<span style="display:flex;flex-direction:column;font-size:8px;line-height:1;color:#64748b;">&#9650;<br>&#9660;</span>' +
                 '</div>';
         } else if (canonical === 'tel') {
-            var dial = $.trim(el.countryCode || '+1');
             var tPh  = defVal || el.placeholder || el.inputMask || '(555) 000-0000';
             innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;box-sizing:border-box;pointer-events:none;">' +
-                '<span style="background:#f1f5f9;color:#334155;font-size:11px;font-weight:700;padding:0 10px;height:100%;display:flex;align-items:center;border-right:1px solid #cbd5e1;">' + $('<div>').text(dial).html() + '</span>' +
-                '<span style="flex:1;padding:0 10px;text-align:' + align + ';color:#64748b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(tPh).html() + reqStar + '</span>' +
+                /* WPPOPPOP_TEL_ICONS */ leftIconHtml + '<span style="flex:1;padding:0 ' + (iRight ? padR : 12) + 'px 0 ' + padL + 'px;text-align:' + align + ';color:#64748b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(tPh).html() + reqStar + '</span>' +
                 rightIconHtml +
                 '</div>';
         } else if (canonical === 'textarea') {
@@ -222,7 +220,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };

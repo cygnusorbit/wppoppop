@@ -158,11 +158,90 @@ class WpPopPop_Front_Decomposed_26 {
                     . $tf_ico('right')
                     . '</div>';
 
+            case 'number':
+                /* WPPOPPOP_NUMBER_FRONT: typeable number input + icons + alignment + bounds + unit suffix */
+                $nm_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $nm_icons = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $nm_key => $nm_side) {
+                    $nm_raw = isset($el[$nm_key]) ? trim((string) $el[$nm_key]) : '';
+                    if ($nm_raw === '') { continue; }
+                    $nm_tokens = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $nm_raw))));
+                    if (empty($nm_tokens)) { continue; }
+                    if (strpos($nm_tokens[0], 'fa-') === 0) { array_unshift($nm_tokens, 'fas'); }
+                    elseif (strpos($nm_tokens[0], 'dashicons-') === 0) { array_unshift($nm_tokens, 'dashicons'); }
+                    $nm_off_key = $nm_key . 'Offset';
+                    $nm_icons[$nm_side]['cls'] = implode(' ', $nm_tokens);
+                    $nm_icons[$nm_side]['off'] = (isset($el[$nm_off_key]) && $el[$nm_off_key] !== '') ? max(0, intval($el[$nm_off_key])) : 10;
+                }
+                static $nm_fa_css = false;
+                $nm_css = '';
+                if (!$nm_fa_css && ($nm_icons['left']['cls'] !== '' || $nm_icons['right']['cls'] !== '')) {
+                    $nm_fa_css = true;
+                    $nm_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                }
+                $nm_unit = isset($el['unitSuffix']) ? trim((string) $el['unitSuffix']) : '';
+                $nm_pl = ($nm_icons['left']['cls'] !== '') ? ($nm_icons['left']['off'] + 22) : 12;
+                $nm_pr = ($nm_icons['right']['cls'] !== '') ? ($nm_icons['right']['off'] + 22) : 12;
+                if ($nm_unit !== '') { $nm_pr += 30 + (strlen($nm_unit) * 8); }
+                $nm_ico = function ($side) use ($nm_icons) {
+                    if ($nm_icons[$side]['cls'] === '') { return ''; }
+                    return '<i class="' . esc_attr($nm_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($nm_icons[$side]['off']) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;"></i>';
+                };
+                $nm_b = array();
+                foreach (array('min' => array('minValue', 'min'), 'max' => array('maxValue', 'max'), 'step' => array('stepValue', 'step')) as $nm_attr => $nm_srcs) {
+                    foreach ($nm_srcs as $nm_s) {
+                        if (isset($el[$nm_s]) && $el[$nm_s] !== '' && is_numeric($el[$nm_s])) { $nm_b[$nm_attr] = $el[$nm_s]; break; }
+                    }
+                }
+                if (!isset($nm_b['step']) || floatval($nm_b['step']) <= 0) { $nm_b['step'] = 1; }
+                $nm_bounds = '';
+                foreach ($nm_b as $nm_k => $nm_v) { $nm_bounds .= ' ' . $nm_k . '="' . esc_attr($nm_v) . '"'; }
+                $nm_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength)="[^"]*"/', '', $data_attrs);
+                $nm_unit_html = ($nm_unit !== '') ? '<span class="wppoppop-num-unit" style="position:absolute;right:26px;top:50%;transform:translateY(-50%);color:#64748b;font-size:12px;pointer-events:none;">' . esc_html($nm_unit) . '</span>' : '';
+                return $nm_css . '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . $nm_ico('left')
+                    . '<input type="number" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder !== '' ? $placeholder : 'Enter number...') . '"' . $nm_bounds . ' class="wppoppop-form-input wppoppop-input-number"' . $nm_data
+                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $nm_pr . 'px 0 ' . $nm_pl . 'px;text-align:' . esc_attr($nm_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;" />'
+                    . $nm_ico('right') . $nm_unit_html
+                    . '</div>';
+
             case 'phone':
             case 'tel':
-                $prefix = !empty($el['phonePrefix']) ? trim($el['phonePrefix']) . ' ' : '';
-                $ph = $placeholder ?: ($prefix . '(555) 000-0000');
-                return '<input type="tel" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($ph) . '" class="wppoppop-form-input wppoppop-input-phone"' . $data_attrs . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 12px;" />';
+                /* WPPOPPOP_PHONE_FRONT: typeable tel input + dial code + icons + alignment + format mask */
+                $ph_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $ph_icons = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $ph_key => $ph_side) {
+                    $ph_raw = isset($el[$ph_key]) ? trim((string) $el[$ph_key]) : '';
+                    if ($ph_raw === '') { continue; }
+                    $ph_tokens = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $ph_raw))));
+                    if (empty($ph_tokens)) { continue; }
+                    if (strpos($ph_tokens[0], 'fa-') === 0) { array_unshift($ph_tokens, 'fas'); }
+                    elseif (strpos($ph_tokens[0], 'dashicons-') === 0) { array_unshift($ph_tokens, 'dashicons'); }
+                    $ph_off_key = $ph_key . 'Offset';
+                    $ph_icons[$ph_side]['cls'] = implode(' ', $ph_tokens);
+                    $ph_icons[$ph_side]['off'] = (isset($el[$ph_off_key]) && $el[$ph_off_key] !== '') ? max(0, intval($el[$ph_off_key])) : 10;
+                }
+                static $ph_fa_css = false;
+                $ph_css = '';
+                if (!$ph_fa_css && ($ph_icons['left']['cls'] !== '' || $ph_icons['right']['cls'] !== '')) {
+                    $ph_fa_css = true;
+                    $ph_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                }
+                $ph_pl = (($ph_icons['left']['cls'] !== '') ? ($ph_icons['left']['off'] + 22) : 12);
+                $ph_pr = ($ph_icons['right']['cls'] !== '') ? ($ph_icons['right']['off'] + 22) : 12;
+                $ph_ico = function ($side, $shift) use ($ph_icons) {
+                    if ($ph_icons[$side]['cls'] === '') { return ''; }
+                    $pos = ($side === 'left') ? ($ph_icons[$side]['off'] + $shift) : $ph_icons[$side]['off'];
+                    return '<i class="' . esc_attr($ph_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($pos) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;"></i>';
+                };
+                $ph_data = $data_attrs;
+                $ph_hint = ($placeholder !== '') ? $placeholder : '(555) 000-0000';
+                return $ph_css . '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . $ph_ico('left', 0)
+                    . '<input type="tel" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($ph_hint) . '" class="wppoppop-form-input wppoppop-input-phone"' . $ph_data
+                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $ph_pr . 'px 0 ' . $ph_pl . 'px;text-align:' . esc_attr($ph_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;" />'
+                    . $ph_ico('right', 0)
+                    . '</div>';
 
             case 'textarea':
                 $rows = !empty($el['rows']) ? max(2, intval($el['rows'])) : 4;

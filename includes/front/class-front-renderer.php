@@ -437,8 +437,8 @@ class WpPopPop_Front_Renderer {
 
         if (isset($inner_html) && $inner_html !== '') {
             /* WPPOPPOP_TF_NOPAD_FRONT: Text Field wrapper never carries padding (input fills the layer box) */
-            $tf_wrap_pad = ($raw_el_type === 'text') ? ';padding:0!important' : '';
-            $tf_wrap_cls = ($raw_el_type === 'text') ? ' wppoppop-el-textfield' : '';
+            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel'), true) ? ';padding:0!important' : '';
+            $tf_wrap_cls = in_array($raw_el_type, array('text', 'phone', 'tel'), true) ? ' wppoppop-el-textfield' : '';
             return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text' . $tf_wrap_cls . ' ' . $anim_class . '" style="' . $style_attr . $tf_wrap_pad . '">' . $inner_html . '</div>';
         }
 
@@ -495,6 +495,17 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email ' . $anim_class . '" style="' . $style_attr . '"><input type="email" name="email"' . $wppoppop_ac_attr . ' class="wppoppop-field-email" placeholder="' . $ph . '" required style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
             case 'number':
+                /* WPPOPPOP_NUMBER_DECOMPOSED */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_nm_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_nm_file)) { require_once $wppoppop_nm_file; }
+                }
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_nm_inner = WpPopPop_Front_Decomposed_26::render_element('number', $el);
+                    if ($wppoppop_nm_inner !== null && $wppoppop_nm_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-number wppoppop-el-textfield ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_nm_inner . '</div>';
+                    }
+                }
                 $ph = !empty($content) ? esc_attr($content) : 'Enter number...';
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="number" name="number_field"' . $wppoppop_ac_attr . ' placeholder="' . $ph . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 

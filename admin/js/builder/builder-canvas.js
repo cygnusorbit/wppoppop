@@ -1198,6 +1198,7 @@
                 newEl.hoverBorderColor = '#1d4ed8';
             }
 
+            if (type === 'phone' || type === 'tel') { newEl.autocomplete = 'tel'; } /* WPPOPPOP_PHONE_AC_DEFAULT */
             if (type === 'shape') {
                 newEl.shapePreset = 'circle';
                 newEl.shapeFill = '#3b82f6';

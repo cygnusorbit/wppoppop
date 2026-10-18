@@ -481,6 +481,12 @@
             if (rules.indexOf('email') !== -1 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
                 return fail(custom || 'Please enter a valid email address.');
             }
+            if (t.type === 'number') { /* WPPOPPOP_NUMBER_RANGE */
+                var nv2 = parseFloat(v), mn = t.getAttribute('min'), mx = t.getAttribute('max');
+                if (isNaN(nv2)) return fail(custom || 'Please enter a valid number.');
+                if (mn !== null && mn !== '' && nv2 < parseFloat(mn)) return fail(custom || ('Value must be at least ' + mn + '.'));
+                if (mx !== null && mx !== '' && nv2 > parseFloat(mx)) return fail(custom || ('Value must be at most ' + mx + '.'));
+            }
             if (rules.indexOf('equal') !== -1) {
                 var eq = t.getAttribute('data-equal-value');
                 if (eq !== null && v !== eq) return fail(custom || 'Value does not match.');
