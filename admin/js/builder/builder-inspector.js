@@ -4823,6 +4823,8 @@
         'rect':      ['insp-section-typography', 'insp-section-custom-css'],
         'rectangle': ['insp-section-typography', 'insp-section-custom-css'],
         'square':    ['insp-section-typography', 'insp-section-custom-css'],
+        'label':     ['insp-section-opacity', 'insp-section-custom-css'],
+        'html':      ['insp-section-opacity', 'insp-section-custom-css'],
         'video':     ['insp-section-opacity', 'insp-section-bg-color', 'insp-section-custom-css']
     };
 
@@ -4908,6 +4910,165 @@
     });
 })(window, jQuery);
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_END === */
+
+/* === WPPOPPOP_LABEL_TEXT_ALIGN_START === */
+/* Label & Html layers: TEXT ALIGNMENT section in Style tab (left / center / right).
+   Writes to the element model (el.textAlign) and the stage node. */
+(function(window, $) {
+    'use strict';
+
+    var SECTION_ID = 'insp-section-text-align';
+    var ALIGNS = ['left', 'center', 'right'];
+    var TARGET_TYPES = ['label', 'html'];
+    function isTargetEl(el) {
+        return !!el && TARGET_TYPES.indexOf(String(el.type || '').toLowerCase().trim()) !== -1;
+    }
+
+    function cleanId(raw) {
+        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
+    }
+
+    function getActiveEl() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state) return null;
+        var activeId = cleanId(core.state.activeId);
+        if (!activeId) return null;
+        var cur = core.state.currentCanvas || 1;
+        var list = (core.state.canvases && core.state.canvases[cur]) || [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && cleanId(list[i].id) === activeId) return list[i];
+        }
+        return null;
+    }
+
+    function ensureSection() {
+        var $existing = $('#' + SECTION_ID);
+        if ($existing.length) return $existing;
+        var pane = document.getElementById('insp-tab-style');
+        if (!pane) return $();
+
+        var btns = ALIGNS.map(function(a) {
+            var label = a.charAt(0).toUpperCase() + a.slice(1);
+            return '<button type="button" class="button wppoppop-label-align-btn" data-align="' + a +
+                   '" style="font-size:11px; font-weight:700;">' + label + '</button>';
+        }).join('');
+
+        var $s = $(
+            '<div class="wppoppop-insp-section" id="' + SECTION_ID + '" style="display:none; background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">' +
+                '<div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">TEXT ALIGNMENT</div>' +
+                '<div id="wppoppop-label-align-group" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">' + btns + '</div>' +
+            '</div>'
+        );
+
+        var anchor = document.getElementById('insp-section-opacity');
+        if (anchor) { $(anchor).before($s); } else { $(pane).prepend($s); }
+        return $s;
+    }
+
+    function paintButtons(align) {
+        $('#wppoppop-label-align-group .wppoppop-label-align-btn').each(function() {
+            var on = $(this).attr('data-align') === align;
+            $(this).toggleClass('active button-primary', on);
+        });
+    }
+
+    function applyAlignToStage(el) {
+        var id = cleanId(el.id);
+        var $node = $('#wppoppop-el-' + id + ', #el-' + id + ', #canvas-elem-' + id + ', .wppoppop-canvas-item[data-id="' + id + '"]').first();
+        if ($node.length) {
+            $node.css('text-align', el.textAlign);
+            $node.find('.wppoppop-label-inner, .wppoppop-title-inner, p, h1, h2, h3, h4, h5, h6, div').first().css('text-align', el.textAlign);
+        }
+    }
+
+    function hydrate() {
+        var el = getActiveEl();
+        var $s = ensureSection();
+        if (!$s.length) return;
+        var isLabel = isTargetEl(el);
+        if (!isLabel) {
+            $s.hide();
+            return;
+        }
+        var align = ALIGNS.indexOf(el.textAlign) !== -1 ? el.textAlign : 'left';
+        paintButtons(align);
+        $s.show();
+    }
+
+    function scheduleHydrate() {
+        hydrate();
+        setTimeout(hydrate, 0);
+        setTimeout(hydrate, 60);
+        setTimeout(hydrate, 200);
+    }
+
+    function bindAlignButtons() {
+        $(document)
+            .off('click.wppoppopLabelAlign')
+            .on('click.wppoppopLabelAlign', '#wppoppop-label-align-group .wppoppop-label-align-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var el = getActiveEl();
+                if (!isTargetEl(el)) return;
+                var align = $(this).attr('data-align');
+                if (ALIGNS.indexOf(align) === -1) return;
+
+                el.textAlign = align;
+                el.text_align = align;
+                paintButtons(align);
+                applyAlignToStage(el);
+
+                if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+                    window.WpPopPopBuilderCanvas.renderCanvas();
+                }
+                if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                    window.WpPopPopBuilderCore.pushHistory('Change Text Alignment');
+                }
+            });
+    }
+
+    function hookInspector() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp.__wppoppopLabelAlignHooked) return;
+        insp.__wppoppopLabelAlignHooked = true;
+
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                scheduleHydrate();
+                return res;
+            };
+        }
+        if (typeof insp.switchTab === 'function') {
+            var origSwitch = insp.switchTab;
+            insp.switchTab = function() {
+                var res = origSwitch.apply(this, arguments);
+                scheduleHydrate();
+                return res;
+            };
+        }
+    }
+
+    // Capture phase: runs even when other handlers call stopPropagation()
+    window.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        if (t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) {
+            scheduleHydrate();
+        }
+    }, true);
+
+    $(function() {
+        ensureSection();
+        bindAlignButtons();
+        hookInspector();
+        scheduleHydrate();
+        setTimeout(hookInspector, 150);
+        setTimeout(hookInspector, 450);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_LABEL_TEXT_ALIGN_END === */
 
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
 
