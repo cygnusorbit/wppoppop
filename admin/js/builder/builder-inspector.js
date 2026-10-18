@@ -4811,6 +4811,144 @@
 
 })(window, jQuery);
 
+/* === WPPOPPOP_VIDEO_SIZE_PRESET_START === */
+/* Video layers: default COORDINATES & BOUNDS preset WIDTH 320px x HEIGHT 240px.
+   Applied on creation, plus an "Apply preset" button in the Content tab. */
+(function(window, $) {
+    'use strict';
+
+    var PRESET_W = 320;
+    var PRESET_H = 240;
+    var TYPE = 'video';
+
+    function cleanId(raw) {
+        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
+    }
+
+    function getList() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state || !core.state.canvases) return null;
+        var cur = core.state.currentCanvas || 1;
+        return core.state.canvases[cur] || null;
+    }
+
+    function getActiveEl() {
+        var core = window.WpPopPopBuilderCore;
+        var list = getList();
+        if (!core || !list || !core.state.activeId) return null;
+        var id = cleanId(core.state.activeId);
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && cleanId(list[i].id) === id) return list[i];
+        }
+        return null;
+    }
+
+    function isVideo(el) {
+        return !!el && String(el.type || '').toLowerCase().trim() === TYPE;
+    }
+
+    function applyPreset(el) {
+        el.width = PRESET_W;
+        el.height = PRESET_H;
+        $('#prop-width, #prop-size-width').val(PRESET_W);
+        $('#prop-height, #prop-size-height').val(PRESET_H);
+        var id = cleanId(el.id);
+        var $node = $('#canvas-elem-' + id + ', #wppoppop-el-' + id + ', #el-' + id + ', .wppoppop-canvas-item[data-id="' + id + '"]').first();
+        if ($node.length) {
+            $node.css({ width: PRESET_W + 'px', height: PRESET_H + 'px' });
+        }
+    }
+
+    function renderAndRecord(label) {
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+            window.WpPopPopBuilderCanvas.renderCanvas();
+        }
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory(label);
+        }
+    }
+
+    // Wrap addElement so every new Video layer starts at the preset size
+    function wrapAddElement() {
+        var canvas = window.WpPopPopBuilderCanvas;
+        if (!canvas || typeof canvas.addElement !== 'function' || canvas.__wppoppopVideoPresetWrapped) return;
+        canvas.__wppoppopVideoPresetWrapped = true;
+        var orig = canvas.addElement;
+        canvas.addElement = function(type) {
+            var before = getList() ? getList().length : 0;
+            var res = orig.apply(this, arguments);
+            if (String(type || '').toLowerCase().trim() === TYPE) {
+                var list = getList() || [];
+                var created = (res && typeof res === 'object' && res.type) ? res : null;
+                if (!created && list.length > before) created = list[list.length - 1];
+                if (!created) {
+                    for (var i = list.length - 1; i >= 0; i--) {
+                        if (isVideo(list[i])) { created = list[i]; break; }
+                    }
+                }
+                if (isVideo(created)) {
+                    applyPreset(created);
+                    renderAndRecord('Video Size Preset');
+                }
+            }
+            return res;
+        };
+    }
+
+    // Content tab button inside COORDINATES & BOUNDS
+    function ensurePresetButton() {
+        var $coords = $('#insp-section-coords');
+        if (!$coords.length || $('#wppoppop-video-preset-btn').length) return;
+        $coords.append(
+            '<div id="wppoppop-video-preset-wrap" style="display:none; margin-top:8px;">' +
+                '<button type="button" id="wppoppop-video-preset-btn" class="button button-small" ' +
+                'style="width:100%; font-size:11px; font-weight:700;">Apply Video Preset (320 x 240)</button>' +
+            '</div>'
+        );
+    }
+
+    function refreshPresetButton() {
+        ensurePresetButton();
+        $('#wppoppop-video-preset-wrap').toggle(isVideo(getActiveEl()));
+    }
+
+    function bindPresetButton() {
+        $(document).off('click.wppoppopVideoPreset').on('click.wppoppopVideoPreset', '#wppoppop-video-preset-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var el = getActiveEl();
+            if (!isVideo(el)) return;
+            applyPreset(el);
+            renderAndRecord('Apply Video Size Preset');
+        });
+    }
+
+    function hookInspector() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp.__wppoppopVideoPresetHooked) return;
+        insp.__wppoppopVideoPresetHooked = true;
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                setTimeout(refreshPresetButton, 20);
+                return res;
+            };
+        }
+    }
+
+    $(function() {
+        wrapAddElement();
+        bindPresetButton();
+        hookInspector();
+        refreshPresetButton();
+        setTimeout(wrapAddElement, 150);
+        setTimeout(hookInspector, 150);
+        setInterval(refreshPresetButton, 500);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_VIDEO_SIZE_PRESET_END === */
+
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
 /* WPPOPPOP_MEDIA_STYLE_TRIM_V2: per-type Style-tab section trim.
    Hides via a stylesheet keyed on <html data-wppoppop-trim-type="...">, so jQuery .show()
