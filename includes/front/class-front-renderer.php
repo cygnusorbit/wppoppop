@@ -539,7 +539,19 @@ class WpPopPop_Front_Renderer {
                 $html .= '</div>';
                 return $html;
 
+            case 'checkbox':
             case 'checkboxes':
+                /* WPPOPPOP_CHECKBOX_DECOMPOSED */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_cb_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_cb_file)) { require_once $wppoppop_cb_file; }
+                }
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_cb_inner = WpPopPop_Front_Decomposed_26::render_element('checkbox', $el);
+                    if ($wppoppop_cb_inner !== null && $wppoppop_cb_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-checkbox ' . $anim_class . '" style="' . $style_attr . ';padding:0!important' . (!empty($box_shadow_val) ? ';box-shadow:' . esc_attr($box_shadow_val) : '') . '">' . $wppoppop_cb_inner . '</div>';
+                    }
+                }
                 $label = !empty($content) ? esc_html($content) : 'I agree to the terms';
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;gap:6px;font-size:12px;"><label style="cursor:pointer;"><input type="checkbox" name="agreement" value="1" checked> <span>' . $label . '</span></label></div>';
 

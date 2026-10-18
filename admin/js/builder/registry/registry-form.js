@@ -99,24 +99,26 @@
                 '<span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;width:16px;height:16px;color:#64748b;"></span>' +
                 '</div>';
         } else if (canonical === 'checkbox') {
-            var cbOpts = parseOptionsList(el.options, []);
-            var isChecked = !!el.checkedDefault || (defVal !== '' && defVal !== '0' && defVal !== 'false');
-            var cbDir = (el.checkboxLayout === 'horizontal') ? 'row' : 'column';
-            if (!cbOpts.length) {
-                var cLbl = el.checkboxLabel || 'I agree to the Terms and Privacy Policy';
-                innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;gap:8px;padding:4px 6px;box-sizing:border-box;pointer-events:none;">' +
-                    '<span style="width:16px;height:16px;border-radius:4px;border:1.5px solid ' + (isChecked ? '#c2185b' : '#94a3b8') + ';background:' + (isChecked ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">' + (isChecked ? '&#10003;' : '') + '</span>' +
-                    '<span style="font-size:12px;color:#1e293b;line-height:1.3;">' + $('<div>').text(cLbl).html() + reqStar + '</span>' +
-                    '</div>';
-            } else {
-                var cbItemsHtml = cbOpts.map(function(opt, idx) {
-                    var active = (idx === 0 && isChecked);
-                    return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#1e293b;">' +
-                        '<span style="width:14px;height:14px;border-radius:3px;border:1.5px solid ' + (active ? '#c2185b' : '#94a3b8') + ';background:' + (active ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:9px;">' + (active ? '&#10003;' : '') + '</span>' +
-                        $('<div>').text(opt).html() + '</span>';
-                }).join('');
-                innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + cbDir + ';flex-wrap:wrap;align-items:center;gap:8px;padding:4px 6px;box-sizing:border-box;pointer-events:none;">' + cbItemsHtml + '</div>';
-            }
+            /* WPPOPPOP_CHECKBOX_STAGE_V2 */
+            var cbOpts = parseOptionsList(el.optionsList || el.options, []);
+            if (!cbOpts.length) { cbOpts = [el.checkboxLabel || 'I agree to the Terms and Privacy Policy']; }
+            var isChecked = (el.checkedDefault === true || el.checkedDefault === 1 || el.checkedDefault === '1' || el.checkedDefault === 'true');
+            var cbLay = String(el.layout || el.checkboxLayout || 'vertical').toLowerCase();
+            var cbRow = (cbLay === 'horizontal' || cbLay === 'inline' || cbLay === 'row');
+            var cbJ = align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start');
+            var cbTxt = 'font-size:' + (parseInt(el.fontSize, 10) || 13) + 'px;' +
+                'font-weight:' + (el.fontWeight || '400') + ';' +
+                'line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';' +
+                'letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;' +
+                'color:' + (el.color || '#1e293b') + ';' +
+                ((el.fontFamily && el.fontFamily !== 'inherit') ? 'font-family:' + String(el.fontFamily).replace(/["<>]/g, '') + ';' : '');
+            var cbItemsHtml = cbOpts.map(function(opt, idx) {
+                var active = (idx === 0 && isChecked);
+                return '<span style="display:inline-flex;align-items:center;gap:8px;' + cbTxt + '">' +
+                    '<span style="width:16px;height:16px;border-radius:3px;border:1.5px solid ' + (active ? '#c2185b' : '#94a3b8') + ';background:' + (active ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;flex-shrink:0;">' + (active ? '&#10003;' : '') + '</span>' +
+                    '<span>' + $('<div>').text(opt).html() + (idx === 0 && el.termsUrl ? ' <u style="color:#0284c7;">(view)</u>' : '') + (idx === 0 ? reqStar : '') + '</span></span>';
+            }).join('');
+            innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (cbRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (cbRow ? 'center' : cbJ) + ';justify-content:' + (cbRow ? cbJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + cbItemsHtml + '</div>';
         } else if (canonical === 'radio') {
             var rOpts = parseOptionsList(el.options, ['Choice A', 'Choice B', 'Choice C']);
             var rDir  = (el.radioLayout === 'vertical') ? 'column' : 'row';
@@ -220,7 +222,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };

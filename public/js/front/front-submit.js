@@ -150,8 +150,9 @@
             var fields = {};
             $popup.find('input, select, textarea').each(function() {
                 var name = $(this).attr('name');
-                if (name && name !== '_wppoppop_hp_email') {
-                    fields[name] = $(this).val();
+                if (name && name !== '_wppoppop_hp_email') { /* WPPOPPOP_CB_SUBMIT */
+                    if ((this.type === 'checkbox' || this.type === 'radio') && !this.checked) { return; }
+                    if (/\[\]$/.test(name)) { (fields[name] = fields[name] || []).push($(this).val()); } else { fields[name] = $(this).val(); }
                 }
             });
 

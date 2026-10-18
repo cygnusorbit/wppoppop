@@ -2,6 +2,18 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <!-- WPPOPPOP UNIFIED STYLE TAB SUITE -->
+<!-- WPPOPPOP_CB_STYLE: Checkbox hides all style cards except Typography -->
+<style>
+#insp-tab-style.wppoppop-cb-style #wppoppop-form-icons-card,
+#insp-tab-style.wppoppop-cb-style #insp-section-opacity,
+#insp-tab-style.wppoppop-cb-style #insp-section-padding,
+#insp-tab-style.wppoppop-cb-style #insp-section-border,
+#insp-tab-style.wppoppop-cb-style #insp-section-custom-css { display: none !important; }
+#insp-tab-style.wppoppop-cb-style #insp-section-typography { display: block !important; } /* WPPOPPOP_CB_TYPO */
+#insp-tab-style.wppoppop-cb-style #insp-section-bg-color { display: block !important; } /* WPPOPPOP_CB_BG */
+#insp-tab-style.wppoppop-cb-style #insp-section-shadow { display: block !important; } /* WPPOPPOP_CB_SHADOW */
+</style>
+
 <!-- WPPOPPOP_TF_STYLE_LEAN: Text Field hides generic style cards -->
 <style>
 #insp-tab-style.wppoppop-tf-style-lean #insp-section-opacity,
