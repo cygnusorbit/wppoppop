@@ -99,7 +99,7 @@ class WpPopPop_Front_Element_Actions {
 
         return '<button type="button" class="wppoppop-close-btn wppoppop-close-trigger" data-close-action="' . esc_attr($action)
             . '" data-cookie-days="' . $cookie_days . '" style="position:static;width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:' . $glyph_color . ';font-size:'
-            . $size . 'px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0;box-sizing:border-box;outline:none;-webkit-appearance:none;appearance:none;">'
+            . $size . 'px !important;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0;box-sizing:border-box;outline:none;-webkit-appearance:none;appearance:none;">'
             . esc_html($glyph) . '</button>';
     }
 }

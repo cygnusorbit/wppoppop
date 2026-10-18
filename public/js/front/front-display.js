@@ -393,3 +393,38 @@
     });
 
 })(window, jQuery);
+
+
+/* === WPPOPPOP_CLOSE_DISMISS_START === */
+(function(window, document) {
+    'use strict';
+    if (window.__wppCloseDismissBound) return;
+    window.__wppCloseDismissBound = true;
+
+    function setCookie(name, val, days) {
+        var d = new Date(); d.setTime(d.getTime() + days * 86400000);
+        document.cookie = name + '=' + encodeURIComponent(val) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    }
+    document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var btn = t.closest('.wppoppop-close-trigger[data-close-action]');
+        if (!btn) return;
+        var action = btn.getAttribute('data-close-action') || 'close';
+        var wrap = btn.closest('.wppoppop-popup-wrap');
+        var uid = wrap ? wrap.getAttribute('data-uid') : '';
+        if (!uid) return;
+        var vars = window.wppoppop_front_vars || {};
+        try {
+            if (action === 'close_period') {
+                window.sessionStorage.setItem('wppoppop_session_' + uid, '1');
+            } else if (action === 'close_forever') {
+                var days = parseInt(btn.getAttribute('data-cookie-days'), 10);
+                if (!days || days < 1) days = 30;
+                setCookie('wppoppop_closed_' + uid, vars.cookie_epoch || 1, days);
+            }
+        } catch (err) {}
+        /* existing handlers then perform the actual close animation */
+    }, true);
+})(window, document);
+/* === WPPOPPOP_CLOSE_DISMISS_END === */
