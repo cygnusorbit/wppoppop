@@ -510,6 +510,18 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="number" name="number_field"' . $wppoppop_ac_attr . ' placeholder="' . $ph . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
             case 'select':
+            case 'dropdown':
+                /* WPPOPPOP_SELECT_DECOMPOSED */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_sl_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_sl_file)) { require_once $wppoppop_sl_file; }
+                }
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_sl_inner = WpPopPop_Front_Decomposed_26::render_element('select', $el);
+                    if ($wppoppop_sl_inner !== null && $wppoppop_sl_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-select wppoppop-el-textfield ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_sl_inner . '</div>';
+                    }
+                }
                 $opts = array_map('trim', explode(',', $content ?: 'Option 1, Option 2'));
                 $html = '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><select name="dropdown_field" style="width:100%;height:100%;padding:0 8px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;">';
                 foreach ($opts as $o) {

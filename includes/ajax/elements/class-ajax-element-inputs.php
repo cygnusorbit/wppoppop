@@ -14,6 +14,8 @@ class WpPopPop_Ajax_Element_Inputs {
 
     public static function sanitize_input(array $el, array $clean) {
         if (isset($el['placeholder']))   $clean['placeholder']   = sanitize_text_field($el['placeholder']);
+        if (isset($el['optionsList']))   $clean['optionsList']   = sanitize_textarea_field($el['optionsList']); /* WPPOPPOP_SELECT */
+        if (isset($el['firstOption']))   $clean['firstOption']   = sanitize_text_field($el['firstOption']);
         if (isset($el['field_name']))    $clean['field_name']    = sanitize_key($el['field_name']);
         if (isset($el['fieldName']))     $clean['fieldName']     = sanitize_key($el['fieldName']);
         if (isset($el['required']))      $clean['required']      = (bool)$el['required'];

@@ -243,6 +243,26 @@ class WpPopPop_Front_Decomposed_26 {
                     . $ph_ico('right', 0)
                     . '</div>';
 
+            case 'select':
+            case 'dropdown':
+                /* WPPOPPOP_SELECT_FRONT: real select, first option placeholder, default selection */
+                $sl_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['options']) ? (is_array($el['options']) ? implode("\n", $el['options']) : (string) $el['options']) : '');
+                $sl_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $sl_raw)), 'strlen'));
+                if (count($sl_items) === 1 && strpos($sl_items[0], ',') !== false) { $sl_items = array_values(array_filter(array_map('trim', explode(',', $sl_items[0])), 'strlen')); }
+                if (empty($sl_items)) { $sl_items = array('Option 1', 'Option 2', 'Option 3'); }
+                $sl_first = isset($el['firstOption']) ? trim((string) $el['firstOption']) : '';
+                if ($sl_first === '' && $placeholder !== '') { $sl_first = $placeholder; }
+                $sl_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $sl_opts = '<option value=""' . ($default_val === '' ? ' selected' : '') . '>' . esc_html($sl_first !== '' ? $sl_first : 'Select an option...') . '</option>';
+                foreach ($sl_items as $sl_o) {
+                    $sl_opts .= '<option value="' . esc_attr($sl_o) . '"' . (($default_val !== '' && $default_val === $sl_o) ? ' selected' : '') . '>' . esc_html($sl_o) . '</option>';
+                }
+                $sl_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                return '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . '<select id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" class="wppoppop-form-input wppoppop-input-select"' . $sl_data
+                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 12px;text-align:' . esc_attr($sl_align) . ';pointer-events:auto;background:#ffffff;cursor:pointer;">' . $sl_opts . '</select>'
+                    . '</div>';
+
             case 'textarea':
                 /* WPPOPPOP_TEXTAREA_FRONT: alignment + rows min-height + live counter */
                 $ta_rows  = !empty($el['rows']) ? max(2, min(15, intval($el['rows']))) : 4;
