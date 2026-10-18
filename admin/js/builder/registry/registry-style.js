@@ -109,7 +109,7 @@
         var hasSideIcons = isForm && ['text', 'email', 'number', 'tel', 'date', 'time', 'password'].indexOf(canonical) !== -1;
         $('#gp-form-input-icons-row').toggle(hasSideIcons);
         /* WPPOPPOP_TF_STYLE: Text Field hides Opacity, Background, Typography, Custom CSS */
-        var tfHide = '#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, ' +
+        var tfHide = '#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css, ' +
             '#prop-form-custom-class, #prop-gp-style-css-class, #wppoppop-btn-add-inline-style, #wppoppop-gp-inline-styles-list';
         var $tfNodes = $(tfHide).map(function() {
             var $c = $(this).closest('.wppoppop-insp-card, .wppoppop-insp-section');

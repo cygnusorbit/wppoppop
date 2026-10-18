@@ -13,7 +13,7 @@
 
         getDefaults: function() {
             return {
-                width: 240,
+                width: 200,
                 height: 42,
                 content: '',
                 placeholder: 'Enter your text...',

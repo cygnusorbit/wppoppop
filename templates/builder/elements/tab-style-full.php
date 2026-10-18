@@ -18,39 +18,27 @@ if (!defined('ABSPATH')) exit;
     </div>
     <div id="wppoppop-form-icons-card" class="wppoppop-insp-card" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
         <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">INPUT ICONS &amp; OFFSETS</div>
-        <div style="display:grid; grid-template-columns:2fr 1fr; gap:8px; margin-bottom:8px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div>
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">LEFT ICON</label>
-                <input type="text" id="prop-form-icon-left" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconLeft" placeholder="✉ or dashicons-email" style="font-size:12px;" />
-            </div>
-            <div>
-                <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">OFFSET (PX)</label>
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <button type="button" class="button wppoppop-fa-pick-btn" data-target="#prop-form-icon-left" title="Choose icon" aria-label="Choose left icon" style="min-width:36px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-icons" aria-hidden="true"></i></button>
+                    <button type="button" class="button wppoppop-fa-clear-btn" data-target="#prop-form-icon-left" title="Clear icon" aria-label="Clear left icon" style="min-width:30px; height:30px; padding:0;">&times;</button>
+                    <input type="text" id="prop-form-icon-left" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconLeft" placeholder="fas fa-envelope" style="font-size:11px; min-width:0;" />
+                </div>
+                <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin:8px 0 4px;">OFFSET (PX)</label>
                 <input type="number" id="prop-form-icon-left-offset" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconLeftOffset" min="0" max="40" value="10" style="font-size:12px;" />
             </div>
-        </div>
-        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px;">
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-left" data-glyph="✉">✉ Email</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-left" data-glyph="👤">👤 User</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-left" data-glyph="📞">📞 Phone</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-left" data-glyph="🔒">🔒 Lock</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-left" data-glyph="">✕ Clear</button>
-        </div>
-        <div style="display:grid; grid-template-columns:2fr 1fr; gap:8px;">
             <div>
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">RIGHT ICON</label>
-                <input type="text" id="prop-form-icon-right" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconRight" placeholder="✔ or dashicons-yes" style="font-size:12px;" />
-            </div>
-            <div>
-                <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">OFFSET (PX)</label>
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <button type="button" class="button wppoppop-fa-pick-btn" data-target="#prop-form-icon-right" title="Choose icon" aria-label="Choose right icon" style="min-width:36px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-icons" aria-hidden="true"></i></button>
+                    <button type="button" class="button wppoppop-fa-clear-btn" data-target="#prop-form-icon-right" title="Clear icon" aria-label="Clear right icon" style="min-width:30px; height:30px; padding:0;">&times;</button>
+                    <input type="text" id="prop-form-icon-right" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconRight" placeholder="fas fa-check" style="font-size:11px; min-width:0;" />
+                </div>
+                <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin:8px 0 4px;">OFFSET (PX)</label>
                 <input type="number" id="prop-form-icon-right-offset" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconRightOffset" min="0" max="40" value="10" style="font-size:12px;" />
             </div>
-        </div>
-        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:8px;">
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="✔">✔ Check</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="🔍">🔍 Search</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="📅">📅 Date</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="👁">👁 Eye</button>
-            <button type="button" class="button button-small wppoppop-form-icon-preset" data-target="#prop-form-icon-right" data-glyph="">✕ Clear</button>
         </div>
     </div>
 </div>
@@ -232,3 +220,8 @@ if (!defined('ABSPATH')) exit;
     </div>
     <div id="wppoppop-gp-inline-styles-list" style="display:flex; flex-direction:column; gap:6px;"></div>
 </div>
+
+<?php
+$wppoppop_fa_picker = __DIR__ . '/tab-style-icon-picker.php';
+if ( file_exists( $wppoppop_fa_picker ) ) { include_once $wppoppop_fa_picker; }
+?>
