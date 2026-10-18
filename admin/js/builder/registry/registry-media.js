@@ -134,7 +134,9 @@
             var rawCode = el.content || '<div style="padding:8px;color:#64748b;font-size:12px;">Custom HTML Block</div>';
             innerHtml = '<' + hTag + ' style="width:100%;height:100%;overflow:' + ovf + ';pointer-events:none;">' + rawCode + '</' + hTag + '>';
         } else if (canonical === 'close') {
-            var sym = el.closeSymbol || 'times';
+            var __g = (el.closeGlyph || el.content || '');
+            var __glyphOK = ['\u00d7','\u2715','\u2716','\u2297','CLOSE'].indexOf(__g) !== -1;
+            var sym = el.closeSymbol || (__g === 'CLOSE' ? 'text_close' : 'times'); /*WPPOPPOP_CLOSE_GLYPH_STAGE*/
             var cSize = parseInt(el.iconSize, 10) || 20;
             var glyphMarkup = '&times;';
             if (sym === 'text_close') {
@@ -142,7 +144,7 @@
             } else if (sym.indexOf('dashicons-') === 0) {
                 glyphMarkup = '<span class="dashicons ' + sym + '" style="font-size:' + cSize + 'px;width:' + cSize + 'px;height:' + cSize + 'px;"></span>';
             } else {
-                glyphMarkup = '<span style="font-size:' + cSize + 'px;line-height:1;">&times;</span>';
+                glyphMarkup = '<span style="font-size:' + cSize + 'px;line-height:1;">' + (__glyphOK && __g !== 'CLOSE' ? $('<div>').text(__g).html() : '&times;') + '</span>';
             }
             innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;">' + glyphMarkup + '</div>';
         } else if (canonical === 'icon') {

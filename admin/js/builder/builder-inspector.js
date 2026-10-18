@@ -4812,26 +4812,48 @@
 })(window, jQuery);
 
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
-/* Per-type Style-tab section trim (Image, Shape, Video).
-   Visibility only: DOM, IDs and data-prop bindings are untouched. */
+/* WPPOPPOP_MEDIA_STYLE_TRIM_V2: per-type Style-tab section trim.
+   Hides via a stylesheet keyed on <html data-wppoppop-trim-type="...">, so jQuery .show()
+   calls elsewhere cannot re-display hidden sections. Visibility only; DOM and data untouched. */
 (function(window, $) {
     'use strict';
 
     var HIDE_MAP = {
-        'image':     ['insp-section-typography', 'insp-section-custom-css', 'insp-section-bg-color'],
-        'shape':     ['insp-section-typography', 'insp-section-custom-css'],
-        'rect':      ['insp-section-typography', 'insp-section-custom-css'],
-        'rectangle': ['insp-section-typography', 'insp-section-custom-css'],
-        'square':    ['insp-section-typography', 'insp-section-custom-css'],
-        'label':     ['insp-section-opacity', 'insp-section-custom-css'],
-        'html':      ['insp-section-opacity', 'insp-section-custom-css'],
-        'close':     ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
-        'video':     ['insp-section-opacity', 'insp-section-bg-color', 'insp-section-custom-css']
+        'image':      ['insp-section-typography', 'insp-section-custom-css', 'insp-section-bg-color'],
+        'shape':      ['insp-section-typography', 'insp-section-custom-css'],
+        'rect':       ['insp-section-typography', 'insp-section-custom-css'],
+        'rectangle':  ['insp-section-typography', 'insp-section-custom-css'],
+        'square':     ['insp-section-typography', 'insp-section-custom-css'],
+        'video':      ['insp-section-opacity', 'insp-section-bg-color', 'insp-section-custom-css'],
+        'label':      ['insp-section-opacity', 'insp-section-custom-css'],
+        'html':       ['insp-section-opacity', 'insp-section-custom-css'],
+        'close':      ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
+        'close_icon': ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css']
     };
 
-    var ALL_MANAGED = ['insp-section-typography', 'insp-section-custom-css',
-                       'insp-section-opacity', 'insp-section-bg-color',
-                       'insp-section-padding', 'insp-section-shadow'];
+    var STYLE_ID = 'wppoppop-style-trim-v2';
+    var ATTR = 'data-wppoppop-trim-type';
+
+    function buildCss() {
+        var rules = [];
+        Object.keys(HIDE_MAP).forEach(function(type) {
+            HIDE_MAP[type].forEach(function(id) {
+                rules.push('html[' + ATTR + '="' + type + '"] #' + id + ' { display: none !important; }');
+            });
+        });
+        return rules.join('\n');
+    }
+
+    function ensureStyle() {
+        var s = document.getElementById(STYLE_ID);
+        if (!s) {
+            s = document.createElement('style');
+            s.id = STYLE_ID;
+            (document.head || document.documentElement).appendChild(s);
+        }
+        var css = buildCss();
+        if (s.textContent !== css) s.textContent = css;
+    }
 
     function cleanId(raw) {
         return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
@@ -4839,43 +4861,42 @@
 
     function getActiveType() {
         var core = window.WpPopPopBuilderCore;
-        if (!core || !core.state) return '';
-        var activeId = cleanId(core.state.activeId);
-        if (!activeId) return '';
-        var cur = core.state.currentCanvas || 1;
-        var list = (core.state.canvases && core.state.canvases[cur]) || [];
-        for (var i = 0; i < list.length; i++) {
-            if (list[i] && cleanId(list[i].id) === activeId) {
-                return String(list[i].type || '').toLowerCase().trim();
+        if (core && core.state && core.state.activeId) {
+            var activeId = cleanId(core.state.activeId);
+            var cur = core.state.currentCanvas || 1;
+            var list = (core.state.canvases && core.state.canvases[cur]) || [];
+            for (var i = 0; i < list.length; i++) {
+                if (list[i] && cleanId(list[i].id) === activeId) {
+                    return String(list[i].type || '').toLowerCase().trim();
+                }
             }
         }
-        return '';
+        var $sel = $('.wppoppop-canvas-item.wppoppop-selected, .wppoppop-canvas-item.selected').first();
+        return String($sel.attr('data-type') || '').toLowerCase().trim();
     }
 
-    function applyMediaStyleTrim() {
-        var hideIds = HIDE_MAP[getActiveType()] || [];
-        for (var i = 0; i < ALL_MANAGED.length; i++) {
-            var node = document.getElementById(ALL_MANAGED[i]);
-            if (!node) continue;
-            if (hideIds.indexOf(ALL_MANAGED[i]) !== -1) {
-                node.style.setProperty('display', 'none', 'important');
-            } else if (node.style.getPropertyPriority('display') === 'important') {
-                node.style.removeProperty('display');
-            }
+    function applyTrim() {
+        ensureStyle();
+        var type = getActiveType();
+        var root = document.documentElement;
+        if (HIDE_MAP.hasOwnProperty(type)) {
+            if (root.getAttribute(ATTR) !== type) root.setAttribute(ATTR, type);
+        } else if (root.hasAttribute(ATTR)) {
+            root.removeAttribute(ATTR);
         }
     }
 
     function scheduleTrim() {
-        applyMediaStyleTrim();
-        setTimeout(applyMediaStyleTrim, 0);
-        setTimeout(applyMediaStyleTrim, 60);
-        setTimeout(applyMediaStyleTrim, 200);
+        applyTrim();
+        setTimeout(applyTrim, 0);
+        setTimeout(applyTrim, 60);
+        setTimeout(applyTrim, 200);
     }
 
     function hookInspector() {
         var insp = window.WpPopPopBuilderInspector;
-        if (!insp || insp.__wppoppopMediaTrimHooked) return;
-        insp.__wppoppopMediaTrimHooked = true;
+        if (!insp || insp.__wppoppopMediaTrimV2Hooked) return;
+        insp.__wppoppopMediaTrimV2Hooked = true;
 
         if (typeof insp.open === 'function') {
             var origOpen = insp.open;
@@ -4905,10 +4926,12 @@
     }, true);
 
     $(function() {
+        ensureStyle();
         hookInspector();
         scheduleTrim();
         setTimeout(hookInspector, 150);
         setTimeout(hookInspector, 450);
+        setInterval(applyTrim, 400); // covers selection changes made without a click event
     });
 })(window, jQuery);
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_END === */
@@ -5238,3 +5261,163 @@
 /* === WPPOPPOP_CLOSE_GLYPH_HOVER_END === */
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
 
+
+/* === WPPOPPOP_CLOSE_PRESET_HOVER_FIX_START === */
+(function(window, $) {
+    'use strict';
+    function cid(r) { return String(r || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim(); }
+    function activeEl() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state) return null;
+        var id = cid(core.state.activeId); if (!id) return null;
+        var l = (core.state.canvases && core.state.canvases[core.state.currentCanvas || 1]) || [];
+        for (var i = 0; i < l.length; i++) { if (l[i] && cid(l[i].id) === id) return l[i]; }
+        return null;
+    }
+    function isClose(el) { return !!el && ['close', 'close_icon'].indexOf(String(el.type || '').toLowerCase()) !== -1; }
+    function stage(el) {
+        var id = cid(el.id);
+        return $('#canvas-elem-' + id + ', #wppoppop-el-' + id + ', #el-' + id + ', .wppoppop-canvas-item[data-id="' + el.id + '"]').first();
+    }
+    function applyHover(el) {
+        var $n = stage(el); if (!$n.length) return;
+        var bg = el.hoverBgColor || el.hoverBg, fg = el.hoverTextColor || el.hoverColor, bd = el.hoverBorderColor || el.hoverBorder;
+        if (!bg && !fg && !bd) return;
+        $n.attr('data-has-hover', 'true');
+        if (bg) $n[0].style.setProperty('--wppoppop-hover-bg', bg);
+        if (fg) $n[0].style.setProperty('--wppoppop-hover-color', fg);
+        if (bd) $n[0].style.setProperty('--wppoppop-hover-border', bd);
+    }
+    /* Phase: 35x35 preset (only for untouched / legacy 36x36 close layers) */
+    function applyPreset(el) {
+        if (el.sizePresetApplied) return false;
+        var w = parseInt(el.width, 10) || 0, h = parseInt(el.height, 10) || 0;
+        if (w !== 35 || h !== 35) { el.width = 35; el.height = 35; }
+        el.sizePresetApplied = true;
+        return true;
+    }
+    function syncDims(el) {
+        $('#prop-width, #prop-size-width').val(parseInt(el.width, 10) || 35);
+        $('#prop-height, #prop-size-height').val(parseInt(el.height, 10) || 35);
+    }
+    function showHoverUI() {
+        $('#prop-btn-hover-section').css('display', 'block');
+    }
+    function run() {
+        var el = activeEl(); if (!isClose(el)) return;
+        if (applyPreset(el)) {
+            if (window.WpPopPopBuilderCanvas && window.WpPopPopBuilderCanvas.renderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
+        }
+        syncDims(el);
+        $('#prop-close-glyph').val(el.closeGlyph || el.content || '\u00d7');
+        showHoverUI();
+        $('#prop-elem-hover-bg').val(el.hoverBgColor || el.hoverBg || '#0284c7');
+        $('#prop-elem-hover-color').val(el.hoverTextColor || el.hoverColor || '#ffffff');
+        $('#prop-elem-hover-border').val(el.hoverBorderColor || el.hoverBorder || '#0284c7');
+        applyHover(el);
+    }
+    function schedule() { [0, 60, 200, 350, 700, 1200].forEach(function(ms) { setTimeout(run, ms); }); }
+
+    function wrapRender() {
+        var cv = window.WpPopPopBuilderCanvas;
+        if (!cv || cv.__closeHoverWrapped || typeof cv.renderCanvas !== 'function') return;
+        cv.__closeHoverWrapped = true;
+        var orig = cv.renderCanvas;
+        cv.renderCanvas = function() {
+            var r = orig.apply(this, arguments);
+            try {
+                var core = window.WpPopPopBuilderCore;
+                var l = (core && core.state && core.state.canvases && core.state.canvases[core.state.currentCanvas || 1]) || [];
+                l.forEach(function(e) { if (isClose(e)) applyHover(e); });
+            } catch (e) {}
+            return r;
+        };
+    }
+    /* Resize inputs -> model sync stays handled by existing #prop-width/#prop-height binding. */
+    $(function() { wrapRender(); setTimeout(wrapRender, 150); setTimeout(wrapRender, 450); schedule(); });
+    window.addEventListener('click', function(e) {
+        var t = e.target;
+        if (t && t.closest && t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) schedule();
+    }, true);
+})(window, jQuery);
+/* === WPPOPPOP_CLOSE_PRESET_HOVER_FIX_END === */
+
+/* === WPPOPPOP_CLOSE_HOVER_LIVE_START === */
+(function(window, $) {
+    'use strict';
+    var MAP = { hoverBgColor: ['hoverBgColor','hoverBg'], hoverTextColor: ['hoverTextColor','hoverColor'], hoverBorderColor: ['hoverBorderColor','hoverBorder'] };
+    function cid(r) { return String(r || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim(); }
+    function list() {
+        var c = window.WpPopPopBuilderCore;
+        return (c && c.state && c.state.canvases && c.state.canvases[c.state.currentCanvas || 1]) || [];
+    }
+    function byId(id) {
+        id = cid(id);
+        var l = list();
+        for (var i = 0; i < l.length; i++) { if (l[i] && cid(l[i].id) === id) return l[i]; }
+        return null;
+    }
+    function isClose(el) { return !!el && ['close', 'close_icon'].indexOf(String(el.type || '').toLowerCase()) !== -1; }
+    function activeEl() { var c = window.WpPopPopBuilderCore; return (c && c.state) ? byId(c.state.activeId) : null; }
+
+    /* Inspector colour inputs (any duplicate) -> model of the active Close layer */
+    $(document).off('input.wppCloseHv change.wppCloseHv')
+      .on('input.wppCloseHv change.wppCloseHv',
+          '[data-prop="hoverBgColor"], [data-prop="hoverTextColor"], [data-prop="hoverBorderColor"]',
+          function(e) {
+        var el = activeEl(); if (!isClose(el)) return;
+        var prop = $(this).attr('data-prop'), val = $(this).val();
+        (MAP[prop] || []).forEach(function(k) { el[k] = val; });
+        $('[data-prop="' + prop + '"]').not(this).val(val);
+        if (e.type === 'change' && window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.pushHistory) {
+            window.WpPopPopBuilderCore.pushHistory('Change Close Hover State');
+        }
+    });
+
+    /* Live hover on stage nodes (no dependency on data-type / CSS variables) */
+    $(document).off('mouseenter.wppCloseHv mouseleave.wppCloseHv', '.wppoppop-canvas-item')
+      .on('mouseenter.wppCloseHv', '.wppoppop-canvas-item', function() {
+        var $n = $(this);
+        var el = byId($n.attr('data-id') || $n.attr('id'));
+        if (!isClose(el)) return;
+        var bg = el.hoverBgColor || el.hoverBg, fg = el.hoverTextColor || el.hoverColor, bd = el.hoverBorderColor || el.hoverBorder;
+        $n.data('wppHvSave', { bg: this.style.backgroundColor, color: this.style.color, bd: this.style.borderColor });
+        if (bg) this.style.setProperty('background-color', bg, 'important');
+        if (fg) this.style.setProperty('color', fg, 'important');
+        if (bd) this.style.setProperty('border-color', bd, 'important');
+    }).on('mouseleave.wppCloseHv', '.wppoppop-canvas-item', function() {
+        var sv = $(this).data('wppHvSave'); if (!sv) return;
+        this.style.removeProperty('background-color'); this.style.removeProperty('color'); this.style.removeProperty('border-color');
+        if (sv.bg) this.style.backgroundColor = sv.bg;
+        if (sv.color) this.style.color = sv.color;
+        if (sv.bd) this.style.borderColor = sv.bd;
+        $(this).removeData('wppHvSave');
+    });
+})(window, jQuery);
+/* === WPPOPPOP_CLOSE_HOVER_LIVE_END === */
+
+/* === WPPOPPOP_CLOSE_GLYPH_COLOR_START === */
+(function(window,$){
+    'use strict';
+    function cid(r){return String(r||'').replace(/^wppoppop-el-/,'').replace(/^el-/,'').trim();}
+    function activeEl(){
+        var c=window.WpPopPopBuilderCore; if(!c||!c.state)return null;
+        var id=cid(c.state.activeId); if(!id)return null;
+        var l=(c.state.canvases&&c.state.canvases[c.state.currentCanvas||1])||[];
+        for(var i=0;i<l.length;i++){ if(l[i]&&cid(l[i].id)===id) return l[i]; }
+        return null;
+    }
+    function run(){
+        var el=activeEl();
+        if(!el||['close','close_icon'].indexOf(String(el.type||'').toLowerCase())===-1) return;
+        var v=/^#[0-9a-f]{6}$/i.test(el.color||'')?el.color:'#64748b';
+        $('#prop-close-glyph-color').val(v);
+    }
+    function sched(){[0,60,200,350,700,1200].forEach(function(ms){setTimeout(run,ms);});}
+    window.addEventListener('click',function(e){
+        var t=e.target;
+        if(t&&t.closest&&t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) sched();
+    },true);
+    $(function(){sched();});
+})(window,jQuery);
+/* === WPPOPPOP_CLOSE_GLYPH_COLOR_END === */

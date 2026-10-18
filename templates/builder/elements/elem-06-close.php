@@ -29,9 +29,13 @@ if (!defined('ABSPATH')) exit;
                 <option value="close_forever">Suppress via Cookie</option>
             </select>
         </div>
-        <div id="prop-close-cookie-wrap">
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">COOKIE DAYS</label>
-            <input type="number" id="prop-close-days" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="cookieDays" min="0" max="365" value="30" style="font-size:12px;">
+        <div>
+            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">GLYPH COLOR</label>
+            <input type="color" id="prop-close-glyph-color" class="widefat wppoppop-gp-bind" data-prop="color" value="#64748b" style="width:100%;height:32px;padding:2px;border:1px solid #334155;border-radius:4px;background:#090d16;cursor:pointer;box-sizing:border-box;font-size:12px;">
         </div>
+    </div>
+    <div style="margin-top:8px;" id="prop-close-cookie-wrap">
+        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">COOKIE DAYS</label>
+        <input type="number" id="prop-close-days" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="cookieDays" min="0" max="365" value="30" style="font-size:12px;">
     </div>
 </div>

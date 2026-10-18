@@ -283,7 +283,7 @@ class WpPopPop_Front_Renderer {
         } elseif (!empty($el['custom_class'])) {
             $wrapper_classes[] = sanitize_html_class($el['custom_class']);
         }
-        if (in_array($type, ['submit', 'link', 'step', 'pay'], true)) {
+        if (in_array($type, ['submit', 'link', 'step', 'pay', 'close', 'close_icon'], true)) {
             $hover_bg = !empty($el['hoverBgColor']) ? $el['hoverBgColor'] : (!empty($el['hover_bg_color']) ? $el['hover_bg_color'] : '');
             $hover_color = !empty($el['hoverTextColor']) ? $el['hoverTextColor'] : (!empty($el['hover_text_color']) ? $el['hover_text_color'] : '');
             $hover_border = !empty($el['hoverBorderColor']) ? $el['hoverBorderColor'] : (!empty($el['hover_border_color']) ? $el['hover_border_color'] : '');

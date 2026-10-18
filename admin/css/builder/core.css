@@ -2080,3 +2080,20 @@ body.wppoppop-preview-locked .wppoppop-canvas-item::after {
     content: none !important;
     border: 0 !important;
 }
+
+/* === WPPOPPOP_CLOSE_HOVER_CSS === */
+.wppoppop-canvas-item[data-has-hover="true"][data-type="close"],
+.wppoppop-canvas-item[data-has-hover="true"][data-type="close_icon"] {
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.wppoppop-canvas-item[data-has-hover="true"][data-type="close"]:hover,
+.wppoppop-canvas-item[data-has-hover="true"][data-type="close_icon"]:hover {
+    background-color: var(--wppoppop-hover-bg) !important;
+    color: var(--wppoppop-hover-color) !important;
+    border-color: var(--wppoppop-hover-border) !important;
+}
+.wppoppop-front-element[style*="--wppoppop-hover-bg"]:hover { background-color: var(--wppoppop-hover-bg) !important; }
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover,
+.wppoppop-front-element[style*="--wppoppop-hover-color"]:hover * { color: var(--wppoppop-hover-color) !important; }
+.wppoppop-front-element[style*="--wppoppop-hover-border"]:hover { border-color: var(--wppoppop-hover-border) !important; }
+/* === /WPPOPPOP_CLOSE_HOVER_CSS === */

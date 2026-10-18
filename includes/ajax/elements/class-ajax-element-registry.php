@@ -81,7 +81,7 @@ class WpPopPop_Ajax_Element_Registry {
             'fieldId', 'fieldName', 'token', 'inputMask',
             'shapePreset', 'strokeColor', 'alt', 'objectFit', 'imageAction',
             'videoProvider', 'aspectRatio', 'videoUrl', 'tag', 'headingTag', 'htmlTag', 'textTransform', 'overflow',
-            'closeSymbol', 'closeAction', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor',
+            'closeSymbol', 'closeAction', 'closeGlyph', 'hoverBgColor', 'hoverTextColor', 'hoverBorderColor', 'hoverBg', 'hoverColor', 'hoverBorder', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor',
             'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'redirectUrl',
             'placeholder', 'countryCode', 'checkboxLabel', 'checkboxLayout', 'radioLayout',
             'activeColor', 'dateFormat', 'minDate', 'maxDate', 'timeFormat', 'allowedExtensions',
@@ -120,7 +120,7 @@ class WpPopPop_Ajax_Element_Registry {
             'required', 'transparentFill', 'targetBlank', 'nofollow',
             'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped',
             'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle',
-            'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb'
+            'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied'
         );
         foreach ( $bool_keys as$bk ) {
             if ( isset( $el[$bk ] ) ) {

@@ -76,22 +76,30 @@ class WpPopPop_Front_Element_Actions {
     }
 
     public static function render_close(array $el, array $config = []) {
-        $style = !empty($el['glyph_style']) ? $el['glyph_style'] : 'times';
+        /* WPPOPPOP_CLOSE_RENDER_V2: same data model as the builder stage */
+        $allowed = array('×', '✕', '✖', '⊗', 'CLOSE');
+        $raw = '';
+        if (!empty($el['closeGlyph'])) $raw = $el['closeGlyph'];
+        elseif (!empty($el['content'])) $raw = $el['content'];
         $glyph = '×';
-        if ($style === 'cross') $glyph = '✕';
-        elseif ($style === 'circle_x') $glyph = 'ⓧ';
-        elseif ($style === 'custom_text') $glyph = !empty($el['content']) ? esc_html($el['content']) : 'CLOSE';
+        if (in_array($raw, $allowed, true)) {
+            $glyph = $raw;
+        } else {
+            $style = !empty($el['glyph_style']) ? $el['glyph_style'] : 'times';
+            if ($style === 'cross') $glyph = '✕';
+            elseif ($style === 'circle_x') $glyph = 'ⓧ';
+            elseif ($style === 'custom_text') $glyph = !empty($el['content']) ? $el['content'] : 'CLOSE';
+        }
+        $action = !empty($el['close_action']) ? $el['close_action'] : (!empty($el['closeAction']) ? $el['closeAction'] : 'close');
+        $cookie_days = !empty($el['cookie_days']) ? intval($el['cookie_days']) : (!empty($el['cookieDays']) ? intval($el['cookieDays']) : 30);
+        $size = !empty($el['iconSize']) ? intval($el['iconSize']) : (!empty($el['icon_size']) ? intval($el['icon_size']) : 20);
+        /* WPPOPPOP_CLOSE_COLOR */
+        $glyph_color = (!empty($el['color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', $el['color'])) ? $el['color'] : 'inherit';
+        if ($glyph === 'CLOSE') $size = max(10, (int) round($size * 0.65));
 
-        $action = !empty($el['close_action']) ? esc_attr($el['close_action']) : 'close';
-        $cookie_days = !empty($el['cookie_days']) ? intval($el['cookie_days']) : 30;
-        $size = !empty($el['icon_size']) ? intval($el['icon_size']) : 22;
-
-        return sprintf(
-            '<button type="button" class="wppoppop-close-btn wppoppop-close-trigger" data-close-action="%1$s" data-cookie-days="%2$d" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:%3$dpx;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;outline:none;-webkit-appearance:none;appearance:none;border:none;">%4$s</button>',
-            $action,
-            $cookie_days,
-            $size,
-            $glyph
-        );
+        return '<button type="button" class="wppoppop-close-btn wppoppop-close-trigger" data-close-action="' . esc_attr($action)
+            . '" data-cookie-days="' . $cookie_days . '" style="position:static;width:100%;height:100%;border:inherit;border-radius:inherit;background:inherit;color:' . $glyph_color . ';font-size:'
+            . $size . 'px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0;box-sizing:border-box;outline:none;-webkit-appearance:none;appearance:none;">'
+            . esc_html($glyph) . '</button>';
     }
 }

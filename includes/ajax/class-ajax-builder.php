@@ -408,6 +408,15 @@ if (!$data || !isset($data['meta'])) {
             $clean['hoverBgColor'] = $clean['hoverBg'];
         }
 
+        /* WPPOPPOP_CLOSE_WHITELIST */
+        if (isset($el['hoverTextColor'])) { $clean['hoverTextColor'] = sanitize_text_field($el['hoverTextColor']); $clean['hoverColor'] = $clean['hoverTextColor']; }
+        elseif (isset($el['hoverColor'])) { $clean['hoverColor'] = sanitize_text_field($el['hoverColor']); $clean['hoverTextColor'] = $clean['hoverColor']; }
+        if (isset($el['hoverBorderColor'])) { $clean['hoverBorderColor'] = sanitize_text_field($el['hoverBorderColor']); $clean['hoverBorder'] = $clean['hoverBorderColor']; }
+        elseif (isset($el['hoverBorder'])) { $clean['hoverBorder'] = sanitize_text_field($el['hoverBorder']); $clean['hoverBorderColor'] = $clean['hoverBorder']; }
+        if (isset($el['closeGlyph'])) { $clean['closeGlyph'] = sanitize_text_field($el['closeGlyph']); }
+        if (isset($el['iconSize'])) { $clean['iconSize'] = intval($el['iconSize']); }
+        if (isset($el['sizePresetApplied'])) { $clean['sizePresetApplied'] = !empty($el['sizePresetApplied']); }
+
         if (isset($el['customClass'])) {
             $clean['customClass'] = sanitize_html_class($el['customClass']);
             $clean['custom_css_class'] = $clean['customClass'];
@@ -507,7 +516,7 @@ if (!$data || !isset($data['meta'])) {
             'defaultValue', 'paramName', 'fieldId', 'fieldName', 'token',
             'shapePreset', 'alt', 'objectFit', 'videoProvider',
             'aspectRatio', 'videoUrl', 'tag', 'textTransform', 'overflow',
-            'closeSymbol', 'closeAction', 'iconClass', 'progressMode',
+            'closeSymbol', 'closeAction', 'closeGlyph', 'hoverBgColor', 'hoverTextColor', 'hoverBorderColor', 'hoverBg', 'hoverColor', 'hoverBorder', 'iconClass', 'progressMode',
             'buttonAction', 'url', 'loadingText', 'submitAction',
             'confirmMessage', 'redirectUrl', 'countryCode', 'checkboxLabel',
             'radioLayout', 'dateFormat', 'minDate', 'maxDate', 'timeFormat',

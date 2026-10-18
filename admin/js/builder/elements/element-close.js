@@ -13,8 +13,8 @@
 
         getDefaults: function() {
             return {
-                width: 36,
-                height: 36,
+                width: 35,
+                height: 35,
                 glyph_style: 'times',
                 icon_size: 22,
                 close_action: 'close',
