@@ -23,13 +23,15 @@ if (!defined('ABSPATH')) exit;
     </div>
     <div id="prop-button-url-wrap">
 <style>
-.wpp-sw{display:flex;align-items:center;gap:10px;font-size:11px;color:#cbd5e1;cursor:pointer;position:relative}
-.wpp-sw input{position:absolute;opacity:0;width:0;height:0}
-.wpp-sw-track{position:relative;flex:0 0 34px;width:34px;height:18px;border-radius:18px;background:#334155;transition:background .15s ease}
-.wpp-sw-track:after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s ease}
-.wpp-sw input:checked+.wpp-sw-track{background:#10b981}
-.wpp-sw input:checked+.wpp-sw-track:after{transform:translateX(16px)}
-.wpp-sw input:focus-visible+.wpp-sw-track{box-shadow:0 0 0 2px #38bdf8}
+#panel-elem-button label.wpp-sw{display:flex !important;align-items:center !important;gap:10px !important;margin:0 0 10px !important;font-size:11px;line-height:20px;color:#cbd5e1;cursor:pointer;position:relative}
+#panel-elem-button label.wpp-sw input[type=checkbox]{position:absolute !important;opacity:0 !important;width:1px !important;height:1px !important;min-width:0 !important;margin:0 !important;pointer-events:none !important;-webkit-appearance:none;appearance:none}
+#panel-elem-button label.wpp-sw input[type=checkbox]::before{display:none !important;content:none !important}
+#panel-elem-button label.wpp-sw .wpp-sw-track{display:block !important;position:relative;flex:0 0 36px;width:36px;height:20px;border-radius:20px;background:#475569;box-sizing:border-box;transition:background .15s ease}
+#panel-elem-button label.wpp-sw .wpp-sw-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.4);transition:transform .15s ease}
+#panel-elem-button label.wpp-sw input[type=checkbox]:checked + .wpp-sw-track{background:#10b981}
+#panel-elem-button label.wpp-sw input[type=checkbox]:checked + .wpp-sw-track::after{transform:translateX(16px)}
+#panel-elem-button label.wpp-sw input[type=checkbox]:focus-visible + .wpp-sw-track{box-shadow:0 0 0 2px #38bdf8}
+#panel-elem-button label.wpp-sw > span:last-child{flex:1 1 auto;display:block}
 </style>
 
         <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">DESTINATION URL</label>
