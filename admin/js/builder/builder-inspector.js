@@ -4949,6 +4949,185 @@
 })(window, jQuery);
 /* === WPPOPPOP_VIDEO_SIZE_PRESET_END === */
 
+/* === WPPOPPOP_FA_ICON_CONTROLS_START === */
+/* Font Awesome / Vector Icon (types: icon, fontawesome).
+   Content tab: colour picker (el.iconColor) + COORDINATES preset 40 x 40. */
+(function(window, $) {
+    'use strict';
+
+    var TYPES = ['icon', 'fontawesome'];
+    var PRESET = 40;
+    var DEFAULT_COLOR = '#38bdf8';
+
+    function cleanId(raw) {
+        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
+    }
+
+    function getList() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state || !core.state.canvases) return null;
+        return core.state.canvases[core.state.currentCanvas || 1] || null;
+    }
+
+    function getActiveEl() {
+        var core = window.WpPopPopBuilderCore;
+        var list = getList();
+        if (!core || !list || !core.state.activeId) return null;
+        var id = cleanId(core.state.activeId);
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && cleanId(list[i].id) === id) return list[i];
+        }
+        return null;
+    }
+
+    function isIcon(el) {
+        return !!el && TYPES.indexOf(String(el.type || '').toLowerCase().trim()) !== -1;
+    }
+
+    function stageNode(el) {
+        var id = cleanId(el.id);
+        return $('#canvas-elem-' + id + ', #wppoppop-el-' + id + ', #el-' + id + ', .wppoppop-canvas-item[data-id="' + id + '"]').first();
+    }
+
+    function applyColorToStage(el) {
+        var $node = stageNode(el);
+        if (!$node.length) return;
+        var $glyph = $node.find('i, .wppoppop-icon, .fa, [class*="fa-"]').first();
+        ($glyph.length ? $glyph : $node).css('color', el.iconColor);
+    }
+
+    function applySizeToStage(el) {
+        var $node = stageNode(el);
+        if ($node.length) $node.css({ width: PRESET + 'px', height: PRESET + 'px' });
+    }
+
+    function render(label) {
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+            window.WpPopPopBuilderCanvas.renderCanvas();
+        }
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory(label);
+        }
+    }
+
+    // Colour picker row inside the Icon panel (reuses #prop-icon-color if the drawer already has it)
+    function ensureColorPicker() {
+        if ($('#prop-icon-color').length) return;
+        var $panel = $('#panel-elem-icon');
+        if (!$panel.length || $('#wppoppop-fa-color-row').length) return;
+        $panel.append(
+            '<div id="wppoppop-fa-color-row" style="display:none; margin-top:8px;">' +
+                '<label for="wppoppop-fa-color" style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">ICON COLOR</label>' +
+                '<input type="color" id="wppoppop-fa-color" value="' + DEFAULT_COLOR + '" style="width:100%; height:32px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:6px; cursor:pointer;" />' +
+            '</div>'
+        );
+    }
+
+    function colorInput() {
+        return $('#prop-icon-color').length ? $('#prop-icon-color') : $('#wppoppop-fa-color');
+    }
+
+    function refreshUi() {
+        ensureColorPicker();
+        var el = getActiveEl();
+        var show = isIcon(el);
+        $('#wppoppop-fa-color-row').toggle(show && !$('#prop-icon-color').length);
+        $('#wppoppop-fa-size-wrap').toggle(show);
+        if (show) {
+            colorInput().val(el.iconColor || DEFAULT_COLOR);
+        }
+    }
+
+    function ensureSizeButton() {
+        var $coords = $('#insp-section-coords');
+        if (!$coords.length || $('#wppoppop-fa-size-wrap').length) return;
+        $coords.append(
+            '<div id="wppoppop-fa-size-wrap" style="display:none; margin-top:8px;">' +
+                '<button type="button" id="wppoppop-fa-size-btn" class="button button-small" style="width:100%; font-size:11px; font-weight:700;">Apply Icon Preset (40 x 40)</button>' +
+            '</div>'
+        );
+    }
+
+    function bindControls() {
+        $(document)
+            .off('input.wppoppopFaColor change.wppoppopFaColor', '#prop-icon-color, #wppoppop-fa-color')
+            .on('input.wppoppopFaColor change.wppoppopFaColor', '#prop-icon-color, #wppoppop-fa-color', function(e) {
+                var el = getActiveEl();
+                if (!isIcon(el)) return;
+                el.iconColor = $(this).val();
+                el.color = el.iconColor;
+                applyColorToStage(el);
+                if (e.type === 'change') render('Change Icon Color');
+            });
+
+        $(document)
+            .off('click.wppoppopFaSize')
+            .on('click.wppoppopFaSize', '#wppoppop-fa-size-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var el = getActiveEl();
+                if (!isIcon(el)) return;
+                el.width = PRESET;
+                el.height = PRESET;
+                $('#prop-width, #prop-size-width').val(PRESET);
+                $('#prop-height, #prop-size-height').val(PRESET);
+                applySizeToStage(el);
+                render('Apply Icon Size Preset');
+            });
+    }
+
+    function wrapAddElement() {
+        var canvas = window.WpPopPopBuilderCanvas;
+        if (!canvas || typeof canvas.addElement !== 'function' || canvas.__wppoppopIconPresetWrapped) return;
+        canvas.__wppoppopIconPresetWrapped = true;
+        var orig = canvas.addElement;
+        canvas.addElement = function(type) {
+            var before = getList() ? getList().length : 0;
+            var res = orig.apply(this, arguments);
+            if (TYPES.indexOf(String(type || '').toLowerCase().trim()) !== -1) {
+                var list = getList() || [];
+                var created = (res && typeof res === 'object' && res.type) ? res : null;
+                if (!created && list.length > before) created = list[list.length - 1];
+                if (isIcon(created)) {
+                    created.width = PRESET;
+                    created.height = PRESET;
+                    if (!created.iconColor) created.iconColor = DEFAULT_COLOR;
+                    applySizeToStage(created);
+                    render('New Icon Preset');
+                }
+            }
+            return res;
+        };
+    }
+
+    function hookInspector() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp.__wppoppopFaHooked) return;
+        insp.__wppoppopFaHooked = true;
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                setTimeout(refreshUi, 20);
+                return res;
+            };
+        }
+    }
+
+    $(function() {
+        ensureColorPicker();
+        ensureSizeButton();
+        bindControls();
+        wrapAddElement();
+        hookInspector();
+        refreshUi();
+        setTimeout(wrapAddElement, 150);
+        setTimeout(hookInspector, 150);
+        setInterval(function() { ensureSizeButton(); refreshUi(); }, 500);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_FA_ICON_CONTROLS_END === */
+
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
 /* WPPOPPOP_MEDIA_STYLE_TRIM_V2: per-type Style-tab section trim.
    Hides via a stylesheet keyed on <html data-wppoppop-trim-type="...">, so jQuery .show()
@@ -4966,7 +5145,9 @@
         'label':      ['insp-section-opacity', 'insp-section-custom-css'],
         'html':       ['insp-section-opacity', 'insp-section-custom-css'],
         'close':      ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
-        'close_icon': ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css']
+        'close_icon': ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
+        'icon':       ['insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
+        'fontawesome':['insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css']
     };
 
     var STYLE_ID = 'wppoppop-style-trim-v2';
