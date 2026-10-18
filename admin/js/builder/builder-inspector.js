@@ -4825,11 +4825,13 @@
         'square':    ['insp-section-typography', 'insp-section-custom-css'],
         'label':     ['insp-section-opacity', 'insp-section-custom-css'],
         'html':      ['insp-section-opacity', 'insp-section-custom-css'],
+        'close':     ['insp-section-opacity', 'insp-section-typography', 'insp-section-padding', 'insp-section-shadow', 'insp-section-custom-css'],
         'video':     ['insp-section-opacity', 'insp-section-bg-color', 'insp-section-custom-css']
     };
 
     var ALL_MANAGED = ['insp-section-typography', 'insp-section-custom-css',
-                       'insp-section-opacity', 'insp-section-bg-color'];
+                       'insp-section-opacity', 'insp-section-bg-color',
+                       'insp-section-padding', 'insp-section-shadow'];
 
     function cleanId(raw) {
         return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
@@ -5070,5 +5072,169 @@
 })(window, jQuery);
 /* === WPPOPPOP_LABEL_TEXT_ALIGN_END === */
 
+/* === WPPOPPOP_CLOSE_GLYPH_HOVER_START === */
+/* Close layers: ICON GLYPH hydration/save + BUTTON HOVER STATE visibility & binding.
+   Writes el.content / el.closeGlyph and el.hoverBgColor / hoverTextColor / hoverBorderColor. */
+(function(window, $) {
+    'use strict';
+
+    var CLOSE_TYPES = ['close', 'close_icon'];
+    var GLYPHS = ['×', '✕', '✖', '⊗', 'CLOSE'];
+    var DEFAULT_GLYPH = '×';
+
+    function cleanId(raw) {
+        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
+    }
+
+    function getActiveEl() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state) return null;
+        var activeId = cleanId(core.state.activeId);
+        if (!activeId) return null;
+        var cur = core.state.currentCanvas || 1;
+        var list = (core.state.canvases && core.state.canvases[cur]) || [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && cleanId(list[i].id) === activeId) return list[i];
+        }
+        return null;
+    }
+
+    function isClose(el) {
+        return !!el && CLOSE_TYPES.indexOf(String(el.type || '').toLowerCase().trim()) !== -1;
+    }
+
+    function stageNode(el) {
+        var id = cleanId(el.id);
+        return $('#canvas-elem-' + id + ', #wppoppop-el-' + id + ', #el-' + id + ', .wppoppop-canvas-item[data-id="' + id + '"]').first();
+    }
+
+    function resolveGlyph(el) {
+        if (GLYPHS.indexOf(el.content) !== -1) return el.content;
+        if (GLYPHS.indexOf(el.closeGlyph) !== -1) return el.closeGlyph;
+        return DEFAULT_GLYPH;
+    }
+
+    function hydrateGlyph(el) {
+        var $sel = $('#prop-close-glyph');
+        if (!$sel.length) return;
+        $sel.val(resolveGlyph(el));
+    }
+
+    function hydrateHover(el) {
+        $('#prop-btn-hover-section').show();
+        $('#prop-elem-hover-bg').val(el.hoverBgColor || el.hoverBg || '#0284c7');
+        $('#prop-elem-hover-color').val(el.hoverTextColor || el.hoverColor || '#ffffff');
+        $('#prop-elem-hover-border').val(el.hoverBorderColor || '#0284c7');
+    }
+
+    function applyHoverToStage(el) {
+        var $node = stageNode(el);
+        if (!$node.length) return;
+        $node.attr('data-has-hover', 'true');
+        var node = $node[0];
+        if (el.hoverBgColor) node.style.setProperty('--wppoppop-hover-bg', el.hoverBgColor);
+        if (el.hoverTextColor) node.style.setProperty('--wppoppop-hover-color', el.hoverTextColor);
+        if (el.hoverBorderColor) node.style.setProperty('--wppoppop-hover-border', el.hoverBorderColor);
+    }
+
+    function render() {
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+            window.WpPopPopBuilderCanvas.renderCanvas();
+        }
+    }
+
+    function pushHistory(label) {
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory(label);
+        }
+    }
+
+    function hydrate() {
+        var el = getActiveEl();
+        if (!isClose(el)) return;
+        hydrateGlyph(el);
+        hydrateHover(el);
+    }
+
+    function scheduleHydrate() {
+        hydrate();
+        setTimeout(hydrate, 0);
+        setTimeout(hydrate, 60);
+        setTimeout(hydrate, 200);
+    }
+
+    function bindControls() {
+        $(document)
+            .off('change.wppoppopCloseGlyph input.wppoppopCloseGlyph')
+            .on('change.wppoppopCloseGlyph input.wppoppopCloseGlyph', '#prop-close-glyph', function() {
+                var el = getActiveEl();
+                if (!isClose(el)) return;
+                var val = $(this).val();
+                if (GLYPHS.indexOf(val) === -1) return;
+                el.content = val;
+                el.closeGlyph = val;
+                el.glyph_style = el.glyph_style || 'standard';
+                render();
+                if (this.getAttribute('data-committed') !== '1' && $(this).is('select')) {
+                    pushHistory('Change Close Icon Glyph');
+                }
+            });
+
+        $(document)
+            .off('input.wppoppopCloseHover change.wppoppopCloseHover')
+            .on('input.wppoppopCloseHover change.wppoppopCloseHover', '#prop-elem-hover-bg, #prop-elem-hover-color, #prop-elem-hover-border', function(e) {
+                var el = getActiveEl();
+                if (!isClose(el)) return;
+                el.hoverBgColor = $('#prop-elem-hover-bg').val();
+                el.hoverBg = el.hoverBgColor;
+                el.hoverTextColor = $('#prop-elem-hover-color').val();
+                el.hoverColor = el.hoverTextColor;
+                el.hoverBorderColor = $('#prop-elem-hover-border').val();
+                applyHoverToStage(el);
+                if (e.type === 'change') pushHistory('Change Close Hover State');
+            });
+    }
+
+    function hookInspector() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp.__wppoppopCloseHooked) return;
+        insp.__wppoppopCloseHooked = true;
+
+        if (typeof insp.open === 'function') {
+            var origOpen = insp.open;
+            insp.open = function() {
+                var res = origOpen.apply(this, arguments);
+                scheduleHydrate();
+                return res;
+            };
+        }
+        if (typeof insp.switchTab === 'function') {
+            var origSwitch = insp.switchTab;
+            insp.switchTab = function() {
+                var res = origSwitch.apply(this, arguments);
+                scheduleHydrate();
+                return res;
+            };
+        }
+    }
+
+    // Capture phase: runs even when other handlers call stopPropagation()
+    window.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        if (t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) {
+            scheduleHydrate();
+        }
+    }, true);
+
+    $(function() {
+        bindControls();
+        hookInspector();
+        scheduleHydrate();
+        setTimeout(hookInspector, 150);
+        setTimeout(hookInspector, 450);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_CLOSE_GLYPH_HOVER_END === */
 /* === WPPOPPOP_INSPECTOR_ICON_ONLY_ACTIVE_ON_CLICK_END === */
 
