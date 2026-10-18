@@ -510,6 +510,24 @@ class WpPopPop_Front_Renderer {
                 $btn_text = !empty($content) ? esc_html($content) : 'Pay Now';
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-pay-trigger" data-amount="19.99" data-currency="USD" style="width:100%;height:100%;background:#059669;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
 
+            case 'close':
+            case 'close_icon':
+                /* WPPOPPOP_CLOSE_CASE: render the Close layer as a real, clickable button */
+                if (!class_exists('WpPopPop_Front_Element_Actions')) {
+                    $wppoppop_act_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-element-actions.php';
+                    if (file_exists($wppoppop_act_file)) { require_once $wppoppop_act_file; }
+                }
+                $wppoppop_close_inner = class_exists('WpPopPop_Front_Element_Actions')
+                    ? WpPopPop_Front_Element_Actions::render_close($el)
+                    : '&times;';
+                $wppoppop_hv_vars = '';
+                foreach ($wrapper_styles as $wppoppop_ws) {
+                    if (strpos($wppoppop_ws, '--') === 0) { $wppoppop_hv_vars .= $wppoppop_ws; }
+                }
+                return '<div id="el-' . $el_id . '" class="wppoppop-layer-item wppoppop-element wppoppop-front-element wppoppop-el-close ' . $anim_class . '" style="'
+                    . esc_attr(implode(';', $style) . $anim_style) . ';' . esc_attr($wppoppop_hv_vars) . 'pointer-events:auto;">'
+                    . $wppoppop_close_inner . $hover_style_tag . '</div>';
+
             case 'html':
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">' . $content . '</div>';
 
