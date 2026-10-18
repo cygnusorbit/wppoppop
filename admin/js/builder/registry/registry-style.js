@@ -108,6 +108,7 @@
         $('#gp-form-global-style-notice, #gp-form-text-align-row').toggle(isForm);
         var hasSideIcons = isForm && ['text', 'email', 'number', 'tel', 'date', 'time', 'password'].indexOf(canonical) !== -1;
         $('#gp-form-input-icons-row').toggle(hasSideIcons);
+        $('#wppoppop-form-icons-card').toggle(canonical !== 'textarea'); /* WPPOPPOP_TEXTAREA_STYLE */
         /* WPPOPPOP_TF_STYLE: Text Field hides Opacity, Background, Typography, Custom CSS */
         var tfHide = '#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css, ' +
             '#prop-form-custom-class, #prop-gp-style-css-class, #wppoppop-btn-add-inline-style, #wppoppop-gp-inline-styles-list';
@@ -115,7 +116,7 @@
             var $c = $(this).closest('.wppoppop-insp-card, .wppoppop-insp-section');
             return ($c.length && !$c.is('#wppoppop-form-icons-card')) ? $c[0] : this;
         });
-        if (canonical === 'text' || canonical === 'textfield' || canonical === 'email' || canonical === 'number' || canonical === 'tel') {
+        if (canonical === 'text' || canonical === 'textfield' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea') {
             $tfNodes.attr('data-tf-hidden', '1').hide();
         } else {
             $tfNodes.filter('[data-tf-hidden]').removeAttr('data-tf-hidden').show();

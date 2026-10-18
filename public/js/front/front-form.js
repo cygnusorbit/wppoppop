@@ -521,3 +521,19 @@
     }, true);
 })(jQuery);
 /* === WPPOPPOP_ADV_RUNTIME_END === */
+
+/* === WPPOPPOP_TA_COUNT_START === */
+(function() {
+    'use strict';
+    if (window.__wppTaCount) return;
+    window.__wppTaCount = true;
+    document.addEventListener('input', function(e) {
+        var t = e.target;
+        if (!t || t.tagName !== 'TEXTAREA' || !t.parentNode) return;
+        var c = t.parentNode.querySelector('.wppoppop-ta-count');
+        if (!c) return;
+        var max = parseInt(c.getAttribute('data-max'), 10) || 0;
+        c.textContent = t.value.length + ' / ' + max;
+    }, true);
+})();
+/* === WPPOPPOP_TA_COUNT_END === */

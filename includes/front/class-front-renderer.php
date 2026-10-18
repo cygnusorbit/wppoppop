@@ -437,8 +437,8 @@ class WpPopPop_Front_Renderer {
 
         if (isset($inner_html) && $inner_html !== '') {
             /* WPPOPPOP_TF_NOPAD_FRONT: Text Field wrapper never carries padding (input fills the layer box) */
-            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel'), true) ? ';padding:0!important' : '';
-            $tf_wrap_cls = in_array($raw_el_type, array('text', 'phone', 'tel'), true) ? ' wppoppop-el-textfield' : '';
+            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea'), true) ? ';padding:0!important' : '';
+            $tf_wrap_cls = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea'), true) ? ' wppoppop-el-textfield' : '';
             return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text' . $tf_wrap_cls . ' ' . $anim_class . '" style="' . $style_attr . $tf_wrap_pad . '">' . $inner_html . '</div>';
         }
 

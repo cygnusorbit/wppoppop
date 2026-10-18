@@ -1207,6 +1207,7 @@
                 newEl.shapeRotate = 0;
             }
 
+            if (type === 'textarea') { newEl.height = 100; newEl.h = 100; if (!newEl.rows) { newEl.rows = 4; } } /* WPPOPPOP_TEXTAREA_H100 */
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();

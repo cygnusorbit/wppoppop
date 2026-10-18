@@ -86,10 +86,10 @@
                 '</div>';
         } else if (canonical === 'textarea') {
             var taPh = defVal || el.placeholder || 'Write your message...';
-            var maxC = parseInt(el.maxLength, 10) || 500;
+            var maxC = parseInt(el.maxLength, 10) || 0;
             innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
                 '<div style="text-align:' + align + ';color:#64748b;font-size:12px;line-height:1.4;overflow:hidden;">' + $('<div>').text(taPh).html() + reqStar + '</div>' +
-                '<div style="text-align:right;font-size:9px;color:#94a3b8;">0 / ' + maxC + '</div>' +
+                (maxC > 0 ? '<div style="text-align:right;font-size:9px;color:#94a3b8;">0 / ' + maxC + '</div>' : '') +
                 '</div>';
         } else if (canonical === 'select') {
             var sOpts = parseOptionsList(el.options, ['Option 1', 'Option 2', 'Option 3']);
@@ -220,7 +220,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };

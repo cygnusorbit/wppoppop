@@ -244,8 +244,16 @@ class WpPopPop_Front_Decomposed_26 {
                     . '</div>';
 
             case 'textarea':
-                $rows = !empty($el['rows']) ? max(2, intval($el['rows'])) : 4;
-                return '<textarea id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" rows="' . $rows . '" placeholder="' . esc_attr($placeholder ?: 'Write your message...') . '" class="wppoppop-form-input wppoppop-input-textarea"' . $data_attrs . ' style="width:100%;height:100%;box-sizing:border-box;padding:8px 12px;resize:none;">' . esc_textarea($default_val) . '</textarea>';
+                /* WPPOPPOP_TEXTAREA_FRONT: alignment + rows min-height + live counter */
+                $ta_rows  = !empty($el['rows']) ? max(2, min(15, intval($el['rows']))) : 4;
+                $ta_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $ta_max   = (!empty($el['maxLength']) && intval($el['maxLength']) > 0) ? intval($el['maxLength']) : 0;
+                $ta_minh  = $ta_rows * 20 + 16;
+                $ta_cnt   = $ta_max > 0 ? '<div class="wppoppop-ta-count" data-max="' . $ta_max . '" style="position:absolute;right:10px;bottom:6px;font-size:10px;color:#94a3b8;pointer-events:none;">0 / ' . $ta_max . '</div>' : '';
+                return '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;min-height:' . $ta_minh . 'px;pointer-events:auto;">'
+                    . '<textarea id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" rows="' . $ta_rows . '" placeholder="' . esc_attr($placeholder !== '' ? $placeholder : 'Write your message...') . '" class="wppoppop-form-input wppoppop-input-textarea"' . $data_attrs
+                    . ' style="width:100%;height:100%;min-height:' . $ta_minh . 'px;box-sizing:border-box;padding:8px 12px;resize:none;text-align:' . esc_attr($ta_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;">' . esc_textarea($default_val) . '</textarea>'
+                    . $ta_cnt . '</div>';
 
             case 'multiselect':
                 $raw_opts = isset($el['options']) ? (is_array($el['options']) ? implode(',', $el['options']) : (string) $el['options']) : 'Option 1, Option 2';
