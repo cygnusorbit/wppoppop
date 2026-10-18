@@ -428,3 +428,70 @@
     }, true);
 })(window, document);
 /* === WPPOPPOP_CLOSE_DISMISS_END === */
+
+
+/* === WPPOPPOP_PROGRESS_RUNTIME_START === */
+(function(window, document) {
+    'use strict';
+    if (window.__wppProgressBound) return;
+    window.__wppProgressBound = true;
+
+    function visible(el) {
+        return !!(el.offsetWidth || el.offsetHeight || (el.getClientRects && el.getClientRects().length));
+    }
+    function formPercent(scope) {
+        var nodes = scope.querySelectorAll('input, select, textarea');
+        var groups = {}, order = [], uid = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            var f = nodes[i], type = (f.type || '').toLowerCase();
+            if (f.disabled) continue;
+            if (['hidden', 'submit', 'button', 'reset', 'image', 'range'].indexOf(type) !== -1) continue;
+            if (!visible(f)) continue;
+            var key = ((type === 'radio' || type === 'checkbox') && f.name) ? ('g:' + f.name) : ('u:' + (uid++));
+            if (!groups[key]) { groups[key] = false; order.push(key); }
+            var done = false;
+            if (type === 'radio' || type === 'checkbox') done = f.checked;
+            else if (type === 'file') done = !!(f.files && f.files.length);
+            else done = String(f.value || '').replace(/^\s+|\s+$/g, '') !== '';
+            if (done) groups[key] = true;
+        }
+        if (!order.length) return 0;
+        var ok = 0;
+        for (var k = 0; k < order.length; k++) { if (groups[order[k]]) ok++; }
+        return Math.round(ok / order.length * 100);
+    }
+    function stepPercent(popup) {
+        var cs = popup.querySelectorAll('.wppoppop-canvas-container');
+        if (!cs.length) return 0;
+        var idx = 0;
+        for (var i = 0; i < cs.length; i++) {
+            if (window.getComputedStyle(cs[i]).display !== 'none') { idx = i; break; }
+        }
+        return Math.round((idx + 1) / cs.length * 100);
+    }
+    function update() {
+        var bars = document.querySelectorAll('[data-progress-mode="form"], [data-progress-mode="steps"]');
+        for (var i = 0; i < bars.length; i++) {
+            var bar = bars[i];
+            var mode = bar.getAttribute('data-progress-mode');
+            var popup = bar.closest('.wppoppop-popup-wrap') || document;
+            var scope = bar.closest('.wppoppop-canvas-container') || popup;
+            var pct = (mode === 'steps') ? stepPercent(popup) : formPercent(scope);
+            var fill = bar.querySelector('.wppoppop-progress-fill');
+            if (fill) fill.style.width = pct + '%';
+            var badge = bar.querySelector('.wppoppop-progress-badge');
+            if (badge) {
+                var lbl = bar.getAttribute('data-progress-label') || '';
+                var show = bar.getAttribute('data-progress-showpct') !== '0';
+                badge.textContent = lbl ? (lbl + (show ? ' (' + pct + '%)' : '')) : (show ? (pct + '%') : '');
+            }
+            bar.setAttribute('aria-valuenow', pct);
+            bar.setAttribute('role', 'progressbar');
+        }
+    }
+    function later() { setTimeout(update, 0); setTimeout(update, 80); setTimeout(update, 400); }
+    ['input', 'change', 'keyup', 'click'].forEach(function(ev) { document.addEventListener(ev, later, true); });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', update); else update();
+    setInterval(update, 1000);   /* covers popups opening later and canvas fade transitions */
+})(window, document);
+/* === WPPOPPOP_PROGRESS_RUNTIME_END === */

@@ -465,6 +465,7 @@ if (!$data || !isset($data['meta'])) {
         if (isset($el['cookieDays'])) $clean['cookieDays'] = intval($el['cookieDays']);
         if (isset($el['iconClass'])) $clean['iconClass'] = sanitize_text_field($el['iconClass']);
         if (isset($el['iconSize'])) $clean['iconSize'] = intval($el['iconSize']);
+        if (isset($el['progressMode'])) $clean['progressMode'] = in_array($el['progressMode'], array('manual','form','steps'), true) ? $el['progressMode'] : 'manual';
         if (isset($el['progressPercent'])) $clean['progressPercent'] = max(0, min(100, intval($el['progressPercent'])));
         if (isset($el['progressColor'])) $clean['progressColor'] = sanitize_hex_color($el['progressColor']);
         if (isset($el['progressStriped'])) $clean['progressStriped'] = !empty($el['progressStriped']);

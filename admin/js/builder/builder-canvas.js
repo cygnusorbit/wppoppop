@@ -1157,7 +1157,7 @@
                 top: (typeof spawnY === 'number' && !isNaN(spawnY)) ? spawnY : (50 + (elements.length * 15) % 150),
                 left: (typeof spawnX === 'number' && !isNaN(spawnX)) ? spawnX : (50 + (elements.length * 15) % 200),
                 width: (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'text' || type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
-                height: (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'text' || type === 'signature') ? 60 : 42),
+                height: (type === 'progress') ? 20 /* WPPOPPOP_PROGRESS_SPAWN_20 */ : (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'text' || type === 'signature') ? 60 : 42),
                 zIndex: nextZ, /* WPPOPPOP_CLOSE_SPAWN_35 */
                 sizePresetApplied: (type === 'close' || type === 'close_icon'),
                 borderRadius: 4,

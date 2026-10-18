@@ -534,6 +534,9 @@ class WpPopPop_Front_Renderer {
                 $pg_anim = $pg_striped && $pg_on(array('progressAnimated'), false);
                 $pg_showpct = $pg_on(array('showPercentLabel'), true);
                 $pg_lbl = isset($el['progressLabel']) ? trim((string) $el['progressLabel']) : '';
+                /* WPPOPPOP_PROGRESS_MODE */
+                $pg_mode = (isset($el['progressMode']) && in_array($el['progressMode'], array('form', 'steps'), true)) ? $el['progressMode'] : 'manual';
+                if ($pg_mode === 'form') { $pg_pct = 0; }
                 $pg_badge = $pg_lbl !== '' ? ($pg_lbl . ($pg_showpct ? ' (' . $pg_pct . '%)' : '')) : ($pg_showpct ? ($pg_pct . '%') : '');
                 $pg_stripe = $pg_striped ? 'background-image:linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.2) 75%,transparent 75%,transparent);background-size:20px 20px;' : '';
                 static $pg_css_done = false;
@@ -542,10 +545,10 @@ class WpPopPop_Front_Renderer {
                     $pg_css_done = true;
                     $pg_css = '<style>@-webkit-keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}@keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}.wppoppop-prog-anim{-webkit-animation:wppProgStripe 1s linear infinite;animation:wppProgStripe 1s linear infinite}</style>';
                 }
-                return $pg_css . '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-progress ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">'
+                return $pg_css . '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-progress ' . $anim_class . '" data-progress-mode="' . esc_attr($pg_mode) . '" data-progress-label="' . esc_attr($pg_lbl) . '" data-progress-showpct="' . ($pg_showpct ? '1' : '0') . '" style="' . $style_attr . ';overflow:hidden;">'
                     . '<div style="width:100%;height:100%;background:' . esc_attr($pg_track) . ';border-radius:inherit;overflow:hidden;position:relative;display:flex;align-items:center;">'
                     . '<div class="wppoppop-progress-fill' . ($pg_anim ? ' wppoppop-prog-anim' : '') . '" style="width:' . $pg_pct . '%;height:100%;background-color:' . esc_attr($pg_fill) . ';' . $pg_stripe . 'transition:width .3s ease;"></div>'
-                    . ($pg_badge !== '' ? '<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);">' . esc_html($pg_badge) . '</span>' : '')
+                    . ($pg_badge !== '' ? '<span class="wppoppop-progress-badge" style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);">' . esc_html($pg_badge) . '</span>' : '')
                     . '</div></div>';
 
             case 'file':
