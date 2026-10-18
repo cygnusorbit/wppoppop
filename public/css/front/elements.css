@@ -617,3 +617,16 @@ button::-moz-focus-inner {
     transform: scale(1.18);
 }
 
+
+
+/* WPPOPPOP_TF_FILL: form inputs fill their layer box (cross-browser) */
+.wppoppop-layer-item > .wppoppop-tf-wrap,
+.wppoppop-layer-item > .wppoppop-form-input,
+.wppoppop-layer-item > .wppoppop-tf-wrap > .wppoppop-form-input {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0;
+    box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+}

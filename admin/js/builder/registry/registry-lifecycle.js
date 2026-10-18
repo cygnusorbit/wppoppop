@@ -116,10 +116,10 @@
             el.logicAction  = $('#prop-logic-action').val() || 'show';
             el.logicMatch   = $('#prop-logic-match').val() || 'all';
             var rulesArr = [];
-            $('#wppoppop-gp-logic-rules-list .wppoppop-gp-repeater-item').each(function() {
-                var f  = $.trim($(this).find('.gp-rule-field').val() || '');
-                var op = $(this).find('.gp-rule-op').val() || 'is';
-                var v  = $.trim($(this).find('.gp-rule-val').val() || '');
+            $('#wppoppop-logic-rules-list .wppoppop-logic-rule-row').each(function() {
+                var f  = $.trim($(this).find('.rule-field').val() || '');
+                var op = $(this).find('.rule-operator').val() || 'equal';
+                var v  = $.trim($(this).find('.rule-value').val() || '');
                 if (f || op === 'not_empty') {
                     rulesArr.push({ field: f, operator: op, value: v });
                 }

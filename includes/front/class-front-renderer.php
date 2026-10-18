@@ -241,6 +241,11 @@ class WpPopPop_Front_Renderer {
     }
 
     private function render_canvas_element(array $el, array $config = array()) {
+        /* WPPOPPOP_LOAD_DECOMPOSED: the autoloader cannot find elements/class-front-decomposed-26.php */
+        if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+            $wppoppop_dec_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+            if (file_exists($wppoppop_dec_file)) { require_once $wppoppop_dec_file; }
+        }
         $el_id = !empty($el['id']) ? sanitize_html_class($el['id']) : uniqid('el_');
         $custom_class = !empty($el['custom_css_class']) ? esc_attr($el['custom_css_class']) : '';
         $custom_id = !empty($el['custom_css_id']) ? (' id="' . esc_attr($el['custom_css_id']) . '"') : '';
@@ -636,6 +641,14 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">' . $content . '</div>';
 
             default:
+                /* WPPOPPOP_DECOMPOSED_DEFAULT: form types without their own case */
+                $wppoppop_dt = strtolower(trim((string) $type));
+                if (in_array($wppoppop_dt, array('phone','tel','textarea','multiselect','imageselect','tile','time','upload','password'), true) && class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_dec = WpPopPop_Front_Decomposed_26::render_element($wppoppop_dt, $el);
+                    if ($wppoppop_dec !== null) {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . '">' . $wppoppop_dec . '</div>';
+                    }
+                }
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '">' . esc_html($content) . '</div>';
         }
         return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '">' . (isset($inner_html) ? $inner_html : '') . $hover_style_tag . '</div>';

@@ -281,12 +281,40 @@
         }
     }
 
+    /* WPPOPPOP_LOGIC_SCOPE: current-stage, form-field-only, de-duplicated candidates */
+    function getLogicFieldCandidates(selfEl) {
+        var LOGIC_TYPES = ['text','textfield','email','number','spinner','phone','tel','textarea','select','dropdown','checkbox','checkboxes','radio','radios','multiselect','imageselect','tile','date','time','upload','file','password','rating'];
+        var pool = [];
+        var core = window.WpPopPopBuilderCore;
+        if (core && core.state && core.state.canvases) {
+            var cur = core.state.currentCanvas || 1;
+            var cData = core.state.canvases[cur];
+            if (cData) pool = Array.isArray(cData) ? cData : (Array.isArray(cData.elements) ? cData.elements : []);
+        }
+        if (!pool.length && window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            try { var a = window.WpPopPopBuilderCanvas.getActiveElements(); if (Array.isArray(a)) pool = a; } catch (e) {}
+        }
+        var selfId = normalizeId(selfEl && selfEl.id);
+        var seen = {}, out = [];
+        for (var i = 0; i < pool.length; i++) {
+            var f = pool[i];
+            if (!f || !f.id) continue;
+            var fid = normalizeId(f.id);
+            if (!fid || fid === selfId || seen[fid]) continue;
+            if (LOGIC_TYPES.indexOf(String(f.type || '').toLowerCase()) === -1) continue;
+            seen[fid] = true;
+            out.push(f);
+        }
+        return out;
+    }
+
+
     function renderLogicRulesList(el) {
         var $list = $('#wppoppop-logic-rules-list');
         if (!$list.length) return;
         $list.empty();
         var rules = Array.isArray(el.logicRules) ? el.logicRules : [];
-        var allEls = extractAllCanvasElements();
+        var allEls = getLogicFieldCandidates(el);
         var cleanSelf = normalizeId(el.id);
 
         if (!rules.length) {
@@ -301,6 +329,9 @@
                 var f = allEls[j];
                 if (!f || normalizeId(f.id) === cleanSelf) continue;
                 var fId = normalizeId(f.id);
+                var usedElsewhere = false;
+                for (var u = 0; u < rules.length; u++) { if (u !== i && rules[u] && normalizeId(rules[u].field) === fId) { usedElsewhere = true; break; } }
+                if (usedElsewhere) continue;
                 var fName = f.fieldName || f.name || f.label || f.placeholder || (String(f.type).toUpperCase() + ' #' + fId);
                 var sel = (fId === normalizeId(r.field)) ? ' selected' : '';
                 fieldOpts += '<option value="' + fId + '"' + sel + '>' + $('<div>').text(fName).html() + '</option>';
@@ -660,6 +691,53 @@
         setTimeout(bindMasterHooks, 450);
     });
     bindMasterHooks();
+
+    /* === WPPOPPOP_LOGIC_RULE_SYNC === */
+    function collectLogicRules() {
+        var arr = [];
+        $('#wppoppop-logic-rules-list .wppoppop-logic-rule-row').each(function() {
+            arr.push({
+                field: $(this).find('.rule-field').val() || '',
+                operator: $(this).find('.rule-operator').val() || 'equal',
+                value: $(this).find('.rule-value').val() || ''
+            });
+        });
+        return arr;
+    }
+    $(document).off('change.wppoppopLogicRules input.wppoppopLogicRules', '#wppoppop-logic-rules-list .rule-field, #wppoppop-logic-rules-list .rule-operator, #wppoppop-logic-rules-list .rule-value')
+        .on('change.wppoppopLogicRules input.wppoppopLogicRules', '#wppoppop-logic-rules-list .rule-field, #wppoppop-logic-rules-list .rule-operator, #wppoppop-logic-rules-list .rule-value', function(e) {
+            var el = resolveElement();
+            if (!el) return;
+            el.logicRules = collectLogicRules();
+            if ($(this).hasClass('rule-field') && e.type === 'change') renderLogicRulesList(el);
+        });
+    $(document).off('click.wppoppopLogicRulesDel', '#wppoppop-logic-rules-list .btn-remove-logic-rule')
+        .on('click.wppoppopLogicRulesDel', '#wppoppop-logic-rules-list .btn-remove-logic-rule', function(e) {
+            e.preventDefault();
+            var el = resolveElement();
+            if (!el) return;
+            var idx = $(this).closest('.wppoppop-logic-rule-row').index();
+            var rules = collectLogicRules();
+            rules.splice(idx, 1);
+            el.logicRules = rules;
+            renderLogicRulesList(el);
+        });
+    /* === /WPPOPPOP_LOGIC_RULE_SYNC === */
+
+    /* === WPPOPPOP_PANEL_GUARD === */
+    window.__wppPanelSettled = function(typeOrId) {
+        var $vis = $('#wppoppop-inspector-drawer .wppoppop-panel-specific:visible');
+        var t = String(typeOrId || '').toLowerCase();
+        if (t !== 'text' && t !== 'textfield') {
+            var el = resolveElement(typeOrId);
+            t = el ? String(el.type || '').toLowerCase() : t;
+        }
+        if (t === 'text' || t === 'textfield') {
+            return $vis.length === 1 && $vis.is('#panel-elem-text');
+        }
+        return false;
+    };
+    /* === /WPPOPPOP_PANEL_GUARD === */
 
 })(window, jQuery);
 /* === WPPOPPOP_MASTER_LAYER_INSPECTOR_AND_LAYER_ENGINE_END === */

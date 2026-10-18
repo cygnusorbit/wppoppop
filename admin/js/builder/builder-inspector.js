@@ -276,10 +276,10 @@
             el.logicAction  = jQuery('#prop-logic-action').val() || 'show';
             el.logicMatch   = jQuery('#prop-logic-match').val() || 'all';
             var rulesArr = [];
-            jQuery('#wppoppop-gp-logic-rules-list .wppoppop-gp-repeater-item').each(function() {
-                var f  = jQuery.trim(jQuery(this).find('.gp-rule-field').val() || '');
-                var op = jQuery(this).find('.gp-rule-op').val() || 'is';
-                var v  = jQuery.trim(jQuery(this).find('.gp-rule-val').val() || '');
+            jQuery('#wppoppop-logic-rules-list .wppoppop-logic-rule-row').each(function() {
+                var f  = jQuery.trim(jQuery(this).find('.rule-field').val() || '');
+                var op = jQuery(this).find('.rule-operator').val() || 'equal';
+                var v  = jQuery.trim(jQuery(this).find('.rule-value').val() || '');
                 if (f !== '' || op === 'not_empty') {
                     rulesArr.push({ field: f, operator: op, value: v });
                 }
@@ -2801,7 +2801,7 @@
         insp.open = function(id) {
             var res = typeof origOpen === 'function' ? origOpen.apply(this, arguments) : undefined;
             applyFamilyRouting(id);
-            setTimeout(function() { applyFamilyRouting(id); }, 20);
+            setTimeout(function() { if (window.__wppPanelSettled && window.__wppPanelSettled(id)) return; applyFamilyRouting(id); }, 20);
             return res;
         };
 
@@ -2844,7 +2844,7 @@
         $(document).off('click.wppoppopPureSelect').on('click.wppoppopPureSelect', '.wppoppop-ribbon-btn, .wppoppop-ribbon-tool, .wppoppop-canvas-item, .wppoppop-layer-item', function() {
             var t = $(this).attr('data-type') ||$(this).data('type') || '';
             applyFamilyRouting(t);
-            setTimeout(function() { applyFamilyRouting(t); }, 30);
+            setTimeout(function() { if (window.__wppPanelSettled && window.__wppPanelSettled(t)) return; applyFamilyRouting(t); }, 30);
         });
     }
 
@@ -4305,12 +4305,40 @@
         }
     }
 
+    /* WPPOPPOP_LOGIC_SCOPE: current-stage, form-field-only, de-duplicated candidates */
+    function getLogicFieldCandidates(selfEl) {
+        var LOGIC_TYPES = ['text','textfield','email','number','spinner','phone','tel','textarea','select','dropdown','checkbox','checkboxes','radio','radios','multiselect','imageselect','tile','date','time','upload','file','password','rating'];
+        var pool = [];
+        var core = window.WpPopPopBuilderCore;
+        if (core && core.state && core.state.canvases) {
+            var cur = core.state.currentCanvas || 1;
+            var cData = core.state.canvases[cur];
+            if (cData) pool = Array.isArray(cData) ? cData : (Array.isArray(cData.elements) ? cData.elements : []);
+        }
+        if (!pool.length && window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.getActiveElements === 'function') {
+            try { var a = window.WpPopPopBuilderCanvas.getActiveElements(); if (Array.isArray(a)) pool = a; } catch (e) {}
+        }
+        var selfId = normalizeId(selfEl && selfEl.id);
+        var seen = {}, out = [];
+        for (var i = 0; i < pool.length; i++) {
+            var f = pool[i];
+            if (!f || !f.id) continue;
+            var fid = normalizeId(f.id);
+            if (!fid || fid === selfId || seen[fid]) continue;
+            if (LOGIC_TYPES.indexOf(String(f.type || '').toLowerCase()) === -1) continue;
+            seen[fid] = true;
+            out.push(f);
+        }
+        return out;
+    }
+
+
     function renderLogicRulesList(el) {
         var $list = $('#wppoppop-logic-rules-list');
         if (!$list.length) return;
         $list.empty();
         var rules = Array.isArray(el.logicRules) ? el.logicRules : [];
-        var allEls = extractAllCanvasElements();
+        var allEls = getLogicFieldCandidates(el);
         var cleanSelf = normalizeId(el.id);
 
         if (!rules.length) {
@@ -4325,6 +4353,9 @@
                 var f = allEls[j];
                 if (!f || normalizeId(f.id) === cleanSelf) continue;
                 var fId = normalizeId(f.id);
+                var usedElsewhere = false;
+                for (var u = 0; u < rules.length; u++) { if (u !== i && rules[u] && normalizeId(rules[u].field) === fId) { usedElsewhere = true; break; } }
+                if (usedElsewhere) continue;
                 var fName = f.fieldName || f.name || f.label || f.placeholder || (String(f.type).toUpperCase() + ' #' + fId);
                 var sel = (fId === normalizeId(r.field)) ? ' selected' : '';
                 fieldOpts += '<option value="' + fId + '"' + sel + '>' + $('<div>').text(fName).html() + '</option>';

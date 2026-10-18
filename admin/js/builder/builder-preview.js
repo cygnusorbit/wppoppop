@@ -49,6 +49,22 @@
                 if (l !== undefined && l !== '' && !isNaN(l)) m.anim_delay = parseInt(l, 10);
                 var o = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
                 if (o) m.anim_disappearance = o;
+
+                /* WPPOPPOP_PREVIEW_GEOM_SYNC: the stage DOM is the visual truth for the current canvas */
+                var geoList = (core.state.canvases && core.state.canvases[cur]) || [];
+                for (var gi = 0; gi < geoList.length; gi++) {
+                    var gEl = geoList[gi];
+                    if (!gEl || gEl.id === undefined) continue;
+                    var gNode = document.getElementById('wppoppop-el-' + gEl.id);
+                    if (!gNode || !gNode.offsetWidth || !gNode.offsetHeight) continue;
+                    var gL = parseInt(gNode.style.left, 10), gT = parseInt(gNode.style.top, 10);
+                    if (isNaN(gL)) gL = parseInt($(gNode).css('left'), 10);
+                    if (isNaN(gT)) gT = parseInt($(gNode).css('top'), 10);
+                    if (!isNaN(gL)) { gEl.left = gL; gEl.x = gL; }
+                    if (!isNaN(gT)) { gEl.top = gT; gEl.y = gT; }
+                    gEl.width = gNode.offsetWidth;  gEl.w = gEl.width;
+                    gEl.height = gNode.offsetHeight; gEl.h = gEl.height;
+                }
             }
         },
 
