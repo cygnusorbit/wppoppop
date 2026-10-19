@@ -689,3 +689,24 @@
     }, true);
 })();
 /* === WPPOPPOP_TILE_RUNTIME_END === */
+
+/* === WPPOPPOP_TILE_BOX_RUNTIME_START === */
+(function() {
+    'use strict';
+    if (window.__wppTileBox) return;
+    window.__wppTileBox = true;
+    function clear() {
+        var n = document.querySelectorAll('.wppoppop-tl-wrap'), i, p;
+        for (i = 0; i < n.length; i++) {
+            p = n[i].parentNode;
+            if (p && p.style) { p.style.setProperty('background-color', 'transparent', 'important'); }
+        }
+    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', clear); } else { clear(); }
+    if (window.MutationObserver && document.body) {
+        new MutationObserver(function() { clear(); }).observe(document.body, { childList: true, subtree: true });
+    } else {
+        setInterval(clear, 800);
+    }
+})();
+/* === WPPOPPOP_TILE_BOX_RUNTIME_END === */

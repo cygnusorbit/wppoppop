@@ -193,11 +193,12 @@
             var tRad  = (el.borderRadius !== undefined && el.borderRadius !== '' && !isNaN(parseInt(el.borderRadius, 10))) ? parseInt(el.borderRadius, 10) : 6;
             var tJ    = align === 'right' ? 'flex-end' : (align === 'left' ? 'flex-start' : 'center');
             var tFg   = (el.color && /^#[0-9a-fA-F]{3,8}$/.test(el.color)) ? el.color : '#334155';
+            var tBg   = (el.transparentFill || el.bgColor === 'transparent') ? 'transparent' : ((el.bgColor && /^#[0-9a-fA-F]{3,8}$/.test(el.bgColor)) ? el.bgColor : '#f1f5f9'); /* WPPOPPOP_TILE_BG_STAGE */
             var tTxt  = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;font-weight:' + (el.fontWeight || '700') + ';line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;';
             var tTiles = tLines.slice(0, 8).map(function(lbl, idx) {
                 var on = (idx === 0);
                 var bd = (tBs === 'none') ? 'none' : (tBw + 'px ' + tBs + ' ' + (on ? tAcc : tBc));
-                return '<div style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' + tJ + ';padding:6px;border-radius:' + tRad + 'px;border:' + bd + ';background:' + (on ? tAcc : '#f1f5f9') + ';color:' + (on ? '#ffffff' : tFg) + ';' + tTxt + '">' +
+                return '<div style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' + tJ + ';padding:6px;border-radius:' + tRad + 'px;border:' + bd + ';background:' + (on ? tAcc : tBg) + ';color:' + (on ? '#ffffff' : tFg) + ';' + tTxt + '">' +
                     '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(lbl).html() + (idx === 0 ? reqStar : '') + '</span></div>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + tCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + tTiles + '</div>';
@@ -258,6 +259,7 @@
         if (typeof Reg.applyStyleToStageNode === 'function') {
             Reg.applyStyleToStageNode(el);
         }
+        if (canonical === 'tile' && $node[0]) { $node[0].style.setProperty('background-color', 'transparent', 'important'); } /* WPPOPPOP_TILE_BG_BOX */
         /* WPPOPPOP_TF_NOPAD */
         if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'multiselect' || canonical === 'tile') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
@@ -327,3 +329,20 @@
         });
 })(window, jQuery);
 /* === WPPOPPOP_TILE_HOVER_BIND_END === */
+
+
+/* === WPPOPPOP_TILE_BG_BIND_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    $(document).off('input.tlBg change.tlBg', '#prop-bg-color, #prop-bg-transparent')
+        .on('input.tlBg change.tlBg', '#prop-bg-color, #prop-bg-transparent', function() {
+            setTimeout(function() {
+                var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+                if (el && String(el.type || '').toLowerCase() === 'tile' && typeof Reg.renderFormElementStage === 'function') {
+                    Reg.renderFormElementStage(el);
+                }
+            }, 0);
+        });
+})(window, jQuery);
+/* === WPPOPPOP_TILE_BG_BIND_END === */

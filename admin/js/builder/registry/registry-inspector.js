@@ -437,6 +437,10 @@
             $('#prop-imageselect-accent').val(el.activeColor || '#38bdf8');
             $('#prop-imageselect-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
         }
+        if (type === 'tile' && !el.bgColor) { /* WPPOPPOP_TILE_BG_DEFAULT */
+            $('#prop-bg-color').val('#f1f5f9');
+            $('#prop-bg-transparent').prop('checked', false);
+        }
         if (type === 'tile') { /* WPPOPPOP_TILE_HYDRATE */
             var tlOpts = el.optionsList || el.options || '';
             if (Array.isArray(tlOpts)) { tlOpts = tlOpts.join('\n'); }

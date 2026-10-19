@@ -424,6 +424,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $tl_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
                 $tl_j = ($tl_al === 'left') ? 'flex-start' : (($tl_al === 'right') ? 'flex-end' : 'center');
                 $tl_fg = $tl_hex(isset($el['color']) ? $el['color'] : '', '#334155');
+                $tl_bg = (!empty($el['transparentFill']) || (isset($el['bgColor']) && $el['bgColor'] === 'transparent')) ? 'transparent' : $tl_hex(isset($el['bgColor']) ? $el['bgColor'] : '', '#f1f5f9'); /* WPPOPPOP_TILE_BG */
                 $tl_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
                 $tl_ty .= 'font-weight:' . ((!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) ? $el['fontWeight'] : '700') . ';';
                 if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $tl_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
@@ -446,7 +447,7 @@ class WpPopPop_Front_Decomposed_26 {
                     $tl_on = in_array($tl_lbl, $tl_defs, true);
                     if ($tl_on) { $tl_vals[] = $tl_lbl; }
                     $tl_border = ($tl_bs === 'none') ? 'none' : ($tl_bw . 'px ' . $tl_bs . ' ' . ($tl_on ? $tl_acc : $tl_bc));
-                    $tl_cards .= '<div class="wppoppop-tl-card" role="button" tabindex="0" data-value="' . esc_attr($tl_lbl) . '" data-bg="#f1f5f9" data-fg="' . esc_attr($tl_fg) . '" data-bc="' . esc_attr($tl_bc) . '" aria-pressed="' . ($tl_on ? 'true' : 'false') . '" style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' . $tl_j . ';padding:6px;border-radius:' . $tl_rad . 'px;border:' . $tl_border . ';background:' . ($tl_on ? $tl_acc : '#f1f5f9') . ';color:' . ($tl_on ? '#ffffff' : $tl_fg) . ';cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;-webkit-user-select:none;user-select:none;' . $tl_ty . '">'
+                    $tl_cards .= '<div class="wppoppop-tl-card" role="button" tabindex="0" data-value="' . esc_attr($tl_lbl) . '" data-bg="' . esc_attr($tl_bg) . '" data-fg="' . esc_attr($tl_fg) . '" data-bc="' . esc_attr($tl_bc) . '" aria-pressed="' . ($tl_on ? 'true' : 'false') . '" style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' . $tl_j . ';padding:6px;border-radius:' . $tl_rad . 'px;border:' . $tl_border . ';background:' . ($tl_on ? $tl_acc : $tl_bg) . ';color:' . ($tl_on ? '#ffffff' : $tl_fg) . ';cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;-webkit-user-select:none;user-select:none;' . $tl_ty . '">'
                         . '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' . esc_html($tl_lbl) . '</span></div>';
                 }
                 $tl_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
