@@ -58,6 +58,7 @@
             $(document).on('click', '.wppoppop-close-btn, .wppoppop-backdrop', function(e) {
                 e.preventDefault();
                 var $wrap = $(this).closest('.wppoppop-popup-wrap, .wppoppop-overlay');
+                if ($wrap.attr('data-inline') === '1') { return; }
                 var uid = $(this).data('uid') || $wrap.data('uid');
                 self.close(uid);
             });
@@ -104,6 +105,7 @@
                     }
                 } catch(e) {}
 
+                if ($wrap.attr('data-manual') === '1') return; /* opened only by button / link / JS API */
                 var hasLoad = $wrap.attr('data-trigger-load') === '1';
                 var hasOther = $wrap.is('[data-trigger-exit],[data-trigger-scroll],[data-trigger-back],[data-trigger-idle]');
                 if (!hasLoad && hasOther) return;

@@ -32,6 +32,10 @@ if (!defined('ABSPATH')) {
                 <?php esc_html_e('This popup has not been saved yet. Click "Save Popup" first so the snippets below contain its real ID.', 'wppoppop'); ?>
             </div>
 
+            <div class="wppoppop-embed-notice" id="wppoppop-embed-draft" style="display:none;">
+                <?php esc_html_e('This popup is a Draft, so the snippets below output nothing on your site yet. Set its status to Published from the Campaigns list (Bulk Actions > Set Status: Published).', 'wppoppop'); ?>
+            </div>
+
             <div class="wppoppop-embed-tab-content active" id="embed-tab-shortcode">
                 <p class="wppoppop-embed-desc"><?php esc_html_e('Paste this shortcode anywhere inside your WordPress page, post, or template:', 'wppoppop'); ?></p>
                 <div class="wppoppop-code-box">

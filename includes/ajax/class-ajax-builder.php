@@ -66,7 +66,13 @@ class WpPopPop_Ajax_Builder {
             $wpdb->insert($table_name, ['uid' => $uid, 'title' => $title, 'data' => $data_raw, 'status' => 'publish'], ['%s', '%s', '%s', '%s']);
         }
 
-        wp_send_json_success(['uid' => $uid, 'message' => 'Popup configuration saved successfully!']);
+        $wppoppop_saved_status = $wpdb->get_var($wpdb->prepare("SELECT status FROM {$table_name} WHERE uid = %s", $uid));
+
+        wp_send_json_success([
+            'uid'     => $uid,
+            'status'  => $wppoppop_saved_status ? $wppoppop_saved_status : 'publish',
+            'message' => 'Popup configuration saved successfully!'
+        ]);
     }
 
     private function sanitize_anim_payload($node) {

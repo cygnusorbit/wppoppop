@@ -136,10 +136,7 @@
         var self = this;
 
         // Header Embed Button
-        $('#wppoppop-btn-embed, #wppoppop-btn-shortcode').off('click.wppoppop_embed').on('click.wppoppop_embed', function(e) {
-            e.preventDefault();
-            self.openEmbedModal();
-        });
+        /* Embed button is bound once, in builder-modals.js (WpPopPopBuilderModals.bindEmbedModal) */
 
         // Header Live Sandbox Preview Button
         $('#wppoppop-btn-preview').off('click.wppoppop_preview_modal').on('click.wppoppop_preview_modal', function(e) {

@@ -11,11 +11,16 @@ if (!defined('ABSPATH')) {
  */
 class WpPopPop_Front_Shortcode {
     protected static $inline_uids = [];
+    protected static $button_uids = [];
     protected $renderer;
 
     public function __construct(WpPopPop_Front_Renderer $renderer) {
         $this->renderer = $renderer;
         add_shortcode('wppoppop', [$this, 'render']);
+    }
+
+    public static function is_button_requested($uid) {
+        return isset(self::$button_uids[$uid]);
     }
 
     public static function is_inline_rendered($uid) {
@@ -43,6 +48,10 @@ class WpPopPop_Front_Shortcode {
             'class' => '',
         ], $atts, 'wppoppop');
 
+        if (function_exists('wppoppop_get_setting') && (bool) wppoppop_get_setting('test_mode', false) && !current_user_can('manage_options')) {
+            return '';
+        }
+
         $uid = sanitize_key($atts['uid']);
         $id  = (int) $atts['id'];
         $row = $this->find_row($uid, $id);
@@ -54,6 +63,7 @@ class WpPopPop_Front_Shortcode {
         $uid = $row['uid'];
 
         if ($atts['mode'] === 'button') {
+            self::$button_uids[$uid] = true;
             $extra = trim(preg_replace('/[^A-Za-z0-9_\- ]/', '', (string) $atts['class']));
             return '<button type="button" class="wppoppop-trigger-btn wppoppop-open-btn ' . esc_attr($extra) . '" data-target-uid="' . esc_attr($uid) . '">'
                 . esc_html($atts['text']) . '</button>';

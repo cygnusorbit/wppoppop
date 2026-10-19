@@ -9,6 +9,7 @@ $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid']
     <!-- Hidden Security Nonce & Campaign Identifier State -->
     <?php wp_nonce_field('wppoppop_builder_nonce', 'wppoppop-builder-nonce'); ?>
     <input type="hidden" id="wppoppop-builder-uid" value="<?php echo esc_attr($current_uid); ?>">
+    <input type="hidden" id="wppoppop-builder-status" value="<?php echo esc_attr(($popup && isset($popup->status)) ? $popup->status : ''); ?>">
 
     <!-- 1. Top Application Toolbar (Canvas Sequence & Navigation) -->
     <?php include WPPOPPOP_PATH . 'templates/builder/header.php'; ?>

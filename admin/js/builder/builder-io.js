@@ -149,6 +149,16 @@
                         if (response && response.success && response.data) {
                             var savedUid = response.data.uid;
                             self.syncUid(savedUid);
+                            if (response.data.status) {
+                                if ($('#wppoppop-builder-status').length === 0) {
+                                    $('<input>').attr({ type: 'hidden', id: 'wppoppop-builder-status' }).appendTo('body');
+                                }
+                                $('#wppoppop-builder-status').val(response.data.status);
+                            }
+                            try {
+                                var wppM = window.WpPopPopBuilderModals;
+                                if (wppM && $('#wppoppop-modal-embed').is(':visible')) { wppM.refresh(); }
+                            } catch (wppE) {}
                             $btn.html('<span class="dashicons dashicons-yes"></span> Saved!');
                             setTimeout(function() {
                                 $btn.prop('disabled', false).html(origText);

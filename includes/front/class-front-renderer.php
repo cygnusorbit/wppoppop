@@ -74,7 +74,7 @@ class WpPopPop_Front_Renderer {
         <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo $preload_class; ?>"
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
-             data-config="<?php echo $encoded_config; ?>"<?php echo $trg_attrs; ?>
+             data-config="<?php echo $encoded_config; ?>"<?php echo $trg_attrs; ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
              style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);"
              aria-hidden="true"
              role="dialog">

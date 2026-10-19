@@ -38,6 +38,8 @@
             $('#wppoppop-embed-js-val').val("window.WpPopPop && window.WpPopPop.show('" + shown + "');");
             $('.wppoppop-embed-uid').text(shown);
             $('#wppoppop-embed-unsaved').toggle(!uid);
+            var st = $.trim(String($('#wppoppop-builder-status').val() || ''));
+            $('#wppoppop-embed-draft').toggle(!!uid && st !== '' && st !== 'publish' && st !== 'published');
         },
 
         switchTab: function(tab) {

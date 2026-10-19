@@ -237,6 +237,13 @@ class WpPopPop_List_Table extends WP_List_Table {
             );
         }
 
+        $actions['embed'] = sprintf(
+            '<a href="javascript:void(0);" role="button" class="wppoppop-action-embed" data-uid="%s" data-status="%s">%s</a>',
+            esc_attr($uid),
+            esc_attr($status),
+            __('Embed', 'wppoppop')
+        );
+
         if ($can_trash) {
             $trash_url = wp_nonce_url(
                 admin_url('admin.php?page=wppoppop&action=trash&uid=' . rawurlencode($uid)),
