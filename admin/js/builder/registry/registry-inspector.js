@@ -463,7 +463,7 @@
         $('#insp-tab-style').toggleClass('wppoppop-tl-style', String(type).toLowerCase() === 'tile'); /* WPPOPPOP_TL_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-cb-style', ['checkbox', 'checkboxes'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_CB_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
-        $('#insp-tab-style').toggleClass('wppoppop-date-style', String(type).toLowerCase() === 'date'); /* WPPOPPOP_DATE_STYLE */
+        $('#insp-tab-style').toggleClass('wppoppop-date-style', ['date', 'time'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_DATE_STYLE + WPPOPPOP_TIME_STYLE */
 
         var op = (el.opacity !== undefined && el.opacity !== null && el.opacity !== '') ? parseFloat(el.opacity) : 100;
         if (op <= 1 && op > 0) op = Math.round(op * 100);

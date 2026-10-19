@@ -32,7 +32,7 @@
         'date', 'time', 'upload', 'password'
     ];
 
-    var INPUT_ICON_CAPABLE = ['text', 'email', 'number', 'phone', 'select', 'date', 'time', 'password'];
+    var INPUT_ICON_CAPABLE = ['text', 'email', 'number', 'phone', 'select', 'date', 'time', 'password', 'upload'];
     var HOVER_CAPABLE      = ['button', 'submit', 'close', 'icon', 'tile', 'imageselect'];
     var CLICK_LOGIC_CAPABLE = ['button', 'submit', 'image', 'icon', 'close', 'shape'];
 

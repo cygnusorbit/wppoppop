@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) exit;
         </div>
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">MINUTE INTERVAL</label>
-            <select id="prop-time-step" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="minuteStep" style="font-size:12px;">
+            <select id="prop-time-step" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="timeStep" style="font-size:12px;">
                 <option value="5">Every 5 Min</option>
                 <option value="10">Every 10 Min</option>
                 <option value="15">Every 15 Min</option>

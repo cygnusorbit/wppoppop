@@ -48,7 +48,7 @@
         var reqStar = el.required ? ' <span style="color:#f43f5e;font-weight:700;">*</span>' : '';
         var roBadge = el.readOnly ? '<span style="font-size:9px;background:#e2e8f0;color:#475569;padding:1px 4px;border-radius:3px;margin-left:6px;flex-shrink:0;">RO</span>' : '';
 
-        var iLeft  = $.trim(el.iconLeft || ((canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? 'dashicons-lock' : '')))));
+        var iLeft  = $.trim(el.iconLeft || ((canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? 'dashicons-lock' : (canonical === 'upload' ? 'dashicons-cloud-upload' : ''))))));
         var iRight = $.trim(el.iconRight || '');
         var offL   = (isNaN(parseInt(el.iconLeftOffset, 10)) ? 10 : parseInt(el.iconLeftOffset, 10));
         var offR   = (isNaN(parseInt(el.iconRightOffset, 10)) ? 10 : parseInt(el.iconRightOffset, 10));
@@ -212,23 +212,27 @@
                 '</div>';
         } else if (canonical === 'time') {
             var tFmt  = el.timeFormat || '12h';
-            var tStep = parseInt(el.timeStep, 10) || 15;
+            var tStep = parseInt(el.timeStep, 10) || parseInt(el.minuteStep, 10) || 15;
             var tmPh  = defVal || el.placeholder || (tFmt === '24h' ? '14:00' : '02:00 PM');
             innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;">' + $('<div>').text(tmPh).html() + reqStar + '</span>' +
-                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:3px;">' + tFmt + ' (' + tStep + 'm)</span>' +
+                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:3px;">' + tFmt + ' (' + tStep + 'm)</span>' + rightIconHtml +
                 '</div>';
         } else if (canonical === 'upload') {
+            /* WPPOPPOP_UPLOAD_STAGE_V2: icons + offsets + default text */
             var uPh   = el.placeholder || 'Choose file or drag here...';
-            var uExts = el.allowedExtensions || '.jpg,.png,.pdf';
+            var uExts = el.allowedExtensions || el.allowedExts || '.jpg,.png,.pdf';
             var uMax  = parseInt(el.maxFileSize, 10) || 5;
-            innerHtml = '<div style="width:100%;height:100%;border:1.5px dashed #94a3b8;border-radius:6px;background:#f8fafc;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 10px;box-sizing:border-box;pointer-events:none;">' +
-                '<span class="dashicons dashicons-cloud-upload" style="font-size:20px;width:20px;height:20px;color:#0284c7;"></span>' +
-                '<div style="display:flex;flex-direction:column;line-height:1.2;">' +
-                    '<span style="font-size:11px;font-weight:600;color:#334155;">' + $('<div>').text(uPh).html() + reqStar + '</span>' +
+            var uAl   = el.textAlign || 'center';
+            var uJ    = uAl === 'left' ? 'flex-start' : (uAl === 'right' ? 'flex-end' : 'center');
+            innerHtml = '<div style="position:relative;width:100%;height:100%;border:1.5px dashed #94a3b8;border-radius:6px;background:#f8fafc;display:flex;align-items:center;justify-content:' + uJ + ';gap:8px;padding:6px ' + padR + 'px 6px ' + padL + 'px;box-sizing:border-box;pointer-events:none;">' +
+                leftIconHtml +
+                '<div style="display:flex;flex-direction:column;line-height:1.2;min-width:0;text-align:' + uAl + ';">' +
+                    '<span style="font-size:11px;font-weight:600;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(uPh).html() + reqStar + '</span>' +
                     '<span style="font-size:9px;color:#64748b;">' + $('<div>').text(uExts).html() + ' (Max ' + uMax + 'MB)</span>' +
                 '</div>' +
+                rightIconHtml +
                 '</div>';
         } else if (canonical === 'password') {
             var pwPh = el.placeholder || '••••••••';
@@ -455,3 +459,187 @@
         });
 })(window, jQuery);
 /* === WPPOPPOP_DATE_HYDRATE_END === */
+
+/* === WPPOPPOP_TIME_HYDRATE_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    function hydrateTime() {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return;
+        var raw = String(el.type || '').toLowerCase();
+        var canon = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
+        if (canon !== 'time') return;
+        $('#prop-time-placeholder').val(el.placeholder || '');
+        $('#prop-time-format').val(el.timeFormat === '24h' ? '24h' : '12h');
+        $('#prop-time-step').val(String(parseInt(el.timeStep, 10) || parseInt(el.minuteStep, 10) || 15));
+    }
+    $(document).off('click.wppTimeHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]')
+        .on('click.wppTimeHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]', function() {
+            [30, 150, 400].forEach(function(ms) { setTimeout(hydrateTime, ms); });
+        });
+})(window, jQuery);
+/* === WPPOPPOP_TIME_HYDRATE_END === */
+
+/* === WPPOPPOP_UPLOAD_HYDRATE_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    /* WPPOPPOP_UPLOAD_STYLE: Upload hides Opacity, Background, Padding, Box Shadow, Custom CSS & Inline Styles (+ icons card) */
+    if (!document.getElementById('wppoppop-upload-style-css')) {
+        var st = document.createElement('style');
+        st.id = 'wppoppop-upload-style-css';
+        st.appendChild(document.createTextNode(
+            '#insp-tab-style.wppoppop-up-style #insp-section-opacity,' +
+            '#insp-tab-style.wppoppop-up-style #insp-section-bg-color,' +
+            '#insp-tab-style.wppoppop-up-style #insp-section-padding,' +
+            '#insp-tab-style.wppoppop-up-style #insp-section-shadow,' +
+            '#insp-tab-style.wppoppop-up-style #insp-section-custom-css { display: none !important; }' +
+            '#insp-tab-style.wppoppop-up-style #insp-section-typography,' +
+            '#insp-tab-style.wppoppop-up-style #insp-section-border,' +
+            '#insp-tab-style.wppoppop-up-style #wppoppop-form-icons-card { display: block !important; }'
+        ));
+        (document.head || document.documentElement).appendChild(st);
+    }
+    function isUpload() {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return null;
+        var raw = String(el.type || '').toLowerCase();
+        var canon = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
+        return (canon === 'upload' || canon === 'file' || raw === 'upload' || raw === 'file') ? el : false;
+    }
+    function hydrateUpload() {
+        var el = isUpload();
+        $('#insp-tab-style').toggleClass('wppoppop-up-style', !!el);
+        if (!el) return;
+        $('#prop-upload-label').val(el.placeholder || '');
+        $('#prop-upload-exts').val(el.allowedExtensions || el.allowedExts || '');
+        $('#prop-upload-maxsize').val(parseInt(el.maxFileSize, 10) || 10);
+        $('#prop-upload-multiple').prop('checked', el.multiUpload === true || el.multiUpload === 1 || el.multiUpload === '1' || el.multiUpload === 'true');
+    }
+    $(document).off('click.wppUploadHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool')
+        .on('click.wppUploadHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool', function() {
+            [30, 150, 400, 800].forEach(function(ms) { setTimeout(hydrateUpload, ms); });
+        });
+    /* Re-assert after the registry sync pass so other toggles cannot clear the class */
+    if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._uploadStyleHooked) {
+        Reg._uploadStyleHooked = true;
+        var origHy = Reg.hydrateCoreAndStyleFields;
+        Reg.hydrateCoreAndStyleFields = function(el) {
+            var r = origHy.apply(this, arguments);
+            var t = String((el && el.type) || '').toLowerCase();
+            $('#insp-tab-style').toggleClass('wppoppop-up-style', t === 'upload' || t === 'file');
+            return r;
+        };
+    }
+})(window, jQuery);
+/* === WPPOPPOP_UPLOAD_HYDRATE_END === */
+
+/* === WPPOPPOP_UPLOAD_PREVIEW_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    var store = {};
+    var down = null;
+
+    function inPreviewMode() {
+        var C = window.WpPopPopBuilderCanvas, P = window.WpPopPopBuilderPreview;
+        return !!((C && C.isPreview) || (P && P.isOpen));
+    }
+    function fmtSize(b) {
+        if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+        if (b >= 1024) return Math.round(b / 1024) + ' KB';
+        return b + ' B';
+    }
+    function allowedList(el) {
+        var raw = String(el.allowedExtensions || el.allowedExts || '.jpg,.png,.pdf');
+        return raw.split(/[\s,;]+/).map(function(x) { x = $.trim(x).toLowerCase(); return x ? '.' + x.replace(/^\./, '') : ''; }).filter(Boolean);
+    }
+    function render($item, id) {
+        $item.children('.wppoppop-up-prev-list').remove();
+        var files = store[id] || [];
+        if (!files.length) return;
+        var $list = $('<div class="wppoppop-up-prev-list"></div>').css({
+            position: 'absolute', left: 0, top: '100%', marginTop: '4px', width: '100%', zIndex: 60,
+            display: 'flex', flexDirection: 'column', gap: '4px', pointerEvents: 'auto'
+        });
+        files.forEach(function(f, i) {
+            var $row = $('<div></div>').css({
+                display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1px solid #cbd5e1',
+                borderRadius: '6px', padding: '3px 6px', fontSize: '11px', color: '#334155', boxSizing: 'border-box'
+            });
+            $('<span></span>').text(f.name).css({ flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }).appendTo($row);
+            $('<span></span>').text(fmtSize(f.size)).css({ fontSize: '9px', color: '#94a3b8', flexShrink: 0 }).appendTo($row);
+            $('<button type="button" class="wppoppop-up-prev-remove" aria-label="Remove file"></button>').text('\u00d7').attr('data-idx', i).css({
+                border: 'none', background: '#fee2e2', color: '#b91c1c', borderRadius: '50%', width: '16px', height: '16px',
+                lineHeight: '14px', padding: 0, cursor: 'pointer', fontSize: '13px', flexShrink: 0
+            }).appendTo($row);
+            $list.append($row);
+        });
+        $item.append($list);
+    }
+    function openPicker($item, el) {
+        $('#wppoppop-up-prev-native').remove();
+        var inp = document.createElement('input');
+        inp.type = 'file';
+        inp.id = 'wppoppop-up-prev-native';
+        inp.accept = allowedList(el).join(',');
+        var multi = (el.multiUpload === true || el.multiUpload === 1 || el.multiUpload === '1' || el.multiUpload === 'true');
+        if (multi) inp.multiple = true;
+        inp.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+        document.body.appendChild(inp);
+        var id = String(el.id);
+        $(inp).on('change', function() {
+            var maxMb = parseInt(el.maxFileSize, 10) || 0;
+            var allowed = allowedList(el);
+            var picked = Array.prototype.slice.call(inp.files || []);
+            var ok = [];
+            picked.forEach(function(f) {
+                var nm = String(f.name).toLowerCase();
+                var ext = nm.lastIndexOf('.') > -1 ? nm.slice(nm.lastIndexOf('.')) : '';
+                if (maxMb && f.size > maxMb * 1048576) { window.alert('File too large (max ' + maxMb + 'MB): ' + f.name); return; }
+                if (allowed.length && allowed.indexOf(ext) === -1) { window.alert('File type not allowed: ' + f.name); return; }
+                ok.push(f);
+            });
+            store[id] = multi ? (store[id] || []).concat(ok) : ok.slice(0, 1);
+            render($item, id);
+            $(inp).remove();
+        });
+        try { inp.click(); } catch (e) {}
+    }
+
+    $(document).off('mousedown.wppUpPrev touchstart.wppUpPrev', '.wppoppop-canvas-item')
+        .on('mousedown.wppUpPrev touchstart.wppUpPrev', '.wppoppop-canvas-item', function(e) {
+            if (!inPreviewMode() || $(e.target).closest('.wppoppop-up-prev-remove').length) { down = null; return; }
+            var t = (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0]) || e;
+            down = { x: t.clientX, y: t.clientY, node: this };
+        });
+    $(document).off('mouseup.wppUpPrev touchend.wppUpPrev')
+        .on('mouseup.wppUpPrev touchend.wppUpPrev', function(e) {
+            if (!down) return;
+            if (!inPreviewMode()) { down = null; return; }
+            var d = down; down = null;
+            var t = (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches[0]) || e;
+            if (Math.abs(t.clientX - d.x) > 4 || Math.abs(t.clientY - d.y) > 4) return;
+            var $item = $(d.node);
+            if ($(e.target).closest('.wppoppop-up-prev-list').length) return;
+            var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement($item.attr('data-id') || $item.data('id')) : null;
+            if (!el) return;
+            var raw = String(el.type || '').toLowerCase();
+            var canon = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
+            if (canon !== 'upload') return;
+            openPicker($item, el);
+        });
+    $(document).off('click.wppUpPrevRemove', '.wppoppop-up-prev-remove')
+        .on('click.wppUpPrevRemove', '.wppoppop-up-prev-remove', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            var $item = $(this).closest('.wppoppop-canvas-item');
+            var id = String($item.attr('data-id') || $item.data('id') || '');
+            var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement(id) : null;
+            var key = el && el.id ? String(el.id) : id;
+            var idx = parseInt($(this).attr('data-idx'), 10);
+            if (store[key]) { store[key].splice(idx, 1); }
+            render($item, key);
+        });
+})(window, jQuery);
+/* === WPPOPPOP_UPLOAD_PREVIEW_END === */

@@ -106,7 +106,7 @@
         $('#insp-section-media-style-suite').toggle(!isForm);
         $('#insp-section-form-input-style').show(); // Custom CSS Class & CSS Styles repeater available for all elements
         $('#gp-form-global-style-notice, #gp-form-text-align-row').toggle(isForm);
-        var hasSideIcons = isForm && ['text', 'email', 'number', 'tel', 'date', 'time', 'password'].indexOf(canonical) !== -1;
+        var hasSideIcons = isForm && ['text', 'email', 'number', 'tel', 'date', 'time', 'password', 'upload', 'file'].indexOf(canonical) !== -1;
         $('#gp-form-input-icons-row').toggle(hasSideIcons);
         $('#wppoppop-form-icons-card').toggle(canonical !== 'textarea' && canonical !== 'select'); /* WPPOPPOP_TEXTAREA_STYLE */
         /* WPPOPPOP_TF_STYLE: Text Field hides Opacity, Background, Typography, Custom CSS */
@@ -130,7 +130,7 @@
         }
 
         /* WPPOPPOP_DATE_STYLE: keep Date's hidden sections hidden through this secondary hydration pass */
-        $('#insp-tab-style').toggleClass('wppoppop-date-style', canonical === 'date');
+        $('#insp-tab-style').toggleClass('wppoppop-date-style', canonical === 'date' || canonical === 'time' || rawType === 'time'); /* WPPOPPOP_TIME_STYLE */
 
         // Hydrate Media Style fields
         var opVal = el.opacity !== undefined ? parseFloat(el.opacity) : 100;

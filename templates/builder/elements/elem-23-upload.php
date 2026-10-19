@@ -9,14 +9,14 @@ if (!defined('ABSPATH')) exit;
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">ALLOWED EXTENSIONS</label>
-            <input type="text" id="prop-upload-exts" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="allowedExts" value="pdf,jpg,png,doc" placeholder="pdf,jpg,png" style="font-size:12px;">
+            <input type="text" id="prop-upload-exts" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="allowedExtensions" placeholder="pdf,jpg,png" style="font-size:12px;">
         </div>
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">MAX SIZE (MB)</label>
-            <input type="number" id="prop-upload-maxsize" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="maxFileSize" min="1" max="100" value="10" style="font-size:12px;">
+            <input type="number" id="prop-upload-maxsize" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="maxFileSize" min="1" max="100" style="font-size:12px;">
         </div>
     </div>
     <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#cbd5e1;cursor:pointer;">
-        <input type="checkbox" id="prop-upload-multiple" class="wppoppop-gp-bind" data-prop="multipleFiles" value="1"> Allow Multiple Files
+        <input type="checkbox" id="prop-upload-multiple" class="wppoppop-gp-bind" data-prop="multiUpload" value="1"> Allow Multiple Files
     </label>
 </div>

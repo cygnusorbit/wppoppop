@@ -502,18 +502,105 @@ class WpPopPop_Front_Decomposed_26 {
                     . '</div>';
 
             case 'time':
-                $step_sec = (!empty($el['timeStep']) ? max(1, intval($el['timeStep'])) : 15) * 60;
-                return '<input type="time" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" step="' . $step_sec . '" value="' . esc_attr($default_val) . '" class="wppoppop-form-input wppoppop-input-time"' . $data_attrs . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 12px;" />';
+                /* WPPOPPOP_TIME_FRONT: icons (default clock), alignment, interval, 12h/24h hint, default, required */
+                $tm_fmt = (isset($el['timeFormat']) && $el['timeFormat'] === '24h') ? '24h' : '12h';
+                $tm_step_min = !empty($el['timeStep']) ? intval($el['timeStep']) : (!empty($el['minuteStep']) ? intval($el['minuteStep']) : 15);
+                $tm_step = max(1, $tm_step_min) * 60;
+                $tm_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $tm_icons = array('left' => array('cls' => 'fas fa-clock', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                $tm_needs_dash = false;
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $tm_key => $tm_side) {
+                    $tm_raw = isset($el[$tm_key]) ? trim((string) $el[$tm_key]) : '';
+                    if ($tm_raw !== '') {
+                        $tm_tokens = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $tm_raw))));
+                        if (!empty($tm_tokens)) {
+                            if (strpos($tm_tokens[0], 'fa-') === 0) { array_unshift($tm_tokens, 'fas'); }
+                            elseif (strpos($tm_tokens[0], 'dashicons-') === 0) { array_unshift($tm_tokens, 'dashicons'); $tm_needs_dash = true; }
+                            $tm_icons[$tm_side]['cls'] = implode(' ', $tm_tokens);
+                        }
+                    }
+                    $tm_ok = $tm_key . 'Offset';
+                    if (isset($el[$tm_ok]) && $el[$tm_ok] !== '') { $tm_icons[$tm_side]['off'] = max(0, intval($el[$tm_ok])); }
+                }
+                static $tm_css_done = false;
+                $tm_css = '';
+                if (!$tm_css_done) {
+                    $tm_css_done = true;
+                    $tm_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    if ($tm_needs_dash) { $tm_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                }
+                $tm_pl = ($tm_icons['left']['cls'] !== '') ? ($tm_icons['left']['off'] + 22) : 12;
+                $tm_pr = ($tm_icons['right']['cls'] !== '') ? ($tm_icons['right']['off'] + 22) : 12;
+                $tm_ico = function ($side) use ($tm_icons) {
+                    if ($tm_icons[$side]['cls'] === '') { return ''; }
+                    return '<i class="' . esc_attr($tm_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($tm_icons[$side]['off']) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;z-index:2;"></i>';
+                };
+                $tm_val = preg_match('/^\d{2}:\d{2}$/', $default_val) ? $default_val : '';
+                $tm_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|readonly="readonly"|data-readonly="true")(="[^"]*")?/', '', $data_attrs);
+                return $tm_css . '<div class="wppoppop-tf-wrap wppoppop-time-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . $tm_ico('left')
+                    . '<input type="time" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" step="' . $tm_step . '" value="' . esc_attr($tm_val) . '" title="' . esc_attr($placeholder) . '" data-format="' . esc_attr($tm_fmt) . '" lang="' . ($tm_fmt === '24h' ? 'en-GB' : 'en-US') . '" class="wppoppop-form-input wppoppop-input-time"' . $tm_data
+                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $tm_pr . 'px 0 ' . $tm_pl . 'px;text-align:' . esc_attr($tm_align) . ';pointer-events:auto;" />'
+                    . $tm_ico('right')
+                    . '</div>';
 
             case 'upload':
             case 'file':
-                $exts = !empty($el['allowedExtensions']) ? esc_attr($el['allowedExtensions']) : '.jpg,.png,.pdf';
-                $multi_attr = !empty($el['multiUpload']) ? ' multiple="multiple"' : '';
-                $prompt =$placeholder ?: 'Choose file or drag here...';
-                return '<label class="wppoppop-upload-dropzone" style="width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#475569;background:#f8fafc;cursor:pointer;box-sizing:border-box;padding:0 10px;">'
-                     . '<span class="wppoppop-upload-label-text">' . esc_html($prompt) . '</span>'
-                     . '<input type="file" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" accept="' . $exts . '"' . $multi_attr .$data_attrs . ' style="display:none;" />'
-                     . '</label>';
+                /* WPPOPPOP_UPLOAD_FRONT_V2: icons+offsets, normalized accept, multi, max size, alignment, file list container */
+                $up_raw = !empty($el['allowedExtensions']) ? (string) $el['allowedExtensions'] : (!empty($el['allowedExts']) ? (string) $el['allowedExts'] : '.jpg,.png,.pdf');
+                $up_list = array();
+                foreach (preg_split('/[\s,;]+/', $up_raw) as $up_x) {
+                    $up_x = strtolower(trim($up_x));
+                    if ($up_x === '') { continue; }
+                    $up_x = '.' . ltrim($up_x, '.');
+                    if (preg_match('/^\.[a-z0-9]{1,10}$/', $up_x)) { $up_list[] = $up_x; }
+                }
+                if (empty($up_list)) { $up_list = array('.jpg', '.png', '.pdf'); }
+                $exts = esc_attr(implode(',', array_values(array_unique($up_list))));
+                $up_multi = !empty($el['multiUpload']) && $el['multiUpload'] !== 'false' && $el['multiUpload'] !== '0';
+                $multi_attr = $up_multi ? ' multiple="multiple"' : '';
+                $up_max = !empty($el['maxFileSize']) ? max(1, intval($el['maxFileSize'])) : 5;
+                $up_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
+                $up_j = ($up_al === 'left') ? 'flex-start' : (($up_al === 'right') ? 'flex-end' : 'center');
+                $up_icons = array('left' => array('cls' => 'fas fa-cloud-arrow-up', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                $up_needs_dash = false;
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $up_key => $up_side) {
+                    $up_r = isset($el[$up_key]) ? trim((string) $el[$up_key]) : '';
+                    if ($up_r !== '') {
+                        $up_tk = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $up_r))));
+                        if (!empty($up_tk)) {
+                            if (strpos($up_tk[0], 'fa-') === 0) { array_unshift($up_tk, 'fas'); }
+                            elseif (strpos($up_tk[0], 'dashicons-') === 0) { array_unshift($up_tk, 'dashicons'); $up_needs_dash = true; }
+                            $up_icons[$up_side]['cls'] = implode(' ', $up_tk);
+                        }
+                    }
+                    $up_ok = $up_key . 'Offset';
+                    if (isset($el[$up_ok]) && $el[$up_ok] !== '') { $up_icons[$up_side]['off'] = max(0, intval($el[$up_ok])); }
+                }
+                static $up_css_done = false;
+                $up_css = '';
+                if (!$up_css_done) {
+                    $up_css_done = true;
+                    $up_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    if ($up_needs_dash) { $up_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                }
+                $up_pl = ($up_icons['left']['cls'] !== '') ? ($up_icons['left']['off'] + 22) : 10;
+                $up_pr = ($up_icons['right']['cls'] !== '') ? ($up_icons['right']['off'] + 22) : 10;
+                $up_ico = function ($side) use ($up_icons) {
+                    if ($up_icons[$side]['cls'] === '') { return ''; }
+                    return '<i class="' . esc_attr($up_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($up_icons[$side]['off']) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;z-index:2;"></i>';
+                };
+                $prompt = $placeholder ?: 'Choose file or drag here...';
+                $up_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly"|data-readonly="true")(="[^"]*")?/', '', $data_attrs);
+                return $up_css . '<div class="wppoppop-upload-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                     . '<label class="wppoppop-upload-dropzone" style="position:relative;width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;display:flex;align-items:center;justify-content:' . $up_j . ';gap:6px;font-size:12px;color:#475569;background:#f8fafc;cursor:pointer;box-sizing:border-box;padding:0 ' . $up_pr . 'px 0 ' . $up_pl . 'px;">'
+                     . $up_ico('left')
+                     . '<span class="wppoppop-upload-label-text" data-default-label="' . esc_attr($prompt) . '" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' . esc_html($prompt) . '</span>'
+                     . '<input type="file" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']' . ($up_multi ? '[]' : '') . '" data-field-name="' . esc_attr($field_name) . '" accept="' . $exts . '" data-max-size="' . $up_max . '"' . $multi_attr . $up_data . ' style="display:none;" />'
+                     . $up_ico('right')
+                     . '</label>'
+                     . '<div class="wppoppop-upload-list" aria-live="polite" style="position:absolute;left:0;top:100%;margin-top:4px;width:100%;z-index:5;display:flex;flex-direction:column;gap:4px;"></div>'
+                     . '</div>';
 
             case 'password':
                 $show_eye = !isset($el['showEyeToggle']) || !empty($el['showEyeToggle']);

@@ -437,7 +437,7 @@ class WpPopPop_Front_Renderer {
 
         if (isset($inner_html) && $inner_html !== '') {
             /* WPPOPPOP_TF_NOPAD_FRONT: Text Field wrapper never carries padding (input fills the layer box) */
-            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea', 'multiselect'), true) ? ';padding:0!important' : ''; /* WPPOPPOP_MULTISELECT_WRAP */
+            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea', 'multiselect', 'time'), true) ? ';padding:0!important' : ''; /* WPPOPPOP_MULTISELECT_WRAP */
             $tf_wrap_cls = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea'), true) ? ' wppoppop-el-textfield' : '';
             return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text' . $tf_wrap_cls . ' ' . $anim_class . '" style="' . $style_attr . $tf_wrap_pad . '">' . $inner_html . '</div>';
         }
@@ -716,10 +716,10 @@ class WpPopPop_Front_Renderer {
             default:
                 /* WPPOPPOP_DECOMPOSED_DEFAULT: form types without their own case */
                 $wppoppop_dt = strtolower(trim((string) $type));
-                if (in_array($wppoppop_dt, array('phone','tel','textarea','multiselect','imageselect','tile','time','upload','password'), true) && class_exists('WpPopPop_Front_Decomposed_26')) {
+                if (in_array($wppoppop_dt, array('phone','tel','textarea','multiselect','imageselect','tile','time','upload','file','password'), true) && class_exists('WpPopPop_Front_Decomposed_26')) {
                     $wppoppop_dec = WpPopPop_Front_Decomposed_26::render_element($wppoppop_dt, $el);
                     if ($wppoppop_dec !== null) {
-                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . (in_array($wppoppop_dt, array('imageselect', 'tile'), true) ? ';padding:0!important' : '') . '">' . $wppoppop_dec . '</div>'; /* WPPOPPOP_IMAGESELECT_WRAP */
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . (in_array($wppoppop_dt, array('imageselect', 'tile', 'upload', 'file'), true) ? ';padding:0!important' : '') . '">' . $wppoppop_dec . '</div>'; /* WPPOPPOP_IMAGESELECT_WRAP */
                     }
                 }
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '">' . esc_html($content) . '</div>';

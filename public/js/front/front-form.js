@@ -251,7 +251,7 @@
             if (files && files.length > 0) {
                 var names = [];
                 for (var i = 0; i < files.length; i++) names.push(files[i].name);
-                $(this).siblings('.wppoppop-upload-label-text').text(names.join(', '));
+                /* WPPOPPOP_UPLOAD_LABEL_KEEP: file names are listed below the field */
             }
         });
 
@@ -710,3 +710,60 @@
     }
 })();
 /* === WPPOPPOP_TILE_BOX_RUNTIME_END === */
+
+/* === WPPOPPOP_UPLOAD_VALIDATE_START === */
+(function($) {
+    'use strict';
+    function fmtSize(b) {
+        if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+        if (b >= 1024) return Math.round(b / 1024) + ' KB';
+        return b + ' B';
+    }
+    function render(inp) {
+        var $list = $(inp).closest('.wppoppop-upload-wrap').find('.wppoppop-upload-list').first();
+        $list.empty();
+        var files = inp.files;
+        if (!files || !files.length) return;
+        for (var i = 0; i < files.length; i++) {
+            var $row = $('<div class="wppoppop-upload-item"></div>').css({
+                display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1px solid #cbd5e1',
+                borderRadius: '6px', padding: '3px 6px', fontSize: '11px', color: '#334155', boxSizing: 'border-box'
+            });
+            $('<span class="wppoppop-upload-item-name"></span>').text(files[i].name).css({ flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }).appendTo($row);
+            $('<span></span>').text(fmtSize(files[i].size)).css({ fontSize: '9px', color: '#94a3b8', flexShrink: 0 }).appendTo($row);
+            $('<button type="button" class="wppoppop-upload-remove" aria-label="Remove file"></button>').text('\u00d7').attr('data-idx', i).css({
+                border: 'none', background: '#fee2e2', color: '#b91c1c', borderRadius: '50%', width: '16px', height: '16px',
+                lineHeight: '14px', padding: 0, cursor: 'pointer', fontSize: '13px', flexShrink: 0
+            }).appendTo($row);
+            $list.append($row);
+        }
+    }
+    $(document).off('change.wppoppopUploadValidate').on('change.wppoppopUploadValidate', '.wppoppop-upload-dropzone input[type="file"]', function() {
+        var inp = this, files = inp.files;
+        if (!files || !files.length) { render(inp); return; }
+        var maxMb = parseInt(inp.getAttribute('data-max-size'), 10) || 0;
+        var allowed = String(inp.getAttribute('accept') || '').toLowerCase().split(',').map(function(x) { return x.trim(); }).filter(Boolean);
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i], nm = String(f.name || '').toLowerCase();
+            var ext = nm.lastIndexOf('.') > -1 ? nm.slice(nm.lastIndexOf('.')) : '';
+            var bad = (maxMb && f.size > maxMb * 1024 * 1024) ? ('File too large (max ' + maxMb + 'MB): ' + f.name) :
+                      ((allowed.length && allowed.indexOf(ext) === -1) ? ('File type not allowed: ' + f.name) : '');
+            if (bad) { inp.value = ''; render(inp); window.alert(bad); return; }
+        }
+        render(inp);
+    });
+    $(document).off('click.wppoppopUploadRemove').on('click.wppoppopUploadRemove', '.wppoppop-upload-remove', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        var inp = $(this).closest('.wppoppop-upload-wrap').find('input[type="file"]')[0];
+        if (!inp || !inp.files) return;
+        var idx = parseInt($(this).attr('data-idx'), 10);
+        try {
+            var dt = new DataTransfer();
+            for (var j = 0; j < inp.files.length; j++) { if (j !== idx) dt.items.add(inp.files[j]); }
+            inp.files = dt.files;
+        } catch (err) { inp.value = ''; }
+        render(inp);
+        $(inp).trigger('wppoppop:upload-changed');
+    });
+})(jQuery);
+/* === WPPOPPOP_UPLOAD_VALIDATE_END === */
