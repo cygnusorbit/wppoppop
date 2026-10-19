@@ -409,22 +409,51 @@ class WpPopPop_Front_Decomposed_26 {
                     . '</div>';
 
             case 'tile':
-                $raw_opts = isset($el['options']) ? (is_array($el['options']) ? implode(',', $el['options']) : (string) $el['options']) : '$10 / mo, $25 / mo, $50 / mo';
-                $items = preg_split('/[\r\n,]+/', $raw_opts);
-                $cols = !empty($el['columns']) ? max(1, min(4, intval($el['columns']))) : 3;
-                $act_color = !empty($el['activeColor']) ? esc_attr($el['activeColor']) : '#0284c7';
-                $multi = !empty($el['multiSelect']) ? 'true' : 'false';
-                $tiles = '';
-                foreach ($items as $idx => $item) {
-                    $lbl = trim($item);
-                    if ($lbl === '') continue;
-                    $active_cls = ($idx === 0 && $default_val === '') || ($default_val === $lbl) ? ' is-selected' : '';
-                    $tiles .= '<div class="wppoppop-choice-card wppoppop-tile-option' . $active_cls . '" data-value="' . esc_attr($lbl) . '" data-active-color="' . $act_color . '" style="padding:8px;border-radius:6px;text-align:center;cursor:pointer;font-weight:700;font-size:12px;border:1px solid #cbd5e1;background:#f1f5f9;color:#334155;">' . esc_html($lbl) . '</div>';
+                /* WPPOPPOP_TILE_FRONT: panel keys, own click class, per-tile border/typography/hover, required-safe value */
+                $tl_hex = function ($v, $d) { return (is_string($v) && preg_match('/^#[0-9a-fA-F]{3,8}$/', $v)) ? $v : $d; };
+                $tl_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['options']) ? (is_array($el['options']) ? implode("\n", $el['options']) : (string) $el['options']) : '');
+                $tl_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $tl_raw)), 'strlen'));
+                if (count($tl_items) === 1 && strpos($tl_items[0], ',') !== false) { $tl_items = array_values(array_filter(array_map('trim', explode(',', $tl_items[0])), 'strlen')); }
+                if (empty($tl_items)) { $tl_items = array('$10 / mo', '$25 / mo', '$50 / mo'); }
+                $tl_cols = !empty($el['gridCols']) ? intval($el['gridCols']) : (!empty($el['columns']) ? intval($el['columns']) : 3);
+                $tl_cols = max(1, min(4, $tl_cols));
+                $tl_acc = $tl_hex(isset($el['activeColor']) ? $el['activeColor'] : '', '#38bdf8');
+                $tl_multi = !empty($el['multiSelect']) && $el['multiSelect'] !== 'false' && $el['multiSelect'] !== '0';
+                $tl_defs = array_values(array_filter(array_map('trim', explode(',', $default_val)), 'strlen'));
+                if (!$tl_multi && count($tl_defs) > 1) { $tl_defs = array($tl_defs[0]); }
+                $tl_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
+                $tl_j = ($tl_al === 'left') ? 'flex-start' : (($tl_al === 'right') ? 'flex-end' : 'center');
+                $tl_fg = $tl_hex(isset($el['color']) ? $el['color'] : '', '#334155');
+                $tl_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
+                $tl_ty .= 'font-weight:' . ((!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) ? $el['fontWeight'] : '700') . ';';
+                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $tl_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
+                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $tl_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
+                $tl_bw = (isset($el['borderWidth']) && is_numeric($el['borderWidth']) && intval($el['borderWidth']) > 0) ? intval($el['borderWidth']) : 1;
+                $tl_bs = (!empty($el['borderStyle']) && in_array($el['borderStyle'], array('solid', 'dashed', 'dotted', 'double', 'none'), true)) ? $el['borderStyle'] : 'solid';
+                $tl_bc = $tl_hex(isset($el['borderColor']) ? $el['borderColor'] : '', '#cbd5e1');
+                $tl_rad = (isset($el['borderRadius']) && is_numeric($el['borderRadius'])) ? max(0, intval($el['borderRadius'])) : 6;
+                $tl_h = array(
+                    'background-color' => $tl_hex(isset($el['hoverBgColor']) ? $el['hoverBgColor'] : (isset($el['hoverBg']) ? $el['hoverBg'] : ''), ''),
+                    'color' => $tl_hex(isset($el['hoverTextColor']) ? $el['hoverTextColor'] : (isset($el['hoverColor']) ? $el['hoverColor'] : ''), ''),
+                    'border-color' => $tl_hex(isset($el['hoverBorderColor']) ? $el['hoverBorderColor'] : (isset($el['hoverBorder']) ? $el['hoverBorder'] : ''), ''),
+                );
+                $tl_rules = '';
+                foreach ($tl_h as $tl_prop => $tl_val) { if ($tl_val !== '') { $tl_rules .= $tl_prop . ':' . $tl_val . ' !important;'; } }
+                $tl_style = ($tl_rules !== '') ? '<style>#' . $field_id . '-grid .wppoppop-tl-card[aria-pressed="false"]:hover{' . $tl_rules . '}</style>' : '';
+                $tl_cards = '';
+                $tl_vals = array();
+                foreach ($tl_items as $tl_lbl) {
+                    $tl_on = in_array($tl_lbl, $tl_defs, true);
+                    if ($tl_on) { $tl_vals[] = $tl_lbl; }
+                    $tl_border = ($tl_bs === 'none') ? 'none' : ($tl_bw . 'px ' . $tl_bs . ' ' . ($tl_on ? $tl_acc : $tl_bc));
+                    $tl_cards .= '<div class="wppoppop-tl-card" role="button" tabindex="0" data-value="' . esc_attr($tl_lbl) . '" data-bg="#f1f5f9" data-fg="' . esc_attr($tl_fg) . '" data-bc="' . esc_attr($tl_bc) . '" aria-pressed="' . ($tl_on ? 'true' : 'false') . '" style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' . $tl_j . ';padding:6px;border-radius:' . $tl_rad . 'px;border:' . $tl_border . ';background:' . ($tl_on ? $tl_acc : '#f1f5f9') . ';color:' . ($tl_on ? '#ffffff' : $tl_fg) . ';cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;-webkit-user-select:none;user-select:none;' . $tl_ty . '">'
+                        . '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' . esc_html($tl_lbl) . '</span></div>';
                 }
-                $init_val = $default_val !== '' ? $default_val : (isset($items[0]) ? trim($items[0]) : '');
-                return '<div class="wppoppop-interactive-choices wppoppop-tile-grid" data-multi="' . $multi . '" data-active-color="' . $act_color . '" style="display:grid;grid-template-columns:repeat(' . $cols . ',1fr);gap:6px;width:100%;height:100%;align-items:center;">'
-                     . '<input type="hidden" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($init_val) . '"' . $data_attrs . ' />'
-                     . $tiles . '</div>';
+                $tl_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                return $tl_style . '<div class="wppoppop-tl-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . '<div id="' . $field_id . '-grid" class="wppoppop-tl-grid" data-multi="' . ($tl_multi ? '1' : '0') . '" data-active-color="' . esc_attr($tl_acc) . '" style="display:grid;grid-template-columns:repeat(' . $tl_cols . ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;width:100%;height:100%;box-sizing:border-box;">' . $tl_cards . '</div>'
+                    . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr(implode(', ', $tl_vals)) . '" readonly tabindex="-1" aria-hidden="true"' . $tl_data . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;padding:0;" />'
+                    . '</div>';
 
             case 'time':
                 $step_sec = (!empty($el['timeStep']) ? max(1, intval($el['timeStep'])) : 15) * 60;

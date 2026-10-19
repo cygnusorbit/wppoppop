@@ -1211,6 +1211,7 @@
             if (type === 'checkbox' || type === 'checkboxes') { newEl.width = 300; newEl.w = 300; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_CHECKBOX_DEFAULTS */
             if (type === 'radio' || type === 'radios') { newEl.width = 100; newEl.w = 100; newEl.height = 100; newEl.h = 100; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_RADIO_DEFAULTS */
             if (type === 'multiselect') { newEl.width = 125; newEl.w = 125; newEl.height = 125; newEl.h = 125; } /* WPPOPPOP_MULTISELECT_SIZE */
+            if (type === 'tile') { newEl.textAlign = 'center'; newEl.hoverBgColor = '#0284c7'; newEl.hoverTextColor = '#ffffff'; newEl.hoverBorderColor = '#0284c7'; } /* WPPOPPOP_TILE_DEFAULTS */
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();

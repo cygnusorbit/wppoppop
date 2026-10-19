@@ -712,7 +712,7 @@ class WpPopPop_Front_Renderer {
                 if (in_array($wppoppop_dt, array('phone','tel','textarea','multiselect','imageselect','tile','time','upload','password'), true) && class_exists('WpPopPop_Front_Decomposed_26')) {
                     $wppoppop_dec = WpPopPop_Front_Decomposed_26::render_element($wppoppop_dt, $el);
                     if ($wppoppop_dec !== null) {
-                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . ($wppoppop_dt === 'imageselect' ? ';padding:0!important' : '') . '">' . $wppoppop_dec . '</div>'; /* WPPOPPOP_IMAGESELECT_WRAP */
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text ' . $anim_class . '" style="' . $style_attr . (in_array($wppoppop_dt, array('imageselect', 'tile'), true) ? ';padding:0!important' : '') . '">' . $wppoppop_dec . '</div>'; /* WPPOPPOP_IMAGESELECT_WRAP */
                     }
                 }
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '">' . esc_html($content) . '</div>';

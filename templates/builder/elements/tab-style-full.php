@@ -2,6 +2,19 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <!-- WPPOPPOP UNIFIED STYLE TAB SUITE -->
+<!-- WPPOPPOP_TL_STYLE: Tile hides icons/opacity/background/padding/shadow/custom css; shows border + hover state -->
+<style>
+#insp-tab-style.wppoppop-tl-style #wppoppop-form-icons-card,
+#insp-tab-style.wppoppop-tl-style #insp-section-opacity,
+#insp-tab-style.wppoppop-tl-style #insp-section-bg-color,
+#insp-tab-style.wppoppop-tl-style #insp-section-padding,
+#insp-tab-style.wppoppop-tl-style #insp-section-shadow,
+#insp-tab-style.wppoppop-tl-style #insp-section-custom-css { display: none !important; }
+#insp-tab-style.wppoppop-tl-style #insp-section-typography,
+#insp-tab-style.wppoppop-tl-style #insp-section-border,
+#insp-tab-style.wppoppop-tl-style #prop-btn-hover-section { display: block !important; }
+</style>
+
 <!-- WPPOPPOP_RD_STYLE: Radio hides everything except Alignment and Typography -->
 <style>
 #insp-tab-style.wppoppop-rd-style #wppoppop-form-icons-card,

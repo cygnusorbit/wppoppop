@@ -437,6 +437,14 @@
             $('#prop-imageselect-accent').val(el.activeColor || '#38bdf8');
             $('#prop-imageselect-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
         }
+        if (type === 'tile') { /* WPPOPPOP_TILE_HYDRATE */
+            var tlOpts = el.optionsList || el.options || '';
+            if (Array.isArray(tlOpts)) { tlOpts = tlOpts.join('\n'); }
+            $('#prop-tile-options').val(tlOpts);
+            $('#prop-tile-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
+            $('#prop-tile-accent').val(el.activeColor || '#38bdf8');
+            $('#prop-tile-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
+        }
         if (type === 'shape') {
             $('#prop-shape-fill').val(el.shapeFill || '#3b82f6');
             $('#prop-shape-transparent').prop('checked', !!el.shapeNoFill);
@@ -448,6 +456,7 @@
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
         $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
         $('#insp-tab-style').toggleClass('wppoppop-rd-style', ['radio', 'radios', 'multiselect', 'imageselect'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_RD_STYLE */
+        $('#insp-tab-style').toggleClass('wppoppop-tl-style', String(type).toLowerCase() === 'tile'); /* WPPOPPOP_TL_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-cb-style', ['checkbox', 'checkboxes'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_CB_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
 
@@ -458,7 +467,7 @@
 
         $('#prop-bg-color').val((el.bgColor && el.bgColor !== 'transparent') ? el.bgColor : '#3b82f6');
         $('#prop-bg-transparent').prop('checked', !!el.transparentFill || el.bgColor === 'transparent' || (type === 'shape' && !el.bgColor));
-        $('#prop-font-size').val(parseInt(el.fontSize, 10) || ((type === 'checkbox' || type === 'checkboxes' || type === 'radio' || type === 'radios') ? 12 : 16));
+        $('#prop-font-size').val(parseInt(el.fontSize, 10) || ((type === 'checkbox' || type === 'checkboxes' || type === 'radio' || type === 'radios' || type === 'tile') ? 12 : 16));
         $('#prop-font-weight').val(el.fontWeight || '400');
         $('#prop-line-height').val(el.lineHeight || 1.4);
         $('#prop-letter-spacing').val(el.letterSpacing || 0);

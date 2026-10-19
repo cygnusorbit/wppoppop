@@ -179,15 +179,28 @@
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + iCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + cards + '</div>';
         } else if (canonical === 'tile') {
-            var tOpts = parseOptionsList(el.options, ['$10', '$25', '$50', '$100']);
-            var tCols = Math.min(4, Math.max(1, parseInt(el.columns, 10) || 4));
-            var tAcc  = el.activeColor || '#c2185b';
-            var tiles = tOpts.slice(0, tCols).map(function(lbl, idx) {
-                var active = defVal ? (lbl.toLowerCase() === defVal.toLowerCase()) : (idx === 0);
-                return '<div style="border:1.5px solid ' + (active ? tAcc : '#cbd5e1') + ';background:' + (active ? tAcc : '#ffffff') + ';color:' + (active ? '#ffffff' : '#334155') + ';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;padding:4px;">' +
-                    $('<div>').text(lbl).html() + '</div>';
+            /* WPPOPPOP_TILE_STAGE_V2 */
+            var tRaw = el.optionsList || el.options || '';
+            if (Array.isArray(tRaw)) { tRaw = tRaw.join('\n'); }
+            var tLines = $.trim(String(tRaw)).split(/\r?\n/).map(function(x) { return $.trim(x); }).filter(Boolean);
+            if (tLines.length === 1 && tLines[0].indexOf(',') !== -1) { tLines = tLines[0].split(',').map(function(x) { return $.trim(x); }).filter(Boolean); }
+            if (!tLines.length) { tLines = ['$10 / mo', '$25 / mo', '$50 / mo']; }
+            var tCols = Math.min(4, Math.max(1, parseInt(el.gridCols || el.columns, 10) || 3));
+            var tAcc  = (el.activeColor && /^#[0-9a-fA-F]{3,8}$/.test(el.activeColor)) ? el.activeColor : '#38bdf8';
+            var tBw   = (parseInt(el.borderWidth, 10) > 0) ? parseInt(el.borderWidth, 10) : 1;
+            var tBs   = (['solid', 'dashed', 'dotted', 'double', 'none'].indexOf(el.borderStyle) !== -1) ? el.borderStyle : 'solid';
+            var tBc   = (el.borderColor && /^#[0-9a-fA-F]{3,8}$/.test(el.borderColor)) ? el.borderColor : '#cbd5e1';
+            var tRad  = (el.borderRadius !== undefined && el.borderRadius !== '' && !isNaN(parseInt(el.borderRadius, 10))) ? parseInt(el.borderRadius, 10) : 6;
+            var tJ    = align === 'right' ? 'flex-end' : (align === 'left' ? 'flex-start' : 'center');
+            var tFg   = (el.color && /^#[0-9a-fA-F]{3,8}$/.test(el.color)) ? el.color : '#334155';
+            var tTxt  = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;font-weight:' + (el.fontWeight || '700') + ';line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;';
+            var tTiles = tLines.slice(0, 8).map(function(lbl, idx) {
+                var on = (idx === 0);
+                var bd = (tBs === 'none') ? 'none' : (tBw + 'px ' + tBs + ' ' + (on ? tAcc : tBc));
+                return '<div style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' + tJ + ';padding:6px;border-radius:' + tRad + 'px;border:' + bd + ';background:' + (on ? tAcc : '#f1f5f9') + ';color:' + (on ? '#ffffff' : tFg) + ';' + tTxt + '">' +
+                    '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(lbl).html() + (idx === 0 ? reqStar : '') + '</span></div>';
             }).join('');
-            innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + tCols + ',1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + tiles + '</div>';
+            innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + tCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + tTiles + '</div>';
         } else if (canonical === 'date') {
             var dFmt = el.dateFormat || 'YYYY-MM-DD';
             var dPh  = defVal || el.placeholder || dFmt;
@@ -246,7 +259,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'multiselect') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'multiselect' || canonical === 'tile') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };
@@ -295,3 +308,22 @@
     bindPhase3FormVerification();
 })(window, jQuery);
 /* === WPPOPPOP_PHASE3_FORM_FIELD_VERIFICATION_END === */
+
+
+/* === WPPOPPOP_TILE_HOVER_BIND_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    var MAP = { 'prop-elem-hover-bg': 'hoverBgColor', 'prop-elem-hover-color': 'hoverTextColor', 'prop-elem-hover-border': 'hoverBorderColor' };
+    $(document).off('input.tlHover change.tlHover', '#prop-elem-hover-bg, #prop-elem-hover-color, #prop-elem-hover-border')
+        .on('input.tlHover change.tlHover', '#prop-elem-hover-bg, #prop-elem-hover-color, #prop-elem-hover-border', function(e) {
+            var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+            if (!el || String(el.type || '').toLowerCase() !== 'tile') { return; }
+            var k = MAP[this.id];
+            if (k) { el[k] = $(this).val(); }
+            if (e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+                window.WpPopPopBuilderCore.pushHistory();
+            }
+        });
+})(window, jQuery);
+/* === WPPOPPOP_TILE_HOVER_BIND_END === */

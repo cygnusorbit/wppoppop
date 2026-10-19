@@ -963,7 +963,7 @@
 
         // Typography
         if ($('#prop-font-family').length && el.fontFamily) $('#prop-font-family').val(el.fontFamily);
-        if ($('#prop-font-size').length && el.fontSize) $('#prop-font-size').val(parseInt(el.fontSize, 10) || ((type === 'checkbox' || type === 'checkboxes' || type === 'radio' || type === 'radios') ? 12 : 16));
+        if ($('#prop-font-size').length && el.fontSize) $('#prop-font-size').val(parseInt(el.fontSize, 10) || ((type === 'checkbox' || type === 'checkboxes' || type === 'radio' || type === 'radios' || type === 'tile') ? 12 : 16));
         if ($('#prop-font-weight').length && el.fontWeight) $('#prop-font-weight').val(el.fontWeight);
         if ($('#prop-text-align').length && el.textAlign) $('#prop-text-align').val(el.textAlign);
         if ($('#prop-line-height').length && el.lineHeight) $('#prop-line-height').val(el.lineHeight);
@@ -4492,6 +4492,14 @@
             $('#prop-imageselect-accent').val(el.activeColor || '#38bdf8');
             $('#prop-imageselect-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
         }
+        if (type === 'tile') { /* WPPOPPOP_TILE_HYDRATE */
+            var tlOpts = el.optionsList || el.options || '';
+            if (Array.isArray(tlOpts)) { tlOpts = tlOpts.join('\n'); }
+            $('#prop-tile-options').val(tlOpts);
+            $('#prop-tile-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
+            $('#prop-tile-accent').val(el.activeColor || '#38bdf8');
+            $('#prop-tile-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
+        }
         if (type === 'shape') {
             $('#prop-shape-fill').val(el.shapeFill || '#3b82f6');
             $('#prop-shape-transparent').prop('checked', !!el.shapeNoFill);
@@ -4503,6 +4511,7 @@
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
         $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
         $('#insp-tab-style').toggleClass('wppoppop-rd-style', ['radio', 'radios', 'multiselect', 'imageselect'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_RD_STYLE */
+        $('#insp-tab-style').toggleClass('wppoppop-tl-style', String(type).toLowerCase() === 'tile'); /* WPPOPPOP_TL_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-cb-style', ['checkbox', 'checkboxes'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_CB_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-tf-style-lean', ['text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_TF_STYLE_LEAN */
 
@@ -5333,6 +5342,128 @@
     });
 })(window, jQuery);
 /* === WPPOPPOP_FA_PREVIEW_RENDER_END === */
+
+/* === WPPOPPOP_IMAGESELECT_SIZE_PRESET_START === */
+/* Image Select layers (type: imageselect): default COORDINATES & BOUNDS preset WIDTH 200px x HEIGHT 50px.
+   Applied on creation, plus an "Apply preset" button in COORDINATES & BOUNDS for existing layers. */
+(function(window, $) {
+    'use strict';
+
+    var TYPE = 'imageselect';
+    var PRESET_W = 200;
+    var PRESET_H = 50;
+
+    function cleanId(raw) {
+        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
+    }
+    function getList() {
+        var core = window.WpPopPopBuilderCore;
+        if (!core || !core.state || !core.state.canvases) return null;
+        return core.state.canvases[core.state.currentCanvas || 1] || null;
+    }
+    function getActiveEl() {
+        var core = window.WpPopPopBuilderCore;
+        var list = getList();
+        if (!core || !list || !core.state.activeId) return null;
+        var id = cleanId(core.state.activeId);
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && cleanId(list[i].id) === id) return list[i];
+        }
+        return null;
+    }
+    function isImageSelect(el) {
+        return !!el && String(el.type || '').toLowerCase().trim() === TYPE;
+    }
+    function applySize(el) {
+        el.width = PRESET_W;
+        el.height = PRESET_H;
+        $('#prop-width, #prop-size-width').val(PRESET_W);
+        $('#prop-height, #prop-size-height').val(PRESET_H);
+        var id = cleanId(el.id);
+        var $node = $('#canvas-elem-' + id + ', #wppoppop-el-' + id + ', #el-' + id + ', .wppoppop-canvas-item[data-id="' + id + '"]').first();
+        if ($node.length) $node.css({ width: PRESET_W + 'px', height: PRESET_H + 'px' });
+    }
+    function render(label) {
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
+            window.WpPopPopBuilderCanvas.renderCanvas();
+        }
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory(label);
+        }
+    }
+
+    function wrapAddElement() {
+        var canvas = window.WpPopPopBuilderCanvas;
+        if (!canvas || typeof canvas.addElement !== 'function' || canvas.__wppoppopImageSelectWrapped) return;
+        canvas.__wppoppopImageSelectWrapped = true;
+        var orig = canvas.addElement;
+        canvas.addElement = function(type) {
+            var before = getList() ? getList().length : 0;
+            var res = orig.apply(this, arguments);
+            if (String(type || '').toLowerCase().trim() === TYPE) {
+                var list = getList() || [];
+                var created = (res && typeof res === 'object' && res.type) ? res : (list.length > before ? list[list.length - 1] : null);
+                if (isImageSelect(created)) {
+                    applySize(created);
+                    render('New Image Select Preset');
+                }
+            }
+            return res;
+        };
+    }
+
+    function ensureButton() {
+        var $coords = $('#insp-section-coords');
+        if (!$coords.length || $('#wppoppop-imgsel-size-wrap').length) return;
+        $coords.append(
+            '<div id="wppoppop-imgsel-size-wrap" style="display:none; margin-top:8px;">' +
+                '<button type="button" id="wppoppop-imgsel-size-btn" class="button button-small" ' +
+                'style="width:100%; font-size:11px; font-weight:700;">Apply Image Select Preset (200 x 50)</button>' +
+            '</div>'
+        );
+    }
+
+    function refreshButton() {
+        ensureButton();
+        $('#wppoppop-imgsel-size-wrap').toggle(isImageSelect(getActiveEl()));
+    }
+
+    function bindButton() {
+        $(document).off('click.wppoppopImgSelSize').on('click.wppoppopImgSelSize', '#wppoppop-imgsel-size-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var el = getActiveEl();
+            if (!isImageSelect(el)) return;
+            applySize(el);
+            render('Apply Image Select Size Preset');
+        });
+    }
+
+    function hookInspector() {
+        var insp = window.WpPopPopBuilderInspector;
+        if (!insp || insp.__wppoppopImageSelectHooked) return;
+        insp.__wppoppopImageSelectHooked = true;
+        if (typeof insp.open === 'function') {
+            var orig = insp.open;
+            insp.open = function() {
+                var res = orig.apply(this, arguments);
+                setTimeout(refreshButton, 20);
+                return res;
+            };
+        }
+    }
+
+    $(function() {
+        bindButton();
+        wrapAddElement();
+        hookInspector();
+        refreshButton();
+        setTimeout(wrapAddElement, 150);
+        setTimeout(hookInspector, 150);
+        setInterval(refreshButton, 500);
+    });
+})(window, jQuery);
+/* === WPPOPPOP_IMAGESELECT_SIZE_PRESET_END === */
 
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
 /* WPPOPPOP_MEDIA_STYLE_TRIM_V2: per-type Style-tab section trim.

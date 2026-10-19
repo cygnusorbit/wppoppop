@@ -639,3 +639,53 @@
     }, true);
 })();
 /* === WPPOPPOP_IMGSEL_RUNTIME_END === */
+
+/* === WPPOPPOP_TILE_RUNTIME_START === */
+(function() {
+    'use strict';
+    if (window.__wppTile) return;
+    window.__wppTile = true;
+    function fire(el, name) {
+        var ev;
+        try { ev = new Event(name, { bubbles: true }); } catch (err) { ev = document.createEvent('Event'); ev.initEvent(name, true, true); }
+        el.dispatchEvent(ev);
+    }
+    function sync(grid) {
+        var acc = grid.getAttribute('data-active-color') || '#38bdf8';
+        var cards = grid.querySelectorAll('.wppoppop-tl-card');
+        var vals = [];
+        for (var i = 0; i < cards.length; i++) {
+            var c = cards[i], on = c.getAttribute('aria-pressed') === 'true';
+            c.style.backgroundColor = on ? acc : (c.getAttribute('data-bg') || '#f1f5f9');
+            c.style.color = on ? '#ffffff' : (c.getAttribute('data-fg') || '#334155');
+            c.style.borderColor = on ? acc : (c.getAttribute('data-bc') || '#cbd5e1');
+            if (on) { vals.push(c.getAttribute('data-value')); }
+        }
+        var inp = grid.parentNode ? grid.parentNode.querySelector('input') : null;
+        if (inp) { inp.value = vals.join(', '); fire(inp, 'input'); fire(inp, 'change'); }
+    }
+    function pick(card) {
+        var grid = card.closest ? card.closest('.wppoppop-tl-grid') : null;
+        if (!grid) return;
+        var multi = grid.getAttribute('data-multi') === '1';
+        var on = card.getAttribute('aria-pressed') === 'true';
+        if (!multi) {
+            var all = grid.querySelectorAll('.wppoppop-tl-card');
+            for (var i = 0; i < all.length; i++) { all[i].setAttribute('aria-pressed', 'false'); }
+            card.setAttribute('aria-pressed', 'true');
+        } else {
+            card.setAttribute('aria-pressed', on ? 'false' : 'true');
+        }
+        sync(grid);
+    }
+    document.addEventListener('click', function(e) {
+        var card = (e.target && e.target.closest) ? e.target.closest('.wppoppop-tl-card') : null;
+        if (card) { pick(card); }
+    }, true);
+    document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' && e.key !== ' ' && e.keyCode !== 13 && e.keyCode !== 32) return;
+        var card = (e.target && e.target.closest) ? e.target.closest('.wppoppop-tl-card') : null;
+        if (card) { e.preventDefault(); pick(card); }
+    }, true);
+})();
+/* === WPPOPPOP_TILE_RUNTIME_END === */
