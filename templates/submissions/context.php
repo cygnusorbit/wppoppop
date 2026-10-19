@@ -50,6 +50,72 @@ $avail_cols = [
     'country' => 'Country',
     'status'  => 'Status',
 ];
+// ---- Live sync: form fields defined on the selected popup -------------------
+$popup_fields = [];   // key => label
+$popup_alias  = [];   // alternate stored key => canonical key
+if ($sel_uid !== '') {
+    $__raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $sel_uid));
+    $__cfg = $__raw ? json_decode($__raw, true) : null;
+    if (is_array($__cfg)) {
+        $__form_types = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
+            'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
+        $__canvases = isset($__cfg['canvases']) ? $__cfg['canvases'] : (isset($__cfg['screens']) ? $__cfg['screens'] : []);
+        if (empty($__canvases) && !empty($__cfg['elements']) && is_array($__cfg['elements'])) {
+            $__canvases = [$__cfg['elements']];
+        }
+        if (is_array($__canvases)) {
+            foreach ($__canvases as $__cv) {
+                $__els = (is_array($__cv) && isset($__cv['elements']) && is_array($__cv['elements'])) ? $__cv['elements'] : $__cv;
+                if (!is_array($__els)) {
+                    continue;
+                }
+                foreach ($__els as $__el) {
+                    if (!is_array($__el) || empty($__el['type'])) {
+                        continue;
+                    }
+                    $__type = strtolower(trim((string) $__el['type']));
+                    if (!in_array($__type, $__form_types, true)) {
+                        continue;
+                    }
+                    if (isset($__el['saveToDb']) && ($__el['saveToDb'] === false || $__el['saveToDb'] === 'false' || $__el['saveToDb'] === 0 || $__el['saveToDb'] === '0')) {
+                        continue;
+                    }
+                    $__key = '';
+                    foreach (['fieldName', 'token', 'field_name', 'fieldId'] as $__p) {
+                        if (!empty($__el[$__p])) {
+                            $__key = sanitize_key((string) $__el[$__p]);
+                            if ($__key !== '') {
+                                break;
+                            }
+                        }
+                    }
+                    if ($__key === '') {
+                        $__key = sanitize_key($__type);
+                    }
+                    if ($__key === '' || isset($popup_fields[$__key])) {
+                        continue;
+                    }
+                    $__lbl = '';
+                    foreach (['name', 'label_text', 'label', 'placeholder'] as $__p) {
+                        if (!empty($__el[$__p]) && is_string($__el[$__p])) {
+                            $__lbl = trim(wp_strip_all_tags($__el[$__p]));
+                            if ($__lbl !== '') {
+                                break;
+                            }
+                        }
+                    }
+                    if ($__lbl === '') {
+                        $__lbl = ucwords(str_replace(['_', '-'], ' ', $__key));
+                    }
+                    $popup_fields[$__key] = mb_substr($__lbl, 0, 60);
+                    $popup_alias['fields' . $__key]  = $__key;
+                    $popup_alias['fields_' . $__key] = $__key;
+                }
+            }
+        }
+    }
+}
+
 $seen_fields = [];
 if (!empty($submissions)) {
     foreach ($submissions as $__s) {
@@ -61,14 +127,22 @@ if (!empty($submissions)) {
             if ($__k === 'signature' || $__k === 'quiz_score') {
                 continue;
             }
+            if (isset($popup_alias[$__k])) {
+                $__k = $popup_alias[$__k];
+            }
             if (!in_array($__k, $seen_fields, true) && count($seen_fields) < 60) {
                 $seen_fields[] = $__k;
             }
         }
     }
 }
+foreach ($popup_fields as $__k => $__lbl) {
+    $avail_cols['field:' . $__k] = $__lbl;
+}
 foreach ($seen_fields as $__k) {
-    $avail_cols['field:' . $__k] = ucwords(str_replace(['_', '-'], ' ', $__k));
+    if (!isset($avail_cols['field:' . $__k])) {
+        $avail_cols['field:' . $__k] = ucwords(str_replace(['_', '-'], ' ', $__k));
+    }
 }
 foreach ($tbl_opts['columns'] as $__c) {
     if (!isset($avail_cols[$__c]) && strpos($__c, 'field:') === 0) {
@@ -82,12 +156,12 @@ $active_cols = array_values(array_filter($tbl_opts['columns'], function ($c) use
 if (empty($active_cols)) {
     $active_cols = ['date'];
     $__n = 0;
-    foreach ($seen_fields as $__k) {
+    foreach (array_unique(array_merge(array_keys($popup_fields), $seen_fields)) as $__k) {
         if (strpos($__k, 'utm_') === 0) {
             continue;
         }
         $active_cols[] = 'field:' . $__k;
-        if (++$__n >= 7) {
+        if (++$__n >= 12) {
             break;
         }
     }
@@ -103,4 +177,5 @@ $tbl_config_payload = [
     'active'    => $active_cols,
     'available' => $avail_cols,
     'per_page'  => $tbl_opts['per_page'],
+    'popup_fields' => array_map(function ($k) { return 'field:' . $k; }, array_keys($popup_fields)),
 ];

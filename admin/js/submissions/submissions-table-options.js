@@ -57,6 +57,16 @@
             });
 
             $('#wto-save').on('click', function() { self.save(); });
+
+            $('#wto-reset-cols').on('click', function() {
+                var pf = $.isArray(self.cfg.popup_fields) ? self.cfg.popup_fields : [];
+                if (!pf.length) { alert('This popup has no saved form fields yet.'); return; }
+                var keep = self.flush();               // preserve unsaved label / per-page edits
+                self.cfg.labels = keep.labels;
+                self.cfg.per_page = keep.per_page;
+                self.cfg.active = ['date'].concat(pf.slice(0, 12));
+                self.render();
+            });
         },
 
         open: function($m) {

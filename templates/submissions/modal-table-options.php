@@ -66,6 +66,10 @@ if (!defined('ABSPATH')) {
                 <div style="margin-top:10px;">
                     <input type="text" class="wto-custom" id="wto-custom-key" placeholder="Custom form field name (e.g. mobile_number)">
                     <button type="button" class="button" id="wto-add-custom">Add field</button>
+                    <?php if ($sel_uid !== '') : ?>
+                        <button type="button" class="button" id="wto-reset-cols" title="Rebuild the active columns from this popup's current form fields">Reset to popup fields</button>
+                        <p style="margin:8px 0 0;font-size:11px;color:#666;">Form fields on this popup sync automatically &mdash; new fields appear under Inactive columns.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

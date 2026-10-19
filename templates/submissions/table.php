@@ -110,7 +110,13 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                 elseif ($c === 'status')   { $val = ucfirst($s->status); }
                 else {
                     $fk  = substr($c, 6);
-                    $val = isset($fields[$fk]) ? $fields[$fk] : '';
+                    $val = '';
+                    foreach ([$fk, strtolower($fk), 'fields' . strtolower($fk), 'fields_' . strtolower($fk)] as $__try) {
+                        if (isset($fields[$__try])) {
+                            $val = $fields[$__try];
+                            break;
+                        }
+                    }
                     $val = is_array($val) ? implode(', ', $val) : $val;
                 }
                 $val = ($val === '' || $val === null) ? '—' : (string) $val;
