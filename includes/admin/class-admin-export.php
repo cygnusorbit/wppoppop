@@ -9,35 +9,86 @@ class WpPopPop_Admin_Export {
         add_action('wp_ajax_wppoppop_export_submissions', [$this, 'export_submissions_csv']);
     }
 
+    private function csv_safe($v) {
+        if (is_array($v)) {
+            $v = implode(', ', $v);
+        }
+        $v = (string) $v;
+        if ($v !== '' && strpos("=+-@\t\r", $v[0]) !== false) {
+            $v = "'" . $v;
+        }
+        return $v;
+    }
+
+    private function normalise_key($k) {
+        $k = (string) $k;
+        if (strpos($k, 'fields_') === 0) {
+            return substr($k, 7);
+        }
+        if (strpos($k, 'fields') === 0 && strlen($k) > 6) {
+            return substr($k, 6);
+        }
+        return $k;
+    }
+
     public function export_submissions_csv() {
         if (!current_user_can('manage_options')) {
             wp_die(__('Unauthorized capability.', 'wppoppop'));
         }
 
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
-        if (!wp_verify_nonce($nonce, 'wppoppop_export_nonce') && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
+        if (!wp_verify_nonce($nonce, 'wppoppop_export_nonce')
+            && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')
+            && !wp_verify_nonce($nonce, 'wppoppop_builder_nonce')) {
             wp_die(__('Security verification failed.', 'wppoppop'));
         }
 
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_submissions';$popup_uid  = isset($_REQUEST['popup_uid']) ? sanitize_text_field(wp_unslash($_REQUEST['popup_uid'])) : '';
+        $table = $wpdb->prefix . 'wppoppop_submissions';
+        $items = $wpdb->prefix . 'wppoppop_items';
+        $popup_uid = isset($_REQUEST['popup_uid']) ? sanitize_text_field(wp_unslash($_REQUEST['popup_uid'])) : '';
 
-        if (!empty($popup_uid)) {
-            $rows =$wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_name} WHERE popup_uid = %s ORDER BY id DESC", $popup_uid));
+        if ($popup_uid !== '') {
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT s.*, i.title AS popup_title FROM {$table} s LEFT JOIN {$items} i ON s.popup_uid = i.uid WHERE s.popup_uid = %s ORDER BY s.id DESC LIMIT 5000",
+                $popup_uid
+            ));
         } else {
-            $rows = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY id DESC LIMIT 5000");
+            $rows = $wpdb->get_results("SELECT s.*, i.title AS popup_title FROM {$table} s LEFT JOIN {$items} i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 5000");
         }
 
-        // Resolve CSV delimiter from Settings
-        $csv_sep_setting = wppoppop_get_setting('csv_separator', ',');$delimiter = ',';
-        if ($csv_sep_setting === ';') {$delimiter = ';';
-        } elseif ($csv_sep_setting === 'tab' ||$csv_sep_setting === "\t") {
+        $csv_sep   = wppoppop_get_setting('csv_separator', ',');
+        $delimiter = ',';
+        if ($csv_sep === ';') {
+            $delimiter = ';';
+        } elseif ($csv_sep === 'tab' || $csv_sep === "\t") {
             $delimiter = "\t";
         }
 
-        $filename = 'wppoppop-submissions-' . gmdate('Y-m-d-His') . '.csv';
+        // Decode once, collect the union of dynamic field keys.
+        $decoded = [];
+        $keys    = [];
+        $skip    = ['signature', 'quiz_score', '_name', '_phone', '_ip'];
+        foreach ((array) $rows as $i => $row) {
+            $f = json_decode($row->fields_data, true);
+            $norm = [];
+            if (is_array($f)) {
+                foreach ($f as $k => $v) {
+                    $nk = $this->normalise_key($k);
+                    if (substr($nk, -5) === '_path') {
+                        continue;
+                    }
+                    $norm[$nk] = $v;
+                    if (!in_array($nk, $skip, true) && !in_array($nk, $keys, true) && count($keys) < 80) {
+                        $keys[] = $nk;
+                    }
+                }
+            }
+            $decoded[$i] = $norm;
+        }
 
-        if (ob_get_level()) {
+        $filename = 'wppoppop-submissions-' . gmdate('Y-m-d-His') . '.csv';
+        while (ob_get_level()) {
             ob_end_clean();
         }
 
@@ -46,25 +97,33 @@ class WpPopPop_Admin_Export {
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'w');
+        $out = fopen('php://output', 'w');
+        fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel / Numbers
 
-        // Output UTF-8 BOM for Microsoft Excel / Apple Numbers compatibility
-        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+        $head = array_merge(['ID', 'Popup', 'Popup UID', 'Email', 'Status', 'Country', 'Date', 'Name', 'Phone', 'IP Address'], $keys);
+        fputcsv($out, $head, $delimiter);
 
-        fputcsv($output, ['ID', 'Popup UID', 'Name', 'Email', 'Phone', 'IP Address', 'Created At', 'Payload JSON'],$delimiter);
-
-        if (!empty($rows)) {
-            foreach ($rows as$row) {
-                fputcsv($output, [
-                    $row->id,$row->popup_uid,
-                    $row->name,$row->email,
-                    $row->phone,$row->ip_address,
-                    $row->created_at,$row->payload
-                ], $delimiter);
+        foreach ((array) $rows as $i => $row) {
+            $f = $decoded[$i];
+            $line = [
+                $row->id,
+                $this->csv_safe($row->popup_title),
+                $row->popup_uid,
+                $this->csv_safe($row->email),
+                $row->status,
+                $row->country_code,
+                $row->created_at,
+                $this->csv_safe(isset($f['_name']) ? $f['_name'] : ''),
+                $this->csv_safe(isset($f['_phone']) ? $f['_phone'] : ''),
+                $this->csv_safe(isset($f['_ip']) ? $f['_ip'] : ''),
+            ];
+            foreach ($keys as $k) {
+                $line[] = $this->csv_safe(isset($f[$k]) ? $f[$k] : '');
             }
+            fputcsv($out, $line, $delimiter);
         }
 
-        fclose($output);
+        fclose($out);
         exit;
     }
 }

@@ -40,10 +40,16 @@
             $canvas.find('input, select, textarea').each(function() {
                 var $input = $(this);
                 var name = $input.attr('name') || $input.data('field-name') || $input.attr('type');
+                if (name === '_wppoppop_hp_email') return;
+                var wppKeyM = /^fields\[([^\]]+)\](\[\])?$/.exec(name || ''); /* WPPOPPOP_FIELD_KEY */
+                if (wppKeyM) { name = wppKeyM[1]; }
                 if (!name || $input.attr('type') === 'submit') return;
 
                 var val = $input.val();
-                fields[name] = val;
+                var wppT = String($input.attr('type') || '').toLowerCase();
+                if (wppT === 'file') return;
+                if ((wppT === 'checkbox' || wppT === 'radio') && !this.checked) return;
+                if (wppT === 'checkbox' && fields[name] !== undefined) { fields[name] = fields[name] + ', ' + val; } else { fields[name] = val; }
 
                 if ($input.attr('type') === 'email' || name.indexOf('email') !== -1) {
                     hasEmail = true;

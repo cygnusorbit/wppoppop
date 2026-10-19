@@ -183,7 +183,7 @@ class WpPopPop_Ajax_Frontend {
 
         // Purge files if user_uploads is set to 'delete'
         $user_uploads = wppoppop_get_setting('user_uploads', 'keep');
-        if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT payload FROM {$table_name} WHERE id = %d", $id));
+        if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT fields_data AS payload FROM {$table_name} WHERE id = %d", $id));
             if ($row && !empty($row->payload)) {
                 $payload = json_decode($row->payload, true);
                 if (is_array($payload)) {$upload_dir = wp_upload_dir();
@@ -229,7 +229,7 @@ class WpPopPop_Ajax_Frontend {
         $base_dir = realpath($upload_dir['basedir']);
 
         foreach ($ids as$id) {
-            if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT payload FROM {$table_name} WHERE id = %d", $id));
+            if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT fields_data AS payload FROM {$table_name} WHERE id = %d", $id));
                 if ($row && !empty($row->payload)) {
                     $payload = json_decode($row->payload, true);
                     if (is_array($payload)) {

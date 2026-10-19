@@ -34,9 +34,18 @@
                 e.preventDefault();
                 self.open($m);
             });
-            $('#wto-close').on('click', function() { $m.removeClass('is-open'); });
-            $m.on('mousedown', function(e) { if (e.target === this) $m.removeClass('is-open'); });
-            $(document).on('keydown', function(e) { if (e.which === 27) $m.removeClass('is-open'); });
+            $('#wto-close').on('click', function() { self.close(); });
+            $m.on('mousedown', function(e) { if (e.target === this) self.close(); });
+            $(document).on('keydown', function(e) { if (e.which === 27 && $m.hasClass('is-open')) self.close(); });
+
+            // ---- Autosave triggers ----------------------------------------------------
+            $m.on('input change', '.lbl-name, .lbl-color, #wto-per-page', function() { self.queueSave(); });
+            $m.on('click', '.lbl-del, #wto-add-label, #wto-add-custom', function() {
+                setTimeout(function() { self.queueSave(); }, 0);   // after the row was added/removed
+            });
+            $('#wto-custom-key').on('keydown', function(e) {
+                if (e.which === 13) { setTimeout(function() { self.queueSave(); }, 0); }
+            });
 
             $('#wto-add-label').on('click', function() {
                 var id = 'l' + Date.now().toString(36) + Math.floor(Math.random() * 1000).toString(36);
@@ -56,7 +65,7 @@
                 if (e.which === 13) { e.preventDefault(); self.addCustom(); }
             });
 
-            $('#wto-save').on('click', function() { self.save(); });
+            $('#wto-save').attr('title', 'Done').on('click', function() { self.close(); });
 
             $('#wto-reset-cols').on('click', function() {
                 var pf = $.isArray(self.cfg.popup_fields) ? self.cfg.popup_fields : [];
@@ -66,6 +75,7 @@
                 self.cfg.per_page = keep.per_page;
                 self.cfg.active = ['date'].concat(pf.slice(0, 12));
                 self.render();
+                self.queueSave();
             });
         },
 
@@ -101,7 +111,8 @@
                     connectWith: '.wppoppop-cols-list',
                     items: '> li',
                     placeholder: 'wto-ph',
-                    tolerance: 'pointer'
+                    tolerance: 'pointer',
+                    update: function() { self.queueSave(); }
                 });
             }
             $('#wto-per-page').val(cfg.per_page || 20);
@@ -155,10 +166,42 @@
             return { labels: labels, columns: active, per_page: Math.max(5, Math.min(200, per)) };
         },
 
-        save: function() {
+        dirty: false,
+        timer: null,
+        inflight: false,
+        again: false,
+        waiters: [],
+
+        status: function(msg, ok) {
+            var $s = $('#wto-autosave-status');
+            if (!$s.length) {
+                $s = $('<span id="wto-autosave-status" style="margin-left:12px;font-size:11px;font-weight:400;"></span>');
+                $('#wppoppop-table-options-modal h2').append($s);
+            }
+            $s.css('color', ok === false ? '#b32d2e' : '#2e7d32').text(msg);
+        },
+
+        queueSave: function() {
+            var self = this;
+            this.dirty = true;
+            this.status('Saving\u2026', true);
+            clearTimeout(this.timer);
+            this.timer = setTimeout(function() { self.timer = null; self.saveNow(); }, 500);
+        },
+
+        // Pre-save flush (DOM -> model) then POST. Serialised: never two requests at once.
+        saveNow: function(cb) {
+            var self = this;
+            if (typeof cb === 'function') this.waiters.push(cb);
+            if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+            if (this.inflight) { this.again = true; return; }
+
+            this.inflight = true;
+            this.again = false;
             var model = this.flush();
             var v = this.vars();
-            var $btn = $('#wto-save').prop('disabled', true);
+            var ok = false;
+
             $.post(v.ajax_url, {
                 action: 'wppoppop_save_table_options',
                 nonce: v.nonce,
@@ -166,15 +209,38 @@
                 config: JSON.stringify(model)
             }).done(function(res) {
                 if (res && res.success) {
-                    window.location.reload();
+                    ok = true;
+                    self.status('\u2713 Saved', true);
                 } else {
-                    alert('Save failed: ' + (res && res.data && res.data.message ? res.data.message : 'Unknown error'));
-                    $btn.prop('disabled', false);
+                    self.status('Save failed: ' + ((res && res.data && res.data.message) ? res.data.message : 'unknown error'), false);
                 }
-            }).fail(function() {
-                alert('Network error while saving table options.');
-                $btn.prop('disabled', false);
+            }).fail(function(xhr) {
+                var hint = (xhr && xhr.status) ? ' (HTTP ' + xhr.status + ')' : '';
+                self.status('Save failed' + hint + ' \u2013 check connection', false);
+            }).always(function() {
+                self.inflight = false;
+                if (self.again) { self.saveNow(); return; }
+                if (ok) { self.dirty = false; self.reloadNeeded = true; }
+                var w = self.waiters.splice(0);
+                $.each(w, function(_, fn) { fn(ok); });
             });
+        },
+
+        close: function() {
+            var self = this;
+            var $m = $('#wppoppop-table-options-modal');
+            var done = function(ok) {
+                $m.removeClass('is-open');
+                if (ok && self.reloadNeeded) {
+                    self.reloadNeeded = false;
+                    window.location.reload();
+                }
+            };
+            if (this.dirty || this.timer || this.inflight) {
+                this.saveNow(done);       // wait for the latest state to be stored, then refresh once
+            } else {
+                done(true);
+            }
         }
     };
 

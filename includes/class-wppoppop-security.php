@@ -37,6 +37,7 @@ class WpPopPop_Security {
             return false;
         }
 
+        if (empty($wpdb->get_results("SHOW COLUMNS FROM {$table_name} LIKE 'ip_address'"))) { return false; } /* WPPOPPOP_IP_COL */
         $one_hour_ago = gmdate('Y-m-d H:i:s', time() - HOUR_IN_SECONDS);
         $count = (int) $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$table_name} WHERE ip_address = %s AND created_at >= %s",
