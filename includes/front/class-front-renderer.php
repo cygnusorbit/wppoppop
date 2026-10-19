@@ -571,6 +571,13 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-field-rating ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;color:#f59e0b;font-size:20px;cursor:pointer;"><input type="hidden" name="rating" value="5">★ ★ ★ ★ ★</div>';
 
             case 'date':
+                /* WPPOPPOP_DATE_FRONT_HOOK */
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_dt_inner = WpPopPop_Front_Decomposed_26::render_element('date', $el);
+                    if ($wppoppop_dt_inner !== null && $wppoppop_dt_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-date ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_dt_inner . '</div>';
+                    }
+                }
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="text" name="date_picker" class="wppoppop-datepicker-input wppoppop-datepicker wppoppop-front-date" style="width:100%;height:100%;padding:0 8px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;" placeholder="Select date..."></div>'; /* WPPOPPOP_DATE_FIX: class parity with decomposed renderer */
 
             case 'slider':

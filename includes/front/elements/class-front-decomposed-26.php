@@ -456,6 +456,51 @@ class WpPopPop_Front_Decomposed_26 {
                     . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr(implode(', ', $tl_vals)) . '" readonly tabindex="-1" aria-hidden="true"' . $tl_data . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;padding:0;" />'
                     . '</div>';
 
+            case 'date':
+                /* WPPOPPOP_DATE_FRONT: placeholder, format, min/max, icons, alignment, default, required */
+                $dt_fmt = (!empty($el['dateFormat']) && in_array($el['dateFormat'], array('YYYY-MM-DD', 'MM/DD/YYYY', 'DD/MM/YYYY'), true)) ? $el['dateFormat'] : 'YYYY-MM-DD';
+                $dt_ph = ($placeholder !== '') ? $placeholder : $dt_fmt;
+                $dt_align = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $dt_min = (!empty($el['minDate']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $el['minDate'])) ? $el['minDate'] : '';
+                $dt_max = (!empty($el['maxDate']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $el['maxDate'])) ? $el['maxDate'] : '';
+                $dt_icons = array('left' => array('cls' => 'fas fa-calendar-alt', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                $dt_needs_dash = false;
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $dt_key => $dt_side) {
+                    $dt_raw = isset($el[$dt_key]) ? trim((string) $el[$dt_key]) : '';
+                    if ($dt_raw !== '') {
+                        $dt_tokens = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $dt_raw))));
+                        if (!empty($dt_tokens)) {
+                            if (strpos($dt_tokens[0], 'fa-') === 0) { array_unshift($dt_tokens, 'fas'); }
+                            elseif (strpos($dt_tokens[0], 'dashicons-') === 0) { array_unshift($dt_tokens, 'dashicons'); $dt_needs_dash = true; }
+                            $dt_icons[$dt_side]['cls'] = implode(' ', $dt_tokens);
+                        }
+                    }
+                    $dt_ok = $dt_key . 'Offset';
+                    if (isset($el[$dt_ok]) && $el[$dt_ok] !== '') { $dt_icons[$dt_side]['off'] = max(0, intval($el[$dt_ok])); }
+                }
+                static $dt_css_done = false;
+                $dt_css = '';
+                if (!$dt_css_done) {
+                    $dt_css_done = true;
+                    $dt_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    if ($dt_needs_dash) { $dt_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                }
+                $dt_pl = ($dt_icons['left']['cls'] !== '') ? ($dt_icons['left']['off'] + 22) : 12;
+                $dt_pr = ($dt_icons['right']['cls'] !== '') ? ($dt_icons['right']['off'] + 22) : 12;
+                $dt_ico = function ($side) use ($dt_icons) {
+                    if ($dt_icons[$side]['cls'] === '') { return ''; }
+                    return '<i class="' . esc_attr($dt_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($dt_icons[$side]['off']) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;"></i>';
+                };
+                $dt_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|readonly="readonly"|data-readonly="true")(="[^"]*")?/', '', $data_attrs);
+                return $dt_css . '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . $dt_ico('left')
+                    . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($dt_ph) . '" autocomplete="off"'
+                    . ' data-format="' . esc_attr($dt_fmt) . '" data-min="' . esc_attr($dt_min) . '" data-max="' . esc_attr($dt_max) . '"'
+                    . ' class="wppoppop-form-input wppoppop-front-date wppoppop-datepicker"' . $dt_data
+                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $dt_pr . 'px 0 ' . $dt_pl . 'px;text-align:' . esc_attr($dt_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;font-size:12px;color:#334155;" />'
+                    . $dt_ico('right')
+                    . '</div>';
+
             case 'time':
                 $step_sec = (!empty($el['timeStep']) ? max(1, intval($el['timeStep'])) : 15) * 60;
                 return '<input type="time" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" step="' . $step_sec . '" value="' . esc_attr($default_val) . '" class="wppoppop-form-input wppoppop-input-time"' . $data_attrs . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 12px;" />';

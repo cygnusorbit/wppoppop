@@ -208,7 +208,7 @@
             innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;">' + $('<div>').text(dPh).html() + reqStar + '</span>' +
-                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:3px;">' + dFmt + '</span>' +
+                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:3px;">' + dFmt + '</span>' + rightIconHtml +
                 '</div>';
         } else if (canonical === 'time') {
             var tFmt  = el.timeFormat || '12h';
@@ -432,3 +432,25 @@
     });
 })(window, jQuery);
 /* === WPPOPPOP_DATE_PREVIEW_PICKER_END === */
+
+/* === WPPOPPOP_DATE_HYDRATE_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    function hydrate() {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return;
+        var raw = String(el.type || '').toLowerCase();
+        var canon = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
+        if (canon !== 'date') return;
+        $('#prop-date-placeholder').val(el.placeholder || '');
+        $('#prop-date-format').val(el.dateFormat || 'YYYY-MM-DD');
+        $('#prop-date-min').val(el.minDate || '');
+        $('#prop-date-max').val(el.maxDate || '');
+    }
+    $(document).off('click.wppDateHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]')
+        .on('click.wppDateHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]', function() {
+            [30, 150, 400].forEach(function(ms) { setTimeout(hydrate, ms); });
+        });
+})(window, jQuery);
+/* === WPPOPPOP_DATE_HYDRATE_END === */
