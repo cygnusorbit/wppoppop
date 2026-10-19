@@ -185,3 +185,31 @@ body.wppoppop-admin-themed .wppoppop-table-container,
 body.wppoppop-admin-themed .wppoppop-dashboard-modal-body { scrollbar-width: thin; scrollbar-color: var(--wpp-c-scroll-thumb) var(--wpp-c-scroll-track); }
 body.wppoppop-admin-themed ::-webkit-scrollbar-thumb { background: var(--wpp-c-scroll-thumb); border-radius: 3px; }
 body.wppoppop-admin-themed ::-webkit-scrollbar-track { background: var(--wpp-c-scroll-track); }
+
+/* WPP_TABLE_FIX: uniform list-table backgrounds.
+   Header colour only on thead/tfoot; body rows own the background; cells stay transparent. */
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat { background: var(--wpp-c-row-bg); border-color: var(--wpp-c-border); }
+
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > thead > tr > th,
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > thead > tr > td,
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tfoot > tr > th,
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tfoot > tr > td {
+    background: var(--wpp-c-th-bg);
+    color: var(--wpp-c-th-text);
+    border-color: var(--wpp-c-row-border);
+}
+
+/* Body cells (including the row-header checkbox <th>) never paint their own background */
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr > th,
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr > td {
+    background: transparent;
+    color: var(--wpp-c-text);
+    border-color: var(--wpp-c-row-border);
+}
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr > th.check-column { vertical-align: middle; }
+
+/* Row backgrounds: one colour per row (white / stripe), hover on the whole row */
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr:nth-child(odd)  { background: var(--wpp-c-row-bg); }
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr:nth-child(even) { background: var(--wpp-c-row-stripe); }
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr:hover          { background: var(--wpp-c-row-hover); }
+body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr.inline-edit-row { background: #f0f0f1; }
