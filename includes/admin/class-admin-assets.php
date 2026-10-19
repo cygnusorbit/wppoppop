@@ -138,11 +138,14 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-submissions-search-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-search.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-actions-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-actions.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-modal-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-modal.js', ['jquery'], $sub_ver, true);
+            wp_enqueue_script('wppoppop-submissions-table-options-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-table-options.js', ['jquery', 'jquery-ui-sortable'], $sub_ver, true);
+            wp_enqueue_script('wppoppop-submissions-list-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-list.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-js', WPPOPPOP_URL . 'admin/js/submissions.js', [
                 'jquery',
                 'wppoppop-submissions-search-js',
                 'wppoppop-submissions-actions-js',
-                'wppoppop-submissions-modal-js'
+                'wppoppop-submissions-modal-js',
+                'wppoppop-submissions-list-js'
             ], $sub_ver, true);
             wp_localize_script('wppoppop-submissions-js', 'wppoppop_vars', array_merge($shared_payload, [
                 'nonce' => wp_create_nonce('wppoppop_builder_nonce')

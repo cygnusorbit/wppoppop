@@ -8,7 +8,99 @@ class WpPopPop_Ajax_Submissions {
         add_action('wp_ajax_wppoppop_export_submissions_csv', [$this, 'export_submissions_csv']);
         add_action('wp_ajax_wppoppop_delete_submission', [$this, 'delete_submission']);
         add_action('wp_ajax_wppoppop_anonymize_submission', [$this, 'anonymize_submission']);
+        add_action('wp_ajax_wppoppop_save_table_options', [$this, 'save_table_options']);
+        add_action('wp_ajax_wppoppop_assign_sub_labels', [$this, 'assign_sub_labels']);
         add_action('wp_ajax_wppoppop_mark_submission_read', [$this, 'mark_submission_read']);
+    }
+
+    public function save_table_options() {
+        $this->verify_nonce();
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized'], 403);
+        }
+
+        $uid = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
+        $key = ($uid !== '') ? $uid : '_default';
+        $raw = isset($_POST['config']) ? json_decode(wp_unslash($_POST['config']), true) : null;
+        if (!is_array($raw)) {
+            wp_send_json_error(['message' => 'Invalid payload.']);
+        }
+
+        // Whitelist: labels
+        $labels = [];
+        if (!empty($raw['labels']) && is_array($raw['labels'])) {
+            foreach (array_slice($raw['labels'], 0, 30) as $l) {
+                $id   = isset($l['id']) ? preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $l['id']) : '';
+                $name = isset($l['name']) ? mb_substr(sanitize_text_field((string) $l['name']), 0, 40) : '';
+                $col  = isset($l['color']) ? sanitize_hex_color((string) $l['color']) : '';
+                if ($id === '' || $name === '') {
+                    continue;
+                }
+                $labels[] = ['id' => $id, 'name' => $name, 'color' => $col ? $col : '#f0c330'];
+            }
+        }
+
+        // Whitelist: columns
+        $builtin = ['date', 'popup', 'email', 'country', 'status'];
+        $columns = [];
+        if (!empty($raw['columns']) && is_array($raw['columns'])) {
+            foreach (array_slice($raw['columns'], 0, 40) as $c) {
+                $c = sanitize_text_field((string) $c);
+                if (in_array($c, $builtin, true) || preg_match('/^field:[A-Za-z0-9_\-\. ]{1,64}$/', $c)) {
+                    if (!in_array($c, $columns, true)) {
+                        $columns[] = $c;
+                    }
+                }
+            }
+        }
+        if (empty($columns)) {
+            $columns = ['date', 'email', 'popup'];
+        }
+
+        $per_page = isset($raw['per_page']) ? intval($raw['per_page']) : 20;
+        $per_page = max(5, min(200, $per_page));
+
+        $all = get_option('wppoppop_sub_table_options', []);
+        if (!is_array($all)) {
+            $all = [];
+        }
+        $all[$key] = ['labels' => $labels, 'columns' => $columns, 'per_page' => $per_page];
+        update_option('wppoppop_sub_table_options', $all, false);
+
+        wp_send_json_success(['saved' => $key]);
+    }
+
+    public function assign_sub_labels() {
+        $this->verify_nonce();
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized'], 403);
+        }
+
+        $ids   = isset($_POST['ids']) && is_array($_POST['ids']) ? array_map('intval', wp_unslash($_POST['ids'])) : [];
+        $label = isset($_POST['label_id']) ? preg_replace('/[^A-Za-z0-9_\-]/', '', (string) wp_unslash($_POST['label_id'])) : '';
+        $mode  = (isset($_POST['mode']) && $_POST['mode'] === 'clear') ? 'clear' : 'add';
+        $ids   = array_slice(array_filter($ids), 0, 500);
+        if (empty($ids) || ($mode === 'add' && $label === '')) {
+            wp_send_json_error(['message' => 'Nothing to update.']);
+        }
+
+        $map = get_option('wppoppop_sub_label_map', []);
+        if (!is_array($map)) {
+            $map = [];
+        }
+        foreach ($ids as $id) {
+            if ($mode === 'clear') {
+                unset($map[$id]);
+            } else {
+                $cur = isset($map[$id]) && is_array($map[$id]) ? $map[$id] : [];
+                if (!in_array($label, $cur, true)) {
+                    $cur[] = $label;
+                }
+                $map[$id] = $cur;
+            }
+        }
+        update_option('wppoppop_sub_label_map', $map, false);
+        wp_send_json_success(['updated' => count($ids)]);
     }
 
     private function verify_nonce() {
