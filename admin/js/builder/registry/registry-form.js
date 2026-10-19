@@ -516,6 +516,9 @@
         $('#prop-upload-exts').val(el.allowedExtensions || el.allowedExts || '');
         $('#prop-upload-maxsize').val(parseInt(el.maxFileSize, 10) || 10);
         $('#prop-upload-multiple').prop('checked', el.multiUpload === true || el.multiUpload === 1 || el.multiUpload === '1' || el.multiUpload === 'true');
+        $('#prop-upload-maxfiles').val(parseInt(el.maxFiles, 10) || '');
+        $('#prop-upload-errmsg').val(el.uploadErrorMessage || '');
+        $('#prop-upload-maxfiles-row').toggle($('#prop-upload-multiple').is(':checked'));
     }
     $(document).off('click.wppUploadHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool')
         .on('click.wppUploadHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool', function() {
@@ -546,6 +549,11 @@
         var C = window.WpPopPopBuilderCanvas, P = window.WpPopPopBuilderPreview;
         return !!((C && C.isPreview) || (P && P.isOpen));
     }
+    var lastErr = '';
+    function sizeMsg(el, f, maxMb) {
+        var t = $.trim(String(el.uploadErrorMessage || '')) || 'File too large. Maximum size is {max}MB.';
+        return t.replace(/\{max\}/g, maxMb).replace(/\{file\}/g, f.name);
+    }
     function fmtSize(b) {
         if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
         if (b >= 1024) return Math.round(b / 1024) + ' KB';
@@ -558,11 +566,15 @@
     function render($item, id) {
         $item.children('.wppoppop-up-prev-list').remove();
         var files = store[id] || [];
-        if (!files.length) return;
+        if (!files.length && !lastErr) return;
         var $list = $('<div class="wppoppop-up-prev-list"></div>').css({
             position: 'absolute', left: 0, top: '100%', marginTop: '4px', width: '100%', zIndex: 60,
             display: 'flex', flexDirection: 'column', gap: '4px', pointerEvents: 'auto'
         });
+        if (lastErr) {
+            $('<div class="wppoppop-up-prev-err"></div>').text(lastErr).css({ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', padding: '3px 6px', fontSize: '11px', boxSizing: 'border-box' }).appendTo($list);
+            lastErr = '';
+        }
         files.forEach(function(f, i) {
             var $row = $('<div></div>').css({
                 display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1px solid #cbd5e1',
@@ -593,15 +605,22 @@
             var maxMb = parseInt(el.maxFileSize, 10) || 0;
             var allowed = allowedList(el);
             var picked = Array.prototype.slice.call(inp.files || []);
-            var ok = [];
+            var ok = [], err = '';
             picked.forEach(function(f) {
                 var nm = String(f.name).toLowerCase();
                 var ext = nm.lastIndexOf('.') > -1 ? nm.slice(nm.lastIndexOf('.')) : '';
-                if (maxMb && f.size > maxMb * 1048576) { window.alert('File too large (max ' + maxMb + 'MB): ' + f.name); return; }
-                if (allowed.length && allowed.indexOf(ext) === -1) { window.alert('File type not allowed: ' + f.name); return; }
+                if (maxMb && f.size > maxMb * 1048576) { err = err || sizeMsg(el, f, maxMb); return; }
+                if (allowed.length && allowed.indexOf(ext) === -1) { err = err || ('File type not allowed: ' + f.name); return; }
                 ok.push(f);
             });
-            store[id] = multi ? (store[id] || []).concat(ok) : ok.slice(0, 1);
+            var combined = multi ? (store[id] || []).concat(ok) : ok.slice(0, 1);
+            var maxF = multi ? (parseInt(el.maxFiles, 10) || 0) : 1;
+            if (multi && maxF && combined.length > maxF) {
+                err = err || ('You can upload up to ' + maxF + ' files.');
+                combined = combined.slice(0, maxF);
+            }
+            store[id] = combined;
+            lastErr = err;
             render($item, id);
             $(inp).remove();
         });
@@ -643,3 +662,12 @@
         });
 })(window, jQuery);
 /* === WPPOPPOP_UPLOAD_PREVIEW_END === */
+
+/* === WPPOPPOP_UPLOAD_TOGGLE_START === */
+(function($) {
+    'use strict';
+    $(document).off('change.wppUpMulti', '#prop-upload-multiple').on('change.wppUpMulti', '#prop-upload-multiple', function() {
+        $('#prop-upload-maxfiles-row').toggle($(this).is(':checked'));
+    });
+})(jQuery);
+/* === WPPOPPOP_UPLOAD_TOGGLE_END === */

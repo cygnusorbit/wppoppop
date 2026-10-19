@@ -719,9 +719,22 @@
         if (b >= 1024) return Math.round(b / 1024) + ' KB';
         return b + ' B';
     }
-    function render(inp) {
+    function setFiles(inp, arr) {
+        try {
+            var dt = new DataTransfer();
+            arr.forEach(function(f) { dt.items.add(f); });
+            inp.files = dt.files;
+        } catch (err) { if (!arr.length) { inp.value = ''; } }
+    }
+    function render(inp, err) {
         var $list = $(inp).closest('.wppoppop-upload-wrap').find('.wppoppop-upload-list').first();
         $list.empty();
+        if (err) {
+            $('<div class="wppoppop-upload-error" role="alert"></div>').text(err).css({
+                color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px',
+                padding: '3px 6px', fontSize: '11px', boxSizing: 'border-box'
+            }).appendTo($list);
+        }
         var files = inp.files;
         if (!files || !files.length) return;
         for (var i = 0; i < files.length; i++) {
@@ -738,31 +751,46 @@
             $list.append($row);
         }
     }
+    function key(f) { return f.name + '|' + f.size + '|' + f.lastModified; }
+
     $(document).off('change.wppoppopUploadValidate').on('change.wppoppopUploadValidate', '.wppoppop-upload-dropzone input[type="file"]', function() {
-        var inp = this, files = inp.files;
-        if (!files || !files.length) { render(inp); return; }
+        var inp = this;
+        var picked = Array.prototype.slice.call(inp.files || []);
+        var multi = inp.hasAttribute('multiple');
         var maxMb = parseInt(inp.getAttribute('data-max-size'), 10) || 0;
+        var maxFiles = parseInt(inp.getAttribute('data-max-files'), 10) || 0;
+        var msgTpl = inp.getAttribute('data-size-msg') || 'File too large. Maximum size is {max}MB.';
         var allowed = String(inp.getAttribute('accept') || '').toLowerCase().split(',').map(function(x) { return x.trim(); }).filter(Boolean);
-        for (var i = 0; i < files.length; i++) {
-            var f = files[i], nm = String(f.name || '').toLowerCase();
+        var prev = multi ? (inp._wppKept || []) : [];
+        var err = '', ok = [];
+        picked.forEach(function(f) {
+            var nm = String(f.name || '').toLowerCase();
             var ext = nm.lastIndexOf('.') > -1 ? nm.slice(nm.lastIndexOf('.')) : '';
-            var bad = (maxMb && f.size > maxMb * 1024 * 1024) ? ('File too large (max ' + maxMb + 'MB): ' + f.name) :
-                      ((allowed.length && allowed.indexOf(ext) === -1) ? ('File type not allowed: ' + f.name) : '');
-            if (bad) { inp.value = ''; render(inp); window.alert(bad); return; }
+            if (maxMb && f.size > maxMb * 1048576) { err = err || msgTpl.replace(/\{max\}/g, maxMb).replace(/\{file\}/g, f.name); return; }
+            if (allowed.length && allowed.indexOf(ext) === -1) { err = err || ('File type not allowed: ' + f.name); return; }
+            ok.push(f);
+        });
+        var seen = {}, merged = [];
+        prev.concat(ok).forEach(function(f) { var k = key(f); if (!seen[k]) { seen[k] = 1; merged.push(f); } });
+        if (multi && maxFiles && merged.length > maxFiles) {
+            err = err || ('You can upload up to ' + maxFiles + ' files.');
+            merged = merged.slice(0, maxFiles);
         }
-        render(inp);
+        if (!multi) { merged = merged.slice(0, 1); }
+        inp._wppKept = merged;
+        setFiles(inp, merged);
+        render(inp, err);
     });
+
     $(document).off('click.wppoppopUploadRemove').on('click.wppoppopUploadRemove', '.wppoppop-upload-remove', function(e) {
         e.preventDefault(); e.stopPropagation();
         var inp = $(this).closest('.wppoppop-upload-wrap').find('input[type="file"]')[0];
         if (!inp || !inp.files) return;
         var idx = parseInt($(this).attr('data-idx'), 10);
-        try {
-            var dt = new DataTransfer();
-            for (var j = 0; j < inp.files.length; j++) { if (j !== idx) dt.items.add(inp.files[j]); }
-            inp.files = dt.files;
-        } catch (err) { inp.value = ''; }
-        render(inp);
+        var arr = Array.prototype.slice.call(inp.files).filter(function(f, j) { return j !== idx; });
+        inp._wppKept = arr;
+        setFiles(inp, arr);
+        render(inp, '');
         $(inp).trigger('wppoppop:upload-changed');
     });
 })(jQuery);

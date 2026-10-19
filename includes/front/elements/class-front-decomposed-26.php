@@ -560,6 +560,8 @@ class WpPopPop_Front_Decomposed_26 {
                 $up_multi = !empty($el['multiUpload']) && $el['multiUpload'] !== 'false' && $el['multiUpload'] !== '0';
                 $multi_attr = $up_multi ? ' multiple="multiple"' : '';
                 $up_max = !empty($el['maxFileSize']) ? max(1, intval($el['maxFileSize'])) : 5;
+                $up_maxfiles = ($up_multi && !empty($el['maxFiles'])) ? min(20, max(1, intval($el['maxFiles']))) : 0;
+                $up_errmsg = (isset($el['uploadErrorMessage']) && trim((string) $el['uploadErrorMessage']) !== '') ? (string) $el['uploadErrorMessage'] : 'File too large. Maximum size is {max}MB.'; /* WPPOPPOP_UPLOAD_LIMITS */
                 $up_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
                 $up_j = ($up_al === 'left') ? 'flex-start' : (($up_al === 'right') ? 'flex-end' : 'center');
                 $up_icons = array('left' => array('cls' => 'fas fa-cloud-arrow-up', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
@@ -596,7 +598,7 @@ class WpPopPop_Front_Decomposed_26 {
                      . '<label class="wppoppop-upload-dropzone" style="position:relative;width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;display:flex;align-items:center;justify-content:' . $up_j . ';gap:6px;font-size:12px;color:#475569;background:#f8fafc;cursor:pointer;box-sizing:border-box;padding:0 ' . $up_pr . 'px 0 ' . $up_pl . 'px;">'
                      . $up_ico('left')
                      . '<span class="wppoppop-upload-label-text" data-default-label="' . esc_attr($prompt) . '" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' . esc_html($prompt) . '</span>'
-                     . '<input type="file" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']' . ($up_multi ? '[]' : '') . '" data-field-name="' . esc_attr($field_name) . '" accept="' . $exts . '" data-max-size="' . $up_max . '"' . $multi_attr . $up_data . ' style="display:none;" />'
+                     . '<input type="file" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']' . ($up_multi ? '[]' : '') . '" data-field-name="' . esc_attr($field_name) . '" accept="' . $exts . '" data-max-size="' . $up_max . '" data-max-files="' . $up_maxfiles . '" data-size-msg="' . esc_attr($up_errmsg) . '"' . $multi_attr . $up_data . ' style="display:none;" />'
                      . $up_ico('right')
                      . '</label>'
                      . '<div class="wppoppop-upload-list" aria-live="polite" style="position:absolute;left:0;top:100%;margin-top:4px;width:100%;z-index:5;display:flex;flex-direction:column;gap:4px;"></div>'

@@ -503,6 +503,8 @@ if (!$data || !isset($data['meta'])) {
         if (isset($el['allowedExtensions'])) $clean['allowedExtensions'] = sanitize_text_field($el['allowedExtensions']);
         if (isset($el['maxFileSize'])) $clean['maxFileSize'] = max(1, intval($el['maxFileSize']));
         if (isset($el['multiUpload'])) $clean['multiUpload'] = !empty($el['multiUpload']);
+        if (isset($el['maxFiles'])) $clean['maxFiles'] = min(20, max(0, intval($el['maxFiles']))); /* WPPOPPOP_UPLOAD_LIMITS */
+        if (isset($el['uploadErrorMessage']) && !is_array($el['uploadErrorMessage'])) $clean['uploadErrorMessage'] = sanitize_text_field(wp_unslash((string) $el['uploadErrorMessage']));
         if (isset($el['minLength'])) $clean['minLength'] = max(0, intval($el['minLength']));
         if (isset($el['showEyeToggle'])) $clean['showEyeToggle'] = !empty($el['showEyeToggle']);
         if (isset($el['ratingMax']))$clean['ratingMax'] = in_array(intval($el['ratingMax']), array(5, 10), true) ? intval($el['ratingMax']) : 5;
@@ -521,7 +523,7 @@ if (!$data || !isset($data['meta'])) {
             'buttonAction', 'url', 'loadingText', 'submitAction',
             'confirmMessage', 'redirectUrl', 'countryCode', 'checkboxLabel',
             'radioLayout', 'dateFormat', 'minDate', 'maxDate', 'timeFormat',
-            'allowedExtensions', 'activeColor', 'ratingShape', 'ratingColor', 'requiredMessage', 'errorMessage', 'validatorEqual', 'validatorList', 'optionsList', 'firstOption', 'minValue', 'maxValue', 'stepValue', 'unitSuffix'
+            'allowedExtensions', 'activeColor', 'ratingShape', 'ratingColor', 'requiredMessage', 'errorMessage', 'validatorEqual', 'validatorList', 'optionsList', 'firstOption', 'minValue', 'maxValue', 'stepValue', 'unitSuffix', 'uploadErrorMessage'
         );
         foreach ( $gp_text_keys as$gk ) {
             if ( isset( $el[$gk ] ) && ! is_array( $el[$gk ] ) ) {
