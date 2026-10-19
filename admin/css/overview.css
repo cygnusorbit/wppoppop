@@ -1,0 +1,50 @@
+
+#wpcontent .wppoppop-dash{max-width:1500px;margin:0 20px 0 2px}
+.wppoppop-dash *{box-sizing:border-box}
+.wppoppop-dash-bar{display:flex;align-items:stretch;background:#fff;border:1px solid #dcdcde;height:44px;margin:12px 0 22px;box-shadow:0 1px 1px rgba(0,0,0,.04)}
+.wppoppop-dash-bar .cell{position:relative;display:flex;align-items:center;border-right:1px solid #e5e5e5}
+.wppoppop-dash-bar .cell.logo{padding:0 12px}
+.wppoppop-dash-bar .cell.logo img{width:28px;height:28px;display:block}
+.wppoppop-dash-bar .bar-btn{display:flex;align-items:center;justify-content:center;width:42px;height:100%;background:none;border:0;border-radius:0;box-shadow:none;cursor:pointer;color:#1d2327;text-decoration:none;padding:0}
+.wppoppop-dash-bar .bar-btn:hover,.wppoppop-dash-bar .bar-btn:focus,.wppoppop-dash-bar .bar-btn[aria-expanded="true"]{background:#f6f7f7;color:#c1272d;outline:0;box-shadow:none}
+.wppoppop-dash-bar .bar-btn .dashicons{font-size:20px;width:20px;height:20px}
+.wppoppop-dash-bar .cell.title{padding:0 18px;font-weight:700;font-size:13px;color:#1d2327;gap:10px;border-right:0;flex:1;justify-content:flex-start}
+.wppoppop-dash-bar .cell.title .dashicons{color:#c1272d}
+.wppoppop-dd{display:none;position:absolute;top:100%;left:-1px;min-width:230px;max-height:360px;overflow:auto;background:#fff;border:1px solid #dcdcde;box-shadow:0 6px 16px rgba(0,0,0,.14);z-index:9999;padding:6px 0}
+.wppoppop-dd.is-open{display:block}
+.wppoppop-dd a{display:flex;align-items:center;gap:8px;padding:8px 14px;color:#1d2327;text-decoration:none;font-size:12px;white-space:nowrap}
+.wppoppop-dd a:hover,.wppoppop-dd a:focus{background:#f6f7f7;color:#c1272d;outline:0;box-shadow:none}
+.wppoppop-dd a .dashicons{font-size:16px;width:16px;height:16px;color:#787c82}
+.wppoppop-dd .dd-sep{height:1px;background:#e5e5e5;margin:6px 0}
+.wppoppop-dd .dd-empty{padding:10px 14px;color:#787c82;font-size:12px}
+.wppoppop-dash-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:start}
+.wppoppop-box{background:#fff;border:1px solid #dcdcde;box-shadow:0 1px 1px rgba(0,0,0,.04);padding:18px 16px 16px}
+.wppoppop-box h2{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:0 0 12px;border-bottom:1px solid #eee;font-size:15px;font-weight:400;color:#1d2327}
+.wppoppop-box .notice-info{background:#d1e8f3;border-left:4px solid #4db8e8;color:#1d4a63;font-size:12px;padding:12px 14px;margin:0 0 12px}
+.wppoppop-box .notice-info a{font-weight:700;color:#2237c9;text-decoration:none}
+.wppoppop-btn-red{display:block;width:100%;text-align:center;background:#c1272d;color:#fff;border:0;border-radius:3px;padding:13px 10px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;text-decoration:none;cursor:pointer}
+.wppoppop-btn-red:hover,.wppoppop-btn-red:focus{background:#a51f25;color:#fff;box-shadow:none}
+.wppoppop-pop-list{list-style:none;margin:0 0 12px;padding:0}
+.wppoppop-pop-list li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #f0f0f1;font-size:12px;margin:0}
+.wppoppop-pop-list li .t{font-weight:600;color:#1d2327;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wppoppop-pop-list li .m{color:#787c82;font-size:11px;white-space:nowrap}
+.wppoppop-pop-list li .a a{margin-left:8px;text-decoration:none;font-size:11px}
+@media (max-width:1100px){.wppoppop-dash-grid{grid-template-columns:1fr}}
+
+/* ---- Recent Submissions + Tools boxes ---- */
+.wppoppop-sub-list{list-style:none;margin:0 0 12px;padding:0}
+.wppoppop-sub-list li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;column-gap:8px;row-gap:2px;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0f1;font-size:12px;margin:0}
+.wppoppop-sub-list .dot{width:8px;height:8px;border-radius:50%;background:transparent;grid-row:1 / span 2}
+.wppoppop-sub-list li.is-unread .dot{background:#c1272d}
+.wppoppop-sub-list .who{font-weight:400;color:#1d2327;text-decoration:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wppoppop-sub-list li.is-unread .who{font-weight:700;color:#2237c9}
+.wppoppop-sub-list .when{color:#787c82;font-size:11px;white-space:nowrap;text-align:right}
+.wppoppop-sub-list .pop{color:#787c82;font-size:11px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;grid-column:2}
+.wppoppop-tool-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wppoppop-tool-tiles .tile{display:flex;flex-direction:column;border:1px solid #dcdcde;border-radius:3px;overflow:hidden;text-decoration:none;background:#fff}
+.wppoppop-tool-tiles .tile:hover,.wppoppop-tool-tiles .tile:focus{border-color:#c1272d;box-shadow:none;outline:0}
+.wppoppop-tool-tiles .ico{display:flex;align-items:center;justify-content:center;height:74px;color:#50575e}
+.wppoppop-tool-tiles .ico .dashicons{font-size:34px;width:34px;height:34px}
+.wppoppop-tool-tiles .lbl{background:#c1272d;color:#fff;text-align:center;font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:9px 4px;line-height:1.25;min-height:34px;display:flex;align-items:center;justify-content:center}
+.wppoppop-tool-tiles .tile:hover .lbl{background:#a51f25}
+@media (max-width:1100px){.wppoppop-tool-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}

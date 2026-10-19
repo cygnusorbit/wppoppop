@@ -132,6 +132,14 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
         }
 
+        // Dashboard overview page (separate from the Popups list assets)
+        if ($page === 'wppoppop-dashboard') {
+            $ov_ver = (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time());
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $ov_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $ov_ver, true);
+        }
+
         // 6. Submissions Assets
         if ($page === 'wppoppop-submissions') {
             $sub_ver = (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time());

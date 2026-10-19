@@ -11,6 +11,20 @@ class WpPopPop_Admin_Pages {
         include WPPOPPOP_PATH . 'templates/dashboard-view.php';
     }
 
+    public function render_overview() {
+        global $wpdb;
+        $items = $wpdb->prefix . 'wppoppop_items';
+        $dash_menu_popups   = $wpdb->get_results("SELECT uid, title FROM {$items} ORDER BY id DESC LIMIT 30");
+        $dash_recent_popups = $wpdb->get_results("SELECT uid, title, submissions FROM {$items} ORDER BY id DESC LIMIT 5");
+        $subs = $wpdb->prefix . 'wppoppop_submissions';
+        $dash_recent_subs = $wpdb->get_results("SELECT s.id, s.popup_uid, s.email, s.status, s.is_read, s.fields_data, s.created_at, i.title AS popup_title FROM {$subs} s LEFT JOIN {$items} i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 6");
+        $dash_export_url  = add_query_arg([
+            'action' => 'wppoppop_export_submissions',
+            'nonce'  => wp_create_nonce('wppoppop_admin_nonce'),
+        ], admin_url('admin-post.php'));
+        include WPPOPPOP_PATH . 'templates/dashboard-overview.php';
+    }
+
     public function render_builder() {
         global $wpdb;
         $uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
