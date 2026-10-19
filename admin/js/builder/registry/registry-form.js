@@ -48,7 +48,7 @@
         var reqStar = el.required ? ' <span style="color:#f43f5e;font-weight:700;">*</span>' : '';
         var roBadge = el.readOnly ? '<span style="font-size:9px;background:#e2e8f0;color:#475569;padding:1px 4px;border-radius:3px;margin-left:6px;flex-shrink:0;">RO</span>' : '';
 
-        var iLeft  = $.trim(el.iconLeft || ((canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? 'dashicons-lock' : (canonical === 'upload' ? 'dashicons-cloud-upload' : ''))))));
+        var iLeft  = $.trim(el.iconLeft || ((canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? '' : (canonical === 'upload' ? 'dashicons-cloud-upload' : ''))))));
         var iRight = $.trim(el.iconRight || '');
         var offL   = (isNaN(parseInt(el.iconLeftOffset, 10)) ? 10 : parseInt(el.iconLeftOffset, 10));
         var offR   = (isNaN(parseInt(el.iconRightOffset, 10)) ? 10 : parseInt(el.iconRightOffset, 10));
@@ -235,12 +235,17 @@
                 rightIconHtml +
                 '</div>';
         } else if (canonical === 'password') {
-            var pwPh = el.placeholder || '••••••••';
-            var showEye = (el.showEyeToggle !== false);
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            /* WPPOPPOP_PASSWORD_STAGE_V3: WordPress-login style, eye = 40px dashicon button */
+            var pwPh = el.placeholder || 'Enter password...';
+            var showEye = (el.showEyeToggle !== false && el.showEyeToggle !== 'false' && el.showEyeToggle !== 0 && el.showEyeToggle !== '0');
+            var pwRightPos = offR + (showEye ? 40 : 0);
+            var pwRightIcon = formatIconTag(iRight, 'position:absolute;right:' + pwRightPos + 'px;top:50%;transform:translateY(-50%);');
+            var pwPadR = Math.max(showEye ? 44 : 12, iRight ? (pwRightPos + 22) : 0);
+            innerHtml = '<div class="wppoppop-pw-stage" style="position:relative;width:100%;height:100%;display:flex;align-items:center;padding-left:' + padL + 'px;padding-right:' + pwPadR + 'px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
-                '<span style="flex:1;text-align:' + align + ';color:#64748b;font-size:12px;">' + $('<div>').text(pwPh).html() + reqStar + '</span>' +
-                (showEye ? '<span class="dashicons dashicons-visibility" style="font-size:16px;width:16px;height:16px;color:#64748b;"></span>' : '') +
+                '<span class="wppoppop-pw-prev-text" data-ph="' + $('<div>').text(pwPh).html().replace(/"/g, '&quot;') + '" style="flex:1;text-align:' + align + ';color:#64748b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(pwPh).html() + reqStar + '</span>' +
+                pwRightIcon +
+                (showEye ? '<span class="wppoppop-pw-prev-eye dashicons dashicons-visibility" aria-label="Show password" style="position:absolute;right:0;top:0;width:40px;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:20px;color:#2271b1;cursor:pointer;pointer-events:auto;"></span>' : '') +
                 '</div>';
         } else if (canonical === 'rating') {
             var rMax   = parseInt(el.ratingMax, 10) === 10 ? 10 : 5;
@@ -671,3 +676,102 @@
     });
 })(jQuery);
 /* === WPPOPPOP_UPLOAD_TOGGLE_END === */
+
+/* === WPPOPPOP_PASSWORD_HYDRATE_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    /* WPPOPPOP_PASSWORD_STYLE: hides Opacity, Background, Padding, Box Shadow, Custom CSS & Inline Styles */
+    if (!document.getElementById('wppoppop-password-style-css')) {
+        var st = document.createElement('style');
+        st.id = 'wppoppop-password-style-css';
+        st.appendChild(document.createTextNode(
+            '#insp-tab-style.wppoppop-pw-style #insp-section-opacity,' +
+            '#insp-tab-style.wppoppop-pw-style #insp-section-bg-color,' +
+            '#insp-tab-style.wppoppop-pw-style #insp-section-padding,' +
+            '#insp-tab-style.wppoppop-pw-style #insp-section-shadow,' +
+            '#insp-tab-style.wppoppop-pw-style #insp-section-custom-css { display: none !important; }' +
+            '#insp-tab-style.wppoppop-pw-style #insp-section-typography,' +
+            '#insp-tab-style.wppoppop-pw-style #insp-section-border,' +
+            '#insp-tab-style.wppoppop-pw-style #wppoppop-form-icons-card { display: block !important; }'
+        ));
+        (document.head || document.documentElement).appendChild(st);
+    }
+    function pwEl() {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return null;
+        return String(el.type || '').toLowerCase() === 'password' ? el : false;
+    }
+    function hydratePw() {
+        var el = pwEl();
+        $('#insp-tab-style').toggleClass('wppoppop-pw-style', !!el);
+        if (!el) return;
+        $('#prop-password-placeholder').val(el.placeholder || '');
+        $('#prop-password-minlength').val(parseInt(el.minLength, 10) || '');
+        $('#prop-password-eye').prop('checked', !(el.showEyeToggle === false || el.showEyeToggle === 'false' || el.showEyeToggle === 0 || el.showEyeToggle === '0'));
+        $('#prop-password-autocomplete').val(el.autocomplete || 'current-password');
+    }
+    $(document).off('click.wppPwHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool')
+        .on('click.wppPwHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool', function() {
+            [30, 150, 400, 800].forEach(function(ms) { setTimeout(hydratePw, ms); });
+        });
+    if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._pwStyleHooked) {
+        Reg._pwStyleHooked = true;
+        var origHy = Reg.hydrateCoreAndStyleFields;
+        Reg.hydrateCoreAndStyleFields = function(el) {
+            var r = origHy.apply(this, arguments);
+            var isPw = String((el && el.type) || '').toLowerCase() === 'password';
+            $('#insp-tab-style').toggleClass('wppoppop-pw-style', isPw);
+            if (isPw) { setTimeout(hydratePw, 0); }
+            return r;
+        };
+    }
+})(window, jQuery);
+/* === WPPOPPOP_PASSWORD_HYDRATE_END === */
+
+/* === WPPOPPOP_PASSWORD_PREVIEW_START === */
+(function(window, $) {
+    'use strict';
+    function inPreviewMode() {
+        var C = window.WpPopPopBuilderCanvas, P = window.WpPopPopBuilderPreview;
+        return !!((C && C.isPreview) || (P && P.isOpen));
+    }
+    function ensureInput($stage) {
+        var $in = $stage.find('.wppoppop-pw-prev-input');
+        if ($in.length) return $in;
+        var $txt = $stage.find('.wppoppop-pw-prev-text');
+        if (!$txt.length) return $();
+        var $n = $('<input type="password" class="wppoppop-pw-prev-input" autocomplete="off" spellcheck="false" autocapitalize="off">')
+            .attr('placeholder', $txt.attr('data-ph') || '')
+            .css({ flex: '1 1 auto', minWidth: 0, width: '100%', border: 0, outline: 0, background: 'transparent', fontSize: '12px', color: '#0f172a', textAlign: $txt.css('text-align'), pointerEvents: 'auto', padding: 0, margin: 0, height: '100%', boxShadow: 'none' });
+        $n.on('mousedown mouseup click touchstart', function(e) { e.stopPropagation(); });
+        $txt.replaceWith($n);
+        return $n;
+    }
+    function toggle($stage) {
+        var $in = ensureInput($stage), $eye = $stage.find('.wppoppop-pw-prev-eye');
+        if (!$in.length) return;
+        var show = $in.attr('type') === 'password';
+        $in.attr('type', show ? 'text' : 'password');
+        $eye.toggleClass('dashicons-visibility', !show).toggleClass('dashicons-hidden', show).attr('aria-label', show ? 'Hide password' : 'Show password');
+        try { $in[0].focus(); var l = $in.val().length; $in[0].setSelectionRange(l, l); } catch (e) {}
+    }
+    document.addEventListener('mousedown', function(e) {
+        if (!inPreviewMode() || !e.target || !e.target.closest) return;
+        var eye = e.target.closest('.wppoppop-pw-prev-eye');
+        var stage = e.target.closest('.wppoppop-canvas-item');
+        var $stage = stage ? $(stage).find('.wppoppop-pw-stage').first() : $();
+        if (!$stage.length) return;
+        if (eye) {
+            e.preventDefault(); e.stopPropagation();
+            toggle($stage);
+        } else if (!$(e.target).closest('.wppoppop-pw-prev-input').length) {
+            var $in = ensureInput($stage);
+            setTimeout(function() { try { $in[0].focus(); } catch (er) {} }, 0);
+        }
+    }, true);
+    document.addEventListener('click', function(e) {
+        if (inPreviewMode() && e.target && e.target.closest && e.target.closest('.wppoppop-pw-prev-eye')) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+})(window, jQuery);
+/* === WPPOPPOP_PASSWORD_PREVIEW_END === */

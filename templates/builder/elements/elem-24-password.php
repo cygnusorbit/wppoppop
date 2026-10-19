@@ -11,11 +11,11 @@ if (!defined('ABSPATH')) exit;
         </div>
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">MIN LENGTH</label>
-            <input type="number" id="prop-password-minlength" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="minLength" min="1" max="64" value="8" style="font-size:12px;">
+            <input type="number" id="prop-password-minlength" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="minLength" min="1" max="64" placeholder="e.g. 8" style="font-size:12px;">
         </div>
     </div>
     <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#cbd5e1;cursor:pointer;">
-        <input type="checkbox" id="prop-password-eye" class="wppoppop-gp-bind" data-prop="showEyeToggle" value="1" checked> Show Password Visibility Eye Icon (👁)
+        <input type="checkbox" id="prop-password-eye" class="wppoppop-gp-bind" data-prop="showEyeToggle" value="1" checked>  Show Password Visibility Eye Icon
     </label>
     <div style="margin-top:10px;">
         <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">BROWSER AUTOCOMPLETE</label>

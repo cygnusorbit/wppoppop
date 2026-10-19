@@ -242,7 +242,8 @@
             e.preventDefault();
             var $inp =$(this).siblings('input.wppoppop-input-password');
             if (!$inp.length) return;
-            var curType = $inp.attr('type');$inp.attr('type', curType === 'password' ? 'text' : 'password');
+            var curType = $inp.attr('type'); var nextType = (curType === 'password') ? 'text' : 'password'; $inp.attr('type', nextType); /* WPPOPPOP_PW_EYE_STATE */
+            $(this).attr('aria-pressed', nextType === 'text' ? 'true' : 'false').attr('aria-label', nextType === 'text' ? 'Hide password' : 'Show password').find('i').toggleClass('fa-eye', nextType === 'password').toggleClass('fa-eye-slash', nextType === 'text');
         });
 
         // 4. File Upload Dropzone Filename Display (Element 23)
@@ -795,3 +796,45 @@
     });
 })(jQuery);
 /* === WPPOPPOP_UPLOAD_VALIDATE_END === */
+
+/* === WPPOPPOP_PW_TOGGLE_START === */
+(function() {
+    'use strict';
+    function findInput(btn) {
+        var wrap = btn.closest('.wppoppop-password-wrap, .wp-pwd');
+        return wrap ? wrap.querySelector('input.wppoppop-input-password') : null;
+    }
+    function setState(btn, inp, show) {
+        inp.type = show ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        var ic = btn.querySelector('.dashicons');
+        if (ic) {
+            ic.classList.toggle('dashicons-visibility', !show);
+            ic.classList.toggle('dashicons-hidden', show);
+        }
+    }
+    document.addEventListener('mousedown', function(e) {
+        if (e.target && e.target.closest && e.target.closest('.wppoppop-pw-toggle')) { e.preventDefault(); }
+    }, true);
+    document.addEventListener('click', function(e) {
+        var btn = e.target && e.target.closest ? e.target.closest('.wppoppop-pw-toggle') : null;
+        if (!btn) return;
+        var inp = findInput(btn);
+        if (!inp) return;
+        e.preventDefault(); e.stopPropagation();
+        var show = inp.type === 'password';
+        setState(btn, inp, show);
+        try { inp.focus(); var l = inp.value.length; inp.setSelectionRange(l, l); } catch (er) {}
+    }, true);
+    function reset(e) {
+        var f = e.target;
+        if (!f || !f.querySelectorAll) return;
+        Array.prototype.forEach.call(f.querySelectorAll('.wppoppop-pw-toggle'), function(b) {
+            var i = findInput(b); if (i) setState(b, i, false);
+        });
+    }
+    document.addEventListener('submit', reset, true);
+    document.addEventListener('reset', reset, true);
+})();
+/* === WPPOPPOP_PW_TOGGLE_END === */

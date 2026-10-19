@@ -605,10 +605,45 @@ class WpPopPop_Front_Decomposed_26 {
                      . '</div>';
 
             case 'password':
-                $show_eye = !isset($el['showEyeToggle']) || !empty($el['showEyeToggle']);
-                $eye_btn =$show_eye ? '<button type="button" class="wppoppop-pw-eye-toggle" aria-label="Toggle Password Visibility" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;color:#64748b;font-size:14px;">👁</button>' : '';
-                return '<div class="wppoppop-password-wrap" style="position:relative;width:100%;height:100%;">'
-                     . '<input type="password" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder ?: 'Enter password...') . '" class="wppoppop-form-input wppoppop-input-password"' . $data_attrs . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 34px 0 12px;" />'
+                /* WPPOPPOP_PASSWORD_FRONT_V3: mimics the WordPress login password field (wp-pwd / wp-hide-pw / dashicons) */
+                $pw_eye_on = !isset($el['showEyeToggle']) || (!empty($el['showEyeToggle']) && $el['showEyeToggle'] !== 'false' && $el['showEyeToggle'] !== '0');
+                $pw_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $pw_icons = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $pw_key => $pw_side) {
+                    $pw_r = isset($el[$pw_key]) ? trim((string) $el[$pw_key]) : '';
+                    if ($pw_r !== '') {
+                        $pw_tk = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $pw_r))));
+                        if (!empty($pw_tk)) {
+                            if (strpos($pw_tk[0], 'fa-') === 0) { array_unshift($pw_tk, 'fas'); }
+                            elseif (strpos($pw_tk[0], 'dashicons-') === 0) { array_unshift($pw_tk, 'dashicons'); }
+                            $pw_icons[$pw_side]['cls'] = implode(' ', $pw_tk);
+                        }
+                    }
+                    $pw_ok = $pw_key . 'Offset';
+                    if (isset($el[$pw_ok]) && $el[$pw_ok] !== '') { $pw_icons[$pw_side]['off'] = max(0, intval($el[$pw_ok])); }
+                }
+                static $pw_css_done = false;
+                $pw_css = '';
+                if (!$pw_css_done) {
+                    $pw_css_done = true;
+                    $pw_css = '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'
+                        . '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />'
+                        . '<style>.wppoppop-pw-toggle{position:absolute;right:0;top:0;width:40px;height:100%;min-width:40px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;color:#2271b1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:auto;-webkit-appearance:none;appearance:none;}.wppoppop-pw-toggle:hover,.wppoppop-pw-toggle:focus{color:#135e96;outline:none;}.wppoppop-pw-toggle .dashicons{font-size:20px;width:20px;height:20px;line-height:20px;}</style>';
+                }
+                $pw_rpos = $pw_icons['right']['off'] + ($pw_eye_on ? 40 : 0);
+                $pw_pl = ($pw_icons['left']['cls'] !== '') ? ($pw_icons['left']['off'] + 22) : 12;
+                $pw_pr = max($pw_eye_on ? 44 : 12, ($pw_icons['right']['cls'] !== '') ? ($pw_rpos + 22) : 0);
+                $pw_ico = function ($side, $pos) use ($pw_icons) {
+                    if ($pw_icons[$side]['cls'] === '') { return ''; }
+                    return '<i class="' . esc_attr($pw_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($pos) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;z-index:2;"></i>';
+                };
+                $pw_ac = !empty($el['autocomplete']) ? $el['autocomplete'] : 'current-password';
+                $pw_data = preg_replace('/\s(data-input-mask|data-filters|autocomplete)(="[^"]*")?/', '', $data_attrs);
+                $eye_btn = $pw_eye_on ? '<button type="button" class="wppoppop-pw-toggle wp-hide-pw" aria-label="Show password" aria-pressed="false"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></button>' : '';
+                return $pw_css . '<div class="wp-pwd wppoppop-password-wrap wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                     . $pw_ico('left', $pw_icons['left']['off'])
+                     . '<input type="password" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder ?: 'Enter password...') . '" autocomplete="' . esc_attr($pw_ac) . '" spellcheck="false" autocapitalize="off" class="wppoppop-form-input wppoppop-input-password"' . $pw_data . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $pw_pr . 'px 0 ' . $pw_pl . 'px;text-align:' . esc_attr($pw_al) . ';pointer-events:auto;" />'
+                     . $pw_ico('right', $pw_rpos)
                      . $eye_btn . '</div>';
 
             case 'rating':
