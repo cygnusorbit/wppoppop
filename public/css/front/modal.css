@@ -101,3 +101,10 @@
     color: #1e293b;
     font-weight: 700;
 }
+
+/* WPPOPPOP_DATE_ZINDEX: Air Datepicker calendar must render above the popup overlay (z-index 999999) */
+.air-datepicker-global-container,
+.air-datepicker {
+    z-index: 2147483000 !important;
+}
+.air-datepicker.-inline- { z-index: auto !important; }

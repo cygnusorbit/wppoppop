@@ -123,6 +123,7 @@
             $wrap.data('wppoppopClosing', false);
             $wrap.stop(true, true).fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
             this.playCanvasIn($wrap.find('.wppoppop-canvas-active').first(), $wrap.find('.wppoppop-box').first());
+            try { this.initExtensionWidgets(); } catch (eW) {} /* WPPOPPOP_DATE_REINIT: library may load after bootstrap */
 
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_impression', { popup_uid: uid });
@@ -289,6 +290,19 @@
                     if (this._wppAirDp) return; /* WPPOPPOP_DATE_FIX: avoid double-init */
                     var $el = $(this);
                     var opts = { autoClose: true };
+                    /* WPPOPPOP_DATE_LOCALE_INLINE: built-in English locale (library default is not English) */
+                    opts.locale = {
+                        days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+                        daysShort: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+                        daysMin: ['Su','Mo','Tu','We','Th','Fr','Sa'],
+                        months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                        monthsShort: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                        today: 'Today',
+                        clear: 'Clear',
+                        dateFormat: 'MM/dd/yyyy',
+                        timeFormat: 'hh:mm aa',
+                        firstDay: 0
+                    };
                     var fmt = $el.data('format') || $el.attr('data-format');
                     if (fmt) {
                         opts.dateFormat = String(fmt)

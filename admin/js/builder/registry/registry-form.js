@@ -377,6 +377,7 @@
         var inp = document.createElement('input');
         inp.type = 'date';
         inp.id = 'wppoppop-date-preview-native';
+        inp.setAttribute('lang', 'en'); /* WPPOPPOP_DATE_NATIVE_LANG */
         if (el.minDate) inp.min = String(el.minDate);
         if (el.maxDate) inp.max = String(el.maxDate);
         inp.style.cssText = 'position:fixed;left:' + r.left + 'px;top:' + r.top + 'px;width:' +
