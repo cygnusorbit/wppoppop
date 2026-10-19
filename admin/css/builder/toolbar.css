@@ -102,38 +102,10 @@ body.theme-light #wppoppop-zoom-select option { background: #ffffff; color: #0f1
 .wppoppop-snap-switch .wppoppop-snap-text {
     font-size: 12px; font-weight: 600; color: #e2e8f0; white-space: nowrap;
 }
-body.theme-light .wppoppop-snap-switch .wppoppop-snap-slider { background: #cbd5e1; border-color: #94a3b8; }
+body.theme-light .wppoppop-snap-switch .wppoppop-snap-slider { background: #475569; border-color: #64748b; }
 body.theme-light .wppoppop-snap-switch .wppoppop-snap-toggle:checked + .wppoppop-snap-slider { background: #2563eb; border-color: #1d4ed8; }
-body.theme-light .wppoppop-snap-switch .wppoppop-snap-text { color: #334155; }
+body.theme-light .wppoppop-snap-switch .wppoppop-snap-text { color: #e2e8f0; }
 
-/* WPPOPPOP_THEME_CHECKER_V1: Night = dark checker, Day = light checker (entire workspace) */
-body:not(.theme-light) .wppoppop-builder-wrap,
-body:not(.theme-light) .wppoppop-main-frame { background-color: #0f172a !important; }
-
-body:not(.theme-light) .wppoppop-builder-wrap .wppoppop-builder-workspace,
-body:not(.theme-light) .wppoppop-builder-wrap #wppoppop-canvas-workspace {
-    background-color: #1e293b !important;
-    background-image:
-        linear-gradient(45deg, #172033 25%, transparent 25%),
-        linear-gradient(-45deg, #172033 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #172033 75%),
-        linear-gradient(-45deg, transparent 75%, #172033 75%) !important;
-    background-size: 20px 20px !important;
-}
-body.theme-light .wppoppop-builder-wrap,
-body.theme-light .wppoppop-main-frame { background-color: #f1f5f9 !important; }
-
-body.theme-light .wppoppop-builder-wrap .wppoppop-builder-workspace,
-body.theme-light .wppoppop-builder-wrap #wppoppop-canvas-workspace {
-    background-color: #ffffff !important;
-    background-image:
-        linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
-        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
-        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%) !important;
-    background-size: 20px 20px !important;
-}
-.wppoppop-builder-workspace, #wppoppop-canvas-workspace { transition: background-color .25s ease; }
 
 
 /* WPPOPPOP_TOOLBAR_THEME_V2: toolbar follows Day / Night mode (forced, high specificity) */
@@ -144,9 +116,9 @@ body.theme-light .wppoppop-builder-wrap #wppoppop-canvas-workspace {
 }
 body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header,
 .wppoppop-builder-wrap.theme-light .wppoppop-builder-header {
-    --wpp-hdr-bg: #ffffff; --wpp-hdr-border: #e2e8f0; --wpp-hdr-text: #0f172a;
-    --wpp-ctl-bg: #f1f5f9; --wpp-ctl-border: #cbd5e1; --wpp-ctl-hover: #e2e8f0;
-    --wpp-ctl-text: #0f172a; --wpp-muted: #475569;
+    --wpp-hdr-bg: #111827; --wpp-hdr-border: #1f2937; --wpp-hdr-text: #f1f5f9;
+    --wpp-ctl-bg: #1f2937; --wpp-ctl-border: #374151; --wpp-ctl-hover: #374151;
+    --wpp-ctl-text: #f1f5f9; --wpp-muted: #94a3b8;
 }
 
 .wppoppop-builder-wrap .wppoppop-builder-header {
@@ -192,7 +164,7 @@ body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header,
     border: 1px solid var(--wpp-ctl-border) !important;
     color: var(--wpp-ctl-text) !important;
 }
-body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select { color-scheme: light; }
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select { color-scheme: dark; }
 body:not(.theme-light) .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select { color-scheme: dark; }
 .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select option {
     background: var(--wpp-hdr-bg); color: var(--wpp-hdr-text);
@@ -231,3 +203,30 @@ body:not(.theme-light) .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop
 .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-btn-icon .dashicons { color: var(--wpp-ctl-text) !important; }
 body.theme-light .wppoppop-builder-wrap .wppoppop-icon-sun { color: #f59e0b !important; }
 body:not(.theme-light) .wppoppop-builder-wrap .wppoppop-icon-moon { color: #38bdf8 !important; }
+
+
+/* WPPOPPOP_TOOLBAR_ALWAYS_DARK: toolbar stays dark in Day mode; only the checker workspace switches */
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header,
+.wppoppop-builder-wrap.theme-light .wppoppop-builder-header {
+    background: #111827 !important;
+    border-bottom: 1px solid #1f2937 !important;
+    color: #f1f5f9 !important;
+}
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab,
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-screen-tab,
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-quick-dimensions-wrap span {
+    color: #f1f5f9 !important;
+}
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-btn-icon .dashicons { color: #f1f5f9 !important; }
+
+
+/* WPPOPPOP_CHECKER_NIGHT_COLORS: inverted colours only - size/position inherited from the original checker */
+body:not(.theme-light) .wppoppop-builder-wrap .wppoppop-builder-workspace,
+body:not(.theme-light) .wppoppop-builder-wrap #wppoppop-canvas-workspace {
+    background-color: #0f172a !important;
+    background-image:
+        linear-gradient(45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e293b 75%),
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%) !important;
+}
