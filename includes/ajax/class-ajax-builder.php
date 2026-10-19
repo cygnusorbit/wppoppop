@@ -533,7 +533,7 @@ if (!$data || !isset($data['meta'])) {
             'animDuration', 'animDelay', 'anim_duration', 'anim_delay', 'iconLeftOffset', 'iconRightOffset',
             'rotate', 'iconSize', 'cookieDays', 'progressValue',
             'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
-            'maxSelect', 'columns', 'timeStep', 'maxFileSize', 'ratingMax'
+            'maxSelect', 'maxSelections', 'columns', 'gridCols', 'timeStep', 'maxFileSize', 'ratingMax'
         );
         foreach ( $gp_int_keys as$ik ) {
             if ( isset( $el[$ik ] ) && $el[$ik ] !== '' ) {

@@ -342,37 +342,71 @@ class WpPopPop_Front_Decomposed_26 {
                     . $ta_cnt . '</div>';
 
             case 'multiselect':
-                $raw_opts = isset($el['options']) ? (is_array($el['options']) ? implode(',', $el['options']) : (string) $el['options']) : 'Option 1, Option 2';
-                $items = preg_split('/[\r\n,]+/', $raw_opts);
-                $max_sel = !empty($el['maxSelect']) ? intval($el['maxSelect']) : 10;
-                $opts_html = '';
-                foreach ($items as $item) {
-                    $item = trim($item);
-                    if ($item === '') continue;
-                    $opts_html .= '<option value="' . esc_attr($item) . '">' . esc_html($item) . '</option>';
+                /* WPPOPPOP_MULTISELECT_FRONT_V2: chip UI that mirrors the builder stage */
+                $ms_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['options']) ? (is_array($el['options']) ? implode("\n", $el['options']) : (string) $el['options']) : '');
+                $ms_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $ms_raw)), 'strlen'));
+                if (count($ms_items) === 1 && strpos($ms_items[0], ',') !== false) { $ms_items = array_values(array_filter(array_map('trim', explode(',', $ms_items[0])), 'strlen')); }
+                if (empty($ms_items)) { $ms_items = array('Marketing', 'Design', 'Development'); }
+                $ms_max = !empty($el['maxSelections']) ? max(1, intval($el['maxSelections'])) : (!empty($el['maxSelect']) ? max(1, intval($el['maxSelect'])) : 0);
+                $ms_fs = (!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 10;
+                $ms_defaults = array_filter(array_map('trim', explode(',', $default_val)), 'strlen');
+                $ms_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                $ms_chips = '';
+                $ms_opts = '';
+                foreach ($ms_items as $ms_i => $ms_o) {
+                    $ms_on = in_array($ms_o, $ms_defaults, true);
+                    $ms_chips .= '<button type="button" class="wppoppop-ms-chip" data-idx="' . $ms_i . '" aria-pressed="' . ($ms_on ? 'true' : 'false') . '" style="padding:2px 7px;border-radius:4px;font-size:' . $ms_fs . 'px;font-weight:600;line-height:1.4;cursor:pointer;margin:0;font-family:inherit;background:' . ($ms_on ? '#c2185b' : '#f1f5f9') . ';color:' . ($ms_on ? '#ffffff' : '#475569') . ';border:1px solid ' . ($ms_on ? '#c2185b' : '#cbd5e1') . ';">' . esc_html($ms_o) . '</button>';
+                    $ms_opts .= '<option value="' . esc_attr($ms_o) . '"' . ($ms_on ? ' selected' : '') . '>' . esc_html($ms_o) . '</option>';
                 }
-                return '<select id="' . $field_id . '" name="fields[' . esc_attr($field_name) . '][]" data-field-name="' . esc_attr($field_name) . '" data-max-select="' . $max_sel . '" multiple="multiple" class="wppoppop-form-input wppoppop-input-multiselect"' . $data_attrs . ' style="width:100%;height:100%;box-sizing:border-box;padding:4px;">' . $opts_html . '</select>';
+                $ms_label = ($ms_max > 0) ? '<span class="wppoppop-ms-max" style="margin-left:auto;font-size:9px;color:#94a3b8;">Max: ' . $ms_max . '</span>' : '';
+                return '<div class="wppoppop-ms-wrap" style="position:relative;width:100%;height:100%;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:5px;box-sizing:border-box;overflow:auto;pointer-events:auto;">'
+                    . $ms_chips . $ms_label
+                    . '<select id="' . $field_id . '" name="fields[' . esc_attr($field_name) . '][]" data-field-name="' . esc_attr($field_name) . '"' . ($ms_max > 0 ? ' data-max-select="' . $ms_max . '"' : '') . ' multiple="multiple" tabindex="-1" aria-hidden="true" class="wppoppop-form-input wppoppop-input-multiselect"' . $ms_data
+                    . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;">' . $ms_opts . '</select>'
+                    . '</div>';
 
             case 'imageselect':
-                $raw_opts = isset($el['options']) ? (is_array($el['options']) ? implode(',', $el['options']) : (string) $el['options']) : 'Starter Plan, Pro Plan, Enterprise';
-                $items = preg_split('/[\r\n,]+/', $raw_opts);
-                $cols = !empty($el['columns']) ? max(1, min(4, intval($el['columns']))) : 3;
-                $multi = !empty($el['multiSelect']) ? 'true' : 'false';
-                $cards = '';
-                foreach ($items as $idx => $item) {
-                    $item = trim($item);
-                    if ($item === '') continue;
-                    $parts = explode('|', $item);
-                    $lbl = trim($parts[0]);
-                    $img = isset($parts[1]) ? trim($parts[1]) : '';
-                    $active_cls = ($idx === 0 && $default_val === '') || ($default_val === $lbl) ? ' is-selected' : '';
-                    $thumb = $img ? '<img src="' . esc_url($img) . '" alt="' . esc_attr($lbl) . '" style="width:100%;height:40px;object-fit:cover;border-radius:4px;margin-bottom:4px;" />' : '';
-                    $cards .= '<div class="wppoppop-choice-card' . $active_cls . '" data-value="' . esc_attr($lbl) . '" style="border:2px solid #cbd5e1;border-radius:6px;padding:6px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;background:#f8fafc;">' . $thumb . '<span>' . esc_html($lbl) . '</span></div>';
+                /* WPPOPPOP_IMAGESELECT_FRONT: panel keys, Label|URL parsing, active border, clickable cards, required-safe value */
+                $is_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['options']) ? (is_array($el['options']) ? implode("\n", $el['options']) : (string) $el['options']) : '');
+                $is_lines = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $is_raw)), 'strlen'));
+                if (count($is_lines) === 1 && strpos($is_lines[0], ',') !== false && !preg_match('#https?:|//|\||::#i', $is_lines[0])) {
+                    $is_lines = array_values(array_filter(array_map('trim', explode(',', $is_lines[0])), 'strlen'));
                 }
-                $init_val = $default_val !== '' ? $default_val : (isset($items[0]) ? trim(explode('|', $items[0])[0]) : '');
-                return '<div class="wppoppop-interactive-choices wppoppop-imageselect-grid" data-multi="' . $multi . '" style="display:grid;grid-template-columns:repeat(' . $cols . ',1fr);gap:6px;width:100%;height:100%;align-items:center;">'
-                     . '<input type="hidden" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($init_val) . '"' . $data_attrs . ' />'
-                     . $cards . '</div>';
+                if (empty($is_lines)) { $is_lines = array('Style A', 'Style B', 'Style C'); }
+                $is_items = array();
+                foreach ($is_lines as $is_ln) {
+                    $is_lbl = $is_ln; $is_img = '';
+                    if (strpos($is_ln, '::') !== false) { $is_p = explode('::', $is_ln, 2); $is_lbl = trim($is_p[0]); $is_img = trim($is_p[1]); }
+                    elseif (strpos($is_ln, '|') !== false) { $is_p = explode('|', $is_ln, 2); $is_lbl = trim($is_p[0]); $is_img = trim($is_p[1]); }
+                    elseif (preg_match('#^(.*?),\s*((?:https?:)?//\S+|/\S+)$#i', $is_ln, $is_m)) { $is_lbl = trim($is_m[1]); $is_img = trim($is_m[2]); }
+                    $is_items[] = array($is_lbl, $is_img);
+                }
+                $is_cols = !empty($el['gridCols']) ? intval($el['gridCols']) : (!empty($el['columns']) ? intval($el['columns']) : 3);
+                $is_cols = max(1, min(4, $is_cols));
+                $is_acc = (!empty($el['activeColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['activeColor'])) ? $el['activeColor'] : '#38bdf8';
+                $is_multi = !empty($el['multiSelect']) && $el['multiSelect'] !== 'false' && $el['multiSelect'] !== '0';
+                $is_defs = array_values(array_filter(array_map('trim', explode(',', $default_val)), 'strlen'));
+                if (!$is_multi && count($is_defs) > 1) { $is_defs = array($is_defs[0]); }
+                $is_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
+                $is_ty .= 'font-weight:' . ((!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) ? $el['fontWeight'] : '600') . ';';
+                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $is_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
+                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $is_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
+                $is_ty .= 'color:' . ((!empty($el['color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['color'])) ? $el['color'] : '#1e293b') . ';';
+                $is_cards = '';
+                $is_vals = array();
+                foreach ($is_items as $is_it) {
+                    $is_on = in_array($is_it[0], $is_defs, true);
+                    if ($is_on) { $is_vals[] = $is_it[0]; }
+                    $is_url = ($is_it[1] !== '') ? esc_url($is_it[1]) : '';
+                    $is_thumb = ($is_url !== '') ? '<img src="' . $is_url . '" alt="' . esc_attr($is_it[0]) . '" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;border-radius:3px;display:block;" />' : '';
+                    $is_cards .= '<div class="wppoppop-imgsel-card" role="button" tabindex="0" data-value="' . esc_attr($is_it[0]) . '" aria-pressed="' . ($is_on ? 'true' : 'false') . '" style="min-width:0;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px;border:2px solid ' . ($is_on ? $is_acc : '#cbd5e1') . ';border-radius:6px;background:#ffffff;text-align:center;cursor:pointer;">'
+                        . $is_thumb . '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' . $is_ty . '">' . esc_html($is_it[0]) . '</span></div>';
+                }
+                $is_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                return '<div class="wppoppop-imgsel-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
+                    . '<div class="wppoppop-imgsel-grid" data-multi="' . ($is_multi ? '1' : '0') . '" data-active-color="' . esc_attr($is_acc) . '" style="display:grid;grid-template-columns:repeat(' . $is_cols . ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;width:100%;height:100%;box-sizing:border-box;">' . $is_cards . '</div>'
+                    . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr(implode(', ', $is_vals)) . '" readonly tabindex="-1" aria-hidden="true"' . $is_data . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;padding:0;" />'
+                    . '</div>';
 
             case 'tile':
                 $raw_opts = isset($el['options']) ? (is_array($el['options']) ? implode(',', $el['options']) : (string) $el['options']) : '$10 / mo, $25 / mo, $50 / mo';

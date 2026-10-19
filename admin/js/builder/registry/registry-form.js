@@ -140,29 +140,44 @@
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (rRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (rRow ? 'center' : rJ) + ';justify-content:' + (rRow ? rJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + rHtml + '</div>';
         } else if (canonical === 'multiselect') {
-            var mOpts = parseOptionsList(el.options, ['Marketing', 'Design', 'Development']);
-            var maxS  = parseInt(el.maxSelect, 10) || 0;
+            var mOpts = parseOptionsList(el.optionsList || el.options, ['Marketing', 'Design', 'Development']);
+            var maxS  = parseInt(el.maxSelections || el.maxSelect, 10) || 0;
             var pills = mOpts.slice(0, 4).map(function(o, i) {
                 var sel = (i === 0);
-                return '<span style="padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;background:' + (sel ? '#c2185b' : '#f1f5f9') + ';color:' + (sel ? '#ffffff' : '#475569') + ';border:1px solid ' + (sel ? '#c2185b' : '#cbd5e1') + ';">' + $('<div>').text(o).html() + '</span>';
+                return '<span style="padding:2px 7px;border-radius:4px;font-size:' + (parseInt(el.fontSize, 10) || 10) + 'px;font-weight:600;background:' + (sel ? '#c2185b' : '#f1f5f9') + ';color:' + (sel ? '#ffffff' : '#475569') + ';border:1px solid ' + (sel ? '#c2185b' : '#cbd5e1') + ';">' + $('<div>').text(o).html() + '</span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;box-sizing:border-box;pointer-events:none;">' +
                 pills + (maxS > 0 ? '<span style="margin-left:auto;font-size:9px;color:#94a3b8;">Max: ' + maxS + '</span>' : '') +
                 '</div>';
         } else if (canonical === 'imageselect') {
-            var imgOpts = parseOptionsList(el.options, ['Starter', 'Pro', 'Enterprise']);
-            var iCols   = Math.min(4, Math.max(1, parseInt(el.columns, 10) || 3));
-            var iAcc    = el.activeColor || '#c2185b';
-            var cards   = imgOpts.slice(0, iCols).map(function(item, idx) {
-                var parts = item.split('::');
-                var lbl = $.trim(parts[0] || 'Choice');
+            /* WPPOPPOP_IMAGESELECT_STAGE_V2 */
+            var imgRaw = el.optionsList || el.options || '';
+            if (Array.isArray(imgRaw)) { imgRaw = imgRaw.join('\n'); }
+            var imgLines = $.trim(String(imgRaw)).split(/\r?\n/).map(function(x) { return $.trim(x); }).filter(Boolean);
+            if (imgLines.length === 1 && imgLines[0].indexOf(',') !== -1 && !/https?:|\/\/|\||::/.test(imgLines[0])) {
+                imgLines = imgLines[0].split(',').map(function(x) { return $.trim(x); }).filter(Boolean);
+            }
+            if (!imgLines.length) { imgLines = ['Style A', 'Style B', 'Style C']; }
+            var iCols = Math.min(4, Math.max(1, parseInt(el.gridCols || el.columns, 10) || 3));
+            var iAcc  = el.activeColor || '#38bdf8';
+            var iTxt  = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;font-weight:' + (el.fontWeight || '600') + ';color:' + (el.color || '#1e293b') + ';';
+            var parseImg = function(line) {
+                var m, p, lbl = line, img = '';
+                if (line.indexOf('::') !== -1) { p = line.split('::'); lbl = $.trim(p.shift()); img = $.trim(p.join('::')); }
+                else if (line.indexOf('|') !== -1) { p = line.split('|'); lbl = $.trim(p.shift()); img = $.trim(p.join('|')); }
+                else if ((m = line.match(/^(.*?),\s*((?:https?:)?\/\/\S+|\/\S+)$/i))) { lbl = $.trim(m[1]); img = m[2]; }
+                return { l: lbl, i: img };
+            };
+            var cards = imgLines.slice(0, 8).map(function(line, idx) {
+                var it = parseImg(line);
                 var active = (idx === 0);
-                return '<div style="border:2px solid ' + (active ? iAcc : '#cbd5e1') + ';border-radius:6px;background:#ffffff;padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">' +
-                    '<span class="dashicons dashicons-format-image" style="font-size:18px;width:18px;height:18px;color:' + (active ? iAcc : '#94a3b8') + ';margin-bottom:2px;"></span>' +
-                    '<span style="font-size:10px;font-weight:600;color:#1e293b;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(lbl).html() + '</span>' +
-                    '</div>';
+                var thumb = (it.i && /^((https?:)?\/\/|\/)/i.test(it.i))
+                    ? '<img src="' + String(it.i).replace(/"/g, '%22').replace(/</g, '%3C') + '" alt="" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;border-radius:3px;display:block;" />'
+                    : '<span class="dashicons dashicons-format-image" style="font-size:18px;width:18px;height:18px;color:' + (active ? iAcc : '#94a3b8') + ';"></span>';
+                return '<div style="min-width:0;min-height:0;box-sizing:border-box;border:2px solid ' + (active ? iAcc : '#cbd5e1') + ';border-radius:6px;background:#ffffff;padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;">' + thumb +
+                    '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' + iTxt + '">' + $('<div>').text(it.l || 'Choice').html() + (idx === 0 ? reqStar : '') + '</span></div>';
             }).join('');
-            innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + iCols + ',1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + cards + '</div>';
+            innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + iCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + cards + '</div>';
         } else if (canonical === 'tile') {
             var tOpts = parseOptionsList(el.options, ['$10', '$25', '$50', '$100']);
             var tCols = Math.min(4, Math.max(1, parseInt(el.columns, 10) || 4));
@@ -231,7 +246,7 @@
             Reg.applyStyleToStageNode(el);
         }
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'multiselect') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };

@@ -537,3 +537,105 @@
     }, true);
 })();
 /* === WPPOPPOP_TA_COUNT_END === */
+
+/* === WPPOPPOP_MULTISELECT_RUNTIME_START === */
+(function() {
+    'use strict';
+    if (window.__wppMultiSel) return;
+    window.__wppMultiSel = true;
+    document.addEventListener('change', function(e) {
+        var t = e.target;
+        if (!t || t.tagName !== 'SELECT' || !t.multiple) return;
+        var max = parseInt(t.getAttribute('data-max-select'), 10) || 0;
+        if (!max) return;
+        var picked = [];
+        for (var i = 0; i < t.options.length; i++) { if (t.options[i].selected) picked.push(t.options[i]); }
+        if (picked.length > max) {
+            var last = t.getAttribute('data-last-valid') ? t.getAttribute('data-last-valid').split('\u0001') : [];
+            for (var j = 0; j < t.options.length; j++) { t.options[j].selected = last.indexOf(t.options[j].value) !== -1; }
+        } else {
+            t.setAttribute('data-last-valid', picked.map(function(o) { return o.value; }).join('\u0001'));
+        }
+    }, true);
+})();
+/* === WPPOPPOP_MULTISELECT_RUNTIME_END === */
+
+/* === WPPOPPOP_MS_CHIPS_START === */
+(function() {
+    'use strict';
+    if (window.__wppMsChips) return;
+    window.__wppMsChips = true;
+    function paint(chip, on) {
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        chip.style.background = on ? '#c2185b' : '#f1f5f9';
+        chip.style.color = on ? '#ffffff' : '#475569';
+        chip.style.borderColor = on ? '#c2185b' : '#cbd5e1';
+    }
+    document.addEventListener('click', function(e) {
+        var chip = (e.target && e.target.closest) ? e.target.closest('.wppoppop-ms-chip') : null;
+        if (!chip) return;
+        var wrap = chip.closest('.wppoppop-ms-wrap');
+        var sel = wrap ? wrap.querySelector('select') : null;
+        if (!sel) return;
+        var opt = sel.options[parseInt(chip.getAttribute('data-idx'), 10)];
+        if (!opt) return;
+        var max = parseInt(sel.getAttribute('data-max-select'), 10) || 0;
+        var count = 0;
+        for (var i = 0; i < sel.options.length; i++) { if (sel.options[i].selected) count++; }
+        if (!opt.selected && max && count >= max) { return; }
+        opt.selected = !opt.selected;
+        paint(chip, opt.selected);
+        var ev;
+        try { ev = new Event('change', { bubbles: true }); } catch (err) { ev = document.createEvent('Event'); ev.initEvent('change', true, true); }
+        sel.dispatchEvent(ev);
+    }, true);
+})();
+/* === WPPOPPOP_MS_CHIPS_END === */
+
+/* === WPPOPPOP_IMGSEL_RUNTIME_START === */
+(function() {
+    'use strict';
+    if (window.__wppImgSel) return;
+    window.__wppImgSel = true;
+    function fire(el, name) {
+        var ev;
+        try { ev = new Event(name, { bubbles: true }); } catch (err) { ev = document.createEvent('Event'); ev.initEvent(name, true, true); }
+        el.dispatchEvent(ev);
+    }
+    function sync(grid) {
+        var acc = grid.getAttribute('data-active-color') || '#38bdf8';
+        var cards = grid.querySelectorAll('.wppoppop-imgsel-card');
+        var vals = [];
+        for (var i = 0; i < cards.length; i++) {
+            var on = cards[i].getAttribute('aria-pressed') === 'true';
+            cards[i].style.borderColor = on ? acc : '#cbd5e1';
+            if (on) { vals.push(cards[i].getAttribute('data-value')); }
+        }
+        var inp = grid.parentNode ? grid.parentNode.querySelector('input') : null;
+        if (inp) { inp.value = vals.join(', '); fire(inp, 'input'); fire(inp, 'change'); }
+    }
+    function pick(card) {
+        var grid = card.closest ? card.closest('.wppoppop-imgsel-grid') : null;
+        if (!grid) return;
+        var multi = grid.getAttribute('data-multi') === '1';
+        var on = card.getAttribute('aria-pressed') === 'true';
+        if (!multi) {
+            var all = grid.querySelectorAll('.wppoppop-imgsel-card');
+            for (var i = 0; i < all.length; i++) { all[i].setAttribute('aria-pressed', 'false'); }
+            card.setAttribute('aria-pressed', 'true');
+        } else {
+            card.setAttribute('aria-pressed', on ? 'false' : 'true');
+        }
+        sync(grid);
+    }
+    document.addEventListener('click', function(e) {
+        var card = (e.target && e.target.closest) ? e.target.closest('.wppoppop-imgsel-card') : null;
+        if (card) { pick(card); }
+    }, true);
+    document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' && e.key !== ' ' && e.keyCode !== 13 && e.keyCode !== 32) return;
+        var card = (e.target && e.target.closest) ? e.target.closest('.wppoppop-imgsel-card') : null;
+        if (card) { e.preventDefault(); pick(card); }
+    }, true);
+})();
+/* === WPPOPPOP_IMGSEL_RUNTIME_END === */

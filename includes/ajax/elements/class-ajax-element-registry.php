@@ -108,7 +108,7 @@ class WpPopPop_Ajax_Element_Registry {
             'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
             'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas', 'goto_canvas', 'goto_screen',
             'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
-            'maxSelect', 'columns', 'timeStep', 'maxFileSize', 'ratingMax'
+            'maxSelect', 'maxSelections', 'columns', 'gridCols', 'timeStep', 'maxFileSize', 'ratingMax'
         );
         foreach ( $num_keys as$nk ) {
             if ( isset( $el[$nk ] ) && $el[$nk ] !== '' && ! is_array( $el[$nk ] ) ) {
