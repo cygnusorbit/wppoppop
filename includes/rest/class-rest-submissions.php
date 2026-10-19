@@ -41,19 +41,32 @@ class WpPopPop_Rest_Submissions {
             return new WP_Error('spam_detected', 'Spam detected by security shield.', ['status' => 400]);
         }
 
-        $uid   = isset($params['uid']) ? sanitize_key($params['uid']) : '';
+        $uid   = isset($params['uid']) ? sanitize_text_field($params['uid']) : '';
         $email = isset($params['email']) ? sanitize_email($params['email']) : '';
         $fields = isset($params['fields']) ? (array)$params['fields'] : [];
         $visitor_country = isset($params['country']) ? sanitize_text_field($params['country']) : '';
         $quiz_score = isset($params['quiz_score']) ? intval($params['quiz_score']) : null;
 
-        if (!is_email($email)) {
+        if ($email === '' && is_array($fields)) {
+            foreach ($fields as $fk => $fv) {
+                if (is_string($fv) && is_email($fv)) { $email = sanitize_email($fv); break; }
+            }
+        }
+        $clean = [];
+        foreach ((array) $fields as $fk => $fv) {
+            $ck = sanitize_key($fk);
+            if ($ck === '') { continue; }
+            $clean[$ck] = is_array($fv) ? array_map('sanitize_text_field', $fv)
+                : (($ck === 'signature' && is_string($fv) && strpos($fv, 'data:image/') === 0) ? $fv : sanitize_text_field($fv));
+        }
+        $fields = $clean;
+        if ($email !== '' && !is_email($email)) {
             return new WP_Error('invalid_email', 'Please enter a valid email address.', ['status' => 422]);
         }
 
         // 2. Disposable Email Filter
         $disposable_domains = ['mailinator.com', '10minutemail.com', 'guerrillamail.com', 'trashmail.com', 'tempmail.com', 'sharklasers.com'];
-        $domain = substr(strrchr($email, '@'), 1);
+        $domain = $email !== '' ? substr(strrchr($email, '@'), 1) : '';
         if (in_array(strtolower($domain), $disposable_domains, true)) {
             return new WP_Error('disposable_email', 'Disposable and temporary email addresses are not allowed.', ['status' => 422]);
         }
@@ -80,7 +93,7 @@ class WpPopPop_Rest_Submissions {
             $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET confirmations = confirmations + 1 WHERE uid = %s", $uid));
         }
 
-        if ($quiz_score !== null) {
+        if ($quiz_score !== null && $quiz_score > 0) {
             $fields['quiz_score'] = $quiz_score;
         }
 
@@ -101,7 +114,7 @@ class WpPopPop_Rest_Submissions {
 
         // Autoresponder dispatch
         $autoresponder = $config['autoresponder'] ?? [];
-        if (!empty($autoresponder['enable_user_email']) && !$is_double_optin) {
+        if (!empty($autoresponder['enable_user_email']) && !$is_double_optin && $email !== '') {
             $ar_subject = !empty($autoresponder['subject']) ? sanitize_text_field($autoresponder['subject']) : 'Welcome! Here is your reward';
             $ar_body    = !empty($autoresponder['message']) ? $autoresponder['message'] : "Thank you for subscribing!
 

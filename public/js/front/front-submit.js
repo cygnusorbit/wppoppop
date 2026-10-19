@@ -212,12 +212,21 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
-                }).then(function(r) { return r.json(); }).then(handleSuccess).catch(function() {
+                }).then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); }).then(function(o) {
+                    if (!o.ok || (o.json && o.json.code && !o.json.success)) {
+                        $btn.prop('disabled', false).text('Submit');
+                        alert((o.json && o.json.message) || 'Submission failed. Please try again.');
+                        return;
+                    }
+                    handleSuccess(o.json);
+                }).catch(function() {
                     $btn.prop('disabled', false).text('Submit');
                     alert('Submission error. Please check your connection.');
                 });
             } else {
-                $.post(ajaxUrl, Object.assign({ action: 'wppoppop_submit_form' }, payload), handleSuccess);
+                $.post(ajaxUrl, Object.assign({ action: 'wppoppop_submit_form', nonce: (window.wppoppop_front_vars && window.wppoppop_front_vars.nonce) || '', popup_uid: uid }, payload)).done(function(res) {
+                    if (res && res.success) { handleSuccess(res); } else { $btn.prop('disabled', false).text('Submit'); alert((res && res.data && res.data.message) || 'Submission failed.'); }
+                }).fail(function() { $btn.prop('disabled', false).text('Submit'); alert('Submission error. Please check your connection.'); });
             }
         },
 

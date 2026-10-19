@@ -11,7 +11,6 @@ class WpPopPop_Ajax_Frontend {
     public function __construct() {
         add_action('wp_ajax_wppoppop_submit_form', [$this, 'submit_form']);
         add_action('wp_ajax_nopriv_wppoppop_submit_form', [$this, 'submit_form']);
-        add_action('wp_ajax_wppoppop_delete_submission', [$this, 'delete_submission']);
         add_action('wp_ajax_wppoppop_bulk_delete_submissions', [$this, 'bulk_delete_submissions']);
     }
 
@@ -47,7 +46,7 @@ class WpPopPop_Ajax_Frontend {
         $raw_fields = isset($_POST['fields']) && is_array($_POST['fields']) ? wp_unslash($_POST['fields']) : [];
         if (empty($raw_fields)) {
             foreach ($_POST as $k =>$v) {
-                if (!in_array($k, ['action', 'nonce', 'popup_uid', 'g-recaptcha-response', 'recaptcha_token'], true)) {$raw_fields[$k] = wp_unslash($v);
+                if (!in_array($k, ['action', 'nonce', 'popup_uid', 'uid', 'country', 'quiz_score', 'g-recaptcha-response', 'recaptcha_token'], true)) {$raw_fields[$k] = wp_unslash($v);
                 }
             }
         }
@@ -99,20 +98,27 @@ class WpPopPop_Ajax_Frontend {
 
         // 6. Database Persistence
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_submissions';$popup_uid  = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
+        $table_name = $wpdb->prefix . 'wppoppop_submissions';$popup_uid  = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : (isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '');
+
+        if (!empty($name)) { $clean_fields['_name'] = $name; }
+        if (!empty($phone)) { $clean_fields['_phone'] = $phone; }
+        $clean_fields['_ip'] = $ip;
+        $visitor_country = isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : '';
 
         $wpdb->insert($table_name,
             [
-                'popup_uid'  => $popup_uid,
-                'name'       => $name,
-                'email'      => $email,
-                'phone'      => $phone,
-                'payload'    => wp_json_encode($clean_fields),
-                'ip_address' => $ip,
-                'created_at' => current_time('mysql')
+                'popup_uid'    => $popup_uid,
+                'email'        => (string) $email,
+                'fields_data'  => wp_json_encode($clean_fields),
+                'status'       => 'confirmed',
+                'country_code' => $visitor_country,
+                'created_at'   => current_time('mysql')
             ],
-            ['%s', '%s', '%s', '%s', '%s', '%s', '%s']
+            ['%s', '%s', '%s', '%s', '%s', '%s']
         );
+        if ($popup_uid !== '') {
+            $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}wppoppop_items SET submissions = submissions + 1, confirmations = confirmations + 1 WHERE uid = %s", $popup_uid));
+        }
 
         $submission_id =$wpdb->insert_id;
 
@@ -163,7 +169,7 @@ class WpPopPop_Ajax_Frontend {
             wp_send_json_error(['message' => __('Unauthorized capability.', 'wppoppop')]);
         }
         $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
-        if (!wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
+        if (!(wp_verify_nonce($nonce, 'wppoppop_admin_nonce') || wp_verify_nonce($nonce, 'wppoppop_builder_nonce'))) {
             wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')]);
         }
 
@@ -207,7 +213,7 @@ class WpPopPop_Ajax_Frontend {
             wp_send_json_error(['message' => __('Unauthorized capability.', 'wppoppop')]);
         }
         $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
-        if (!wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
+        if (!(wp_verify_nonce($nonce, 'wppoppop_admin_nonce') || wp_verify_nonce($nonce, 'wppoppop_builder_nonce'))) {
             wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')]);
         }
 

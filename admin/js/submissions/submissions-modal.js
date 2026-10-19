@@ -2,6 +2,8 @@
     'use strict';
     window.WpPopPopSubmissions = window.WpPopPopSubmissions || {};
 
+    function escHtml(v) { return $('<div>').text(v == null ? '' : String(v)).html(); }
+
     var Modal = {
         init: function() {
             this.bindInspector();
@@ -32,7 +34,7 @@
                 var hasSig = false;
 
                 $.each(fields, function(key, val) {
-                    if (key === 'signature' && val) {
+                    if (key === 'signature' && val && String(val).indexOf('data:image/') === 0) {
                         hasSig = true;
                         $('#wppoppop-modal-sig-img').attr('src', val);
                     } else if (key.indexOf('utm_') === 0) {
@@ -40,7 +42,8 @@
                         $utmList.append('<span style="background:#e2e8f0;padding:2px 8px;border-radius:4px;"><strong>' + key + ':</strong> ' + val + '</span>');
                     } else {
                         var displayVal = Array.isArray(val) ? val.join(', ') : val;
-                        $fieldsList.append('<div style="background:#f8fafc;padding:8px 12px;border-radius:6px;border:1px solid #e2e8f0;"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">' + key + '</label><div style="font-weight:600;font-size:13px;color:#1e293b;">' + displayVal + '</div></div>');
+                        if (key.charAt(0) === '_') { key = key.substring(1); }
+                        $fieldsList.append('<div style="background:#f8fafc;padding:8px 12px;border-radius:6px;border:1px solid #e2e8f0;"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">' + escHtml(key) + '</label><div style="font-weight:600;font-size:13px;color:#1e293b;">' + escHtml(displayVal) + '</div></div>');
                     }
                 });
 

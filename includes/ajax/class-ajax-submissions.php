@@ -10,8 +10,15 @@ class WpPopPop_Ajax_Submissions {
         add_action('wp_ajax_wppoppop_anonymize_submission', [$this, 'anonymize_submission']);
     }
 
+    private function verify_nonce() {
+        $n = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
+        if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
+            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+        }
+    }
+
     public function export_submissions_csv() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_die('Unauthorized');
         }
@@ -32,7 +39,7 @@ class WpPopPop_Ajax_Submissions {
     }
 
     public function delete_submission() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized action.']);
         }
@@ -42,7 +49,7 @@ class WpPopPop_Ajax_Submissions {
     }
 
     public function anonymize_submission() {
-        check_ajax_referer('wppoppop_builder_nonce', 'nonce');
+        $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized action.']);
         }

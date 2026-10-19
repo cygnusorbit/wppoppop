@@ -132,6 +132,23 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
         }
 
+        // 6. Submissions Assets
+        if ($page === 'wppoppop-submissions') {
+            $sub_ver = (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time());
+            wp_enqueue_script('wppoppop-submissions-search-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-search.js', ['jquery'], $sub_ver, true);
+            wp_enqueue_script('wppoppop-submissions-actions-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-actions.js', ['jquery'], $sub_ver, true);
+            wp_enqueue_script('wppoppop-submissions-modal-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-modal.js', ['jquery'], $sub_ver, true);
+            wp_enqueue_script('wppoppop-submissions-js', WPPOPPOP_URL . 'admin/js/submissions.js', [
+                'jquery',
+                'wppoppop-submissions-search-js',
+                'wppoppop-submissions-actions-js',
+                'wppoppop-submissions-modal-js'
+            ], $sub_ver, true);
+            wp_localize_script('wppoppop-submissions-js', 'wppoppop_vars', array_merge($shared_payload, [
+                'nonce' => wp_create_nonce('wppoppop_builder_nonce')
+            ]));
+        }
+
         // 5. Tools & Portability Assets
         if ($page === 'wppoppop-tools') {
             wp_enqueue_script('wppoppop-tools-system-js', WPPOPPOP_URL . 'admin/js/tools/tools-system.js', ['jquery'], (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time()), true);
