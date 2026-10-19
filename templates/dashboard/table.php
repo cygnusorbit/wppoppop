@@ -75,6 +75,18 @@ $list_table->prepare_items();
     background: var(--wpp-c-primary, #c0281c); border-color: var(--wpp-c-primary, #c0281c); color: var(--wpp-c-primary-text, #fff);
 }
 .wppoppop-table-wrap a.wppoppop-preview-screen .dashicons { width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
+/* WPP_ACTIVE_SWITCH */
+/* Active slide toggle */
+.wppoppop-table-wrap label.wppoppop-switch { position: relative; display: inline-block; width: 40px; height: 22px; margin: 0; vertical-align: middle; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.wppoppop-table-wrap .wppoppop-switch input.wppoppop-status-toggle-input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.wppoppop-table-wrap .wppoppop-switch-slider { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: var(--wpp-c-border-strong, #c3c4c7); border-radius: 22px; -webkit-transition: background .2s ease; transition: background .2s ease; }
+.wppoppop-table-wrap .wppoppop-switch-slider::before { content: ""; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,.3); -webkit-transition: -webkit-transform .2s ease; transition: transform .2s ease; }
+.wppoppop-table-wrap .wppoppop-switch input:checked + .wppoppop-switch-slider { background: var(--wpp-c-success, #16a34a); }
+.wppoppop-table-wrap .wppoppop-switch input:checked + .wppoppop-switch-slider::before { -webkit-transform: translateX(18px); transform: translateX(18px); }
+.wppoppop-table-wrap .wppoppop-switch input:focus + .wppoppop-switch-slider { box-shadow: 0 0 0 2px var(--wpp-c-input-focus, #2271b1); }
+.wppoppop-table-wrap .wppoppop-switch input:disabled { cursor: not-allowed; }
+.wppoppop-table-wrap .wppoppop-switch input:disabled + .wppoppop-switch-slider { opacity: .5; }
+.wppoppop-table-wrap .wppoppop-switch.is-busy { opacity: .6; pointer-events: none; }
 </style>
 <div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
     <?php if (!empty($_GET['trashed'])) : 
@@ -126,6 +138,12 @@ $list_table->prepare_items();
                 ?>
             </p>
         </div>
+    <?php elseif (!empty($_GET['duplicated'])) :
+        $duplicated_count = intval($_GET['duplicated']);
+    ?>
+        <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
+            <p><?php printf(_n('%d campaign duplicated (saved as Draft).', '%d campaigns duplicated (saved as Draft).', $duplicated_count, 'wppoppop'), number_format_i18n($duplicated_count)); ?></p>
+        </div>
     <?php elseif (!empty($_GET['updated'])) : 
         $updated_count = intval($_GET['updated']);
     ?>
@@ -156,6 +174,7 @@ $list_table->prepare_items();
         <?php wp_nonce_field('bulk-popups'); ?>
         <?php
         $list_table->views();
+        $list_table->search_box(__('Search Popups', 'wppoppop'), 'wppoppop');
         $list_table->display();
         ?>
     </form>

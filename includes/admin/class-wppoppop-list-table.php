@@ -389,10 +389,21 @@ class WpPopPop_List_Table extends WP_List_Table {
     }
 
     public function column_active($item) {
+        $uid    = is_array($item) ? $item['uid'] : $item->uid;
         $status = is_array($item) ? $item['status'] : $item->status;
-        return ($status === 'publish' || $status === 'published')
-            ? esc_html__('Yes', 'wppoppop')
-            : esc_html__('No', 'wppoppop');
+        if ($status === 'trash') {
+            return '<span aria-hidden="true">&mdash;</span>';
+        }
+        $is_on    = ($status === 'publish' || $status === 'published');
+        $can      = current_user_can('manage_options') || current_user_can('publish_wppoppop_campaigns');
+        $label    = $is_on ? __('Active', 'wppoppop') : __('Inactive', 'wppoppop');
+        return sprintf(
+            '<label class="wppoppop-switch" title="%1$s"><input type="checkbox" class="wppoppop-status-toggle-input" data-uid="%2$s" role="switch" aria-label="%1$s"%3$s%4$s /><span class="wppoppop-switch-slider" aria-hidden="true"></span></label>',
+            esc_attr($label),
+            esc_attr($uid),
+            $is_on ? ' checked="checked"' : '',
+            $can ? '' : ' disabled="disabled"'
+        );
     }
 
     public function column_modified($item) {
@@ -520,7 +531,7 @@ class WpPopPop_List_Table extends WP_List_Table {
 
         // 5. Bulk Actions Handler
         $action = $this->current_action();
-        if ($action && in_array($action, ['trash', 'untrash', 'delete', 'publish', 'draft'], true)) {
+        if ($action && in_array($action, ['trash', 'untrash', 'delete', 'publish', 'draft', 'duplicate'], true)) {
             $nonce = !empty($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '';
             $valid = wp_verify_nonce($nonce, 'bulk-' . $this->_args['plural']) || 
                      wp_verify_nonce($nonce, 'bulk-popups') || 
@@ -560,6 +571,25 @@ class WpPopPop_List_Table extends WP_List_Table {
                         $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $uids));
                     }
                     $arg = ['deleted' => $count];
+                } elseif ($action === 'duplicate') {
+                    if (!current_user_can('edit_wppoppop_campaigns')) {
+                        wp_die(__('You do not have permission to duplicate campaigns.', 'wppoppop'));
+                    }
+                    $src = $wpdb->get_results($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid IN ($placeholders) AND status != 'trash'", $uids), ARRAY_A);
+                    $made = 0;
+                    foreach ((array) $src as $r) {
+                        $ok = $wpdb->insert($items_table, [
+                            'uid'           => wp_generate_uuid4(),
+                            'title'         => $r['title'] . ' (Copy)',
+                            'data'          => $r['data'],
+                            'status'        => 'draft',
+                            'impressions'   => 0,
+                            'submissions'   => 0,
+                            'confirmations' => 0,
+                        ], ['%s', '%s', '%s', '%s', '%d', '%d', '%d']);
+                        if ($ok) { $made++; }
+                    }
+                    $arg = ['duplicated' => $made];
                 } elseif ($action === 'publish' || $action === 'draft') {
                     if (!current_user_can('publish_wppoppop_campaigns')) {
                         wp_die(__('You do not have permission to modify campaign statuses.', 'wppoppop'));

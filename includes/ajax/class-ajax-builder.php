@@ -119,7 +119,7 @@ class WpPopPop_Ajax_Builder {
     public function duplicate_popup() {
         $this->verify_security();
         global $wpdb;
-        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_POST['uid'])), ARRAY_A);
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : ''), ARRAY_A);
         if (!$row) {
             wp_send_json_error(['message' => 'Source popup not found.']);
         }
@@ -131,7 +131,7 @@ class WpPopPop_Ajax_Builder {
                 'uid'           => $new_uid,
                 'title'         => $row['title'] . ' (Copy)',
                 'data'          => $row['data'],
-                'status'        => 'publish',
+                'status'        => 'draft',
                 'impressions'   => 0,
                 'submissions'   => 0,
                 'confirmations' => 0
@@ -149,7 +149,11 @@ class WpPopPop_Ajax_Builder {
     public function delete_popup() {
         $this->verify_security();
         global $wpdb;
-        $wpdb->delete($wpdb->prefix . 'wppoppop_items', ['uid' => sanitize_key($_POST['uid'])], ['%s']);
+        $del_uid = isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : '';
+        if ($del_uid === '') {
+            wp_send_json_error(['message' => 'Missing campaign UID.']);
+        }
+        $wpdb->delete($wpdb->prefix . 'wppoppop_items', ['uid' => $del_uid], ['%s']);
         wp_send_json_success(['message' => 'Popup removed successfully.']);
     }
 
@@ -176,7 +180,7 @@ class WpPopPop_Ajax_Builder {
     public function export_popup() {
         $this->verify_security();
         global $wpdb;
-        $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", sanitize_key($_GET['uid'])), ARRAY_A);
+        $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", isset($_GET['uid']) ? sanitize_key(wp_unslash($_GET['uid'])) : ''), ARRAY_A);
         if (!$row) {
             wp_send_json_error(['message' => 'Popup not found.']);
         }
