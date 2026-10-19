@@ -30,7 +30,9 @@ class WpPopPop_Admin_Pages {
 
     public function render_submissions() {
         global $wpdb;
-        $submissions = $wpdb->get_results("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 200");
+        $filter_uid = isset($_GET['popup_uid']) ? sanitize_text_field(wp_unslash($_GET['popup_uid'])) : '';
+        $where = $filter_uid !== '' ? $wpdb->prepare(' WHERE s.popup_uid = %s', $filter_uid) : '';
+        $submissions = $wpdb->get_results("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid{$where} ORDER BY s.id DESC LIMIT 200");
         include WPPOPPOP_PATH . 'templates/submissions-view.php';
     }
 

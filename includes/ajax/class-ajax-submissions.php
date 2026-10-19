@@ -8,6 +8,7 @@ class WpPopPop_Ajax_Submissions {
         add_action('wp_ajax_wppoppop_export_submissions_csv', [$this, 'export_submissions_csv']);
         add_action('wp_ajax_wppoppop_delete_submission', [$this, 'delete_submission']);
         add_action('wp_ajax_wppoppop_anonymize_submission', [$this, 'anonymize_submission']);
+        add_action('wp_ajax_wppoppop_mark_submission_read', [$this, 'mark_submission_read']);
     }
 
     private function verify_nonce() {
@@ -36,6 +37,22 @@ class WpPopPop_Ajax_Submissions {
         }
         fclose($output);
         exit;
+    }
+
+    public function mark_submission_read() {
+        $n = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
+            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+        }
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized action.'], 403);
+        }
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        if ($id > 0) {
+            global $wpdb;
+            $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['is_read' => 1], ['id' => $id], ['%d'], ['%d']);
+        }
+        wp_send_json_success(['id' => $id]);
     }
 
     public function delete_submission() {

@@ -7,7 +7,12 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
+if (!class_exists('WpPopPop_Installer')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-installer.php';
+}
+
 class WpPopPop_List_Table extends WP_List_Table {
+    protected $entry_counts = null;
 
     public function __construct() {
         parent::__construct([
@@ -19,24 +24,22 @@ class WpPopPop_List_Table extends WP_List_Table {
 
     public function get_columns() {
         return [
-            'cb'          => '<input type="checkbox" />',
-            'title'       => __('Campaign', 'wppoppop'),
-            'status'      => __('Status', 'wppoppop'),
-            'impressions' => __('Impressions', 'wppoppop'),
-            'submissions' => __('Submissions', 'wppoppop'),
-            'conversion'  => __('Conv. Rate', 'wppoppop'),
-            'created_at'  => __('Created', 'wppoppop'),
+            'cb'        => '<input type="checkbox" />',
+            'title'     => __('Name', 'wppoppop'),
+            'shortcode' => '',
+            'entries'   => __('Entries', 'wppoppop'),
+            'active'    => __('Active', 'wppoppop'),
+            'modified'  => __('Last modified', 'wppoppop'),
         ];
     }
 
     protected function get_sortable_columns() {
         return [
-            'title'       => ['title', false],
-            'status'      => ['status', false],
-            'impressions' => ['impressions', false],
-            'submissions' => ['submissions', false],
-            'conversion'  => ['conversion', false],
-            'created_at'  => ['created_at', true],
+            'title'     => ['title', false],
+            'shortcode' => ['uid', false],
+            'entries'   => ['submissions', false],
+            'active'    => ['status', false],
+            'modified'  => ['updated_at', true],
         ];
     }
 
@@ -70,6 +73,51 @@ class WpPopPop_List_Table extends WP_List_Table {
     }
 
     protected function get_views() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wppoppop_items';
+        $rows = $wpdb->get_results("SELECT status FROM {$table_name}");
+
+        $all = 0; $active = 0; $inactive = 0; $trash = 0;
+        foreach ((array) $rows as $row) {
+            if ($row->status === 'trash') {
+                $trash++;
+                continue;
+            }
+            $all++;
+            if ($row->status === 'publish' || $row->status === 'published') {
+                $active++;
+            } else {
+                $inactive++;
+            }
+        }
+
+        $current = isset($_GET['status']) ? sanitize_key($_GET['status']) : 'all';
+        if ($current === 'publish' || $current === 'published') { $current = 'active'; }
+        if ($current === 'draft') { $current = 'inactive'; }
+
+        $make = function ($key, $label, $count) use ($current) {
+            $url = ($key === 'all')
+                ? remove_query_arg(['status', 'paged'])
+                : add_query_arg(['status' => $key, 'paged' => 1]);
+            return sprintf(
+                '<a href="%s" class="wppoppop-view-btn%s"%s>%s <span class="count">(%d)</span></a>',
+                esc_url($url),
+                $current === $key ? ' current' : '',
+                $current === $key ? ' aria-current="page"' : '',
+                esc_html($label),
+                (int) $count
+            );
+        };
+
+        return [
+            'all'      => $make('all', __('All', 'wppoppop'), $all),
+            'active'   => $make('active', __('Active', 'wppoppop'), $active),
+            'inactive' => $make('inactive', __('Inactive', 'wppoppop'), $inactive),
+            'trash'    => $make('trash', __('Trash', 'wppoppop'), $trash),
+        ];
+    }
+
+    protected function get_views_legacy() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
         $all_rows   = $wpdb->get_results("SELECT id, status, impressions, submissions FROM {$table_name}");
@@ -226,12 +274,12 @@ class WpPopPop_List_Table extends WP_List_Table {
                 __('Quick Edit', 'wppoppop')
             );
             $actions['duplicate'] = sprintf(
-                '<a href="javascript:void(0);" role="button" class="wppoppop-duplicate-btn" data-uid="%s">%s</a>',
+                '<a href="javascript:void(0);" role="button" class="wppoppop-duplicate-btn wppoppop-action-duplicate" data-uid="%s">%s</a>',
                 esc_attr($uid),
                 __('Duplicate', 'wppoppop')
             );
             $actions['export'] = sprintf(
-                '<a href="javascript:void(0);" role="button" class="wppoppop-export-btn" data-uid="%s">%s</a>',
+                '<a href="javascript:void(0);" role="button" class="wppoppop-export-btn wppoppop-action-export" data-uid="%s">%s</a>',
                 esc_attr($uid),
                 __('Export JSON', 'wppoppop')
             );
@@ -294,6 +342,65 @@ class WpPopPop_List_Table extends WP_List_Table {
     public function column_created_at($item) {
         $val = is_array($item) ? $item['created_at'] : $item->created_at;
         return esc_html(date_i18n(get_option('date_format'), strtotime($val)));
+    }
+
+    protected function get_entry_counts() {
+        if ($this->entry_counts !== null) {
+            return $this->entry_counts;
+        }
+        global $wpdb;
+        WpPopPop_Installer::ensure_schema();
+        $subs = $wpdb->prefix . 'wppoppop_submissions';
+        $rows = $wpdb->get_results(
+            "SELECT popup_uid, COUNT(*) AS total, SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread FROM {$subs} GROUP BY popup_uid",
+            ARRAY_A
+        );
+        $this->entry_counts = [];
+        foreach ((array) $rows as $r) {
+            $this->entry_counts[$r['popup_uid']] = [
+                'total'  => (int) $r['total'],
+                'unread' => (int) $r['unread'],
+            ];
+        }
+        return $this->entry_counts;
+    }
+
+    public function column_shortcode($item) {
+        $uid = is_array($item) ? $item['uid'] : $item->uid;
+        $sc  = '[wppoppop uid="' . $uid . '"]';
+        return '<code class="wppoppop-shortcode-chip" title="' . esc_attr__('Click to copy', 'wppoppop') . '">' . esc_html($sc) . '</code>';
+    }
+
+    public function column_entries($item) {
+        $uid    = is_array($item) ? $item['uid'] : $item->uid;
+        $counts = $this->get_entry_counts();
+        $total  = isset($counts[$uid]) ? $counts[$uid]['total'] : 0;
+        $unread = isset($counts[$uid]) ? $counts[$uid]['unread'] : 0;
+        $url    = admin_url('admin.php?page=wppoppop-submissions&popup_uid=' . rawurlencode($uid));
+        $label  = sprintf(
+            __('%1$s unread (%2$s entries)', 'wppoppop'),
+            number_format_i18n($unread),
+            number_format_i18n($total)
+        );
+        return '<a href="' . esc_url($url) . '"><strong>' . esc_html($label) . '</strong></a>';
+    }
+
+    public function column_active($item) {
+        $status = is_array($item) ? $item['status'] : $item->status;
+        return ($status === 'publish' || $status === 'published')
+            ? esc_html__('Yes', 'wppoppop')
+            : esc_html__('No', 'wppoppop');
+    }
+
+    public function column_modified($item) {
+        $val = is_array($item) ? ($item['updated_at'] ?? '') : ($item->updated_at ?? '');
+        if (empty($val) || $val === '0000-00-00 00:00:00') {
+            $val = is_array($item) ? ($item['created_at'] ?? '') : ($item->created_at ?? '');
+        }
+        if (empty($val)) {
+            return '—';
+        }
+        return esc_html(mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $val));
     }
 
     public function column_default($item, $column_name) {
@@ -484,10 +591,10 @@ class WpPopPop_List_Table extends WP_List_Table {
 
         if ($status === 'trash') {
             $query .= " AND status = 'trash'";
-        } elseif ($status === 'published' || $status === 'publish') {
+        } elseif ($status === 'published' || $status === 'publish' || $status === 'active') {
             $query .= " AND status IN ('publish', 'published')";
-        } elseif ($status === 'draft') {
-            $query .= " AND status = 'draft'";
+        } elseif ($status === 'draft' || $status === 'inactive') {
+            $query .= " AND status NOT IN ('publish', 'published', 'trash')";
         } else {
             $query .= " AND status != 'trash'";
         }
@@ -499,12 +606,12 @@ class WpPopPop_List_Table extends WP_List_Table {
             $params[] = $wildcard;
         }
 
-        $orderby = isset($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'created_at';
+        $orderby = isset($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'updated_at';
         $order   = isset($_GET['order']) && strtolower($_GET['order']) === 'asc' ? 'ASC' : 'DESC';
 
-        $allowed_orderby = ['title', 'status', 'impressions', 'submissions', 'created_at'];
+        $allowed_orderby = ['title', 'uid', 'status', 'impressions', 'submissions', 'created_at', 'updated_at'];
         if (!in_array($orderby, $allowed_orderby, true)) {
-            $orderby = 'created_at';
+            $orderby = 'updated_at';
         }
 
         $query .= " ORDER BY {$orderby} {$order}";

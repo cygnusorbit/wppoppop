@@ -22,6 +22,12 @@
                 var fields = $btn.data('fields') || {};
 
                 $('#wppoppop-modal-id').text('#' + id);
+                (function() {
+                    var v = window.wppoppop_vars || {};
+                    if (v.ajax_url && id) {
+                        $.post(v.ajax_url, { action: 'wppoppop_mark_submission_read', nonce: v.nonce, id: id });
+                    }
+                })();
                 $('#wppoppop-modal-email').text(email);
                 $('#wppoppop-modal-meta').text(popup + ' • ' + date + ' • Country: ' + country);
 

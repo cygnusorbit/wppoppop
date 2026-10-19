@@ -44,6 +44,7 @@ class WpPopPop_Installer {
             status varchar(20) NOT NULL DEFAULT 'confirmed',
             confirm_token varchar(64) DEFAULT '',
             country_code varchar(8) DEFAULT '',
+            is_read tinyint(1) NOT NULL DEFAULT 0,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             KEY popup_uid (popup_uid),
@@ -95,6 +96,14 @@ class WpPopPop_Installer {
             KEY transaction_id (transaction_id)
         ) {$charset_collate};";
         dbDelta($sql_transactions);
+    }
+
+    public static function ensure_schema() {
+        if (get_option('wppoppop_schema_is_read') === '1') {
+            return;
+        }
+        self::create_tables();
+        update_option('wppoppop_schema_is_read', '1');
     }
 
     public static function init_defaults() {

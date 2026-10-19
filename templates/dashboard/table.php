@@ -11,6 +11,56 @@ require_once WPPOPPOP_PATH . 'includes/admin/class-wppoppop-list-table.php';
 $list_table = new WpPopPop_List_Table();
 $list_table->prepare_items();
 ?>
+<style id="wppoppop-screenshot-table">
+.wppoppop-table-wrap table.wp-list-table { table-layout: fixed; width: 100%; border: 1px solid #c3c4c7; }
+.wppoppop-table-wrap table.wp-list-table .check-column { width: 2.2em; }
+.wppoppop-table-wrap table.wp-list-table th.column-title,
+.wppoppop-table-wrap table.wp-list-table td.column-title { width: 26%; }
+.wppoppop-table-wrap table.wp-list-table th.column-shortcode,
+.wppoppop-table-wrap table.wp-list-table td.column-shortcode { width: 30%; }
+.wppoppop-table-wrap table.wp-list-table th.column-entries,
+.wppoppop-table-wrap table.wp-list-table td.column-entries { width: 16%; }
+.wppoppop-table-wrap table.wp-list-table th.column-active,
+.wppoppop-table-wrap table.wp-list-table td.column-active { width: 9%; }
+.wppoppop-table-wrap table.wp-list-table th.column-modified,
+.wppoppop-table-wrap table.wp-list-table td.column-modified { width: 15%; }
+.wppoppop-table-wrap table.wp-list-table td { vertical-align: middle; }
+.wppoppop-table-wrap table.wp-list-table td.column-title a.row-title { font-size: 14px; font-weight: 600; }
+.wppoppop-table-wrap table.wp-list-table td.column-shortcode code.wppoppop-shortcode-chip {
+    display: block; max-width: 100%; box-sizing: border-box; padding: 8px 12px; margin: 0;
+    background: #e9e9e9; border: 0; border-radius: 4px; color: #50575e;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; user-select: all;
+    -webkit-user-select: all;
+}
+.wppoppop-table-wrap table.wp-list-table td.column-entries a { text-decoration: none; }
+.wppoppop-table-wrap .row-actions { left: -9999em; position: relative; }
+.wppoppop-table-wrap tr:hover .row-actions,
+.wppoppop-table-wrap tr:focus-within .row-actions { left: 0; }
+
+/* Status filter buttons */
+.wppoppop-table-wrap ul.subsubsub {
+    float: none; display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 16px 0 18px; padding: 0; font-size: 0; line-height: 1; white-space: normal;
+}
+.wppoppop-table-wrap ul.subsubsub li { display: block; margin: 0; padding: 0; font-size: 0; }
+.wppoppop-table-wrap a.wppoppop-view-btn {
+    position: relative; display: inline-block; padding: 11px 16px; font-size: 14px; line-height: 1;
+    color: #3c434a; text-decoration: none; background: #f6f7f7;
+    border: 1px solid #dcdcde; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.wppoppop-table-wrap a.wppoppop-view-btn:hover { background: #fff; border-color: #c3c4c7; color: #1d2327; }
+.wppoppop-table-wrap a.wppoppop-view-btn .count { color: #d63638; font-size: 12px; font-weight: 400; }
+.wppoppop-table-wrap a.wppoppop-view-btn.current {
+    background: #c0281c; border-color: #a62016; color: #fff; font-weight: 700;
+}
+.wppoppop-table-wrap a.wppoppop-view-btn.current .count { color: #fff; font-weight: 700; }
+.wppoppop-table-wrap a.wppoppop-view-btn.current::after {
+    content: ""; position: absolute; left: 14px; bottom: -9px; width: 0; height: 0;
+    border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 9px solid #c0281c;
+}
+.wppoppop-table-wrap .tablenav.top { clear: both; }
+</style>
 <div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
     <?php if (!empty($_GET['trashed'])) : 
         $trashed_count = intval($_GET['trashed']);
@@ -91,7 +141,6 @@ $list_table->prepare_items();
         <?php wp_nonce_field('bulk-popups'); ?>
         <?php
         $list_table->views();
-        $list_table->search_box(__('Search Campaigns', 'wppoppop'), 'wppoppop-search-input');
         $list_table->display();
         ?>
     </form>
