@@ -61,7 +61,24 @@ if (!defined('ABSPATH')) exit;
             row.className = 'wppoppop-imgsel-row';
             row.style.cssText = 'display:flex;gap:4px;align-items:center;margin-bottom:6px;';
             row.appendChild(mkInput('Label', l, 'label', '1 1 36%'));
-            row.appendChild(mkInput('https://... image URL', u, 'url', '1 1 64%'));
+            /* WPPOPPOP_IMGSEL_MEDIA */
+            var uw = document.createElement('div');
+            uw.style.cssText = 'position:relative;flex:1 1 64%;min-width:0;display:flex;align-items:center;';
+            var ui = mkInput('https://... image URL', u, 'url', '1 1 auto');
+            ui.style.cssText = 'width:100%;min-width:0;font-size:12px;padding-right:30px;';
+            uw.appendChild(ui);
+            var mb = document.createElement('button');
+            mb.type = 'button';
+            mb.setAttribute('data-act', 'media');
+            mb.title = 'Choose image from Media Library';
+            mb.setAttribute('aria-label', 'Choose image from Media Library');
+            mb.style.cssText = 'position:absolute;right:3px;top:50%;transform:translateY(-50%);width:22px;height:22px;padding:0;margin:0;border:0;background:transparent;color:#38bdf8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;';
+            var mi = document.createElement('span');
+            mi.className = 'dashicons dashicons-admin-media';
+            mi.style.cssText = 'font-size:16px;width:16px;height:16px;line-height:16px;pointer-events:none;';
+            mb.appendChild(mi);
+            uw.appendChild(mb);
+            row.appendChild(uw);
             row.appendChild(mkBtn('+', 'Add a choice below', 'add'));
             row.appendChild(mkBtn('-', 'Remove this choice', 'del'));
             return row;
@@ -96,6 +113,38 @@ if (!defined('ABSPATH')) exit;
         }
         window.__wppImgSelRebuild = rebuild;
 
+        var mediaFrame = null, mediaRow = null;
+        function setRow(row, url, title) {
+            if (!row) { return; }
+            var ui = row.querySelector('[data-role="url"]'), li = row.querySelector('[data-role="label"]');
+            if (ui) { ui.value = url; }
+            if (li && !trim(li.value) && title) { li.value = cleanLabel(title); }
+            serialize();
+        }
+        function openMedia(row) {
+            mediaRow = row;
+            if (!window.wp || !window.wp.media) {
+                var ui = row.querySelector('[data-role="url"]');
+                var manual = window.prompt('WordPress Media is unavailable. Enter image URL:', ui ? ui.value : '');
+                if (manual) { setRow(row, cleanUrl(manual), ''); }
+                return;
+            }
+            if (!mediaFrame) {
+                mediaFrame = window.wp.media({
+                    title: 'Select or Upload Image',
+                    button: { text: 'Use Image' },
+                    multiple: false,
+                    library: { type: 'image' }
+                });
+                mediaFrame.on('select', function () {
+                    var att = mediaFrame.state().get('selection').first();
+                    att = att ? att.toJSON() : null;
+                    if (att && att.url) { setRow(mediaRow, att.url, att.title || ''); }
+                });
+            }
+            mediaFrame.open();
+        }
+
         document.addEventListener('input', function (e) {
             var t = e.target;
             if (t && t.closest && t.closest('#wppoppop-imgsel-rows')) { serialize(); }
@@ -108,6 +157,10 @@ if (!defined('ABSPATH')) exit;
                 e.preventDefault();
                 var row = b.closest('.wppoppop-imgsel-row'), c = box();
                 if (!row || !c) { return; }
+                if (b.getAttribute('data-act') === 'media') {
+                    openMedia(row);
+                    return;
+                }
                 if (b.getAttribute('data-act') === 'add') {
                     var nr = mkRow('', '');
                     c.insertBefore(nr, row.nextSibling);
