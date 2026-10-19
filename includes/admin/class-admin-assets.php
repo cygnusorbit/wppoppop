@@ -20,6 +20,14 @@ class WpPopPop_Admin_Assets {
         $page = isset($_GET['page']) ? sanitize_key($_GET['page']) : '';
         $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : '';
 
+        // 0. Global Theme (all WpPopPop admin pages) + Theme page assets
+        if (class_exists('WpPopPop_Admin_Theme')) {
+            WpPopPop_Admin_Theme::enqueue_global();
+            if ($page === WpPopPop_Admin_Theme::PAGE) {
+                WpPopPop_Admin_Theme::enqueue_page();
+            }
+        }
+
         // Shared general configuration
         $shared_payload = [
             'ajax_url'    => admin_url('admin-ajax.php'),

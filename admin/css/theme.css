@@ -1,0 +1,26 @@
+/* Theme settings page layout */
+.wpp-theme-layout { display: -webkit-box; display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.wpp-theme-main { flex: 1 1 560px; min-width: 0; }
+.wpp-theme-side { flex: 0 0 360px; max-width: 100%; position: sticky; top: 42px; }
+.wpp-theme-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.wpp-theme-tab.is-active { background: #0f172a !important; color: #fff !important; border-color: #0f172a !important; }
+.wpp-theme-panel { display: none; padding: 16px 20px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; box-sizing: border-box; }
+.wpp-theme-panel.is-active, .wpp-theme-main.is-searching .wpp-theme-panel { display: block; margin-bottom: 12px; }
+.wpp-theme-panel h2 { margin-top: 0; }
+.wpp-theme-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px 18px; }
+.wpp-theme-field.is-wide { grid-column: 1 / -1; }
+.wpp-theme-field label { display: block; margin-bottom: 4px; }
+.wpp-theme-field input[type="text"], .wpp-theme-field select, .wpp-theme-field textarea { width: 100%; box-sizing: border-box; }
+.wpp-theme-field textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.wpp-theme-field.is-hidden { display: none; }
+.wpp-theme-input-row { display: flex; align-items: center; gap: 6px; }
+.wpp-theme-picker { width: 38px; height: 32px; padding: 0; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; flex: 0 0 auto; -webkit-appearance: none; appearance: none; }
+.wpp-theme-picker::-webkit-color-swatch-wrapper { padding: 2px; }
+.wpp-theme-picker::-webkit-color-swatch { border: none; border-radius: 4px; }
+.wpp-theme-picker::-moz-color-swatch { border: none; border-radius: 4px; }
+.wpp-theme-field-reset { border: 0; background: transparent; cursor: pointer; font-size: 16px; color: #64748b; padding: 0 4px; }
+.wpp-theme-box { padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; margin-bottom: 16px; box-sizing: border-box; }
+.wpp-theme-box h3 { margin-top: 0; }
+.wpp-theme-box textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.wpp-theme-preview .wppoppop-kpi-card { margin-bottom: 12px; }
+@media (max-width: 960px) { .wpp-theme-side { position: static; flex-basis: 100%; } }

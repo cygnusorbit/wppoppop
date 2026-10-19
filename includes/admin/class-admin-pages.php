@@ -163,6 +163,13 @@ class WpPopPop_Admin_Pages {
         include WPPOPPOP_PATH . 'templates/settings-view.php';
     }
 
+    public function render_theme() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.', 'wppoppop'));
+        }
+        include WPPOPPOP_PATH . 'templates/theme-view.php';
+    }
+
     public function render_tools() {
         include WPPOPPOP_PATH . 'templates/tools-view.php';
     }

@@ -16,15 +16,21 @@ if (!class_exists('WpPopPop_Admin_Export') && file_exists(WPPOPPOP_PATH . 'inclu
     require_once WPPOPPOP_PATH . 'includes/admin/class-admin-export.php';
 }
 
+if (!class_exists('WpPopPop_Admin_Theme') && file_exists(WPPOPPOP_PATH . 'includes/admin/class-admin-theme.php')) {
+    require_once WPPOPPOP_PATH . 'includes/admin/class-admin-theme.php';
+}
+
 class WpPopPop_Admin {
     protected $pages;
     protected $menu;
     protected $assets;
+    protected $theme;
     protected $export;
 
     public function __construct() {
         $this->pages  = new WpPopPop_Admin_Pages();
         $this->menu   = new WpPopPop_Admin_Menu($this->pages);
+        $this->theme  = new WpPopPop_Admin_Theme();
         $this->assets = new WpPopPop_Admin_Assets();
         if (class_exists('WpPopPop_Admin_Export')) {
             $this->export = new WpPopPop_Admin_Export();
