@@ -24,3 +24,54 @@
 .wpp-theme-box textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 .wpp-theme-preview .wppoppop-kpi-card { margin-bottom: 12px; }
 @media (max-width: 960px) { .wpp-theme-side { position: static; flex-basis: 100%; } }
+
+/* WPP_THEME_V2: dashboard-aligned layout */
+.wppoppop-theme-wrap { max-width: none; width: 100%; padding-right: 30px; box-sizing: border-box; }
+.wppoppop-theme-wrap .wpp-theme-topbar { padding-top: 10px; }
+.wppoppop-theme-wrap .wpp-theme-topbar h1 { margin: 0; }
+.wppoppop-theme-wrap .wpp-theme-topbar h1 .dashicons { font-size: 22px; width: 22px; height: 22px; }
+.wppoppop-theme-wrap .wpp-theme-subtitle { margin: 4px 0 0; color: var(--wpp-c-muted, #64748b); font-size: 13px; }
+.wppoppop-theme-wrap .wppoppop-dashboard-actions input[type="search"] { height: 34px; min-width: 200px; padding: 0 10px; }
+.wppoppop-theme-wrap .button .dashicons { font-size: 16px; width: 16px; height: 16px; }
+
+/* Top bar sticks below the WP admin bar while scrolling */
+.wppoppop-theme-wrap .wpp-theme-topbar {
+    position: -webkit-sticky; position: sticky; top: 32px; z-index: 20;
+    background: var(--wpp-c-bg-page, #f0f0f1); padding-bottom: 10px; margin-bottom: 14px;
+    border-bottom: 1px solid var(--wpp-c-border, #e2e8f0);
+}
+@media (max-width: 782px) { .wppoppop-theme-wrap .wpp-theme-topbar { top: 46px; } }
+
+/* Tabs: same look as dashboard buttons, active state follows primary color */
+.wppoppop-theme-wrap .wpp-theme-tabs { margin-bottom: 14px; }
+.wppoppop-theme-wrap .wpp-theme-tab.is-active {
+    background: var(--wpp-c-primary, #2563eb) !important;
+    border-color: var(--wpp-c-primary, #2563eb) !important;
+    color: var(--wpp-c-primary-text, #fff) !important;
+}
+
+/* Cards use dashboard card look */
+.wppoppop-theme-wrap .wpp-theme-panel,
+.wppoppop-theme-wrap .wpp-theme-box {
+    background: var(--wpp-c-bg-card, #fff);
+    border: 1px solid var(--wpp-c-border, #e2e8f0);
+    border-radius: var(--wpp-r-card, 8px);
+    box-shadow: var(--wpp-shadow-card, 0 1px 3px rgba(0,0,0,.05));
+}
+.wppoppop-theme-wrap .wpp-theme-panel h2,
+.wppoppop-theme-wrap .wpp-theme-box h3 { margin: 0 0 14px; }
+.wppoppop-theme-wrap .wpp-theme-side { top: 100px; }
+
+/* Neutralize dashboard 34px button rule for tiny inline controls */
+.wppoppop-theme-wrap button.wpp-theme-field-reset {
+    height: 28px; width: 28px; padding: 0; justify-content: center; border: 0; background: transparent; color: var(--wpp-c-muted, #64748b); font-size: 16px; font-weight: 400;
+}
+.wppoppop-theme-wrap button.wpp-theme-field-reset:hover { color: var(--wpp-c-text, #1e293b); }
+.wppoppop-theme-wrap .wpp-theme-field input[type="checkbox"] { height: 18px; width: 18px; min-height: 0; margin: 2px 0 0; }
+.wppoppop-theme-wrap .wpp-theme-field input[type="text"],
+.wppoppop-theme-wrap .wpp-theme-field select { height: 34px; padding: 0 10px; }
+.wppoppop-theme-wrap .wpp-theme-field textarea { padding: 8px 10px; }
+.wppoppop-theme-wrap .wpp-theme-picker { height: 34px; padding: 0; }
+.wppoppop-theme-wrap .wpp-theme-box textarea { margin-bottom: 8px; }
+.wppoppop-theme-wrap .wpp-theme-preview .wppoppop-kpi-card { align-items: flex-start; }
+.wppoppop-theme-wrap .wpp-theme-preview p { margin: 12px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

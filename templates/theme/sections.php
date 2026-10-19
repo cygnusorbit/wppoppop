@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
     <?php endforeach; ?>
 </datalist>
 
-<nav class="wpp-theme-tabs" role="tablist">
+<nav class="button wpp-theme-tabs" role="tablist">
     <?php $first = true; foreach ($theme_schema as $gid => $group) : ?>
         <button type="button" role="tab" class="wpp-theme-tab<?php echo $first ? ' is-active' : ''; ?>" data-tab="<?php echo esc_attr($gid); ?>"><?php echo esc_html($group['label']); ?></button>
     <?php $first = false; endforeach; ?>

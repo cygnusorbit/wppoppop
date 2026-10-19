@@ -14,17 +14,18 @@ class WpPopPop_Admin_Theme {
     public function __construct() {
         add_action('admin_init', [$this, 'handle_post']);
         add_filter('admin_body_class', [$this, 'body_class']);
+        add_action('admin_menu', [$this, 'reorder_menu'], 100);
         add_action('admin_menu', [$this, 'register_fallback_menu'], 99);
     }
 
     public function register_fallback_menu() {
         global $submenu;
-        if (!empty($submenu['wppoppop'])) {
-            foreach ($submenu['wppoppop'] as $item) {
+        if (!empty($submenu['wppoppop-dashboard'])) {
+            foreach ($submenu['wppoppop-dashboard'] as $item) {
                 if (isset($item[2]) && $item[2] === self::PAGE) { return; }
             }
         }
-        add_submenu_page('wppoppop', 'Theme', 'Theme', 'manage_options', self::PAGE, [$this, 'render_page']);
+        add_submenu_page('wppoppop-dashboard', 'Theme', 'Theme', 'manage_options', self::PAGE, [$this, 'render_page']);
     }
 
     public function render_page() {
@@ -32,6 +33,27 @@ class WpPopPop_Admin_Theme {
             wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'wppoppop'));
         }
         include WPPOPPOP_PATH . 'templates/theme-view.php';
+    }
+
+    /* Place "Theme" immediately below "Settings" in the WpPopPop submenu. */
+    public function reorder_menu() {
+        global $submenu;
+        if (empty($submenu['wppoppop-dashboard']) || !is_array($submenu['wppoppop-dashboard'])) { return; }
+        $items = array_values($submenu['wppoppop-dashboard']);
+        $theme_item = null;
+        $rest = [];
+        foreach ($items as $item) {
+            if (isset($item[2]) && $item[2] === self::PAGE) { $theme_item = $item; } else { $rest[] = $item; }
+        }
+        if ($theme_item === null) { return; }
+        $out = [];
+        $placed = false;
+        foreach ($rest as $item) {
+            $out[] = $item;
+            if (isset($item[2]) && $item[2] === 'wppoppop-settings') { $out[] = $theme_item; $placed = true; }
+        }
+        if (!$placed) { $out[] = $theme_item; }
+        $submenu['wppoppop-dashboard'] = $out;
     }
 
     /* ---------------------------------------------------------- schema */
@@ -314,7 +336,9 @@ class WpPopPop_Admin_Theme {
     }
 
     public static function enqueue_page() {
-        wp_enqueue_style('wppoppop-theme-css', WPPOPPOP_URL . 'admin/css/theme.css', ['wppoppop-theme-global-css'], self::version());
+        // Shared dashboard base (wrap, header, buttons, KPI cards, badges, chips)
+        wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], self::version());
+        wp_enqueue_style('wppoppop-theme-css', WPPOPPOP_URL . 'admin/css/theme.css', ['wppoppop-dashboard-css', 'wppoppop-theme-global-css'], self::version());
         wp_enqueue_script('wppoppop-theme-js', WPPOPPOP_URL . 'admin/js/theme.js', [], self::version(), true);
     }
 
