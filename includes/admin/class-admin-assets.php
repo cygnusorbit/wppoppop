@@ -167,6 +167,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-ab-actions-js', WPPOPPOP_URL . 'admin/js/ab/ab-actions.js', ['jquery'], $ab_ver, true);
             wp_enqueue_script('wppoppop-ab-js', WPPOPPOP_URL . 'admin/js/ab.js', ['jquery', 'wppoppop-ab-modal-js', 'wppoppop-ab-actions-js'], $ab_ver, true);
             wp_localize_script('wppoppop-ab-js', 'wppoppop_vars', $shared_payload);
+            wp_enqueue_script('wppoppop-ab-edit-js', WPPOPPOP_URL . 'admin/js/ab/ab-edit.js', ['jquery', 'wppoppop-ab-js'], $ab_ver, true);
         }
 
         // 6. Submissions Assets

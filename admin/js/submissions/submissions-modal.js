@@ -24,8 +24,14 @@
                 $('#wppoppop-modal-id').text('#' + id);
                 (function() {
                     var v = window.wppoppop_vars || {};
-                    if (v.ajax_url && id) {
-                        $.post(v.ajax_url, { action: 'wppoppop_mark_submission_read', nonce: v.nonce, id: id });
+                    var $readRow = $btn.closest('tr.wppoppop-sub-row');
+                    if (v.ajax_url && id && $readRow.hasClass('is-unread')) {
+                        $.post(v.ajax_url, { action: 'wppoppop_mark_submission_read', nonce: v.nonce, id: id }).done(function(res) {
+                            if (res && res.success) {
+                                $readRow.removeClass('is-unread');
+                                $(document).trigger('wppoppop:subs-read-changed');
+                            }
+                        });
                     }
                 })();
                 $('#wppoppop-modal-email').text(email);

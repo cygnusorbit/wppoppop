@@ -11,6 +11,7 @@ class WpPopPop_Ajax_Submissions {
         add_action('wp_ajax_wppoppop_save_table_options', [$this, 'save_table_options']);
         add_action('wp_ajax_wppoppop_assign_sub_labels', [$this, 'assign_sub_labels']);
         add_action('wp_ajax_wppoppop_mark_submission_read', [$this, 'mark_submission_read']);
+        add_action('wp_ajax_wppoppop_mark_submission_unread', [$this, 'mark_submission_unread']);
     }
 
     public function save_table_options() {
@@ -143,6 +144,26 @@ class WpPopPop_Ajax_Submissions {
         if ($id > 0) {
             global $wpdb;
             $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['is_read' => 1], ['id' => $id], ['%d'], ['%d']);
+        }
+        wp_send_json_success(['id' => $id]);
+    }
+
+    public function mark_submission_unread() {
+        $n = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
+            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+        }
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized action.'], 403);
+        }
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        if ($id <= 0) {
+            wp_send_json_error(['message' => 'Invalid submission.']);
+        }
+        global $wpdb;
+        $ok = $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['is_read' => 0], ['id' => $id], ['%d'], ['%d']);
+        if ($ok === false) {
+            wp_send_json_error(['message' => 'Database error while saving.']);
         }
         wp_send_json_success(['id' => $id]);
     }

@@ -42,13 +42,14 @@ $ab_cols  = '
                     $status    = strtolower((string) $c->status);
                     $is_off    = in_array($status, ['draft', 'paused', 'inactive', 'trash'], true);
                     ?>
-                    <tr class="wppoppop-ab-row" data-uid="<?php echo esc_attr($c->uid); ?>">
+                    <tr class="wppoppop-ab-row" data-uid="<?php echo esc_attr($c->uid); ?>" data-title="<?php echo esc_attr($c->title); ?>" data-popups="<?php echo esc_attr(wp_json_encode(array_values($uids))); ?>">
                         <td class="column-num"><?php echo (int) ($idx + 1); ?></td>
                         <td class="column-title has-row-actions">
                             <strong class="wpp-ab-title"><?php echo esc_html($c->title); ?></strong>
                             <div class="wpp-ab-meta"><code><?php echo esc_html($c->uid); ?></code></div>
                             <div class="wpp-ab-meta"><?php esc_html_e('Created:', 'wppoppop'); ?> <?php echo esc_html($c->created_at); ?></div>
                             <div class="row-actions">
+                                <span class="edit"><button type="button" class="button-link wppoppop-edit-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Edit', 'wppoppop'); ?></button> | </span>
                                 <span class="delete"><button type="button" class="button-link wppoppop-del-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Delete', 'wppoppop'); ?></button></span>
                             </div>
                         </td>
@@ -78,7 +79,11 @@ $ab_cols  = '
                             <?php endif; ?>
                         </td>
                         <td class="column-status">
-                            <span class="wpp-badge <?php echo $is_off ? 'is-off' : 'is-on'; ?>"><?php echo esc_html(ucfirst((string) $c->status)); ?></span>
+                            <label class="wpp-ab-switch" title="<?php echo esc_attr($is_off ? __('Inactive', 'wppoppop') : __('Active', 'wppoppop')); ?>">
+                                <input type="checkbox" class="wpp-ab-status-toggle" data-uid="<?php echo esc_attr($c->uid); ?>" role="switch" aria-label="<?php esc_attr_e('Campaign active', 'wppoppop'); ?>"<?php echo $is_off ? '' : ' checked="checked"'; ?> />
+                                <span class="wpp-ab-switch-slider" aria-hidden="true"></span>
+                            </label>
+                            <span class="wpp-badge <?php echo $is_off ? 'is-off' : 'is-on'; ?>"><?php echo $is_off ? esc_html__('Inactive', 'wppoppop') : esc_html__('Active', 'wppoppop'); ?></span>
                         </td>
                         <td class="column-shortcode">
                             <code class="wppoppop-shortcode-chip wppoppop-copy-ab-sc-btn" data-shortcode="<?php echo esc_attr($shortcode); ?>" title="<?php esc_attr_e('Click to copy shortcode', 'wppoppop'); ?>"><?php echo esc_html($shortcode); ?></code>

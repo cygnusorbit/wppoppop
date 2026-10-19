@@ -52,6 +52,9 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
 #wppoppop-submissions-table .row-actions a{text-decoration:none;cursor:pointer}
 #wppoppop-submissions-table .row-actions .trash a{color:#b32d2e}
 .wppoppop-sub-row.wppoppop-hidden{display:none}
+#wppoppop-submissions-table .wppoppop-unread-dot{display:inline-block;width:8px;height:8px;margin:0 6px 1px 0;border-radius:50%;background:var(--wpp-c-danger,#d63638);vertical-align:middle}
+#wppoppop-submissions-table tr:not(.is-unread) .wppoppop-unread-dot{display:none}
+#wppoppop-submissions-table tr.is-unread .mark-unread-wrap,#wppoppop-submissions-table tr:not(.is-unread) .mark-read-wrap{display:none}
 .wppoppop-pager .pagination-links .button{min-width:26px;padding:0 6px;height:26px;line-height:24px}
 .wppoppop-pager .paging-input{margin:0 6px;font-size:12px}
 </style>
@@ -79,6 +82,9 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
             $fields = [];
         }
         $is_confirmed = ($s->status === 'confirmed');
+        $is_unread    = empty($s->is_read);
+        $dot_col      = in_array('popup', $active_cols, true) ? 'popup' : reset($active_cols);
+        $unread_dot   = '<span class="wppoppop-unread-dot" title="' . esc_attr__('Unread', 'wppoppop') . '" aria-label="' . esc_attr__('Unread', 'wppoppop') . '"></span>';
         $country      = !empty($s->country_code) ? $s->country_code : '—';
         $ts           = strtotime($s->created_at);
         $date_label   = $ts ? date_i18n('j/n/Y g:i A', $ts) : $s->created_at;
@@ -95,7 +101,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
             . '" data-date="' . esc_attr($s->created_at) . '" data-country="' . esc_attr($country)
             . "\" data-fields='" . esc_attr(wp_json_encode($fields)) . "'";
         ?>
-        <tr class="wppoppop-sub-row <?php echo $is_confirmed ? 'is-confirmed' : 'is-pending'; ?>"
+        <tr class="wppoppop-sub-row <?php echo $is_confirmed ? 'is-confirmed' : 'is-pending'; ?><?php echo $is_unread ? ' is-unread' : ''; ?>"
             data-id="<?php echo esc_attr($s->id); ?>"
             data-status="<?php echo $is_confirmed ? 'confirmed' : 'pending'; ?>"
             data-ts="<?php echo esc_attr((int) $ts); ?>"
@@ -127,15 +133,17 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                             <span class="dashicons dashicons-tag wppoppop-tag" style="color:<?php echo esc_attr($rl['color']); ?>;" title="<?php echo esc_attr($rl['name']); ?>"></span>
                         <?php endforeach; ?>
                         <span class="dashicons <?php echo $is_confirmed ? 'dashicons-email' : 'dashicons-email-alt'; ?> wppoppop-envelope"></span>
-                        <a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>><?php echo esc_html($val); ?></a>
+                        <?php echo ($c === $dot_col) ? $unread_dot : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>><?php echo esc_html($val); ?></a>
                         <div class="row-actions">
                             <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>>View</a> | </span>
+                            <span class="mark-unread-wrap"><a href="#" class="wppoppop-mark-unread-btn" data-id="<?php echo esc_attr($s->id); ?>">Mark as unread</a> | </span>
+                            <span class="mark-read-wrap"><a href="#" class="wppoppop-mark-read-btn" data-id="<?php echo esc_attr($s->id); ?>">Mark as read</a> | </span>
                             <span class="anon"><a href="#" class="wppoppop-anon-sub-btn" data-id="<?php echo esc_attr($s->id); ?>" title="Anonymize PII (GDPR)">Anonymize</a> | </span>
                             <span class="trash"><a href="#" class="wppoppop-del-sub-btn" data-id="<?php echo esc_attr($s->id); ?>">Delete</a></span>
                         </div>
                     </td>
                 <?php else : ?>
-                    <td class="<?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>"><?php echo esc_html($val); ?></td>
+                    <td class="<?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>"><?php echo ($c === $dot_col) ? $unread_dot : ''; echo esc_html($val); ?></td>
                 <?php endif;
             endforeach; ?>
         </tr>

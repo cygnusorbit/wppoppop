@@ -300,7 +300,9 @@ class WpPopPop_List_Table extends WP_List_Table {
             $actions['trash'] = sprintf('<a href="%s" class="submitdelete">%s</a>', esc_url($trash_url), __('Trash', 'wppoppop'));
         }
 
-        $post_state = ($status === 'draft') ? ' <span class="post-state">— ' . esc_html__('Draft', 'wppoppop') . '</span>' : '';
+        $post_state = in_array($status, ['publish', 'published'], true)
+            ? ' <span class="wppoppop-active-badge">' . esc_html__('ACTIVE', 'wppoppop') . '</span>'
+            : ' <span class="wppoppop-inactive-badge">' . esc_html__('INACTIVE', 'wppoppop') . '</span>';
 
         $title_link = $can_edit
             ? sprintf('<a class="row-title" href="%s">%s</a>', esc_url($edit_url), esc_html($title))

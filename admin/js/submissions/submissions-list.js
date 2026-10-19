@@ -21,7 +21,8 @@
             var self = this;
             return this.rows().filter(function() {
                 var $r = $(this);
-                if (self.filter !== 'all' && $r.attr('data-status') !== self.filter) return false;
+                if (self.filter === 'unread') { if (!$r.hasClass('is-unread')) return false; }
+                else if (self.filter !== 'all' && $r.attr('data-status') !== self.filter) return false;
                 if (self.term) {
                     var hay = ($r.attr('data-email') || '') + ' ' + ($r.attr('data-title') || '') + ' ' + $r.text().toLowerCase();
                     if (hay.indexOf(self.term) === -1) return false;
@@ -50,7 +51,16 @@
             $('[data-count="all"]').text($all.length);
             $('[data-count="pending"]').text($all.filter('[data-status="pending"]').length);
             $('[data-count="confirmed"]').text($all.filter('[data-status="confirmed"]').length);
+            $('[data-count="unread"]').text($all.filter('.is-unread').length);
             $('.wppoppop-check-all').prop('checked', false);
+        },
+
+        counts: function() {
+            var $all = this.rows();
+            $('[data-count="all"]').text($all.length);
+            $('[data-count="pending"]').text($all.filter('[data-status="pending"]').length);
+            $('[data-count="confirmed"]').text($all.filter('[data-status="confirmed"]').length);
+            $('[data-count="unread"]').text($all.filter('.is-unread').length);
         },
 
         selectedIds: function() {
@@ -164,6 +174,8 @@
                     setTimeout(function() { self.render(); }, 450);
                 }
             });
+
+            $(document).on('wppoppop:subs-read-changed', function() { self.counts(); });
 
             this.render();
         }

@@ -132,9 +132,11 @@
             $row.find('.wppoppop-action-embed').attr('data-status', status);
 
             var $strong = $row.find('td.column-title > strong').first();
-            $strong.find('.post-state').remove();
+            $strong.find('.post-state, .wppoppop-inactive-badge, .wppoppop-active-badge').remove();
             if (status !== 'publish') {
-                $strong.append(' <span class="post-state">\u2014 Draft</span>');
+                $strong.append(' <span class="wppoppop-inactive-badge">INACTIVE</span>');
+            } else {
+                $strong.append(' <span class="wppoppop-active-badge">ACTIVE</span>');
             }
             $row.find('.wppoppop-status-toggle-input').prop('checked', status === 'publish');
         },

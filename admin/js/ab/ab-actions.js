@@ -36,12 +36,14 @@
                 }
 
                 var $btn = $(this);
-                $btn.prop('disabled', true).text('Launching...');
+                var origLabel = $btn.text();
+                $btn.prop('disabled', true).text($('#wppoppop-ab-edit-uid').val() ? 'Saving...' : 'Launching...');
 
                 var vars = self.getVars();
 
                 $.post(vars.ajax_url, {
-                    action: 'wppoppop_save_campaign',
+                    action: ($('#wppoppop-ab-edit-uid').val() ? 'wppoppop_update_campaign' : 'wppoppop_save_campaign'),
+                    uid: ($('#wppoppop-ab-edit-uid').val() || ''),
                     nonce: vars.nonce,
                     title: title,
                     popup_uids: selectedUids
@@ -50,11 +52,11 @@
                         location.reload();
                     } else {
                         alert('Error: ' + (res.data ? res.data.message : 'Unable to create campaign.'));
-                        $btn.prop('disabled', false).text('Launch Campaign');
+                        $btn.prop('disabled', false).text(origLabel);
                     }
                 }).fail(function() {
                     alert('Network error while saving campaign.');
-                    $btn.prop('disabled', false).text('Launch Campaign');
+                    $btn.prop('disabled', false).text(origLabel);
                 });
             });
         },

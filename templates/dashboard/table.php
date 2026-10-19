@@ -87,6 +87,16 @@ $list_table->prepare_items();
 .wppoppop-table-wrap .wppoppop-switch input:disabled { cursor: not-allowed; }
 .wppoppop-table-wrap .wppoppop-switch input:disabled + .wppoppop-switch-slider { opacity: .5; }
 .wppoppop-table-wrap .wppoppop-switch.is-busy { opacity: .6; pointer-events: none; }
+/* WPP_INACTIVE_BADGE */
+.wppoppop-table-wrap .wppoppop-inactive-badge,
+.wppoppop-table-wrap .wppoppop-active-badge {
+    display: inline-block; margin-left: 6px; padding: 2px 8px; vertical-align: middle;
+    background: var(--wpp-c-warning, #d97706); color: #fff;
+    border-radius: var(--wpp-r-badge, 12px);
+    font-size: var(--wpp-fs-badge, 11px); font-weight: 700; line-height: 1.5;
+    letter-spacing: .4px; text-transform: uppercase; white-space: nowrap;
+}
+.wppoppop-table-wrap .wppoppop-active-badge { background: var(--wpp-c-success, #16a34a); }
 </style>
 <div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
     <?php if (!empty($_GET['trashed'])) : 

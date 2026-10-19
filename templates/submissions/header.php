@@ -4,8 +4,12 @@ if (!defined('ABSPATH')) {
 }
 $wppoppop_total     = isset($submissions) ? count($submissions) : 0;
 $wppoppop_confirmed = 0;
+$wppoppop_unread    = 0;
 if (!empty($submissions)) {
     foreach ($submissions as $__s) {
+        if (empty($__s->is_read)) {
+            $wppoppop_unread++;
+        }
         if ($__s->status === 'confirmed') {
             $wppoppop_confirmed++;
         }
@@ -40,6 +44,7 @@ $bar_after_title = WPPOPPOP_PATH . 'templates/submissions/bar-filter.php';
 <div class="wppoppop-subs-toolbar">
     <div class="wppoppop-subs-tabs" id="wppoppop-subs-tabs">
         <button type="button" class="active" data-filter="all">All <small>(<span data-count="all"><?php echo (int) $wppoppop_total; ?></span>)</small></button>
+        <button type="button" data-filter="unread">Unread <small>(<span data-count="unread"><?php echo (int) $wppoppop_unread; ?></span>)</small></button>
         <button type="button" data-filter="pending">Pending <small>(<span data-count="pending"><?php echo (int) $wppoppop_pending; ?></span>)</small></button>
         <button type="button" data-filter="confirmed">Confirmed <small>(<span data-count="confirmed"><?php echo (int) $wppoppop_confirmed; ?></span>)</small></button>
     </div>

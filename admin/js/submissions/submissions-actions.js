@@ -7,6 +7,7 @@
             this.bindExportCsv();
             this.bindAnonymize();
             this.bindDelete();
+            this.bindReadToggle();
         },
 
         getVars: function() {
@@ -49,6 +50,36 @@
                 }).fail(function() {
                     alert('Network error while anonymizing lead.');
                 });
+            });
+        },
+
+        bindReadToggle: function() {
+            var self = this;
+            $(document).off('click.wppSubRead').on('click.wppSubRead', '.wppoppop-mark-unread-btn, .wppoppop-mark-read-btn', function(e) {
+                e.preventDefault();
+                var $a = $(this);
+                var makeRead = $a.hasClass('wppoppop-mark-read-btn');
+                var id = $a.data('id');
+                var $row = $a.closest('tr');
+                var vars = self.getVars();
+                if ($a.data('busy')) { return; }
+                $a.data('busy', true);
+
+                $.post(vars.ajax_url, {
+                    action: makeRead ? 'wppoppop_mark_submission_read' : 'wppoppop_mark_submission_unread',
+                    nonce: vars.nonce,
+                    id: id
+                }).done(function(res) {
+                    if (res && res.success) {
+                        $row.toggleClass('is-unread', !makeRead);
+                        var L = window.WpPopPopSubmissions && window.WpPopPopSubmissions.List;
+                        if (L && typeof L.render === 'function') { L.render(); }
+                    } else {
+                        alert((res && res.data && res.data.message) || 'Could not update read state.');
+                    }
+                }).fail(function() {
+                    alert('Network error while updating read state.');
+                }).always(function() { $a.data('busy', false); });
             });
         },
 
