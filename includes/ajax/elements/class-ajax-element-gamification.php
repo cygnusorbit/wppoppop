@@ -16,6 +16,9 @@ class WpPopPop_Ajax_Element_Gamification {
         if (isset($el['ratingVal']))        $clean['ratingVal']        = intval($el['ratingVal']);
         if (isset($el['maxStars']))         $clean['maxStars']         = intval($el['maxStars']);
         if (isset($el['ratingColor']))      $clean['ratingColor']      = sanitize_hex_color($el['ratingColor']) ?: sanitize_text_field($el['ratingColor']);
+        if (isset($el['ratingInactiveColor']) && !is_array($el['ratingInactiveColor'])) { $ric = sanitize_hex_color((string) $el['ratingInactiveColor']); if ($ric) { $clean['ratingInactiveColor'] = $ric; } } /* WPPOPPOP_RATING */
+        if (isset($el['ratingMax']))        $clean['ratingMax']        = (intval($el['ratingMax']) === 10) ? 10 : 5;
+        if (isset($el['ratingShape']))      $clean['ratingShape']      = sanitize_key($el['ratingShape']);
         if (isset($el['sliderVal']))        $clean['sliderVal']        = floatval($el['sliderVal']);
         if (isset($el['sliderColor']))      $clean['sliderColor']      = sanitize_hex_color($el['sliderColor']) ?: sanitize_text_field($el['sliderColor']);
         if (isset($el['sigColor']))         $clean['sigColor']         = sanitize_hex_color($el['sigColor']) ?: sanitize_text_field($el['sigColor']);

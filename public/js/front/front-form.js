@@ -60,7 +60,7 @@
             }
 
             var origText = $btn.text();
-            $btn.prop('disabled', true).text('Submitting...');
+            $btn.prop('disabled', true).text($btn.attr('data-loading-text') || 'Submitting...'); /* WPPOPPOP_SUBMIT_LOADING */
 
             if (vars.enable_recaptcha && vars.recaptcha_site_key && typeof window.grecaptcha !== 'undefined') {
                 window.grecaptcha.ready(function() {
@@ -96,6 +96,23 @@
                     $btn.prop('disabled', false).text(origText);
 
                     if (res && res.success) {
+                        /* WPPOPPOP_SUBMIT_ROUTING: honour the Submit layer's post-submit action */
+                        var wppAct = $btn.attr('data-submit-action') || 'default';
+                        if (wppAct === 'redirect' && $btn.attr('data-redirect-url')) {
+                            $(document).trigger('wppoppop:form_submitted', [res.data]);
+                            window.location.href = $btn.attr('data-redirect-url');
+                            return;
+                        }
+                        if (wppAct === 'next_canvas' && $popup && $popup.find('[data-canvas="' + (parseInt($btn.attr('data-goto-canvas'), 10) || 2) + '"]').length) { /* WPPOPPOP_SUBMIT_CANVAS_GUARD */
+                            var wppTo = parseInt($btn.attr('data-goto-canvas'), 10) || 2;
+                            $(document).trigger('wppoppop:form_submitted', [res.data]);
+                            var $wppNext = $('<button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn" aria-hidden="true" tabindex="-1" style="display:none"></button>')
+                                .attr({ 'data-goto-canvas': wppTo, 'data-goto-screen': wppTo, 'data-goto': wppTo });
+                            ($popup && $popup.length ? $popup.find('.wppoppop-box').first() : $canvas).append($wppNext);
+                            $wppNext.trigger('click');
+                            setTimeout(function() { $wppNext.remove(); }, 50);
+                            return;
+                        }
                         if (window.WpPopPopFrontDisplay && typeof window.WpPopPopFrontDisplay.triggerCelebration === 'function') {
                             window.WpPopPopFrontDisplay.triggerCelebration();
                         }
@@ -104,7 +121,7 @@
                         if (res.data && res.data.redirect_url) {
                             window.location.href = res.data.redirect_url;
                         } else {
-                            var successMsg = (res.data && res.data.message) ? res.data.message : 'Thank you for your submission!';
+                            var successMsg = $btn.attr('data-confirm-message') || ((res.data && res.data.message) ? res.data.message : 'Thank you for your submission!'); /* WPPOPPOP_SUBMIT_CONFIRM */
                             self.showSuccess($canvas, successMsg, $popup);
                             setTimeout(function() {
                                 if (window.WpPopPopFrontDisplay) {
@@ -224,15 +241,15 @@
         });
 
         // 2. Interactive Star / Heart / Thumb Rating (Element 25)
-        $(document).off('click.wppoppopRatingGlyph').on('click.wppoppopRatingGlyph', '.wppoppop-rating-glyph', function(e) {
+        $(document).off('click.wppoppopRatingGlyph').on('click.wppoppopRatingGlyph', '.wppoppop-rating-glyph-legacy', function(e) { /* WPPOPPOP_RATING_LEGACY_OFF */
             e.preventDefault();
             var $glyph =$(this);
             var score = parseInt($glyph.attr('data-score'), 10) || 5;
             var $wrap =$glyph.closest('.wppoppop-interactive-rating');
-            var actCol = $wrap.attr('data-active-color') || '#f59e0b';
+            var actCol = $wrap.attr('data-active-color') || '#f59e0b'; var inCol = $wrap.attr('data-inactive-color') || '#cbd5e1'; /* WPPOPPOP_RATING */
             $wrap.find('.wppoppop-rating-glyph').each(function() {
                 var s = parseInt($(this).attr('data-score'), 10) || 1;
-                $(this).css('color', s <= score ? actCol : '#cbd5e1');
+                $(this).css('color', s <= score ? actCol : inCol);
             });
             $wrap.find('input[type="hidden"]').val(score).trigger('change');
         });
@@ -364,7 +381,7 @@
     });
 
     // 3. Interactive Star Rating Selection on Frontend
-    $(document).on('click', '.wppoppop-rating-glyph', function() {
+    $(document).on('click', '.wppoppop-rating-glyph-legacy', function() { /* WPPOPPOP_RATING_LEGACY_OFF */
         var $g =$(this);
         var score = parseInt($g.attr('data-score'), 10) || 5;
         var $wrap =$g.closest('.wppoppop-rating-wrap');
@@ -838,3 +855,162 @@
     document.addEventListener('reset', reset, true);
 })();
 /* === WPPOPPOP_PW_TOGGLE_END === */
+
+/* === WPPOPPOP_RATING_SYNC_START === */
+(function($) {
+    'use strict';
+    function paint($w) {
+        var v = parseInt($w.find('input[type="hidden"]').val(), 10) || 0;
+        var act = $w.attr('data-active-color') || '#f59e0b';
+        var ina = $w.attr('data-inactive-color') || '#cbd5e1';
+        $w.find('.wppoppop-rating-glyph').each(function() {
+            var sc = parseInt($(this).attr('data-score'), 10) || 0;
+            $(this).css('color', sc <= v ? act : ina);
+        });
+    }
+    $(document).off('change.wppRtSync').on('change.wppRtSync', '.wppoppop-interactive-rating input[type="hidden"]', function() {
+        var $w = $(this).closest('.wppoppop-interactive-rating');
+        var max = $w.find('.wppoppop-rating-glyph').length;
+        var v = parseInt(this.value, 10) || 0;
+        if (v > max) { this.value = String(max); }
+        if (v < 0) { this.value = ''; }
+        paint($w);
+    });
+})(jQuery);
+/* === WPPOPPOP_RATING_SYNC_END === */
+
+/* === WPPOPPOP_RATING_RUNTIME_START === */
+(function() {
+    'use strict';
+    if (window.__wppRating) return;
+    window.__wppRating = true;
+
+    if (!document.getElementById('wppoppop-rating-runtime-css')) {
+        var st = document.createElement('style');
+        st.id = 'wppoppop-rating-runtime-css';
+        st.appendChild(document.createTextNode('.wppoppop-interactive-rating,.wppoppop-interactive-rating .wppoppop-rating-glyph{pointer-events:auto!important;touch-action:manipulation;}.wppoppop-rating-glyph:focus{outline:2px solid rgba(2,132,199,.5);outline-offset:2px;border-radius:3px;}'));
+        (document.head || document.documentElement).appendChild(st);
+    }
+
+    function fire(el, name) {
+        var ev;
+        try { ev = new Event(name, { bubbles: true }); } catch (err) { ev = document.createEvent('Event'); ev.initEvent(name, true, true); }
+        el.dispatchEvent(ev);
+    }
+    function glyphs(wrap) { return wrap.querySelectorAll('.wppoppop-rating-glyph'); }
+    function paint(wrap, score) {
+        var act = wrap.getAttribute('data-active-color') || '#f59e0b';
+        var ina = wrap.getAttribute('data-inactive-color') || '#cbd5e1';
+        var g = glyphs(wrap);
+        for (var i = 0; i < g.length; i++) {
+            var sc = parseInt(g[i].getAttribute('data-score'), 10) || 0;
+            g[i].style.color = (sc <= score) ? act : ina;
+            g[i].setAttribute('aria-checked', sc === score ? 'true' : 'false');
+        }
+    }
+    function current(wrap) {
+        var inp = wrap.querySelector('input[type="hidden"]');
+        return inp ? (parseInt(inp.value, 10) || 0) : 0;
+    }
+    function setValue(wrap, score) {
+        var inp = wrap.querySelector('input[type="hidden"]');
+        if (!inp) return;
+        var max = glyphs(wrap).length;
+        score = Math.max(0, Math.min(max, score));
+        inp.value = score > 0 ? String(score) : '';
+        paint(wrap, score);
+        fire(inp, 'input');
+        fire(inp, 'change');
+        var bub = document.querySelector('.wppoppop-error-bubble');
+        if (bub && bub.getAttribute('data-rating') === '1' && bub.parentNode) { bub.parentNode.removeChild(bub); }
+    }
+    function glyphOf(t) { return (t && t.closest) ? t.closest('.wppoppop-rating-glyph') : null; }
+
+    document.addEventListener('click', function(e) {
+        var g = glyphOf(e.target);
+        if (!g) return;
+        var wrap = g.closest('.wppoppop-interactive-rating');
+        if (!wrap) return;
+        e.preventDefault();
+        e.stopPropagation();
+        setValue(wrap, parseInt(g.getAttribute('data-score'), 10) || 0);
+    }, true);
+
+    document.addEventListener('mouseover', function(e) {
+        var g = glyphOf(e.target);
+        if (!g) return;
+        var wrap = g.closest('.wppoppop-interactive-rating');
+        if (wrap) { paint(wrap, parseInt(g.getAttribute('data-score'), 10) || 0); }
+    }, true);
+    document.addEventListener('mouseout', function(e) {
+        var g = glyphOf(e.target);
+        if (!g) return;
+        var wrap = g.closest('.wppoppop-interactive-rating');
+        if (wrap) { paint(wrap, current(wrap)); }
+    }, true);
+
+    document.addEventListener('keydown', function(e) {
+        var g = glyphOf(e.target);
+        if (!g) return;
+        var wrap = g.closest('.wppoppop-interactive-rating');
+        if (!wrap) return;
+        var k = e.key, sc = parseInt(g.getAttribute('data-score'), 10) || 0, cur = current(wrap);
+        if (k === 'Enter' || k === ' ' || e.keyCode === 13 || e.keyCode === 32) { e.preventDefault(); setValue(wrap, sc); }
+        else if (k === 'ArrowRight' || k === 'ArrowUp' || e.keyCode === 39 || e.keyCode === 38) { e.preventDefault(); setValue(wrap, Math.max(cur, 0) + 1); }
+        else if (k === 'ArrowLeft' || k === 'ArrowDown' || e.keyCode === 37 || e.keyCode === 40) { e.preventDefault(); setValue(wrap, cur - 1); }
+    }, true);
+
+    /* repaint when the value is set from elsewhere (dynamic URL default, reset, etc.) */
+    document.addEventListener('change', function(e) {
+        var t = e.target;
+        if (!t || !t.closest || t.type !== 'hidden') return;
+        var wrap = t.closest('.wppoppop-interactive-rating');
+        if (!wrap) return;
+        var max = glyphs(wrap).length, v = parseInt(t.value, 10) || 0;
+        if (v > max) { t.value = String(max); v = max; }
+        if (v < 0) { t.value = ''; v = 0; }
+        paint(wrap, v);
+    }, true);
+
+    function init(root) {
+        var list = (root || document).querySelectorAll('.wppoppop-interactive-rating');
+        for (var i = 0; i < list.length; i++) {
+            var w = list[i];
+            var g = glyphs(w);
+            for (var j = 0; j < g.length; j++) { if (!g[j].hasAttribute('tabindex')) { g[j].setAttribute('tabindex', '0'); } }
+            paint(w, current(w));
+        }
+    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function() { init(); }); } else { init(); }
+    if (window.MutationObserver && document.body) {
+        new MutationObserver(function() { init(); }).observe(document.body, { childList: true, subtree: true });
+    }
+    window.addEventListener('load', function() { init(); });
+
+    /* required rating: hidden inputs are skipped by the generic validator */
+    document.addEventListener('click', function(e) {
+        var btn = (e.target && e.target.closest) ? e.target.closest('.wppoppop-submit-trigger') : null;
+        if (!btn) return;
+        var popup = btn.closest('.wppoppop-popup-wrap') || document.body;
+        var list = popup.querySelectorAll('.wppoppop-interactive-rating');
+        for (var i = 0; i < list.length; i++) {
+            var w = list[i], inp = w.querySelector('input[type="hidden"]');
+            if (!inp || !inp.hasAttribute('required') || inp.value) continue;
+            if (!(w.offsetWidth || w.offsetHeight || w.getClientRects().length)) continue;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var old = document.querySelector('.wppoppop-error-bubble');
+            if (old && old.parentNode) { old.parentNode.removeChild(old); }
+            var b = document.createElement('div');
+            b.className = 'wppoppop-error-bubble';
+            b.setAttribute('data-rating', '1');
+            b.textContent = inp.getAttribute('data-error-msg') || 'Please select a rating.';
+            var r = w.getBoundingClientRect();
+            b.style.cssText = 'position:absolute;top:' + (r.top + window.pageYOffset - 34) + 'px;left:' + (r.left + window.pageXOffset) + 'px;background:#ef4444;color:#fff;padding:6px 12px;border-radius:4px;font-size:12px;font-weight:600;z-index:9999999;box-shadow:0 4px 12px rgba(239,68,68,.3);';
+            document.body.appendChild(b);
+            setTimeout(function() { if (b.parentNode) { b.parentNode.removeChild(b); } }, 3500);
+            return;
+        }
+    }, true);
+})();
+/* === WPPOPPOP_RATING_RUNTIME_END === */

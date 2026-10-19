@@ -25,11 +25,16 @@ if (!defined('ABSPATH')) exit;
         </div>
         <div id="prop-submit-canvas-wrap">
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">NEXT CANVAS #</label>
-            <input type="number" id="prop-submit-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" min="1" max="10" value="2" style="font-size:12px;">
+            <select id="prop-submit-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" style="font-size:12px;"><option value="">Select a canvas...</option></select>
+            <span style="display:block;font-size:9px;color:#64748b;margin-top:3px;">Canvas shown after a successful submit.</span>
         </div>
     </div>
     <div id="prop-submit-redirect-wrap">
         <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">POST-SUBMIT REDIRECT URL</label>
         <input type="text" id="prop-submit-redirect" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="redirectUrl" placeholder="https://example.com/thank-you" style="font-size:12px;">
+    </div>
+    <div id="prop-submit-confirm-wrap" style="margin-top:10px;">
+        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">CONFIRMATION MESSAGE</label>
+        <input type="text" id="prop-submit-confirm" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="confirmMessage" placeholder="Thank you for your submission!" style="font-size:12px;">
     </div>
 </div>

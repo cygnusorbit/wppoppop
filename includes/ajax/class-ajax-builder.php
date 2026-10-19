@@ -510,7 +510,8 @@ if (!$data || !isset($data['meta'])) {
         if (isset($el['ratingMax']))$clean['ratingMax'] = in_array(intval($el['ratingMax']), array(5, 10), true) ? intval($el['ratingMax']) : 5;
         if (isset($el['ratingShape'])) $clean['ratingShape'] = sanitize_key($el['ratingShape']);
         if (isset($el['ratingColor'])) $clean['ratingColor'] = sanitize_hex_color($el['ratingColor']);
-        foreach (array('iconLeftColor', 'iconRightColor') as $wppoppop_ic) { if (isset($el[$wppoppop_ic]) && !is_array($el[$wppoppop_ic])) { $wppoppop_icv = sanitize_hex_color((string) $el[$wppoppop_ic]); if ($wppoppop_icv) { $clean[$wppoppop_ic] = $wppoppop_icv; } } } /* WPPOPPOP_ICON_COLOR */
+        if (isset($el['ratingInactiveColor']) && !is_array($el['ratingInactiveColor'])) { $wppoppop_ric = sanitize_hex_color((string) $el['ratingInactiveColor']); if ($wppoppop_ric) { $clean['ratingInactiveColor'] = $wppoppop_ric; } } /* WPPOPPOP_RATING */
+        foreach (array('iconLeftColor', 'iconRightColor', 'fgColor') as $wppoppop_ic) { if (isset($el[$wppoppop_ic]) && !is_array($el[$wppoppop_ic])) { $wppoppop_icv = sanitize_hex_color((string) $el[$wppoppop_ic]); if ($wppoppop_icv) { $clean[$wppoppop_ic] = $wppoppop_icv; } } } /* WPPOPPOP_ICON_COLOR */
 
         
         // === PHASE 4: v3.0.637 SANITIZED 5-TAB & 3-TAB LAYER SETTINGS WHITELIST ===
@@ -548,7 +549,7 @@ if (!$data || !isset($data['meta'])) {
             'required', 'transparentFill', 'autoplay', 'muted', 'loop',
             'controls', 'showPercentLabel', 'striped', 'targetBlank',
             'nofollow', 'checkedDefault', 'multiSelect', 'multiple',
-            'showEyeToggle', 'logicEnabled', 'dynamicDefault',
+            'showEyeToggle', 'bgCustom', 'logicEnabled', 'dynamicDefault',
             'readOnly', 'saveToDb', 'blockDisposable'
         );
         foreach ( $gp_bool_keys as$bk ) {

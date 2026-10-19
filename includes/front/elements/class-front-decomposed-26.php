@@ -90,6 +90,7 @@ class WpPopPop_Front_Decomposed_26 {
         if ($html === null || $html === '') { return $html; }
         foreach (array('left' => 'iconLeftColor', 'right' => 'iconRightColor') as $side => $key) {
             $c = isset($el[$key]) ? trim((string) $el[$key]) : '';
+            if (($c === '' || !preg_match('/^#[0-9a-fA-F]{3,8}$/', $c)) && !empty($el['fgColor'])) { $c = trim((string) $el['fgColor']); } /* WPPOPPOP_FG_COLOR */
             if ($c === '' || !preg_match('/^#[0-9a-fA-F]{3,8}$/', $c)) { continue; }
             $html = preg_replace_callback('/<i\b[^>]*style="position:absolute;' . $side . ':[^"]*"[^>]*>/', function ($m) use ($c) {
                 $count = 0;
@@ -664,17 +665,24 @@ class WpPopPop_Front_Decomposed_26 {
                      . $eye_btn . '</div>';
 
             case 'rating':
-                $rmax = (!empty($el['ratingMax']) && intval($el['ratingMax']) === 10) ? 10 : 5;
-                $rcol = !empty($el['ratingColor']) ? esc_attr($el['ratingColor']) : '#f59e0b';
-                $rshape = !empty($el['ratingShape']) ? $el['ratingShape'] : 'star';$glyph = ($rshape === 'heart') ? '♥' : (($rshape === 'thumb') ? '👍' : '★');
-                $init_score = $default_val !== '' ? intval($default_val) : 5;
+                /* WPPOPPOP_RATING_FRONT_V2: inactive colour, default from Data tab, a11y, matches builder stage */
+                $rmax = ((!empty($el['ratingMax']) && intval($el['ratingMax']) === 10) || (empty($el['ratingMax']) && !empty($el['maxStars']) && intval($el['maxStars']) === 10)) ? 10 : 5; /* WPPOPPOP_RATING_MAXSTARS */
+                $rcol = (!empty($el['ratingColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['ratingColor'])) ? $el['ratingColor'] : '#f59e0b';
+                $roff = (!empty($el['ratingInactiveColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['ratingInactiveColor'])) ? $el['ratingInactiveColor'] : '#cbd5e1';
+                $rshape = !empty($el['ratingShape']) ? $el['ratingShape'] : 'star';
+                $glyph = ($rshape === 'heart') ? '♥' : (($rshape === 'thumb') ? '👍' : '★');
+                $init_score = ($default_val !== '' && is_numeric($default_val)) ? max(0, min($rmax, intval($default_val))) : 0;
+                $rfs = ($rmax === 10) ? 15 : 20;
+                $rt_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
+                $rt_j = ($rt_al === 'left') ? 'flex-start' : (($rt_al === 'right') ? 'flex-end' : 'center');
                 $stars_html = '';
                 for ($i = 1; $i <= $rmax; $i++) {
-                    $col = ($i <= $init_score) ?$rcol : '#cbd5e1';
-                    $stars_html .= '<span class="wppoppop-rating-glyph" data-score="' . $i . '" data-active-color="' . $rcol . '" style="color:' . $col . ';font-size:20px;cursor:pointer;line-height:1;user-select:none;">' . $glyph . '</span>';
+                    $col = ($i <= $init_score) ? $rcol : $roff;
+                    $stars_html .= '<span class="wppoppop-rating-glyph" role="radio" tabindex="0" aria-label="' . $i . ' of ' . $rmax . '" data-score="' . $i . '" data-active-color="' . esc_attr($rcol) . '" style="color:' . esc_attr($col) . ';font-size:' . $rfs . 'px;cursor:pointer;line-height:1;user-select:none;-webkit-user-select:none;">' . $glyph . '</span>';
                 }
-                return '<div class="wppoppop-interactive-rating" data-active-color="' . $rcol . '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:4px;">'
-                     . '<input type="hidden" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . $init_score . '"' . $data_attrs . ' />'
+                $rt_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                return '<div class="wppoppop-interactive-rating" role="radiogroup" data-active-color="' . esc_attr($rcol) . '" data-inactive-color="' . esc_attr($roff) . '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . $rt_j . ';gap:4px;pointer-events:auto;">'
+                     . '<input type="hidden" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . ($init_score > 0 ? $init_score : '') . '"' . $rt_data . ' />'
                      . $stars_html . '</div>';
         }
 

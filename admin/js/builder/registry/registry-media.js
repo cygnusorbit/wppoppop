@@ -168,6 +168,27 @@
                 (badgeText ? '<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,0.45);">' + $('<div>').text(badgeText).html() + '</span>' : '') +
                 '</div>';
         } else if (canonical === 'button' || canonical === 'submit') {
+            /* WPPOPPOP_SUBMIT_STAGE_ICONS */
+            var sbIconHtml = '', sbPadStyle = '';
+            if (canonical === 'submit') {
+                var sbHex = function(c) { return /^#[0-9a-fA-F]{3,8}$/.test(c || ''); };
+                var sbOne = function(cls, side, off, colorKey) {
+                    cls = $.trim(cls || '');
+                    if (!cls) return '';
+                    var col = sbHex(el[colorKey]) ? el[colorKey] : (sbHex(el.fgColor) ? el.fgColor : 'currentColor');
+                    var pos = 'position:absolute;' + side + ':' + off + 'px;top:50%;transform:translateY(-50%);color:' + col + ';line-height:1;pointer-events:none;font-size:14px;width:14px;height:14px;';
+                    if (!/^[A-Za-z][A-Za-z0-9 _-]*$/.test(cls)) { return '<span aria-hidden="true" style="' + pos + '">' + $('<div>').text(cls).html() + '</span>'; }
+                    var full = cls;
+                    if (cls.indexOf('dashicons-') === 0 && cls.indexOf('dashicons ') === -1) { full = 'dashicons ' + cls; }
+                    else if (cls.indexOf('fa-') === 0) { full = 'fas ' + cls; }
+                    return '<i class="' + full + '" aria-hidden="true" style="' + pos + '"></i>';
+                };
+                var sbOffL = isNaN(parseInt(el.iconLeftOffset, 10)) ? 10 : parseInt(el.iconLeftOffset, 10);
+                var sbOffR = isNaN(parseInt(el.iconRightOffset, 10)) ? 10 : parseInt(el.iconRightOffset, 10);
+                var sbL = $.trim(el.iconLeft || ''), sbR = $.trim(el.iconRight || '');
+                sbIconHtml = sbOne(sbL, 'left', sbOffL, 'iconLeftColor') + sbOne(sbR, 'right', sbOffR, 'iconRightColor');
+                sbPadStyle = 'padding:0 ' + (sbR ? sbOffR + 22 : 12) + 'px 0 ' + (sbL ? sbOffL + 22 : 12) + 'px;';
+            }
             var bTxt = el.content !== undefined ? el.content : (canonical === 'submit' ? 'Submit Form' : 'Click Here');
             var bIco = $.trim(el.buttonIcon || '');
             var icoHtml = '';
@@ -180,8 +201,8 @@
                 '--wppoppop-hover-color': el.hoverColor || '#ffffff',
                 '--wppoppop-hover-border': el.hoverBorder || '#1d4ed8'
             });
-            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;font:inherit;color:inherit;">' +
-                icoHtml + '<span>' + $('<div>').text(bTxt).html() + '</span>' +
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;box-sizing:border-box;' + sbPadStyle + 'pointer-events:none;font:inherit;color:inherit;">' +
+                icoHtml + sbIconHtml + '<span>' + $('<div>').text(bTxt).html() + '</span>' +
                 '</div>';
         }
 

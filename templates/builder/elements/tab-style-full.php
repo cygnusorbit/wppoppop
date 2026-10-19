@@ -165,9 +165,18 @@ if (!defined('ABSPATH')) exit;
             <input type="number" id="prop-letter-spacing" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="letterSpacing" step="0.5" min="-5" max="20" value="0" style="font-size:12px;" />
         </div>
     </div>
-    <div>
-        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">TEXT / FOREGROUND COLOR</label>
-        <input type="color" id="prop-color" class="widefat wppoppop-gp-bind" data-prop="color" value="#ffffff" style="height:34px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:6px; cursor:pointer;" />
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div>
+            <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">TEXT COLOR</label>
+            <input type="color" id="prop-color" class="widefat wppoppop-gp-bind" data-prop="color" value="#ffffff" style="height:34px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:6px; cursor:pointer;" />
+        </div>
+        <div>
+            <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">FOREGROUND COLOR</label>
+            <div style="display:flex; gap:4px; align-items:center;">
+                <input type="color" id="prop-fg-color" class="widefat wppoppop-gp-bind" data-prop="fgColor" value="#64748b" title="Icons &amp; accents" style="flex:1; height:34px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:6px; cursor:pointer; min-width:0;" />
+                <button type="button" id="prop-fg-color-reset" class="button" title="Reset foreground color" aria-label="Reset foreground color" style="height:34px; min-width:30px; padding:0; font-size:11px;">&#8635;</button>
+            </div>
+        </div>
     </div>
 </div>
 

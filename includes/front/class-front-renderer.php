@@ -149,7 +149,7 @@ class WpPopPop_Front_Renderer {
                             if (is_array($elements)) {
                                 foreach ($elements as $el) {
                                     if (is_array($el) && empty($el['hidden'])) {
-                                        echo $this->render_canvas_element($el);
+                                        echo $this->wppoppop_apply_fg($this->render_canvas_element($el), $el);
                                     }
                                 }
                             }
@@ -169,6 +169,15 @@ class WpPopPop_Front_Renderer {
             </div>
         </div>
         <?php
+    }
+
+    /* WPPOPPOP_FG_COLOR: expose the layer's foreground colour as a CSS variable on its wrapper */
+    private function wppoppop_apply_fg($html, array $el) {
+        $c = isset($el['fgColor']) ? trim((string) $el['fgColor']) : '';
+        if ($c === '' || !preg_match('/^#[0-9a-fA-F]{3,8}$/', $c)) { return $html; }
+        return preg_replace_callback('/<div\b[^>]*class="[^"]*wppoppop-layer-item[^"]*"[^>]*\sstyle="/', function ($m) use ($c) {
+            return $m[0] . '--wppoppop-fg:' . $c . ';';
+        }, $html, 1);
     }
 
     private function render_shape_svg($preset, $fill, $stroke, $stroke_width, $rotate) {
@@ -437,7 +446,7 @@ class WpPopPop_Front_Renderer {
 
         if (isset($inner_html) && $inner_html !== '') {
             /* WPPOPPOP_TF_NOPAD_FRONT: Text Field wrapper never carries padding (input fills the layer box) */
-            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea', 'multiselect', 'time'), true) ? ';padding:0!important' : ''; /* WPPOPPOP_MULTISELECT_WRAP */
+            $tf_wrap_pad = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea', 'multiselect', 'rating', 'time'), true) ? ';padding:0!important' : ''; /* WPPOPPOP_MULTISELECT_WRAP */
             $tf_wrap_cls = in_array($raw_el_type, array('text', 'phone', 'tel', 'textarea'), true) ? ' wppoppop-el-textfield' : '';
             return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-text' . $tf_wrap_cls . ' ' . $anim_class . '" style="' . $style_attr . $tf_wrap_pad . '">' . $inner_html . '</div>';
         }
@@ -568,6 +577,17 @@ class WpPopPop_Front_Renderer {
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;gap:6px;font-size:12px;"><label style="cursor:pointer;"><input type="checkbox" name="agreement" value="1" checked> <span>' . $label . '</span></label></div>';
 
             case 'rating':
+                /* WPPOPPOP_RATING_DECOMPOSED: interactive stars, saved scale, colours, hidden value input */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_rt_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_rt_file)) { require_once $wppoppop_rt_file; }
+                }
+                if (class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_rt_inner = WpPopPop_Front_Decomposed_26::render_element('rating', $el);
+                    if ($wppoppop_rt_inner !== null && $wppoppop_rt_inner !== '') {
+                        return '<div class="wppoppop-layer-item wppoppop-element wppoppop-field-rating wppoppop-el-rating ' . $anim_class . '" style="' . $style_attr . ';padding:0!important;pointer-events:auto;">' . $wppoppop_rt_inner . '</div>';
+                    }
+                }
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-field-rating ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;justify-content:center;color:#f59e0b;font-size:20px;cursor:pointer;"><input type="hidden" name="rating" value="5">★ ★ ★ ★ ★</div>';
 
             case 'date':
@@ -685,9 +705,78 @@ class WpPopPop_Front_Renderer {
                 return '<div id="el-' . $el_id . '" class="wppoppop-layer-item wppoppop-element wppoppop-front-element wppoppop-el-button ' . $anim_class . '" style="' . $bt_wrap_style . '">' . $bt_html . $hover_style_tag . '</div>';
 
             case 'submit':
-                $btn_text = !empty($content) ? esc_html($content) : 'Submit Form';
-                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-button ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-submit-trigger wppoppop-submit-btn" style="width:100%;height:100%;background:#c2185b;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
-
+                /* WPPOPPOP_SUBMIT_CASE: label, loading text, post-submit routing, typography, hover */
+                $sb_label = (isset($el['content']) && trim((string) $el['content']) !== '') ? esc_html($el['content']) : 'Submit Form';
+                $sb_loading = (isset($el['loadingText']) && trim((string) $el['loadingText']) !== '') ? (string) $el['loadingText'] : 'Submitting...';
+                $sb_act = (isset($el['submitAction']) && in_array($el['submitAction'], array('default', 'next_canvas', 'redirect'), true)) ? $el['submitAction'] : 'default';
+                $sb_canvas = !empty($el['goto_canvas']) ? max(1, intval($el['goto_canvas'])) : (!empty($el['goto_screen']) ? max(1, intval($el['goto_screen'])) : 2);
+                $sb_url = !empty($el['redirectUrl']) ? esc_url($el['redirectUrl']) : '';
+                $sb_confirm = isset($el['confirmMessage']) ? trim((string) $el['confirmMessage']) : '';
+                $sb_just = 'center';
+                if (!empty($el['textAlign'])) {
+                    if ($el['textAlign'] === 'left') { $sb_just = 'flex-start'; }
+                    elseif ($el['textAlign'] === 'right') { $sb_just = 'flex-end'; }
+                }
+                $sb_fg = (!empty($el['color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['color']) && strtolower((string) $el['color']) !== '#1e293b') ? $el['color'] : '#ffffff'; /* WPPOPPOP_SUBMIT_BLUE */
+                $sb_custom = !empty($el['bgCustom']) && $el['bgCustom'] !== 'false' && $el['bgCustom'] !== '0'; /* WPPOPPOP_SUBMIT_BG_CUSTOM */
+                $sb_trans = !empty($el['transparentFill']) && $el['transparentFill'] !== 'false' && $el['transparentFill'] !== '0';
+                $sb_hexok = !empty($el['bgColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['bgColor']);
+                if ($sb_custom && $sb_trans) { $sb_bg = 'transparent'; }
+                elseif ($sb_custom && $sb_hexok) { $sb_bg = $el['bgColor']; }
+                elseif ($sb_hexok && !in_array(strtolower((string) $el['bgColor']), array('#ffffff', '#fff'), true) && !$sb_trans) { $sb_bg = $el['bgColor']; }
+                else { $sb_bg = '#2563eb'; }
+                $sb_hover = ($hover_style_tag !== '') ? $hover_style_tag : '<style>#el-' . $el_id . ' button:hover{background-color:#1d4ed8 !important;}</style>';
+                $sb_fs = (!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? max(8, intval($el['fontSize'])) : 13;
+                $sb_fw = (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) ? $el['fontWeight'] : '700';
+                $sb_x = 'font-size:' . $sb_fs . 'px;font-weight:' . $sb_fw . ';color:' . $sb_fg . ';';
+                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $sb_x .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
+                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $sb_x .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
+                if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit' && preg_match('/^[A-Za-z0-9 ,\'"-]+$/', (string) $el['fontFamily'])) { $sb_x .= 'font-family:' . esc_attr($el['fontFamily']) . ';'; }
+                $sb_data = ' data-submit-action="' . esc_attr($sb_act) . '" data-loading-text="' . esc_attr($sb_loading) . '"';
+                if ($sb_act === 'next_canvas') { $sb_data .= ' data-goto-canvas="' . $sb_canvas . '"'; }
+                if ($sb_act === 'redirect' && $sb_url !== '') { $sb_data .= ' data-redirect-url="' . esc_attr($sb_url) . '"'; }
+                if ($sb_act === 'default' && $sb_confirm !== '') { $sb_data .= ' data-confirm-message="' . esc_attr($sb_confirm) . '"'; }
+                /* WPPOPPOP_SUBMIT_ICONS: left/right icons + offsets + colours, box shadow */
+                $sb_ic = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
+                $sb_dash = false;
+                foreach (array('iconLeft' => 'left', 'iconRight' => 'right') as $sb_k => $sb_side) {
+                    $sb_r = isset($el[$sb_k]) ? trim((string) $el[$sb_k]) : '';
+                    if ($sb_r !== '') {
+                        $sb_tk = array_values(array_filter(array_map('sanitize_html_class', preg_split('/\s+/', $sb_r))));
+                        if (!empty($sb_tk)) {
+                            if (strpos($sb_tk[0], 'fa-') === 0) { array_unshift($sb_tk, 'fas'); }
+                            elseif (strpos($sb_tk[0], 'dashicons-') === 0) { array_unshift($sb_tk, 'dashicons'); $sb_dash = true; }
+                            $sb_ic[$sb_side]['cls'] = implode(' ', $sb_tk);
+                        }
+                    }
+                    $sb_ok = $sb_k . 'Offset';
+                    if (isset($el[$sb_ok]) && $el[$sb_ok] !== '') { $sb_ic[$sb_side]['off'] = max(0, intval($el[$sb_ok])); }
+                }
+                $sb_col = function ($key) use ($el) {
+                    foreach (array($key, 'fgColor') as $k) {
+                        if (!empty($el[$k]) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el[$k])) { return $el[$k]; }
+                    }
+                    return 'currentColor';
+                };
+                $sb_tag = function ($side, $ckey) use ($sb_ic, $sb_col) {
+                    if ($sb_ic[$side]['cls'] === '') { return ''; }
+                    return '<i class="' . esc_attr($sb_ic[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($sb_ic[$side]['off']) . 'px;top:50%;transform:translateY(-50%);color:' . esc_attr($sb_col($ckey)) . ';font-size:14px;line-height:1;pointer-events:none;"></i>';
+                };
+                static $sb_css_done = false;
+                $sb_css = '';
+                if (!$sb_css_done && ($sb_ic['left']['cls'] !== '' || $sb_ic['right']['cls'] !== '')) {
+                    $sb_css_done = true;
+                    $sb_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    if ($sb_dash) { $sb_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                }
+                $sb_pl = ($sb_ic['left']['cls'] !== '') ? ($sb_ic['left']['off'] + 22) : 12;
+                $sb_pr = ($sb_ic['right']['cls'] !== '') ? ($sb_ic['right']['off'] + 22) : 12;
+                $sb_shadow = !empty($box_shadow_val) ? (';box-shadow:' . esc_attr($box_shadow_val)) : '';
+                return $sb_css . '<div id="el-' . $el_id . '" class="wppoppop-layer-item wppoppop-element wppoppop-front-element wppoppop-el-button ' . $anim_class . '" style="' . $style_attr . ';padding:0!important;background-color:transparent;pointer-events:auto' . $sb_shadow . ';">'
+                    . '<button type="button" class="wppoppop-submit-trigger wppoppop-submit-btn"' . $sb_data . ' style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:' . $sb_just . ';box-sizing:border-box;margin:0;padding:0 ' . $sb_pr . 'px 0 ' . $sb_pl . 'px;background:' . esc_attr(isset($sb_bg) ? $sb_bg : '#2563eb') . ';border:none;border-radius:inherit;cursor:pointer;' . $sb_x . '">'
+                    . $sb_tag('left', 'iconLeftColor') . '<span>' . $sb_label . '</span>' . $sb_tag('right', 'iconRightColor')
+                    . '</button>'
+                    . (isset($sb_hover) ? $sb_hover : $hover_style_tag) . '</div>';
             case 'pay':
                 $btn_text = !empty($content) ? esc_html($content) : 'Pay Now';
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-pay-trigger" data-amount="19.99" data-currency="USD" style="width:100%;height:100%;background:#059669;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';

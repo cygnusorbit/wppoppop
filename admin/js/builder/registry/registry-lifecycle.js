@@ -132,11 +132,23 @@
 
         // 6. Flush Form Data & Advanced Tabs
         if (isForm) {
-            el.defaultValue   = $('#prop-data-default').val() || '';
-            el.dynamicDefault = $('#prop-data-dynamic').is(':checked');
-            el.paramName      = $('#prop-data-param').val() || '';
-            el.readOnly       = $('#prop-data-readonly').is(':checked');
-            el.saveToDb       = $('#prop-data-savedb').is(':checked');
+            /* WPPOPPOP_RATING_DATA_FLUSH: correct ids; Rating uses its own Data controls */
+            if (canonical === 'rating' && $('#prop-rt-data-default').length) {
+                el.ratingMax      = parseInt($('#prop-rt-data-stars').val(), 10) === 10 ? 10 : 5;
+                el.defaultValue   = $('#prop-rt-data-default').val() || '';
+                el.dynamicDefault = $('#prop-rt-data-dynamic').is(':checked');
+                el.paramName      = $.trim($('#prop-rt-data-param').val() || '');
+                el.saveToDb       = $('#prop-rt-data-savedb').is(':checked');
+            } else {
+                if ($('#prop-data-default').length) { el.defaultValue = $('#prop-data-default').val() || ''; }
+                var $dd = $('#prop-data-dynamic-default, #prop-data-dynamic').first();
+                if ($dd.length) { el.dynamicDefault = $dd.is(':checked'); }
+                var $dp = $('#prop-data-param-name, #prop-data-param').first();
+                if ($dp.length) { el.paramName = $dp.val() || ''; }
+                if ($('#prop-data-readonly').length) { el.readOnly = $('#prop-data-readonly').is(':checked'); }
+                var $ds = $('#prop-data-save-db, #prop-data-savedb').first();
+                if ($ds.length) { el.saveToDb = $ds.is(':checked'); }
+            }
             /* WPPOPPOP_ADV_TAB: flush */
             if ($('#prop-field-name').length) {
                 var advName = $.trim($('#prop-field-name').val() || '').replace(/[^A-Za-z0-9_-]/g, '');

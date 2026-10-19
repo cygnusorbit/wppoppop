@@ -630,3 +630,9 @@ button::-moz-focus-inner {
     -webkit-box-sizing: border-box !important;
     -moz-box-sizing: border-box !important;
 }
+
+/* WPPOPPOP_FG_COLOR: foreground colour for icons & accents */
+.wppoppop-layer-item[style*="--wppoppop-fg"] .wppoppop-front-btn i,
+.wppoppop-layer-item[style*="--wppoppop-fg"] .wppoppop-front-btn .dashicons { color: var(--wppoppop-fg); }
+.wppoppop-layer-item[style*="--wppoppop-fg"] input[type="checkbox"],
+.wppoppop-layer-item[style*="--wppoppop-fg"] input[type="radio"] { accent-color: var(--wppoppop-fg); }

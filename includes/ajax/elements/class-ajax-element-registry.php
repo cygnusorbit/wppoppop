@@ -93,7 +93,7 @@ class WpPopPop_Ajax_Element_Registry {
             }
         }
 
-        foreach ( array( 'iconLeftColor', 'iconRightColor' ) as $wppoppop_ic ) { /* WPPOPPOP_ICON_COLOR */
+        foreach ( array( 'iconLeftColor', 'iconRightColor', 'fgColor' ) as $wppoppop_ic ) { /* WPPOPPOP_ICON_COLOR */
             if ( isset( $el[ $wppoppop_ic ] ) && ! is_array( $el[ $wppoppop_ic ] ) ) {
                 $wppoppop_icv = sanitize_hex_color( (string) $el[ $wppoppop_ic ] );
                 if ( $wppoppop_icv ) { $clean[ $wppoppop_ic ] = $wppoppop_icv; }
@@ -126,7 +126,7 @@ class WpPopPop_Ajax_Element_Registry {
         $bool_keys = array(
             'required', 'transparentFill', 'targetBlank', 'linkBlank', 'nofollow',
             'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped', 'progressStriped', 'progressAnimated',
-            'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle',
+            'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle', 'bgCustom',
             'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied', 'blockDisposable'
         );
         foreach ( $bool_keys as$bk ) {

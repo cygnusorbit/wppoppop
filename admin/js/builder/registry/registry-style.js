@@ -43,6 +43,9 @@
         if (el.letterSpacing !== undefined) $node.css('letter-spacing', parseFloat(el.letterSpacing) + 'px');
         if (el.textAlign) $node.css('text-align', el.textAlign);
         if (el.color) $node.css('color', el.color);
+        /* WPPOPPOP_FG_COLOR: foreground colour for icons & accents */
+        if (/^#[0-9a-fA-F]{3,8}$/.test(el.fgColor || '')) { $node[0].style.setProperty('--wppoppop-fg', el.fgColor); $node.attr('data-wpp-fg', '1'); }
+        else { $node[0].style.removeProperty('--wppoppop-fg'); $node.removeAttr('data-wpp-fg'); }
         if (el.bgColor && !el.transparentFill) {
             $node.css('background-color', el.bgColor);
         } else if (el.transparentFill) {
@@ -310,3 +313,58 @@
     bindPhase1VerifiedEvents();
 })(window, jQuery);
 /* === WPPOPPOP_PHASE1_CORE_TAB_VERIFICATION_END === */
+
+/* === WPPOPPOP_FG_COLOR_BIND_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    if (!document.getElementById('wppoppop-fg-color-css')) {
+        var st = document.createElement('style');
+        st.id = 'wppoppop-fg-color-css';
+        st.appendChild(document.createTextNode(
+            '.wppoppop-canvas-item[data-wpp-fg] .dashicons:not([style*="color"]),' +
+            '.wppoppop-canvas-item[data-wpp-fg] i:not([style*="color"]){color:var(--wppoppop-fg);}' +
+            '.wppoppop-canvas-item[data-wpp-fg] input[type="checkbox"],.wppoppop-canvas-item[data-wpp-fg] input[type="radio"]{accent-color:var(--wppoppop-fg);}'
+        ));
+        (document.head || document.documentElement).appendChild(st);
+    }
+    var ok = function(c) { return /^#[0-9a-fA-F]{3,8}$/.test(c || ''); };
+    function rerender(el) {
+        var raw = String(el.type || '').toLowerCase();
+        var can = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
+        var isForm = Reg.FORM_FAMILY && Reg.FORM_FAMILY.indexOf(can) !== -1;
+        if (isForm && typeof Reg.renderFormElementStage === 'function') { Reg.renderFormElementStage(el); }
+        else if (typeof Reg.renderMediaElementStage === 'function') { Reg.renderMediaElementStage(el); }
+        else if (typeof Reg.applyStyleToStageNode === 'function') { Reg.applyStyleToStageNode(el); }
+    }
+    $(document).off('input.wppFg change.wppFg', '#prop-fg-color').on('input.wppFg change.wppFg', '#prop-fg-color', function(e) {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return;
+        el.fgColor = $(this).val();
+        rerender(el);
+        if (e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') { window.WpPopPopBuilderCore.pushHistory(); }
+    });
+    $(document).off('click.wppFgReset', '#prop-fg-color-reset').on('click.wppFgReset', '#prop-fg-color-reset', function(e) {
+        e.preventDefault();
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return;
+        el.fgColor = '';
+        $('#prop-fg-color').val('#64748b');
+        rerender(el);
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') { window.WpPopPopBuilderCore.pushHistory(); }
+    });
+    function hydrate(el) {
+        if (!el) el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (el) { $('#prop-fg-color').val(ok(el.fgColor) ? el.fgColor : '#64748b'); }
+    }
+    if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._fgHooked) {
+        Reg._fgHooked = true;
+        var orig = Reg.hydrateCoreAndStyleFields;
+        Reg.hydrateCoreAndStyleFields = function(el) { var r = orig.apply(this, arguments); hydrate(el); return r; };
+    }
+    $(document).off('click.wppFgHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]')
+        .on('click.wppFgHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]', function() {
+            [60, 250, 600].forEach(function(ms) { setTimeout(function() { hydrate(); }, ms); });
+        });
+})(window, jQuery);
+/* === WPPOPPOP_FG_COLOR_BIND_END === */
