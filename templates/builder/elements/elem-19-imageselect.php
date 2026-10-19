@@ -4,8 +4,149 @@ if (!defined('ABSPATH')) exit;
 <!-- DECOMPOSED MODULE 19: IMAGE SELECT (imageselect) -->
 <div class="element-panel wppoppop-panel-specific" id="panel-elem-imageselect" data-elem-family="form" style="display:none;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
     <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">19. Visual Image Select Grid</div>
-    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">IMAGE CHOICES (LABEL, IMAGE URL PER LINE)</label>
-    <textarea id="prop-imageselect-options" rows="3" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="optionsList" placeholder="Style A&#10;Style B&#10;Style C" style="margin-bottom:10px;font-size:12px;"></textarea>
+    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">IMAGE CHOICES (LABEL + IMAGE URL)</label>
+    <textarea id="prop-imageselect-options" rows="3" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="optionsList" tabindex="-1" aria-hidden="true" style="display:none;"></textarea>
+    <!-- WPPOPPOP_IMGSEL_REPEATER -->
+    <div style="display:flex;gap:4px;margin-bottom:4px;padding-right:62px;">
+        <span style="flex:1 1 36%;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Label</span>
+        <span style="flex:1 1 64%;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Image URL</span>
+    </div>
+    <div id="wppoppop-imgsel-rows" style="margin-bottom:10px;"></div>
+    <script>
+    (function () {
+        'use strict';
+        if (window.__wppImgSelRepeater) { return; }
+        window.__wppImgSelRepeater = true;
+        var last = null;
+        function ta() { return document.getElementById('prop-imageselect-options'); }
+        function box() { return document.getElementById('wppoppop-imgsel-rows'); }
+        function trim(v) { return String(v == null ? '' : v).replace(/^\s+|\s+$/g, ''); }
+        function cleanLabel(v) { return trim(String(v == null ? '' : v).replace(/[\r\n|]+/g, ' ')); }
+        function cleanUrl(v) { return trim(String(v == null ? '' : v).replace(/[\r\n]+/g, '')); }
+        function fire(el) {
+            var ev;
+            try { ev = new Event('input', { bubbles: true }); } catch (err) { ev = document.createEvent('Event'); ev.initEvent('input', true, true); }
+            el.dispatchEvent(ev);
+        }
+        function parse(line) {
+            var lbl = line, img = '', p, m;
+            if (line.indexOf('::') !== -1) { p = line.split('::'); lbl = p.shift(); img = p.join('::'); }
+            else if (line.indexOf('|') !== -1) { p = line.split('|'); lbl = p.shift(); img = p.join('|'); }
+            else if ((m = line.match(/^(.*?),\s*((?:https?:)?\/\/\S+|\/\S+)$/i))) { lbl = m[1]; img = m[2]; }
+            return { l: trim(lbl), u: trim(img) };
+        }
+        function mkInput(ph, val, role, flex) {
+            var i = document.createElement('input');
+            i.type = 'text';
+            i.className = 'widefat';
+            i.placeholder = ph;
+            i.value = val || '';
+            i.setAttribute('data-role', role);
+            i.style.cssText = 'flex:' + flex + ';min-width:0;font-size:12px;';
+            return i;
+        }
+        function mkBtn(txt, title, act) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'button button-small';
+            b.title = title;
+            b.setAttribute('aria-label', title);
+            b.setAttribute('data-act', act);
+            b.style.cssText = 'min-width:26px;height:28px;padding:0;font-weight:700;line-height:1;';
+            b.appendChild(document.createTextNode(txt));
+            return b;
+        }
+        function mkRow(l, u) {
+            var row = document.createElement('div');
+            row.className = 'wppoppop-imgsel-row';
+            row.style.cssText = 'display:flex;gap:4px;align-items:center;margin-bottom:6px;';
+            row.appendChild(mkInput('Label', l, 'label', '1 1 36%'));
+            row.appendChild(mkInput('https://... image URL', u, 'url', '1 1 64%'));
+            row.appendChild(mkBtn('+', 'Add a choice below', 'add'));
+            row.appendChild(mkBtn('-', 'Remove this choice', 'del'));
+            return row;
+        }
+        function serialize() {
+            var t = ta(), c = box();
+            if (!t || !c) { return; }
+            var rows = c.querySelectorAll('.wppoppop-imgsel-row'), out = [], i;
+            for (i = 0; i < rows.length; i++) {
+                var l = cleanLabel(rows[i].querySelector('[data-role="label"]').value);
+                var u = cleanUrl(rows[i].querySelector('[data-role="url"]').value);
+                if (!l && !u) { continue; }
+                out.push(u ? ((l || 'Choice') + ' | ' + u) : l);
+            }
+            var v = out.join('\n');
+            last = v;
+            if (t.value !== v) { t.value = v; fire(t); }
+        }
+        function rebuild(force) {
+            var t = ta(), c = box();
+            if (!t || !c) { return; }
+            var raw = String(t.value || '');
+            if (!force && last !== null && raw === last) { return; }
+            var lines = raw.split(/\r?\n/).map(trim).filter(Boolean);
+            if (lines.length === 1 && lines[0].indexOf(',') !== -1 && !/https?:|\/\/|\||::/i.test(lines[0])) {
+                lines = lines[0].split(',').map(trim).filter(Boolean);
+            }
+            c.innerHTML = '';
+            lines.forEach(function (line) { var p = parse(line); c.appendChild(mkRow(p.l, p.u)); });
+            if (!lines.length) { c.appendChild(mkRow('', '')); }
+            last = raw;
+        }
+        window.__wppImgSelRebuild = rebuild;
+
+        document.addEventListener('input', function (e) {
+            var t = e.target;
+            if (t && t.closest && t.closest('#wppoppop-imgsel-rows')) { serialize(); }
+        }, true);
+
+        document.addEventListener('click', function (e) {
+            var tg = e.target;
+            var b = (tg && tg.closest) ? tg.closest('#wppoppop-imgsel-rows [data-act]') : null;
+            if (b) {
+                e.preventDefault();
+                var row = b.closest('.wppoppop-imgsel-row'), c = box();
+                if (!row || !c) { return; }
+                if (b.getAttribute('data-act') === 'add') {
+                    var nr = mkRow('', '');
+                    c.insertBefore(nr, row.nextSibling);
+                    var f = nr.querySelector('input');
+                    if (f) { f.focus(); }
+                } else {
+                    if (c.querySelectorAll('.wppoppop-imgsel-row').length > 1) {
+                        c.removeChild(row);
+                    } else {
+                        var ins = row.querySelectorAll('input'), k;
+                        for (k = 0; k < ins.length; k++) { ins[k].value = ''; }
+                    }
+                    serialize();
+                }
+                return;
+            }
+            if (tg && tg.closest && tg.closest('.wppoppop-canvas-item, .wppoppop-layer-item')) {
+                [60, 250, 600].forEach(function (ms) { setTimeout(function () { rebuild(false); }, ms); });
+            }
+        }, true);
+
+        function watch() {
+            var p = document.getElementById('panel-elem-imageselect');
+            if (!p || p.__wppImgSelWatch) { return; }
+            p.__wppImgSelWatch = true;
+            if (window.MutationObserver) {
+                new MutationObserver(function () { rebuild(false); }).observe(p, { attributes: true, attributeFilter: ['style', 'class'] });
+            }
+            p.addEventListener('mousedown', function () { rebuild(false); }, true);
+        }
+        watch();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () { watch(); rebuild(false); });
+        } else {
+            watch();
+            rebuild(false);
+        }
+    })();
+    </script>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">GRID COLUMNS</label>

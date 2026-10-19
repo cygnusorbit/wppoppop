@@ -432,6 +432,7 @@
             var isOpts = el.optionsList || el.options || '';
             if (Array.isArray(isOpts)) { isOpts = isOpts.join('\n'); }
             $('#prop-imageselect-options').val(isOpts);
+            if (window.__wppImgSelRebuild) { window.__wppImgSelRebuild(true); } /* WPPOPPOP_IMGSEL_REBUILD */
             $('#prop-imageselect-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
             $('#prop-imageselect-accent').val(el.activeColor || '#38bdf8');
             $('#prop-imageselect-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
