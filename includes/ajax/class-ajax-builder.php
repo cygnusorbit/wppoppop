@@ -223,21 +223,44 @@ if (!$data || !isset($data['meta'])) {
     }
 
     public function save_campaign() {
-        $this->verify_security();
+        $this->verify_security(); /* WPPOPPOP_AB_VALIDATED */
         global $wpdb;
-        $wpdb->insert($wpdb->prefix . 'wppoppop_campaigns', [
+
+        $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
+        $raw   = isset($_POST['popup_uids']) ? (array) wp_unslash($_POST['popup_uids']) : [];
+        $uids  = array_values(array_unique(array_filter(array_map('sanitize_key', $raw))));
+
+        if ($title === '') {
+            wp_send_json_error(['message' => 'Please enter a campaign title.']);
+        }
+        if (count($uids) < 2) {
+            wp_send_json_error(['message' => 'Select at least 2 popups for split-testing.']);
+        }
+
+        $ok = $wpdb->insert($wpdb->prefix . 'wppoppop_campaigns', [
             'uid'        => wp_generate_uuid4(),
-            'title'      => sanitize_text_field($_POST['title']),
-            'popup_uids' => wp_json_encode(array_map('sanitize_key', (array)$_POST['popup_uids'])),
+            'title'      => $title,
+            'popup_uids' => wp_json_encode($uids),
             'status'     => 'active'
         ]);
+        if ($ok === false) {
+            wp_send_json_error(['message' => 'Database error: could not save the campaign. Try Tools > Repair Tables.']);
+        }
         wp_send_json_success(['message' => 'A/B Campaign saved!']);
     }
 
     public function delete_campaign() {
         $this->verify_security();
         global $wpdb;
-        $wpdb->delete($wpdb->prefix . 'wppoppop_campaigns', ['uid' => sanitize_key($_POST['uid'])]);
+
+        $uid = isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : '';
+        if ($uid === '') {
+            wp_send_json_error(['message' => 'Missing campaign UID.']);
+        }
+        $deleted = $wpdb->delete($wpdb->prefix . 'wppoppop_campaigns', ['uid' => $uid], ['%s']);
+        if (!$deleted) {
+            wp_send_json_error(['message' => 'Campaign not found or already deleted.']);
+        }
         wp_send_json_success(['message' => 'Campaign deleted.']);
     }
 

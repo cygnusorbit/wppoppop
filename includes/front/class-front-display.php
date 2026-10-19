@@ -24,6 +24,7 @@ class WpPopPop_Front_Display {
         add_action('wp_footer', [$this, 'print_custom_footer_assets'], 99);
         add_action('wp_footer', [$this, 'render_popups'], 50);
         new WpPopPop_Front_Shortcode($renderer);
+        new WpPopPop_Front_Ab();
     }
 
     protected function is_execution_allowed() {

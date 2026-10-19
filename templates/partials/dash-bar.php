@@ -6,6 +6,7 @@ global $wpdb;
 $bar_title   = isset($bar_title) ? $bar_title : __('Dashboard', 'wppoppop');
 $bar_icon    = isset($bar_icon) ? $bar_icon : 'dashicons-screenoptions';
 $bar_actions = isset($bar_actions) ? $bar_actions : '';
+$bar_after_title = isset($bar_after_title) ? $bar_after_title : '';
 $bar_popups  = $wpdb->get_results("SELECT uid, title FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 30");
 
 $bar_links = [
@@ -64,6 +65,8 @@ $bar_logo    = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
         <span class="dashicons <?php echo esc_attr($bar_icon); ?>"></span>
         <span><?php echo esc_html($bar_title); ?></span>
     </div>
+
+    <?php if ($bar_after_title !== '' && file_exists($bar_after_title)) { include $bar_after_title; } ?>
 
     <?php if ($bar_actions !== '' && file_exists($bar_actions)) { include $bar_actions; } ?>
 </div>

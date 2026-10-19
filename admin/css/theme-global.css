@@ -213,3 +213,10 @@ body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody >
 body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr:nth-child(even) { background: var(--wpp-c-row-stripe); }
 body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr:hover          { background: var(--wpp-c-row-hover); }
 body.wppoppop-admin-themed #wpbody-content table.wp-list-table.widefat > tbody > tr.inline-edit-row { background: #f0f0f1; }
+
+/* WPP_LIST_BADGES */
+body.wppoppop-admin-themed .wppoppop-badge { font-size: var(--wpp-fs-badge); border-radius: var(--wpp-r-badge); text-transform: var(--wpp-tt-badge); }
+body.wppoppop-admin-themed .wppoppop-badge.wppoppop-badge-success { background: var(--wpp-c-badge-pub-bg); color: var(--wpp-c-badge-pub-text); }
+body.wppoppop-admin-themed .wppoppop-badge.wppoppop-badge-draft { background: var(--wpp-c-badge-draft-bg); color: var(--wpp-c-badge-draft-text); }
+body.wppoppop-admin-themed #wpbody-content .row-actions a { font-size: var(--wpp-fs-small); }
+body.wppoppop-admin-themed #wpbody-content .row-actions .submitdelete { color: var(--wpp-c-danger); }

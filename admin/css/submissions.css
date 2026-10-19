@@ -1,0 +1,22 @@
+/* WpPopPop Submissions page: bar buttons + filter row. Chrome/Safari/Firefox/Edge safe. */
+.wppoppop-submissions-wrap .wppoppop-dash-bar .cell.actions { gap: 8px; padding: 0 12px; border-right: 0; border-left: 1px solid #e5e5e5; margin-left: auto; }
+.wppoppop-submissions-wrap .wpp-bar-btn {
+    display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex;
+    -webkit-box-align: center; -ms-flex-align: center; align-items: center;
+    -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center;
+    gap: 6px; height: 30px; min-height: 30px; padding: 0 12px; margin: 0;
+    border: 1px solid var(--wpp-c-secondary-border, #c3c4c7); border-radius: var(--wpp-r-button, 3px);
+    background: var(--wpp-c-secondary-bg, #fff); color: var(--wpp-c-secondary-text, #1d2327);
+    font-family: inherit; font-size: var(--wpp-fs-button, 12px); font-weight: var(--wpp-fw-button, 600); line-height: 1;
+    cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; box-sizing: border-box; text-decoration: none;
+}
+.wppoppop-submissions-wrap .wpp-bar-btn:hover,
+.wppoppop-submissions-wrap .wpp-bar-btn:focus { background: var(--wpp-c-secondary-hover, #f6f7f7); color: var(--wpp-c-primary, #c1272d); border-color: var(--wpp-c-primary, #c1272d); outline: 0; box-shadow: none; }
+.wppoppop-submissions-wrap .wpp-bar-btn.is-primary { background: var(--wpp-c-primary, #c1272d); border-color: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-primary-text, #fff); }
+.wppoppop-submissions-wrap .wpp-bar-btn.is-primary:hover,
+.wppoppop-submissions-wrap .wpp-bar-btn.is-primary:focus { background: var(--wpp-c-primary-hover, #a51f25); border-color: var(--wpp-c-primary-hover, #a51f25); color: var(--wpp-c-primary-text, #fff); }
+.wppoppop-submissions-wrap .wpp-bar-btn.is-icon { width: 30px; padding: 0; }
+.wppoppop-submissions-wrap .wpp-bar-btn .dashicons { display: block; width: 16px; height: 16px; font-size: 16px; line-height: 1; margin: 0; padding: 0; text-align: center; }
+.wppoppop-submissions-wrap .wpp-bar-btn::-moz-focus-inner { border: 0; padding: 0; }
+.wppoppop-submissions-wrap .wppoppop-dash-bar .cell.subs-filter { display: -webkit-box; display: -ms-flexbox; display: flex; align-items: center; padding: 0 12px; border-right: 0; }
+.wppoppop-submissions-wrap .wppoppop-dash-bar .cell.subs-filter select { height: 30px; min-height: 30px; max-width: 240px; margin: 0; padding: 0 24px 0 8px; font-size: var(--wpp-fs-input, 12px); line-height: 28px; box-sizing: border-box; }

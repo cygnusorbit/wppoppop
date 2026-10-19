@@ -368,7 +368,10 @@ class WpPopPop_List_Table extends WP_List_Table {
     public function column_shortcode($item) {
         $uid = is_array($item) ? $item['uid'] : $item->uid;
         $sc  = '[wppoppop uid="' . $uid . '"]';
-        return '<code class="wppoppop-shortcode-chip" title="' . esc_attr__('Click to copy', 'wppoppop') . '">' . esc_html($sc) . '</code>';
+        $preview_url = add_query_arg('wppoppop_preview', rawurlencode($uid), home_url('/'));
+        $chip = '<code class="wppoppop-shortcode-chip" title="' . esc_attr__('Click to copy', 'wppoppop') . '">' . esc_html($sc) . '</code>';
+        $icon = '<a href="' . esc_url($preview_url) . '" class="wppoppop-preview-screen" target="_blank" rel="noopener noreferrer" title="' . esc_attr__('Live preview on homepage', 'wppoppop') . '" aria-label="' . esc_attr__('Live preview on homepage', 'wppoppop') . '"><span class="dashicons dashicons-desktop" aria-hidden="true"></span></a>';
+        return '<div class="wppoppop-shortcode-wrap">' . $chip . $icon . '</div>';
     }
 
     public function column_entries($item) {

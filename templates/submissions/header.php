@@ -26,23 +26,15 @@ $wppoppop_pending = $wppoppop_total - $wppoppop_confirmed;
 .wppoppop-subs-searchbox{display:flex;align-items:center;gap:6px}
 .wppoppop-subs-searchbox input[type=search]{width:140px;height:28px}
 </style>
-<div class="wppoppop-subs-topbar">
-    <span class="dashicons dashicons-email-alt" style="color:#c1272d;"></span>
-    <h1><?php echo esc_html__('Entries for', 'wppoppop'); ?>
-        <select id="wppoppop-subs-popup-filter" data-base="<?php echo esc_url(admin_url('admin.php?page=wppoppop-submissions')); ?>" style="margin-left:6px;max-width:220px;">
-            <option value="">All popups</option>
-            <?php foreach ((array) $all_popups as $__p) : ?>
-                <option value="<?php echo esc_attr($__p->uid); ?>" <?php selected($sel_uid, $__p->uid); ?>><?php echo esc_html($__p->title ? $__p->title : $__p->uid); ?></option>
-            <?php endforeach; ?>
-        </select>
-    </h1>
-    <span class="spacer"></span>
-    <button type="button" class="button button-primary" id="wppoppop-btn-export-csv" style="display:inline-flex;align-items:center;gap:4px;">
-        <span class="dashicons dashicons-download" style="font-size:16px;width:16px;height:16px;"></span> <?php echo esc_html__('Export to CSV', 'wppoppop'); ?>
-    </button>
-    <button type="button" class="button" id="wppoppop-table-options-btn" title="Table options" aria-label="Table options" style="display:inline-flex;align-items:center;">
-        <span class="dashicons dashicons-admin-generic" style="font-size:18px;width:18px;height:18px;"></span>
-    </button>
+<?php
+$bar_title   = __('Submissions', 'wppoppop');
+$bar_icon    = 'dashicons-email-alt';
+$bar_actions = WPPOPPOP_PATH . 'templates/submissions/bar-actions.php';
+$bar_after_title = WPPOPPOP_PATH . 'templates/submissions/bar-filter.php';
+?>
+<h1 class="screen-reader-text"><?php esc_html_e('Submissions', 'wppoppop'); ?></h1>
+<div class="wppoppop-dash" style="margin:0 0 20px;max-width:none;">
+    <?php include WPPOPPOP_PATH . 'templates/partials/dash-bar.php'; ?>
 </div>
 <div id="wppoppop-subs-notice" style="display:none;" class="notice is-dismissible"></div>
 <div class="wppoppop-subs-toolbar">

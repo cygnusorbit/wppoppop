@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wrap wppoppop-submissions-wrap" style="max-width:100%;">
+<div class="wrap wppoppop-dashboard-wrap wppoppop-submissions-wrap" style="width:100%;padding-right:30px;max-width:none;box-sizing:border-box;">
     <?php include WPPOPPOP_PATH . 'templates/submissions/context.php'; ?>
     <!-- Top Action & Search Header -->
     <?php include WPPOPPOP_PATH . 'templates/submissions/header.php'; ?>

@@ -148,9 +148,27 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $ov_ver, true);
         }
 
+        // A/B Campaigns Assets (previously never enqueued -> buttons were dead, no nonce)
+        if ($page === 'wppoppop-ab') {
+            $ab_ver = (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time());
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $ab_ver);
+            wp_enqueue_style('wppoppop-ab-css', WPPOPPOP_URL . 'admin/css/ab.css', ['wppoppop-overview-css'], $ab_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $ab_ver, true);
+            wp_enqueue_script('wppoppop-ab-modal-js', WPPOPPOP_URL . 'admin/js/ab/ab-modal.js', ['jquery'], $ab_ver, true);
+            wp_enqueue_script('wppoppop-ab-actions-js', WPPOPPOP_URL . 'admin/js/ab/ab-actions.js', ['jquery'], $ab_ver, true);
+            wp_enqueue_script('wppoppop-ab-js', WPPOPPOP_URL . 'admin/js/ab.js', ['jquery', 'wppoppop-ab-modal-js', 'wppoppop-ab-actions-js'], $ab_ver, true);
+            wp_localize_script('wppoppop-ab-js', 'wppoppop_vars', $shared_payload);
+        }
+
         // 6. Submissions Assets
         if ($page === 'wppoppop-submissions') {
             $sub_ver = (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time());
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], $sub_ver);
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $sub_ver);
+            wp_enqueue_style('wppoppop-submissions-css', WPPOPPOP_URL . 'admin/css/submissions.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css'], $sub_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-search-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-search.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-actions-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-actions.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-modal-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-modal.js', ['jquery'], $sub_ver, true);

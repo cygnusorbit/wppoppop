@@ -12,7 +12,7 @@ $list_table = new WpPopPop_List_Table();
 $list_table->prepare_items();
 ?>
 <style id="wppoppop-screenshot-table">
-.wppoppop-table-wrap table.wp-list-table { table-layout: fixed; width: 100%; border: 1px solid #c3c4c7; }
+.wppoppop-table-wrap table.wp-list-table { table-layout: fixed; width: 100%; border: var(--wpp-bw, 1px) solid var(--wpp-c-border-strong, #c3c4c7); }
 .wppoppop-table-wrap table.wp-list-table .check-column { width: 2.2em; }
 .wppoppop-table-wrap table.wp-list-table th.column-title,
 .wppoppop-table-wrap table.wp-list-table td.column-title { width: 26%; }
@@ -25,11 +25,12 @@ $list_table->prepare_items();
 .wppoppop-table-wrap table.wp-list-table th.column-modified,
 .wppoppop-table-wrap table.wp-list-table td.column-modified { width: 15%; }
 .wppoppop-table-wrap table.wp-list-table td { vertical-align: middle; }
-.wppoppop-table-wrap table.wp-list-table td.column-title a.row-title { font-size: 14px; font-weight: 600; }
+.wppoppop-table-wrap table.wp-list-table td.column-title a.row-title { font-size: var(--wpp-fs-table, 14px); font-weight: var(--wpp-fw-heading, 600); }
 .wppoppop-table-wrap table.wp-list-table td.column-shortcode code.wppoppop-shortcode-chip {
-    display: block; max-width: 100%; box-sizing: border-box; padding: 8px 12px; margin: 0;
-    background: #e9e9e9; border: 0; border-radius: 4px; color: #50575e;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px;
+    display: block; flex: 1 1 auto; min-width: 0; max-width: 100%; box-sizing: border-box; padding: 8px 12px; margin: 0;
+    background: var(--wpp-c-chip-bg, #e9e9e9); border: var(--wpp-bw, 1px) solid var(--wpp-c-chip-border, #e9e9e9);
+    border-radius: var(--wpp-r-button, 4px); color: var(--wpp-c-chip-text, #50575e);
+    font-family: var(--wpp-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace); font-size: var(--wpp-fs-small, 11px);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; user-select: all;
     -webkit-user-select: all;
 }
@@ -46,20 +47,34 @@ $list_table->prepare_items();
 .wppoppop-table-wrap ul.subsubsub li { display: block; margin: 0; padding: 0; font-size: 0; }
 .wppoppop-table-wrap a.wppoppop-view-btn {
     position: relative; display: inline-block; padding: 11px 16px; font-size: 14px; line-height: 1;
-    color: #3c434a; text-decoration: none; background: #f6f7f7;
-    border: 1px solid #dcdcde; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08);
+    color: var(--wpp-c-secondary-text, #3c434a); text-decoration: none; background: var(--wpp-c-secondary-bg, #f6f7f7);
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-button, 4px); box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
-.wppoppop-table-wrap a.wppoppop-view-btn:hover { background: #fff; border-color: #c3c4c7; color: #1d2327; }
-.wppoppop-table-wrap a.wppoppop-view-btn .count { color: #d63638; font-size: 12px; font-weight: 400; }
+.wppoppop-table-wrap a.wppoppop-view-btn:hover { background: var(--wpp-c-secondary-hover, #fff); border-color: var(--wpp-c-border-strong, #c3c4c7); color: var(--wpp-c-secondary-text, #1d2327); }
+.wppoppop-table-wrap a.wppoppop-view-btn .count { color: var(--wpp-c-danger, #d63638); font-size: var(--wpp-fs-small, 12px); font-weight: 400; }
 .wppoppop-table-wrap a.wppoppop-view-btn.current {
-    background: #c0281c; border-color: #a62016; color: #fff; font-weight: 700;
+    background: var(--wpp-c-primary, #c0281c); border-color: var(--wpp-c-primary-hover, #a62016); color: var(--wpp-c-primary-text, #fff); font-weight: 700;
 }
-.wppoppop-table-wrap a.wppoppop-view-btn.current .count { color: #fff; font-weight: 700; }
+.wppoppop-table-wrap a.wppoppop-view-btn.current .count { color: var(--wpp-c-primary-text, #fff); font-weight: 700; }
 .wppoppop-table-wrap a.wppoppop-view-btn.current::after {
     content: ""; position: absolute; left: 14px; bottom: -9px; width: 0; height: 0;
-    border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 9px solid #c0281c;
+    border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 9px solid var(--wpp-c-primary, #c0281c);
 }
 .wppoppop-table-wrap .tablenav.top { clear: both; }
+
+/* Shortcode chip + live-preview screen icon */
+.wppoppop-table-wrap .wppoppop-shortcode-wrap { display: flex; align-items: center; gap: 6px; max-width: 100%; }
+.wppoppop-table-wrap a.wppoppop-preview-screen {
+    flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; box-sizing: border-box; text-decoration: none;
+    background: var(--wpp-c-secondary-bg, #f6f7f7); color: var(--wpp-c-secondary-text, #3c434a);
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-secondary-border, #c3c4c7); border-radius: var(--wpp-r-button, 4px);
+}
+.wppoppop-table-wrap a.wppoppop-preview-screen:hover,
+.wppoppop-table-wrap a.wppoppop-preview-screen:focus {
+    background: var(--wpp-c-primary, #c0281c); border-color: var(--wpp-c-primary, #c0281c); color: var(--wpp-c-primary-text, #fff);
+}
+.wppoppop-table-wrap a.wppoppop-preview-screen .dashicons { width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
 </style>
 <div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
     <?php if (!empty($_GET['trashed'])) : 
