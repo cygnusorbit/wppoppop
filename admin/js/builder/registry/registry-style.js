@@ -129,6 +129,9 @@
             $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(canonical) !== -1);
         }
 
+        /* WPPOPPOP_DATE_STYLE: keep Date's hidden sections hidden through this secondary hydration pass */
+        $('#insp-tab-style').toggleClass('wppoppop-date-style', canonical === 'date');
+
         // Hydrate Media Style fields
         var opVal = el.opacity !== undefined ? parseFloat(el.opacity) : 100;
         if (opVal > 0 && opVal <= 1) opVal = Math.round(opVal * 100);

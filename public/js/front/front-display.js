@@ -285,8 +285,20 @@
             }
 
             if (typeof window.AirDatepicker !== 'undefined') {
-                $('.wppoppop-datepicker-input').each(function() {
-                    new window.AirDatepicker(this, { autoClose: true });
+                $('.wppoppop-datepicker-input, .wppoppop-datepicker, .wppoppop-front-date').each(function() {
+                    if (this._wppAirDp) return; /* WPPOPPOP_DATE_FIX: avoid double-init */
+                    var $el = $(this);
+                    var opts = { autoClose: true };
+                    var fmt = $el.data('format') || $el.attr('data-format');
+                    if (fmt) {
+                        opts.dateFormat = String(fmt)
+                            .replace('YYYY', 'yyyy').replace('MM', 'MM').replace('DD', 'dd');
+                    }
+                    var minD = $el.data('min') || $el.attr('data-min');
+                    var maxD = $el.data('max') || $el.attr('data-max');
+                    if (minD) { var md = new Date(minD); if (!isNaN(md)) opts.minDate = md; }
+                    if (maxD) { var xd = new Date(maxD); if (!isNaN(xd)) opts.maxDate = xd; }
+                    this._wppAirDp = new window.AirDatepicker(this, opts);
                 });
             }
 

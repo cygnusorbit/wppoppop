@@ -41,6 +41,21 @@ if (!defined('ABSPATH')) exit;
 
 <!-- WPPOPPOP_TF_STYLE_LEAN: Text Field hides generic style cards -->
 <style>
+#insp-tab-style.wppoppop-date-style { display: block; }
+</style>
+
+<!-- WPPOPPOP_DATE_STYLE: Date hides Opacity/Visibility, Background Color, Padding, Box Shadow, Custom CSS & Inline Styles -->
+<style>
+#insp-tab-style.wppoppop-date-style #insp-section-opacity,
+#insp-tab-style.wppoppop-date-style #insp-section-bg-color,
+#insp-tab-style.wppoppop-date-style #insp-section-padding,
+#insp-tab-style.wppoppop-date-style #insp-section-shadow,
+#insp-tab-style.wppoppop-date-style #insp-section-custom-css { display: none !important; }
+#insp-tab-style.wppoppop-date-style #insp-section-typography,
+#insp-tab-style.wppoppop-date-style #insp-section-border,
+#insp-tab-style.wppoppop-date-style #wppoppop-form-icons-card { display: block !important; }
+</style>
+<style>
 #insp-tab-style.wppoppop-tf-style-lean #insp-section-opacity,
 #insp-tab-style.wppoppop-tf-style-lean #insp-section-bg-color,
 #insp-tab-style.wppoppop-tf-style-lean #insp-section-typography,
