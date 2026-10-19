@@ -27,20 +27,9 @@
 
 /* WPP_THEME_V2: dashboard-aligned layout */
 .wppoppop-theme-wrap { max-width: none; width: 100%; padding-right: 30px; box-sizing: border-box; }
-.wppoppop-theme-wrap .wpp-theme-topbar { padding-top: 10px; }
-.wppoppop-theme-wrap .wpp-theme-topbar h1 { margin: 0; }
-.wppoppop-theme-wrap .wpp-theme-topbar h1 .dashicons { font-size: 22px; width: 22px; height: 22px; }
-.wppoppop-theme-wrap .wpp-theme-subtitle { margin: 4px 0 0; color: var(--wpp-c-muted, #64748b); font-size: 13px; }
 .wppoppop-theme-wrap .wppoppop-dashboard-actions input[type="search"] { height: 34px; min-width: 200px; padding: 0 10px; }
 .wppoppop-theme-wrap .button .dashicons { font-size: 16px; width: 16px; height: 16px; }
 
-/* Top bar sticks below the WP admin bar while scrolling */
-.wppoppop-theme-wrap .wpp-theme-topbar {
-    position: -webkit-sticky; position: sticky; top: 32px; z-index: 20;
-    background: var(--wpp-c-bg-page, #f0f0f1); padding-bottom: 10px; margin-bottom: 14px;
-    border-bottom: 1px solid var(--wpp-c-border, #e2e8f0);
-}
-@media (max-width: 782px) { .wppoppop-theme-wrap .wpp-theme-topbar { top: 46px; } }
 
 /* Tabs: same look as dashboard buttons, active state follows primary color */
 .wppoppop-theme-wrap .wpp-theme-tabs { margin-bottom: 14px; }
@@ -98,4 +87,94 @@
 @media (max-width: 782px) {
     .wppoppop-theme-wrap .wppoppop-dash-bar { top: 46px; height: auto; flex-wrap: wrap; }
     .wppoppop-dash-bar .cell.actions { width: 100%; border-left: 0; border-top: 1px solid #e5e5e5; padding: 8px 12px; flex-wrap: wrap; }
+}
+
+/* WPP_THEME_V4 */
+/* Page frame + consistent padding (matches Dashboard gutters) */
+#wpcontent .wppoppop-dash.wppoppop-theme-wrap { max-width: none; margin: 0 20px 0 2px; padding: 0 0 40px; }
+#wpbody-content .wppoppop-theme-wrap .notice { margin: 0 0 16px; }
+
+/* Layout */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-layout { gap: 24px; align-items: flex-start; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-main { flex: 1 1 560px; min-width: 0; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-side { flex: 0 0 360px; top: 96px; }
+
+/* Tabs (plain nav: no .button inheritance) */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-tabs { display: flex; flex-wrap: wrap; gap: 6px; height: auto; min-height: 0; margin: 0 0 16px; padding: 0; background: none; border: 0; box-shadow: none; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-tab {
+    -webkit-appearance: none; appearance: none; display: -webkit-inline-box; display: inline-flex; align-items: center;
+    height: 30px; margin: 0; padding: 0 12px; box-sizing: border-box; cursor: pointer; white-space: nowrap;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-secondary-border, #c3c4c7); border-radius: var(--wpp-r-button, 3px);
+    background: var(--wpp-c-secondary-bg, #fff); color: var(--wpp-c-secondary-text, #1d2327);
+    font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1;
+}
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-tab:hover { background: var(--wpp-c-secondary-hover, #f6f7f7); border-color: var(--wpp-c-primary, #c1272d); }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-tab:focus { outline: 0; box-shadow: 0 0 0 1px var(--wpp-c-primary, #c1272d); }
+
+/* Panels / boxes: one padding system */
+#wpbody-content .wppoppop-theme-wrap .wppoppop-box.wpp-theme-panel,
+#wpbody-content .wppoppop-theme-wrap .wppoppop-box.wpp-theme-box { padding: 20px; margin: 0 0 16px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-panel > h2,
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-box > h3 { margin: 0 0 16px; padding: 0 0 12px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-fields { gap: 16px 20px; }
+
+/* Field labels + controls (all share one height) */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field > label { margin: 0 0 6px; color: var(--wpp-c-text, #1d2327); }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-input-row { gap: 6px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-input-row input[type="text"] { flex: 1 1 auto; min-width: 0; width: 100%; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field input[type="text"],
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field select { height: var(--wpp-h-input, 32px); min-height: var(--wpp-h-input, 32px); padding: 0 10px; box-sizing: border-box; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field select { padding-right: 28px; } /* keep room for the native arrow */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-picker { width: 40px; height: var(--wpp-h-input, 32px); min-height: var(--wpp-h-input, 32px); flex: 0 0 auto; border-radius: var(--wpp-r-input, 3px); }
+#wpbody-content .wppoppop-theme-wrap button.wpp-theme-field-reset { display: -webkit-inline-box; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 28px; height: 28px; min-height: 0; border-radius: var(--wpp-r-button, 3px); }
+#wpbody-content .wppoppop-theme-wrap button.wpp-theme-field-reset:hover { background: var(--wpp-c-row-hover, #f6f7f7); }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field textarea { display: block; min-height: 160px; padding: 10px; resize: vertical; }
+
+/* Checkbox fields: box on the left, label to its right */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field.is-bool { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 10px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field.is-bool > label { margin: 0; text-transform: none; letter-spacing: 0; font-size: var(--wpp-fs-base, 13px); font-weight: 600; cursor: pointer; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-field.is-bool input[type="checkbox"] { flex: 0 0 auto; margin: 0; }
+
+/* Live preview card: self-contained base styles (list-page inline CSS is not loaded here) */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview .description { margin: 0 0 14px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview .wppoppop-kpi-card { display: block; margin-bottom: 14px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview .wppoppop-kpi-card .kpi-label,
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview .wppoppop-kpi-card .kpi-val { display: block; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview p { margin: 0 0 14px; gap: 8px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview .wppoppop-shortcode-chip {
+    display: inline-block; padding: 4px 8px; line-height: 1.4;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-chip-border, #e2e8f0); border-radius: var(--wpp-r-button, 3px);
+    background: var(--wpp-c-chip-bg, #f1f5f9); color: var(--wpp-c-chip-text, #334155);
+    font-family: var(--wpp-font-mono, ui-monospace, monospace); font-size: var(--wpp-fs-small, 12px);
+}
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview .wppoppop-status-badge { display: inline-block; padding: 2px 8px; line-height: 1.6; font-weight: 600; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-preview table { margin: 4px 0 0; }
+
+/* Export / Import box */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-box textarea { display: block; margin: 0 0 12px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-box p { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-box hr { margin: 16px 0; border: 0; border-top: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
+
+@media (max-width: 960px) {
+    #wpbody-content .wppoppop-theme-wrap .wpp-theme-side { position: static; flex-basis: 100%; }
+}
+@media (max-width: 782px) {
+    #wpcontent .wppoppop-dash.wppoppop-theme-wrap { margin-right: 10px; }
+    #wpbody-content .wppoppop-theme-wrap .wppoppop-box.wpp-theme-panel,
+    #wpbody-content .wppoppop-theme-wrap .wppoppop-box.wpp-theme-box { padding: 14px; }
+}
+
+/* WPP_THEME_V5 */
+/* Right gutter: neutralise the older width:100% rule that pushed the page past the viewport */
+body.wp-admin #wpcontent .wppoppop-dash.wppoppop-theme-wrap {
+    box-sizing: border-box;
+    width: auto;
+    max-width: none;
+    margin: 0 0 0 2px;
+    padding: 0 20px 40px 0;
+}
+body.wp-admin #wpcontent .wppoppop-theme-wrap .wppoppop-dash-bar,
+body.wp-admin #wpcontent .wppoppop-theme-wrap .wpp-theme-layout { box-sizing: border-box; max-width: 100%; }
+@media (max-width: 782px) {
+    body.wp-admin #wpcontent .wppoppop-dash.wppoppop-theme-wrap { padding-right: 10px; }
 }

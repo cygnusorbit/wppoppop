@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
     <?php endforeach; ?>
 </datalist>
 
-<nav class="button wpp-theme-tabs" role="tablist">
+<nav class="wpp-theme-tabs" role="tablist" aria-label="<?php esc_attr_e('Theme sections', 'wppoppop'); ?>">
     <?php $first = true; foreach ($theme_schema as $gid => $group) : ?>
         <button type="button" role="tab" class="wpp-theme-tab<?php echo $first ? ' is-active' : ''; ?>" data-tab="<?php echo esc_attr($gid); ?>"><?php echo esc_html($group['label']); ?></button>
     <?php $first = false; endforeach; ?>
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
                 $is_color = ($field['type'] === 'color');
                 $is_wide  = in_array($field['type'], ['font', 'textarea', 'shadow'], true);
                 ?>
-                <div class="wpp-theme-field<?php echo $is_wide ? ' is-wide' : ''; ?>" data-label="<?php echo esc_attr(strtolower($field['label'] . ' ' . $key)); ?>">
+                <div class="wpp-theme-field<?php echo $is_wide ? ' is-wide' : ''; ?><?php echo $field['type'] === 'bool' ? ' is-bool' : ''; ?>" data-label="<?php echo esc_attr(strtolower($field['label'] . ' ' . $key)); ?>">
                     <label for="<?php echo esc_attr($id); ?>"><?php echo esc_html($field['label']); ?></label>
                     <?php if ($field['type'] === 'bool') : ?>
                         <input type="checkbox" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" value="1" data-default="<?php echo (int) $field['default']; ?>" <?php checked(!empty($val)); ?>>
