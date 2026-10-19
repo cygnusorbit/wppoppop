@@ -30,9 +30,9 @@ body.wppoppop-admin-themed #wpbody-content .description,
 body.wppoppop-admin-themed #wpbody-content small,
 body.wppoppop-admin-themed #wpbody-content .howto { font-size: var(--wpp-fs-small); color: var(--wpp-c-muted); }
 
-body.wppoppop-admin-themed #wpbody-content a { color: var(--wpp-c-link); }
-body.wppoppop-admin-themed #wpbody-content a:hover,
-body.wppoppop-admin-themed #wpbody-content a:focus { color: var(--wpp-c-link-hover); }
+:where(body.wppoppop-admin-themed #wpbody-content) a { color: var(--wpp-c-link); }
+:where(body.wppoppop-admin-themed #wpbody-content) a:hover,
+:where(body.wppoppop-admin-themed #wpbody-content) a:focus { color: var(--wpp-c-link-hover); }
 
 body.wppoppop-admin-themed #wpbody-content code,
 body.wppoppop-admin-themed #wpbody-content pre,

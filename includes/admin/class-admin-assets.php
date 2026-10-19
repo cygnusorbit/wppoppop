@@ -141,7 +141,7 @@ class WpPopPop_Admin_Assets {
         }
 
         // Dashboard overview page (separate from the Popups list assets)
-        if ($page === 'wppoppop-dashboard') {
+        if (in_array($page, ['wppoppop-dashboard', 'wppoppop'], true)) {
             $ov_ver = (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION . '.' . time() : time());
             wp_enqueue_style('dashicons');
             wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $ov_ver);

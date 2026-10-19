@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wpp-theme-box wpp-theme-preview">
+<div class="wppoppop-box wpp-theme-box wpp-theme-preview">
     <h3><?php esc_html_e('Live Preview', 'wppoppop'); ?></h3>
     <p class="description"><?php esc_html_e('Changes apply instantly to this whole page before saving.', 'wppoppop'); ?></p>
     <div class="wppoppop-kpi-card"><span class="kpi-label">Views</span><span class="kpi-val">1,284</span></div>

@@ -56,11 +56,8 @@ class WpPopPop_Admin_Menu {
     }
 
     public function load_dashboard_screen_options() {
-        add_screen_option('per_page', [
-            'label'   => __('Campaigns per page', 'wppoppop'),
-            'default' => 25,
-            'option'  => 'wppoppop_campaigns_per_page',
-        ]);
+        // Screen Options intentionally hidden on the Popups page.
+        add_filter('screen_options_show_screen', '__return_false');
     }
 
     public function set_screen_option($status, $option, $value) {

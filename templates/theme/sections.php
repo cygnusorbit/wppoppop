@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 </nav>
 
 <?php $first = true; foreach ($theme_schema as $gid => $group) : ?>
-    <section class="wpp-theme-panel<?php echo $first ? ' is-active' : ''; ?>" data-panel="<?php echo esc_attr($gid); ?>">
+    <section class="wppoppop-box wpp-theme-panel<?php echo $first ? ' is-active' : ''; ?>" data-panel="<?php echo esc_attr($gid); ?>">
         <h2><?php echo esc_html($group['label']); ?></h2>
         <div class="wpp-theme-fields">
             <?php foreach ($group['fields'] as $key => $field) :

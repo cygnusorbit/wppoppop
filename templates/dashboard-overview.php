@@ -15,6 +15,7 @@ $menu_links = [
     ['wppoppop-payments',        'Transactions',     'dashicons-money-alt'],
     ['wppoppop-library',         'Popups Library',   'dashicons-category'],
     ['wppoppop-settings',        'Settings',         'dashicons-admin-generic'],
+    ['wppoppop-theme',           'Theme',            'dashicons-art'],
     ['wppoppop-tools',           'Tools & Export',   'dashicons-admin-tools'],
 ];
 

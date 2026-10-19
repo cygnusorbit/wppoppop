@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wpp-theme-box">
+<div class="wppoppop-box wpp-theme-box">
     <h3><?php esc_html_e('Export / Import', 'wppoppop'); ?></h3>
     <textarea id="wpp-theme-json" name="wpp_theme_import" rows="6" spellcheck="false"></textarea>
     <p>

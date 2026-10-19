@@ -73,8 +73,8 @@ class WpPopPop_Admin_Theme {
                 'apply_builder' => $f('Also apply to the Builder page', 'bool', 0),
                 'c_bg_page'     => $f('Page background', 'color', '#f0f0f1'),
                 'c_bg_card'     => $f('Card / panel background', 'color', '#ffffff'),
-                'c_border'      => $f('Border color', 'color', '#e2e8f0'),
-                'c_border_strong' => $f('Strong border color', 'color', '#cbd5e1'),
+                'c_border'      => $f('Border color', 'color', '#dcdcde'),
+                'c_border_strong' => $f('Strong border color', 'color', '#c3c4c7'),
                 'bw'            => $f('Border width', 'size', '1px'),
             ]],
             'typography' => ['label' => 'Typography', 'fields' => [
@@ -83,7 +83,7 @@ class WpPopPop_Admin_Theme {
                 'font_mono'    => $f('Monospace font family', 'font', $mono),
                 'fs_base'      => $f('Body font size', 'size', '13px'),
                 'fs_h1'        => $f('H1 size', 'size', '22px'),
-                'fs_h2'        => $f('H2 size', 'size', '18px'),
+                'fs_h2'        => $f('H2 size', 'size', '15px'),
                 'fs_h3'        => $f('H3 size', 'size', '15px'),
                 'fs_small'     => $f('Small / helper text size', 'size', '12px'),
                 'fs_label'     => $f('Label size', 'size', '11px'),
@@ -94,7 +94,7 @@ class WpPopPop_Admin_Theme {
                 'fs_kpi'       => $f('KPI value size', 'size', '24px'),
                 'fs_modal_title' => $f('Modal title size', 'size', '14px'),
                 'fw_body'      => $f('Body weight', 'enum', '400', ['options' => $weights]),
-                'fw_heading'   => $f('Heading weight', 'enum', '700', ['options' => $weights]),
+                'fw_heading'   => $f('Heading weight', 'enum', '600', ['options' => $weights]),
                 'fw_label'     => $f('Label weight', 'enum', '700', ['options' => $weights]),
                 'fw_button'    => $f('Button weight', 'enum', '600', ['options' => $weights]),
                 'fw_kpi'       => $f('KPI value weight', 'enum', '800', ['options' => $weights]),
@@ -104,49 +104,49 @@ class WpPopPop_Admin_Theme {
                 'tt_badge'     => $f('Badge text transform', 'enum', 'uppercase', ['options' => $transforms]),
             ]],
             'text' => ['label' => 'Text & Links', 'fields' => [
-                'c_text'       => $f('Body text', 'color', '#1e293b'),
-                'c_heading'    => $f('Headings', 'color', '#0f172a'),
-                'c_muted'      => $f('Muted / description text', 'color', '#64748b'),
-                'c_link'       => $f('Link', 'color', '#2563eb'),
-                'c_link_hover' => $f('Link hover', 'color', '#1d4ed8'),
+                'c_text'       => $f('Body text', 'color', '#1d2327'),
+                'c_heading'    => $f('Headings', 'color', '#1d2327'),
+                'c_muted'      => $f('Muted / description text', 'color', '#787c82'),
+                'c_link'       => $f('Link', 'color', '#2237c9'),
+                'c_link_hover' => $f('Link hover', 'color', '#c1272d'),
             ]],
             'buttons' => ['label' => 'Buttons', 'fields' => [
-                'c_primary'        => $f('Primary background', 'color', '#2563eb'),
-                'c_primary_hover'  => $f('Primary hover background', 'color', '#1d4ed8'),
+                'c_primary'        => $f('Primary background', 'color', '#c1272d'),
+                'c_primary_hover'  => $f('Primary hover background', 'color', '#a51f25'),
                 'c_primary_text'   => $f('Primary text', 'color', '#ffffff'),
                 'c_secondary_bg'   => $f('Secondary background', 'color', '#ffffff'),
                 'c_secondary_hover' => $f('Secondary hover background', 'color', '#f1f5f9'),
-                'c_secondary_text' => $f('Secondary text', 'color', '#1e293b'),
-                'c_secondary_border' => $f('Secondary border', 'color', '#cbd5e1'),
-                'c_danger'         => $f('Danger background', 'color', '#dc2626'),
+                'c_secondary_text' => $f('Secondary text', 'color', '#1d2327'),
+                'c_secondary_border' => $f('Secondary border', 'color', '#c3c4c7'),
+                'c_danger'         => $f('Danger background', 'color', '#b32d2e'),
                 'c_danger_text'    => $f('Danger text', 'color', '#ffffff'),
-                'r_button'         => $f('Button radius', 'size', '6px'),
+                'r_button'         => $f('Button radius', 'size', '3px'),
                 'h_button'         => $f('Button height', 'size', '34px'),
             ]],
             'forms' => ['label' => 'Form Fields', 'fields' => [
                 'c_input_bg'          => $f('Input background', 'color', '#ffffff'),
                 'c_input_text'        => $f('Input text', 'color', '#1e293b'),
-                'c_input_border'      => $f('Input border', 'color', '#cbd5e1'),
-                'c_input_focus'       => $f('Input focus border', 'color', '#2563eb'),
+                'c_input_border'      => $f('Input border', 'color', '#8c8f94'),
+                'c_input_focus'       => $f('Input focus border', 'color', '#c1272d'),
                 'c_input_placeholder' => $f('Placeholder text', 'color', '#94a3b8'),
-                'r_input'             => $f('Input radius', 'size', '6px'),
+                'r_input'             => $f('Input radius', 'size', '3px'),
                 'h_input'             => $f('Input height', 'size', '32px'),
             ]],
             'tables' => ['label' => 'Tables', 'fields' => [
-                'c_th_bg'      => $f('Header background', 'color', '#f8fafc'),
-                'c_th_text'    => $f('Header text', 'color', '#475569'),
+                'c_th_bg'      => $f('Header background', 'color', '#f6f7f7'),
+                'c_th_text'    => $f('Header text', 'color', '#1d2327'),
                 'c_row_bg'     => $f('Row background', 'color', '#ffffff'),
-                'c_row_stripe' => $f('Striped row background', 'color', '#f8fafc'),
-                'c_row_hover'  => $f('Row hover background', 'color', '#f1f5f9'),
-                'c_row_border' => $f('Row border', 'color', '#e2e8f0'),
+                'c_row_stripe' => $f('Striped row background', 'color', '#f6f7f7'),
+                'c_row_hover'  => $f('Row hover background', 'color', '#f6f7f7'),
+                'c_row_border' => $f('Row border', 'color', '#f0f0f1'),
             ]],
             'cards' => ['label' => 'Cards & KPI', 'fields' => [
-                'c_kpi_label' => $f('KPI label color', 'color', '#64748b'),
-                'c_kpi_value' => $f('KPI value color', 'color', '#0f172a'),
-                'r_card'      => $f('Card radius', 'size', '8px'),
+                'c_kpi_label' => $f('KPI label color', 'color', '#787c82'),
+                'c_kpi_value' => $f('KPI value color', 'color', '#1d2327'),
+                'r_card'      => $f('Card radius', 'size', '3px'),
                 'p_card'      => $f('Card padding', 'size', '16px'),
                 'gap'         => $f('Grid gap', 'size', '16px'),
-                'shadow_card' => $f('Card shadow', 'shadow', '0 1px 3px rgba(0,0,0,0.05)'),
+                'shadow_card' => $f('Card shadow', 'shadow', '0 1px 1px rgba(0,0,0,0.04)'),
             ]],
             'badges' => ['label' => 'Badges & Chips', 'fields' => [
                 'c_badge_pub_bg'    => $f('Published badge background', 'color', '#dcfce7'),
@@ -336,10 +336,13 @@ class WpPopPop_Admin_Theme {
     }
 
     public static function enqueue_page() {
-        // Shared dashboard base (wrap, header, buttons, KPI cards, badges, chips)
-        wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], self::version());
-        wp_enqueue_style('wppoppop-theme-css', WPPOPPOP_URL . 'admin/css/theme.css', ['wppoppop-dashboard-css', 'wppoppop-theme-global-css'], self::version());
-        wp_enqueue_script('wppoppop-theme-js', WPPOPPOP_URL . 'admin/js/theme.js', [], self::version(), true);
+        $v = self::version();
+        wp_enqueue_style('dashicons');
+        wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], $v);
+        wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $v);
+        wp_enqueue_style('wppoppop-theme-css', WPPOPPOP_URL . 'admin/css/theme.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css', 'wppoppop-theme-global-css'], $v);
+        wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $v, true);
+        wp_enqueue_script('wppoppop-theme-js', WPPOPPOP_URL . 'admin/js/theme.js', [], $v, true);
     }
 
     /* ---------------------------------------------------------- save */
