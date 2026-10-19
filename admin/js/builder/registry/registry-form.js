@@ -346,3 +346,82 @@
         });
 })(window, jQuery);
 /* === WPPOPPOP_TILE_BG_BIND_END === */
+
+
+/* === WPPOPPOP_DATE_PREVIEW_PICKER_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    var down = null;
+
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    function fmtDate(iso, fmt) {
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+        if (!m) return '';
+        if (fmt === 'MM/DD/YYYY') return m[2] + '/' + m[3] + '/' + m[1];
+        if (fmt === 'DD/MM/YYYY') return m[3] + '/' + m[2] + '/' + m[1];
+        return iso;
+    }
+
+    function closeNative() { $('#wppoppop-date-preview-native').remove(); }
+
+    function openPicker($item, el) {
+        closeNative();
+        var r = $item[0].getBoundingClientRect();
+        var inp = document.createElement('input');
+        inp.type = 'date';
+        inp.id = 'wppoppop-date-preview-native';
+        if (el.minDate) inp.min = String(el.minDate);
+        if (el.maxDate) inp.max = String(el.maxDate);
+        inp.style.cssText = 'position:fixed;left:' + r.left + 'px;top:' + r.top + 'px;width:' +
+            Math.max(r.width, 140) + 'px;height:' + Math.max(r.height, 28) +
+            'px;opacity:0.01;z-index:2147483000;border:0;padding:0;margin:0;';
+        document.body.appendChild(inp);
+
+        var $span = $item.find('span[style*="flex:1"]').first();
+        $(inp).on('change', function() {
+            if (this.value) {
+                $span.text(fmtDate(this.value, el.dateFormat || 'YYYY-MM-DD')).css('color', '#0f172a');
+            }
+            setTimeout(closeNative, 50);
+        }).on('blur', function() { setTimeout(closeNative, 200); });
+
+        try {
+            inp.focus();
+            if (typeof inp.showPicker === 'function') { inp.showPicker(); }   /* Chrome, Edge, Safari 16+, Firefox 101+ */
+            else { inp.click(); }
+        } catch (err) { try { inp.click(); } catch (e2) {} }
+    }
+
+    $(document).off('mousedown.wppDatePrev touchstart.wppDatePrev', '.wppoppop-canvas-item')
+        .on('mousedown.wppDatePrev touchstart.wppDatePrev', '.wppoppop-canvas-item', function(e) {
+            var t = (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0]) || e;
+            down = { x: t.clientX, y: t.clientY, node: this };
+        });
+
+    $(document).off('mouseup.wppDatePrev touchend.wppDatePrev')
+        .on('mouseup.wppDatePrev touchend.wppDatePrev', function(e) {
+            if (!down) return;
+            var d = down; down = null;
+            var t = (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches[0]) || e;
+            if (Math.abs(t.clientX - d.x) > 4 || Math.abs(t.clientY - d.y) > 4) return;   /* drag, not click */
+            var $item = $(d.node);
+            if (!$item.length || !$(e.target).closest($item).length) return;
+            setTimeout(function() {      /* wait for selection to update */
+                var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+                if (!el) return;
+                var raw = String(el.type || '').toLowerCase();
+                var canon = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
+                if (canon !== 'date') return;
+                var id = $item.data('id');
+                if (id && el.id && String(id) !== String(el.id)) return;
+                openPicker($item, el);
+            }, 0);
+        });
+
+    $(document).off('mousedown.wppDatePrevClose').on('mousedown.wppDatePrevClose', function(e) {
+        if (e.target && e.target.id !== 'wppoppop-date-preview-native') { closeNative(); }
+    });
+})(window, jQuery);
+/* === WPPOPPOP_DATE_PREVIEW_PICKER_END === */
