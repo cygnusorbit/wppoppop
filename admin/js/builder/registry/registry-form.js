@@ -353,6 +353,11 @@
     'use strict';
     var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
     var down = null;
+    /* WPPOPPOP_DATE_PREVIEW_ONLY */
+    function inPreviewMode() {
+        var C = window.WpPopPopBuilderCanvas, P = window.WpPopPopBuilderPreview;
+        return !!((C && C.isPreview) || (P && P.isOpen));
+    }
 
     function pad(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -396,6 +401,7 @@
 
     $(document).off('mousedown.wppDatePrev touchstart.wppDatePrev', '.wppoppop-canvas-item')
         .on('mousedown.wppDatePrev touchstart.wppDatePrev', '.wppoppop-canvas-item', function(e) {
+            if (!inPreviewMode()) { down = null; return; }
             var t = (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0]) || e;
             down = { x: t.clientX, y: t.clientY, node: this };
         });
@@ -403,6 +409,7 @@
     $(document).off('mouseup.wppDatePrev touchend.wppDatePrev')
         .on('mouseup.wppDatePrev touchend.wppDatePrev', function(e) {
             if (!down) return;
+            if (!inPreviewMode()) { down = null; closeNative(); return; }
             var d = down; down = null;
             var t = (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches[0]) || e;
             if (Math.abs(t.clientX - d.x) > 4 || Math.abs(t.clientY - d.y) > 4) return;   /* drag, not click */
