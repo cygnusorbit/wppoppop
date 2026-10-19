@@ -135,7 +135,7 @@ def run_feature_scan():
     settings_file = os.path.join(BASE_DIR, "templates", "builder", "drawer-settings.php")
 
     features = [
-        ("Phase 1: Undo / Redo Toolbar Buttons", header_file, "wppoppop-btn-undo"),
+        ("Phase 1: Theme Toggle (Day/Night)", header_file, "wppoppop-btn-theme-toggle"),
         ("Phase 1: Duplicate Canvas Action", header_file, "wppoppop-canvas-duplicate-btn"),
         ("Phase 1: Viewport Zoom Dropdown", header_file, "wppoppop-zoom-select"),
         ("Phase 2: Button Hover State Tabs", inspector_file, "prop-btn-hover"),

@@ -7,19 +7,18 @@ if (!defined('ABSPATH')) {
 <div class="wppoppop-builder-header">
     <!-- Left Section: Navigation, Settings, Title -->
     <div class="wppoppop-hdr-group wppoppop-hdr-left">
-        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popups Dashboard">Dashboard</a>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popup List" aria-label="Back to Popup List">Popup List</a>
                         <!-- Day / Night Mode Toggle -->
         <button type="button" class="wppoppop-btn-icon wppoppop-btn-theme" id="wppoppop-btn-theme-toggle" title="Toggle Day / Night Mode" aria-label="Toggle Day / Night Mode" style="cursor:pointer;pointer-events:auto;">
             <svg class="wppoppop-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;pointer-events:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
             <svg class="wppoppop-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;pointer-events:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-        <button type="button" class="wppoppop-btn-icon wppoppop-btn-settings" id="wppoppop-btn-settings" data-action="settings" title="Campaign Settings" aria-label="Campaign Settings" onclick="if(window.WpPopPopBuilderSettings&&typeof window.WpPopPopBuilderSettings.toggleDrawer==='function'){window.WpPopPopBuilderSettings.toggleDrawer();}else if(window.WpPopPopSettings){window.WpPopPopSettings.toggleDrawer();}" style="cursor:pointer;pointer-events:auto;"><span class="dashicons dashicons-admin-generic" style="pointer-events:none;"></span></button>Settings</button>
+        <button type="button" class="wppoppop-btn-icon wppoppop-btn-settings" id="wppoppop-btn-settings" data-action="settings" title="Campaign Settings" aria-label="Campaign Settings" style="cursor:pointer;pointer-events:auto;"><span class="dashicons dashicons-admin-generic" style="pointer-events:none;"></span></button>
         <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
     </div>
 
     <!-- Center Section: Canvas Label (Outside Workspace) & Sequence Tabs -->
     <div class="wppoppop-hdr-group wppoppop-hdr-center">
-        <span class="wppoppop-hdr-canvas-label" style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;user-select:none;">Canvas:</span>
         <div class="wppoppop-canvas-tabs wppoppop-screen-tabs" id="wppoppop-canvas-tabs-container">
             <div class="wppoppop-canvas-tab-wrapper active">
                 <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
@@ -42,14 +41,6 @@ if (!defined('ABSPATH')) {
             <input type="number" id="quick-box-height" value="400" min="150" max="1000">
         </div>
 
-                <div class="wppoppop-header-history-tools">
-            <button type="button" class="wppoppop-btn-tool" id="wppoppop-btn-undo" title="Undo (Cmd/Ctrl + Z)" aria-label="Undo" disabled>
-                <span class="dashicons dashicons-undo"></span>
-            </button>
-            <button type="button" class="wppoppop-btn-tool" id="wppoppop-btn-redo" title="Redo (Cmd/Ctrl + Y)" aria-label="Redo" disabled>
-                <span class="dashicons dashicons-redo"></span>
-            </button>
-        </div>
         <div class="wppoppop-viewport-toggles">
             <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>
@@ -62,7 +53,7 @@ if (!defined('ABSPATH')) {
 
     <!-- Right Section: Preview, Embed, Save Actions (Clean Text Buttons) -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
-        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select" title="Stage Zoom" aria-label="Stage Zoom">
+        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select" autocomplete="off" title="Stage Zoom" aria-label="Stage Zoom">
             <option value="0.5">50%</option>
             <option value="0.75">75%</option>
             <option value="1" selected>100%</option>

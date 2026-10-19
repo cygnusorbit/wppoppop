@@ -25,6 +25,7 @@
         isPreview: false,
 
         setZoom: function(level) {
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.setZoom === "function") { return window.WpPopPopBuilderCore.setZoom(level); }
         var $box = $('#wppoppop-canvas-box');
         var $workspace = $('.wppoppop-builder-workspace, #wppoppop-canvas-workspace');
         if (!$box.length) return;

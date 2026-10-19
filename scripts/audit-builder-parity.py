@@ -50,8 +50,18 @@ def check_file(rel_path, required_strings, desc):
 print("🔍 Auditing Macro Parity Systems in WpPopPop...")
 
 # Phase 1: Header Workflow & Canvas Sequence
-check_file('templates/builder/header.php', ['wppoppop-btn-undo', 'wppoppop-btn-redo', 'wppoppop-zoom-select', 'wppoppop-canvas-duplicate-btn'], 'Phase 1 Header History & Zoom')
+check_file('templates/builder/header.php', ['wppoppop-zoom-select', 'wppoppop-canvas-duplicate-btn', 'wppoppop-btn-theme-toggle', 'wppoppop-snap-object'], 'Phase 1 Header Zoom, Duplicate, Theme & Snap (Undo/Redo buttons intentionally removed)')
 check_file('admin/js/builder/builder-core.js', ['duplicateActiveCanvas', 'updateHistoryButtons', 'bindKeyboardShortcuts'], 'Phase 1 History State & Shortcuts')
+
+# WPPOPPOP_NO_UNDO_BUTTONS_AUDIT: toolbar undo/redo buttons were removed on purpose
+_hdr_path = os.path.join(base_dir, 'templates/builder/header.php')
+if os.path.isfile(_hdr_path):
+    with open(_hdr_path, 'r', encoding='utf-8') as _hf:
+        _hdr = _hf.read()
+    for _banned in ['wppoppop-btn-undo', 'wppoppop-btn-redo', 'Canvas:</span>']:
+        if _banned in _hdr:
+            errors.append("In templates/builder/header.php: Removed element '" + _banned + "' must not be present")
+check_file('admin/js/builder/builder-core.js', ['undo: function', 'redo: function', "e.key === 'z'"], 'Keyboard undo/redo remains available')
 check_file('admin/js/builder/builder-canvas.js', ['setZoom', 'bindZoomControls'], 'Phase 1 Viewport Zoom Engine')
 
 # Phase 2: Inspector Advanced Styling & States
