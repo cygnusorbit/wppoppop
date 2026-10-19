@@ -506,6 +506,8 @@
         $('#prop-form-icon-left-offset').val(el.iconLeftOffset !== undefined ? el.iconLeftOffset : 10);
         $('#prop-form-icon-right').val(el.iconRight || '');
         $('#prop-form-icon-right-offset').val(el.iconRightOffset !== undefined ? el.iconRightOffset : 10);
+        $('#prop-form-icon-left-color').val(/^#[0-9a-fA-F]{3,8}$/.test(el.iconLeftColor || '') ? el.iconLeftColor : '#64748b'); /* WPPOPPOP_ICON_COLOR */
+        $('#prop-form-icon-right-color').val(/^#[0-9a-fA-F]{3,8}$/.test(el.iconRightColor || '') ? el.iconRightColor : '#64748b');
         $('#prop-custom-class, #prop-form-custom-class').val(el.customClass || el.custom_css_class || '');
         $('#prop-custom-id').val(el.customId || el.custom_css_id || '');
         renderInlineStylesRepeater(el);

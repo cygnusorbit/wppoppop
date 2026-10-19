@@ -510,6 +510,7 @@ if (!$data || !isset($data['meta'])) {
         if (isset($el['ratingMax']))$clean['ratingMax'] = in_array(intval($el['ratingMax']), array(5, 10), true) ? intval($el['ratingMax']) : 5;
         if (isset($el['ratingShape'])) $clean['ratingShape'] = sanitize_key($el['ratingShape']);
         if (isset($el['ratingColor'])) $clean['ratingColor'] = sanitize_hex_color($el['ratingColor']);
+        foreach (array('iconLeftColor', 'iconRightColor') as $wppoppop_ic) { if (isset($el[$wppoppop_ic]) && !is_array($el[$wppoppop_ic])) { $wppoppop_icv = sanitize_hex_color((string) $el[$wppoppop_ic]); if ($wppoppop_icv) { $clean[$wppoppop_ic] = $wppoppop_icv; } } } /* WPPOPPOP_ICON_COLOR */
 
         
         // === PHASE 4: v3.0.637 SANITIZED 5-TAB & 3-TAB LAYER SETTINGS WHITELIST ===

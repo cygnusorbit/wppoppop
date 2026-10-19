@@ -91,6 +91,11 @@ if (!defined('ABSPATH')) exit;
                 </div>
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin:8px 0 4px;">OFFSET (PX)</label>
                 <input type="number" id="prop-form-icon-left-offset" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconLeftOffset" min="0" max="40" value="10" style="font-size:12px;" />
+                <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin:8px 0 4px;">ICON COLOR</label>
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <input type="color" id="prop-form-icon-left-color" class="wppoppop-gp-bind" data-prop="iconLeftColor" value="#64748b" style="flex:1; height:30px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:4px; cursor:pointer; min-width:0;" />
+                    <button type="button" class="button wppoppop-icon-color-reset" data-target="#prop-form-icon-left-color" title="Reset color" aria-label="Reset left icon color" style="height:30px; min-width:30px; padding:0; font-size:11px;">&#8635;</button>
+                </div>
             </div>
             <div>
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">RIGHT ICON</label>
@@ -101,6 +106,11 @@ if (!defined('ABSPATH')) exit;
                 </div>
                 <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin:8px 0 4px;">OFFSET (PX)</label>
                 <input type="number" id="prop-form-icon-right-offset" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="iconRightOffset" min="0" max="40" value="10" style="font-size:12px;" />
+                <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin:8px 0 4px;">ICON COLOR</label>
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <input type="color" id="prop-form-icon-right-color" class="wppoppop-gp-bind" data-prop="iconRightColor" value="#64748b" style="flex:1; height:30px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:4px; cursor:pointer; min-width:0;" />
+                    <button type="button" class="button wppoppop-icon-color-reset" data-target="#prop-form-icon-right-color" title="Reset color" aria-label="Reset right icon color" style="height:30px; min-width:30px; padding:0; font-size:11px;">&#8635;</button>
+                </div>
             </div>
         </div>
     </div>

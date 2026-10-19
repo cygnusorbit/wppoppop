@@ -22,17 +22,26 @@
         return out.length ? out : (fallbackList || []);
     }
 
-    function formatIconTag(cls, posStyle) {
+    /* WPPOPPOP_ICON_COLOR */
+    var _iconEl = null;
+    function formatIconTagBase(cls, posStyle, color) {
         var c = $.trim(cls || '');
         if (c && !/^[A-Za-z][A-Za-z0-9 _-]*$/.test(c)) {
-            return '<span aria-hidden="true" style="' + posStyle + 'color:#64748b;font-size:14px;line-height:1;pointer-events:none;">' + $('<div>').text(c).html() + '</span>';
+            return '<span aria-hidden="true" style="' + posStyle + 'color:' + color + ';font-size:14px;line-height:1;pointer-events:none;">' + $('<div>').text(c).html() + '</span>';
         }
         if (!c) return '';
         var full = (c.indexOf('dashicons-') === 0 && c.indexOf('dashicons ') === -1) ? ('dashicons ' + c) : c;
-        return '<i class="' + full + '" style="' + posStyle + 'color:#64748b;font-size:14px;width:14px;height:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;pointer-events:none;"></i>';
+        return '<i class="' + full + '" style="' + posStyle + 'color:' + color + ';font-size:14px;width:14px;height:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;pointer-events:none;"></i>';
+    }
+    function formatIconTag(cls, posStyle) {
+        var key = (String(posStyle).indexOf('right:') !== -1) ? 'iconRightColor' : 'iconLeftColor';
+        var c = _iconEl && _iconEl[key];
+        if (!c || !/^#[0-9a-fA-F]{3,8}$/.test(c)) { c = '#64748b'; }
+        return formatIconTagBase(cls, posStyle, c);
     }
 
     Reg.renderFormElementStage = function(el) {
+        _iconEl = el || null;
         if (!el) return;
         var $node = (typeof Reg.getStageNode === 'function') ? Reg.getStageNode(el) : $();
         if (!$node || !$node.length) return;
@@ -775,3 +784,36 @@
     }, true);
 })(window, jQuery);
 /* === WPPOPPOP_PASSWORD_PREVIEW_END === */
+
+/* === WPPOPPOP_ICON_COLOR_BIND_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    var SEL = '#prop-form-icon-left-color, #prop-form-icon-right-color';
+    $(document).off('input.wppIconColor change.wppIconColor', SEL).on('input.wppIconColor change.wppIconColor', SEL, function(e) {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return;
+        var v = $(this).val();
+        if (this.id === 'prop-form-icon-left-color') { el.iconLeftColor = v; } else { el.iconRightColor = v; }
+        if (typeof Reg.renderFormElementStage === 'function') { Reg.renderFormElementStage(el); }
+        if (e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
+            window.WpPopPopBuilderCore.pushHistory();
+        }
+    });
+    $(document).off('click.wppIconColorReset', '.wppoppop-icon-color-reset').on('click.wppIconColorReset', '.wppoppop-icon-color-reset', function(e) {
+        e.preventDefault();
+        $($(this).attr('data-target')).val('#64748b').trigger('input').trigger('change');
+    });
+    function hydrateIconColors() {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        if (!el) return;
+        var ok = function(c) { return /^#[0-9a-fA-F]{3,8}$/.test(c || ''); };
+        $('#prop-form-icon-left-color').val(ok(el.iconLeftColor) ? el.iconLeftColor : '#64748b');
+        $('#prop-form-icon-right-color').val(ok(el.iconRightColor) ? el.iconRightColor : '#64748b');
+    }
+    $(document).off('click.wppIconColorHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]')
+        .on('click.wppIconColorHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]', function() {
+            [30, 150, 400].forEach(function(ms) { setTimeout(hydrateIconColors, ms); });
+        });
+})(window, jQuery);
+/* === WPPOPPOP_ICON_COLOR_BIND_END === */

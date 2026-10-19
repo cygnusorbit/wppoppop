@@ -93,6 +93,13 @@ class WpPopPop_Ajax_Element_Registry {
             }
         }
 
+        foreach ( array( 'iconLeftColor', 'iconRightColor' ) as $wppoppop_ic ) { /* WPPOPPOP_ICON_COLOR */
+            if ( isset( $el[ $wppoppop_ic ] ) && ! is_array( $el[ $wppoppop_ic ] ) ) {
+                $wppoppop_icv = sanitize_hex_color( (string) $el[ $wppoppop_ic ] );
+                if ( $wppoppop_icv ) { $clean[ $wppoppop_ic ] = $wppoppop_icv; }
+            }
+        }
+
         $html_keys = array( 'content', 'options', 'titleText', 'paragraphText', 'text', 'label' );
         foreach ( $html_keys as$hk ) {
             if ( isset( $el[$hk ] ) && ! is_array( $el[$hk ] ) ) {

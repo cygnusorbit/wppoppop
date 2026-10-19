@@ -84,7 +84,24 @@ class WpPopPop_Front_Decomposed_26 {
         return $attrs;
     }
 
+    /* WPPOPPOP_ICON_COLOR: applies the per-layer left/right icon colour to every rendered input icon */
     public static function render_element(string $type, array $el): ?string {
+        $html = self::render_element_raw($type, $el);
+        if ($html === null || $html === '') { return $html; }
+        foreach (array('left' => 'iconLeftColor', 'right' => 'iconRightColor') as $side => $key) {
+            $c = isset($el[$key]) ? trim((string) $el[$key]) : '';
+            if ($c === '' || !preg_match('/^#[0-9a-fA-F]{3,8}$/', $c)) { continue; }
+            $html = preg_replace_callback('/<i\b[^>]*style="position:absolute;' . $side . ':[^"]*"[^>]*>/', function ($m) use ($c) {
+                $count = 0;
+                $out = preg_replace('/color:#[0-9a-fA-F]{3,8}/', 'color:' . $c, $m[0], 1, $count);
+                if ($count === 0) { $out = str_replace('position:absolute;', 'position:absolute;color:' . $c . ';', $m[0]); }
+                return $out;
+            }, $html);
+        }
+        return $html;
+    }
+
+    public static function render_element_raw(string $type, array $el): ?string {
         $t = strtolower(trim($type));
         $field_name = !empty($el['fieldName']) ? sanitize_key($el['fieldName']) : (!empty($el['token']) ? sanitize_key($el['token']) : $t);
         $field_id = !empty($el['fieldId']) ? sanitize_html_class($el['fieldId']) : 'wppoppop-field-' . esc_attr($el['id'] ?? uniqid());

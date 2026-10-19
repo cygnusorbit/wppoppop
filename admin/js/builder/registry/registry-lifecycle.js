@@ -96,6 +96,8 @@
             el.iconLeftOffset  = (isNaN(parseInt($('#prop-form-icon-left-offset').val(), 10)) ? 10 : parseInt($('#prop-form-icon-left-offset').val(), 10));
             el.iconRight       = $('#prop-form-icon-right').val() || '';
             el.iconRightOffset = (isNaN(parseInt($('#prop-form-icon-right-offset').val(), 10)) ? 10 : parseInt($('#prop-form-icon-right-offset').val(), 10));
+            if ($('#prop-form-icon-left-color').length)  { el.iconLeftColor  = $('#prop-form-icon-left-color').val()  || '#64748b'; } /* WPPOPPOP_ICON_COLOR */
+            if ($('#prop-form-icon-right-color').length) { el.iconRightColor = $('#prop-form-icon-right-color').val() || '#64748b'; }
         }
 
         if ($('#prop-gp-style-css-class').length) {
