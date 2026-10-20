@@ -127,7 +127,7 @@ class WpPopPop_Ajax_Element_Registry {
             'required', 'transparentFill', 'targetBlank', 'linkBlank', 'nofollow',
             'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped', 'progressStriped', 'progressAnimated',
             'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle', 'bgCustom',
-            'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied', 'blockDisposable'
+            'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied', 'blockDisposable', 'borderEnabled', 'shadowEnabled'
         );
         foreach ( $bool_keys as$bk ) {
             if ( isset( $el[$bk ] ) ) {

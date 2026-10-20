@@ -60,14 +60,15 @@
         if (pt || pr || pb || pl) {
             $node.css('padding', pt + 'px ' + pr + 'px ' + pb + 'px ' + pl + 'px');
         }
-        var bw = parseInt(el.borderWidth, 10) || 0;
-        var bs = el.borderStyle || (bw > 0 ? 'solid' : 'none');
+        var bOff = (el.borderEnabled === false || el.borderEnabled === 'false' || el.borderEnabled === 0);
+        var bw = bOff ? 0 : (parseInt(el.borderWidth, 10) || 0);
+        var bs = bOff ? 'none' : (el.borderStyle || (bw > 0 ? 'solid' : 'none'));
         var bc = el.borderColor || '#cbd5e1';
         $node.css({
             'border-width': bw + 'px',
             'border-style': bs,
             'border-color': bc,
-            'border-radius': (parseInt(el.borderRadius, 10) || 0) + 'px'
+            'border-radius': (bOff ? 0 : (parseInt(el.borderRadius, 10) || 0)) + 'px'
         });
 
         // 5. 5-Parameter Box Shadow
@@ -76,7 +77,8 @@
         var sBlur = parseInt(el.shadowBlur, 10) || 0;
         var sSpread = parseInt(el.shadowSpread, 10) || 0;
         var sCol = el.shadowColor || 'rgba(0,0,0,0.15)';
-        if (sx || sy || sBlur || sSpread) {
+        var sOff = (el.shadowEnabled === false || el.shadowEnabled === 'false' || el.shadowEnabled === 0);
+        if (!sOff && (sx || sy || sBlur || sSpread)) {
             $node.css('box-shadow', sx + 'px ' + sy + 'px ' + sBlur + 'px ' + sSpread + 'px ' + sCol);
         } else {
             $node.css('box-shadow', 'none');

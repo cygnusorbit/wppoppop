@@ -255,6 +255,13 @@ class WpPopPop_Front_Renderer {
             $wppoppop_dec_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
             if (file_exists($wppoppop_dec_file)) { require_once $wppoppop_dec_file; }
         }
+        /* WPPOPPOP_STYLE_TOGGLES */
+        if (isset($el['borderEnabled']) && (empty($el['borderEnabled']) || $el['borderEnabled'] === 'false')) {
+            $el['borderWidth'] = 0; $el['borderRadius'] = 0; $el['borderStyle'] = 'none';
+        }
+        if (isset($el['shadowEnabled']) && (empty($el['shadowEnabled']) || $el['shadowEnabled'] === 'false')) {
+            unset($el['boxShadow'], $el['shadowX'], $el['shadowY'], $el['shadowBlur'], $el['shadowSpread']);
+        }
         $el_id = !empty($el['id']) ? sanitize_html_class($el['id']) : uniqid('el_');
         $custom_class = !empty($el['custom_css_class']) ? esc_attr($el['custom_css_class']) : '';
         $custom_id = !empty($el['custom_css_id']) ? (' id="' . esc_attr($el['custom_css_id']) . '"') : '';

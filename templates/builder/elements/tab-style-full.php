@@ -2,6 +2,19 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <!-- WPPOPPOP UNIFIED STYLE TAB SUITE -->
+<style>
+.wppoppop-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.wppoppop-sec-head .wppoppop-sec-title{font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;}
+.wppoppop-insp-switch{position:relative;display:inline-block;width:34px;height:18px;margin:0;cursor:pointer;}
+.wppoppop-insp-switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2;}
+.wppoppop-insp-switch .wppoppop-insp-slider{position:absolute;top:0;right:0;bottom:0;left:0;background:#475569;border-radius:18px;-webkit-transition:background .2s ease;transition:background .2s ease;}
+.wppoppop-insp-switch .wppoppop-insp-slider:before{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;background:#fff;border-radius:50%;-webkit-transition:-webkit-transform .2s ease;transition:transform .2s ease;}
+.wppoppop-insp-switch input:checked + .wppoppop-insp-slider{background:#2563eb;}
+.wppoppop-insp-switch input:checked + .wppoppop-insp-slider:before{-webkit-transform:translateX(16px);transform:translateX(16px);}
+.wppoppop-insp-switch input:focus + .wppoppop-insp-slider{box-shadow:0 0 0 2px #38bdf8;}
+.wppoppop-sec-off .wppoppop-sec-body{opacity:.4;pointer-events:none;}
+</style>
+
 <!-- WPPOPPOP_TL_NOBORDER --><!-- WPPOPPOP_TL_STYLE: Tile hides icons/opacity/background/padding/shadow/custom css; shows border + hover state -->
 <style>
 #insp-tab-style.wppoppop-tl-style #wppoppop-form-icons-card,
@@ -205,7 +218,7 @@ if (!defined('ABSPATH')) exit;
 
 <!-- F. BORDER & CORNER RADIUS -->
 <div class="wppoppop-insp-section" id="insp-section-border" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">BORDER &amp; CORNER RADIUS</div>
+    <div class="wppoppop-sec-head"><span class="wppoppop-sec-title">BORDER &amp; CORNER RADIUS</span><label class="wppoppop-insp-switch" title="Enable / Disable"><input type="checkbox" id="prop-border-enabled" data-toggle-prop="borderEnabled" checked><span class="wppoppop-insp-slider"></span></label></div><div class="wppoppop-sec-body">
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
         <div>
             <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">WIDTH (PX)</label>
@@ -233,10 +246,11 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
 </div>
+</div>
 
 <!-- G. BOX SHADOW -->
 <div class="wppoppop-insp-section" id="insp-section-shadow" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">BOX SHADOW</div>
+    <div class="wppoppop-sec-head"><span class="wppoppop-sec-title">BOX SHADOW</span><label class="wppoppop-insp-switch" title="Enable / Disable"><input type="checkbox" id="prop-shadow-enabled" data-toggle-prop="shadowEnabled" checked><span class="wppoppop-insp-slider"></span></label></div><div class="wppoppop-sec-body">
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
         <div>
             <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">OFFSET X (PX)</label>
@@ -261,6 +275,7 @@ if (!defined('ABSPATH')) exit;
             <input type="color" id="prop-shadow-color" class="widefat wppoppop-gp-bind" data-prop="shadowColor" value="#000000" style="height:34px; padding:2px; background:#090d16; border:1px solid #1e293b; border-radius:6px; cursor:pointer;" />
         </div>
     </div>
+</div>
 </div>
 
 <!-- H. BUTTON HOVER STATE (Buttons & Submit) -->

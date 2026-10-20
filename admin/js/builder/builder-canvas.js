@@ -1229,6 +1229,7 @@
 
         getDefaultContent: function(type) {
             switch(type) {
+                case 'label': return 'Hello World';
                 case 'title': return 'Headline Title';
                 case 'paragraph':
                 case 'text': return 'Click to edit your text headline...';

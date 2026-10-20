@@ -125,9 +125,11 @@
         } else if (canonical === 'label') {
             var tag = (el.tag || el.headingTag || 'div').toLowerCase();
             if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].indexOf(tag) === -1) tag = 'div';
-            var txt = el.content !== undefined ? el.content : (el.titleText || el.paragraphText || el.text || 'Label Text');
+            var txt = (el.content !== undefined && el.content !== '') ? el.content : (el.titleText || el.paragraphText || el.text || 'Hello World');
             var tf  = el.textTransform || 'none';
-            innerHtml = '<' + tag + ' class="wppoppop-stage-label-inner" style="margin:0;padding:0;width:100%;height:100%;text-transform:' + tf + ';font:inherit;color:inherit;line-height:inherit;letter-spacing:inherit;text-align:inherit;pointer-events:none;">' + txt + '</' + tag + '>';
+            var hScale = { h1: 2, h2: 1.5, h3: 1.17, h4: 1, h5: 0.83, h6: 0.67 };
+            var tagFont = hScale[tag] ? ('font-family:inherit;font-style:inherit;font-size:' + hScale[tag] + 'em;font-weight:700;') : 'font:inherit;';
+            innerHtml = '<' + tag + ' class="wppoppop-stage-label-inner" style="margin:0;padding:0;width:100%;height:100%;text-transform:' + tf + ';' + tagFont + 'color:inherit;line-height:inherit;letter-spacing:inherit;text-align:inherit;pointer-events:none;">' + txt + '</' + tag + '>';
         } else if (canonical === 'html') {
             var hTag = (el.tag === 'span') ? 'span' : 'div';
             var ovf  = el.overflow || 'hidden';
@@ -201,7 +203,7 @@
                 '--wppoppop-hover-color': el.hoverColor || '#ffffff',
                 '--wppoppop-hover-border': el.hoverBorder || '#1d4ed8'
             });
-            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;box-sizing:border-box;' + sbPadStyle + 'pointer-events:none;font:inherit;color:inherit;">' +
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;box-sizing:border-box;' + sbPadStyle + 'pointer-events:none;' + tagFont + 'color:inherit;">' +
                 icoHtml + sbIconHtml + '<span>' + $('<div>').text(bTxt).html() + '</span>' +
                 '</div>';
         }

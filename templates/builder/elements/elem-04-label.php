@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) exit;
         <button type="button" id="wppoppop-label-token-btn" title="Insert WordPress value" aria-haspopup="true" style="cursor:pointer;background:#1e293b;border:1px solid #334155;color:#e2e8f0;border-radius:4px;padding:2px 8px;font-size:12px;line-height:18px;">&lt;/&gt;</button>
         <div id="wppoppop-label-token-menu" role="menu" style="display:none;position:absolute;right:0;top:26px;z-index:100000;min-width:190px;max-height:240px;overflow-y:auto;background:#0f172a;border:1px solid #334155;border-radius:6px;box-shadow:0 10px 25px rgba(0,0,0,.45);text-align:left;"></div>
     </div>
-    <textarea id="prop-label-content" rows="3" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="content" placeholder="Enter headline or body label..." style="margin-bottom:10px;font-size:12px;"></textarea>
+    <textarea id="prop-label-content" rows="3" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="content" placeholder="Hello World" style="margin-bottom:10px;font-size:12px;"></textarea>
     <input type="hidden" id="prop-title-text" class="wppoppop-gp-alias" data-prop="content">
     <input type="hidden" id="prop-paragraph-text" class="wppoppop-gp-alias" data-prop="content">
     <input type="hidden" id="prop-text-content" class="wppoppop-gp-alias" data-prop="content">
