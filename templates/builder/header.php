@@ -33,14 +33,6 @@ if (!defined('ABSPATH')) {
             <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="Add Canvas">+</button>
         </div>
 
-        <!-- Quick Dimension Display -->
-        <div class="wppoppop-quick-dimensions-wrap" title="Canvas Stage Dimensions">
-            <span>W:</span>
-            <input type="number" id="quick-box-width" value="640" min="200" max="1400">
-            <span>H:</span>
-            <input type="number" id="quick-box-height" value="400" min="150" max="1000">
-        </div>
-
         <div class="wppoppop-viewport-toggles">
             <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>

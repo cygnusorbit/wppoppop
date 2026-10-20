@@ -1363,3 +1363,22 @@ window.WpPopPopBuilder = window.WpPopPopBuilder || {};
 window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
 })(jQuery);
 
+/* WPPOPPOP_CANVAS_SIZE_GUIDE_V1: live "width x height" label (cross-browser) */
+(function ($) {
+    function sync() {
+        var box = document.getElementById('wppoppop-canvas-box');
+        var g = document.getElementById('wppoppop-canvas-size-guide');
+        if (!box || !g) return;
+        g.textContent = Math.round(box.offsetWidth) + ' x ' + Math.round(box.offsetHeight);
+    }
+    $(function () {
+        sync();
+        var box = document.getElementById('wppoppop-canvas-box');
+        if (box && window.ResizeObserver) {
+            new ResizeObserver(sync).observe(box);
+        } else {
+            $(window).on('resize', sync);
+            setInterval(sync, 300);
+        }
+    });
+})(jQuery);

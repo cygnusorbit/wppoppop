@@ -1,0 +1,26 @@
+/* WpPopPop layer isolation: identical in the builder stage and on the frontend */
+.wppoppop-popup-wrap .wppoppop-layer-item,
+#wppoppop-canvas-box .wppoppop-canvas-item {
+    text-transform: none;
+    letter-spacing: normal;
+    text-shadow: none;
+}
+.wppoppop-popup-wrap .wppoppop-layer-item button,
+.wppoppop-popup-wrap .wppoppop-layer-item input,
+.wppoppop-popup-wrap .wppoppop-layer-item select,
+.wppoppop-popup-wrap .wppoppop-layer-item textarea,
+#wppoppop-canvas-box .wppoppop-canvas-item button,
+#wppoppop-canvas-box .wppoppop-canvas-item input,
+#wppoppop-canvas-box .wppoppop-canvas-item select,
+#wppoppop-canvas-box .wppoppop-canvas-item textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-transform: none;
+    margin: 0;
+    min-height: 0;
+    max-width: none;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}

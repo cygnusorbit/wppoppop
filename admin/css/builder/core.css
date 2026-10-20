@@ -2128,3 +2128,26 @@ body.wppoppop-preview-locked .wppoppop-canvas-item::after {
     outline-offset: 0 !important;
 }
 /* === /WPPOPPOP_SELECTED_PRIMARY_GUIDE === */
+
+/* WPPOPPOP_CANVAS_SIZE_GUIDE_V1 */
+#wppoppop-canvas-box {
+    border: 0 !important;
+    outline: 1px dashed #777777 !important;
+    outline-offset: 0 !important;
+    overflow: visible;
+}
+#wppoppop-canvas-size-guide {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1;
+    color: #64748b;
+    white-space: nowrap;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    z-index: 1;
+}
+body.wppoppop-preview-locked #wppoppop-canvas-size-guide { display: none; }

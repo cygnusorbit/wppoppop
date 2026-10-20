@@ -64,6 +64,7 @@ if (!defined('ABSPATH')) {
         </div>
 
         <!-- Live Resize Dimension Tooltip Badge -->
+        <div id="wppoppop-canvas-size-guide" aria-hidden="true">600 x 450</div>
         <div id="wppoppop-canvas-size-badge">640 × 400 px</div>
 
         <!-- Dedicated Ergonomic Bottom-Right Corner Resize Handle -->
