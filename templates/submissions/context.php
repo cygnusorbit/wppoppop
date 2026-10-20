@@ -19,10 +19,11 @@ if (isset($all_opts[$opt_key]) && is_array($all_opts[$opt_key])) {
 } else {
     $tbl_opts = [];
 }
-$tbl_opts = wp_parse_args($tbl_opts, ['labels' => [], 'columns' => [], 'per_page' => 20]);
+$tbl_opts = wp_parse_args($tbl_opts, ['labels' => [], 'columns' => [], 'per_page' => 10]);
 if (!is_array($tbl_opts['labels']))  { $tbl_opts['labels'] = []; }
 if (!is_array($tbl_opts['columns'])) { $tbl_opts['columns'] = []; }
-$tbl_opts['per_page'] = max(5, min(200, intval($tbl_opts['per_page'])));
+$__pp = intval($tbl_opts['per_page']);
+$tbl_opts['per_page'] = ($__pp <= 0) ? 10 : ($__pp > 25 ? 30 : ($__pp > 15 ? 20 : 10));
 
 $label_map = get_option('wppoppop_sub_label_map', []);
 if (!is_array($label_map)) {

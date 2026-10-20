@@ -2,7 +2,7 @@
     'use strict';
     window.WpPopPopSubmissions = window.WpPopPopSubmissions || {};
 
-    var PER_PAGE = parseInt($('#wppoppop-submissions-table').attr('data-per-page'), 10) || 20;
+    var PER_PAGE = parseInt($('#wppoppop-submissions-table').attr('data-per-page'), 10) || 10;
 
     var List = {
         filter: 'all',

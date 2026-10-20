@@ -115,7 +115,14 @@
                     update: function() { self.queueSave(); }
                 });
             }
-            $('#wto-per-page').val(cfg.per_page || 20);
+            $('#wto-per-page').val(Opts.snap(cfg.per_page));
+        },
+
+        // Allowed page sizes: 10 / 20 / 30 (default 10)
+        snap: function(n) {
+            n = parseInt(n, 10);
+            if (isNaN(n) || n <= 0) return 10;
+            return n > 25 ? 30 : (n > 15 ? 20 : 10);
         },
 
         colItem: function(id, name) {
@@ -126,7 +133,7 @@
             var color = /^#[0-9a-fA-F]{6}$/.test(l.color || '') ? l.color : '#f0c330';
             var $row = $('<div class="wto-lbl">').attr('data-id', l.id).css('background', color);
             $row.append($('<input type="text" class="lbl-name" maxlength="40">').val(l.name || ''));
-            $row.append($('<input type="color" class="lbl-color">').val(color));
+            $row.append($('<span class="lbl-color-wrap" title="Change color"><span class="dashicons dashicons-art" aria-hidden="true"></span></span>').append($('<input type="color" class="lbl-color" aria-label="Label color">').val(color)));
             $row.append($('<a href="#" class="lbl-del dashicons dashicons-trash" title="Delete"></a>'));
             $('#wto-labels').append($row);
         },
@@ -162,8 +169,7 @@
             });
             var active = $('#wppoppop-cols-active li').map(function() { return $(this).attr('data-col'); }).get();
             var per = parseInt($('#wto-per-page').val(), 10);
-            if (isNaN(per)) per = 20;
-            return { labels: labels, columns: active, per_page: Math.max(5, Math.min(200, per)) };
+            return { labels: labels, columns: active, per_page: Opts.snap(per) };
         },
 
         dirty: false,

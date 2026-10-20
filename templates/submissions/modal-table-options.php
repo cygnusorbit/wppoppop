@@ -12,10 +12,19 @@ if (!defined('ABSPATH')) {
 #wppoppop-table-options-modal .wto-label{width:140px;flex:none;font-size:12px;color:#333;padding-top:8px}
 #wppoppop-table-options-modal .wto-body{flex:1;min-width:0}
 .wto-add-btn{background:#7dc32d;color:#fff;border:0;padding:10px 24px;font-size:12px;font-weight:600;cursor:pointer;border-radius:2px}
-.wto-lbl{display:flex;align-items:center;gap:6px;padding:7px 8px;color:#fff;font-size:11px;font-weight:600;margin-bottom:6px;border-radius:2px}
-.wto-lbl .lbl-name{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px dashed rgba(255,255,255,.6);color:#fff;font-weight:600;font-size:11px;box-shadow:none;padding:2px}
-.wto-lbl .lbl-color{width:26px;height:20px;padding:0;border:0;background:transparent;cursor:pointer}
-.wto-lbl .lbl-del{color:#fff;cursor:pointer;text-decoration:none}
+/* WPP_TO_V2: labels grid, transparent fields, colour icon, per-page select */
+#wppoppop-table-options-modal #wto-labels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:0 0 12px}
+#wppoppop-table-options-modal #wto-labels:empty{display:none;margin:0}
+#wppoppop-table-options-modal .wto-lbl{display:flex;align-items:center;gap:8px;min-width:0;margin:0;padding:6px 10px;box-sizing:border-box;color:#fff;font-size:11px;font-weight:600;border-radius:2px}
+#wppoppop-table-options-modal .wto-lbl input.lbl-name[type="text"]{flex:1 1 auto;min-width:0;width:auto;height:24px !important;min-height:0 !important;margin:0;padding:2px 4px;background:transparent !important;border:0 !important;border-bottom:1px dashed rgba(255,255,255,.65) !important;border-radius:0 !important;box-shadow:none !important;outline:0;color:#fff !important;font-size:11px;font-weight:600}
+#wppoppop-table-options-modal .wto-lbl input.lbl-name[type="text"]:focus{border-bottom:1px solid #fff !important;box-shadow:none !important}
+#wppoppop-table-options-modal .wto-lbl input.lbl-name::placeholder{color:rgba(255,255,255,.7)}
+#wppoppop-table-options-modal .lbl-color-wrap{position:relative;flex:0 0 auto;display:inline-block;width:20px;height:20px;cursor:pointer}
+#wppoppop-table-options-modal .lbl-color-wrap .dashicons{width:20px;height:20px;font-size:18px;line-height:20px;color:#fff}
+#wppoppop-table-options-modal .lbl-color-wrap input.lbl-color{position:absolute !important;left:0;top:0;width:100% !important;height:100% !important;min-height:0 !important;margin:0;padding:0 !important;border:0;opacity:0;cursor:pointer}
+#wppoppop-table-options-modal .lbl-color-wrap:hover .dashicons,#wppoppop-table-options-modal .lbl-del:hover{opacity:.8}
+#wppoppop-table-options-modal .lbl-del{flex:0 0 auto;width:20px;height:20px;font-size:16px;line-height:20px;color:#fff;cursor:pointer;text-decoration:none}
+@media (max-width:480px){#wppoppop-table-options-modal #wto-labels{grid-template-columns:1fr}}
 .wto-cols{display:flex;border-top:1px solid #ccc;padding-top:10px}
 .wto-cols>div{flex:1;padding:0 8px}
 .wto-cols>div+div{border-left:1px solid #ccc}
@@ -64,8 +73,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
                 <div style="margin-top:10px;">
-                    <input type="text" class="wto-custom" id="wto-custom-key" placeholder="Custom form field name (e.g. mobile_number)">
-                    <button type="button" class="button" id="wto-add-custom">Add field</button>
+                    <span class="wto-custom-wrap" hidden style="display:none !important;"><input type="text" class="wto-custom" id="wto-custom-key" placeholder="Custom form field name (e.g. mobile_number)"><button type="button" class="button" id="wto-add-custom">Add field</button></span>
                     <?php if ($sel_uid !== '') : ?>
                         <button type="button" class="button" id="wto-reset-cols" title="Rebuild the active columns from this popup's current form fields">Reset to popup fields</button>
                         <p style="margin:8px 0 0;font-size:11px;color:#666;">Form fields on this popup sync automatically &mdash; new fields appear under Inactive columns.</p>
@@ -76,7 +84,7 @@ if (!defined('ABSPATH')) {
 
         <div class="wto-row">
             <div class="wto-label">Entries per page</div>
-            <div class="wto-body"><input type="number" id="wto-per-page" min="5" max="200" step="1"></div>
+            <div class="wto-body"><select id="wto-per-page"><option value="10">10</option><option value="20">20</option><option value="30">30</option></select></div>
         </div>
     </div>
 </div>

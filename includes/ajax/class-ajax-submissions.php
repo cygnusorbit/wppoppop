@@ -58,8 +58,8 @@ class WpPopPop_Ajax_Submissions {
             $columns = ['date', 'email', 'popup'];
         }
 
-        $per_page = isset($raw['per_page']) ? intval($raw['per_page']) : 20;
-        $per_page = max(5, min(200, $per_page));
+        $per_page = isset($raw['per_page']) ? intval($raw['per_page']) : 10;
+        $per_page = ($per_page <= 0) ? 10 : ($per_page > 25 ? 30 : ($per_page > 15 ? 20 : 10)); // whitelist: 10 / 20 / 30
 
         $all = get_option('wppoppop_sub_table_options', []);
         if (!is_array($all)) {
