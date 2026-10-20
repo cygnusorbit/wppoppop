@@ -111,6 +111,9 @@
                     self.applyRow($row, res.data);
                     self.applyCounts(res.data.counts);
                     $row.show();
+                    if (res.data.old_uid && res.data.uid && res.data.uid !== res.data.old_uid) {
+                        window.location.reload(); /* WPPOPPOP_QE_UID_RELOAD: refresh shortcode, links and nonces */
+                    }
                 } else {
                     $edit.find('.wppoppop-qe-error-message').text((res && res.data && res.data.message) || 'Update failed.');
                     $err.show();

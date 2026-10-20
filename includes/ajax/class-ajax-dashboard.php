@@ -76,8 +76,12 @@ class WpPopPop_Ajax_Dashboard {
 
         // Keep builder meta title in sync (if present).
         $decoded = json_decode((string) $row['data'], true);
-        if (is_array($decoded) && isset($decoded['meta']) && is_array($decoded['meta']) && array_key_exists('title', $decoded['meta'])) {
-            $decoded['meta']['title'] = $title;
+        $wppoppop_sync = false;
+        if (is_array($decoded)) {
+            if (isset($decoded['meta']) && is_array($decoded['meta']) && array_key_exists('title', $decoded['meta'])) { $decoded['meta']['title'] = $title; $wppoppop_sync = true; }
+            if (array_key_exists('title', $decoded)) { $decoded['title'] = $title; $wppoppop_sync = true; }
+        }
+        if ($wppoppop_sync) {
             $enc = wp_json_encode($decoded);
             if (is_string($enc) && $enc !== '') {
                 $update['data'] = $enc;
@@ -90,8 +94,13 @@ class WpPopPop_Ajax_Dashboard {
             wp_send_json_error(['message' => __('Database error while saving.', 'wppoppop')]);
         }
 
+        require_once WPPOPPOP_PATH . 'includes/class-wppoppop-uid.php';
+        $old_uid = $uid;
+        $uid     = WpPopPop_Uid::rename_for_title($uid, $title); /* WPPOPPOP_QE_UID_FOLLOWS_TITLE */
+
         wp_send_json_success([
-            'uid'    => $uid,
+            'uid'     => $uid,
+            'old_uid' => $old_uid,
             'title'  => $title,
             'status' => $status,
             'counts' => $this->counts(),
