@@ -329,7 +329,7 @@ class WpPopPop_Front_Renderer {
         $height = intval($el['height'] ?? $el['h'] ?? 40);
         $zIndex = intval($el['zIndex'] ?? 10);
         $bRad   = intval($el['borderRadius'] ?? 4);
-        $opac   = floatval($el['opacity'] ?? 1);
+        $opac   = floatval($el['opacity'] ?? 1); if ($opac > 1) { $opac = $opac / 100; } /* WPPOPPOP_OPACITY_PCT */
         $content = $el['content'] ?? '';
 
         $style = [
@@ -347,7 +347,7 @@ class WpPopPop_Front_Renderer {
         if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit') $style[] = 'font-family:' . esc_attr($el['fontFamily']);
         if (!empty($el['fontSize'])) $style[] = 'font-size:' . intval($el['fontSize']) . 'px';
         if (!empty($el['color'])) $style[] = 'color:' . esc_attr($el['color']);
-        if (!empty($el['bgColor']) && $type !== 'shape') $style[] = 'background-color:' . esc_attr($el['bgColor']);
+        if (!empty($el['bgColor']) && $type !== 'shape' && (empty($el['transparentFill']) || $el['transparentFill'] === 'false')) $style[] = 'background-color:' . esc_attr($el['bgColor']);
 
                 $pad_top    = intval($el['paddingTop'] ?? ($el['padding_top'] ?? ($el['padding'] ?? 0)));
         $pad_right  = intval($el['paddingRight'] ?? ($el['padding_right'] ?? ($el['padding'] ?? 0)));
@@ -355,6 +355,17 @@ class WpPopPop_Front_Renderer {
         $pad_left   = intval($el['paddingLeft'] ?? ($el['padding_left'] ?? ($el['padding'] ?? 0)));
         if ($pad_top > 0 || $pad_right > 0 || $pad_bottom > 0 || $pad_left > 0) {
             $style[] = "padding:{$pad_top}px {$pad_right}px {$pad_bottom}px {$pad_left}px";
+        }
+
+        /* WPPOPPOP_LABEL_STYLE_FRONT: border + shadow for text-like layers */
+        if (in_array($type, array('label', 'text', 'title', 'paragraph', 'html'), true)) {
+            $lb_bw = isset($el['borderWidth']) ? intval($el['borderWidth']) : 0;
+            if ($lb_bw > 0) {
+                $lb_bs = (!empty($el['borderStyle']) && in_array($el['borderStyle'], array('solid', 'dashed', 'dotted', 'double'), true)) ? $el['borderStyle'] : 'solid';
+                $lb_bc = (!empty($el['borderColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['borderColor'])) ? $el['borderColor'] : '#334155';
+                $style[] = 'border:' . $lb_bw . 'px ' . $lb_bs . ' ' . $lb_bc;
+            }
+            if (!empty($box_shadow_val)) { $style[] = 'box-shadow:' . $box_shadow_val; }
         }
 
         $shape_rot = 0;

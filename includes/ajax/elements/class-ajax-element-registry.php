@@ -110,7 +110,7 @@ class WpPopPop_Ajax_Element_Registry {
         $num_keys = array(
             'x', 'y', 'left', 'top', 'width', 'height', 'w', 'h', 'opacity',
             'fontSize', 'lineHeight', 'letterSpacing',
-            'padTop', 'padRight', 'padBottom', 'padLeft',
+            'padTop', 'padRight', 'padBottom', 'padLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'padding',
             'borderWidth', 'borderRadius', 'shadowX', 'shadowY', 'shadowBlur', 'shadowSpread',
             'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
             'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas', 'goto_canvas', 'goto_screen',

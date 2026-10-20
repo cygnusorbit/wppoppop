@@ -127,9 +127,11 @@
             if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].indexOf(tag) === -1) tag = 'div';
             var txt = (el.content !== undefined && el.content !== '') ? el.content : (el.titleText || el.paragraphText || el.text || 'Hello World');
             var tf  = el.textTransform || 'none';
+            var jcMap = { center: 'center', right: 'flex-end' };
+            var jc = jcMap[el.textAlign] || 'flex-start';
             var hScale = { h1: 2, h2: 1.5, h3: 1.17, h4: 1, h5: 0.83, h6: 0.67 };
-            var tagFont = hScale[tag] ? ('font-family:inherit;font-style:inherit;font-size:' + hScale[tag] + 'em;font-weight:700;') : 'font:inherit;';
-            innerHtml = '<' + tag + ' class="wppoppop-stage-label-inner" style="margin:0;padding:0;width:100%;height:100%;text-transform:' + tf + ';' + tagFont + 'color:inherit;line-height:inherit;letter-spacing:inherit;text-align:inherit;pointer-events:none;">' + txt + '</' + tag + '>';
+            var tagFont = hScale[tag] ? ('font-family:inherit;font-style:inherit;font-size:' + hScale[tag] + 'em;font-weight:' + (el.fontWeight || 700) + ';') : 'font:inherit;';
+            innerHtml = '<' + tag + ' class="wppoppop-stage-label-inner" style="margin:0!important;padding:0!important;box-sizing:border-box;display:flex;align-items:center;justify-content:' + jc + ';width:100%;height:100%;text-transform:' + tf + ';' + tagFont + 'color:inherit;line-height:inherit;letter-spacing:inherit;text-align:inherit;pointer-events:none;">' + txt + '</' + tag + '>';
         } else if (canonical === 'html') {
             var hTag = (el.tag === 'span') ? 'span' : 'div';
             var ovf  = el.overflow || 'hidden';

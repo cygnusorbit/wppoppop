@@ -53,11 +53,13 @@
         }
 
         // 4. 4-Way Padding & Borders
-        var pt = parseInt(el.padTop, 10) || 0;
-        var pr = parseInt(el.padRight, 10) || 0;
-        var pb = parseInt(el.padBottom, 10) || 0;
-        var pl = parseInt(el.padLeft, 10) || 0;
-        if (pt || pr || pb || pl) {
+        var pk = function(a, b) { return (el[a] !== undefined && el[a] !== '' && el[a] !== null) ? el[a] : el[b]; };
+        var pt = parseInt(pk('paddingTop', 'padTop'), 10) || 0;
+        var pr = parseInt(pk('paddingRight', 'padRight'), 10) || 0;
+        var pb = parseInt(pk('paddingBottom', 'padBottom'), 10) || 0;
+        var pl = parseInt(pk('paddingLeft', 'padLeft'), 10) || 0;
+        var padSet = ['paddingTop','paddingRight','paddingBottom','paddingLeft','padTop','padRight','padBottom','padLeft'].some(function(k) { return el[k] !== undefined && el[k] !== ''; });
+        if (padSet) {
             $node.css('padding', pt + 'px ' + pr + 'px ' + pb + 'px ' + pl + 'px');
         }
         var bOff = (el.borderEnabled === false || el.borderEnabled === 'false' || el.borderEnabled === 0);
@@ -243,35 +245,40 @@
                    .on('input.p1MediaStyle change.p1MediaStyle', styleSelectors, function() {
             var el = Reg.resolveElement();
             if (!el) return;
-            var op = parseInt($('#prop-opacity').val(), 10);
-            if (!isNaN(op)) {
-                el.opacity = op;
-                $('#prop-opacity-val').text(op + '%');
+            var tid = this.id;
+            var MAP = {
+                'prop-font-family': ['fontFamily', 'str'], 'prop-font-size': ['fontSize', 'int'],
+                'prop-font-weight': ['fontWeight', 'str'], 'prop-line-height': ['lineHeight', 'float'],
+                'prop-letter-spacing': ['letterSpacing', 'float'], 'prop-text-align': ['textAlign', 'str'],
+                'prop-color': ['color', 'str'],
+                'prop-border-width': ['borderWidth', 'int'], 'prop-border-style': ['borderStyle', 'str'],
+                'prop-border-color': ['borderColor', 'str'], 'prop-border-radius': ['borderRadius', 'int'],
+                'prop-shadow-x': ['shadowX', 'int'], 'prop-shadow-y': ['shadowY', 'int'],
+                'prop-shadow-blur': ['shadowBlur', 'int'], 'prop-shadow-spread': ['shadowSpread', 'int'],
+                'prop-shadow-color': ['shadowColor', 'str'],
+                'prop-hover-bg': ['hoverBg', 'str'], 'prop-hover-color': ['hoverColor', 'str'], 'prop-hover-border': ['hoverBorder', 'str']
+            };
+            if (tid === 'prop-opacity') {
+                var op = parseInt($('#prop-opacity').val(), 10);
+                if (!isNaN(op)) { el.opacity = op; $('#prop-opacity-val').text(op + '%'); }
+            } else if (tid === 'prop-bg-color') {
+                el.bgColor = $('#prop-bg-color').val();
+                el.transparentFill = false;
+                $('#prop-bg-transparent').prop('checked', false);
+            } else if (tid === 'prop-bg-transparent') {
+                el.transparentFill = $('#prop-bg-transparent').is(':checked');
+                if (!el.transparentFill && (!el.bgColor || el.bgColor === 'transparent')) { el.bgColor = $('#prop-bg-color').val(); }
+            } else if (/^prop-pad-(top|right|bottom|left)$/.test(tid)) {
+                var side = tid.replace('prop-pad-', '');
+                var Side = side.charAt(0).toUpperCase() + side.slice(1);
+                var pv = Math.max(0, parseInt($(this).val(), 10) || 0);
+                el['padding' + Side] = pv; el['pad' + Side] = pv; el['padding_' + side] = pv;
+            } else if (MAP[tid]) {
+                var spec = MAP[tid], raw = $(this).val(), out = raw;
+                if (spec[1] === 'int') { out = parseInt(raw, 10); if (isNaN(out)) out = 0; }
+                else if (spec[1] === 'float') { out = parseFloat(raw); if (isNaN(out)) out = 0; }
+                el[spec[0]] = out;
             }
-            el.fontFamily    = $('#prop-font-family').val();
-            el.fontSize      = parseInt($('#prop-font-size').val(), 10) || 16;
-            el.fontWeight    = $('#prop-font-weight').val();
-            el.lineHeight    = parseFloat($('#prop-line-height').val()) || 1.4;
-            el.letterSpacing = parseFloat($('#prop-letter-spacing').val()) || 0;
-            el.textAlign     = $('#prop-text-align').val();
-            el.color         = $('#prop-color').val();
-            el.bgColor       = $('#prop-bg-color').val();
-            el.padTop        = parseInt($('#prop-pad-top').val(), 10) || 0;
-            el.padRight      = parseInt($('#prop-pad-right').val(), 10) || 0;
-            el.padBottom     = parseInt($('#prop-pad-bottom').val(), 10) || 0;
-            el.padLeft       = parseInt($('#prop-pad-left').val(), 10) || 0;
-            el.borderWidth   = parseInt($('#prop-border-width').val(), 10) || 0;
-            el.borderStyle   = $('#prop-border-style').val();
-            el.borderRadius  = parseInt($('#prop-border-radius').val(), 10) || 0;
-            el.borderColor   = $('#prop-border-color').val();
-            el.shadowX       = parseInt($('#prop-shadow-x').val(), 10) || 0;
-            el.shadowY       = parseInt($('#prop-shadow-y').val(), 10) || 0;
-            el.shadowBlur    = parseInt($('#prop-shadow-blur').val(), 10) || 0;
-            el.shadowSpread  = parseInt($('#prop-shadow-spread').val(), 10) || 0;
-            el.shadowColor   = $('#prop-shadow-color').val();
-            el.hoverBg       = $('#prop-hover-bg').val();
-            el.hoverColor    = $('#prop-hover-color').val();
-            el.hoverBorder   = $('#prop-hover-border').val();
 
             Reg.applyStyleToStageNode(el);
         });

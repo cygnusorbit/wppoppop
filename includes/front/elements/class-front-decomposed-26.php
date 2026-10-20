@@ -102,6 +102,18 @@ class WpPopPop_Front_Decomposed_26 {
         return $html;
     }
 
+    /* WPPOPPOP_LABEL_TYPO_FRONT */
+    private static function label_typo(array $el): string {
+        $al = isset($el['textAlign']) ? strtolower((string) $el['textAlign']) : 'left';
+        if (!in_array($al, array('left', 'center', 'right', 'justify'), true)) { $al = 'left'; }
+        $j = ($al === 'center') ? 'center' : (($al === 'right') ? 'flex-end' : 'flex-start');
+        $o = 'justify-content:' . $j . ';text-align:' . $al . ';';
+        if (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) { $o .= 'font-weight:' . $el['fontWeight'] . ';'; }
+        if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $o .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
+        if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $o .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
+        return $o;
+    }
+
     public static function render_element_raw(string $type, array $el): ?string {
         $t = strtolower(trim($type));
         $field_name = !empty($el['fieldName']) ? sanitize_key($el['fieldName']) : (!empty($el['token']) ? sanitize_key($el['token']) : $t);
@@ -122,7 +134,7 @@ class WpPopPop_Front_Decomposed_26 {
                     $blank_on = !empty($el['targetBlank']) && $el['targetBlank'] !== 'false';
                     $content = '<a class="wppoppop-label-link" href="' . $label_url . '"' . ($blank_on ? ' target="_blank" rel="noopener noreferrer"' : '') . ' style="color:inherit;text-decoration:inherit;display:block;width:100%;">' . $content . '</a>';
                 }
-                return '<' . $tag . ' class="wppoppop-front-label" style="margin:0;width:100%;height:100%;display:flex;align-items:center;' . $tf . '">' . $content . '</' . $tag . '>';
+                return '<' . $tag . ' class="wppoppop-front-label" style="margin:0;padding:0;box-sizing:border-box;width:100%;height:100%;display:flex;align-items:center;' . self::label_typo($el) . $tf . '">' . $content . '</' . $tag . '>';
 
             case 'button':
                 $btn_label = isset($el['content']) && $el['content'] !== '' ? esc_html($el['content']) : 'Click Here';

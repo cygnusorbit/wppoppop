@@ -1199,6 +1199,7 @@
                 newEl.hoverBorderColor = '#1d4ed8';
             }
 
+            if (type === 'label') { newEl.padding = 0; newEl.paddingTop = 0; newEl.paddingRight = 0; newEl.paddingBottom = 0; newEl.paddingLeft = 0; newEl.lineHeight = 1; } /* WPPOPPOP_LABEL_ZERO_GAP */
             if (type === 'phone' || type === 'tel') { newEl.autocomplete = 'tel'; } /* WPPOPPOP_PHONE_AC_DEFAULT */
             if (type === 'shape') {
                 newEl.shapePreset = 'square';
