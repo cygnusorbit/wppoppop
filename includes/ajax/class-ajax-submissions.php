@@ -9,6 +9,7 @@ class WpPopPop_Ajax_Submissions {
         add_action('wp_ajax_wppoppop_delete_submission', [$this, 'delete_submission']);
         add_action('wp_ajax_wppoppop_anonymize_submission', [$this, 'anonymize_submission']);
         add_action('wp_ajax_wppoppop_save_table_options', [$this, 'save_table_options']);
+        add_action('wp_ajax_wppoppop_get_popup_fields', [$this, 'get_popup_fields']);
         add_action('wp_ajax_wppoppop_assign_sub_labels', [$this, 'assign_sub_labels']);
         add_action('wp_ajax_wppoppop_mark_submission_read', [$this, 'mark_submission_read']);
         add_action('wp_ajax_wppoppop_mark_submission_unread', [$this, 'mark_submission_unread']);
@@ -69,6 +70,79 @@ class WpPopPop_Ajax_Submissions {
         update_option('wppoppop_sub_table_options', $all, false);
 
         wp_send_json_success(['saved' => $key]);
+    }
+
+
+    public function get_popup_fields() {
+        $this->verify_nonce();
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized'], 403);
+        }
+        $uid = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
+        if ($uid === '') {
+            wp_send_json_success(['fields' => new stdClass()]);
+        }
+        global $wpdb;
+        $raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $uid));
+        $cfg = $raw ? json_decode($raw, true) : null;
+        $out = [];
+        if (is_array($cfg)) {
+            $types = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
+                'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
+            $canvases = isset($cfg['canvases']) ? $cfg['canvases'] : (isset($cfg['screens']) ? $cfg['screens'] : []);
+            if (empty($canvases) && !empty($cfg['elements']) && is_array($cfg['elements'])) {
+                $canvases = [$cfg['elements']];
+            }
+            if (is_array($canvases)) {
+                foreach ($canvases as $cv) {
+                    $els = (is_array($cv) && isset($cv['elements']) && is_array($cv['elements'])) ? $cv['elements'] : $cv;
+                    if (!is_array($els)) {
+                        continue;
+                    }
+                    foreach ($els as $el) {
+                        if (!is_array($el) || empty($el['type'])) {
+                            continue;
+                        }
+                        $type = strtolower(trim((string) $el['type']));
+                        if (!in_array($type, $types, true)) {
+                            continue;
+                        }
+                        if (isset($el['saveToDb']) && ($el['saveToDb'] === false || $el['saveToDb'] === 'false' || $el['saveToDb'] === 0 || $el['saveToDb'] === '0')) {
+                            continue;
+                        }
+                        $key = '';
+                        foreach (['fieldName', 'token', 'field_name', 'fieldId'] as $p) {
+                            if (!empty($el[$p])) {
+                                $key = sanitize_key((string) $el[$p]);
+                                if ($key !== '') {
+                                    break;
+                                }
+                            }
+                        }
+                        if ($key === '') {
+                            $key = sanitize_key($type);
+                        }
+                        if ($key === '' || isset($out['field:' . $key]) || !preg_match('/^[A-Za-z0-9_\-\. ]{1,64}$/', $key)) {
+                            continue;
+                        }
+                        $lbl = '';
+                        foreach (['name', 'label_text', 'label', 'placeholder'] as $p) {
+                            if (!empty($el[$p]) && is_string($el[$p])) {
+                                $lbl = trim(wp_strip_all_tags($el[$p]));
+                                if ($lbl !== '') {
+                                    break;
+                                }
+                            }
+                        }
+                        if ($lbl === '') {
+                            $lbl = ucwords(str_replace(['_', '-'], ' ', $key));
+                        }
+                        $out['field:' . $key] = mb_substr($lbl, 0, 60);
+                    }
+                }
+            }
+        }
+        wp_send_json_success(['fields' => empty($out) ? new stdClass() : $out]);
     }
 
     public function assign_sub_labels() {

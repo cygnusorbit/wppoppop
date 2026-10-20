@@ -82,7 +82,83 @@
         open: function($m) {
             this.render();
             $m.addClass('is-open');
+            this.startSync();
         },
+
+        // ---- Live sync of popup form fields (no manual refresh) -------------------
+        syncTimer: null,
+        syncBusy: false,
+
+        startSync: function() {
+            var self = this;
+            this.stopSync();
+            if (!this.cfg.popup_uid) return;
+            this.syncFields();
+            this.syncTimer = setInterval(function() { self.syncFields(); }, 4000);
+            $(window).off('focus.wppsync').on('focus.wppsync', function() { self.syncFields(); });
+        },
+
+        stopSync: function() {
+            if (this.syncTimer) { clearInterval(this.syncTimer); this.syncTimer = null; }
+            $(window).off('focus.wppsync');
+        },
+
+        syncFields: function() {
+            var self = this, v = this.vars();
+            if (this.syncBusy || !this.cfg.popup_uid || !v.ajax_url) return;
+            if (!$('#wppoppop-table-options-modal').hasClass('is-open')) return;
+            this.syncBusy = true;
+            $.post(v.ajax_url, {
+                action: 'wppoppop_get_popup_fields',
+                nonce: v.nonce,
+                popup_uid: this.cfg.popup_uid
+            }).done(function(res) {
+                if (res && res.success && res.data && res.data.fields && typeof res.data.fields === 'object') {
+                    self.applyFields(res.data.fields);
+                }
+            }).always(function() { self.syncBusy = false; });
+        },
+
+        applyFields: function(fields) {
+            var self = this, cfg = this.cfg, changed = false, removedActive = false;
+            var prev = {};
+            $.each($.isArray(cfg.popup_fields) ? cfg.popup_fields : [], function(_, id) { prev[id] = true; });
+
+            // add / rename
+            $.each(fields, function(id, label) {
+                var $li = $('#wppoppop-cols-active li, #wppoppop-cols-inactive li').filter(function() {
+                    return $(this).attr('data-col') === id;
+                });
+                cfg.available[id] = label;
+                if (!$li.length) {
+                    $('#wppoppop-cols-inactive').append(self.colItem(id, label));
+                } else if ($li.text() !== label) {
+                    $li.text(label);
+                }
+            });
+
+            // remove fields that were deleted from the popup
+            $.each(prev, function(id) {
+                if (fields[id] !== undefined) return;
+                $('#wppoppop-cols-active li, #wppoppop-cols-inactive li').filter(function() {
+                    return $(this).attr('data-col') === id;
+                }).each(function() {
+                    if ($(this).closest('#wppoppop-cols-active').length) removedActive = true;
+                    $(this).remove();
+                });
+                delete cfg.available[id];
+                changed = true;
+            });
+
+            var next = [];
+            $.each(fields, function(id) { next.push(id); });
+            if (next.join('|') !== (cfg.popup_fields || []).join('|')) changed = true;
+            cfg.popup_fields = next;
+
+            if (removedActive) self.queueSave();
+            return changed;
+        },
+
 
         render: function() {
             var self = this;
@@ -236,6 +312,7 @@
             var self = this;
             var $m = $('#wppoppop-table-options-modal');
             var done = function(ok) {
+                self.stopSync();
                 $m.removeClass('is-open');
                 if (ok && self.reloadNeeded) {
                     self.reloadNeeded = false;
