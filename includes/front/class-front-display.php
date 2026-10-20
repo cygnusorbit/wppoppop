@@ -93,16 +93,17 @@ class WpPopPop_Front_Display {
     }
 
     public function print_custom_head_assets() {
+        // Site-wide tracking markup is independent of popup Test Mode.
+        $header_html = wppoppop_get_setting('custom_header_html', '');
+        if (!empty($header_html)) {
+            echo "\n<!-- WpPopPop Head Markup -->\n" . $header_html . "\n";
+        }
+
         if (!$this->is_execution_allowed()) {
             return;
         }
 
         WpPopPop_Libraries::print_font_head_tags();
-
-        $header_html = wppoppop_get_setting('custom_header_html', '');
-        if (!empty($header_html)) {
-            echo "\n<!-- WpPopPop Head Markup -->\n" . $header_html . "\n";
-        }
 
         $custom_css = wppoppop_get_setting('custom_css', '');
         if (!empty($custom_css)) {
@@ -114,6 +115,11 @@ class WpPopPop_Front_Display {
     }
 
     public function print_custom_footer_assets() {
+        $footer_html = wppoppop_get_setting('custom_footer_html', '');
+        if (!empty($footer_html)) {
+            echo "\n<!-- WpPopPop Footer Tracking -->\n" . $footer_html . "\n";
+        }
+
         if (!$this->is_execution_allowed()) {
             return;
         }
@@ -136,11 +142,6 @@ class WpPopPop_Front_Display {
         $custom_js = wppoppop_get_setting('custom_js', '');
         if (!empty($custom_js)) {
             echo "\n<script id=\"wppoppop-global-custom-js\">\n" . $custom_js . "\n</script>\n";
-        }
-
-        $footer_html = wppoppop_get_setting('custom_footer_html', '');
-        if (!empty($footer_html)) {
-            echo "\n<!-- WpPopPop Footer Tracking -->\n" . $footer_html . "\n";
         }
     }
 

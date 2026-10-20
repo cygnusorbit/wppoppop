@@ -131,8 +131,14 @@ class WpPopPop_Admin_Settings {
             $o['custom_css'] = $css; $o['custom_js'] = $js;
             $o['custom_header_html'] = $hh; $o['custom_footer_html'] = $fh;
         } else {
-            $o['custom_css'] = wp_strip_all_tags($css); $o['custom_js'] = wp_strip_all_tags($js);
-            $o['custom_header_html'] = wp_kses_post($hh); $o['custom_footer_html'] = wp_kses_post($fh);
+            // Restricted users cannot author executable code: keep what is already stored
+            // instead of overwriting it with a mangled copy.
+            $prev = get_option('wppoppop_settings', []);
+            $prev = is_array($prev) ? $prev : [];
+            $o['custom_css']         = wp_strip_all_tags($css);
+            $o['custom_js']          = isset($prev['custom_js']) ? $prev['custom_js'] : '';
+            $o['custom_header_html'] = isset($prev['custom_header_html']) ? $prev['custom_header_html'] : '';
+            $o['custom_footer_html'] = isset($prev['custom_footer_html']) ? $prev['custom_footer_html'] : '';
         }
 
         // 6. System state
