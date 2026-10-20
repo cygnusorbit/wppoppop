@@ -117,7 +117,12 @@ class WpPopPop_Admin_Assets {
 
         // 3. Settings Assets
         if ($page === 'wppoppop-settings') {
-            wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', [], self::ver());
+            $set_ver = self::ver();
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], $set_ver);
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $set_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $set_ver, true);
+            wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css', 'wppoppop-theme-global-css'], $set_ver);
 
             wp_enqueue_script('wppoppop-settings-tabs-js', WPPOPPOP_URL . 'admin/js/settings/settings-tabs.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);

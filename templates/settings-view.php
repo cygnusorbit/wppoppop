@@ -7,34 +7,29 @@ if (!isset($settings) || !is_array($settings)) {
     $settings = get_option('wppoppop_settings', []);
 }
 ?>
-<div class="wrap wppoppop-settings-wrap">
-    <h1 class="wp-heading-inline">
-        <?php esc_html_e('WpPopPop Settings', 'wppoppop'); ?>
-    </h1>
-    <p class="description" style="margin-top:4px;color:#64748b;">
-        <?php esc_html_e('Configure domain delivery rules, performance preloads, component extensions, bot security, and cache epochs.', 'wppoppop'); ?>
-    </p>
+<div class="wrap wppoppop-dash wppoppop-settings-wrap">
+    <?php include WPPOPPOP_PATH . 'templates/settings/header.php'; ?>
 
     <!-- Native Server-Side Notice Banner -->
     <?php if (isset($notice) && 'saved' === $notice) : ?>
-        <div class="notice notice-success is-dismissible" style="margin-top:16px;">
+        <div class="notice notice-success is-dismissible">
             <p><?php esc_html_e('Settings saved successfully!', 'wppoppop'); ?></p>
         </div>
     <?php endif; ?>
 
     <!-- Real-time AJAX Notification Container -->
-    <div id="wppoppop-settings-alert" class="notice is-dismissible" style="display:none;margin-top:16px;">
+    <div id="wppoppop-settings-alert" class="notice is-dismissible" style="display:none;">
         <p></p>
     </div>
 
     <!-- Navigation Tab Buttons (Clean Text - No Icons) -->
-    <nav class="wppoppop-settings-tabs-nav" aria-label="<?php esc_attr_e('Settings Sections', 'wppoppop'); ?>">
-        <button type="button" class="wppoppop-tab-btn active" data-tab="general"><?php esc_html_e('General & Mailing', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-tab-btn" data-tab="performance"><?php esc_html_e('Performance & Preload', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-tab-btn" data-tab="libraries"><?php esc_html_e('Typography & Libraries', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-tab-btn" data-tab="security"><?php esc_html_e('Security & Geolocation', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-tab-btn" data-tab="custom-code"><?php esc_html_e('Custom CSS & JS', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-tab-btn" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
+    <nav class="wppoppop-settings-tabs-nav wpp-theme-tabs" aria-label="<?php esc_attr_e('Settings Sections', 'wppoppop'); ?>">
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab active" data-tab="general"><?php esc_html_e('General & Mailing', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="performance"><?php esc_html_e('Performance & Preload', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="libraries"><?php esc_html_e('Typography & Libraries', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="security"><?php esc_html_e('Security & Geolocation', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="custom-code"><?php esc_html_e('Custom CSS & JS', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
        
     </nav>
 
@@ -73,8 +68,8 @@ if (!isset($settings) || !is_array($settings)) {
         </div>
 
         <!-- Bottom Action Persistence Bar (Clean Text Button - No Misaligned Icons) -->
-        <div class="wppoppop-settings-submit-bar" style="margin-top:24px;display:flex;align-items:center;gap:12px;">
-            <button type="submit" id="wppoppop-save-settings-btn" class="button button-primary button-hero" style="min-height:42px;line-height:40px;padding:0 24px;font-size:14px;cursor:pointer;">
+        <div class="wppoppop-settings-submit-bar">
+            <button type="submit" id="wppoppop-save-settings-btn" class="button button-primary">
                 <?php esc_html_e('Save Settings', 'wppoppop'); ?>
             </button>
             <span id="wppoppop-save-settings-spinner" class="spinner" style="float:none;margin:0;"></span>

@@ -19,8 +19,12 @@
                 var $spinner = $('#wppoppop-save-settings-spinner');
                 var $msg = $('#wppoppop-save-settings-msg');
                 var $alert = $('#wppoppop-settings-alert');
+                var $barBtn = $('#wppoppop-bar-save-btn');
+                var $barMsg = $('#wppoppop-bar-save-msg');
 
                 $btn.prop('disabled', true);
+                $barBtn.prop('disabled', true);
+                $barMsg.text('Saving...');
                 $spinner.addClass('is-active');
                 $msg.css('color', '#64748b').text('Saving settings...');
 
@@ -43,6 +47,8 @@
                     dataType: 'json',
                     success: function(res) {
                         $btn.prop('disabled', false);
+                        $barBtn.prop('disabled', false);
+                        $barMsg.text('');
                         $spinner.removeClass('is-active');
 
                         if (res && res.success) {
@@ -64,6 +70,8 @@
                     },
                     error: function() {
                         $btn.prop('disabled', false);
+                        $barBtn.prop('disabled', false);
+                        $barMsg.text('');
                         $spinner.removeClass('is-active');
                         $msg.css('color', '#dc2626').text('✕ Server communication error.');
                     }

@@ -59,3 +59,11 @@
     window.WpPopPopSettings.Tabs = Tabs;
     window.WpPopPopSettingsTabs = Tabs;
 })(window, jQuery);
+
+/* WPP_TAB_CLEAN: remove legacy is-active hook from settings tab buttons */
+(function ($) {
+    'use strict';
+    $(function () {
+        $('.wppoppop-settings-tabs-nav .wppoppop-tab-btn').removeClass('is-active');
+    });
+})(jQuery);
