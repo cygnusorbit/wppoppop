@@ -150,6 +150,13 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                             break;
                         }
                     }
+                    if ($val === '' || $val === null) {
+                        $__want = preg_replace('/^fields/', '', preg_replace('/[^a-z0-9]/', '', strtolower($fk)));
+                        foreach ($fields as $__fk2 => $__fv2) {
+                            $__have = preg_replace('/^fields/', '', preg_replace('/[^a-z0-9]/', '', strtolower((string) $__fk2)));
+                            if ($__want !== '' && $__have === $__want) { $val = $__fv2; break; }
+                        }
+                    }
                     $val = is_array($val) ? implode(', ', $val) : $val;
                 }
                 $val = ($val === '' || $val === null) ? '—' : (string) $val;

@@ -98,7 +98,7 @@ class WpPopPop_Ajax_Frontend {
 
         // 6. Database Persistence
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_submissions';$popup_uid  = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : (isset($_POST['uid']) ? sanitize_text_field(wp_unslash($_POST['uid'])) : '');
+        $table_name = $wpdb->prefix . 'wppoppop_submissions';$popup_uid  = $this->resolve_popup_uid();
 
         if (!empty($name)) { $clean_fields['_name'] = $name; }
         if (!empty($phone)) { $clean_fields['_phone'] = $phone; }
@@ -162,6 +162,30 @@ class WpPopPop_Ajax_Frontend {
             'submission_id' => $submission_id,
             'redirect_url'  => $redirect_url
         ]);
+    }
+
+    /**
+     * Resolve the popup UID from any known request key; map numeric IDs to UIDs.
+     */
+    private function resolve_popup_uid() {
+        global $wpdb;
+        $uid = '';
+        foreach (['popup_uid', 'uid', 'popup_id', 'id'] as $k) {
+            if (!empty($_POST[$k]) && is_scalar($_POST[$k])) {
+                $uid = sanitize_text_field(wp_unslash((string) $_POST[$k]));
+                if ($uid !== '' && $uid !== 'undefined' && $uid !== 'null') {
+                    break;
+                }
+                $uid = '';
+            }
+        }
+        if ($uid !== '' && ctype_digit($uid)) {
+            $mapped = $wpdb->get_var($wpdb->prepare("SELECT uid FROM {$wpdb->prefix}wppoppop_items WHERE id = %d", (int) $uid));
+            if ($mapped) {
+                $uid = (string) $mapped;
+            }
+        }
+        return $uid;
     }
 
     public function delete_submission() {

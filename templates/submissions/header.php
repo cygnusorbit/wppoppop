@@ -35,6 +35,7 @@ $bar_title   = __('Submissions', 'wppoppop');
 $bar_icon    = 'dashicons-email-alt';
 $bar_actions = WPPOPPOP_PATH . 'templates/submissions/bar-actions.php';
 $bar_after_title = WPPOPPOP_PATH . 'templates/submissions/bar-filter.php';
+$bar_popup_page = 'wppoppop-submissions';
 ?>
 <h1 class="screen-reader-text"><?php esc_html_e('Submissions', 'wppoppop'); ?></h1>
 <div class="wppoppop-dash" style="margin:0 0 20px;max-width:none;">

@@ -49,7 +49,7 @@ $bar_logo    = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
             <?php if (empty($bar_popups)) : ?>
                 <div class="dd-empty"><?php echo esc_html__('No popups yet.', 'wppoppop'); ?></div>
             <?php else : foreach ($bar_popups as $bp) : ?>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . rawurlencode($bp->uid))); ?>"><span class="dashicons dashicons-edit"></span><?php echo esc_html($bp->title !== '' ? $bp->title : $bp->uid); ?></a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=' . (isset($bar_popup_page) ? $bar_popup_page : 'wppoppop-builder') . '&' . ((isset($bar_popup_page) && $bar_popup_page === 'wppoppop-submissions') ? 'popup_uid' : 'uid') . '=' . rawurlencode($bp->uid))); ?>"><span class="dashicons dashicons-edit"></span><?php echo esc_html($bp->title !== '' ? $bp->title : $bp->uid); ?></a>
             <?php endforeach; endif; ?>
             <div class="dd-sep"></div>
             <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>"><span class="dashicons dashicons-list-view"></span><?php echo esc_html__('View all popups', 'wppoppop'); ?></a>

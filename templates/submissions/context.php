@@ -125,8 +125,12 @@ if (!empty($submissions)) {
             continue;
         }
         foreach ($__f as $__k => $__v) {
-            if ($__k === 'signature' || $__k === 'quiz_score') {
+            if ($__k === 'signature' || $__k === 'quiz_score' || $__k === '_ip' || substr((string) $__k, -5) === '_path') {
                 continue;
+            }
+            $__nk = sanitize_key((string) $__k);
+            if ($__nk !== '') {
+                $__k = $__nk;
             }
             if (isset($popup_alias[$__k])) {
                 $__k = $popup_alias[$__k];
