@@ -8,7 +8,8 @@ if (!defined('ABSPATH')) exit;
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">SVG SHAPE PRESET</label>
             <select id="prop-shape-type" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shapePreset" style="font-size:12px;">
-                <option value="rectangle">Rectangle / Square</option>
+                <option value="square" selected>Square</option>
+                <option value="rectangle">Rectangle</option>
                 <option value="rounded">Rounded Box</option>
                 <option value="circle">Circle / Oval</option>
                 <option value="pill">Pill / Stadium</option>

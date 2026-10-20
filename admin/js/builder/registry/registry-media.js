@@ -10,10 +10,10 @@
     var Reg = window.WpPopPopElementsRegistry;
 
     var SVG_SHAPE_PATHS = {
-        'rectangle': '<rect x="2" y="2" width="96" height="96" rx="0" />',
-        'rect':      '<rect x="2" y="2" width="96" height="96" rx="0" />',
-        'square':    '<rect x="2" y="2" width="96" height="96" rx="0" />',
-        'rounded':   '<rect x="2" y="2" width="96" height="96" rx="16" />',
+        'rectangle': '<rect x="0" y="0" width="100" height="100" rx="0" />',
+        'rect':      '<rect x="0" y="0" width="100" height="100" rx="0" />',
+        'square':    '<rect x="0" y="0" width="100" height="100" rx="0" />',
+        'rounded':   '<rect x="0" y="0" width="100" height="100" rx="16" />',
         'circle':    '<circle cx="50" cy="50" r="48" />',
         'pill':      '<rect x="2" y="15" width="96" height="70" rx="35" />',
         'triangle':  '<polygon points="50,4 96,96 4,96" />',
@@ -58,8 +58,8 @@
         var innerHtml = null;
 
         if (canonical === 'shape') {
-            var preset = el.shapePreset || 'rectangle';
-            var svgInner = SVG_SHAPE_PATHS[preset] || SVG_SHAPE_PATHS['rectangle'];
+            var preset = el.shapePreset || 'square';
+            var svgInner = SVG_SHAPE_PATHS[preset] || SVG_SHAPE_PATHS['square'];
             var fillCol = el.shapeNoFill ? 'none' : (el.shapeFill || '#3b82f6');
             var stWidth = parseInt(el.strokeWidth, 10) || 0;
             var stCol   = el.strokeColor || '#0284c7';

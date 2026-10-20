@@ -226,10 +226,10 @@ class WpPopPop_Front_Renderer {
                 break;
             case 'rectangle':
             case 'rect':
-                $path = sprintf('<rect x="2" y="2" width="96" height="96" fill="%s" %s />', $fill, $s_attr);
+                $path = sprintf('<rect x="0" y="0" width="100" height="100" fill="%s" %s />', $fill, $s_attr);
                 break;
             case 'rounded':
-                $path = sprintf('<rect x="2" y="2" width="96" height="96" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
+                $path = sprintf('<rect x="0" y="0" width="100" height="100" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
                 break;
             case 'pill':
                 $path = sprintf('<rect x="2" y="15" width="96" height="70" rx="35" ry="35" fill="%s" %s />', $fill, $s_attr);
@@ -467,7 +467,7 @@ class WpPopPop_Front_Renderer {
                 $inner_html = "<img src=\"{$img_src}\" alt=\"{$img_alt}\" style=\"width:100%;height:100%;object-fit:{$img_fit};display:block;border-radius:inherit;\" />";
                 break;
             case 'shape':
-                $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'circle');
+                $preset = !empty($el['shapePreset']) ? $el['shapePreset'] : (!empty($el['content']) ? $el['content'] : 'square');
                 $fill = !empty($el['shapeNoFill']) ? 'none' : esc_attr(!empty($el['shapeFill']) ? $el['shapeFill'] : '#3b82f6');
                 $stroke = esc_attr(!empty($el['strokeColor']) ? $el['strokeColor'] : (!empty($el['shapeStroke']) ? $el['shapeStroke'] : 'transparent'));
                 $stroke_width = intval($el['strokeWidth'] ?? ($el['shapeStrokeWidth'] ?? 0));

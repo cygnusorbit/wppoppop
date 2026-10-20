@@ -713,7 +713,7 @@
         buildElementNode: function(el) {
 
             var pad = el.padding !== undefined ? parseInt(el.padding, 10) : 0;
-            var isFormOrBtn = ['step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'select', 'date'].indexOf(el.type) !== -1;
+            var isFormOrBtn = ['shape', 'step_btn', 'submit', 'pay', 'link_btn', 'textfield', 'email', 'number', 'select', 'date'].indexOf(el.type) !== -1;
 
             var $div = $('<div>')
                 .addClass('wppoppop-canvas-item')
@@ -757,7 +757,7 @@
         },
 
         renderShapeSvg: function(preset, fill, stroke, strokeWidth, rotate) {
-            preset = preset || 'circle';
+            preset = preset || 'square';
             fill = fill || '#3b82f6';
             stroke = stroke || '#1d4ed8';
             var sw = (strokeWidth !== undefined) ? parseInt(strokeWidth, 10) : 2;
@@ -770,11 +770,11 @@
             var geom = '';
             switch(preset) {
                 case 'square':
-                    geom = '<rect x="5" y="5" width="90" height="90" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
+                    geom = '<rect x="0" y="0" width="100" height="100" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
                     break;
                 case 'rounded_rect':
                 case 'rounded_rectangle':
-                    geom = '<rect x="5" y="5" width="90" height="90" rx="15" ry="15" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
+                    geom = '<rect x="0" y="0" width="100" height="100" rx="15" ry="15" ' + fAttr + ' ' + sAttr + transformAttr + ' />';
                     break;
                 case 'star':
                     geom = '<polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" ' + fAttr + ' ' + sAttr + transformAttr + ' stroke-linejoin="round" />';
@@ -1201,7 +1201,7 @@
 
             if (type === 'phone' || type === 'tel') { newEl.autocomplete = 'tel'; } /* WPPOPPOP_PHONE_AC_DEFAULT */
             if (type === 'shape') {
-                newEl.shapePreset = 'circle';
+                newEl.shapePreset = 'square';
                 newEl.shapeFill = '#3b82f6';
                 newEl.shapeStroke = '#1d4ed8';
                 newEl.shapeStrokeWidth = 2;
