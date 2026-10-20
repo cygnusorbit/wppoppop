@@ -1214,6 +1214,21 @@
             if (type === 'radio' || type === 'radios') { newEl.width = 100; newEl.w = 100; newEl.height = 100; newEl.h = 100; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_RADIO_DEFAULTS */
             if (type === 'multiselect') { newEl.width = 125; newEl.w = 125; newEl.height = 125; newEl.h = 125; } /* WPPOPPOP_MULTISELECT_SIZE */
             if (type === 'tile') { newEl.textAlign = 'center'; newEl.hoverBgColor = '#0284c7'; newEl.hoverTextColor = '#ffffff'; newEl.hoverBorderColor = '#0284c7'; } /* WPPOPPOP_TILE_DEFAULTS */
+            if (type === 'icon' || type === 'fontawesome') { /* WPPOPPOP_ICON_DEFAULTS_V1 */
+                newEl.iconClass = 'fas fa-star';
+                newEl.content = 'fas fa-star';
+                newEl.iconSize = 36;
+                newEl.iconColor = '#38bdf8';
+                newEl.color = '#38bdf8';
+                newEl.rotate = 0;
+                newEl.width = 40; newEl.w = 40;
+                newEl.height = 40; newEl.h = 40;
+                newEl.borderRadius = 0;
+                newEl.padding = 0;
+                newEl.bgColor = 'transparent';
+                newEl.transparentFill = true;
+                newEl.textAlign = 'center';
+            }
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();
