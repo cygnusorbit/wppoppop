@@ -12,7 +12,7 @@ class WpPopPop_Overlay {
 
     const DEFAULT_CSS = 'align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);';
     const MAX_ITEMS   = 20;
-    const MAX_HTML    = 100000;
+    const MAX_HTML    = 400000;
 
     private static function truthy($v) {
         return !empty($v) && $v !== 'false' && $v !== '0';
