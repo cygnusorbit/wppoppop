@@ -3,13 +3,13 @@ if (!defined('ABSPATH')) exit;
 ?>
 <!-- ADVANCED FIELD IDENTIFIER, FILTERS & VALIDATORS SUITE -->
 <div class="wppoppop-insp-section" id="insp-section-form-advanced" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; margin-bottom:12px;">
-    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">FIELD IDENTIFIER &amp; INPUT MASK</div>
+    <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">FIELD IDENTIFIER</div>
     <div style="margin-bottom:10px;">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">ID / Merge Token Name</label>
-        <input type="text" id="prop-field-name" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="fieldName" placeholder="e.g. email or first_name" style="font-size:12px;" />
+        <input type="text" id="prop-field-name" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="fieldName" placeholder="auto: layer-name-a1b2c3" style="font-size:12px;" />
         <small style="font-size:10px; color:#64748b; display:block; margin-top:3px;">Use as <code>{field_name}</code> in email notifications &amp; CRM webhooks.</small>
     </div>
-    <div>
+    <div class="wppoppop-input-mask-row" style="display:none !important;" aria-hidden="true">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Input Mask</label>
         <input type="text" id="prop-input-mask" class="widefat wppoppop-input wppoppop-adv-bind" data-adv-prop="inputMask" placeholder="e.g. (999) 999-9999" style="font-size:12px;" />
     </div>
