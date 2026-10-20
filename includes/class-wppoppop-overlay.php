@@ -106,6 +106,26 @@ class WpPopPop_Overlay {
         return $out;
     }
 
+    /** Loads/unloads animation iframes as their popup is shown/hidden (ES5, cross-browser). */
+    private static function loader_js() {
+        return <<<'JS'
+(function(){
+if(window.__wppOvLazy){return;}window.__wppOvLazy=true;
+function sync(){
+var f=document.querySelectorAll('iframe.wppoppop-ov-bg[data-srcdoc]');
+for(var i=0;i<f.length;i++){
+var el=f[i],vis=el.offsetWidth>0&&el.offsetHeight>0,on=el.getAttribute('data-on')==='1';
+if(vis&&!on){el.setAttribute('srcdoc',el.getAttribute('data-srcdoc'));el.setAttribute('data-on','1');}
+else if(!vis&&on){el.removeAttribute('srcdoc');el.setAttribute('src','about:blank');el.setAttribute('data-on','0');}
+}}
+function boot(){sync();
+if(window.MutationObserver){new MutationObserver(sync).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['style','class']});}
+else{setInterval(sync,400);}}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{boot();}
+})();
+JS;
+    }
+
     /**
      * Frontend renderer bits.
      * @return array{css:string,layers:string}
@@ -146,10 +166,15 @@ class WpPopPop_Overlay {
                 $html = isset($active['html']) && is_string($active['html']) ? $active['html'] : '';
                 if (trim($html) !== '') {
                     $doc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}</style></head><body>' . $html . '</body></html>';
-                    $layers .= '<iframe class="wppoppop-ov-bg" aria-hidden="true" tabindex="-1" sandbox="allow-scripts" srcdoc="' . esc_attr($doc) . '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;pointer-events:none;background:transparent;"></iframe>';
+                    $layers .= '<iframe class="wppoppop-ov-bg" aria-hidden="true" tabindex="-1" sandbox="allow-scripts" data-srcdoc="' . esc_attr($doc) . '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;pointer-events:none;background:transparent;"></iframe>';
                 }
             }
             if ($layers !== '') {
+                /* WPPOPPOP_OVERLAY_LAZY: transparent backdrop over custom layers; iframe loads only while visible */
+                $layers .= '<style>.wppoppop-ov-bg ~ .wppoppop-backdrop{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;}.wppoppop-ov-bg{z-index:0;}</style>';
+                if (strpos($layers, 'data-srcdoc') !== false) {
+                    $layers .= '<script>' . self::loader_js() . '</script>';
+                }
                 $layers .= '<div class="wppoppop-ov-tint" aria-hidden="true" style="' . esc_attr('position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;background:' . $tint . ';') . '"></div>';
                 $res['css']    = 'align-items:center;justify-content:center;background:transparent;';
                 $res['layers'] = $layers;
