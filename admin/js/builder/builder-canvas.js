@@ -1229,6 +1229,7 @@
                 newEl.transparentFill = true;
                 newEl.textAlign = 'center';
             }
+            if (type === 'submit') { newEl.textAlign = 'center'; } /* WPPOPPOP_SUBMIT_ALIGN_DEFAULT */
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();

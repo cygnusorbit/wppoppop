@@ -85,7 +85,7 @@ class WpPopPop_Front_Renderer {
 
             <div class="wppoppop-box wppoppop-box-container"
                  data-uid="<?php echo esc_attr($uid); ?>"
-                 style="position:relative;width:<?php echo esc_attr($width); ?>px;max-width:92vw;min-height:<?php echo esc_attr($height); ?>px;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:visible !important;<?php echo esc_attr($box_bg); ?>">
+                 style="position:relative;width:auto;max-width:92vw;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:visible !important;<?php echo esc_attr($box_bg); ?>">
 
                 <!-- Close Button -->
                 <?php if (!$is_inline): ?>
@@ -142,7 +142,7 @@ class WpPopPop_Front_Renderer {
                          data-anim-disappearance="<?php echo $c_anim_dis; ?>"
                          data-anim-exit="<?php echo (isset($cm['anim_exit_enabled']) && in_array($cm['anim_exit_enabled'], array(false, 0, '0', 'false'), true)) ? '0' : '1'; ?>"
                          data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
-                         style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style); ?>width:100%;min-height:<?php echo esc_attr($c_height); ?>px;position:relative;">
+                         style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
 
                         <div class="wppoppop-canvas-content">
                             <?php 
@@ -193,57 +193,38 @@ class WpPopPop_Front_Renderer {
             ? sprintf('stroke="%s" stroke-width="%d" vector-effect="non-scaling-stroke"', $stroke, $stroke_width) 
             : '';
 
-        switch ($preset) {
-            case 'square':
-                $path = sprintf('<rect x="4" y="4" width="92" height="92" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'rounded_square':
-                $path = sprintf('<rect x="4" y="4" width="92" height="92" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'star':
-                $path = sprintf('<polygon points="50,4 64,34 97,38 73,61 80,94 50,78 20,94 27,61 3,38 36,34" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'triangle':
-                $path = sprintf('<polygon points="50,6 96,92 4,92" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'diamond':
-                $path = sprintf('<polygon points="50,4 96,50 50,96 4,50" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'heart':
-                $path = sprintf('<path d="M50 88 C20 70 4 50 4 30 C4 14 16 4 30 4 C40 4 47 11 50 17 C53 11 60 4 70 4 C84 4 96 14 96 30 C96 50 80 70 50 88 Z" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'hexagon':
-                $path = sprintf('<polygon points="25,6 75,6 96,50 75,94 25,94 4,50" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'octagon':
-                $path = sprintf('<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'shield':
-                $path = sprintf('<path d="M50 4 L92 18 L92 54 C92 76 50 96 50 96 C50 96 8 76 8 54 L8 18 Z" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'cross':
-                $path = sprintf('<polygon points="36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'rectangle':
-            case 'rect':
-                $path = sprintf('<rect x="0" y="0" width="100" height="100" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'rounded':
-                $path = sprintf('<rect x="0" y="0" width="100" height="100" rx="16" ry="16" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'pill':
-                $path = sprintf('<rect x="2" y="15" width="96" height="70" rx="35" ry="35" fill="%s" %s />', $fill, $s_attr);
-                break;
-            case 'pentagon':
-                $path = sprintf('<polygon points="50,3 97,38 79,94 21,94 3,38" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'badge':
-                $path = sprintf('<polygon points="50,2 62,13 78,10 83,25 97,33 93,49 99,64 86,74 83,90 67,91 56,99 44,91 28,90 25,74 12,64 18,49 14,33 28,25 33,10 48,13" fill="%s" %s stroke-linejoin="round" />', $fill, $s_attr);
-                break;
-            case 'circle':
-            default:
-                $path = sprintf('<ellipse cx="50" cy="50" rx="46" ry="46" fill="%s" %s />', $fill, $s_attr);
-                break;
+        /* WPPOPPOP_SHAPE_GEOM_PARITY: same geometry as the builder stage (registry-media.js) */
+        $geom_open = array(
+            'square'    => '<rect x="0" y="0" width="100" height="100"',
+            'rectangle' => '<rect x="0" y="0" width="100" height="100"',
+            'rect'      => '<rect x="0" y="0" width="100" height="100"',
+            'rounded'   => '<rect x="0" y="0" width="100" height="100" rx="16" ry="16"',
+            'rounded_square' => '<rect x="0" y="0" width="100" height="100" rx="16" ry="16"',
+            'circle'    => '<circle cx="50" cy="50" r="48"',
+            'pill'      => '<rect x="2" y="15" width="96" height="70" rx="35" ry="35"',
+        );
+        $geom_poly = array(
+            'triangle' => '50,4 96,96 4,96',
+            'diamond'  => '50,2 98,50 50,98 2,50',
+            'star'     => '50,3 63,36 98,38 70,60 79,95 50,75 21,95 30,60 2,38 37,36',
+            'pentagon' => '50,3 97,38 79,94 21,94 3,38',
+            'hexagon'  => '25,5 75,5 98,50 75,95 25,95 2,50',
+            'badge'    => '50,2 62,13 78,10 83,25 97,33 93,49 99,64 86,74 83,90 67,91 56,99 44,91 28,90 25,74 12,64 18,49 14,33 28,25 33,10 48,13',
+            'octagon'  => '30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30',
+            'cross'    => '36,4 64,4 64,36 96,36 96,64 64,64 64,96 36,96 36,64 4,64 4,36 36,36',
+        );
+        $geom_path = array(
+            'heart'  => 'M50,88 C50,88 10,60 10,32 C10,16 23,6 37,6 C45,6 50,12 50,18 C50,12 55,6 63,6 C77,6 90,16 90,32 C90,60 50,88 50,88 Z',
+            'shield' => 'M50 4 L92 18 L92 54 C92 76 50 96 50 96 C50 96 8 76 8 54 L8 18 Z',
+        );
+        if (isset($geom_open[$preset])) {
+            $path = sprintf('%s fill="%s" %s />', $geom_open[$preset], $fill, $s_attr);
+        } elseif (isset($geom_poly[$preset])) {
+            $path = sprintf('<polygon points="%s" fill="%s" %s stroke-linejoin="round" />', $geom_poly[$preset], $fill, $s_attr);
+        } elseif (isset($geom_path[$preset])) {
+            $path = sprintf('<path d="%s" fill="%s" %s stroke-linejoin="round" />', $geom_path[$preset], $fill, $s_attr);
+        } else {
+            $path = sprintf('%s fill="%s" %s />', $geom_open['circle'], $fill, $s_attr);
         }
 
         return sprintf('<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="%s">%s</svg>', esc_attr($svg_style), $path);

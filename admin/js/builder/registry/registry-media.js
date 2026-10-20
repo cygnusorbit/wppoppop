@@ -173,7 +173,7 @@
                 '</div>';
         } else if (canonical === 'button' || canonical === 'submit') {
             /* WPPOPPOP_SUBMIT_STAGE_ICONS */
-            var sbIconHtml = '', sbPadStyle = '';
+            var sbIconHtml = '', sbPadStyle = ''; var sbJust = 'center'; /* WPPOPPOP_SUBMIT_ALIGN_STAGE */ if (canonical === 'submit') { sbJust = (el.textAlign === 'left') ? 'flex-start' : ((el.textAlign === 'right') ? 'flex-end' : 'center'); }
             if (canonical === 'submit') {
                 var sbHex = function(c) { return /^#[0-9a-fA-F]{3,8}$/.test(c || ''); };
                 var sbOne = function(cls, side, off, colorKey) {
@@ -205,7 +205,7 @@
                 '--wppoppop-hover-color': el.hoverColor || '#ffffff',
                 '--wppoppop-hover-border': el.hoverBorder || '#1d4ed8'
             });
-            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;box-sizing:border-box;' + sbPadStyle + 'pointer-events:none;' + tagFont + 'color:inherit;">' +
+            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + sbJust + ';position:relative;box-sizing:border-box;' + sbPadStyle + 'pointer-events:none;' + tagFont + 'color:inherit;">' +
                 icoHtml + sbIconHtml + '<span>' + $('<div>').text(bTxt).html() + '</span>' +
                 '</div>';
         }
