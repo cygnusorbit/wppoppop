@@ -17,8 +17,8 @@ if (!defined('ABSPATH')) {
     <!-- Dashboard Header & Top Actions -->
     <?php include WPPOPPOP_PATH . 'templates/dashboard/header.php'; ?>
 
-    <!-- Performance Metric Cards -->
-    <?php include WPPOPPOP_PATH . 'templates/dashboard/kpi-cards.php'; ?>
+    <?php /* WPP_KPI_HIDDEN: KPI cards disabled on the Popups page. To restore, uncomment the next line. */ ?>
+    <?php // include WPPOPPOP_PATH . 'templates/dashboard/kpi-cards.php'; ?>
 
     <!-- Campaigns List Table -->
     <?php include WPPOPPOP_PATH . 'templates/dashboard/table.php'; ?>
