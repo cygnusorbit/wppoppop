@@ -64,6 +64,31 @@ class WpPopPop_Front_Renderer {
         ";
         }
 
+        /* WPPOPPOP_INLINE_CANVAS_ONLY: shortcode embed shows the canvas only (no overlay / backdrop / box chrome) */
+        if ($is_inline) {
+            $custom_inline_css .= "
+        #wppoppop-popup-{$uid}[data-inline] {
+            background: transparent !important;
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+            position: relative !important;
+            inset: auto !important;
+            width: auto !important;
+            height: auto !important;
+            display: block !important;
+            padding: 0 !important;
+        }
+        #wppoppop-popup-{$uid}[data-inline] .wppoppop-backdrop { display: none !important; }
+        #wppoppop-popup-{$uid}[data-inline] .wppoppop-box {
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            max-width: 100% !important;
+            margin: 0 auto;
+        }
+        ";
+        }
+
         if ($minify_css && function_exists('wppoppop_minify_css')) {
             $custom_inline_css = wppoppop_minify_css($custom_inline_css);
         }
@@ -75,17 +100,19 @@ class WpPopPop_Front_Renderer {
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
              data-config="<?php echo $encoded_config; ?>"<?php echo $trg_attrs; ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
-             style="<?php echo esc_attr($overlay_style); ?>align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);"
+             style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : 'align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);'; ?>"
              aria-hidden="true"
              role="dialog">
 
             <style><?php echo $custom_inline_css; ?></style>
 
+            <?php if (!$is_inline): ?>
             <div class="wppoppop-backdrop" data-uid="<?php echo esc_attr($uid); ?>"></div>
+            <?php endif; ?>
 
             <div class="wppoppop-box wppoppop-box-container"
                  data-uid="<?php echo esc_attr($uid); ?>"
-                 style="position:relative;width:auto;max-width:92vw;border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);overflow:visible !important;<?php echo esc_attr($box_bg); ?>">
+                 style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr('border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);' . $box_bg); ?>">
 
                 <!-- Close Button -->
                 <?php if (!$is_inline): ?>
