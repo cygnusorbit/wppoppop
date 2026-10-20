@@ -107,7 +107,7 @@
 
                 if ($wrap.attr('data-manual') === '1') return; /* opened only by button / link / JS API */
                 var hasLoad = $wrap.attr('data-trigger-load') === '1';
-                var hasOther = $wrap.is('[data-trigger-exit],[data-trigger-scroll],[data-trigger-back],[data-trigger-idle]');
+                var hasOther = $wrap.is('[data-trigger-exit],[data-trigger-scroll],[data-trigger-back],[data-trigger-idle],[data-trigger-adblock],[data-trigger-video-end]');
                 if (!hasLoad && hasOther) return;
                 var loadDelay = hasLoad ? (parseFloat($wrap.attr('data-trigger-load-delay')) || 0) * 1000 : 0;
                 if (loadDelay > 0) {
@@ -546,3 +546,58 @@
     }, false);
 })(window, document);
 /* === WPPOPPOP_BUTTON_CLOSE_END === */
+
+
+/* === WPPOPPOP_TRIGGER_REPEAT_START: "always on page load" + "re-appear every X hours" === */
+(function(window, $) {
+    'use strict';
+    var D = window.WpPopPopFrontDisplay;
+    if (!D || D._repeatWrapped) return;
+    D._repeatWrapped = true;
+
+    var timers = {};
+    function key(uid) { return 'wppoppop_dismissed_' + uid; }
+    function getTs(uid) { try { return parseInt(localStorage.getItem(key(uid)), 10) || 0; } catch (e) { return 0; } }
+    function clr(uid) { try { localStorage.removeItem(key(uid)); } catch (e) {} }
+
+    function waitUntil(uid, due) {
+        clearTimeout(timers[uid]);
+        var left = due - Date.now();
+        if (left <= 0) { clr(uid); D.show(uid); return; }
+        timers[uid] = setTimeout(function() { waitUntil(uid, due); }, Math.min(left, 2147000000)); /* setTimeout max ~24.8d */
+    }
+
+    var origEval = D.evaluateTriggers;
+    D.evaluateTriggers = function() {
+        $('.wppoppop-popup-wrap[data-uid]').each(function() {
+            var $w = $(this), uid = $w.attr('data-uid');
+            if (!uid || $w.attr('data-inline') === '1') { return; }
+            if ($w.attr('data-trigger-always') === '1') { clr(uid); return; }
+            var h = parseFloat($w.attr('data-repeat-hours')) || 0;
+            if (h > 0) {
+                var ts = getTs(uid);
+                if (!ts) { return; }
+                var due = ts + h * 3600000;
+                if (Date.now() >= due) {
+                    clr(uid);
+                    if ($w.attr('data-trigger-load') !== '1') { D.show(uid); }
+                } else {
+                    waitUntil(uid, due);
+                }
+            }
+        });
+        return origEval.apply(this, arguments);
+    };
+
+    var origClose = D.close;
+    D.close = function(uid) {
+        var r = origClose.apply(this, arguments);
+        var $w = D.getPopupWrap(uid);
+        var h = parseFloat($w.attr('data-repeat-hours')) || 0;
+        if (h > 0 && $w.attr('data-inline') !== '1') {
+            waitUntil(uid, Date.now() + h * 3600000);
+        }
+        return r;
+    };
+})(window, jQuery);
+/* === WPPOPPOP_TRIGGER_REPEAT_END === */

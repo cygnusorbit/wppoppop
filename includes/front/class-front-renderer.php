@@ -37,6 +37,15 @@ class WpPopPop_Front_Renderer {
         if ($trg_on('backbutton') || $trg_on('back')) { $trg_attrs .= ' data-trigger-back="1"'; }
         if ($trg_on('idle'))   { $trg_attrs .= ' data-trigger-idle="' . max(1, intval($trg['idle_seconds'] ?? ($trg['idle_time'] ?? 15))) . '"'; }
 
+        /* WPPOPPOP_TRIGGER_ALWAYS_REPEAT */
+        if ($trg_on('always')) {
+            if (!$trg_on('load')) { $trg_attrs .= ' data-trigger-load="1" data-trigger-load-delay="0"'; }
+            $trg_attrs .= ' data-trigger-always="1"';
+        }
+        if ($trg_on('repeat') && intval($trg['repeat_hours'] ?? 0) > 0) {
+            $trg_attrs .= ' data-repeat-hours="' . max(1, min(720, intval($trg['repeat_hours']))) . '"';
+        }
+
         // Settings Integrations
         $default_font   = function_exists('wppoppop_get_setting') ? wppoppop_get_setting('default_font', 'inherit') : 'inherit';
         $show_watermark = function_exists('wppoppop_get_setting') ? (bool) wppoppop_get_setting('powered_by_badge', false) : false;

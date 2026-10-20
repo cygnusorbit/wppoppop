@@ -23,19 +23,25 @@
             });
         },
 
-        bindExitIntent: function() {
+        bindExitIntent: function() { /* WPPOPPOP_EXIT_XBROWSER */
             var triggered = {};
-            $(document).on('mouseleave', function(e) {
-                if (e.clientY <= (parseInt($('.wppoppop-popup-wrap[data-trigger-exit="1"]').first().attr('data-exit-sens'), 10) || 10)) {
-                    $('.wppoppop-popup-wrap[data-trigger-exit="1"]').each(function() {
-                        var uid = $(this).data('uid');
-                        if (!triggered[uid] && window.WpPopPopFront.Modal) {
-                            triggered[uid] = true;
-                            window.WpPopPopFront.Modal.open(uid);
-                        }
-                    });
-                }
-            });
+            function fire(e) {
+                var y = (typeof e.clientY === 'number') ? e.clientY : 0;
+                $('.wppoppop-popup-wrap[data-trigger-exit="1"]').each(function() {
+                    var $w = $(this);
+                    var uid = $w.attr('data-uid');
+                    var sens = parseInt($w.attr('data-exit-sens'), 10) || 20;
+                    if (!uid || triggered[uid] || y > sens) { return; }
+                    triggered[uid] = true;
+                    if (window.WpPopPopFront.Modal) { window.WpPopPopFront.Modal.open(uid); }
+                });
+            }
+            /* Chrome / Edge / Firefox: pointer leaves the viewport */
+            document.documentElement.addEventListener('mouseleave', fire, false);
+            /* Safari fallback: mouseout with no related target = left the window */
+            document.addEventListener('mouseout', function(e) {
+                if (!e.relatedTarget && !e.toElement) { fire(e); }
+            }, false);
         },
 
         bindMobileBack: function() {
