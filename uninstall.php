@@ -27,6 +27,7 @@ if ($clean_on_uninstall) {
     delete_option('wppoppop_db_version');
     delete_option('wppoppop_cookie_epoch');
     delete_option('wppoppop_activated');
+    delete_option('wppoppop_schema_is_read');
 
     // 3. Purge cached transients
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wppoppop_%' OR option_name LIKE '_transient_timeout_wppoppop_%'");

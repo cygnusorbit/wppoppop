@@ -41,7 +41,7 @@ class WpPopPop_Admin_Settings {
             'range_slider' => 0, 'js_parser' => 0,
             'email_validation' => 'basic', 'enable_recaptcha' => 0,
             'recaptcha_site_key' => '', 'recaptcha_secret_key' => '',
-            'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
+            'recaptcha_threshold' => 0.4, 'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
             'custom_css' => '', 'custom_js' => '', 'custom_header_html' => '', 'custom_footer_html' => '',
             'clean_on_uninstall' => 0,
         ];
@@ -116,10 +116,12 @@ class WpPopPop_Admin_Settings {
         $o['enable_recaptcha']       = $b('enable_recaptcha');
         $o['recaptcha_site_key']     = !empty($in['recaptcha_site_key']) ? sanitize_text_field($in['recaptcha_site_key']) : '';
         $o['recaptcha_secret_key']   = !empty($in['recaptcha_secret_key']) ? sanitize_text_field($in['recaptcha_secret_key']) : '';
+        $thr = (isset($in['recaptcha_threshold']) && is_numeric($in['recaptcha_threshold'])) ? (float) $in['recaptcha_threshold'] : 0.4;
+        $o['recaptcha_threshold']    = round(min(0.9, max(0.1, $thr)), 2);
         $o['max_submissions_per_ip'] = isset($in['max_submissions_per_ip']) ? min(100, max(1, (int) $in['max_submissions_per_ip'])) : 10;
         $o['ip_geotargeting']        = $b('ip_geotargeting');
         $geo = !empty($in['geoip_service']) ? $in['geoip_service'] : (!empty($in['geoip_api_service']) ? $in['geoip_api_service'] : 'none');
-        $o['geoip_service']     = in_array($geo, ['none', 'ipapi', 'ip-api', 'maxmind'], true) ? $geo : 'none';
+        $o['geoip_service']     = in_array($geo, ['none', 'ipapi', 'ip-api'], true) ? $geo : 'none';
         $o['geoip_api_service'] = $o['geoip_service'];
 
         // 5. Custom code (capability-aware, no double unslash)

@@ -136,8 +136,6 @@ class WpPopPop_Admin_Assets {
             ];
 
             wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', $settings_payload);
-            wp_localize_script('wppoppop-settings-save-js', 'wppoppop_settings_vars', $settings_payload);
-            wp_localize_script('wppoppop-settings-tools-js', 'wppoppop_settings_vars', $settings_payload);
             wp_localize_script('wppoppop-settings-js', 'wppoppop_vars', $shared_payload);
         }
 

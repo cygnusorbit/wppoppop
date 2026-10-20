@@ -78,7 +78,9 @@ class WpPopPop_Security {
 
         if (is_array($data) && !empty($data['success'])) {
             // For v3, evaluate minimum score threshold
-            if (isset($data['score']) && (float) $data['score'] < 0.4) {
+            $threshold = (float) wppoppop_get_setting('recaptcha_threshold', 0.4);
+            if ($threshold < 0.1 || $threshold > 0.9) { $threshold = 0.4; }
+            if (isset($data['score']) && (float) $data['score'] < $threshold) {
                 return false;
             }
             return true;

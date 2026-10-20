@@ -33,8 +33,8 @@ if (!isset($settings) || !is_array($settings)) {
         <button type="button" class="wppoppop-tab-btn" data-tab="performance"><?php esc_html_e('Performance & Preload', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn" data-tab="libraries"><?php esc_html_e('Typography & Libraries', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn" data-tab="security"><?php esc_html_e('Security & Geolocation', 'wppoppop'); ?></button>
-         <button type="button" class="wppoppop-tab-btn" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn" data-tab="custom-code"><?php esc_html_e('Custom CSS & JS', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
        
     </nav>
 

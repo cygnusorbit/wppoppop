@@ -46,6 +46,13 @@ $geoip_service          = isset($settings['geoip_service']) ? $settings['geoip_s
             </td>
         </tr>
         <tr>
+            <th scope="row"><label for="setting-recaptcha-threshold"><?php esc_html_e('reCAPTCHA v3 Minimum Score', 'wppoppop'); ?></label></th>
+            <td>
+                <input type="number" id="setting-recaptcha-threshold" name="settings[recaptcha_threshold]" value="<?php echo esc_attr(isset($settings['recaptcha_threshold']) ? (float) $settings['recaptcha_threshold'] : 0.4); ?>" min="0.1" max="0.9" step="0.1" class="small-text">
+                <p class="description"><?php esc_html_e('Submissions scoring below this are rejected (0.1 = lenient, 0.9 = strict). Default 0.4. Requires a reCAPTCHA v3 key pair.', 'wppoppop'); ?></p>
+            </td>
+        </tr>
+        <tr>
             <th scope="row"><label for="setting-ip-limit"><?php esc_html_e('IP Rate Limiting', 'wppoppop'); ?></label></th>
             <td>
                 <input type="number" id="setting-ip-limit" name="settings[max_submissions_per_ip]" value="<?php echo esc_attr($max_submissions_per_ip); ?>" min="1" max="100" class="small-text">
@@ -69,7 +76,6 @@ $geoip_service          = isset($settings['geoip_service']) ? $settings['geoip_s
                     <option value="none" <?php selected($geoip_service, 'none'); ?>><?php esc_html_e('None (Server Headers: Cloudflare CF-IPCountry only)', 'wppoppop'); ?></option>
                     <option value="ipapi" <?php selected($geoip_service, 'ipapi'); ?>>ipapi.co (JSON API)</option>
                     <option value="ip-api" <?php selected($geoip_service, 'ip-api'); ?>>ip-api.com</option>
-                    <option value="maxmind" <?php selected($geoip_service, 'maxmind'); ?>>MaxMind GeoIP2</option>
                 </select>
                 <p class="description"><?php esc_html_e('Provider used to detect visitor countries for geo-whitelisting and blacklisting.', 'wppoppop'); ?></p>
             </td>
