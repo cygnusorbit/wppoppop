@@ -155,8 +155,8 @@ class WpPopPop_Security {
         }
 
         // Localhost fallback
-        if (in_array($ip, ['127.0.0.1', '::1', '0.0.0.0'], true) || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
-            return 'US';
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return (string) apply_filters('wppoppop_geoip_local_country', '');
         }
 
         $transient_key = 'wppoppop_geo_' . md5($service . '_' . $ip);
