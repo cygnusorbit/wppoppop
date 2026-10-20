@@ -15,10 +15,6 @@ class WpPopPop_Ajax_Builder {
         add_action('wp_ajax_wppoppop_import_popup', [$this, 'import_popup']);
         add_action('wp_ajax_wppoppop_save_campaign', [$this, 'save_campaign']);
         add_action('wp_ajax_wppoppop_delete_campaign', [$this, 'delete_campaign']);
-        add_action('wp_ajax_wppoppop_bulk_export', [$this, 'bulk_export']);
-        add_action('wp_ajax_wppoppop_bulk_import', [$this, 'bulk_import']);
-        add_action('wp_ajax_wppoppop_repair_tables', [$this, 'repair_tables']);
-        add_action('wp_ajax_wppoppop_reset_counters', [$this, 'reset_counters']);
     }
 
     private function verify_security() {
@@ -146,6 +142,8 @@ class WpPopPop_Ajax_Builder {
     }
 
     private function sanitize_anim_payload($node) {
+        if (!class_exists('WpPopPop_Sanitizer')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sanitizer.php'; }
+        return WpPopPop_Sanitizer::anim_payload($node);
         if (is_object($node)) {
             foreach (get_object_vars($node) as $k => $v) { $node->$k = $this->sanitize_anim_value($k, $v); }
             return $node;
@@ -338,160 +336,10 @@ if (!$data || !isset($data['meta'])) {
         wp_send_json_success(['message' => 'Campaign deleted.']);
     }
 
-    public function bulk_export() {
-        $this->verify_security();
-        global $wpdb;
-        $items = $wpdb->get_results("SELECT uid, title, data, status FROM {$wpdb->prefix}wppoppop_items", ARRAY_A);
-        $campaigns = $wpdb->get_results("SELECT uid, title, popup_uids, status FROM {$wpdb->prefix}wppoppop_campaigns", ARRAY_A);
 
-        $backup_payload = [
-            'generator'  => 'WpPopPop ' . (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION : '1.0.0'),
-            'exported'   => current_time('mysql'),
-            'items'      => $items ?: [],
-            'campaigns'  => $campaigns ?: []
-        ];
 
-        wp_send_json_success([
-            'filename' => 'wppoppop-bulk-backup-' . gmdate('Y-m-d') . '.json',
-            'payload'  => $backup_payload
-        ]);
-    }
 
-    public function bulk_import() {
-        $this->verify_security();
-        $raw_json = '';
-        if (!empty($_FILES['wppoppop_bulk_import_file']['tmp_name'])) {
-            $raw_json = file_get_contents($_FILES['wppoppop_bulk_import_file']['tmp_name']);
-        } elseif (!empty($_POST['import_data'])) {
-            $raw_json = wp_unslash($_POST['import_data']);
-        }
 
-        if (empty($raw_json)) {
-            wp_send_json_error(['message' => 'No backup data was provided for restoration.']);
-        }
-
-        $decoded = json_decode($raw_json, true);
-        if (!$decoded || !is_array($decoded) || (empty($decoded['items']) && empty($decoded['campaigns']))) {
-            wp_send_json_error(['message' => 'Invalid or unrecognized backup format.']);
-        }
-
-        global $wpdb;
-        $items_table     =$wpdb->prefix . 'wppoppop_items';
-        $campaigns_table =$wpdb->prefix . 'wppoppop_campaigns';
-
-        $imported_items     = 0;
-        $imported_campaigns = 0;
-        $uid_map            = [];
-
-        if (!empty($decoded['items']) && is_array($decoded['items'])) {
-            foreach ($decoded['items'] as$item) {
-                $old_uid = isset($item['uid']) ? sanitize_key($item['uid']) : '';$new_uid = $this->generate_unique_uid(isset($item['title']) ? sanitize_text_field($item['title']) : '');
-                if ($old_uid) {$uid_map[$old_uid] =$new_uid;
-                }
-
-                $title = isset($item['title']) ? sanitize_text_field($item['title']) . ' (Restored)' : 'Restored Popup';$data  = isset($item['data']) ? (is_array($item['data']) ? wp_json_encode($item['data']) :$item['data']) : '{}';
-
-                $wpdb->insert($items_table,
-                    [
-                        'uid'           => $new_uid,
-                        'title'         => $title,
-                        'data'          => $data,
-                        'status'        => 'publish',
-                        'impressions'   => 0,
-                        'submissions'   => 0,
-                        'confirmations' => 0
-                    ],
-                    ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
-                );
-                $imported_items++;
-            }
-        }
-
-        if (!empty($decoded['campaigns']) && is_array($decoded['campaigns'])) {
-            foreach ($decoded['campaigns'] as$camp) {
-                $camp_uid = wp_generate_uuid4();$title    = isset($camp['title']) ? sanitize_text_field($camp['title']) . ' (Restored)' : 'Restored A/B Test';
-
-                $raw_uids = isset($camp['popup_uids']) ? (is_array($camp['popup_uids']) ?$camp['popup_uids'] : json_decode($camp['popup_uids'], true)) : [];$remapped_uids = [];
-
-                if (is_array($raw_uids)) {
-                    foreach ($raw_uids as$var_uid) {
-                        $remapped_uids[] = isset($uid_map[$var_uid]) ?$uid_map[$var_uid] : sanitize_key($var_uid);
-                    }
-                }
-
-                $wpdb->insert($campaigns_table,
-                    [
-                        'uid'        => $camp_uid,
-                        'title'      => $title,
-                        'popup_uids' => wp_json_encode($remapped_uids),
-                        'status'     => 'active'
-                    ],
-                    ['%s', '%s', '%s', '%s']
-                );
-                $imported_campaigns++;
-            }
-        }
-
-        wp_send_json_success([
-            'message'            => sprintf('Successfully restored %d popups and %d A/B campaigns!', $imported_items,$imported_campaigns),
-            'imported_items'     => $imported_items,
-            'imported_campaigns' => $imported_campaigns
-        ]);
-    }
-
-    public function repair_tables() {
-        $this->verify_security();
-        require_once WPPOPPOP_PATH . 'includes/class-wppoppop-installer.php';
-        WpPopPop_Installer::create_tables();
-
-        global $wpdb;
-        $tables = [
-            'items'        => $wpdb->prefix . 'wppoppop_items',
-            'submissions'  => $wpdb->prefix . 'wppoppop_submissions',
-            'campaigns'    => $wpdb->prefix . 'wppoppop_campaigns',
-            'logs'         => $wpdb->prefix . 'wppoppop_logs',
-            'transactions' => $wpdb->prefix . 'wppoppop_transactions',
-        ];
-
-        $status_data = [];
-        foreach ($tables as$key => $table_name) {$check = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name));
-            $exists = ($check === $table_name);$rows = 0;
-            $data_size = '0 KB';
-
-            if ($exists) {
-                $rows = (int)$wpdb->get_var("SELECT COUNT(*) FROM `{$table_name}`");
-                $table_status = $wpdb->get_row($wpdb->prepare("SHOW TABLE STATUS LIKE %s", $table_name), ARRAY_A);
-                if ($table_status && isset($table_status['Data_length'])) {$bytes = (int)$table_status['Data_length'] + (int)$table_status['Index_length'];
-                    $data_size = size_format($bytes, 2);
-                }
-            }
-
-            $status_data[$key] = [
-                'table'     => $table_name,
-                'exists'    => $exists,
-                'rows'      => number_format_i18n($rows),
-                'size'      => $data_size,
-                'status'    => $exists ? 'Optimal' : 'Missing',
-            ];
-        }
-
-        wp_send_json_success([
-            'message' => 'All 5 database tables successfully verified and schema confirmed healthy!',
-            'tables'  => $status_data
-        ]);
-    }
-
-    public function reset_counters() {
-        $this->verify_security();
-        global $wpdb;
-        $table_name =$wpdb->prefix . 'wppoppop_items';
-        $affected =$wpdb->query("UPDATE `{$table_name}` SET impressions = 0, submissions = 0, confirmations = 0");
-
-        wp_send_json_success([
-            'message'  => 'All popup impressions, leads captured, and confirmation counters have been reset to 0.',
-            'affected' => $affected !== false ? $affected : 0
-        ]);
-    }
 
     /**
      * Phase 2 Backend Whitelist Parity: opacity, hoverBgColor, customClass

@@ -1,0 +1,104 @@
+/* Tools page: matches Theme page, driven by global --wpp-* variables.
+   Phase 1 overrides legacy inline styles with !important; phase 2 should move them to classes. */
+body.wp-admin #wpcontent .wppoppop-dash.wppoppop-tools-wrap { box-sizing: border-box; width: auto; max-width: none; margin: 0 0 0 2px; padding: 0 20px 40px 0; }
+body.wp-admin #wpcontent .wppoppop-tools-wrap .wppoppop-dash-bar { box-sizing: border-box; max-width: 100%; }
+.wppoppop-tools-wrap .wppoppop-dash-bar { position: -webkit-sticky; position: sticky; top: 32px; z-index: 30; }
+#wpbody-content .wppoppop-tools-wrap .notice { margin: 0 0 16px !important; }
+
+/* Cards */
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box {
+    background: var(--wpp-c-bg-card, #fff) !important;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde) !important;
+    border-radius: var(--wpp-r-card, 3px) !important;
+    box-shadow: var(--wpp-shadow-card, 0 1px 1px rgba(0,0,0,.04)) !important;
+    padding: var(--wpp-p-card, 20px) !important;
+    margin: 0 0 16px !important;
+    box-sizing: border-box;
+}
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box h3 {
+    font-family: var(--wpp-font-heading, inherit) !important; font-size: var(--wpp-fs-h2, 15px) !important;
+    font-weight: var(--wpp-fw-heading, 600) !important; color: var(--wpp-c-heading, #1d2327) !important;
+}
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box h4 { color: var(--wpp-c-heading, #1d2327) !important; font-family: var(--wpp-font-heading, inherit) !important; }
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box > div:first-child { border-bottom-color: var(--wpp-c-row-border, #eee) !important; }
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box .dashicons { color: var(--wpp-c-primary, #c1272d) !important; }
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box .button .dashicons { color: inherit !important; }#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box strong { color: var(--wpp-c-text, #1d2327) !important; }
+
+/* Buttons */
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box .button-primary {
+    background: var(--wpp-c-primary, #c1272d) !important; border-color: var(--wpp-c-primary, #c1272d) !important; color: var(--wpp-c-primary-text, #fff) !important;
+}
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box .button-primary:hover,
+#wpbody-content .wppoppop-tools-wrap .wppoppop-card-box .button-primary:focus { background: var(--wpp-c-primary-hover, #a51f25) !important; border-color: var(--wpp-c-primary-hover, #a51f25) !important; }/* Table health grid */
+#wpbody-content .wppoppop-tools-wrap table.widefat { border-color: var(--wpp-c-row-border, #f0f0f1) !important; }
+#wpbody-content .wppoppop-tools-wrap table.widefat thead tr,
+#wpbody-content .wppoppop-tools-wrap table.widefat thead th { background: var(--wpp-c-th-bg, #f6f7f7) !important; color: var(--wpp-c-th-text, #1d2327) !important; }
+
+/* Responsive: fixed 2-col inline grids collapse on small screens */
+@media (max-width: 960px) {}
+@media (max-width: 782px) {
+    body.wp-admin #wpcontent .wppoppop-dash.wppoppop-tools-wrap { padding-right: 10px; }
+    .wppoppop-tools-wrap .wppoppop-dash-bar { top: 46px; height: auto; flex-wrap: wrap; }
+}
+
+/* Phase 2: maintenance partial (class-based, theme variables) */
+.wpp-tools-card-head { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 0 0 12px; border-bottom: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
+.wpp-tools-card-head h3 { margin: 0; }
+.wpp-tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--wpp-gap, 16px); }
+.wpp-tools-panel { background: var(--wpp-c-bg-page, #f0f0f1); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); padding: 16px; box-sizing: border-box; }
+.wpp-tools-panel h4 { margin: 0 0 6px; font-size: var(--wpp-fs-base, 13px); }
+.wpp-tools-help { margin: 0 0 12px; font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); line-height: 1.4; }
+.wpp-tools-row { display: flex; align-items: center; gap: 8px; }
+.wpp-tools-check { display: block; margin: 0 0 8px; text-transform: none; letter-spacing: 0; font-weight: 600; }
+.wpp-tools-notice { margin: 0 0 14px; padding: 10px 14px; border-left: 4px solid var(--wpp-c-info, #0284c7); background: var(--wpp-c-bg-page, #f0f0f1); border-radius: var(--wpp-r-button, 3px); font-size: var(--wpp-fs-small, 12px); }
+.wpp-tools-notice.is-success { border-left-color: var(--wpp-c-success, #16a34a); }
+.wpp-tools-notice.is-error { border-left-color: var(--wpp-c-danger, #b32d2e); }
+.wpp-tools-notice[hidden] { display: none; }
+
+/* Phase 3: class-based Tools markup */
+.wpp-tools-head-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wpp-tools-btn { display: -webkit-inline-box; display: inline-flex; align-items: center; gap: 6px; }
+.wpp-tools-btn .dashicons { font-size: 16px; width: 16px; height: 16px; }
+.wpp-tools-hidden { display: none; }
+.wpp-tools-grid { margin-top: 0; }
+.wpp-tools-card .wpp-tools-table { margin: 0 0 16px; }
+.wpp-tools-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.wpp-tools-panel.is-danger { border-color: var(--wpp-c-danger, #b32d2e); background: var(--wpp-c-bg-card, #fff); }
+.wpp-tools-panel.is-danger h4 { color: var(--wpp-c-danger, #b32d2e); }
+.wpp-btn-danger { background: var(--wpp-c-danger, #b32d2e) !important; border-color: var(--wpp-c-danger, #b32d2e) !important; color: var(--wpp-c-danger-text, #fff) !important; }
+.wpp-tools-file { display: block; width: 100%; max-width: 100%; margin: 0 0 12px; font-size: var(--wpp-fs-small, 12px); }
+.wpp-tools-status { font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); }
+.wpp-tools-status[hidden] { display: none; }
+.wpp-kv { display: flex; flex-direction: column; gap: 6px; font-size: var(--wpp-fs-small, 12px); }
+.wpp-kv-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.wpp-kv-label { color: var(--wpp-c-muted, #787c82); }
+.wpp-kv-value { display: flex; align-items: center; gap: 6px; text-align: right; }
+.wpp-pill { display: inline-block; padding: 1px 8px; border-radius: var(--wpp-r-badge, 12px); font-size: var(--wpp-fs-badge, 11px); font-weight: 600; line-height: 1.6; text-transform: var(--wpp-tt-badge, none); }
+.wpp-pill.is-ok { background: var(--wpp-c-badge-pub-bg, #dcfce7); color: var(--wpp-c-badge-pub-text, #15803d); }
+.wpp-pill.is-warn { background: #fef3c7; color: #92400e; }
+.wpp-pill.is-bad { background: #fee2e2; color: #b91c1c; }
+.wpp-tools-table th, .wpp-tools-table td { padding: 10px 14px; }
+.wpp-tools-table .num { text-align: right; }
+.wpp-tools-table .wpp-strong { font-weight: 600; }
+.wpp-tools-table .wpp-mono { font-family: var(--wpp-font-mono, ui-monospace, monospace); font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); }
+@-webkit-keyframes rotation { from { -webkit-transform: rotate(0deg); } to { -webkit-transform: rotate(359deg); } }
+@keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
+
+/* WPP_BTN_ICON_ALIGN: one explicit box for icon + label buttons (Chrome/Safari/Firefox/Edge) */
+#wpbody-content .wppoppop-tools-wrap .wpp-tools-btn,
+#wpbody-content .wppoppop-tools-wrap .wpp-tools-card .button {
+    display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex;
+    -webkit-box-align: center; -ms-flex-align: center; align-items: center;
+    -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center;
+    gap: 6px; box-sizing: border-box;
+    height: var(--wpp-h-button, 34px); min-height: var(--wpp-h-button, 34px);
+    padding: 0 14px; line-height: 1; vertical-align: middle;
+}
+#wpbody-content .wppoppop-tools-wrap .wpp-tools-card .button .dashicons {
+    -webkit-box-flex: 0; -ms-flex: 0 0 auto; flex: 0 0 auto;
+    display: block; width: 16px; height: 16px; margin: 0; padding: 0;
+    font-size: 16px; line-height: 16px; vertical-align: baseline; text-align: center;
+}
+#wpbody-content .wppoppop-tools-wrap .wpp-tools-card .button .dashicons:before {
+    display: block; width: 16px; height: 16px; font-size: 16px; line-height: 16px;
+}

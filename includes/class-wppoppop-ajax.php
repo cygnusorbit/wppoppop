@@ -12,6 +12,7 @@ class WpPopPop_Ajax {
             'WpPopPop_Ajax_Submissions' => 'class-ajax-submissions.php',
             'WpPopPop_Ajax_Campaigns'   => 'class-ajax-campaigns.php',
             'WpPopPop_Ajax_Dashboard'   => 'class-ajax-dashboard.php',
+            'WpPopPop_Ajax_Tools'       => 'class-ajax-tools.php',
         ];
 
         foreach ($modules as $class => $file) {

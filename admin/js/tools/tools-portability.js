@@ -122,6 +122,8 @@
                             formData.append('action', 'wppoppop_bulk_import');
                             formData.append('nonce', nonce);
                             formData.append('import_data', evt.target.result);
+                            if ($('#wppoppop-import-dryrun').is(':checked')) { formData.append('dry_run', '1'); }
+                            if ($('#wppoppop-import-settings').is(':checked')) { formData.append('import_settings', '1'); }
 
                             $.ajax({
                                 url: ajaxUrl,
@@ -134,9 +136,7 @@
                                     if (response && response.success) {
                                         $btn.html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Restored!');
                                         $status.css('color', '#10b981').text(response.data.message || 'Restoration complete!');
-                                        setTimeout(function() {
-                                            window.location.reload();
-                                        }, 1400);
+                                        if (response.data && response.data.dry_run) { $btn.prop('disabled', false).html(origText); } else { setTimeout(function() { window.location.reload(); }, 1400); }
                                     } else {
                                         var errMsg = (response.data && response.data.message) ? response.data.message : 'Import failed.';
                                         alert('Import Error: ' + errMsg);

@@ -3,42 +3,33 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div class="wppoppop-card-box" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid #f1f5f9;padding-bottom:10px;">
-        <span class="dashicons dashicons-download" style="font-size:20px;width:20px;height:20px;color:#8b5cf6;"></span>
-        <h3 style="margin:0;font-size:16px;font-weight:700;color:#1e293b;">Bulk Backup & Template Portability</h3>
+<div class="wppoppop-card-box wpp-tools-card">
+    <div class="wpp-tools-card-head">
+        <span class="dashicons dashicons-download"></span>
+        <h3><?php esc_html_e('Bulk Backup & Template Portability', 'wppoppop'); ?></h3>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-        <!-- Bulk Export Container -->
-        <div style="background:#f8fafc;padding:18px;border-radius:8px;border:1px solid #e2e8f0;display:flex;flex-direction:column;">
-            <h4 style="margin:0 0 6px 0;font-size:14px;color:#1e293b;">Export All Campaigns (Bulk JSON)</h4>
-            <p style="margin:0 0 14px 0;font-size:12px;color:#64748b;line-height:1.4;flex:1;">
-                Download a complete, unified JSON archive containing all published popup designs, elements, screen sequences, and settings.
-            </p>
-            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="wppoppop-bulk-export-form" style="margin:0;">
+    <div class="wpp-tools-grid">
+        <div class="wpp-tools-panel">
+            <h4><?php esc_html_e('Export All Campaigns (Bulk JSON)', 'wppoppop'); ?></h4>
+            <p class="wpp-tools-help"><?php esc_html_e('Download a complete JSON archive containing all popup designs, A/B campaigns, plugin settings and the global theme.', 'wppoppop'); ?></p>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="wppoppop-bulk-export-form">
                 <input type="hidden" name="action" value="wppoppop_bulk_export">
-                <?php wp_nonce_field('wppoppop_tools_action', 'wppoppop_tools_nonce'); ?>
-                <button type="submit" name="wppoppop_bulk_export" id="wppoppop-bulk-export-btn" class="button button-primary" style="background:#8b5cf6;border-color:#7c3aed;display:inline-flex;align-items:center;gap:6px;">
-                    <span class="dashicons dashicons-download" style="font-size:16px;width:16px;height:16px;"></span> Export Complete Backup
-                </button>
+                <input type="hidden" name="wppoppop_tools_nonce" value="<?php echo esc_attr(wp_create_nonce('wppoppop_tools_action')); ?>"><?php wp_referer_field(); ?>
+                <button type="submit" name="wppoppop_bulk_export" id="wppoppop-bulk-export-btn" class="button button-primary wpp-tools-btn"><span class="dashicons dashicons-download"></span><?php esc_html_e('Export Complete Backup', 'wppoppop'); ?></button>
             </form>
         </div>
 
-        <!-- Bulk Import Container -->
-        <div style="background:#f8fafc;padding:18px;border-radius:8px;border:1px solid #e2e8f0;display:flex;flex-direction:column;">
-            <h4 style="margin:0 0 6px 0;font-size:14px;color:#1e293b;">Restore / Import Bulk Archive</h4>
-            <p style="margin:0 0 14px 0;font-size:12px;color:#64748b;line-height:1.4;">
-                Select a previously exported WpPopPop bulk JSON archive to restore all popup configurations and A/B campaigns into this site.
-            </p>
-            <form method="post" enctype="multipart/form-data" id="wppoppop-bulk-import-form" style="margin:0;">
-                <?php wp_nonce_field('wppoppop_tools_action', 'wppoppop_tools_nonce'); ?>
-                <input type="file" name="wppoppop_bulk_import_file" id="wppoppop-bulk-import-file" accept=".json,application/json" required style="width:100%;margin-bottom:12px;font-size:12px;">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <button type="submit" name="wppoppop_bulk_import" id="wppoppop-bulk-import-btn" class="button button-secondary" style="display:inline-flex;align-items:center;gap:6px;">
-                        <span class="dashicons dashicons-upload" style="font-size:16px;width:16px;height:16px;"></span> Restore Bulk Backup
-                    </button>
-                    <span id="wppoppop-import-status-text" style="font-size:12px;color:#64748b;display:none;"></span>
+        <div class="wpp-tools-panel">
+            <h4><?php esc_html_e('Restore / Import Bulk Archive', 'wppoppop'); ?></h4>
+            <p class="wpp-tools-help"><?php esc_html_e('Select a previously exported WpPopPop bulk JSON archive (10 MB maximum). Restore is all-or-nothing: if the database rejects any entry, nothing is kept.', 'wppoppop'); ?></p>
+            <form method="post" enctype="multipart/form-data" id="wppoppop-bulk-import-form">
+                <input type="hidden" name="wppoppop_tools_nonce" value="<?php echo esc_attr(wp_create_nonce('wppoppop_tools_action')); ?>"><?php wp_referer_field(); ?>
+                <input type="file" name="wppoppop_bulk_import_file" id="wppoppop-bulk-import-file" class="wpp-tools-file" accept=".json,application/json" required>
+                <label class="wpp-tools-check"><input type="checkbox" name="import_settings" value="1"> <?php esc_html_e('Also restore plugin settings and theme', 'wppoppop'); ?></label>
+                <div class="wpp-tools-row">
+                    <button type="submit" name="wppoppop_bulk_import" id="wppoppop-bulk-import-btn" class="button wpp-tools-btn"><span class="dashicons dashicons-upload"></span><?php esc_html_e('Restore Bulk Backup', 'wppoppop'); ?></button>
+                    <span id="wppoppop-import-status-text" class="wpp-tools-status" hidden></span>
                 </div>
             </form>
         </div>

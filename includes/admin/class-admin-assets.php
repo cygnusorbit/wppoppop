@@ -201,6 +201,15 @@ class WpPopPop_Admin_Assets {
 
         // 5. Tools & Portability Assets
         if ($page === 'wppoppop-tools') {
+            $tl_ver = self::ver();
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], $tl_ver);
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $tl_ver);
+            wp_enqueue_style('wppoppop-bar-actions-css', WPPOPPOP_URL . 'admin/css/bar-actions.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css'], $tl_ver);
+            wp_enqueue_style('wppoppop-tools-css', WPPOPPOP_URL . 'admin/css/tools.css', ['wppoppop-bar-actions-css', 'wppoppop-theme-global-css'], $tl_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $tl_ver, true);
+            wp_enqueue_script('wppoppop-tools-bar-js', WPPOPPOP_URL . 'admin/js/tools/tools-bar.js', ['jquery'], $tl_ver, true);
+            wp_enqueue_script('wppoppop-tools-maintenance-js', WPPOPPOP_URL . 'admin/js/tools/tools-maintenance.js', ['jquery'], $tl_ver, true);
             wp_enqueue_script('wppoppop-tools-system-js', WPPOPPOP_URL . 'admin/js/tools/tools-system.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-tools-database-js', WPPOPPOP_URL . 'admin/js/tools/tools-database.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-tools-portability-js', WPPOPPOP_URL . 'admin/js/tools/tools-portability.js', ['jquery'], self::ver(), true);

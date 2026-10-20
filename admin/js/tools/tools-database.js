@@ -41,10 +41,7 @@
                                         var $rows =$row.find('.wppoppop-tbl-rows-count');
                                         var $size =$row.find('.wppoppop-tbl-size-val');
 
-                                        $pill.css({
-                                            background: tbl.exists ? '#dcfce7' : '#fee2e2',
-                                            color: tbl.exists ? '#15803d' : '#b91c1c'
-                                        }).text(tbl.status);
+                                        $pill.toggleClass('is-ok', !!tbl.exists).toggleClass('is-bad', !tbl.exists).text(tbl.status);
 
                                         $rows.text(tbl.rows);$size.text(tbl.size);
                                     }
@@ -84,7 +81,7 @@
             $(document).on('click', '#wppoppop-reset-counters-btn', function(e) {
                 e.preventDefault();
 
-                var confirmed = window.confirm(
+                var confirmed = window.WpPopPopTypedConfirm(
                     'WARNING: Are you sure you want to reset all popup impressions, captured leads numbers, and conversion counts across all campaigns to zero?\n\nThis action cannot be undone.'
                 );
 
