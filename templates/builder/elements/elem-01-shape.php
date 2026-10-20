@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
     <div style="margin-bottom:10px;">
-        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">STROKE COLOR</label>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">STROKE COLOR</label><button type="button" id="prop-shape-stroke-none" class="button button-small" aria-pressed="false" title="Disable stroke" style="font-size:10px;font-weight:700;line-height:1.6;padding:0 8px;min-height:0;">&#8856; No Stroke</button></div>
         <input type="color" id="prop-shape-stroke-color" class="widefat wppoppop-gp-bind" data-prop="strokeColor" value="#0284c7" style="height:34px;padding:2px;background:#090d16;border:1px solid #1e293b;border-radius:6px;cursor:pointer;">
     </div>
     <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">

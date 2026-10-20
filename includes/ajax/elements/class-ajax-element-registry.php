@@ -113,7 +113,7 @@ class WpPopPop_Ajax_Element_Registry {
             'padTop', 'padRight', 'padBottom', 'padLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'padding',
             'borderWidth', 'borderRadius', 'shadowX', 'shadowY', 'shadowBlur', 'shadowSpread',
             'animDuration', 'animDelay', 'iconLeftOffset', 'iconRightOffset',
-            'strokeWidth', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas', 'goto_canvas', 'goto_screen',
+            'strokeWidth', 'strokeWidthPrev', 'rotate', 'iconSize', 'cookieDays', 'progressValue', 'progressPercent', 'progressVal', 'gotoCanvas', 'goto_canvas', 'goto_screen',
             'maxLength', 'minLength', 'min', 'max', 'step', 'rows',
             'maxSelect', 'maxSelections', 'columns', 'gridCols', 'timeStep', 'maxFileSize', 'ratingMax'
         );
@@ -126,7 +126,7 @@ class WpPopPop_Ajax_Element_Registry {
         $bool_keys = array(
             'required', 'transparentFill', 'targetBlank', 'linkBlank', 'nofollow',
             'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped', 'progressStriped', 'progressAnimated',
-            'checkedDefault', 'multiSelect', 'multiple', 'showEyeToggle', 'bgCustom',
+            'checkedDefault', 'strokeNone', 'multiSelect', 'multiple', 'showEyeToggle', 'bgCustom',
             'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied', 'blockDisposable', 'borderEnabled', 'shadowEnabled'
         );
         foreach ( $bool_keys as$bk ) {

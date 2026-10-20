@@ -6392,3 +6392,75 @@
     $(function() { sched(); });
 })(window, jQuery);
 /* === WPPOPPOP_BUTTON_V2_END === */
+
+/* === WPPOPPOP_SHAPE_STROKE_TOGGLE_START === */
+(function(window, $) {
+    'use strict';
+    var BTN = '#prop-shape-stroke-none';
+    var DEFAULT_W = 2;
+
+    function cid(r) { return String(r || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim(); }
+    function activeEl() {
+        var c = window.WpPopPopBuilderCore;
+        if (!c || !c.state || !c.state.activeId) return null;
+        var id = cid(c.state.activeId);
+        var l = (c.state.canvases && c.state.canvases[c.state.currentCanvas || 1]) || [];
+        for (var i = 0; i < l.length; i++) { if (l[i] && cid(l[i].id) === id) return l[i]; }
+        return null;
+    }
+    function isShape(el) { return !!el && String(el.type || '').toLowerCase() === 'shape'; }
+    function isNone(el) { return el.strokeNone === true || el.strokeNone === 'true' || el.strokeNone === 1 || el.strokeNone === '1'; }
+
+    function paint(el) {
+        var on = isShape(el) && isNone(el);
+        $(BTN).toggleClass('active button-primary', on).attr('aria-pressed', on ? 'true' : 'false');
+        $('#prop-shape-stroke-color').prop('disabled', on).css('opacity', on ? 0.4 : 1);
+        $('#prop-shape-stroke-width').val(on ? 0 : (parseInt(el && (el.strokeWidth !== undefined ? el.strokeWidth : el.shapeStrokeWidth), 10) || 0));
+    }
+    function rerender(label) {
+        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') window.WpPopPopBuilderCanvas.renderCanvas();
+        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') window.WpPopPopBuilderCore.pushHistory(label);
+    }
+
+    $(document).off('click.wppStrokeNone', BTN).on('click.wppStrokeNone', BTN, function(e) {
+        e.preventDefault(); e.stopPropagation();
+        var el = activeEl(); if (!isShape(el)) return;
+        if (isNone(el)) {
+            var w = parseInt(el.strokeWidthPrev, 10);
+            if (isNaN(w) || w <= 0) w = DEFAULT_W;
+            el.strokeNone = false;
+            el.strokeWidth = w; el.shapeStrokeWidth = w;
+        } else {
+            var cur = parseInt(el.strokeWidth !== undefined ? el.strokeWidth : el.shapeStrokeWidth, 10) || 0;
+            if (cur > 0) el.strokeWidthPrev = cur;
+            el.strokeNone = true;
+            el.strokeWidth = 0; el.shapeStrokeWidth = 0;
+        }
+        paint(el);
+        rerender('Toggle Shape Stroke');
+    });
+
+    /* typing a width > 0 re-enables the stroke */
+    $(document).off('input.wppStrokeNone change.wppStrokeNone', '#prop-shape-stroke-width')
+        .on('input.wppStrokeNone change.wppStrokeNone', '#prop-shape-stroke-width', function() {
+            var el = activeEl(); if (!isShape(el)) return;
+            var v = parseInt($(this).val(), 10) || 0;
+            if (v > 0 && isNone(el)) {
+                el.strokeNone = false;
+                el.strokeWidth = v; el.shapeStrokeWidth = v;
+                paint(el);
+            } else if (v > 0) {
+                el.strokeWidthPrev = v;
+            }
+        });
+
+    function sync() { var el = activeEl(); if (isShape(el)) paint(el); }
+    function sched() { [0, 60, 200, 450].forEach(function(ms) { setTimeout(sync, ms); }); }
+
+    window.addEventListener('click', function(e) {
+        var t = e.target;
+        if (t && t.closest && t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) sched();
+    }, true);
+    $(function() { sched(); setTimeout(sched, 300); });
+})(window, jQuery);
+/* === WPPOPPOP_SHAPE_STROKE_TOGGLE_END === */

@@ -80,6 +80,8 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['shapeRotate']))        $clean['shapeRotate']        = intval($el['shapeRotate']);
         if (isset($el['shapeNoFill']))        $clean['shapeNoFill']        = !empty($el['shapeNoFill']) && $el['shapeNoFill'] !== 'false';
         if (isset($el['strokeWidth']))        $clean['strokeWidth']        = max(0, intval($el['strokeWidth']));
+        if (isset($el['strokeNone']))         $clean['strokeNone']         = !empty($el['strokeNone']) && $el['strokeNone'] !== 'false';
+        if (isset($el['strokeWidthPrev']))    $clean['strokeWidthPrev']    = max(0, intval($el['strokeWidthPrev']));
         if (isset($el['strokeColor']))        $clean['strokeColor']        = sanitize_hex_color($el['strokeColor']) ?: sanitize_text_field($el['strokeColor']);
         if (isset($el['rotate']))             $clean['rotate']             = intval($el['rotate']);
         if (isset($el['bgColor']))            $clean['bgColor']            = sanitize_hex_color($el['bgColor']) ?: sanitize_text_field($el['bgColor']);
