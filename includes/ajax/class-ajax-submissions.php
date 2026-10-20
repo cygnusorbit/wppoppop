@@ -79,9 +79,12 @@ class WpPopPop_Ajax_Submissions {
 
         $ids   = isset($_POST['ids']) && is_array($_POST['ids']) ? array_map('intval', wp_unslash($_POST['ids'])) : [];
         $label = isset($_POST['label_id']) ? preg_replace('/[^A-Za-z0-9_\-]/', '', (string) wp_unslash($_POST['label_id'])) : '';
-        $mode  = (isset($_POST['mode']) && $_POST['mode'] === 'clear') ? 'clear' : 'add';
+        $mode  = isset($_POST['mode']) ? sanitize_key(wp_unslash($_POST['mode'])) : 'add';
+        if (!in_array($mode, ['add', 'remove', 'clear'], true)) {
+            $mode = 'add';
+        }
         $ids   = array_slice(array_filter($ids), 0, 500);
-        if (empty($ids) || ($mode === 'add' && $label === '')) {
+        if (empty($ids) || ($mode !== 'clear' && $label === '')) {
             wp_send_json_error(['message' => 'Nothing to update.']);
         }
 
@@ -92,6 +95,14 @@ class WpPopPop_Ajax_Submissions {
         foreach ($ids as $id) {
             if ($mode === 'clear') {
                 unset($map[$id]);
+            } elseif ($mode === 'remove') {
+                $cur = isset($map[$id]) && is_array($map[$id]) ? $map[$id] : [];
+                $cur = array_values(array_diff($cur, [$label]));
+                if (empty($cur)) {
+                    unset($map[$id]);
+                } else {
+                    $map[$id] = $cur;
+                }
             } else {
                 $cur = isset($map[$id]) && is_array($map[$id]) ? $map[$id] : [];
                 if (!in_array($label, $cur, true)) {

@@ -183,6 +183,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-submissions-modal-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-modal.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-table-options-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-table-options.js', ['jquery', 'jquery-ui-sortable'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-list-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-list.js', ['jquery'], $sub_ver, true);
+            wp_enqueue_script('wppoppop-submissions-labels-js', WPPOPPOP_URL . 'admin/js/submissions/submissions-labels.js', ['jquery'], $sub_ver, true);
             wp_enqueue_script('wppoppop-submissions-js', WPPOPPOP_URL . 'admin/js/submissions.js', [
                 'jquery',
                 'wppoppop-submissions-search-js',

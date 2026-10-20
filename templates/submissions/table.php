@@ -52,6 +52,33 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
 #wppoppop-submissions-table .row-actions a{text-decoration:none;cursor:pointer}
 #wppoppop-submissions-table .row-actions .trash a{color:#b32d2e}
 .wppoppop-sub-row.wppoppop-hidden{display:none}
+/* Label slot + envelope (first column) */
+#wppoppop-submissions-table td.col-first .wppoppop-unread-dot{display:none}
+#wppoppop-submissions-table .wppoppop-label-slot{display:inline-block;position:relative;width:18px;height:18px;margin-right:6px;vertical-align:middle}
+#wppoppop-submissions-table .wppoppop-label-btn{display:block;position:relative;width:18px;height:18px;margin:0;padding:0;border:0;border-radius:3px;background:none;box-shadow:none;cursor:pointer;line-height:1}
+#wppoppop-submissions-table .wppoppop-label-btn:focus{outline:0;box-shadow:0 0 0 1px var(--wpp-c-primary,#c1272d)}
+#wppoppop-submissions-table .wppoppop-label-dots{position:absolute;top:0;right:0;bottom:0;left:0;display:-webkit-box;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;overflow:hidden}
+#wppoppop-submissions-table .wppoppop-label-dot{display:block;width:8px;height:8px;margin:1px;border-radius:50%}
+#wppoppop-submissions-table .wppoppop-bookmark{position:absolute;left:1px;top:1px;color:#a7aaad;visibility:hidden}
+#wppoppop-submissions-table .wppoppop-label-btn:hover .wppoppop-bookmark{color:#50575e}
+#wppoppop-submissions-table tr:hover .wppoppop-bookmark,#wppoppop-submissions-table tr.is-menu-open .wppoppop-bookmark,#wppoppop-submissions-table .wppoppop-label-btn:focus .wppoppop-bookmark{visibility:visible}
+#wppoppop-submissions-table .wppoppop-label-slot.has-labels .wppoppop-bookmark{display:none}
+#wppoppop-submissions-table .wppoppop-mail{display:inline-block;width:16px;height:16px;margin-right:6px;vertical-align:middle;color:#8c8f94}
+#wppoppop-submissions-table .wppoppop-mail svg{display:block}
+#wppoppop-submissions-table .wppoppop-mail .m-closed{display:none}
+#wppoppop-submissions-table tr.is-unread .wppoppop-mail{color:var(--wpp-c-primary,#c1272d)}
+#wppoppop-submissions-table tr.is-unread .wppoppop-mail .m-closed{display:block}
+#wppoppop-submissions-table tr.is-unread .wppoppop-mail .m-open{display:none}
+#wppoppop-submissions-table td.col-first .row-actions{margin-left:46px}
+/* Label picker menu (moved to <body> by JS) */
+#wppoppop-label-menu{display:none;position:absolute;z-index:100050;min-width:170px;padding:6px;background:#fff;border:1px solid #dcdcde;border-radius:6px;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+#wppoppop-label-menu.is-open{display:block}
+#wppoppop-label-menu .wppoppop-label-opt{display:block;width:100%;margin:0 0 6px;padding:8px 12px;border:0;border-radius:4px;box-sizing:border-box;cursor:pointer;font-size:12px;font-weight:600;line-height:1.4;text-align:left}
+#wppoppop-label-menu .wppoppop-label-opt:last-child{margin-bottom:0}
+#wppoppop-label-menu .wppoppop-label-opt:focus{outline:0;box-shadow:0 0 0 2px rgba(0,0,0,.35)}
+#wppoppop-label-menu .wppoppop-label-opt .chk{display:none;margin-right:6px}
+#wppoppop-label-menu .wppoppop-label-opt.is-on .chk{display:inline}
+#wppoppop-label-menu .wppoppop-label-empty{padding:6px 8px;color:#646970;font-size:12px;max-width:200px}
 #wppoppop-submissions-table .wppoppop-unread-dot{display:inline-block;width:8px;height:8px;margin:0 6px 1px 0;border-radius:50%;background:var(--wpp-c-danger,#d63638);vertical-align:middle}
 #wppoppop-submissions-table tr:not(.is-unread) .wppoppop-unread-dot{display:none}
 #wppoppop-submissions-table tr.is-unread .mark-unread-wrap,#wppoppop-submissions-table tr:not(.is-unread) .mark-read-wrap{display:none}
@@ -129,10 +156,20 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                 $cls = ($c === 'email' || stripos($c, 'mail') !== false) ? 'col-email' : '';
                 if ($ci === 0) : ?>
                     <td class="col-first <?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>">
-                        <?php foreach ($row_labels as $rl) : ?>
-                            <span class="dashicons dashicons-tag wppoppop-tag" style="color:<?php echo esc_attr($rl['color']); ?>;" title="<?php echo esc_attr($rl['name']); ?>"></span>
-                        <?php endforeach; ?>
-                        <span class="dashicons <?php echo $is_confirmed ? 'dashicons-email' : 'dashicons-email-alt'; ?> wppoppop-envelope"></span>
+                        <?php
+                        $row_label_ids = [];
+                        foreach ($row_labels as $rl) { $row_label_ids[] = $rl['id']; }
+                        ?>
+                        <span class="wppoppop-label-slot<?php echo $row_label_ids ? ' has-labels' : ''; ?>" data-labels="<?php echo esc_attr(wp_json_encode($row_label_ids)); ?>">
+                            <button type="button" class="wppoppop-label-btn" aria-haspopup="true" title="<?php esc_attr_e('Labels', 'wppoppop'); ?>" aria-label="<?php esc_attr_e('Labels', 'wppoppop'); ?>">
+                                <span class="wppoppop-label-dots"><?php foreach ($row_labels as $rl) : ?><span class="wppoppop-label-dot" style="background:<?php echo esc_attr($rl['color']); ?>;" title="<?php echo esc_attr($rl['name']); ?>"></span><?php endforeach; ?></span>
+                                <svg class="wppoppop-bookmark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M6 3h12v18l-6-4-6 4z" fill="currentColor"/></svg>
+                            </button>
+                        </span>
+                        <span class="wppoppop-mail" aria-hidden="true">
+                            <svg class="m-closed" viewBox="0 0 24 24" width="16" height="16" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                            <svg class="m-open" viewBox="0 0 24 24" width="16" height="16" focusable="false"><path d="M3 10l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 10l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                        </span>
                         <?php echo ($c === $dot_col) ? $unread_dot : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>><?php echo esc_html($val); ?></a>
                         <div class="row-actions">
                             <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>>View</a> | </span>
@@ -158,5 +195,21 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
         </tr>
     </tfoot>
 </table>
+<?php
+$wppoppop_lbl_text = function ($hex) {
+    $h = ltrim((string) $hex, '#');
+    if (strlen($h) === 3) { $h = $h[0] . $h[0] . $h[1] . $h[1] . $h[2] . $h[2]; }
+    if (strlen($h) !== 6 || !ctype_xdigit($h)) { return '#ffffff'; }
+    $y = (hexdec(substr($h, 0, 2)) * 299 + hexdec(substr($h, 2, 2)) * 587 + hexdec(substr($h, 4, 2)) * 114) / 1000;
+    return $y > 200 ? '#1d2327' : '#ffffff';
+};
+?>
+<div id="wppoppop-label-menu" role="menu" aria-label="<?php esc_attr_e('Labels', 'wppoppop'); ?>">
+    <?php $__has_lbl = false; foreach ((array) $tbl_opts['labels'] as $__l) : if (empty($__l['id'])) { continue; } $__has_lbl = true; $__col = !empty($__l['color']) ? $__l['color'] : '#f0c330'; ?>
+        <button type="button" class="wppoppop-label-opt" role="menuitemcheckbox" aria-checked="false" data-label-id="<?php echo esc_attr($__l['id']); ?>" data-color="<?php echo esc_attr($__col); ?>" data-name="<?php echo esc_attr($__l['name']); ?>" style="background:<?php echo esc_attr($__col); ?>;color:<?php echo esc_attr($wppoppop_lbl_text($__col)); ?>;"><span class="chk">&#10003;</span><?php echo esc_html($__l['name']); ?></button>
+    <?php endforeach; if (!$__has_lbl) : ?>
+        <div class="wppoppop-label-empty"><?php esc_html_e('No labels yet. Add some in Table options.', 'wppoppop'); ?></div>
+    <?php endif; ?>
+</div>
 <?php wppoppop_subs_bulk_bar('bottom', $tbl_opts['labels']); ?>
 </div>
