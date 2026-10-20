@@ -49,6 +49,13 @@ class WpPopPop_Ajax_Builder {
         }
 
         $wppoppop_obj = json_decode($data_raw);
+        /* WPPOPPOP_OVERLAY_WHITELIST: validate popup overlay settings before persisting */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Overlay')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-overlay.php'; }
+            $wppoppop_obj->settings->overlay = json_decode(wp_json_encode(
+                WpPopPop_Overlay::sanitize(isset($wppoppop_obj->settings->overlay) ? $wppoppop_obj->settings->overlay : array())
+            ));
+        }
         /* WPPOPPOP_CELEBRATION_WHITELIST: allow-list the success celebration effect */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_cel_ok = array('default', 'none', 'burst', 'cannon', 'fireworks', 'rain', 'stars', 'both');

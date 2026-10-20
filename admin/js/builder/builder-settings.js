@@ -935,3 +935,161 @@ if (settings.triggers) {
         return r;
     };
 })(jQuery);
+
+
+/* WPPOPPOP_OVERLAY_UI: popup overlay opacity / color / custom backgrounds */
+(function($) {
+    'use strict';
+    var S = window.WpPopPopBuilderSettings;
+    if (!S || S._overlayWrapped) return;
+    S._overlayWrapped = true;
+
+    var model = { backgrounds: [], selected: '' };
+    var editingId = null;
+    var IMG_RE = /\.(jpe?g|png)(\?.*)?$/i;
+
+    function newId() { return 'bg_' + Math.random().toString(36).slice(2, 8) + (new Date().getTime()).toString(36).slice(-3); }
+    function find(id) {
+        for (var i = 0; i < model.backgrounds.length; i++) { if (model.backgrounds[i].id === id) return model.backgrounds[i]; }
+        return null;
+    }
+    function clampOpacity(v) {
+        v = parseInt(v, 10);
+        if (isNaN(v)) v = 65;
+        return Math.max(0, Math.min(100, v));
+    }
+
+    function syncOpacityLabel() { $('#set-ov-opacity-val').text(clampOpacity($('#set-ov-opacity').val()) + '%'); }
+    function syncTransparentUi() {
+        var on = $('#set-ov-transparent').is(':checked');
+        $('#set-ov-color').prop('disabled', on).css('opacity', on ? 0.4 : 1);
+    }
+
+    function renderList() {
+        var $l = $('#set-ov-bg-list').empty();
+        function row(id, label, badge, editable) {
+            var $r = $('<div></div>').css({ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', border: '1px solid #e2e8f0', borderRadius: '4px', marginBottom: '4px', background: '#fff' });
+            var $rad = $('<input type="radio" name="set-ov-bg-selected">').val(id).prop('checked', model.selected === id);
+            var $lab = $('<span></span>').css({ flex: 1, fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }).text(label);
+            $r.append($rad, $lab);
+            if (badge) { $r.append($('<span></span>').css({ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }).text(badge)); }
+            if (editable) {
+                $r.append($('<button type="button" class="button button-small set-ov-bg-edit"></button>').attr('data-id', id).text('Edit'));
+                $r.append($('<button type="button" class="button button-small set-ov-bg-del"></button>').attr('data-id', id).css('color', '#b91c1c').text('Delete'));
+            }
+            $l.append($r);
+        }
+        row('', 'None (color overlay only)', '', false);
+        $.each(model.backgrounds, function(i, bg) {
+            row(bg.id, bg.name || 'Background', bg.type === 'animation' ? 'Animation' : 'Picture', true);
+        });
+    }
+
+    function toggleType() {
+        var anim = $('#set-ov-bg-type').val() === 'animation';
+        $('#set-ov-bg-img-wrap').toggle(!anim);
+        $('#set-ov-bg-anim-wrap').toggle(anim);
+    }
+    function setPreview(url) {
+        $('#set-ov-bg-preview').css('background-image', url ? 'url("' + String(url).replace(/"/g, '%22') + '")' : 'none');
+    }
+    function openEditor(bg) {
+        editingId = bg ? bg.id : null;
+        $('#set-ov-bg-name').val(bg ? bg.name : '');
+        $('#set-ov-bg-type').val(bg ? bg.type : 'image');
+        $('#set-ov-bg-url').val(bg && bg.type === 'image' ? bg.url : '');
+        $('#set-ov-bg-html').val(bg && bg.type === 'animation' ? bg.html : '');
+        setPreview(bg && bg.type === 'image' ? bg.url : '');
+        toggleType();
+        $('#set-ov-bg-editor').slideDown(120);
+    }
+    function closeEditor() { editingId = null; $('#set-ov-bg-editor').slideUp(120); }
+
+    var origGet = S.getSettings, origSet = S.setSettings;
+
+    S.getSettings = function() {
+        var out = origGet.apply(this, arguments) || {};
+        out.overlay = {
+            opacity: clampOpacity($('#set-ov-opacity').val()),
+            color: $('#set-ov-color').val() || '#0f172a',
+            transparent: $('#set-ov-transparent').is(':checked'),
+            selected: model.selected || '',
+            backgrounds: $.map(model.backgrounds, function(b) { return $.extend({}, b); })
+        };
+        return out;
+    };
+
+    S.setSettings = function(settings) {
+        var r = origSet.apply(this, arguments);
+        var ov = (settings && settings.overlay) || {};
+        $('#set-ov-opacity').val(ov.opacity !== undefined && ov.opacity !== '' ? clampOpacity(ov.opacity) : 65);
+        $('#set-ov-color').val(/^#[0-9a-f]{6}$/i.test(ov.color || '') ? ov.color : '#0f172a');
+        $('#set-ov-transparent').prop('checked', !!ov.transparent && ov.transparent !== 'false' && ov.transparent !== '0');
+        var list = ov.backgrounds;
+        if (list && !$.isArray(list) && typeof list === 'object') { list = $.map(list, function(v) { return v; }); }
+        model.backgrounds = $.isArray(list) ? $.map(list, function(b) { return $.extend({ id: newId(), name: '', type: 'image', url: '', html: '' }, b); }) : [];
+        model.selected = (ov.selected && find(ov.selected)) ? ov.selected : '';
+        closeEditor();
+        syncOpacityLabel();
+        syncTransparentUi();
+        renderList();
+        return r;
+    };
+
+    $(document)
+        .off('input.wppOv change.wppOv', '#set-ov-opacity').on('input.wppOv change.wppOv', '#set-ov-opacity', syncOpacityLabel)
+        .off('change.wppOvT', '#set-ov-transparent').on('change.wppOvT', '#set-ov-transparent', syncTransparentUi)
+        .off('change.wppOvType', '#set-ov-bg-type').on('change.wppOvType', '#set-ov-bg-type', toggleType)
+        .off('input.wppOvUrl change.wppOvUrl', '#set-ov-bg-url').on('input.wppOvUrl change.wppOvUrl', '#set-ov-bg-url', function() { setPreview($.trim($(this).val())); })
+        .off('click.wppOvAdd', '#set-ov-bg-add').on('click.wppOvAdd', '#set-ov-bg-add', function(e) { e.preventDefault(); if (model.backgrounds.length >= 20) { window.alert('Maximum of 20 custom backgrounds.'); return; } openEditor(null); })
+        .off('click.wppOvCancel', '#set-ov-bg-cancel').on('click.wppOvCancel', '#set-ov-bg-cancel', function(e) { e.preventDefault(); closeEditor(); })
+        .off('change.wppOvSel', 'input[name="set-ov-bg-selected"]').on('change.wppOvSel', 'input[name="set-ov-bg-selected"]', function() { model.selected = $(this).val() || ''; })
+        .off('click.wppOvEdit', '.set-ov-bg-edit').on('click.wppOvEdit', '.set-ov-bg-edit', function(e) { e.preventDefault(); var bg = find($(this).attr('data-id')); if (bg) openEditor(bg); })
+        .off('click.wppOvDel', '.set-ov-bg-del').on('click.wppOvDel', '.set-ov-bg-del', function(e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            if (!window.confirm('Delete this background?')) return;
+            model.backgrounds = $.grep(model.backgrounds, function(b) { return b.id !== id; });
+            if (model.selected === id) model.selected = '';
+            if (editingId === id) closeEditor();
+            renderList();
+        })
+        .off('click.wppOvMedia', '#set-ov-bg-media').on('click.wppOvMedia', '#set-ov-bg-media', function(e) {
+            e.preventDefault();
+            if (!window.wp || !window.wp.media) {
+                var manual = window.prompt('WordPress Media is unavailable. Enter image URL (JPG/PNG):', $('#set-ov-bg-url').val() || '');
+                if (manual) { $('#set-ov-bg-url').val($.trim(manual)).trigger('change'); }
+                return;
+            }
+            var frame = window.wp.media({ title: 'Select Overlay Background (JPG / PNG)', button: { text: 'Use Image' }, multiple: false, library: { type: ['image/jpeg', 'image/png'] } });
+            frame.on('select', function() {
+                var att = frame.state().get('selection').first();
+                att = att ? att.toJSON() : null;
+                if (att && att.url) { $('#set-ov-bg-url').val(att.url).trigger('change'); }
+            });
+            frame.open();
+        })
+        .off('click.wppOvApply', '#set-ov-bg-apply').on('click.wppOvApply', '#set-ov-bg-apply', function(e) {
+            e.preventDefault();
+            var type = $('#set-ov-bg-type').val() === 'animation' ? 'animation' : 'image';
+            var name = $.trim($('#set-ov-bg-name').val()) || (type === 'animation' ? 'Animation' : 'Picture');
+            var item = { id: editingId || newId(), name: name.slice(0, 60), type: type, url: '', html: '' };
+            if (type === 'image') {
+                item.url = $.trim($('#set-ov-bg-url').val());
+                if (!IMG_RE.test(item.url)) { window.alert('Please choose a JPEG or PNG image (.jpg, .jpeg, .png).'); return; }
+            } else {
+                item.html = $('#set-ov-bg-html').val() || '';
+                if (!$.trim(item.html)) { window.alert('Please enter the animation HTML / JS.'); return; }
+            }
+            if (editingId) {
+                for (var i = 0; i < model.backgrounds.length; i++) { if (model.backgrounds[i].id === editingId) { model.backgrounds[i] = item; break; } }
+            } else {
+                model.backgrounds.push(item);
+                model.selected = item.id;
+            }
+            closeEditor();
+            renderList();
+        });
+
+    $(function() { syncOpacityLabel(); syncTransparentUi(); renderList(); });
+})(jQuery);

@@ -102,6 +102,9 @@ class WpPopPop_Front_Renderer {
             $custom_inline_css = wppoppop_minify_css($custom_inline_css);
         }
 
+        /* WPPOPPOP_OVERLAY_SETTINGS */
+        if (!class_exists('WpPopPop_Overlay')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-overlay.php'; }
+        $wppoppop_ov = WpPopPop_Overlay::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
         $overlay_style = $is_inline ? 'display:block;position:relative;' : 'display:none;position:fixed;inset:0;z-index:999999;';
         $preload_class = $preload ? 'wppoppop-preloaded' : '';
         ?>
@@ -109,13 +112,14 @@ class WpPopPop_Front_Renderer {
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
              data-config="<?php echo $encoded_config; ?>"<?php echo $trg_attrs; ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
-             style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : 'align-items:center;justify-content:center;background:rgba(15,23,42,0.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);'; ?>"
+             style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : $wppoppop_ov['css']; ?>"
              aria-hidden="true"
              role="dialog">
 
             <style><?php echo $custom_inline_css; ?></style>
 
             <?php if (!$is_inline): ?>
+            <?php echo $wppoppop_ov['layers']; ?>
             <div class="wppoppop-backdrop" data-uid="<?php echo esc_attr($uid); ?>"></div>
             <?php endif; ?>
 

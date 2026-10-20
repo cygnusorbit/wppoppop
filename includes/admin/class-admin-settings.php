@@ -43,6 +43,7 @@ class WpPopPop_Admin_Settings {
             'acc-13-woocommerce'  => __('WooCommerce', 'wppoppop'),
             'acc-14-custom-code'  => __('Custom Code', 'wppoppop'),
             'acc-15-quiz'         => __('Quiz', 'wppoppop'),
+            'acc-17-popup-overlay' => __('Popup Overlay', 'wppoppop'),
         ];
     }
 
