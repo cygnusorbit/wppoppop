@@ -912,3 +912,26 @@ if (settings.triggers) {
 
     $(function() { setTimeout(dimSubs, 350); });
 })(jQuery);
+
+
+/* WPPOPPOP_CELEBRATION_UI: per-popup success celebration effect */
+(function($) {
+    'use strict';
+    var S = window.WpPopPopBuilderSettings;
+    if (!S || S._celebrationWrapped) return;
+    S._celebrationWrapped = true;
+    var ALLOWED = ['default', 'none', 'burst', 'cannon', 'fireworks', 'rain', 'stars', 'both'];
+    function norm(v) { return ALLOWED.indexOf(v) !== -1 ? v : 'default'; }
+    var origGet = S.getSettings, origSet = S.setSettings;
+    S.getSettings = function() {
+        var out = origGet.apply(this, arguments) || {};
+        out.celebration = { effect: norm($('#set-celebration-effect').val()) };
+        return out;
+    };
+    S.setSettings = function(settings) {
+        var r = origSet.apply(this, arguments);
+        var eff = (settings && settings.celebration && settings.celebration.effect) || 'default';
+        $('#set-celebration-effect').val(norm(eff));
+        return r;
+    };
+})(jQuery);

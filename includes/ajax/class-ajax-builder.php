@@ -49,6 +49,15 @@ class WpPopPop_Ajax_Builder {
         }
 
         $wppoppop_obj = json_decode($data_raw);
+        /* WPPOPPOP_CELEBRATION_WHITELIST: allow-list the success celebration effect */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            $wppoppop_cel_ok = array('default', 'none', 'burst', 'cannon', 'fireworks', 'rain', 'stars', 'both');
+            $wppoppop_cel    = (isset($wppoppop_obj->settings->celebration) && is_object($wppoppop_obj->settings->celebration) && isset($wppoppop_obj->settings->celebration->effect))
+                ? (string) $wppoppop_obj->settings->celebration->effect : 'default';
+            $wppoppop_obj->settings->celebration = (object) array(
+                'effect' => in_array($wppoppop_cel, $wppoppop_cel_ok, true) ? $wppoppop_cel : 'default'
+            );
+        }
         if (is_object($wppoppop_obj) || is_array($wppoppop_obj)) {
             $wppoppop_enc = wp_json_encode($this->sanitize_anim_payload($wppoppop_obj));
             if (is_string($wppoppop_enc) && $wppoppop_enc !== '') { $data_raw = $wppoppop_enc; }

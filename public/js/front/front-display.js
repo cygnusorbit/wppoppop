@@ -248,6 +248,8 @@
         },
 
         triggerCelebration: function() {
+            /* WPPOPPOP_CELEBRATE: an explicit per-popup effect replaces the legacy global one */
+            if (window.WpPopPopFront && window.WpPopPopFront.celebrationMode && window.WpPopPopFront.celebrationMode !== 'default') { return; }
             if (typeof window.confetti === 'function') {
                 try {
                     window.confetti({

@@ -178,7 +178,15 @@
                 // Sound & Confetti
                 if (window.WpPopPopFront.Gamification) {
                     window.WpPopPopFront.Gamification.playChime('success');
-                    window.WpPopPopFront.Gamification.launchConfetti($popup);
+                    /* WPPOPPOP_CELEBRATE */
+                    var wppCel = (config && (config.celebration || (config.settings && config.settings.celebration))) || {};
+                    var wppEffect = wppCel.effect || 'default';
+                    window.WpPopPopFront.celebrationMode = wppEffect;
+                    if (typeof window.WpPopPopFront.Gamification.celebrate === 'function') {
+                        window.WpPopPopFront.Gamification.celebrate(wppEffect, $popup);
+                    } else {
+                        window.WpPopPopFront.Gamification.launchConfetti($popup);
+                    }
                 }
 
                 // Show status overlay

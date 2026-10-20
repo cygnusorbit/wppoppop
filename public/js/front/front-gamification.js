@@ -311,3 +311,142 @@
 
     window.WpPopPopFront.Gamification = Gamification;
 })(window, jQuery);
+
+
+/* WPPOPPOP_CELEBRATE: selectable success celebration effects */
+(function(window, $) {
+    'use strict';
+    var G = window.WpPopPopFront && window.WpPopPopFront.Gamification;
+    if (!G || G.celebrate) return;
+
+    var COLORS = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+    var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(cb) { return window.setTimeout(cb, 16); };
+
+    function runCanvas(spawn, step, ms) {
+        var c = document.createElement('canvas');
+        c.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2147483000;';
+        var dpr = window.devicePixelRatio || 1;
+        var w = window.innerWidth, h = window.innerHeight;
+        c.width = Math.round(w * dpr);
+        c.height = Math.round(h * dpr);
+        document.body.appendChild(c);
+        var ctx = c.getContext('2d');
+        if (!ctx) { if (c.parentNode) c.parentNode.removeChild(c); return; }
+        ctx.scale(dpr, dpr);
+        var parts = spawn(w, h);
+        var start = new Date().getTime();
+        (function frame() {
+            var t = new Date().getTime() - start;
+            ctx.clearRect(0, 0, w, h);
+            var alive = step(ctx, parts, w, h, t, ms);
+            if (t < ms && alive !== false) {
+                raf(frame);
+            } else if (c.parentNode) {
+                c.parentNode.removeChild(c);
+            }
+        })();
+    }
+
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+
+    function rain() {
+        runCanvas(function(w) {
+            var a = [];
+            for (var i = 0; i < 140; i++) {
+                a.push({ x: rnd(0, w), y: rnd(-400, 0), w: rnd(5, 11), h: rnd(4, 8), vy: rnd(2, 5), vx: rnd(-1, 1),
+                         rot: rnd(0, 360), vr: rnd(-8, 8), color: COLORS[i % COLORS.length] });
+            }
+            return a;
+        }, function(ctx, parts, w, h, t, ms) {
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i];
+                p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+                if (p.y > h + 20 && t < ms - 1500) { p.y = rnd(-60, -10); p.x = rnd(0, w); }
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+            }
+        }, 3500);
+    }
+
+    function starPath(ctx, r) {
+        ctx.beginPath();
+        for (var i = 0; i < 10; i++) {
+            var rad = (i % 2 === 0) ? r : r / 2.4;
+            var ang = (Math.PI / 5) * i - Math.PI / 2;
+            if (i === 0) ctx.moveTo(Math.cos(ang) * rad, Math.sin(ang) * rad);
+            else ctx.lineTo(Math.cos(ang) * rad, Math.sin(ang) * rad);
+        }
+        ctx.closePath();
+    }
+
+    function stars() {
+        runCanvas(function(w, h) {
+            var a = [];
+            for (var i = 0; i < 70; i++) {
+                var ang = rnd(0, Math.PI * 2), sp = rnd(3, 11);
+                a.push({ x: w / 2, y: h / 2, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 2, r: rnd(6, 14),
+                         rot: rnd(0, 360), vr: rnd(-6, 6), color: COLORS[i % COLORS.length], life: 1 });
+            }
+            return a;
+        }, function(ctx, parts) {
+            var any = false;
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i];
+                p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.vx *= 0.99; p.rot += p.vr; p.life -= 0.01;
+                if (p.life <= 0) continue;
+                any = true;
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                starPath(ctx, p.r);
+                ctx.fill();
+                ctx.restore();
+            }
+            return any;
+        }, 3000);
+    }
+
+    function cannon() {
+        if (typeof window.confetti !== 'function') return false;
+        try {
+            window.confetti({ particleCount: 70, angle: 60, spread: 60, origin: { x: 0, y: 0.8 } });
+            window.confetti({ particleCount: 70, angle: 120, spread: 60, origin: { x: 1, y: 0.8 } });
+            return true;
+        } catch (e) { return false; }
+    }
+
+    function fireworks() {
+        if (typeof window.Fireworks === 'undefined') return false;
+        try {
+            var Ctor = window.Fireworks.default || window.Fireworks;
+            var fw = new Ctor(document.body, {
+                autoresize: true, opacity: 0.5, acceleration: 1.05, friction: 0.97, gravity: 1.5,
+                particles: 50, traceLength: 3, traceSpeed: 10, explosion: 5, intensity: 30
+            });
+            fw.start();
+            window.setTimeout(function() { try { fw.stop(); } catch (e) {} }, 2500);
+            return true;
+        } catch (e) { return false; }
+    }
+
+    G.celebrate = function(effect, $popup) {
+        effect = effect || 'default';
+        var burst = function() { try { G.launchConfetti($popup); } catch (e) {} };
+        switch (effect) {
+            case 'none':      return;
+            case 'burst':     burst(); return;
+            case 'cannon':    if (!cannon()) burst(); return;
+            case 'fireworks': if (!fireworks()) burst(); return;
+            case 'rain':      rain(); return;
+            case 'stars':     stars(); return;
+            case 'both':      burst(); fireworks(); return;
+            default:          burst(); return;
+        }
+    };
+})(window, jQuery);
