@@ -138,6 +138,13 @@ class WpPopPop_Ajax_Builder {
                 $wpdb->update($camps, ['popup_uids' => wp_json_encode(array_values($list))], ['id' => (int) $r['id']], ['%s'], ['%d']);
             }
         }
+        /* RULE: a renamed uid keeps working. Record old -> new so existing shortcodes still resolve. */
+        $aliases = get_option('wppoppop_uid_aliases', []);
+        if (!is_array($aliases)) { $aliases = []; }
+        foreach ($aliases as $ak => $av) { if ($av === $uid) { $aliases[$ak] = $new; } }
+        $aliases[$uid] = $new;
+        unset($aliases[$new]);
+        update_option('wppoppop_uid_aliases', array_slice($aliases, -500, null, true), false);
         return $new;
     }
 

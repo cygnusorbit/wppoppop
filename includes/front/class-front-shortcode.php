@@ -31,7 +31,18 @@ class WpPopPop_Front_Shortcode {
         global $wpdb;
         $table = $wpdb->prefix . 'wppoppop_items';
         if ($uid !== '') {
-            return $wpdb->get_row($wpdb->prepare("SELECT uid, data FROM {$table} WHERE uid = %s AND status = 'publish'", $uid), ARRAY_A);
+            $row = $wpdb->get_row($wpdb->prepare("SELECT uid, data FROM {$table} WHERE uid = %s AND status = 'publish'", $uid), ARRAY_A);
+            if (!$row && preg_match('/^(.+)-([a-z0-9]{6})$/', $uid, $m)) {
+                /* RULE: uids are name-xxxxxx. Match on the 6-char suffix, then confirm the name ignoring hyphens. */
+                $cands = $wpdb->get_results($wpdb->prepare("SELECT uid, data FROM {$table} WHERE uid LIKE %s AND status = 'publish' LIMIT 10", '%-' . $wpdb->esc_like($m[2])), ARRAY_A);
+                $want  = preg_replace('/[^a-z0-9]/', '', $m[1]);
+                foreach ((array) $cands as $c) {
+                    if (preg_match('/^(.+)-([a-z0-9]{6})$/', $c['uid'], $cm) && preg_replace('/[^a-z0-9]/', '', $cm[1]) === $want) {
+                        return $c;
+                    }
+                }
+            }
+            return $row;
         }
         if ($id > 0) {
             return $wpdb->get_row($wpdb->prepare("SELECT uid, data FROM {$table} WHERE id = %d AND status = 'publish'", $id), ARRAY_A);
@@ -55,6 +66,14 @@ class WpPopPop_Front_Shortcode {
         $uid = sanitize_key($atts['uid']);
         $id  = (int) $atts['id'];
         $row = $this->find_row($uid, $id);
+        if (!$row && $uid !== '') {
+            $aliases = get_option('wppoppop_uid_aliases', []);
+            $hops = 0;
+            while (!$row && is_array($aliases) && isset($aliases[$uid]) && $hops++ < 5) {
+                $uid = $aliases[$uid];
+                $row = $this->find_row($uid, 0);
+            }
+        }
         if (!$row) {
             return current_user_can('manage_options')
                 ? '<!-- WpPopPop: popup not found or not published -->'

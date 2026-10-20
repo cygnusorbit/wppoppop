@@ -145,6 +145,24 @@ class WpPopPop_Front_Display {
         }
     }
 
+    /**
+     * True when this popup's uid appears in the current post content (link / button / JS snippet)
+     * or a theme/plugin forces it via the wppoppop_force_render_uids filter.
+     */
+    protected function is_manual_trigger_used($uid) {
+        static $haystack = null;
+        if ($haystack === null) {
+            $post     = function_exists('get_post') ? get_post() : null;
+            $haystack = ($post && !empty($post->post_content)) ? (string) $post->post_content : '';
+            $haystack = (string) apply_filters('wppoppop_manual_trigger_haystack', $haystack);
+        }
+        $forced = (array) apply_filters('wppoppop_force_render_uids', []);
+        if (in_array($uid, $forced, true)) {
+            return true;
+        }
+        return ($haystack !== '' && $uid !== '' && strpos($haystack, $uid) !== false);
+    }
+
     public function render_popups() {
         if (apply_filters('wppoppop_suppress_front_popups', false)) {
             return;
@@ -170,7 +188,7 @@ class WpPopPop_Front_Display {
             if (WpPopPop_Front_Shortcode::is_inline_rendered($popup->uid)) {
                 continue;
             }
-            $wppoppop_forced   = WpPopPop_Front_Shortcode::is_button_requested($popup->uid);
+            $wppoppop_forced   = WpPopPop_Front_Shortcode::is_button_requested($popup->uid) || $this->is_manual_trigger_used($popup->uid);
             $wppoppop_eligible = $this->targeting->is_eligible($popup);
             if ($wppoppop_forced || $wppoppop_eligible) {
                 $wppoppop_raw_cfg = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');

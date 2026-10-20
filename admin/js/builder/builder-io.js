@@ -40,7 +40,7 @@
             if (!core || !core.state) return {};
             return {
                 id: core.state.id || (window.jQuery ? window.jQuery('#wppoppop-builder-uid').val() : 0) || 0,
-                title: core.state.title || (window.jQuery ? window.jQuery('#wppoppop-popup-title-input').val() : '') || 'Untitled Popup',
+                title: core.state.title || (window.jQuery ? window.jQuery('#wppoppop-builder-title').val() : '') || 'Untitled Popup',
                 canvases: JSON.parse(JSON.stringify(core.state.canvases || { 1: [] })),
                 canvasMeta: JSON.parse(JSON.stringify(core.state.canvasMeta || {})),
                 settings: JSON.parse(JSON.stringify(core.state.settings || {}))

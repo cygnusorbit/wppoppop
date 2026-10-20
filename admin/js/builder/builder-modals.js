@@ -30,24 +30,11 @@
             return $.trim(String(uid || ''));
         },
 
-        slugName: function(t) {
-            var s = String(t || '');
-            try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
-            s = s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substr(0, 29).replace(/-+$/, '');
-            return s || 'popup';
-        },
-
-        liveUid: function(uid) {
-            var m = /^(.+)-([a-z0-9]{6})$/.exec(uid || '');
-            if (!m) return uid;
-            var title = $('#wppoppop-builder-title').val() || $('#wppoppop-popup-title-input').val() || '';
-            if (!$.trim(title)) return uid;
-            return this.slugName(title) + '-' + m[2];
-        },
+        /* RULE: the server is the only source of uids. The UI only displays the saved value. */
 
         refresh: function() {
             var uid = this.getUid();
-            var shown = this.liveUid(uid) || PLACEHOLDER; /* WPPOPPOP_EMBED_LIVE_NAME */
+            var shown = uid || PLACEHOLDER; /* WPPOPPOP_EMBED_LIVE_NAME */
             $('#wppoppop-embed-shortcode-val').val('[wppoppop uid="' + shown + '"]');
             $('#wppoppop-embed-onclick-val').val('<a href="#" class="wppoppop-trigger" data-wppoppop-id="' + shown + '">Open Popup</a>');
             $('#wppoppop-embed-js-val').val("window.WpPopPop && window.WpPopPop.show('" + shown + "');");
@@ -150,8 +137,8 @@
                     if (e.target === this) self.closeEmbed();
                 });
 
-            $(document).off('input' + ENS + ' change' + ENS, '#wppoppop-builder-title, #wppoppop-popup-title-input')
-                .on('input' + ENS + ' change' + ENS, '#wppoppop-builder-title, #wppoppop-popup-title-input', function() {
+            $(document).off('input' + ENS + ' change' + ENS, '#wppoppop-builder-title')
+                .on('input' + ENS + ' change' + ENS, '#wppoppop-builder-title', function() {
                     if ($(MODAL).is(':visible')) self.refresh();
                 });
 

@@ -8,7 +8,12 @@ import sys
 import subprocess
 import re
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Plugin root = the folder that contains includes/ and admin/ (one level above scripts/).
+BASE_DIR = os.path.dirname(_SCRIPT_DIR) if os.path.basename(_SCRIPT_DIR) == "scripts" else _SCRIPT_DIR
+if not os.path.isdir(os.path.join(BASE_DIR, "includes")):
+    print("\033[91m[FAILURE] Plugin root not found (no includes/ folder in %s)\033[0m" % BASE_DIR)
+    sys.exit(1)
 
 def print_step(title):
     print(f"\n=== [TEST] {title} ===")
@@ -99,3 +104,19 @@ ok("AJAX security gate verified (inclusive dual-nonce verification active).")
 print("\n\033[92m=====================================================")
 print("ALL VERIFICATION SUITES PASSED! Zero regressions found.")
 print("=====================================================\033[0m")
+
+
+# Suite 4: UID Single Source Of Truth
+print_step("Suite 4: UID Single Source Of Truth")
+import re as _re
+for rel in ["admin/js/builder/builder-modals.js", "admin/js/builder/builder-core.js", "admin/js/builder/builder-io.js"]:
+    fp = os.path.join(BASE_DIR, rel)
+    if not os.path.exists(fp):
+        continue
+    with open(fp, "r", encoding="utf-8") as fh:
+        src = fh.read()
+    _code = _re.sub(r"/\*.*?\*/", "", src, flags=_re.S)   # strip block comments
+    _code = _re.sub(r"(?m)^\s*//.*$", "", _code)          # strip line comments
+    if _re.search(r"slugName|liveUid|slugify", _code):
+        fail(f"UID rule violated: slug logic found in {rel}. Uids must only come from the server.")
+ok("No uid or slug derivation in builder JS.")
