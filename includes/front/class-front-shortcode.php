@@ -7,11 +7,14 @@ if (!defined('ABSPATH')) {
  * WpPopPop Front: [wppoppop] shortcode
  *   [wppoppop uid="pop_x"]                              inline embed (default)
  *   [wppoppop uid="pop_x" mode="button" text="Open"]    button that opens the popup
+ *   [wppoppop uid="pop_x" mode="onload" delay="3"]   opens on page load after 3s
  *   [wppoppop id="12"]                                  numeric DB id also accepted
  */
 class WpPopPop_Front_Shortcode {
     protected static $inline_uids = [];
     protected static $button_uids = [];
+    /* WPPOPPOP_ONLOAD_REGISTRY: uid => delay (seconds) for widget "Onload Popup" mode */
+    protected static $onload_uids = [];
     protected $renderer;
 
     public function __construct(WpPopPop_Front_Renderer $renderer) {
@@ -21,6 +24,18 @@ class WpPopPop_Front_Shortcode {
 
     public static function is_button_requested($uid) {
         return isset(self::$button_uids[$uid]);
+    }
+
+    public static function register_onload($uid, $delay = 0) {
+        self::$onload_uids[$uid] = max(0, (int) $delay);
+    }
+
+    public static function is_onload_requested($uid) {
+        return isset(self::$onload_uids[$uid]);
+    }
+
+    public static function get_onload_delay($uid) {
+        return isset(self::$onload_uids[$uid]) ? (int) self::$onload_uids[$uid] : 0;
     }
 
     public static function is_inline_rendered($uid) {
@@ -57,6 +72,7 @@ class WpPopPop_Front_Shortcode {
             'mode'  => 'inline',
             'text'  => __('Open Popup', 'wppoppop'),
             'class' => '',
+            'delay' => 0,
         ], $atts, 'wppoppop');
 
         if (function_exists('wppoppop_get_setting') && (bool) wppoppop_get_setting('test_mode', false) && !current_user_can('manage_options')) {
@@ -80,6 +96,12 @@ class WpPopPop_Front_Shortcode {
                 : '';
         }
         $uid = $row['uid'];
+
+        if ($atts['mode'] === 'onload') {
+            /* WPPOPPOP_SC_ONLOAD: footer renderer prints the popup once and forces the load trigger */
+            self::register_onload($uid, max(0, (int) $atts['delay']));
+            return '';
+        }
 
         if ($atts['mode'] === 'button') {
             self::$button_uids[$uid] = true;

@@ -188,7 +188,7 @@ class WpPopPop_Front_Display {
             if (WpPopPop_Front_Shortcode::is_inline_rendered($popup->uid)) {
                 continue;
             }
-            $wppoppop_forced   = WpPopPop_Front_Shortcode::is_button_requested($popup->uid) || $this->is_manual_trigger_used($popup->uid);
+            $wppoppop_forced   = WpPopPop_Front_Shortcode::is_button_requested($popup->uid) || WpPopPop_Front_Shortcode::is_onload_requested($popup->uid) || $this->is_manual_trigger_used($popup->uid);
             $wppoppop_eligible = $this->targeting->is_eligible($popup);
             if ($wppoppop_forced || $wppoppop_eligible) {
                 $wppoppop_raw_cfg = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');
@@ -199,7 +199,17 @@ class WpPopPop_Front_Display {
                 ob_start();
                 $wppoppop_ret  = $this->renderer->render_popup_markup($popup->uid, $config, false, $preload_popups);
                 $wppoppop_html = ob_get_clean() . (is_string($wppoppop_ret) ? $wppoppop_ret : '');
-                if ($wppoppop_forced && !$wppoppop_eligible) {
+                if (WpPopPop_Front_Shortcode::is_onload_requested($popup->uid)) {
+                    /* WPPOPPOP_WIDGET_ONLOAD: widget "Onload Popup" opens on page load regardless of the popup's own triggers */
+                    if (strpos($wppoppop_html, 'data-trigger-load="1"') === false) {
+                        $wppoppop_html = preg_replace(
+                            '/<div class="wppoppop-overlay/',
+                            '<div data-trigger-load="1" data-trigger-load-delay="' . (int) WpPopPop_Front_Shortcode::get_onload_delay($popup->uid) . '" class="wppoppop-overlay',
+                            $wppoppop_html,
+                            1
+                        );
+                    }
+                } elseif ($wppoppop_forced && !$wppoppop_eligible) {
                     $wppoppop_html = preg_replace('/<div class="wppoppop-overlay/', '<div data-manual="1" class="wppoppop-overlay', $wppoppop_html, 1);
                 }
                 echo $wppoppop_html;

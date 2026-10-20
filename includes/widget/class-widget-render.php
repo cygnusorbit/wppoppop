@@ -20,31 +20,22 @@ class WpPopPop_Widget_Render {
         }
 
         if ($mode === 'button') {
+            /* Legacy click-trigger mode (kept so previously saved widgets keep working) */
             ?>
             <div class="wppoppop-widget-trigger-wrap" style="text-align:center;padding:8px 0;">
-                <button type="button" 
-                        class="button button-primary wppoppop-open-btn" 
-                        data-target-uid="<?php echo esc_attr($popup_uid); ?>">
+                <button type="button" class="button button-primary wppoppop-open-btn wppoppop-trigger-btn" data-target-uid="<?php echo esc_attr($popup_uid); ?>">
                     <?php echo esc_html($button_text); ?>
                 </button>
             </div>
             <?php
-        } else {
-            // Inline Embed Delivery Mode
-            global $wpdb;
-            $items_table = $wpdb->prefix . 'wppoppop_items';
-            $row = $wpdb->get_row($wpdb->prepare("SELECT data FROM {$items_table} WHERE uid = %s AND status = 'publish'", $popup_uid), ARRAY_A);
-
-            if ($row) {
-                $config = json_decode($row['data'], true);
-                if (!empty($config)) {
-                    if (class_exists('WpPopPop_Front_Renderer')) {
-                        (new WpPopPop_Front_Renderer())->render_popup_markup($popup_uid, $config, true);
-                    } elseif (class_exists('WpPopPop_Front')) {
-                        (new WpPopPop_Front())->render_popup_markup($popup_uid, $config, true);
-                    }
-                }
+        } elseif ($mode === 'onload') {
+            /* Onload Popup: footer renderer prints the popup once and forces the load trigger */
+            if (class_exists('WpPopPop_Front_Shortcode')) {
+                WpPopPop_Front_Shortcode::register_onload($popup_uid, isset($instance['onload_delay']) ? (int) $instance['onload_delay'] : 0);
             }
+        } else {
+            /* Inline Popup: shortcode handler owns lookup, aliases, test-mode and duplicate protection */
+            echo do_shortcode('[wppoppop uid="' . esc_attr($popup_uid) . '" mode="inline"]');
         }
 
         echo $args['after_widget'];
