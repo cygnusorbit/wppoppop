@@ -138,7 +138,8 @@ class WpPopPop_Security {
         }
 
         // 1. Direct Edge Headers (Cloudflare, MaxMind Server Module, LiteSpeed)
-        if (!empty($_SERVER['HTTP_CF_IPCOUNTRY']) && strlen($_SERVER['HTTP_CF_IPCOUNTRY']) === 2) {
+        if (!empty($_SERVER['HTTP_CF_IPCOUNTRY']) && strlen($_SERVER['HTTP_CF_IPCOUNTRY']) === 2
+            && !in_array(strtoupper($_SERVER['HTTP_CF_IPCOUNTRY']), ['XX', 'T1'], true)) {
             return strtoupper(sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_IPCOUNTRY'])));
         }
         if (!empty($_SERVER['GEOIP_COUNTRY_CODE']) && strlen($_SERVER['GEOIP_COUNTRY_CODE']) === 2) {

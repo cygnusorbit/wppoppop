@@ -31,7 +31,8 @@ class WpPopPop_Front_Targeting {
             $geo_mode        = isset($target_settings['geo_mode']) ? $target_settings['geo_mode'] : 'all';
             $geo_countries   = isset($target_settings['geo_countries']) && is_array($target_settings['geo_countries']) ? array_map('strtoupper', $target_settings['geo_countries']) : [];
 
-            if (!empty($visitor_country) && !empty($geo_countries)) {
+            $geo_known = !empty($visitor_country) && !in_array(strtoupper($visitor_country), ['XX', 'T1'], true);
+            if ($geo_known && !empty($geo_countries)) {
                 if ($geo_mode === 'whitelist' && !in_array($visitor_country, $geo_countries, true)) {
                     return false;
                 }
