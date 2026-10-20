@@ -27,6 +27,34 @@ class WpPopPop_Admin_Settings {
         );
     }
 
+    /** Campaign Settings accordions 3-15 that can be switched on/off (key = acc-*.php basename). */
+    public static function get_modules() {
+        return [
+            'acc-03-logic-math'   => __('Conditional Logic & Math', 'wppoppop'),
+            'acc-04-side-tabs'    => __('Side Tabs', 'wppoppop'),
+            'acc-05-payments'     => __('Payments', 'wppoppop'),
+            'acc-06-downloads'    => __('Downloads', 'wppoppop'),
+            'acc-07-video'        => __('Video', 'wppoppop'),
+            'acc-08-autoresponder' => __('Autoresponder', 'wppoppop'),
+            'acc-09-webhooks'     => __('Webhooks', 'wppoppop'),
+            'acc-10-sms'          => __('SMS', 'wppoppop'),
+            'acc-11-targeting'    => __('Targeting', 'wppoppop'),
+            'acc-12-frequency'    => __('Frequency', 'wppoppop'),
+            'acc-13-woocommerce'  => __('WooCommerce', 'wppoppop'),
+            'acc-14-custom-code'  => __('Custom Code', 'wppoppop'),
+            'acc-15-quiz'         => __('Quiz', 'wppoppop'),
+        ];
+    }
+
+    /** True unless the module was explicitly switched off. */
+    public static function module_enabled($key) {
+        $s = get_option('wppoppop_settings', []);
+        if (!is_array($s) || !isset($s['modules']) || !is_array($s['modules']) || !array_key_exists($key, $s['modules'])) {
+            return true;
+        }
+        return !empty($s['modules'][$key]);
+    }
+
     public static function get_defaults() {
         $admin = get_option('admin_email');
         return [
@@ -141,6 +169,14 @@ class WpPopPop_Admin_Settings {
             $o['custom_js']          = isset($prev['custom_js']) ? $prev['custom_js'] : '';
             $o['custom_header_html'] = isset($prev['custom_header_html']) ? $prev['custom_header_html'] : '';
             $o['custom_footer_html'] = isset($prev['custom_footer_html']) ? $prev['custom_footer_html'] : '';
+        }
+
+        // 5b. Campaign Settings modules (whitelist; missing = enabled)
+        $o['modules'] = [];
+        foreach (array_keys(self::get_modules()) as $__mk) {
+            $o['modules'][$__mk] = (isset($in['modules']) && is_array($in['modules']) && array_key_exists($__mk, $in['modules']))
+                ? (!empty($in['modules'][$__mk]) ? 1 : 0)
+                : 1;
         }
 
         // 6. System state

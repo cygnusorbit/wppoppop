@@ -20,8 +20,28 @@ if (!defined('ABSPATH')) {
             $wppoppop_acc_files = glob(__DIR__ . '/settings/acc-*.php');
             if (!empty($wppoppop_acc_files)) {
                 sort($wppoppop_acc_files);
+                if (!class_exists('WpPopPop_Admin_Settings')) {
+                    require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
+                }
                 foreach ($wppoppop_acc_files as $wppoppop_acc_file) {
+                    $wppoppop_acc_key = basename($wppoppop_acc_file, '.php');
+                    if (WpPopPop_Admin_Settings::module_enabled($wppoppop_acc_key)) {
+                        include $wppoppop_acc_file;
+                        continue;
+                    }
+                    // Disabled: keep the markup (so the save flush never wipes stored values) but hide it.
+                    ob_start();
                     include $wppoppop_acc_file;
+                    $wppoppop_acc_html = ob_get_clean();
+                    $wppoppop_acc_html = preg_replace(
+                        '/<div class="wppoppop-acc-item"/',
+                        '<div class="wppoppop-acc-item wppoppop-module-off" data-module="' . esc_attr($wppoppop_acc_key) . '" style="display:none !important;"',
+                        $wppoppop_acc_html, 1, $wppoppop_acc_hit
+                    );
+                    if (empty($wppoppop_acc_hit)) {
+                        $wppoppop_acc_html = '<div class="wppoppop-module-off" style="display:none !important;">' . $wppoppop_acc_html . '</div>';
+                    }
+                    echo $wppoppop_acc_html;
                 }
             }
             ?>
