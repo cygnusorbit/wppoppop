@@ -38,7 +38,7 @@ class WpPopPop_Ajax_Builder {
         $table_name = $wpdb->prefix . 'wppoppop_items';
 
         $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : 'Untitled Popup';
-        $uid   = isset($_POST['uid']) && !empty($_POST['uid']) ? sanitize_key($_POST['uid']) : wp_generate_uuid4();
+        $uid   = isset($_POST['uid']) && !empty($_POST['uid']) ? sanitize_key($_POST['uid']) : $this->generate_unique_uid($title);
 
         // Support both 'data' and 'config' payload parameters
         $data_raw = '{}';
@@ -62,6 +62,7 @@ class WpPopPop_Ajax_Builder {
 
         if ($existing) {
             $wpdb->update($table_name, ['title' => $title, 'data' => $data_raw], ['uid' => $uid], ['%s', '%s'], ['%s']);
+            $uid = $this->maybe_rename_uid($uid, $title); /* WPPOPPOP_UID_FOLLOWS_TITLE */
         } else {
             $wpdb->insert($table_name, ['uid' => $uid, 'title' => $title, 'data' => $data_raw, 'status' => 'publish'], ['%s', '%s', '%s', '%s']);
         }
@@ -73,6 +74,75 @@ class WpPopPop_Ajax_Builder {
             'status'  => $wppoppop_saved_status ? $wppoppop_saved_status : 'publish',
             'message' => 'Popup configuration saved successfully!'
         ]);
+    }
+
+    /**
+     * Unique embed UID: <popup-name>-<6 lowercase alphanumerics>.
+     * Max length 36 (same as a UUID) so any existing uid column fits.
+     */
+    private function generate_unique_uid($title = '') {
+        global $wpdb;
+        $table = $wpdb->prefix . 'wppoppop_items';
+        $base  = sanitize_title((string) $title);
+        $base  = preg_replace('/[^a-z0-9-]+/', '-', strtolower($base));
+        $base  = trim(preg_replace('/-{2,}/', '-', $base), '-');
+        $base  = substr($base, 0, 29);
+        $base  = rtrim($base, '-');
+        if ($base === '') {
+            $base = 'popup';
+        }
+        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        for ($try = 0; $try < 30; $try++) {
+            $suffix = '';
+            for ($i = 0; $i < 6; $i++) {
+                $suffix .= $chars[wp_rand(0, strlen($chars) - 1)];
+            }
+            $candidate = $base . '-' . $suffix;
+            $taken = $wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$table} WHERE uid = %s", $candidate));
+            if (!$taken) {
+                return $candidate;
+            }
+        }
+        return substr($base, 0, 20) . '-' . strtolower(wp_generate_password(6, false, false));
+    }
+
+    /** Slug used for the <popup-name> part of a uid (max 29 chars). */
+    private function uid_base($title) {
+        $base = sanitize_title((string) $title);
+        $base = preg_replace('/[^a-z0-9-]+/', '-', strtolower($base));
+        $base = trim(preg_replace('/-{2,}/', '-', $base), '-');
+        $base = rtrim(substr($base, 0, 29), '-');
+        return $base === '' ? 'popup' : $base;
+    }
+
+    /** Rename an auto-format uid (name-xxxxxx) when the title slug changed. Returns final uid. */
+    private function maybe_rename_uid($uid, $title) {
+        global $wpdb;
+        if (!preg_match('/^(.+)-([a-z0-9]{6})$/', $uid, $m)) {
+            return $uid;
+        }
+        $base = $this->uid_base($title);
+        if ($m[1] === $base) {
+            return $uid;
+        }
+        $items = $wpdb->prefix . 'wppoppop_items';
+        $new   = $base . '-' . $m[2];
+        if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$items} WHERE uid = %s", $new))) {
+            $new = $this->generate_unique_uid($title);
+        }
+        $wpdb->update($items, ['uid' => $new], ['uid' => $uid], ['%s'], ['%s']);
+        $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['popup_uid' => $new], ['popup_uid' => $uid], ['%s'], ['%s']);
+        $wpdb->update($wpdb->prefix . 'wppoppop_transactions', ['popup_uid' => $new], ['popup_uid' => $uid], ['%s'], ['%s']);
+        $camps = $wpdb->prefix . 'wppoppop_campaigns';
+        $rows  = $wpdb->get_results("SELECT id, popup_uids FROM {$camps}", ARRAY_A);
+        foreach ((array) $rows as $r) {
+            $list = json_decode($r['popup_uids'], true);
+            if (is_array($list) && in_array($uid, $list, true)) {
+                foreach ($list as $k => $v) { if ($v === $uid) { $list[$k] = $new; } }
+                $wpdb->update($camps, ['popup_uids' => wp_json_encode(array_values($list))], ['id' => (int) $r['id']], ['%s'], ['%d']);
+            }
+        }
+        return $new;
     }
 
     private function sanitize_anim_payload($node) {
@@ -124,7 +194,7 @@ class WpPopPop_Ajax_Builder {
             wp_send_json_error(['message' => 'Source popup not found.']);
         }
 
-        $new_uid = wp_generate_uuid4();
+        $new_uid = $this->generate_unique_uid($row['title']);
         $wpdb->insert(
             $wpdb->prefix . 'wppoppop_items',
             [
@@ -218,7 +288,7 @@ if (!$data || !isset($data['meta'])) {
 
         global $wpdb;
         $wpdb->insert($wpdb->prefix . 'wppoppop_items', [
-            'uid'    => wp_generate_uuid4(),
+            'uid'    => $this->generate_unique_uid(sanitize_text_field($data['meta']['title'])),
             'title'  => sanitize_text_field($data['meta']['title']) . ' (Imported)',
             'data'   => $json_raw,
             'status' => 'publish'
@@ -315,7 +385,7 @@ if (!$data || !isset($data['meta'])) {
 
         if (!empty($decoded['items']) && is_array($decoded['items'])) {
             foreach ($decoded['items'] as$item) {
-                $old_uid = isset($item['uid']) ? sanitize_key($item['uid']) : '';$new_uid = wp_generate_uuid4();
+                $old_uid = isset($item['uid']) ? sanitize_key($item['uid']) : '';$new_uid = $this->generate_unique_uid(isset($item['title']) ? sanitize_text_field($item['title']) : '');
                 if ($old_uid) {$uid_map[$old_uid] =$new_uid;
                 }
 
