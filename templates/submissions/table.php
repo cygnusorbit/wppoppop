@@ -157,6 +157,29 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                             if ($__want !== '' && $__have === $__want) { $val = $__fv2; break; }
                         }
                     }
+                    // Cross-popup fallback: match by field label inside this row's own popup.
+                    if (($val === '' || $val === null) && !empty($popup_field_maps[$s->popup_uid])) {
+                        $__want_lbl = strtolower((string) $avail_cols[$c]);
+                        $__want_key = sanitize_key($fk);
+                        foreach ($popup_field_maps[$s->popup_uid] as $__mk => $__ml) {
+                            if (strtolower($__ml) !== $__want_lbl && $__mk !== $__want_key) {
+                                continue;
+                            }
+                            foreach ([$__mk, 'fields' . $__mk, 'fields_' . $__mk] as $__try2) {
+                                if (isset($fields[$__try2]) && $fields[$__try2] !== '') {
+                                    $val = $fields[$__try2];
+                                    break 2;
+                                }
+                            }
+                            $__nk2 = preg_replace('/[^a-z0-9]/', '', strtolower($__mk));
+                            foreach ($fields as $__fk3 => $__fv3) {
+                                if (preg_replace('/^fields/', '', preg_replace('/[^a-z0-9]/', '', strtolower((string) $__fk3))) === $__nk2 && $__fv3 !== '') {
+                                    $val = $__fv3;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
                     $val = is_array($val) ? implode(', ', $val) : $val;
                 }
                 $val = ($val === '' || $val === null) ? '—' : (string) $val;

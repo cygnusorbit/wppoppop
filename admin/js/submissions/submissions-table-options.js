@@ -92,7 +92,6 @@
         startSync: function() {
             var self = this;
             this.stopSync();
-            if (!this.cfg.popup_uid) return;
             this.syncFields();
             this.syncTimer = setInterval(function() { self.syncFields(); }, 4000);
             $(window).off('focus.wppsync').on('focus.wppsync', function() { self.syncFields(); });
@@ -105,7 +104,7 @@
 
         syncFields: function() {
             var self = this, v = this.vars();
-            if (this.syncBusy || !this.cfg.popup_uid || !v.ajax_url) return;
+            if (this.syncBusy || !v.ajax_url) return;
             if (!$('#wppoppop-table-options-modal').hasClass('is-open')) return;
             this.syncBusy = true;
             $.post(v.ajax_url, {
@@ -148,6 +147,15 @@
                 });
                 delete cfg.available[id];
                 changed = true;
+            });
+
+            // prune every field:* column that is not a current form element
+            $('#wppoppop-cols-active li, #wppoppop-cols-inactive li').each(function() {
+                var id = $(this).attr('data-col') || '';
+                if (id.indexOf('field:') !== 0 || fields[id] !== undefined) return;
+                if ($(this).closest('#wppoppop-cols-active').length) removedActive = true;
+                $(this).remove();
+                delete cfg.available[id];
             });
 
             var next = [];

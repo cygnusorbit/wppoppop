@@ -79,70 +79,89 @@ class WpPopPop_Ajax_Submissions {
             wp_send_json_error(['message' => 'Unauthorized'], 403);
         }
         $uid = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
-        if ($uid === '') {
-            wp_send_json_success(['fields' => new stdClass()]);
-        }
         global $wpdb;
-        $raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $uid));
-        $cfg = $raw ? json_decode($raw, true) : null;
+        $t = $wpdb->prefix . 'wppoppop_items';
         $out = [];
-        if (is_array($cfg)) {
-            $types = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
-                'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
-            $canvases = isset($cfg['canvases']) ? $cfg['canvases'] : (isset($cfg['screens']) ? $cfg['screens'] : []);
-            if (empty($canvases) && !empty($cfg['elements']) && is_array($cfg['elements'])) {
-                $canvases = [$cfg['elements']];
-            }
-            if (is_array($canvases)) {
-                foreach ($canvases as $cv) {
-                    $els = (is_array($cv) && isset($cv['elements']) && is_array($cv['elements'])) ? $cv['elements'] : $cv;
-                    if (!is_array($els)) {
-                        continue;
+        if ($uid !== '') {
+            $raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$t} WHERE uid = %s", $uid));
+            $out = $this->extract_form_fields($raw ? json_decode($raw, true) : null);
+        } else {
+            $seen = [];
+            foreach ((array) $wpdb->get_results("SELECT data FROM {$t}") as $r) {
+                foreach ($this->extract_form_fields($r->data ? json_decode($r->data, true) : null) as $id => $lbl) {
+                    $lc = strtolower($lbl);
+                    if (isset($seen[$lc])) {
+                        continue;   // same label across popups = one column
                     }
-                    foreach ($els as $el) {
-                        if (!is_array($el) || empty($el['type'])) {
-                            continue;
-                        }
-                        $type = strtolower(trim((string) $el['type']));
-                        if (!in_array($type, $types, true)) {
-                            continue;
-                        }
-                        if (isset($el['saveToDb']) && ($el['saveToDb'] === false || $el['saveToDb'] === 'false' || $el['saveToDb'] === 0 || $el['saveToDb'] === '0')) {
-                            continue;
-                        }
-                        $key = '';
-                        foreach (['fieldName', 'token', 'field_name', 'fieldId'] as $p) {
-                            if (!empty($el[$p])) {
-                                $key = sanitize_key((string) $el[$p]);
-                                if ($key !== '') {
-                                    break;
-                                }
-                            }
-                        }
-                        if ($key === '') {
-                            $key = sanitize_key($type);
-                        }
-                        if ($key === '' || isset($out['field:' . $key]) || !preg_match('/^[A-Za-z0-9_\-\. ]{1,64}$/', $key)) {
-                            continue;
-                        }
-                        $lbl = '';
-                        foreach (['name', 'label_text', 'label', 'placeholder'] as $p) {
-                            if (!empty($el[$p]) && is_string($el[$p])) {
-                                $lbl = trim(wp_strip_all_tags($el[$p]));
-                                if ($lbl !== '') {
-                                    break;
-                                }
-                            }
-                        }
-                        if ($lbl === '') {
-                            $lbl = ucwords(str_replace(['_', '-'], ' ', $key));
-                        }
-                        $out['field:' . $key] = mb_substr($lbl, 0, 60);
-                    }
+                    $seen[$lc] = true;
+                    $out[$id] = $lbl;
                 }
             }
         }
         wp_send_json_success(['fields' => empty($out) ? new stdClass() : $out]);
+    }
+
+    private function extract_form_fields($cfg) {
+        $out = [];
+        if (!is_array($cfg)) {
+            return $out;
+        }
+        $types = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
+            'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
+        $cvs = isset($cfg['canvases']) ? $cfg['canvases'] : (isset($cfg['screens']) ? $cfg['screens'] : []);
+        if (empty($cvs) && !empty($cfg['elements']) && is_array($cfg['elements'])) {
+            $cvs = [$cfg['elements']];
+        }
+        if (!is_array($cvs)) {
+            return $out;
+        }
+        foreach ($cvs as $cv) {
+            $els = (is_array($cv) && isset($cv['elements']) && is_array($cv['elements'])) ? $cv['elements'] : $cv;
+            if (!is_array($els)) {
+                continue;
+            }
+            foreach ($els as $el) {
+                if (!is_array($el) || empty($el['type'])) {
+                    continue;
+                }
+                $type = strtolower(trim((string) $el['type']));
+                if (!in_array($type, $types, true)) {
+                    continue;
+                }
+                if (isset($el['saveToDb']) && ($el['saveToDb'] === false || $el['saveToDb'] === 'false' || $el['saveToDb'] === 0 || $el['saveToDb'] === '0')) {
+                    continue;
+                }
+                $key = '';
+                foreach (['fieldName', 'token', 'field_name', 'fieldId'] as $p) {
+                    if (!empty($el[$p])) {
+                        $key = sanitize_key((string) $el[$p]);
+                        if ($key !== '') {
+                            break;
+                        }
+                    }
+                }
+                if ($key === '') {
+                    $key = sanitize_key($type);
+                }
+                if ($key === '' || isset($out['field:' . $key]) || !preg_match('/^[A-Za-z0-9_\\-\\. ]{1,64}$/', $key)) {
+                    continue;
+                }
+                $lbl = '';
+                foreach (['name', 'label_text', 'label', 'placeholder'] as $p) {
+                    if (!empty($el[$p]) && is_string($el[$p])) {
+                        $lbl = trim(wp_strip_all_tags($el[$p]));
+                        if ($lbl !== '') {
+                            break;
+                        }
+                    }
+                }
+                if ($lbl === '') {
+                    $lbl = ucwords(str_replace(['_', '-'], ' ', $key));
+                }
+                $out['field:' . $key] = mb_substr($lbl, 0, 60);
+            }
+        }
+        return $out;
     }
 
     public function assign_sub_labels() {

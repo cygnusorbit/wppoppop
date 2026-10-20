@@ -59,10 +59,16 @@
         return !Reg.FORM_FAMILY || Reg.FORM_FAMILY.indexOf(canon) !== -1;
     }
 
+
+    function paintToken(tok) {
+        $('#prop-field-name, #prop-data-token, #gp-data-fieldname, #prop-adv-field-id').val(tok);
+        $('#prop-display-token, #gp-data-token-preview').val('{' + tok + '}');
+    }
+
     function apply(el, tok) {
-        el.fieldName = tok; el.fieldId = tok; el.token = tok;
+        el.fieldName = tok; el.fieldId = tok; el.token = tok; el.field_name = tok;
         if (Reg.resolveElement && Reg.resolveElement() === el) {
-            $('#prop-field-name').val(tok);
+            paintToken(tok);
         }
     }
 
@@ -73,16 +79,11 @@
     };
 
     /* Ensure one element has a valid, non-duplicate token. */
-    Reg.ensureElementToken = function(el, renamed) {
+    function ensureCore(el, renamed) {
         if (!el || !isFormEl(el)) return;
         var cur = currentToken(el), base = slug(el.name || el.label || el.type), m;
         if (!cur) { apply(el, Reg.generateUniqueToken(el)); return; }
         m = AUTO_RE.exec(cur);
-        if (renamed && m && m[1] !== base) {
-            var cand = base + '-' + m[2];
-            apply(el, isTaken(cand, el) ? Reg.generateUniqueToken(el) : cand);
-            return;
-        }
         if (isTaken(cur, el)) {
             var b = m ? m[1] : cur;
             var t, g = 0;
@@ -93,6 +94,8 @@
         }
     };
 
+    Reg.ensureElementToken = function(el) { ensureCore(el, false); };
+
     /* Pre-save gate: every layer on every canvas. */
     Reg.ensureAllTokensUnique = function() {
         var all = allElements();
@@ -100,12 +103,13 @@
     };
 
     function bind() {
+
         $(document).off('input.wpTok change.wpTok', '#prop-layer-name, #prop-element-name')
             .on('input.wpTok change.wpTok', '#prop-layer-name, #prop-element-name', function() {
                 var el = Reg.resolveElement ? Reg.resolveElement() : null;
                 if (!el) return;
                 el.name = $(this).val();
-                Reg.ensureElementToken(el, true);
+                Reg.ensureElementToken(el, false);
             });
 
         /* Manual edits: sanitize + duplicate check on commit */
@@ -123,7 +127,7 @@
             .on('blur.wpTok', '.wppoppop-layer-rename-input', function() {
                 setTimeout(function() {
                     var el = Reg.resolveElement ? Reg.resolveElement() : null;
-                    if (el) Reg.ensureElementToken(el, true);
+                    if (el) Reg.ensureElementToken(el, false);
                 }, 30);
             });
 
