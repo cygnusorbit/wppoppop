@@ -73,7 +73,7 @@ $geoip_service          = isset($settings['geoip_service']) ? $settings['geoip_s
             <th scope="row"><label for="setting-geoip-service"><?php esc_html_e('GeoIP Resolution Service', 'wppoppop'); ?></label></th>
             <td>
                 <select id="setting-geoip-service" name="settings[geoip_service]">
-                    <option value="none" <?php selected($geoip_service, 'none'); ?>><?php esc_html_e('None (Server Headers: Cloudflare CF-IPCountry only)', 'wppoppop'); ?></option>
+                    <option value="none" <?php selected($geoip_service, 'none'); ?>><?php esc_html_e('None (Cloudflare CF-IPCountry header only, no external lookups)', 'wppoppop'); ?></option>
                     <option value="ipapi" <?php selected($geoip_service, 'ipapi'); ?>>ipapi.co (JSON API)</option>
                     <option value="ip-api" <?php selected($geoip_service, 'ip-api'); ?>>ip-api.com</option>
                 </select>

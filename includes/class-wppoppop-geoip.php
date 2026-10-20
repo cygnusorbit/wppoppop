@@ -23,7 +23,10 @@ class WpPopPop_GeoIP {
             return apply_filters('wppoppop_geoip_local_country', 'US');
         }
 
-        $service = wppoppop_get_setting('geoip_api_service', 'ipapi');
+        $service = wppoppop_get_setting('geoip_service', wppoppop_get_setting('geoip_api_service', 'none'));
+        if (!in_array($service, ['ipapi', 'ip-api', 'cloudflare'], true)) {
+            $service = 'none';
+        }
 
         // 1. Cloudflare CF-IPCountry Header Check (Immediate, 0ms latency)
         if ($service === 'cloudflare' || !empty($_SERVER['HTTP_CF_IPCOUNTRY'])) {
@@ -33,6 +36,11 @@ class WpPopPop_GeoIP {
                     return $cf_country;
                 }
             }
+        }
+
+        // 1b. 'none' = Cloudflare header only. Never contact an external provider.
+        if ($service === 'none') {
+            return 'XX';
         }
 
         // 2. Check WordPress Transient Cache
