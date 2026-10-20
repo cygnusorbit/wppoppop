@@ -456,18 +456,16 @@ body.wppoppop-resizing-canvas {
     -moz-user-select: none !important;
 }
 
-/* Dotted / Dashed Gray Selection Border */
+/* Selected layer: primary-color guide line, keeps its own stacking order (no bring-to-front) */
 .wppoppop-canvas-item.wppoppop-selected {
-    outline: 1px dashed #777777 !important;
-    outline-offset: 0 !important;
-    z-index: 9990 !important;
-}
-
-/* Workspace Element Hover: 1px Solid Blue Border */
-.wppoppop-canvas-item:hover:not(.wppoppop-selected) {
     outline: 1px solid #2563eb !important;
     outline-offset: 0 !important;
-    z-index: 9980 !important;
+}
+
+/* Workspace Element Hover: dotted guide line only (no select look, no z-index change) */
+.wppoppop-canvas-item:hover:not(.wppoppop-selected) {
+    outline: 1px dotted #2563eb !important;
+    outline-offset: 0 !important;
 }
 
 
@@ -2111,3 +2109,22 @@ body.wppoppop-preview-locked .wppoppop-canvas-item::after {
     z-index: auto;
 }
 /* === /WPPOPPOP_CANVAS_CORNER_BELOW_LAYERS === */
+
+
+/* === WPPOPPOP_HOVER_GUIDE_ONLY === */
+.wppoppop-canvas-item:hover:not(.wppoppop-selected) {
+    outline: 1px dotted #2563eb !important;
+    outline-offset: 0 !important;
+}
+.wppoppop-canvas-item:hover:not(.wppoppop-selected) .ui-resizable-handle {
+    display: none !important;
+}
+/* === /WPPOPPOP_HOVER_GUIDE_ONLY === */
+
+
+/* === WPPOPPOP_SELECTED_PRIMARY_GUIDE === */
+.wppoppop-canvas-item.wppoppop-selected {
+    outline: 1px solid #2563eb !important;
+    outline-offset: 0 !important;
+}
+/* === /WPPOPPOP_SELECTED_PRIMARY_GUIDE === */
