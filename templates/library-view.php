@@ -122,7 +122,7 @@ $templates = [
     ]
 ];
 ?>
-<div class="wrap wppoppop-library-wrap" style="max-width:1200px;">
+<div class="wrap wppoppop-dash wppoppop-library-wrap">
     <!-- Catalog Header Toolbar & Category Filters -->
     <?php include WPPOPPOP_PATH . 'templates/library/header.php'; ?>
 

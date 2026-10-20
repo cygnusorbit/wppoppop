@@ -2,25 +2,30 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+$bar_title = __('Popups Library', 'wppoppop');
+$bar_icon  = 'dashicons-category';
 ?>
-<div class="wppoppop-library-header" style="margin-bottom:24px;padding-top:10px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:18px;">
-        <div>
-            <h1 class="wp-heading-inline" style="margin:0;font-size:24px;font-weight:700;color:#1e293b;">Popups & Templates Library</h1>
-            <p style="margin:4px 0 0;color:#64748b;font-size:13px;">Browse pre-configured, high-converting templates and import them directly into the visual builder.</p>
+<h1 class="screen-reader-text"><?php esc_html_e('Popups & Templates Library', 'wppoppop'); ?></h1>
+<?php include WPPOPPOP_PATH . 'templates/partials/dash-bar.php'; ?>
+
+<div class="wppoppop-library-header">
+    <div class="wppoppop-library-toolbar">
+        <div class="wppoppop-library-intro">
+            <h2><?php esc_html_e('Popups & Templates Library', 'wppoppop'); ?></h2>
+            <p><?php esc_html_e('Browse pre-configured, high-converting templates and import them directly into the visual builder.', 'wppoppop'); ?></p>
         </div>
-        <div style="display:flex;gap:10px;align-items:center;">
-            <input type="text" id="wppoppop-lib-search" placeholder="Search templates by keyword..." style="width:260px;padding:7px 12px;font-size:13px;border-radius:6px;border:1px solid #cbd5e1;">
+        <div class="wppoppop-library-search-wrap">
+            <span class="dashicons dashicons-search"></span>
+            <input type="text" id="wppoppop-lib-search" placeholder="<?php echo esc_attr__('Search templates by keyword...', 'wppoppop'); ?>" autocomplete="off">
         </div>
     </div>
 
-    <!-- Category Filter Pills -->
-    <div class="wppoppop-lib-categories" style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button type="button" class="button wppoppop-cat-btn active" data-cat="all" style="background:#2563eb;color:#fff;border-color:#1d4ed8;font-weight:600;border-radius:20px;padding:4px 14px;">All Templates</button>
-        <button type="button" class="button wppoppop-cat-btn" data-cat="lead-gen" style="border-radius:20px;padding:4px 14px;">Lead Generation</button>
-        <button type="button" class="button wppoppop-cat-btn" data-cat="ecommerce" style="border-radius:20px;padding:4px 14px;">E-Commerce & Coupons</button>
-        <button type="button" class="button wppoppop-cat-btn" data-cat="gamified" style="border-radius:20px;padding:4px 14px;">Gamified & Interactive</button>
-        <button type="button" class="button wppoppop-cat-btn" data-cat="feedback" style="border-radius:20px;padding:4px 14px;">Surveys & Feedback</button>
-        <button type="button" class="button wppoppop-cat-btn" data-cat="announcement" style="border-radius:20px;padding:4px 14px;">Announcements</button>
+    <div class="wppoppop-lib-categories wppoppop-library-categories">
+        <button type="button" class="wppoppop-cat-btn active" data-cat="all"><?php esc_html_e('All Templates', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-cat-btn" data-cat="lead-gen"><?php esc_html_e('Lead Generation', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-cat-btn" data-cat="ecommerce"><?php esc_html_e('E-Commerce & Coupons', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-cat-btn" data-cat="gamified"><?php esc_html_e('Gamified & Interactive', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-cat-btn" data-cat="feedback"><?php esc_html_e('Surveys & Feedback', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-cat-btn" data-cat="announcement"><?php esc_html_e('Announcements', 'wppoppop'); ?></button>
     </div>
 </div>

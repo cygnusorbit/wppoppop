@@ -146,8 +146,13 @@ class WpPopPop_Admin_Assets {
 
         // 4. Library Assets
         if ($page === 'wppoppop-library') {
-            wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', [], self::ver());
-            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], self::ver(), true);
+            $lib_ver = self::ver();
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], $lib_ver);
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $lib_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $lib_ver, true);
+            wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css', 'wppoppop-theme-global-css'], $lib_ver);
+            wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], $lib_ver, true);
             wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
         }
 
