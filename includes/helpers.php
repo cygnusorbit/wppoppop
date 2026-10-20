@@ -10,14 +10,23 @@ if (!class_exists('WpPopPop_Security') && file_exists(WPPOPPOP_PATH . 'includes/
 /**
  * Retrieve a WpPopPop setting with static in-memory caching.
  */
-function wppoppop_get_setting($key, $default = '') {
+function wppoppop_settings_store($reset = false) {
     static $settings = null;
+    if ($reset) {
+        $settings = null;
+        return [];
+    }
     if ($settings === null) {
         $settings = get_option('wppoppop_settings', []);
         if (!is_array($settings)) {
             $settings = [];
         }
     }
+    return $settings;
+}
+
+function wppoppop_get_setting($key, $default = '') {
+    $settings = wppoppop_settings_store();
     return isset($settings[$key]) ? $settings[$key] : $default;
 }
 
@@ -25,8 +34,7 @@ function wppoppop_get_setting($key, $default = '') {
  * Flush in-memory settings cache on update.
  */
 function wppoppop_flush_settings_cache() {
-    static $settings = null;
-    $settings = null;
+    wppoppop_settings_store(true);
 }
 
 /**

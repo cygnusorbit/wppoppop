@@ -86,75 +86,21 @@ class WpPopPop_Admin_Pages {
                     $existing = [];
                 }
 
-                $clean = [];
-
-                // Tab 1: General & Mailing
-                $clean['sender_name']        = !empty($raw['sender_name']) ? sanitize_text_field($raw['sender_name']) : (!empty($raw['from_name']) ? sanitize_text_field($raw['from_name']) : get_bloginfo('name'));
-                $clean['from_name']          = $clean['sender_name'];
-                $clean['sender_email']       = !empty($raw['sender_email']) ? sanitize_email($raw['sender_email']) : (!empty($raw['from_email']) ? sanitize_email($raw['from_email']) : get_option('admin_email'));
-                $clean['from_email']         = $clean['sender_email'];
-                $clean['admin_email']        = !empty($raw['admin_email']) ? sanitize_email($raw['admin_email']) : get_option('admin_email');
-                $clean['csv_separator']      = !empty($raw['csv_separator']) ? sanitize_text_field($raw['csv_separator']) : ',';
-                $clean['user_uploads']       = !empty($raw['user_uploads']) ? sanitize_text_field($raw['user_uploads']) : 'keep';
-                $clean['powered_by_badge']   = !empty($raw['powered_by_badge']) ? 1 : 0;
-                $clean['test_mode']          = !empty($raw['test_mode']) ? 1 : 0;
-
-                // Tab 2: Performance & Preload
-                $clean['preload_popups']       = !empty($raw['preload_popups']) ? 1 : 0;
-                $clean['preload_events']       = !empty($raw['preload_events']) ? 1 : 0;
-                $clean['disable_google_fonts'] = !empty($raw['disable_google_fonts']) ? 1 : 0;
-                $clean['minify_css']           = !empty($raw['minify_css']) ? 1 : 0;
-                $clean['cache_busting']        = !empty($raw['cache_busting']) ? 1 : 0;
-                $clean['render_delay']         = isset($raw['render_delay']) ? max(0, (int) $raw['render_delay']) : 0;
-                $clean['ga_tracking']          = !empty($raw['ga_tracking']) ? 1 : 0;
-                $clean['adblock_detector']     = !empty($raw['adblock_detector']) ? 1 : 0;
-
-                // Tab 3: Typography & Libraries
-                $clean['default_font']          = !empty($raw['default_font']) ? sanitize_text_field($raw['default_font']) : 'inherit';
-                $clean['google_fonts']          = !empty($raw['google_fonts']) ? 1 : 0;
-                $clean['font_awesome']          = !empty($raw['font_awesome']) ? 1 : 0;
-                $clean['custom_fonts']          = isset($raw['custom_fonts']) ? sanitize_textarea_field($raw['custom_fonts']) : '';
-                $clean['load_canvas_confetti']  = !empty($raw['load_canvas_confetti']) ? 1 : 0;
-                $clean['load_canvas_fireworks'] = !empty($raw['load_canvas_fireworks']) ? 1 : 0;
-                $clean['air_datepicker']        = (!empty($raw['air_datepicker']) || !empty($raw['load_air_datepicker'])) ? 1 : 0;
-                $clean['load_air_datepicker']   = $clean['air_datepicker'];
-                $clean['jquery_mask']           = (!empty($raw['jquery_mask']) || !empty($raw['load_jquery_mask'])) ? 1 : 0;
-                $clean['load_jquery_mask']      = $clean['jquery_mask'];
-                $clean['signature_pad']         = (!empty($raw['signature_pad']) || !empty($raw['load_signature_pad'])) ? 1 : 0;
-                $clean['load_signature_pad']    = $clean['signature_pad'];
-                $clean['range_slider']          = (!empty($raw['range_slider']) || !empty($raw['load_range_slider'])) ? 1 : 0;
-                $clean['load_range_slider']     = $clean['range_slider'];
-                $clean['js_parser']             = (!empty($raw['js_parser']) || !empty($raw['load_math_parser'])) ? 1 : 0;
-                $clean['load_math_parser']      = $clean['js_parser'];
-
-                // Tab 4: Security & Geolocation
-                $clean['email_validation']       = !empty($raw['email_validation']) ? sanitize_text_field($raw['email_validation']) : 'basic';
-                $clean['enable_recaptcha']       = !empty($raw['enable_recaptcha']) ? 1 : 0;
-                $clean['recaptcha_site_key']     = !empty($raw['recaptcha_site_key']) ? sanitize_text_field($raw['recaptcha_site_key']) : '';
-                $clean['recaptcha_secret_key']   = !empty($raw['recaptcha_secret_key']) ? sanitize_text_field($raw['recaptcha_secret_key']) : '';
-                $clean['max_submissions_per_ip'] = isset($raw['max_submissions_per_ip']) ? max(1, (int) $raw['max_submissions_per_ip']) : 10;
-                $clean['ip_geotargeting']        = !empty($raw['ip_geotargeting']) ? 1 : 0;
-                $clean['geoip_service']          = !empty($raw['geoip_service']) ? sanitize_text_field($raw['geoip_service']) : (!empty($raw['geoip_api_service']) ? sanitize_text_field($raw['geoip_api_service']) : 'none');
-                $clean['geoip_api_service']      = $clean['geoip_service'];
-
-                // Tab 5: Custom Code & Scripts
-                if (current_user_can('unfiltered_html')) {
-                    $clean['custom_css']         = isset($raw['custom_css']) ? $raw['custom_css'] : '';
-                    $clean['custom_js']          = isset($raw['custom_js']) ? $raw['custom_js'] : '';
-                    $clean['custom_header_html'] = isset($raw['custom_header_html']) ? $raw['custom_header_html'] : '';
-                    $clean['custom_footer_html'] = isset($raw['custom_footer_html']) ? $raw['custom_footer_html'] : '';
-                } else {
-                    $clean['custom_css']         = isset($raw['custom_css']) ? wp_strip_all_tags($raw['custom_css']) : '';
-                    $clean['custom_js']          = isset($raw['custom_js']) ? wp_strip_all_tags($raw['custom_js']) : '';
-                    $clean['custom_header_html'] = isset($raw['custom_header_html']) ? wp_kses_post($raw['custom_header_html']) : '';
-                    $clean['custom_footer_html'] = isset($raw['custom_footer_html']) ? wp_kses_post($raw['custom_footer_html']) : '';
+                if (!class_exists('WpPopPop_Admin_Settings')) {
+                    require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
                 }
 
-                // Tab 6: System Tools
-                $clean['clean_on_uninstall'] = !empty($raw['clean_on_uninstall']) ? 1 : 0;
-                $clean['cookie_epoch']       = isset($existing['cookie_epoch']) ? (int) $existing['cookie_epoch'] : (int) get_option('wppoppop_cookie_epoch', 1);
+                // Cookie epoch is server-owned: never trust the client value.
+                $raw['cookie_epoch'] = isset($existing['cookie_epoch'])
+                    ? (int) $existing['cookie_epoch']
+                    : (int) get_option('wppoppop_cookie_epoch', 1);
+
+                $clean = WpPopPop_Admin_Settings::sanitize_settings($raw);
 
                 update_option('wppoppop_settings', $clean);
+                if (function_exists('wppoppop_flush_settings_cache')) {
+                    wppoppop_flush_settings_cache();
+                }
                 $notice = 'saved';
             }
         }
