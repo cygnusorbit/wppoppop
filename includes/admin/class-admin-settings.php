@@ -43,15 +43,22 @@ class WpPopPop_Admin_Settings {
             'acc-13-woocommerce'  => __('WooCommerce', 'wppoppop'),
             'acc-14-custom-code'  => __('Custom Code', 'wppoppop'),
             'acc-15-quiz'         => __('Quiz', 'wppoppop'),
-            'acc-16-double-optin'  => __('Double Opt-In', 'wppoppop'),
-            'acc-17-popup-overlay' => __('Popup Overlay', 'wppoppop'),
+            'acc-16-popup-overlay' => __('Popup Overlay', 'wppoppop'),
+            'acc-17-double-optin'  => __('Double Opt-In', 'wppoppop'),
             'acc-18-notifications' => __('Notifications', 'wppoppop'),
+            'acc-19-success-celebration' => __('Success Celebration', 'wppoppop'),
         ];
     }
 
     /** True unless the module was explicitly switched off. */
     public static function module_enabled($key) {
         $s = get_option('wppoppop_settings', []);
+        /* WPPOPPOP_MODULE_LEGACY_KEYS: keep toggles saved under the pre-renumber keys */
+        $legacy = ['acc-17-double-optin' => 'acc-16-double-optin', 'acc-16-popup-overlay' => 'acc-17-popup-overlay'];
+        if (is_array($s) && isset($s['modules']) && is_array($s['modules']) && !array_key_exists($key, $s['modules'])
+            && isset($legacy[$key]) && array_key_exists($legacy[$key], $s['modules'])) {
+            return !empty($s['modules'][$legacy[$key]]);
+        }
         if (!is_array($s) || !isset($s['modules']) || !is_array($s['modules']) || !array_key_exists($key, $s['modules'])) {
             return true;
         }
