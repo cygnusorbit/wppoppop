@@ -82,7 +82,9 @@ class WpPopPop_Rest_Submissions {
 
         $config = json_decode($row['data'], true) ?: [];
         $notif  = $config['notifications'] ?? [];
-        $is_double_optin = !empty($notif['enable_double_optin']);
+        if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
+        $dopt_cfg        = WpPopPop_Double_Optin::get_config($config);
+        $is_double_optin = !empty($dopt_cfg['enable']) || !empty($notif['enable_double_optin']);
 
         $initial_status = $is_double_optin ? 'pending' : 'confirmed';
         $confirm_token  = $is_double_optin ? wp_generate_password(32, false) : '';
@@ -111,6 +113,15 @@ class WpPopPop_Rest_Submissions {
             ['%s', '%s', '%s', '%s', '%s', '%s']
         );
         $submission_id = $wpdb->insert_id;
+
+        // Notifications: "After successful form submission"
+        if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
+        WpPopPop_Notifications::dispatch('after_submission', $uid, $row['title'], $config, $email, $fields, $submission_id, $visitor_country);
+
+        // Double Opt-In: send the confirmation email
+        if ($is_double_optin) {
+            WpPopPop_Double_Optin::send_confirmation($uid, $dopt_cfg, $email, $fields, $confirm_token, $submission_id);
+        }
 
         // Autoresponder dispatch
         $autoresponder = $config['autoresponder'] ?? [];

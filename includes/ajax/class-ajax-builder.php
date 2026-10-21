@@ -65,6 +65,88 @@ class WpPopPop_Ajax_Builder {
                 'effect' => in_array($wppoppop_cel, $wppoppop_cel_ok, true) ? $wppoppop_cel : 'default'
             );
         }
+        /* WPPOPPOP_NOTIFICATIONS_WHITELIST: allow-list the Notifications module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            $wppoppop_nin = isset($wppoppop_obj->settings->notifications) ? $wppoppop_obj->settings->notifications : array();
+            if (is_object($wppoppop_nin)) { $wppoppop_nin = array_values(get_object_vars($wppoppop_nin)); }
+            if (!is_array($wppoppop_nin)) { $wppoppop_nin = array(); }
+            $wppoppop_nout = array();
+            foreach (array_slice($wppoppop_nin, 0, 20) as $wppoppop_n) {
+                $wppoppop_n = is_object($wppoppop_n) ? get_object_vars($wppoppop_n) : (is_array($wppoppop_n) ? $wppoppop_n : array());
+                if (empty($wppoppop_n)) { continue; }
+                $wppoppop_t = function ($k, $d = '') use ($wppoppop_n) {
+                    return (isset($wppoppop_n[$k]) && is_scalar($wppoppop_n[$k])) ? sanitize_text_field((string) $wppoppop_n[$k]) : $d;
+                };
+                $wppoppop_b = function ($k) use ($wppoppop_n) {
+                    return isset($wppoppop_n[$k]) && in_array($wppoppop_n[$k], array(true, 1, '1', 'true'), true);
+                };
+                $wppoppop_att = array();
+                $wppoppop_ain = isset($wppoppop_n['attachments']) ? $wppoppop_n['attachments'] : array();
+                if (is_object($wppoppop_ain)) { $wppoppop_ain = array_values(get_object_vars($wppoppop_ain)); }
+                foreach ((is_array($wppoppop_ain) ? array_slice($wppoppop_ain, 0, 10) : array()) as $wppoppop_a) {
+                    $wppoppop_a = is_object($wppoppop_a) ? get_object_vars($wppoppop_a) : (is_array($wppoppop_a) ? $wppoppop_a : array());
+                    $wppoppop_aid = isset($wppoppop_a['id']) ? absint($wppoppop_a['id']) : 0;
+                    if ($wppoppop_aid) {
+                        $wppoppop_att[] = array(
+                            'id'   => $wppoppop_aid,
+                            'name' => isset($wppoppop_a['name']) && is_scalar($wppoppop_a['name']) ? sanitize_text_field((string) $wppoppop_a['name']) : '',
+                            'url'  => isset($wppoppop_a['url']) && is_scalar($wppoppop_a['url']) ? esc_url_raw((string) $wppoppop_a['url']) : ''
+                        );
+                    }
+                }
+                $wppoppop_rules = array();
+                $wppoppop_rin = isset($wppoppop_n['rules']) ? $wppoppop_n['rules'] : array();
+                if (is_object($wppoppop_rin)) { $wppoppop_rin = array_values(get_object_vars($wppoppop_rin)); }
+                foreach ((is_array($wppoppop_rin) ? array_slice($wppoppop_rin, 0, 20) : array()) as $wppoppop_r) {
+                    $wppoppop_r = is_object($wppoppop_r) ? get_object_vars($wppoppop_r) : (is_array($wppoppop_r) ? $wppoppop_r : array());
+                    $wppoppop_op = isset($wppoppop_r['operator']) ? (string) $wppoppop_r['operator'] : 'is';
+                    $wppoppop_rules[] = array(
+                        'field'    => isset($wppoppop_r['field']) && is_scalar($wppoppop_r['field']) ? sanitize_text_field((string) $wppoppop_r['field']) : '',
+                        'operator' => in_array($wppoppop_op, array('is', 'is_not', 'contains', 'not_contains', 'empty', 'not_empty'), true) ? $wppoppop_op : 'is',
+                        'value'    => isset($wppoppop_r['value']) && is_scalar($wppoppop_r['value']) ? sanitize_text_field((string) $wppoppop_r['value']) : ''
+                    );
+                }
+                $wppoppop_send = $wppoppop_t('send', 'after_submission');
+                $wppoppop_nout[] = array(
+                    'id'           => sanitize_key($wppoppop_t('id')),
+                    'name'         => $wppoppop_t('name', 'Notification'),
+                    'enable'       => $wppoppop_b('enable'),
+                    'send'         => in_array($wppoppop_send, array('after_submission', 'after_confirmation'), true) ? $wppoppop_send : 'after_submission',
+                    'recipient'    => $wppoppop_t('recipient'),
+                    'subject'      => $wppoppop_t('subject'),
+                    'message'      => (isset($wppoppop_n['message']) && is_string($wppoppop_n['message'])) ? wp_kses_post($wppoppop_n['message']) : '',
+                    'attachments'  => $wppoppop_att,
+                    'reply_to'     => $wppoppop_t('reply_to'),
+                    'from_email'   => $wppoppop_t('from_email'),
+                    'from_name'    => $wppoppop_t('from_name'),
+                    'logic_enable' => $wppoppop_b('logic_enable'),
+                    'logic_match'  => $wppoppop_t('logic_match', 'all') === 'any' ? 'any' : 'all',
+                    'rules'        => $wppoppop_rules
+                );
+            }
+            $wppoppop_obj->settings->notifications = json_decode(wp_json_encode($wppoppop_nout));
+            if (!is_array($wppoppop_obj->settings->notifications)) { $wppoppop_obj->settings->notifications = array(); }
+        }
+        /* WPPOPPOP_DOUBLEOPTIN_WHITELIST: allow-list the Double Opt-In module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            $wppoppop_do = (isset($wppoppop_obj->settings->double_optin) && is_object($wppoppop_obj->settings->double_optin))
+                ? get_object_vars($wppoppop_obj->settings->double_optin) : array();
+            $wppoppop_do_txt = function ($k, $def = '') use ($wppoppop_do) {
+                return (isset($wppoppop_do[$k]) && !is_array($wppoppop_do[$k]) && !is_object($wppoppop_do[$k]))
+                    ? sanitize_text_field((string) $wppoppop_do[$k]) : $def;
+            };
+            $wppoppop_do_en = isset($wppoppop_do['enable']) && in_array($wppoppop_do['enable'], array(true, 1, '1', 'true'), true);
+            $wppoppop_obj->settings->double_optin = (object) array(
+                'enable'        => $wppoppop_do_en,
+                'recipient'     => $wppoppop_do_txt('recipient'),
+                'subject'       => $wppoppop_do_txt('subject'),
+                'message'       => (isset($wppoppop_do['message']) && is_string($wppoppop_do['message'])) ? wp_kses_post($wppoppop_do['message']) : '',
+                'from_email'    => $wppoppop_do_txt('from_email'),
+                'from_name'     => $wppoppop_do_txt('from_name'),
+                'thank_message' => (isset($wppoppop_do['thank_message']) && is_string($wppoppop_do['thank_message'])) ? wp_kses_post($wppoppop_do['thank_message']) : '',
+                'thank_url'     => (isset($wppoppop_do['thank_url']) && is_string($wppoppop_do['thank_url'])) ? esc_url_raw($wppoppop_do['thank_url']) : ''
+            );
+        }
         if (is_object($wppoppop_obj) || is_array($wppoppop_obj)) {
             $wppoppop_enc = wp_json_encode($this->sanitize_anim_payload($wppoppop_obj));
             if (is_string($wppoppop_enc) && $wppoppop_enc !== '') { $data_raw = $wppoppop_enc; }

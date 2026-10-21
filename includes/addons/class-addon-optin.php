@@ -52,10 +52,37 @@ class WpPopPop_Addon_Optin {
             ));
         }
 
+        if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
+        $wppoppop_dopt = WpPopPop_Double_Optin::defaults();
+        if (!empty($submission['popup_uid'])) {
+            $wppoppop_data = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']));
+            $wppoppop_dopt = WpPopPop_Double_Optin::get_config(json_decode((string) $wppoppop_data, true));
+        }
+        $wppoppop_dopt_msg = trim((string) WpPopPop_Double_Optin::merge($wppoppop_dopt['thank_message'], array('email' => esc_html($submission['email']))));
+
+        // Notifications: "After double opt-in confirmation"
+        if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
+        if (!empty($submission['popup_uid'])) {
+            $wppoppop_n_row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A);
+            if ($wppoppop_n_row) {
+                WpPopPop_Notifications::dispatch(
+                    'after_confirmation', $submission['popup_uid'], $wppoppop_n_row['title'],
+                    json_decode((string) $wppoppop_n_row['data'], true), $submission['email'],
+                    (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true),
+                    (int) $submission['id'], isset($submission['country_code']) ? $submission['country_code'] : ''
+                );
+            }
+        }
+
         wppoppop_log_event('optin_confirmed', 'Double opt-in confirmed for ' . $submission['email'], [
             'popup_uid'     => $submission['popup_uid'],
             'submission_id' => $submission['id']
         ]);
+
+        if (!empty($wppoppop_dopt['thank_url'])) {
+            wp_redirect(esc_url_raw($wppoppop_dopt['thank_url']));
+            exit;
+        }
 
         // Render clean confirmation screen
         ?>
@@ -77,8 +104,12 @@ class WpPopPop_Addon_Optin {
         <body>
             <div class="card">
                 <div class="icon">&#10004;</div>
-                <h1>Subscription Confirmed!</h1>
+                <?php if ($wppoppop_dopt_msg === '') : ?><h1>Subscription Confirmed!</h1><?php endif; ?>
+                <?php if ($wppoppop_dopt_msg !== '') : ?>
+                <div class="wppoppop-dopt-thanks"><?php echo wp_kses_post(wpautop($wppoppop_dopt_msg)); ?></div>
+                <?php else : ?>
                 <p>Thank you. Your email address <strong><?php echo esc_html($submission['email']); ?></strong> has been verified successfully.</p>
+                <?php endif; ?>
                 <a href="<?php echo esc_url(home_url()); ?>" class="btn">Return to Site</a>
             </div>
         </body>

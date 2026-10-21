@@ -43,7 +43,9 @@ class WpPopPop_Admin_Settings {
             'acc-13-woocommerce'  => __('WooCommerce', 'wppoppop'),
             'acc-14-custom-code'  => __('Custom Code', 'wppoppop'),
             'acc-15-quiz'         => __('Quiz', 'wppoppop'),
+            'acc-16-double-optin'  => __('Double Opt-In', 'wppoppop'),
             'acc-17-popup-overlay' => __('Popup Overlay', 'wppoppop'),
+            'acc-18-notifications' => __('Notifications', 'wppoppop'),
         ];
     }
 
