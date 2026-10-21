@@ -65,6 +65,18 @@ if (!defined('ABSPATH')) {
                             <span style="font-size:10px;color:#64748b;display:block;margin-top:4px;">ON: elements may extend beyond the canvas edges (visible). OFF: anything outside the canvas is clipped.</span>
                         </div>
 
+                        <!-- WPPOPPOP_DEFAULT_CLOSE: per-canvas default close button toggle -->
+                        <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                                <label for="set-canvas-close-btn" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;">SHOW DEFAULT CLOSE BUTTON</label>
+                                <span class="wppoppop-ovf-switch">
+                                    <input type="checkbox" id="set-canvas-close-btn" value="1" role="switch" aria-label="Show the default close button on this canvas" checked>
+                                    <span class="wppoppop-ovf-track"></span>
+                                </span>
+                            </div>
+                            <span style="font-size:10px;color:#64748b;display:block;margin-top:4px;">ON: visitors see the round &times; button in the top-right corner of this canvas. OFF: hidden. Use a Close element or a Close-action button instead.</span>
+                        </div>
+
                         <!-- Phase 4: Canvas Auto-Close Countdown -->
                         <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
                             <label for="set-canvas-autoclose" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">AUTO-CLOSE COUNTDOWN (SECONDS)</label>

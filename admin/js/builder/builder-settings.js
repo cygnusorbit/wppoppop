@@ -214,6 +214,9 @@
             var ovOn = (meta.allow_overflow === true || meta.allow_overflow === 1 || meta.allow_overflow === '1' || meta.allow_overflow === 'true');
             $('#set-canvas-allow-overflow').prop('checked', ovOn);
             this.applyCanvasOverflow(ovOn);
+            /* WPPOPPOP_DEFAULT_CLOSE hydrate: missing = enabled */
+            var dcOn = !(meta.close_btn_enabled === false || meta.close_btn_enabled === 0 || meta.close_btn_enabled === '0' || meta.close_btn_enabled === 'false');
+            $('#set-canvas-close-btn').prop('checked', dcOn);
 
             var acVal = parseInt(meta.autoclose_delay !== undefined ? meta.autoclose_delay : meta.autoclose, 10);
             $('#set-canvas-autoclose').val(isNaN(acVal) ? 0 : acVal);
@@ -335,6 +338,15 @@
                 core.state.canvasMeta[cur].allow_overflow = on;
                 self.applyCanvasOverflow(on);
                 core.pushHistory();
+            });
+            /* WPPOPPOP_DEFAULT_CLOSE: per-canvas default close button */
+            $(document).off('change.wppoppop_dclose', '#set-canvas-close-btn').on('change.wppoppop_dclose', '#set-canvas-close-btn', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                core.state.canvasMeta[cur].close_btn_enabled = $(this).is(':checked');
+                if (typeof core.pushHistory === 'function') core.pushHistory();
             });
             // Play Canvas Animation on Demand
             $(document).on('click', '#set-canvas-anim-play', function(e) {

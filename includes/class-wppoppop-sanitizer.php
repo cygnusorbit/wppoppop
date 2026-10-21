@@ -26,7 +26,11 @@ class WpPopPop_Sanitizer {
     protected static function anim_value($k, $v) {
         static $txt = ['anim_appearance', 'anim_disappearance', 'anim_effect', 'animEffect', 'animation', 'animIn', 'animOut'];
         static $int = ['anim_duration', 'anim_delay', 'animDuration', 'animDelay'];
+        static $bool = ['close_btn_enabled']; /* WPPOPPOP_DEFAULT_CLOSE */
         if (is_scalar($v) || $v === null) {
+            if (in_array($k, $bool, true)) {
+                return in_array($v, [true, 1, '1', 'true', 'on', 'yes'], true);
+            }
             if (in_array($k, $txt, true)) {
                 return preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $v);
             }

@@ -116,6 +116,10 @@
 
             var liveAnimDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
             if (liveAnimDis) curCanvasMeta.anim_disappearance = liveAnimDis;
+
+            /* WPPOPPOP_DEFAULT_CLOSE: pre-save flush */
+            var $dcBtn = $('#set-canvas-close-btn');
+            if ($dcBtn.length) { curCanvasMeta.close_btn_enabled = $dcBtn.is(':checked'); }
         }
 
 

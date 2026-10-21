@@ -43,6 +43,7 @@
             if (vDel !== undefined && vDel !== '' && !isNaN(vDel)) { cm.anim_delay = parseInt(vDel, 10); }
             var vDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
             if (vDis) { cm.anim_disappearance = vDis; }
+            var $dcT = $('#set-canvas-close-btn'); if ($dcT.length) { cm.close_btn_enabled = $dcT.is(':checked'); } /* WPPOPPOP_DEFAULT_CLOSE */
             return {
                 title: $('#wppoppop-builder-title').val() || 'Untitled Popup',
                 canvases: canv,

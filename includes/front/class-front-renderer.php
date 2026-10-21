@@ -127,10 +127,7 @@ class WpPopPop_Front_Renderer {
                  data-uid="<?php echo esc_attr($uid); ?>"
                  style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr('border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);' . $box_bg); ?>">
 
-                <!-- Close Button -->
-                <?php if (!$is_inline): ?>
-                    <button type="button" class="wppoppop-close-btn" data-uid="<?php echo esc_attr($uid); ?>" aria-label="Close" style="position:absolute;top:10px;right:10px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>
-                <?php endif; ?>
+                <?php /* WPPOPPOP_DEFAULT_CLOSE: the default close button is now drawn inside each canvas */ ?>
 
                 <!-- Submission Status Overlay -->
                 <div class="wppoppop-status-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.95);z-index:999999;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center;border-radius:inherit;">
@@ -153,6 +150,7 @@ class WpPopPop_Front_Renderer {
                     $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
                     $c_allow_ovf = !empty($cm['allow_overflow']) && $cm['allow_overflow'] !== 'false';
                     $c_overflow_style = $c_allow_ovf ? 'overflow:visible;' : 'overflow:hidden;';
+                    $c_close_on = !(is_array($cm) && isset($cm['close_btn_enabled']) && in_array($cm['close_btn_enabled'], array(false, 0, '0', 'false'), true)); /* WPPOPPOP_DEFAULT_CLOSE */
 
                     $c_bg_mode = $cm['bg_mode'] ?? 'solid';
                     $c_bg_color = $cm['bg_color'] ?? '';
@@ -184,6 +182,9 @@ class WpPopPop_Front_Renderer {
                          data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
                          style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
 
+                        <?php if (!$is_inline && $c_close_on): ?>
+                            <button type="button" class="wppoppop-close-btn wppoppop-default-close" data-uid="<?php echo esc_attr($uid); ?>" aria-label="Close" style="position:absolute;top:10px;right:10px;width:auto;height:auto;display:block;padding:0 4px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>
+                        <?php endif; ?>
                         <div class="wppoppop-canvas-content">
                             <?php 
                             if (is_array($elements)) {
