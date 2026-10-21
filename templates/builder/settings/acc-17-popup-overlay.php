@@ -27,6 +27,7 @@ if (!defined('ABSPATH')) {
                         </div>
 
                         <div id="set-ov-bg-list" style="margin-bottom:8px;"></div>
+                        <div id="set-ov-bg-pager" style="display:none;align-items:center;justify-content:space-between;gap:6px;margin:-2px 0 10px;font-size:11px;color:#475569;"></div>
 
                         <div id="set-ov-bg-editor" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;">
                             <label for="set-ov-bg-name" style="font-size:11px;font-weight:600;color:#475569;">Name</label>

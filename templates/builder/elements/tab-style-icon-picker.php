@@ -81,10 +81,10 @@
     });
     $(document).on('click', '#wppoppop-fa-picker-backdrop, #wppoppop-fa-picker .fa-pk-x', closePicker);
     $(document).on('keydown', function(e){ if (e.key === 'Escape' && $target) closePicker(); });
-    $(document).on('input change', '#prop-form-icon-left, #prop-form-icon-right', function(){ refreshBtn($(this)); });
+    $(document).on('input change', '#prop-form-icon-left, #prop-form-icon-right, #prop-icon-class', function(){ refreshBtn($(this)); });
     $(document).on('click', '#wppoppop-inspector-drawer [data-tab], .wppoppop-canvas-item, .wppoppop-layer-item', function(){
-        setTimeout(function(){ refreshBtn($('#prop-form-icon-left')); refreshBtn($('#prop-form-icon-right')); }, 80);
+        setTimeout(function(){ refreshBtn($('#prop-form-icon-left')); refreshBtn($('#prop-form-icon-right')); refreshBtn($('#prop-icon-class')); }, 80);
     });
-    $(function(){ refreshBtn($('#prop-form-icon-left')); refreshBtn($('#prop-form-icon-right')); });
+    $(function(){ refreshBtn($('#prop-form-icon-left')); refreshBtn($('#prop-form-icon-right')); refreshBtn($('#prop-icon-class')); });
 })(jQuery);
 </script>

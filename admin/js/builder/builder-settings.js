@@ -965,8 +965,39 @@ if (settings.triggers) {
         $('#set-ov-color').prop('disabled', on).css('opacity', on ? 0.4 : 1);
     }
 
+    /* WPPOPPOP_OVERLAY_PAGER: paginated custom background list (default 5 per page) */
+    var ovPage = 0, ovPerPage = 5, ovLastCount = 0;
+
+    function pageOfSelected() {
+        for (var i = 0; i < model.backgrounds.length; i++) {
+            if (model.backgrounds[i].id === model.selected) { return Math.floor(i / ovPerPage); }
+        }
+        return 0;
+    }
+
+    function renderPager(total, pages) {
+        var $p = $('#set-ov-bg-pager').empty();
+        if (total <= 5) { $p.hide(); return; }
+        var $info = $('<span></span>').text(total + ' items');
+        var $nav = $('<span></span>').css({ display: 'inline-flex', alignItems: 'center', gap: '6px' });
+        $nav.append($('<button type="button" class="button button-small set-ov-pg-prev"></button>').prop('disabled', ovPage <= 0).html('&lsaquo; Prev'));
+        $nav.append($('<span></span>').css({ minWidth: '70px', textAlign: 'center', fontWeight: '600' }).text('Page ' + (ovPage + 1) + ' / ' + pages));
+        $nav.append($('<button type="button" class="button button-small set-ov-pg-next"></button>').prop('disabled', ovPage >= pages - 1).html('Next &rsaquo;'));
+        var $sel = $('<select id="set-ov-pg-size" class="button-small"></select>').css({ fontSize: '11px', height: '26px' });
+        $.each([5, 10, 20], function(i, n) {
+            $sel.append($('<option></option>').val(n).text(n + ' / page').prop('selected', n === ovPerPage));
+        });
+        $p.append($info, $nav, $sel).css('display', 'flex');
+    }
+
     function renderList() {
         var $l = $('#set-ov-bg-list').empty();
+        var total = model.backgrounds.length;
+        var pages = Math.max(1, Math.ceil(total / ovPerPage));
+        if (ovPage < 0 || total > ovLastCount) { ovPage = pageOfSelected(); }   /* load or add: show the selected item */
+        ovLastCount = total;
+        ovPage = Math.max(0, Math.min(pages - 1, ovPage));
+
         function row(id, label, badge, editable) {
             var $r = $('<div></div>').css({ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', border: '1px solid #e2e8f0', borderRadius: '4px', marginBottom: '4px', background: '#fff' });
             var $rad = $('<input type="radio" name="set-ov-bg-selected">').val(id).prop('checked', model.selected === id);
@@ -980,10 +1011,23 @@ if (settings.triggers) {
             $l.append($r);
         }
         row('', 'None (color overlay only)', '', false);
-        $.each(model.backgrounds, function(i, bg) {
+        var start = ovPage * ovPerPage;
+        $.each(model.backgrounds.slice(start, start + ovPerPage), function(i, bg) {
             row(bg.id, bg.name || 'Background', bg.type === 'animation' ? 'Animation' : 'Picture', true);
         });
+        renderPager(total, pages);
     }
+
+    $(document)
+        .off('click.wppOvPrev', '.set-ov-pg-prev').on('click.wppOvPrev', '.set-ov-pg-prev', function(e) { e.preventDefault(); ovPage--; renderList(); })
+        .off('click.wppOvNext', '.set-ov-pg-next').on('click.wppOvNext', '.set-ov-pg-next', function(e) { e.preventDefault(); ovPage++; renderList(); })
+        .off('change.wppOvSize', '#set-ov-pg-size').on('change.wppOvSize', '#set-ov-pg-size', function() {
+            var first = ovPage * ovPerPage;               /* keep the first visible item in view */
+            var n = parseInt($(this).val(), 10);
+            ovPerPage = (n === 10 || n === 20) ? n : 5;
+            ovPage = Math.floor(first / ovPerPage);
+            renderList();
+        });
 
     function toggleType() {
         var anim = $('#set-ov-bg-type').val() === 'animation';
@@ -1032,6 +1076,7 @@ if (settings.triggers) {
         if (list && !$.isArray(list) && typeof list === 'object') { list = $.map(list, function(v) { return v; }); }
         model.backgrounds = $.isArray(list) ? $.map(list, function(b) { return $.extend({ id: newId(), name: '', type: 'image', url: '', html: '' }, b); }) : [];
         model.selected = (ov.selected && find(ov.selected)) ? ov.selected : '';
+        ovPage = -1;
         closeEditor();
         syncOpacityLabel();
         syncTransparentUi();
