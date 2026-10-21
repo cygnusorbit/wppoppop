@@ -72,6 +72,7 @@ class WpPopPop_Admin_Settings {
             'recaptcha_site_key' => '', 'recaptcha_secret_key' => '',
             'recaptcha_threshold' => 0.4, 'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
             'custom_css' => '', 'custom_js' => '', 'custom_header_html' => '', 'custom_footer_html' => '',
+            'builder_alignment_tool' => 1,
             'clean_on_uninstall' => 0,
         ];
     }
@@ -179,6 +180,9 @@ class WpPopPop_Admin_Settings {
                 ? (!empty($in['modules'][$__mk]) ? 1 : 0)
                 : 1;
         }
+
+        // 5c. Builder tools (missing = enabled so unrelated saves never switch it off)
+        $o['builder_alignment_tool'] = (array_key_exists('builder_alignment_tool', $in) && empty($in['builder_alignment_tool'])) ? 0 : 1;
 
         // 6. System state
         $o['clean_on_uninstall'] = $b('clean_on_uninstall');

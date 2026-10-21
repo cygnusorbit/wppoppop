@@ -982,8 +982,10 @@
         }
     },
 
-    close: function() {
+    close: function(force) {
         var $drawer = $('#wppoppop-inspector-drawer');
+        /* WPPOPPOP_INSPECTOR_CLOSE_ONLY_X: only the title-bar X (or force===true) may close */
+        if (force !== true && !window.__wppoppopInspCloseAllowed) { return; }
         $drawer.removeClass('is-open').addClass('is-closed');
         $('body, .wppoppop-builder-workspace, .wppoppop-main-frame, .wppoppop-builder-wrap').removeClass('panel-open inspector-open');
         setTimeout(function() {
@@ -3704,16 +3706,8 @@
             // Deselect active stage element and slide out Layer Settings Inspector
             $('.wppoppop-canvas-item').removeClass('selected is-selected active');
             $('.wppoppop-layer-item').removeClass('active is-active selected');
-            $('#wppoppop-inspector-drawer').removeClass('is-open open').addClass('is-closed');
-            $('body, .wppoppop-builder-workspace, .wppoppop-main-frame').removeClass('panel-open inspector-open');
-
-            if (window.WpPopPopBuilderLayers) {
-                if (typeof window.WpPopPopBuilderLayers.pushForInspector === 'function') {
-                    window.WpPopPopBuilderLayers.pushForInspector(false);
-                } else {
-                    $('#wppoppop-floating-layers-panel').css('right', '16px');
-                }
-            }
+            /* WPPOPPOP_INSPECTOR_CLOSE_ONLY_X: checker click no longer closes Layer Settings */
+            if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state) { window.WpPopPopBuilderCore.state.activeId = null; }
         });
     }
 
@@ -6547,3 +6541,20 @@
     $(function() { ensureSection(); hook(); sched(); setTimeout(hook, 150); setTimeout(hook, 450); });
 })(window, jQuery);
 /* === WPPOPPOP_SUBMIT_TEXT_ALIGN_END === */
+
+
+/* === WPPOPPOP_INSPECTOR_CLOSE_ONLY_X_START === */
+(function(window) {
+    'use strict';
+    if (window.__wppoppopCloseOnlyXBound) return;
+    window.__wppoppopCloseOnlyXBound = true;
+    window.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        if (t.closest('#wppoppop-inspector-drawer #wppoppop-inspector-close, #wppoppop-inspector-drawer .wppoppop-inspector-close')) {
+            window.__wppoppopInspCloseAllowed = true;
+            setTimeout(function() { window.__wppoppopInspCloseAllowed = false; }, 0);
+        }
+    }, true);
+})(window);
+/* === WPPOPPOP_INSPECTOR_CLOSE_ONLY_X_END === */

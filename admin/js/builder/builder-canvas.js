@@ -1398,3 +1398,133 @@ window.WpPopPopBuilder.Canvas = window.WpPopPopBuilderCanvas;
         }
     });
 })(jQuery);
+
+/* === WPPOPPOP_ALIGN_TOOLBAR_FIX_START === */
+/* Stage alignment toolbar: working align (6) + distribute (2) + no accidental deselect. */
+(function(window, $) {
+    'use strict';
+    var Cv = window.WpPopPopBuilderCanvas;
+    if (!Cv) return;
+
+    function cid(r) { return String(r == null ? '' : r).replace(/^#/, '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim(); }
+    function num(v) { var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+    function list() {
+        var c = window.WpPopPopBuilderCore;
+        return (c && c.state && c.state.canvases && c.state.canvases[c.state.currentCanvas || 1]) || [];
+    }
+    function findEl(id) {
+        var k = cid(id), l = list();
+        for (var i = 0; i < l.length; i++) { if (l[i] && cid(l[i].id) === k) return l[i]; }
+        return null;
+    }
+    function nodeOf(el) { return document.getElementById('el-' + cid(el.id)); }
+    function dims(el, n) {
+        return { w: n ? n.offsetWidth : (num(el.width) || 100), h: n ? n.offsetHeight : (num(el.height) || 40) };
+    }
+    function place(el, n, left, top) {
+        if (left !== null) { el.left = left; if (el.x !== undefined) { el.x = left; } if (n) { n.style.left = left + 'px'; } }
+        if (top !== null)  { el.top = top;   if (el.y !== undefined) { el.y = top; }  if (n) { n.style.top = top + 'px'; } }
+    }
+    function syncInputs(el) {
+        $('#prop-left, #prop-pos-left, #prop-x').val(Math.round(num(el.left)));
+        $('#prop-top, #prop-pos-top, #prop-y').val(Math.round(num(el.top)));
+        var I = window.WpPopPopBuilderInspector;
+        if (I && typeof I.syncCoordinates === 'function') { try { I.syncCoordinates(el); } catch (e) {} }
+    }
+    function commit(label) {
+        var c = window.WpPopPopBuilderCore;
+        if (c && typeof c.pushHistory === 'function') { c.pushHistory(label); }
+    }
+
+    Cv.alignActiveElement = function(mode) {
+        var core = window.WpPopPopBuilderCore;
+        var box = document.getElementById('wppoppop-canvas-box');
+        if (!core || !core.state || !box) return;
+        var bw = box.clientWidth || 640, bh = box.clientHeight || 400;
+        var m = String(mode || '').toLowerCase().replace(/_/g, '-');
+
+        /* ---- Distribute (needs 3+ visible layers) ---- */
+        if (m === 'distribute-h' || m === 'distribute-v') {
+            var horiz = (m === 'distribute-h');
+            var items = [];
+            var all = list();
+            for (var i = 0; i < all.length; i++) {
+                var e = all[i];
+                if (!e || e.hidden) continue;
+                var n = nodeOf(e), d = dims(e, n);
+                items.push({ el: e, n: n, size: horiz ? d.w : d.h, pos: horiz ? num(e.left) : num(e.top) });
+            }
+            if (items.length < 3) return;
+            items.sort(function(a, b) { return a.pos - b.pos; });
+            var start = items[0].pos, end = start, sum = 0, k;
+            for (k = 0; k < items.length; k++) {
+                end = Math.max(end, items[k].pos + items[k].size);
+                sum += items[k].size;
+            }
+            var gap = (end - start - sum) / (items.length - 1);
+            var cursor = start;
+            for (k = 0; k < items.length; k++) {
+                var it = items[k];
+                if (!it.el.locked) {
+                    var v = Math.round(cursor);
+                    if (horiz) { place(it.el, it.n, v, null); } else { place(it.el, it.n, null, v); }
+                }
+                cursor += it.size + gap;
+            }
+            var act = findEl(core.state.activeId);
+            if (act) { syncInputs(act); }
+            commit(horiz ? 'Distribute Horizontally' : 'Distribute Vertically');
+            return;
+        }
+
+        /* ---- Single-layer align ---- */
+        var el = findEl(core.state.activeId || Cv.selectedId);
+        if (!el || el.locked) return;
+        var node = nodeOf(el), sz = dims(el, node);
+        var left = null, top = null;
+        switch (m) {
+            case 'left':                       left = 0; break;
+            case 'center': case 'center-h':    left = Math.round((bw - sz.w) / 2); break;
+            case 'right':                      left = Math.max(0, bw - sz.w); break;
+            case 'top':                        top = 0; break;
+            case 'middle': case 'middle-v':    top = Math.round((bh - sz.h) / 2); break;
+            case 'bottom':                     top = Math.max(0, bh - sz.h); break;
+            default: return;
+        }
+        place(el, node, left, top);
+        syncInputs(el);
+        commit('Align ' + m);
+    };
+
+    /* Toolbar clicks must not bubble to the workspace deselect handler */
+    function bindStop() {
+        $('#wppoppop-alignment-toolbar')
+            .off('click.wppAlignStop mousedown.wppAlignStop')
+            .on('click.wppAlignStop mousedown.wppAlignStop', function(e) { e.stopPropagation(); });
+    }
+    $(function() { bindStop(); setTimeout(bindStop, 200); });
+})(window, jQuery);
+/* === WPPOPPOP_ALIGN_TOOLBAR_FIX_END === */
+
+/* === WPPOPPOP_ALIGN_TOOL_GATE_START === */
+/* Settings > Builder > Alignment Tool = off  ->  toolbar hidden, align actions disabled. */
+(function(window, $) {
+    'use strict';
+    var v = window.wppoppop_vars || {};
+    var flag = v.alignment_tool;
+    var off = (flag === 0 || flag === false || String(flag) === '0');
+    if (!off) return;
+
+    var st = document.createElement('style');
+    st.id = 'wppoppop-align-tool-off';
+    st.textContent = '#wppoppop-alignment-toolbar{display:none !important;}';
+    (document.head || document.documentElement).appendChild(st);
+
+    var Cv = window.WpPopPopBuilderCanvas;
+    if (Cv) {
+        Cv.alignActiveElement = function() {};
+        Cv.alignSelectedElements = function() {};
+    }
+    $(function() { $('#wppoppop-alignment-toolbar').hide(); });
+})(window, jQuery);
+/* === WPPOPPOP_ALIGN_TOOL_GATE_END === */

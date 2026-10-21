@@ -603,8 +603,16 @@
 
             elements.splice(idx, 1);
 
-            if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state.activeId === id) {
-                window.WpPopPopBuilderCanvas.deselect();
+            /* WPPOPPOP_KEEP_INSPECTOR_ON_DELETE: soft-deselect, never close the Layer Settings drawer */
+            var _core = window.WpPopPopBuilderCore;
+            var _clean = function(v) { return String(v == null ? '' : v).replace(/^(wppoppop-el-|el-)/, ''); };
+            if (_core && _core.state && _core.state.activeId != null && _clean(_core.state.activeId) === _clean(id)) {
+                _core.state.activeId = null;
+                window.WpPopPopBuilderCanvas.selectedId = null;
+                $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
+                $('.wppoppop-layer-item').removeClass('active');
+                $('#wppoppop-alignment-toolbar').hide();
+                $('#wppoppop-guide-v, #wppoppop-guide-h').hide();
             }
 
             window.WpPopPopBuilderCanvas.renderCanvas();

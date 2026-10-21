@@ -123,7 +123,7 @@
             this.wasPreview = !!(C && C.isPreview);
             if (C) C.isPreview = true;                      // disables canvas selection/drag handlers
             $('body').addClass('wppoppop-preview-locked').css('overflow', 'hidden');
-            try { if (window.WpPopPopBuilderInspector && window.WpPopPopBuilderInspector.close) window.WpPopPopBuilderInspector.close(); } catch (e) {}
+            try { if (window.WpPopPopBuilderInspector && window.WpPopPopBuilderInspector.close) window.WpPopPopBuilderInspector.close(true); } catch (e) {}
             try { if (window.WpPopPopBuilderSettings && window.WpPopPopBuilderSettings.closeDrawer) window.WpPopPopBuilderSettings.closeDrawer(); } catch (e) {}
             this.frameUrl = url;
             $(FRAME).css('width', '100%').attr('src', url);
@@ -300,7 +300,7 @@
             this.wasPreview = !!(C && C.isPreview);
             if (C) C.isPreview = true;
             $('body').addClass('wppoppop-preview-locked');
-            try { if (window.WpPopPopBuilderInspector && window.WpPopPopBuilderInspector.close) window.WpPopPopBuilderInspector.close(); } catch (e) {}
+            try { if (window.WpPopPopBuilderInspector && window.WpPopPopBuilderInspector.close) window.WpPopPopBuilderInspector.close(true); } catch (e) {}
             try { if (window.WpPopPopBuilderSettings && window.WpPopPopBuilderSettings.closeDrawer) window.WpPopPopBuilderSettings.closeDrawer(); } catch (e) {}
             this.frameUrl = url;
             $('#wppoppop-live-preview-frame').css('width', '100%').attr('src', url);

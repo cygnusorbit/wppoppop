@@ -340,10 +340,11 @@
                 };
 
                 var origClose = insp.close;
-                insp.close = function() {
+                insp.close = function(force) {
+                    if (force !== true && !window.__wppoppopInspCloseAllowed) { return; } /* WPPOPPOP_INSPECTOR_CLOSE_ONLY_X */
                     self.forceSlideInDrawer(false);
                     if (typeof origClose === 'function') {
-                        try { origClose.call(insp); } catch (err) {}
+                        try { origClose.call(insp, true); } catch (err) {}
                     }
                 };
 

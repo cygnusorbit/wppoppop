@@ -31,6 +31,7 @@ if (!isset($settings) || !is_array($settings)) {
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="custom-code"><?php esc_html_e('Custom CSS & JS', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="module"><?php esc_html_e('Module', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="builder"><?php esc_html_e('Builder', 'wppoppop'); ?></button>
        
     </nav>
 
@@ -71,6 +72,11 @@ if (!isset($settings) || !is_array($settings)) {
         <!-- Tab 7 Container: Module (Campaign Settings on/off) -->
         <div id="tab-module" class="wppoppop-tab-content" data-tab-content="module" style="display:none;">
             <?php include WPPOPPOP_PATH . 'templates/settings/tab-module.php'; ?>
+        </div>
+
+        <!-- Tab 8 Container: Builder tools -->
+        <div id="tab-builder" class="wppoppop-tab-content" data-tab-content="builder" style="display:none;">
+            <?php include WPPOPPOP_PATH . 'templates/settings/tab-builder.php'; ?>
         </div>
 
         <!-- Bottom Action Persistence Bar (Clean Text Button - No Misaligned Icons) -->

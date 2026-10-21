@@ -108,6 +108,10 @@ class WpPopPop_Admin_Assets {
 
             $builder_payload = array_merge($shared_payload, [
                 'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
+                'alignment_tool' => (function () {
+                    $s = get_option('wppoppop_settings', []);
+                    return (is_array($s) && array_key_exists('builder_alignment_tool', $s) && empty($s['builder_alignment_tool'])) ? 0 : 1;
+                })(),
                 'custom_fonts' => WpPopPop_Libraries::get_custom_font_families()
             ]);
             wp_localize_script('wppoppop-builder-core-js', 'wppoppop_vars', $builder_payload);
