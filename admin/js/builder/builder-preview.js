@@ -80,7 +80,7 @@
                 canvasMeta: meta,
                 canvas_meta: meta,
                 settings: settings,
-                title: $('#wppoppop-builder-title').val() || 'Untitled Campaign'
+                title: $('#wppoppop-builder-title').val() || 'Untitled Popup'
             };
         },
 

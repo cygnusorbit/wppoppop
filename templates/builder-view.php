@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : ($popup ? $popup->uid : '');
 ?>
 <div class="wppoppop-builder-wrap">
-    <!-- Hidden Security Nonce & Campaign Identifier State -->
+    <!-- Hidden Security Nonce & Popup Identifier State -->
     <?php wp_nonce_field('wppoppop_builder_nonce', 'wppoppop-builder-nonce'); ?>
     <input type="hidden" id="wppoppop-builder-uid" value="<?php echo esc_attr($current_uid); ?>">
     <input type="hidden" id="wppoppop-builder-status" value="<?php echo esc_attr(($popup && isset($popup->status)) ? $popup->status : ''); ?>">
@@ -26,7 +26,7 @@ $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid']
         <?php include WPPOPPOP_PATH . 'templates/builder/drawer-inspector.php'; ?>
     </div>
 
-    <!-- 5. Slide-Out Campaign Settings Drawer -->
+    <!-- 5. Slide-Out Popup Settings Drawer -->
     <?php include WPPOPPOP_PATH . 'templates/builder/drawer-settings.php'; ?>
 
     <!-- 6. Embed Codes & Live Sandbox Preview Modals -->

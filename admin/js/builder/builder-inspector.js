@@ -3628,7 +3628,7 @@
             }
         });
 
-        // 5. Close Campaign Settings drawer if open so drawers don't collide
+        // 5. Close Popup Settings drawer if open so drawers don't collide
         if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
             window.WpPopPopBuilderSettings.closeDrawer();
         }
@@ -3687,15 +3687,15 @@
             }
         });
 
-        // C. Stop clicks inside Campaign Settings Drawer (#wppoppop-settings-drawer)
+        // C. Stop clicks inside Popup Settings Drawer (#wppoppop-settings-drawer)
         //    or Inspector Drawer (#wppoppop-inspector-drawer) from bubbling to the checker area
         $(document).off('mousedown.gpDrawerStop click.gpDrawerStop', '#wppoppop-settings-drawer, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel')
                    .on('mousedown.gpDrawerStop click.gpDrawerStop', '#wppoppop-settings-drawer, #wppoppop-inspector-drawer, #wppoppop-floating-layers-panel', function(e) {
             e.stopPropagation();
         });
 
-        // D. Clicking on the Checker Area (or empty canvas background) closes Campaign Settings
-        //    only if Campaign Settings was explicitly dismissed via its close button OR if clicking
+        // D. Clicking on the Checker Area (or empty canvas background) closes Popup Settings
+        //    only if Popup Settings was explicitly dismissed via its close button OR if clicking
         //    on the checker area when no settings input is being edited
         $(document).off('click.gpCheckerAreaClick', '.wppoppop-builder-workspace, #wppoppop-builder-workspace, #wppoppop-canvas-scroll-container, #wppoppop-canvas-box')
                    .on('click.gpCheckerAreaClick', '.wppoppop-builder-workspace, #wppoppop-builder-workspace, #wppoppop-canvas-scroll-container, #wppoppop-canvas-box', function(e) {

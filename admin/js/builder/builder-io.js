@@ -125,7 +125,7 @@
                     canvasMeta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
                     canvas_meta: (core && core.state && core.state.canvasMeta) ? core.state.canvasMeta : {},
                     settings: settings,
-                    title: $('#wppoppop-builder-title').val() || 'Untitled Campaign'
+                    title: $('#wppoppop-builder-title').val() || 'Untitled Popup'
                 };
 
                 var serialized = JSON.stringify(payload);

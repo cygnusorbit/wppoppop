@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <div class="wppoppop-builder-header">
     <div class="wppoppop-header-left">
-        <button type="button" class="wppoppop-hdr-btn" id="wppoppop-btn-settings" title="Campaign Settings">Settings</button>
+        <button type="button" class="wppoppop-hdr-btn" id="wppoppop-btn-settings" title="Popup Settings">Settings</button>
         <span class="wppoppop-brand-title">WpPopPop Builder</span>
         <div class="wppoppop-viewport-switch">
             <button type="button" class="wppoppop-hdr-btn active" id="wppoppop-viewport-desktop" data-viewport="desktop" title="Desktop View (640px)">Desktop</button>

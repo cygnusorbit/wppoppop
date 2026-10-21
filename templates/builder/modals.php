@@ -33,7 +33,7 @@ if (!defined('ABSPATH')) {
             </div>
 
             <div class="wppoppop-embed-notice" id="wppoppop-embed-draft" style="display:none;">
-                <?php esc_html_e('This popup is a Draft, so the snippets below output nothing on your site yet. Set its status to Published from the Campaigns list (Bulk Actions > Set Status: Published).', 'wppoppop'); ?>
+                <?php esc_html_e('This popup is a Draft, so the snippets below output nothing on your site yet. Set its status to Published from the Popups list (Bulk Actions > Set Status: Published).', 'wppoppop'); ?>
             </div>
 
             <div class="wppoppop-embed-tab-content active" id="embed-tab-shortcode">

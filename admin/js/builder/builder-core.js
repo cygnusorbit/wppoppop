@@ -484,7 +484,7 @@
         bindCanvasTabs: function() {
             var self = this;
 
-            // Clicking top Canvas button switches canvas AND opens Campaign Settings drawer
+            // Clicking top Canvas button switches canvas AND opens Popup Settings drawer
             $(document).on('click', '.wppoppop-canvas-tab, .wppoppop-screen-tab', function(e) {
                 e.preventDefault();
                 var targetCanvas = $(this).data('canvas') || $(this).data('screen') || 1;
@@ -515,7 +515,7 @@
             var keys = Object.keys(this.state.canvases).map(Number).sort(function(a, b) { return a - b; });
 
             if (keys.length <= 1) {
-                alert('Your popup campaign must have at least one canvas.');
+                alert('Your popup must have at least one canvas.');
                 return;
             }
 

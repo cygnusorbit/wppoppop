@@ -1,5 +1,5 @@
 /**
- * WpPopPop Visual Builder: Campaign Settings Drawer Engine
+ * WpPopPop Visual Builder: Popup Settings Drawer Engine
  * Dedicated Per-Canvas Settings (Name, Size, Color, Animation, Logic Tab) & Bullets Selector
  */
 (function($) {
