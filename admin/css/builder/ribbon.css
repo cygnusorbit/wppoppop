@@ -257,3 +257,9 @@
     -webkit-flex: 0 0 auto !important;
     flex: 0 0 auto !important;
 }
+
+
+/* WPPOPPOP-RIBBON-SNAP */
+.wppoppop-ribbon-bar .wppoppop-ribbon-snap { margin-left: auto !important; margin-right: 0 !important; padding-left: 8px; }
+.wppoppop-ribbon-bar .wppoppop-snap-text { color: #e2e8f0; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.wppoppop-ribbon-bar .wppoppop-snap-switch { color: #e2e8f0; }

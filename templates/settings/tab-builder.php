@@ -3,6 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 $__align_on = !array_key_exists('builder_alignment_tool', (array) $settings) || !empty($settings['builder_alignment_tool']);
+$__vp_on = !array_key_exists('builder_viewport_toggle', (array) $settings) || !empty($settings['builder_viewport_toggle']);
+$__zm_on = !array_key_exists('builder_zoom_select', (array) $settings) || !empty($settings['builder_zoom_select']);
 ?>
 <style>
 .wppoppop-bld-list{max-width:720px;margin:0;padding:0;list-style:none}
@@ -28,6 +30,26 @@ $__align_on = !array_key_exists('builder_alignment_tool', (array) $settings) || 
             <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Alignment Tool', 'wppoppop'); ?>">
                 <input type="hidden" name="settings[builder_alignment_tool]" value="0">
                 <input type="checkbox" name="settings[builder_alignment_tool]" value="1" <?php checked($__align_on); ?>>
+                <span class="trk"></span>
+            </label>
+        </li>
+        <li>
+            <span class="bld-name"><?php esc_html_e('Viewport', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Show the Desktop / Mobile viewport switch in the builder header.', 'wppoppop'); ?></span>
+            </span>
+            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Viewport', 'wppoppop'); ?>">
+                <input type="hidden" name="settings[builder_viewport_toggle]" value="0">
+                <input type="checkbox" name="settings[builder_viewport_toggle]" value="1" <?php checked($__vp_on); ?>>
+                <span class="trk"></span>
+            </label>
+        </li>
+        <li>
+            <span class="bld-name"><?php esc_html_e('Zoom Select', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Show the stage zoom dropdown (50% - Fit) in the builder header.', 'wppoppop'); ?></span>
+            </span>
+            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Zoom Select', 'wppoppop'); ?>">
+                <input type="hidden" name="settings[builder_zoom_select]" value="0">
+                <input type="checkbox" name="settings[builder_zoom_select]" value="1" <?php checked($__zm_on); ?>>
                 <span class="trk"></span>
             </label>
         </li>

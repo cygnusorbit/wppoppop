@@ -50,7 +50,15 @@ def check_file(rel_path, required_strings, desc):
 print("🔍 Auditing Macro Parity Systems in WpPopPop...")
 
 # Phase 1: Header Workflow & Canvas Sequence
-check_file('templates/builder/header.php', ['wppoppop-zoom-select', 'wppoppop-canvas-duplicate-btn', 'wppoppop-btn-theme-toggle', 'wppoppop-snap-object'], 'Phase 1 Header Zoom, Duplicate, Theme & Snap (Undo/Redo buttons intentionally removed)')
+check_file('templates/builder/header.php', ['wppoppop-zoom-select', 'wppoppop-canvas-duplicate-btn', 'wppoppop-btn-theme-toggle'], 'Phase 1 Header Zoom, Duplicate & Theme (Undo/Redo buttons intentionally removed)')
+# Snap Object now lives at the right end of the elements ribbon
+check_file('templates/builder/ribbon.php', ['wppoppop-snap-object'], 'Phase 1 Ribbon Snap Object')
+# Popup List button removed from header on purpose
+_hdr2 = os.path.join(base_dir, 'templates/builder/header.php')
+if os.path.isfile(_hdr2):
+    with open(_hdr2, 'r', encoding='utf-8') as _hf2:
+        if 'wppoppop-hdr-dash-btn' in _hf2.read():
+            errors.append("In templates/builder/header.php: Removed element 'wppoppop-hdr-dash-btn' must not be present")
 check_file('admin/js/builder/builder-core.js', ['duplicateActiveCanvas', 'updateHistoryButtons', 'bindKeyboardShortcuts'], 'Phase 1 History State & Shortcuts')
 
 # WPPOPPOP_NO_UNDO_BUTTONS_AUDIT: toolbar undo/redo buttons were removed on purpose

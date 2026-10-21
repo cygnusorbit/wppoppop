@@ -73,6 +73,9 @@ class WpPopPop_Admin_Settings {
             'recaptcha_threshold' => 0.4, 'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
             'custom_css' => '', 'custom_js' => '', 'custom_header_html' => '', 'custom_footer_html' => '',
             'builder_alignment_tool' => 1,
+            'builder_viewport_toggle' => 1,
+            'builder_zoom_select' => 1,
+            'menu_pages' => [],
             'clean_on_uninstall' => 0,
         ];
     }
@@ -183,6 +186,35 @@ class WpPopPop_Admin_Settings {
 
         // 5c. Builder tools (missing = enabled so unrelated saves never switch it off)
         $o['builder_alignment_tool'] = (array_key_exists('builder_alignment_tool', $in) && empty($in['builder_alignment_tool'])) ? 0 : 1;
+
+        $o['builder_viewport_toggle'] = (array_key_exists('builder_viewport_toggle', $in) && empty($in['builder_viewport_toggle'])) ? 0 : 1;
+        $o['builder_zoom_select']     = (array_key_exists('builder_zoom_select', $in) && empty($in['builder_zoom_select'])) ? 0 : 1;
+
+        // 5d. Admin menu pages (rename / reorder / hide). Whitelist: wppoppop* slugs only.
+        // Missing key = keep what is stored, so unrelated saves never reset it.
+        $__mp_prev = get_option('wppoppop_settings', []);
+        $__mp_src  = (isset($in['menu_pages']) && is_array($in['menu_pages']))
+            ? $in['menu_pages']
+            : ((is_array($__mp_prev) && isset($__mp_prev['menu_pages']) && is_array($__mp_prev['menu_pages'])) ? $__mp_prev['menu_pages'] : []);
+        $__mp_pin  = ['wppoppop-dashboard', 'wppoppop-settings'];
+        $o['menu_pages'] = [];
+        foreach ($__mp_src as $__mp_slug => $__mp_row) {
+            $__mp_slug = sanitize_key($__mp_slug);
+            if ($__mp_slug === '' || strpos($__mp_slug, 'wppoppop') !== 0 || !is_array($__mp_row)) {
+                continue;
+            }
+            $__mp_label = isset($__mp_row['label']) ? sanitize_text_field($__mp_row['label']) : '';
+            if (function_exists('mb_substr')) {
+                $__mp_label = mb_substr($__mp_label, 0, 60);
+            } else {
+                $__mp_label = substr($__mp_label, 0, 60);
+            }
+            $o['menu_pages'][$__mp_slug] = [
+                'label'  => $__mp_label,
+                'hidden' => (!empty($__mp_row['hidden']) && !in_array($__mp_slug, $__mp_pin, true)) ? 1 : 0,
+                'order'  => isset($__mp_row['order']) ? max(0, min(999, (int) $__mp_row['order'])) : 0,
+            ];
+        }
 
         // 6. System state
         $o['clean_on_uninstall'] = $b('clean_on_uninstall');

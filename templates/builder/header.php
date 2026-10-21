@@ -3,11 +3,14 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+$__wpp_set   = get_option('wppoppop_settings', []);
+$__wpp_set   = is_array($__wpp_set) ? $__wpp_set : [];
+$__wpp_vp_on = !array_key_exists('builder_viewport_toggle', $__wpp_set) || !empty($__wpp_set['builder_viewport_toggle']);
+$__wpp_zm_on = !array_key_exists('builder_zoom_select', $__wpp_set) || !empty($__wpp_set['builder_zoom_select']);
 ?>
 <div class="wppoppop-builder-header">
     <!-- Left Section: Navigation, Settings, Title -->
     <div class="wppoppop-hdr-group wppoppop-hdr-left">
-        <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>" class="button button-secondary wppoppop-hdr-dash-btn" title="Back to Popup List" aria-label="Back to Popup List">Popup List</a>
                         <!-- Day / Night Mode Toggle -->
         <button type="button" class="wppoppop-btn-icon wppoppop-btn-theme" id="wppoppop-btn-theme-toggle" title="Toggle Day / Night Mode" aria-label="Toggle Day / Night Mode" style="cursor:pointer;pointer-events:auto;">
             <svg class="wppoppop-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;pointer-events:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -15,10 +18,6 @@ if (!defined('ABSPATH')) {
         </button>
         <button type="button" class="wppoppop-btn-icon wppoppop-btn-settings" id="wppoppop-btn-settings" data-action="settings" title="Campaign Settings" aria-label="Campaign Settings" style="cursor:pointer;pointer-events:auto;"><span class="dashicons dashicons-admin-generic" style="pointer-events:none;"></span></button>
         <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup Campaign'); ?>" placeholder="Campaign Title..." title="Campaign Title">
-    </div>
-
-    <!-- Center Section: Canvas Label (Outside Workspace) & Sequence Tabs -->
-    <div class="wppoppop-hdr-group wppoppop-hdr-center">
         <div class="wppoppop-canvas-tabs wppoppop-screen-tabs" id="wppoppop-canvas-tabs-container">
             <div class="wppoppop-canvas-tab-wrapper active">
                 <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
@@ -32,8 +31,12 @@ if (!defined('ABSPATH')) {
             </div>
             <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="Add Canvas">+</button>
         </div>
+    </div>
 
-        <div class="wppoppop-viewport-toggles">
+    <!-- Center Section: Canvas Label (Outside Workspace) & Sequence Tabs -->
+    <div class="wppoppop-hdr-group wppoppop-hdr-center">
+
+        <div class="wppoppop-viewport-toggles"<?php echo $__wpp_vp_on ? '' : ' style="display:none !important;" aria-hidden="true"'; ?>>
             <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
                 <span class="dashicons dashicons-desktop"></span>
             </button>
@@ -45,22 +48,15 @@ if (!defined('ABSPATH')) {
 
     <!-- Right Section: Preview, Embed, Save Actions (Clean Text Buttons) -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
-        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select" autocomplete="off" title="Stage Zoom" aria-label="Stage Zoom">
+        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select"<?php echo $__wpp_zm_on ? '' : ' style="display:none !important;" aria-hidden="true" tabindex="-1"'; ?> autocomplete="off" title="Stage Zoom" aria-label="Stage Zoom">
             <option value="0.5">50%</option>
             <option value="0.75">75%</option>
             <option value="1" selected>100%</option>
             <option value="1.25">125%</option>
             <option value="fit">Fit</option>
         </select>
-        <div class="wppoppop-snap-group" role="group" aria-label="Snapping">
-<label class="wppoppop-snap-switch" title="Snap to other objects' edges and centers (hold Alt to bypass)">
-                <input type="checkbox" id="wppoppop-snap-object" class="wppoppop-snap-toggle" data-snap="object">
-                <span class="wppoppop-snap-slider" aria-hidden="true"></span>
-                <span class="wppoppop-snap-text">Snap Object</span>
-            </label>
-        </div>
-        <button type="button" class="wppoppop-btn wppoppop-btn-secondary" id="wppoppop-btn-preview">Preview</button>
-        <button type="button" id="wppoppop-btn-embed" class="button" title="Get Embed Codes">Embed</button>
-        <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save">Save Popup</button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-secondary wppoppop-hdr-icon-btn" id="wppoppop-btn-preview" title="Preview" aria-label="Preview"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+        <button type="button" id="wppoppop-btn-embed" class="button wppoppop-hdr-icon-btn" title="Get Embed Codes" aria-label="Embed"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save">Save</button>
     </div>
 </div>

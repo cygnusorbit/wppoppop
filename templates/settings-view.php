@@ -32,6 +32,7 @@ if (!isset($settings) || !is_array($settings)) {
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="module"><?php esc_html_e('Module', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="builder"><?php esc_html_e('Builder', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="pages"><?php esc_html_e('Pages', 'wppoppop'); ?></button>
        
     </nav>
 
@@ -77,6 +78,11 @@ if (!isset($settings) || !is_array($settings)) {
         <!-- Tab 8 Container: Builder tools -->
         <div id="tab-builder" class="wppoppop-tab-content" data-tab-content="builder" style="display:none;">
             <?php include WPPOPPOP_PATH . 'templates/settings/tab-builder.php'; ?>
+        </div>
+
+        <!-- Tab 9 Container: Pages (menu rename / order / hide) -->
+        <div id="tab-pages" class="wppoppop-tab-content" data-tab-content="pages" style="display:none;">
+            <?php include WPPOPPOP_PATH . 'templates/settings/tab-pages.php'; ?>
         </div>
 
         <!-- Bottom Action Persistence Bar (Clean Text Button - No Misaligned Icons) -->

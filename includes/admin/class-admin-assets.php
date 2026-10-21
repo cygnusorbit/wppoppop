@@ -105,6 +105,7 @@ class WpPopPop_Admin_Assets {
             ], self::ver(), true);
 
             wp_enqueue_script('wppoppop-builder-preview-js', WPPOPPOP_URL . 'admin/js/builder/builder-preview.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js', 'wppoppop-builder-io-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-save-state-js', WPPOPPOP_URL . 'admin/js/builder/builder-save-state.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-io-js', 'wppoppop-builder-settings-js'], self::ver(), true);
 
             $builder_payload = array_merge($shared_payload, [
                 'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
@@ -133,6 +134,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-settings-tabs-js', WPPOPPOP_URL . 'admin/js/settings/settings-tabs.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-tools-js', WPPOPPOP_URL . 'admin/js/settings/settings-tools.js', ['jquery'], self::ver(), true);
+            wp_enqueue_script('wppoppop-settings-pages-js', WPPOPPOP_URL . 'admin/js/settings/settings-pages.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js'], self::ver(), true);
 
             wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', [
                 'jquery',

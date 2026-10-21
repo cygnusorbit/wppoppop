@@ -230,3 +230,195 @@ body:not(.theme-light) .wppoppop-builder-wrap #wppoppop-canvas-workspace {
         linear-gradient(45deg, transparent 75%, #1e293b 75%),
         linear-gradient(-45deg, transparent 75%, #1e293b 75%) !important;
 }
+
+
+/* WPPOPPOP-HDR-ICON-BTNS */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview i,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home i,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed i {
+    font-size: 14px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+
+/* WPPOPPOP-HDR-UNIFORM */
+:root { --wpp-ctl-h: 32px; --wpp-ctl-pad-x: 12px; --wpp-ctl-gap: 8px; }
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-hdr-group { display: flex !important; align-items: center !important; gap: var(--wpp-ctl-gap) !important; min-width: 0; }
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-hdr-left { flex: 1 1 auto; }
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tabs { display: inline-flex !important; align-items: center !important; gap: 6px !important; }
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab-wrapper, .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-toggles { display: inline-flex !important; align-items: center !important; height: var(--wpp-ctl-h) !important; box-sizing: border-box !important; }
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-toggles { gap: 4px !important; }
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-builder-title,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select,
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn,
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn {
+    height: var(--wpp-ctl-h) !important; min-height: var(--wpp-ctl-h) !important; max-height: var(--wpp-ctl-h) !important;
+    box-sizing: border-box !important; margin-top: 0 !important; margin-bottom: 0 !important;
+    font-size: 12px !important; line-height: 1 !important; border-radius: 6px !important;
+    display: inline-flex !important; align-items: center !important; justify-content: center !important;
+    vertical-align: middle !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-builder-title,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select,
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save { padding: 0 var(--wpp-ctl-pad-x) !important; width: auto !important; min-width: 0 !important; max-width: none !important; }
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-builder-title { justify-content: flex-start !important; flex: 0 1 220px; width: 220px !important; min-width: 120px !important; }
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select { display: inline-block !important; padding: 0 8px !important; }
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn,
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn { padding: 0 !important; width: var(--wpp-ctl-h) !important; min-width: var(--wpp-ctl-h) !important; max-width: var(--wpp-ctl-h) !important; }
+
+/* Update state: saved popup has unsaved changes */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save.is-dirty {
+    background: #f97316 !important; border-color: #ea580c !important; color: #ffffff !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save.is-dirty:hover:not(:disabled) {
+    background: #ea580c !important; border-color: #c2410c !important;
+}
+
+
+/* WPPOPPOP-HDR-NO-MARGIN-HOME */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home {
+    margin: 0 !important;
+}
+
+
+/* WPPOPPOP-HDR-ADD-CANVAS-BTN */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn {
+    background: var(--wpp-ctl-bg) !important;
+    border: 1px solid var(--wpp-ctl-border) !important;
+    color: var(--wpp-ctl-text) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin: 0 0 0 4px !important;
+    padding: 0 !important;
+    flex: 0 0 auto !important;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:hover {
+    background: var(--wpp-ctl-hover) !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:focus-visible {
+    outline: 2px solid #38bdf8 !important;
+    outline-offset: 1px;
+}
+
+
+/* WPPOPPOP-HDR-UNIFORM-HOVER */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle:hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings:hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn:hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview:not(.active):not(.preview-active):hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home:hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed:hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn:not(.active):not(.preview-active):hover:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab:not(.active):not(.preview-active):hover:not(:disabled) {
+    background: var(--wpp-ctl-hover) !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+    transform: none !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle:hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle:hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle:hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings:hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings:hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings:hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn:hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn:hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn:hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview:not(.active):not(.preview-active):hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview:not(.active):not(.preview-active):hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview:not(.active):not(.preview-active):hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home:hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home:hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home:hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed:hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed:hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed:hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn:not(.active):not(.preview-active):hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn:not(.active):not(.preview-active):hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn:not(.active):not(.preview-active):hover:not(:disabled) svg,
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab:not(.active):not(.preview-active):hover:not(:disabled) .dashicons, .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab:not(.active):not(.preview-active):hover:not(:disabled) i, .wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab:not(.active):not(.preview-active):hover:not(:disabled) svg {
+    color: #38bdf8 !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-zoom-select:hover,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-builder-title:hover {
+    border-color: #38bdf8 !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-theme-toggle:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-settings:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-duplicate-btn:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-add-canvas-btn:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-preview-home:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-embed:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-viewport-btn:not(:disabled),
+.wppoppop-builder-wrap .wppoppop-builder-header .wppoppop-canvas-tab:not(:disabled) {
+    transition: background .15s ease, border-color .15s ease, color .15s ease !important;
+}
+
+
+/* WPPOPPOP-HDR-CANVAS-TAB-HOVER-FIX */
+/* Inner tab button never draws its own box on hover/focus/active */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab:hover,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab:focus,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab:active {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transform: none !important;
+}
+
+/* Hover effect lives on the wrapper (inactive tabs) */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper:not(.active):hover {
+    background: var(--wpp-ctl-hover) !important;
+    border-color: #38bdf8 !important;
+    border-radius: 6px !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper:not(.active):hover .wppoppop-canvas-tab,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper:not(.active):hover .wppoppop-tab-delete-canvas {
+    color: #38bdf8 !important;
+}
+
+/* Active tab keeps its solid blue pill on hover, text stays white */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper.active:hover {
+    background: #2563eb !important;
+    border-color: #1d4ed8 !important;
+    border-radius: 6px !important;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper.active .wppoppop-canvas-tab,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper.active:hover .wppoppop-canvas-tab,
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-canvas-tab-wrapper.active .wppoppop-tab-delete-canvas {
+    color: #ffffff !important;
+}
+
+/* Delete "x": subtle feedback on its own hover */
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-tab-delete-canvas {
+    cursor: pointer;
+    transition: opacity .15s ease;
+}
+.wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-canvas-tabs-container .wppoppop-tab-delete-canvas:hover {
+    opacity: .7;
+}

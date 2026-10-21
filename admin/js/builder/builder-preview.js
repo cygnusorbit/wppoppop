@@ -143,8 +143,8 @@
         setBusy: function (sel, busy, label) {
             var $b = $(sel);
             if (!$b.length) return;
-            if (busy) { $b.data('wppOrig', $b.text()).prop('disabled', true).text(label); }
-            else { $b.prop('disabled', false).text($b.data('wppOrig') || $b.text()); }
+            if (busy) { $b.data('wppOrig', $b.html()).prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin" aria-hidden="true" title="' + label + '"></i>'); }
+            else { $b.prop('disabled', false).html($b.data('wppOrig') || $b.html()); }
         },
 
         openLive: function () {
@@ -182,7 +182,7 @@
             if ($('#wppoppop-btn-preview-home').length) return;
             var $src = $('#wppoppop-btn-preview').first();
             if (!$src.length) return;
-            var $b = $src.clone(false).attr({ id: 'wppoppop-btn-preview-home', title: 'Open the homepage with this popup running live' }).text('Preview on Homepage');
+            var $b = $src.clone(false).attr({ id: 'wppoppop-btn-preview-home', title: 'Preview on Homepage', 'aria-label': 'Preview on Homepage' }).html('<i class="fa-solid fa-desktop" aria-hidden="true"></i>');
             $src.after($b);
         }
     };
@@ -221,7 +221,7 @@
     // Inject extra button + matching style (works with either header template)
     $(function () {
         if (!$('#wppoppop-preview-home-css').length) {
-            $('head').append('<style id="wppoppop-preview-home-css">#wppoppop-btn-preview-home{display:inline-flex!important;align-items:center!important;justify-content:center!important;height:32px!important;padding:0 12px!important;background:#1e293b!important;border:1px solid #334155!important;border-radius:6px!important;color:#f8fafc!important;font-size:12px!important;font-weight:500!important;cursor:pointer!important;box-sizing:border-box!important;margin-left:6px;white-space:nowrap;}#wppoppop-btn-preview-home:hover{background:#334155!important;color:#38bdf8!important;border-color:#38bdf8!important;}#wppoppop-btn-preview-home:disabled,#wppoppop-btn-preview:disabled{opacity:.6;cursor:wait!important;}</style>');
+            $('head').append('<style id="wppoppop-preview-home-css">#wppoppop-btn-preview-home{display:inline-flex!important;align-items:center!important;justify-content:center!important;height:32px!important;padding:0 12px!important;background:#1e293b!important;border:1px solid #334155!important;border-radius:6px!important;color:#f8fafc!important;font-size:12px!important;font-weight:500!important;cursor:pointer!important;box-sizing:border-box!important;margin:0!important;white-space:nowrap;}#wppoppop-btn-preview-home:hover{background:#334155!important;color:#38bdf8!important;border-color:#38bdf8!important;}#wppoppop-btn-preview-home:disabled,#wppoppop-btn-preview:disabled{opacity:.6;cursor:wait!important;}</style>');
         }
         Preview.ensureHomeButton();
         setTimeout(function () { Preview.ensureHomeButton(); }, 500);
@@ -307,7 +307,7 @@
             $('#wppoppop-live-preview-modal').css('display', 'flex');
             placeOverWorkspace();
             this.isOpen = true;
-            $('#wppoppop-btn-preview').text('Exit Preview').addClass('active');
+            $('#wppoppop-btn-preview').html('<i class="fa-solid fa-eye-slash" aria-hidden="true"></i>').attr({title:'Exit Preview','aria-label':'Exit Preview'}).addClass('active');
         };
 
         P.exit = function () {
@@ -317,7 +317,7 @@
             if (C) C.isPreview = this.wasPreview;
             $('body').removeClass('wppoppop-preview-locked').css('overflow', '');
             this.isOpen = false;
-            $('#wppoppop-btn-preview').text('Preview').removeClass('active');
+            $('#wppoppop-btn-preview').html('<i class="fa-solid fa-eye" aria-hidden="true"></i>').attr({title:'Preview','aria-label':'Preview'}).removeClass('active');
         };
 
         // Preview button toggles: open -> Exit
