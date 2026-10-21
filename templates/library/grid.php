@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
         ?>
         <div class="wppoppop-tpl-card" 
              data-id="<?php echo esc_attr($tpl['id']); ?>" 
-             data-category="<?php echo esc_attr($tpl['category']); ?>" 
+             data-category="<?php echo esc_attr($tpl['category']); ?>" data-preset="<?php echo !empty($tpl['preset']) ? '1' : '0'; ?>" 
              data-title="<?php echo esc_attr(strtolower($tpl['title'])); ?>" 
              data-desc="<?php echo esc_attr(strtolower($tpl['description'])); ?>"
              style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-direction:column;transition:transform 0.2s ease, box-shadow 0.2s ease;">
@@ -28,11 +28,11 @@ if (!defined('ABSPATH')) {
 
             <!-- Card Body -->
             <div style="padding:16px;flex:1;display:flex;flex-direction:column;">
-                <h3 style="margin:0 0 6px 0;font-size:15px;font-weight:700;color:#1e293b;"><?php echo esc_html($tpl['title']); ?></h3>
-                <p style="margin:0 0 14px 0;font-size:12px;color:#64748b;line-height:1.4;flex:1;"><?php echo esc_html($tpl['description']); ?></p>
+                <h3 class="wpp-tpl-title" style="margin:0 0 6px 0;font-size:15px;font-weight:700;color:#1e293b;"><?php echo esc_html($tpl['title']); ?></h3>
+                <p class="wpp-tpl-desc" style="margin:0 0 14px 0;font-size:12px;color:#64748b;line-height:1.4;flex:1;"><?php echo esc_html($tpl['description']); ?></p>
                 
-                <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid #f1f5f9;margin-top:auto;">
-                    <span style="font-size:11px;color:#94a3b8;font-weight:600;">
+                <div class="wpp-tpl-foot" style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid #f1f5f9;margin-top:auto;">
+                    <span class="wpp-tpl-meta" style="font-size:11px;color:#94a3b8;font-weight:600;">
                         <?php echo count($tpl['config']['elements']); ?> Elements &bull; <?php echo esc_html($tpl['config']['meta']['width']); ?>x<?php echo esc_html($tpl['config']['meta']['height']); ?>px
                     </span>
                     <div style="display:flex;gap:6px;">
@@ -46,7 +46,7 @@ if (!defined('ABSPATH')) {
                                 data-config='<?php echo esc_attr($json_str); ?>'>
                             Preview
                         </button>
-                        <button type="button" class="button button-small button-primary <?php echo !empty($tpl['user']) ? 'wppoppop-usertpl-use' : 'wppoppop-tpl-import-btn'; ?>" 
+                        <button type="button" class="button button-small button-primary <?php echo (!empty($tpl['user']) || !empty($tpl['preset'])) ? 'wppoppop-usertpl-use' : 'wppoppop-tpl-import-btn'; ?>" 
                                 data-id="<?php echo esc_attr($tpl['id']); ?>" 
                                 data-title="<?php echo esc_attr($tpl['title']); ?>" 
                                 data-config='<?php echo esc_attr($json_str); ?>'

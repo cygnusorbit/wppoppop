@@ -146,7 +146,29 @@ if (is_array($wppoppop_user_tpls)) {
         ];
     }
 }
-$templates = array_merge($wppoppop_user_cards, $templates);
+
+// Premade templates (library-presets/*.json)
+if (!class_exists('WpPopPop_Library_Presets')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-library-presets.php'; }
+$wppoppop_preset_cards = [];
+foreach (WpPopPop_Library_Presets::all() as $wppoppop_pt) {
+    $wppoppop_preset_cards[] = [
+        'id'          => $wppoppop_pt['id'],
+        'category'    => $wppoppop_pt['category'],
+        'cat_label'   => __('Premade', 'wppoppop'),
+        'title'       => $wppoppop_pt['title'],
+        'description' => $wppoppop_pt['description'],
+        'icon'        => 'dashicons-layout',
+        'bg_preview'  => 'linear-gradient(135deg, #2563eb, #0f172a)',
+        'image'       => $wppoppop_pt['image'],
+        'preset'      => true,
+        'config'      => [
+            'meta'     => ['width' => $wppoppop_pt['width'], 'height' => $wppoppop_pt['height'], 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+            'triggers' => new stdClass(),
+            'elements' => $wppoppop_pt['elements'],
+        ],
+    ];
+}
+$templates = array_merge($wppoppop_user_cards, $wppoppop_preset_cards, $templates);
 
 // Keep card badges in sync with renamed categories
 if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-templates.php'; }

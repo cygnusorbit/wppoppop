@@ -133,13 +133,13 @@ if (!defined('ABSPATH')) {
 #wppoppop-modal-save-template .wpt-hd h3,body #wppoppop-modal-save-template .wpt-hd #wppoppop-tpl-title{margin:0 !important;padding:0 !important;font-size:18px !important;font-weight:600 !important;line-height:1.3 !important;color:#fff !important;text-shadow:none !important}
 #wppoppop-modal-save-template .wpt-x{background:transparent !important;border:0 !important;box-shadow:none !important;color:#e2e8f0 !important;font-size:22px;cursor:pointer;line-height:1;padding:0 2px}
 #wppoppop-modal-save-template .wpt-bd{padding:20px 22px 18px;overflow:auto;flex:1}
-#wppoppop-modal-save-template .wpt-grid{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);grid-template-areas:"img btns" "name cat" "desc used" "size used";gap:14px 18px}
+#wppoppop-modal-save-template .wpt-grid{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);grid-template-areas:"img btns" "name cat" "desc desc" "used size";gap:14px 18px}
 #wppoppop-modal-save-template .wpt-a-img{grid-area:img}
 #wppoppop-modal-save-template .wpt-a-btns{grid-area:btns;display:flex;flex-direction:column;gap:8px;align-self:start;padding-top:20px}
 #wppoppop-modal-save-template .wpt-a-name{grid-area:name}
 #wppoppop-modal-save-template .wpt-a-cat{grid-area:cat}
 #wppoppop-modal-save-template .wpt-a-desc{grid-area:desc}
-#wppoppop-modal-save-template .wpt-a-size{grid-area:size}
+#wppoppop-modal-save-template .wpt-a-size{grid-area:size;align-self:start}
 #wppoppop-modal-save-template .wpt-a-used{grid-area:used;display:flex;flex-direction:column;min-height:0}
 #wppoppop-modal-save-template .wpt-l{display:block;margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#334155}
 #wppoppop-modal-save-template .wpt-prev{width:100%;height:150px;border:2px dashed #94a3b8;border-radius:8px;background:#eaf0fb center/cover no-repeat;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px;text-align:center;padding:8px}
@@ -151,10 +151,10 @@ if (!defined('ABSPATH')) {
 #wppoppop-modal-save-template .wpt-btn-ghost:hover{background:#f1f5f9 !important}
 #wppoppop-modal-save-template .wpt-in{display:block;width:100%;height:38px;min-height:0;margin:0;padding:0 12px;border:1px solid #94a3b8;border-radius:6px;background:#fff;color:#1e293b;font-size:13px;line-height:1.2;box-shadow:none}
 #wppoppop-modal-save-template select.wpt-in{padding-right:28px;cursor:pointer}
-#wppoppop-modal-save-template textarea.wpt-in{height:104px;padding:10px 12px;resize:vertical;line-height:1.4}
+#wppoppop-modal-save-template textarea.wpt-in{height:96px;padding:10px 12px;resize:vertical;line-height:1.4}
 #wppoppop-modal-save-template .wpt-in:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,.18)}
 #wppoppop-modal-save-template .wpt-ro{display:flex;align-items:center;height:38px;padding:0 12px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;font-weight:600;color:#334155}
-#wppoppop-modal-save-template .wpt-box{flex:1;min-height:150px;overflow:auto;padding:10px 12px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;font-weight:600;line-height:1.9;color:#334155}
+#wppoppop-modal-save-template .wpt-box{flex:1;min-height:104px;overflow:auto;padding:10px 12px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;font-weight:600;line-height:1.9;color:#334155}
 #wppoppop-modal-save-template .wpt-msg{display:none;margin-top:12px;font-size:12px}
 #wppoppop-modal-save-template .wpt-ft{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid #cbd5e1;background:#fff}
 #wppoppop-modal-save-template .wpt-ft .wpt-btn{width:auto;min-width:104px;height:36px;line-height:34px}

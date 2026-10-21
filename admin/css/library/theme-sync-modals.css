@@ -1,0 +1,137 @@
+/* Global Theme sync for Library cards, Library modals and the builder Save As Template modal.
+   Every var() has a fallback equal to the previous hard-coded look. Chrome / Safari / Firefox / Edge safe. */
+
+/* ---- Backdrops ---- */
+#wppoppop-lib-cats-modal, #wppoppop-lib-preview-modal, #wppoppop-te-modal, #wppoppop-modal-save-template {
+    background: var(--wpp-c-modal-backdrop, rgba(15,23,42,.7)) !important;
+}
+/* ---- Dialogs ---- */
+#wppoppop-lib-cats-modal .lc-dlg, #wppoppop-lib-preview-modal .lp-dlg,
+#wppoppop-te-modal .te-dlg, #wppoppop-modal-save-template .wpt-dlg {
+    background: var(--wpp-c-modal-bg, #fff) !important;
+    color: var(--wpp-c-text, #1e293b) !important;
+    border-radius: var(--wpp-r-card, 12px) !important;
+    box-shadow: var(--wpp-shadow-modal, 0 25px 50px -12px rgba(0,0,0,.5)) !important;
+    font-family: var(--wpp-font-base, inherit);
+}
+/* ---- Headers ---- */
+#wppoppop-lib-cats-modal .lc-hd, #wppoppop-lib-preview-modal .lp-hd,
+#wppoppop-te-modal .te-hd, #wppoppop-modal-save-template .wpt-hd {
+    background: var(--wpp-c-modal-head-bg, #0f172a) !important;
+}
+body #wppoppop-lib-cats-modal .lc-hd h3, body #wppoppop-lib-preview-modal .lp-hd h3,
+body #wppoppop-te-modal .te-hd h3, body #wppoppop-modal-save-template .wpt-hd h3 {
+    color: var(--wpp-c-modal-head-text, #fff) !important;
+    font-family: var(--wpp-font-heading, inherit) !important;
+    font-size: var(--wpp-fs-modal-title, 18px) !important;
+    font-weight: var(--wpp-fw-heading, 600) !important;
+}
+#wppoppop-lib-cats-modal .lc-x, #wppoppop-lib-preview-modal .lp-x,
+#wppoppop-te-modal .te-x, #wppoppop-modal-save-template .wpt-x {
+    color: var(--wpp-c-modal-close, #e2e8f0) !important;
+}
+/* ---- Footers / dividers ---- */
+#wppoppop-lib-cats-modal .lc-ft, #wppoppop-lib-preview-modal .lp-ft,
+#wppoppop-te-modal .te-ft, #wppoppop-modal-save-template .wpt-ft,
+#wppoppop-lib-preview-modal .lp-bar {
+    border-color: var(--wpp-c-border, #cbd5e1) !important;
+    background: var(--wpp-c-modal-bg, #fff) !important;
+}
+/* ---- Labels / helper text ---- */
+#wppoppop-modal-save-template .wpt-l, #wppoppop-te-modal .te-l {
+    color: var(--wpp-c-heading, #334155) !important;
+    font-size: var(--wpp-fs-label, 11px) !important;
+    font-weight: var(--wpp-fw-label, 700) !important;
+    letter-spacing: var(--wpp-ls-label, .4px) !important;
+    text-transform: var(--wpp-tt-label, uppercase) !important;
+}
+#wppoppop-lib-cats-modal .lc-note, #wppoppop-lib-preview-modal .lp-bar,
+#wppoppop-lib-preview-modal .lp-ft, #wppoppop-lib-cats-modal .lc-lock { color: var(--wpp-c-muted, #64748b) !important; }
+/* ---- Inputs ---- */
+#wppoppop-modal-save-template .wpt-in, #wppoppop-te-modal .te-in,
+#wppoppop-lib-cats-modal .lc-row input[type=text], #wppoppop-lib-cats-modal .lc-add input {
+    background: var(--wpp-c-input-bg, #fff) !important;
+    color: var(--wpp-c-input-text, #1e293b) !important;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-input-border, #94a3b8) !important;
+    border-radius: var(--wpp-r-input, 6px) !important;
+    font-family: var(--wpp-font-base, inherit) !important;
+    font-size: var(--wpp-fs-input, 13px) !important;
+}
+#wppoppop-modal-save-template .wpt-in:focus, #wppoppop-te-modal .te-in:focus,
+#wppoppop-lib-cats-modal .lc-row input[type=text]:focus, #wppoppop-lib-cats-modal .lc-add input:focus {
+    border-color: var(--wpp-c-input-focus, #2563eb) !important;
+    box-shadow: 0 0 0 1px var(--wpp-c-input-focus, #2563eb) !important;
+}
+/* ---- Read-only boxes / rows ---- */
+#wppoppop-modal-save-template .wpt-ro, #wppoppop-modal-save-template .wpt-box,
+#wppoppop-te-modal .te-ro, #wppoppop-te-modal .te-box, #wppoppop-lib-cats-modal .lc-row {
+    background: var(--wpp-c-bg-page, #f8fafc) !important;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #cbd5e1) !important;
+    color: var(--wpp-c-text, #334155) !important;
+    border-radius: var(--wpp-r-input, 6px) !important;
+}
+#wppoppop-modal-save-template .wpt-prev, #wppoppop-te-modal .te-prev { border-color: var(--wpp-c-input-border, #94a3b8) !important; border-radius: var(--wpp-r-card, 8px) !important; }
+#wppoppop-lib-preview-modal .lp-stage { background: var(--wpp-c-bg-page, #f1f5f9) !important; }
+#wppoppop-lib-cats-modal .lc-btn { background: var(--wpp-c-secondary-bg, #fff) !important; border-color: var(--wpp-c-secondary-border, #cbd5e1) !important; color: var(--wpp-c-secondary-text, #475569) !important; }
+#wppoppop-lib-cats-modal .lc-btn:hover { background: var(--wpp-c-secondary-hover, #f1f5f9) !important; }
+#wppoppop-lib-cats-modal .lc-del { color: var(--wpp-c-danger, #b32d2e) !important; }
+#wppoppop-lib-cats-modal .lc-ph { border-color: var(--wpp-c-primary, #2563eb) !important; }
+/* ---- Modal buttons ---- */
+#wppoppop-modal-save-template .wpt-btn, #wppoppop-te-modal .te-btn { border-radius: var(--wpp-r-button, 6px) !important; font-family: var(--wpp-font-base, inherit) !important; }
+#wppoppop-modal-save-template .wpt-btn-ghost, #wppoppop-te-modal .te-ghost {
+    background: var(--wpp-c-secondary-bg, #fff) !important; color: var(--wpp-c-secondary-text, #1e293b) !important; border-color: var(--wpp-c-secondary-border, #94a3b8) !important;
+}
+#wppoppop-modal-save-template .wpt-btn-ghost:hover, #wppoppop-te-modal .te-ghost:hover { background: var(--wpp-c-secondary-hover, #f1f5f9) !important; }
+#wppoppop-modal-save-template .wpt-btn-blue, #wppoppop-te-modal .te-blue {
+    background: var(--wpp-c-primary, #0a6bb5) !important; color: var(--wpp-c-primary-text, #fff) !important; border-color: var(--wpp-c-primary, #085a99) !important;
+}
+#wppoppop-modal-save-template .wpt-btn-blue:hover, #wppoppop-te-modal .te-blue:hover { background: var(--wpp-c-primary-hover, #085a99) !important; border-color: var(--wpp-c-primary-hover, #085a99) !important; }
+#wppoppop-modal-save-template .wpt-btn-green { background: var(--wpp-c-success, #00a32a) !important; border-color: var(--wpp-c-success, #008a20) !important; color: #fff !important; }
+#wppoppop-modal-save-template .wpt-btn-green:hover { background: var(--wpp-c-success, #008a20) !important; -webkit-filter: brightness(.92); filter: brightness(.92); }
+#wppoppop-te-modal .te-orange { background: var(--wpp-c-warning, #f97316) !important; border-color: var(--wpp-c-warning, #ea580c) !important; color: #fff !important; }
+#wppoppop-te-modal .te-orange:hover { background: var(--wpp-c-warning, #ea580c) !important; -webkit-filter: brightness(.92); filter: brightness(.92); }
+#wppoppop-lib-preview-modal .lp-bar .button.is-on { background: var(--wpp-c-primary, #2563eb) !important; border-color: var(--wpp-c-primary, #1d4ed8) !important; color: var(--wpp-c-primary-text, #fff) !important; }
+
+/* ---- Library cards ---- */
+.wppoppop-library-wrap .wppoppop-tpl-card {
+    background: var(--wpp-c-bg-card, #fff) !important;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #e2e8f0) !important;
+    border-radius: var(--wpp-r-card, 10px) !important;
+    box-shadow: var(--wpp-shadow-card, 0 1px 3px rgba(0,0,0,.05)) !important;
+}
+.wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-title { color: var(--wpp-c-heading, #1e293b) !important; font-family: var(--wpp-font-heading, inherit) !important; font-weight: var(--wpp-fw-heading, 700) !important; font-size: var(--wpp-fs-h3, 15px) !important; }
+.wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-desc { color: var(--wpp-c-muted, #64748b) !important; font-size: var(--wpp-fs-small, 12px) !important; }
+.wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-meta { color: var(--wpp-c-muted, #94a3b8) !important; font-size: var(--wpp-fs-small, 11px) !important; }
+.wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-foot { border-top-color: var(--wpp-c-row-border, #f1f5f9) !important; }
+/* ---- Card icon buttons ---- */
+.wppoppop-tpl-card .wppoppop-tpl-preview-btn, .wppoppop-tpl-card .wppoppop-usertpl-dl,
+.wppoppop-tpl-card .wppoppop-usertpl-edit, .wppoppop-tpl-card .wppoppop-usertpl-del {
+    background: var(--wpp-c-secondary-bg, #fff) !important; border-color: var(--wpp-c-secondary-border, #cbd5e1) !important;
+    color: var(--wpp-c-secondary-text, #334155) !important; border-radius: var(--wpp-r-button, 6px) !important;
+}
+.wppoppop-tpl-card .wppoppop-tpl-preview-btn:hover, .wppoppop-tpl-card .wppoppop-usertpl-dl:hover {
+    background: var(--wpp-c-secondary-hover, #eff6ff) !important; border-color: var(--wpp-c-primary, #2563eb) !important; color: var(--wpp-c-primary, #2563eb) !important;
+}
+.wppoppop-tpl-card .wppoppop-tpl-import-btn, .wppoppop-tpl-card .wppoppop-usertpl-use {
+    background: var(--wpp-c-primary, #2563eb) !important; border-color: var(--wpp-c-primary, #1d4ed8) !important;
+    color: var(--wpp-c-primary-text, #fff) !important; border-radius: var(--wpp-r-button, 6px) !important;
+}
+.wppoppop-tpl-card .wppoppop-tpl-import-btn:hover, .wppoppop-tpl-card .wppoppop-usertpl-use:hover { background: var(--wpp-c-primary-hover, #1d4ed8) !important; border-color: var(--wpp-c-primary-hover, #1d4ed8) !important; }
+.wppoppop-tpl-card .wppoppop-usertpl-edit { color: var(--wpp-c-warning, #ea580c) !important; }
+.wppoppop-tpl-card .wppoppop-usertpl-del { color: var(--wpp-c-danger, #b32d2e) !important; }
+.wppoppop-tpl-card .wppoppop-usertpl-dl::before { font-family: "Font Awesome 6 Free","Font Awesome 5 Free" !important; font-weight: 900 !important; content: "\f019"; font-size: 14px !important; line-height: 1 !important; display: inline-block; }
+.wppoppop-tpl-card .wppoppop-usertpl-dl {
+    display: inline-flex !important; align-items: center; justify-content: center;
+    width: 32px !important; height: 32px !important; min-width: 32px !important; min-height: 0 !important;
+    padding: 0 !important; margin: 0 !important; font-size: 0 !important; line-height: 0 !important; cursor: pointer;
+    box-shadow: none !important; -webkit-appearance: none; appearance: none;
+}
+
+/* ---- Builder: green Save As Template follows the theme success colour ---- */
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template {
+    background: var(--wpp-c-success, #00a32a) !important; border-color: var(--wpp-c-success, #008a20) !important; border-radius: var(--wpp-r-button, 6px) !important;
+}
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:hover,
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:focus {
+    background: var(--wpp-c-success, #008a20) !important; -webkit-filter: brightness(.9); filter: brightness(.9);
+}

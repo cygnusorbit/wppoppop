@@ -11,6 +11,7 @@
     function decorate() {
         $('.wppoppop-usertpl-use').each(function () {
             var $use = $(this);
+            if ($use.closest('.wppoppop-tpl-card').attr('data-preset') === '1') { return; }
             if ($use.siblings('.wppoppop-usertpl-del').length) { return; }
             $('<button type="button" class="button button-small wppoppop-usertpl-del" style="color:#b32d2e;">Delete</button>')
                 .attr('data-id', $use.attr('data-id'))

@@ -14,6 +14,7 @@ class WpPopPop_Ajax_Templates {
         add_action('wp_ajax_wppoppop_template_save', array($this, 'save'));
         add_action('wp_ajax_wppoppop_template_use', array($this, 'use_template'));
         add_action('wp_ajax_wppoppop_template_delete', array($this, 'delete'));
+        add_action('wp_ajax_wppoppop_template_download', array($this, 'download'));
         add_action('wp_ajax_wppoppop_template_get', array($this, 'get_one'));
         add_action('wp_ajax_wppoppop_template_update', array($this, 'update_info'));
         add_action('wp_ajax_wppoppop_library_cats_save', array($this, 'save_categories'));
@@ -329,5 +330,38 @@ class WpPopPop_Ajax_Templates {
         $all[$id]['category']    = $cat;
         update_option(self::OPT, $all, false);
         wp_send_json_success(array('message' => 'Template updated.'));
+    }
+
+    /** Returns a portable template JSON (drop-in format for /library-presets/). */
+    public function download() {
+        $this->guard();
+        $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
+        $all = method_exists($this, 'with_presets') ? $this->with_presets() : $this->all();
+        if ($id === '' || !isset($all[$id]) || empty($all[$id]['data'])) {
+            wp_send_json_error(array('message' => 'Template not found.'));
+        }
+        $t    = $all[$id];
+        $data = json_decode($t['data']);
+        if (!is_object($data)) {
+            wp_send_json_error(array('message' => 'Template data is damaged.'));
+        }
+        $payload = array(
+            'template' => array(
+                'title'       => isset($t['title']) ? (string) $t['title'] : '',
+                'description' => isset($t['description']) ? (string) $t['description'] : '',
+                'category'    => (isset($t['category']) && $t['category'] !== '') ? (string) $t['category'] : 'custom',
+                'image'       => isset($t['image']) ? (string) $t['image'] : '',
+            ),
+            'data' => $data,
+        );
+        $json = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if (!is_string($json) || $json === '') {
+            wp_send_json_error(array('message' => 'Could not encode template.'));
+        }
+        $name = sanitize_title(isset($t['title']) ? $t['title'] : '');
+        wp_send_json_success(array(
+            'filename' => ($name !== '' ? $name : 'template') . '-wppoppop-template.json',
+            'payload'  => $json,
+        ));
     }
 }

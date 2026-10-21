@@ -15,6 +15,7 @@
         $('.wppoppop-usertpl-use').each(function () {
             var $use = $(this), id = $use.attr('data-id');
             label($use, 'Import');
+            if ($use.closest('.wppoppop-tpl-card').attr('data-preset') === '1') { return; }
             if (!$use.siblings('.wppoppop-usertpl-edit').length) {
                 $('<button type="button" class="button button-small wppoppop-usertpl-edit"></button>').attr('data-id', id).insertAfter($use);
             }

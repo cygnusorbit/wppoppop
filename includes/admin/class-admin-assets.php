@@ -68,6 +68,8 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], self::ver());
             $wppoppop_st_file = WPPOPPOP_PATH . 'admin/css/builder/save-template.css';
             wp_enqueue_style('wppoppop-builder-save-template-css', WPPOPPOP_URL . 'admin/css/builder/save-template.css', ['wppoppop-builder-css'], file_exists($wppoppop_st_file) ? (string) filemtime($wppoppop_st_file) : self::ver());
+            $wppoppop_ts_bld = WPPOPPOP_PATH . 'admin/css/library/theme-sync-modals.css';
+            wp_enqueue_style('wppoppop-builder-theme-modals-css', WPPOPPOP_URL . 'admin/css/library/theme-sync-modals.css', ['wppoppop-builder-save-template-css'], file_exists($wppoppop_ts_bld) ? (string) filemtime($wppoppop_ts_bld) : self::ver());
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
@@ -181,6 +183,9 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-library-actions-css', WPPOPPOP_URL . 'admin/css/library/actions.css', ['wppoppop-library-css', 'wppoppop-fa-library'], file_exists($wppoppop_la_css) ? (string) filemtime($wppoppop_la_css) : $lib_ver);
             wp_enqueue_script('wppoppop-library-actions-js', WPPOPPOP_URL . 'admin/js/library/library-actions.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
             wp_localize_script('wppoppop-library-actions-js', 'wppoppop_libact_vars', ['ajax_url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wppoppop_admin_nonce')]);
+            $wppoppop_ts_lib = WPPOPPOP_PATH . 'admin/css/library/theme-sync-modals.css';
+            wp_enqueue_style('wppoppop-library-theme-modals-css', WPPOPPOP_URL . 'admin/css/library/theme-sync-modals.css', ['wppoppop-library-css'], file_exists($wppoppop_ts_lib) ? (string) filemtime($wppoppop_ts_lib) : $lib_ver);
+            wp_enqueue_script('wppoppop-library-download-js', WPPOPPOP_URL . 'admin/js/library/library-download.js', ['jquery', 'wppoppop-library-actions-js'], $lib_ver, true);
             wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
         }
 

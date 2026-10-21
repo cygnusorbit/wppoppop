@@ -63,7 +63,7 @@
         cur.id = id; cur.frame = '';
         $('#wppoppop-lp-title').text($btn.attr('data-title') || 'Template Preview');
         $('#wppoppop-lp-meta').text(($btn.attr('data-width') || '') + ' \u00d7 ' + ($btn.attr('data-height') || '') + ' px \u2022 ' + ($btn.attr('data-elements') || '0') + ' elements');
-        var isUser = id.indexOf('user-') === 0;
+        var isUser = (id.indexOf('user-') === 0 || id.indexOf('preset-') === 0);
         $('#wppoppop-lp-use').toggle(isUser);
         $('#wppoppop-lp-replay').toggle(isUser);
         setView('desktop');
