@@ -27,5 +27,6 @@ $bar_icon  = 'dashicons-category';
         <button type="button" class="wppoppop-cat-btn" data-cat="gamified"><?php esc_html_e('Gamified & Interactive', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-cat-btn" data-cat="feedback"><?php esc_html_e('Surveys & Feedback', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-cat-btn" data-cat="announcement"><?php esc_html_e('Announcements', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-cat-btn" data-cat="custom"><?php esc_html_e('My Templates', 'wppoppop'); ?></button>
     </div>
 </div>

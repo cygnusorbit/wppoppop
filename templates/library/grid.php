@@ -16,7 +16,11 @@ if (!defined('ABSPATH')) {
             
             <!-- Card Visual Banner / Preview Thumbnail -->
             <div style="height:150px;background:<?php echo esc_attr($tpl['bg_preview']); ?>;display:flex;align-items:center;justify-content:center;position:relative;padding:16px;">
-                <span class="dashicons <?php echo esc_attr($tpl['icon']); ?>" style="font-size:48px;width:48px;height:48px;color:#ffffff;opacity:0.9;"></span>
+                <?php if (!empty($tpl['image'])) : ?>
+                    <img src="<?php echo esc_url($tpl['image']); ?>" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+                <?php else : ?>
+                    <span class="dashicons <?php echo esc_attr($tpl['icon']); ?>" style="font-size:48px;width:48px;height:48px;color:#ffffff;opacity:0.9;"></span>
+                <?php endif; ?>
                 <span style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);color:#ffffff;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">
                     <?php echo esc_html($tpl['cat_label']); ?>
                 </span>
@@ -42,7 +46,7 @@ if (!defined('ABSPATH')) {
                                 data-config='<?php echo esc_attr($json_str); ?>'>
                             Preview
                         </button>
-                        <button type="button" class="button button-small button-primary wppoppop-tpl-import-btn" 
+                        <button type="button" class="button button-small button-primary <?php echo !empty($tpl['user']) ? 'wppoppop-usertpl-use' : 'wppoppop-tpl-import-btn'; ?>" 
                                 data-id="<?php echo esc_attr($tpl['id']); ?>" 
                                 data-title="<?php echo esc_attr($tpl['title']); ?>" 
                                 data-config='<?php echo esc_attr($json_str); ?>'

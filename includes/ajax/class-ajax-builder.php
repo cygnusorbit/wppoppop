@@ -15,6 +15,8 @@ class WpPopPop_Ajax_Builder {
         add_action('wp_ajax_wppoppop_import_popup', [$this, 'import_popup']);
         add_action('wp_ajax_wppoppop_save_campaign', [$this, 'save_campaign']);
         add_action('wp_ajax_wppoppop_delete_campaign', [$this, 'delete_campaign']);
+        if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-templates.php'; }
+        new WpPopPop_Ajax_Templates();
     }
 
     private function verify_security() {

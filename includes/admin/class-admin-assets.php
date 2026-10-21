@@ -105,10 +105,16 @@ class WpPopPop_Admin_Assets {
             ], self::ver(), true);
 
             wp_enqueue_script('wppoppop-builder-preview-js', WPPOPPOP_URL . 'admin/js/builder/builder-preview.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js', 'wppoppop-builder-io-js'], self::ver(), true);
+            wp_enqueue_media();
+            wp_enqueue_script('wppoppop-builder-template-js', WPPOPPOP_URL . 'admin/js/builder/builder-template.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-io-js', 'wppoppop-builder-settings-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-save-state-js', WPPOPPOP_URL . 'admin/js/builder/builder-save-state.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-io-js', 'wppoppop-builder-settings-js'], self::ver(), true);
 
             $builder_payload = array_merge($shared_payload, [
                 'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
+                'save_template' => (function () {
+                    $s = get_option('wppoppop_settings', []);
+                    return (is_array($s) && !empty($s['builder_disable_save_template'])) ? 0 : 1;
+                })(),
                 'alignment_tool' => (function () {
                     $s = get_option('wppoppop_settings', []);
                     return (is_array($s) && array_key_exists('builder_alignment_tool', $s) && empty($s['builder_alignment_tool'])) ? 0 : 1;
@@ -162,6 +168,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-library-css', WPPOPPOP_URL . 'admin/css/library.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css', 'wppoppop-theme-global-css'], $lib_ver);
             wp_enqueue_script('wppoppop-library-js', WPPOPPOP_URL . 'admin/js/library.js', ['jquery'], $lib_ver, true);
             wp_localize_script('wppoppop-library-js', 'wppoppop_vars', $shared_payload);
+            wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
         }
 
         // Dashboard overview page (separate from the Popups list assets)

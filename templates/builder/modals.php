@@ -122,3 +122,52 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 </div>
+
+<!-- Save As Template -->
+<style>
+#wppoppop-modal-save-template{position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:999999;align-items:center;justify-content:center}
+#wppoppop-modal-save-template .wpt-dlg{background:#fff;color:#1e293b;border-radius:8px;width:520px;max-width:95vw;max-height:92vh;overflow:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.5)}
+#wppoppop-modal-save-template .wpt-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#0f172a;color:#fff}
+#wppoppop-modal-save-template .wpt-hd h3{margin:0;font-size:14px;color:#fff}
+#wppoppop-modal-save-template .wpt-x{background:transparent;border:0;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1}
+#wppoppop-modal-save-template .wpt-bd{padding:16px 18px}
+#wppoppop-modal-save-template label.wpt-l{display:block;font-weight:600;font-size:12px;margin:12px 0 4px}
+#wppoppop-modal-save-template input[type=text],#wppoppop-modal-save-template textarea{width:100%;box-sizing:border-box}
+#wppoppop-modal-save-template .wpt-img{display:flex;gap:12px;align-items:center}
+#wppoppop-modal-save-template .wpt-prev{width:120px;height:80px;border:1px dashed #94a3b8;border-radius:6px;background:#f1f5f9 center/cover no-repeat;flex:none}
+#wppoppop-modal-save-template .wpt-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-size:12px;line-height:1.7}
+#wppoppop-modal-save-template .wpt-ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e2e8f0}
+#wppoppop-modal-save-template .wpt-msg{margin-top:10px;font-size:12px;display:none}
+</style>
+<div class="wppoppop-modal-backdrop" id="wppoppop-modal-save-template" style="display:none;">
+    <div class="wpt-dlg" role="dialog" aria-modal="true" aria-labelledby="wppoppop-tpl-title">
+        <div class="wpt-hd">
+            <h3 id="wppoppop-tpl-title"><?php esc_html_e('Save As Template', 'wppoppop'); ?></h3>
+            <button type="button" class="wpt-x" id="wppoppop-tpl-close" aria-label="<?php esc_attr_e('Close', 'wppoppop'); ?>">&times;</button>
+        </div>
+        <div class="wpt-bd">
+            <label class="wpt-l"><?php esc_html_e('Popup Image', 'wppoppop'); ?></label>
+            <div class="wpt-img">
+                <div class="wpt-prev" id="wppoppop-tpl-prev"></div>
+                <div>
+                    <button type="button" class="button" id="wppoppop-tpl-upload"><?php esc_html_e('Upload Image', 'wppoppop'); ?></button>
+                    <button type="button" class="button" id="wppoppop-tpl-remove-img"><?php esc_html_e('Remove', 'wppoppop'); ?></button>
+                    <input type="hidden" id="wppoppop-tpl-image" value="">
+                </div>
+            </div>
+            <label class="wpt-l" for="wppoppop-tpl-name"><?php esc_html_e('Popup Name', 'wppoppop'); ?></label>
+            <input type="text" id="wppoppop-tpl-name" maxlength="120">
+            <label class="wpt-l" for="wppoppop-tpl-desc"><?php esc_html_e('Description', 'wppoppop'); ?></label>
+            <textarea id="wppoppop-tpl-desc" rows="3" maxlength="400"></textarea>
+            <label class="wpt-l"><?php esc_html_e('Used Elements', 'wppoppop'); ?> <span id="wppoppop-tpl-total"></span></label>
+            <div class="wpt-box" id="wppoppop-tpl-elements"></div>
+            <label class="wpt-l"><?php esc_html_e('Canvas Size', 'wppoppop'); ?></label>
+            <div class="wpt-box" id="wppoppop-tpl-size"></div>
+            <div class="wpt-msg" id="wppoppop-tpl-msg"></div>
+        </div>
+        <div class="wpt-ft">
+            <button type="button" class="button" id="wppoppop-tpl-cancel"><?php esc_html_e('Cancel', 'wppoppop'); ?></button>
+            <button type="button" class="button button-primary" id="wppoppop-tpl-submit" style="background:#00a32a;border-color:#008a20;"><?php esc_html_e('Save Template', 'wppoppop'); ?></button>
+        </div>
+    </div>
+</div>

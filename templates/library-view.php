@@ -121,6 +121,32 @@ $templates = [
         ]
     ]
 ];
+
+// User-saved templates (Builder > Save As Template)
+$wppoppop_user_tpls = get_option('wppoppop_user_templates', []);
+$wppoppop_user_cards = [];
+if (is_array($wppoppop_user_tpls)) {
+    foreach (array_reverse($wppoppop_user_tpls) as $ut) {
+        if (!is_array($ut) || empty($ut['id'])) { continue; }
+        $wppoppop_user_cards[] = [
+            'id'          => $ut['id'],
+            'category'    => 'custom',
+            'cat_label'   => __('My Templates', 'wppoppop'),
+            'title'       => isset($ut['title']) ? $ut['title'] : '',
+            'description' => isset($ut['description']) ? $ut['description'] : '',
+            'icon'        => 'dashicons-saved',
+            'bg_preview'  => 'linear-gradient(135deg, #00a32a, #0f172a)',
+            'image'       => isset($ut['image']) ? $ut['image'] : '',
+            'user'        => true,
+            'config'      => [
+                'meta'     => ['width' => isset($ut['width']) ? (int) $ut['width'] : 640, 'height' => isset($ut['height']) ? (int) $ut['height'] : 400, 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
+                'triggers' => new stdClass(),
+                'elements' => isset($ut['elements']) && is_array($ut['elements']) ? $ut['elements'] : [],
+            ],
+        ];
+    }
+}
+$templates = array_merge($wppoppop_user_cards, $templates);
 ?>
 <div class="wrap wppoppop-dash wppoppop-library-wrap">
     <!-- Catalog Header Toolbar & Category Filters -->
