@@ -1313,14 +1313,13 @@ jQuery(function($) {
         return h;
     }
 
-    function tag(k) { return '<select class="wppoppop-ntf-tag" data-for="' + k + '" style="max-width:96px;margin-left:6px;" aria-label="Insert merge tag">' + tagOptions() + '</select>'; }
+    function tag(k) { return '<button type="button" class="button button-small wppoppop-ntf-tag" data-for="' + k + '" title="Insert merge tag" aria-label="Insert merge tag" aria-haspopup="true" aria-expanded="false" style="display:inline-flex;align-items:center;justify-content:center;min-height:22px;height:22px;line-height:1;padding:0 5px;margin:0 0 0 auto;"><span class="dashicons" aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;font-size:16px;line-height:1;margin:0;padding:0;">&#xf150;</span></button>'; }
 
     function inputRow(label, k, n, big) {
         var ctl = big
             ? '<textarea class="widefat" rows="5" data-k="' + k + '">' + esc(n[k]) + '</textarea>'
             : '<input type="text" class="widefat" data-k="' + k + '" value="' + esc(n[k]) + '">';
-        return '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">' + label + '</label>' +
-            '<div style="display:flex;align-items:' + (big ? 'flex-start' : 'center') + ';">' + ctl + tag(k) + '</div></div>';
+        return '<div style="margin:0 0 10px;"><div class="wppoppop-ntf-lblrow" style="position:relative;display:flex;align-items:center;gap:6px;margin:0 0 4px;"><label style="font-weight:600;">' + label + '</label>' + tag(k) + '</div>' + ctl + '</div>';
     }
 
     function ruleHtml(r) {
@@ -1440,7 +1439,7 @@ jQuery(function($) {
             if (k === 'name') { $(this).closest('.wppoppop-ntf-card').find('.wppoppop-ntf-title').text(n.name || 'Notification'); }
             if (k === 'logic_enable') { $(this).closest('.wppoppop-ntf-card').find('.wppoppop-ntf-logic').toggle(!!n.logic_enable); }
         })
-        .on('change.wppNtf', '.wppoppop-ntf-tag', function() {
+        .on('change.wppNtf', '.wppoppop-ntf-tag-legacy', function() {
             var t = $(this).val(); if (!t) return;
             var $c = $(this).closest('.wppoppop-ntf-card');
             var $t = $c.find('[data-k="' + $(this).attr('data-for') + '"]');
@@ -1500,4 +1499,176 @@ jQuery(function($) {
         .on('click.wppNtf', '#wppoppop-ntf-acc .wppoppop-acc-header', function() { setTimeout(render, 0); });
 
     $(function() { setTimeout(render, 300); });
+})(jQuery);
+
+
+/* WPPOPPOP_NTF_TAGMENU: icon button + merge-tag menu for Notifications */
+(function($) {
+    'use strict';
+    if (window._wppNtfTagMenu) return;
+    window._wppNtfTagMenu = true;
+
+    var $menu = null, $btn = null;
+
+    function esc(v) { return $('<div></div>').text(v === undefined || v === null ? '' : String(v)).html(); }
+
+    function tokens() {
+        var out = [], seen = {};
+        var core = window.WpPopPopBuilderCore;
+        if (core && core.state && core.state.canvases) {
+            Object.keys(core.state.canvases).forEach(function(c) {
+                (core.state.canvases[c] || []).forEach(function(el) {
+                    var t = el && (el.field_name || el.fieldName || el.fieldId);
+                    if (!t || seen[t]) return;
+                    seen[t] = true;
+                    out.push([String(t) + ' | ' + (el.type || 'field'), '{{' + t + '}}']);
+                });
+            });
+        }
+        return out;
+    }
+
+    function close() {
+        if ($btn) { $btn.attr('aria-expanded', 'false'); }
+        if ($menu) { $menu.remove(); }
+        $menu = null; $btn = null;
+    }
+
+    function group(title, items) {
+        var h = '<div style="padding:6px 10px 2px;font-size:11px;font-weight:700;color:#475569;">' + esc(title) + '</div>';
+        $.each(items, function(i, it) {
+            h += '<button type="button" class="wppoppop-ntf-tag-item" data-tag="' + esc(it[1]) + '" style="display:block;width:100%;text-align:left;border:0;background:transparent;padding:5px 10px;font-size:12px;cursor:pointer;color:#1e293b;">' + esc(it[0]) + '</button>';
+        });
+        return h;
+    }
+
+    function open($b) {
+        close();
+        $btn = $b;
+        $b.attr('aria-expanded', 'true');
+        var forms = tokens().concat([['email', '{{email}}'], ['All form data', '{{form-data}}']]);
+        var gen = [['Popup name', '{{form-name}}'], ['Submission ID', '{{submission-id}}'], ['Visitor country', '{{country}}'], ['Site name', '{{site-name}}'], ['Global from email', '{{global-from-email}}'], ['Global from name', '{{global-from-name}}']];
+        $menu = $('<div class="wppoppop-ntf-tag-menu" role="menu"></div>').css({
+            position: 'absolute', top: '100%', right: 0, left: 'auto', zIndex: 50, minWidth: '190px', maxHeight: '220px',
+            overflowY: 'auto', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '4px',
+            boxShadow: '0 4px 14px rgba(0,0,0,.15)', marginTop: '2px'
+        }).html(group('Form values', forms) + group('General', gen));
+        $b.closest('.wppoppop-ntf-lblrow').append($menu);
+    }
+
+    $(document)
+        .off('.wppNtfMenu')
+        .on('click.wppNtfMenu', '.wppoppop-ntf-tag', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            if ($btn && $btn[0] === this && $menu) { close(); } else { open($(this)); }
+        })
+        .on('mouseenter.wppNtfMenu', '.wppoppop-ntf-tag-item', function() { $(this).css('background', '#f1f5f9'); })
+        .on('mouseleave.wppNtfMenu', '.wppoppop-ntf-tag-item', function() { $(this).css('background', 'transparent'); })
+        .on('click.wppNtfMenu', '.wppoppop-ntf-tag-item', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            var tag = $(this).attr('data-tag');
+            var $t = $btn ? $btn.closest('.wppoppop-ntf-card').find('[data-k="' + $btn.attr('data-for') + '"]') : $();
+            var el = $t.get(0);
+            if (el && tag) {
+                var v = $t.val() || '';
+                var a = (typeof el.selectionStart === 'number') ? el.selectionStart : v.length;
+                var b = (typeof el.selectionEnd === 'number') ? el.selectionEnd : a;
+                $t.val(v.slice(0, a) + tag + v.slice(b));
+                try { el.focus(); el.setSelectionRange(a + tag.length, a + tag.length); } catch (err) {}
+                $t.trigger('input');
+            }
+            close();
+        })
+        .on('click.wppNtfMenu', function(e) {
+            if ($menu && !$(e.target).closest('.wppoppop-ntf-tag-menu, .wppoppop-ntf-tag').length) { close(); }
+        })
+        .on('keydown.wppNtfMenu', function(e) {
+            if ($menu && (e.key === 'Escape' || e.keyCode === 27)) { e.stopPropagation(); close(); }
+        });
+})(jQuery);
+
+
+/* WPPOPPOP_DOPT_TAGMENU: icon button + merge-tag menu for Double Opt-In */
+(function($) {
+    'use strict';
+    if (window._wppDoptTagMenu) return;
+    window._wppDoptTagMenu = true;
+
+    var $menu = null, $btn = null;
+
+    function esc(v) { return $('<div></div>').text(v === undefined || v === null ? '' : String(v)).html(); }
+
+    function tokens() {
+        var out = [], seen = {};
+        var core = window.WpPopPopBuilderCore;
+        if (core && core.state && core.state.canvases) {
+            Object.keys(core.state.canvases).forEach(function(c) {
+                (core.state.canvases[c] || []).forEach(function(el) {
+                    var t = el && (el.field_name || el.fieldName || el.fieldId);
+                    if (!t || seen[t]) return;
+                    seen[t] = true;
+                    out.push([String(t) + ' | ' + (el.type || 'field'), '{{' + t + '}}']);
+                });
+            });
+        }
+        return out;
+    }
+
+    function close() {
+        if ($btn) { $btn.attr('aria-expanded', 'false'); }
+        if ($menu) { $menu.remove(); }
+        $menu = null; $btn = null;
+    }
+
+    function group(title, items) {
+        var h = '<div style="padding:6px 10px 2px;font-size:11px;font-weight:700;color:#475569;">' + esc(title) + '</div>';
+        $.each(items, function(i, it) {
+            h += '<button type="button" class="wppoppop-dopt-tag-item" data-tag="' + esc(it[1]) + '" style="display:block;width:100%;text-align:left;border:0;background:transparent;padding:5px 10px;font-size:12px;cursor:pointer;color:#1e293b;">' + esc(it[0]) + '</button>';
+        });
+        return h;
+    }
+
+    function open($b) {
+        close();
+        $btn = $b;
+        $b.attr('aria-expanded', 'true');
+        var forms = tokens().concat([['email', '{{email}}']]);
+        var gen = [['Confirmation URL', '{{confirmation-url}}'], ['Global from email', '{{global-from-email}}'], ['Global from name', '{{global-from-name}}'], ['Site name', '{{site-name}}']];
+        $menu = $('<div class="wppoppop-dopt-tag-menu" role="menu"></div>').css({
+            position: 'absolute', top: '100%', right: 0, left: 'auto', zIndex: 50, minWidth: '190px', maxHeight: '220px',
+            overflowY: 'auto', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '4px',
+            boxShadow: '0 4px 14px rgba(0,0,0,.15)', marginTop: '2px'
+        }).html(group('Form values', forms) + group('General', gen));
+        $b.closest('.wppoppop-dopt-lblrow').append($menu);
+    }
+
+    $(document)
+        .off('.wppDoptMenu')
+        .on('click.wppDoptMenu', '.wppoppop-dopt-tagbtn', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            if ($btn && $btn[0] === this && $menu) { close(); } else { open($(this)); }
+        })
+        .on('mouseenter.wppDoptMenu', '.wppoppop-dopt-tag-item', function() { $(this).css('background', '#f1f5f9'); })
+        .on('mouseleave.wppDoptMenu', '.wppoppop-dopt-tag-item', function() { $(this).css('background', 'transparent'); })
+        .on('click.wppDoptMenu', '.wppoppop-dopt-tag-item', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            var tag = $(this).attr('data-tag');
+            var $t = $btn ? $($btn.attr('data-target')) : $();
+            var el = $t.get(0);
+            if (el && tag) {
+                var v = $t.val() || '';
+                var a = (typeof el.selectionStart === 'number') ? el.selectionStart : v.length;
+                var b = (typeof el.selectionEnd === 'number') ? el.selectionEnd : a;
+                $t.val(v.slice(0, a) + tag + v.slice(b));
+                try { el.focus(); el.setSelectionRange(a + tag.length, a + tag.length); } catch (err) {}
+                $t.trigger('input');
+            }
+            close();
+        })
+        .on('click.wppDoptMenu', function(e) {
+            if ($menu && !$(e.target).closest('.wppoppop-dopt-tag-menu, .wppoppop-dopt-tagbtn').length) { close(); }
+        })
+        .on('keydown.wppDoptMenu', function(e) {
+            if ($menu && (e.key === 'Escape' || e.keyCode === 27)) { e.stopPropagation(); close(); }
+        });
 })(jQuery);
