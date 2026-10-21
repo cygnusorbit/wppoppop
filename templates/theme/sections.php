@@ -25,12 +25,27 @@ if (!defined('ABSPATH')) {
                 $id    = 'wpp-f-' . $key;
                 $var   = WpPopPop_Admin_Theme::css_var($key);
                 $is_color = ($field['type'] === 'color');
-                $is_wide  = in_array($field['type'], ['font', 'textarea', 'shadow'], true);
+                $is_wide  = in_array($field['type'], ['font', 'textarea', 'shadow', 'media'], true);
                 ?>
                 <div class="wpp-theme-field<?php echo $is_wide ? ' is-wide' : ''; ?><?php echo $field['type'] === 'bool' ? ' is-bool' : ''; ?>" data-label="<?php echo esc_attr(strtolower($field['label'] . ' ' . $key)); ?>">
                     <label for="<?php echo esc_attr($id); ?>"><?php echo esc_html($field['label']); ?></label>
                     <?php if ($field['type'] === 'bool') : ?>
                         <input type="checkbox" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" value="1" data-default="<?php echo (int) $field['default']; ?>" <?php checked(!empty($val)); ?>>
+                    <?php elseif ($field['type'] === 'media') :
+                        $wpp_logo_url = $val ? wp_get_attachment_image_url((int) $val, 'full') : '';
+                        $wpp_def_logo = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
+                        ?>
+                        <div class="wpp-theme-media" data-default="<?php echo esc_url($wpp_def_logo); ?>">
+                            <input type="hidden" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" value="<?php echo (int) $val; ?>" data-default="0">
+                            <div class="wpp-theme-media-preview" style="display:inline-flex;align-items:center;justify-content:center;min-width:56px;min-height:44px;padding:6px 10px;margin:0 0 8px;border:1px solid #c3c4c7;border-radius:3px;background:#fff;">
+                                <img src="<?php echo esc_url($wpp_logo_url ? $wpp_logo_url : $wpp_def_logo); ?>" alt="" style="display:block;max-width:140px;max-height:44px;object-fit:contain;">
+                            </div>
+                            <div>
+                                <button type="button" class="button wpp-theme-media-pick"><?php echo $val ? esc_html__('Replace logo', 'wppoppop') : esc_html__('Upload logo', 'wppoppop'); ?></button>
+                                <button type="button" class="button wpp-theme-media-remove"<?php echo $val ? '' : ' style="display:none;"'; ?>><?php esc_html_e('Remove', 'wppoppop'); ?></button>
+                            </div>
+                            <p class="description" style="margin:6px 0 0;"><?php esc_html_e('Shown in the top bar of every WpPopPop page. Leave empty to use the default logo.', 'wppoppop'); ?></p>
+                        </div>
                     <?php elseif ($field['type'] === 'enum') : ?>
                         <select id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" data-wpp-var="<?php echo esc_attr($var); ?>" data-default="<?php echo esc_attr($field['default']); ?>">
                             <?php foreach ($field['options'] as $ov => $ol) : ?>

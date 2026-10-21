@@ -183,8 +183,14 @@ $list_table->prepare_items();
         <?php endif; ?>
         <?php wp_nonce_field('bulk-popups'); ?>
         <?php
+        /* WPPOPPOP_LIST_TOOLBAR: status filter + search on one row */
+        ob_start();
         $list_table->views();
+        $wppoppop_views_html = ob_get_clean();
+        ob_start();
         $list_table->search_box(__('Search Popups', 'wppoppop'), 'wppoppop');
+        $wppoppop_search_html = ob_get_clean();
+        echo '<div class="wppoppop-list-toolbar">' . $wppoppop_views_html . $wppoppop_search_html . '</div>';
         $list_table->display();
         ?>
     </form>

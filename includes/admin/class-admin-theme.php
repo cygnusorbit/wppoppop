@@ -71,6 +71,7 @@ class WpPopPop_Admin_Theme {
             'general' => ['label' => 'General', 'fields' => [
                 'enabled'       => $f('Enable global theme on all WpPopPop pages', 'bool', 1),
                 'apply_builder' => $f('Also apply to the Builder page', 'bool', 0),
+                'logo_id'       => $f('Top bar logo', 'media', 0),
                 'c_bg_page'     => $f('Page background', 'color', '#f0f0f1'),
                 'c_bg_card'     => $f('Card / panel background', 'color', '#ffffff'),
                 'c_border'      => $f('Border color', 'color', '#dcdcde'),
@@ -250,6 +251,9 @@ class WpPopPop_Admin_Theme {
                 return ($value !== '' && strlen($value) <= 250 && preg_match('/^[A-Za-z0-9 ,"\'\-_.]+$/', $value)) ? $value : $field['default'];
             case 'shadow':
                 return ($value !== '' && strlen($value) <= 200 && preg_match('/^(none|[0-9a-zA-Z\s.,#()%\-]+)$/', $value)) ? $value : $field['default'];
+            case 'media':
+                $wpp_id = absint($value);
+                return ($wpp_id && strpos((string) get_post_mime_type($wpp_id), 'image/') === 0) ? $wpp_id : 0;
             case 'textarea':
                 $value = wp_strip_all_tags($value);
                 return str_ireplace('</style', '', substr($value, 0, 20000));
@@ -287,6 +291,16 @@ class WpPopPop_Admin_Theme {
         return $values;
     }
 
+    /** Custom top-bar logo URL, or '' to use the bundled default logo. */
+    public static function logo_url() {
+        $v  = self::get_values();
+        $id = isset($v['logo_id']) ? (int) $v['logo_id'] : 0;
+        if ($id <= 0) { return ''; }
+        $url = wp_get_attachment_image_url($id, 'full');
+        if (!$url) { $url = wp_get_attachment_url($id); }
+        return $url ? $url : '';
+    }
+
     /* -------------------------------------------------------- output */
     public static function is_wppoppop_admin_page() {
         $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
@@ -313,7 +327,7 @@ class WpPopPop_Admin_Theme {
         $css = 'body.wppoppop-admin-themed{';
         foreach (self::schema() as $group) {
             foreach ($group['fields'] as $key => $field) {
-                if (in_array($field['type'], ['bool', 'textarea'], true)) {
+                if (in_array($field['type'], ['bool', 'textarea', 'media'], true)) {
                     continue;
                 }
                 $css .= self::css_var($key) . ':' . $v[$key] . ';';
@@ -343,6 +357,8 @@ class WpPopPop_Admin_Theme {
         wp_enqueue_style('wppoppop-theme-css', WPPOPPOP_URL . 'admin/css/theme.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css', 'wppoppop-theme-global-css'], $v);
         wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $v, true);
         wp_enqueue_script('wppoppop-theme-js', WPPOPPOP_URL . 'admin/js/theme.js', [], $v, true);
+        wp_enqueue_media();
+        wp_enqueue_script('wppoppop-theme-logo-js', WPPOPPOP_URL . 'admin/js/theme-logo.js', ['wppoppop-theme-js'], $v, true);
     }
 
     /* ---------------------------------------------------------- save */
