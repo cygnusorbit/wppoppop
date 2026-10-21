@@ -7,7 +7,7 @@
     'use strict';
 
     var MEDIA_TYPES = ['shape', 'image', 'video', 'label', 'html', 'close', 'icon', 'progress', 'button', 'submit'];
-    var FORM_TYPES  = ['text', 'email', 'number', 'phone', 'textarea', 'select', 'checkbox', 'radio', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'password', 'rating'];
+    var FORM_TYPES  = ['text', 'email', 'number', 'phone', 'textarea', 'select', 'checkbox', 'radio', 'checkboxgroup', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'password', 'rating'];
 
     var TYPE_ALIASES = {
         'title': 'label',
@@ -28,7 +28,7 @@
 
     var TYPOGRAPHY_CAPABLE = [
         'label', 'button', 'submit', 'text', 'email', 'number', 'phone',
-        'textarea', 'select', 'checkbox', 'radio', 'multiselect', 'tile',
+        'textarea', 'select', 'checkbox', 'radio', 'checkboxgroup', 'multiselect', 'tile',
         'date', 'time', 'upload', 'password'
     ];
 
@@ -52,7 +52,8 @@
         phone: '13. Phone / Tel',
         textarea: '14. Textarea',
         select: '15. Select Dropdown',
-        checkbox: '16. Checkbox',
+        checkbox: 'Agreement Checkbox',
+        checkboxgroup: '16. Checkbox',
         radio: '17. Radio Button',
         multiselect: '18. Multiselect',
         imageselect: '19. Image Select',
@@ -607,6 +608,7 @@
 
                 case 'select':
                 case 'radio':
+                case 'checkboxgroup':
                 case 'checkbox':
                 case 'multiselect':
                     var optVal = Array.isArray(el.options) ? el.options.join('\n') : (el.content || 'Option 1\nOption 2\nOption 3');
@@ -615,7 +617,7 @@
                             '<label>CHOICES / OPTIONS (ONE PER LINE OR COMMA SEPARATED)</label>' +
                             '<textarea id="gp-cnt-choice-options" rows="3">' + this.esc(optVal) + '</textarea>' +
                         '</div>';
-                    if (cType === 'checkbox' || cType === 'radio') {
+                    if (cType === 'checkbox' || cType === 'radio' || cType === 'checkboxgroup') {
                         html += '' +
                             '<div><label>LAYOUT ORIENTATION</label>' +
                                 '<select id="gp-cnt-choice-layout">' +
@@ -955,6 +957,7 @@
                         break;
                     case 'select':
                     case 'radio':
+                case 'checkboxgroup':
                     case 'checkbox':
                     case 'multiselect':
                         var rawOpts = $('#gp-cnt-choice-options').val() || '';

@@ -599,6 +599,15 @@ class WpPopPop_Front_Renderer {
                 $html .= '</div>';
                 return $html;
 
+            case 'checkboxgroup':
+                /* WPPOPPOP_CBGROUP_DECOMPOSED */
+                if (!class_exists('WpPopPop_Front_Decomposed_26')) {
+                    $wppoppop_cg_file = WPPOPPOP_PATH . 'includes/front/elements/class-front-decomposed-26.php';
+                    if (file_exists($wppoppop_cg_file)) { require_once $wppoppop_cg_file; }
+                }
+                $wppoppop_cg_inner = class_exists('WpPopPop_Front_Decomposed_26') ? WpPopPop_Front_Decomposed_26::render_element('checkboxgroup', $el) : '';
+                return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-checkboxgroup ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . (string) $wppoppop_cg_inner . '</div>';
+
             case 'checkbox':
             case 'checkboxes':
                 /* WPPOPPOP_CHECKBOX_DECOMPOSED */

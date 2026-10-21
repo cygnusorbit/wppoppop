@@ -20,7 +20,7 @@
         'text', 'email', 'number', 'phone', 'textarea',
         'select', 'checkbox', 'radio', 'multiselect', 'imageselect',
         'tile', 'date', 'time', 'upload', 'password', 'rating',
-        'textfield', 'tel', 'dropdown', 'checkboxes', 'radios', 'file'
+        'textfield', 'tel', 'dropdown', 'checkboxes', 'radios', 'file', 'checkboxgroup'
     ];
 
     var PANEL_MAP = {
@@ -51,6 +51,7 @@
         'checkbox': '#panel-elem-checkbox, #panel-elem-checkboxes',
         'checkboxes': '#panel-elem-checkboxes, #panel-elem-checkbox',
         'radio': '#panel-elem-radio, #panel-elem-radios',
+        'checkboxgroup': '#panel-elem-checkboxgroup',
         'radios': '#panel-elem-radios, #panel-elem-radio',
         'multiselect': '#panel-elem-multiselect',
         'imageselect': '#panel-elem-imageselect',

@@ -107,7 +107,7 @@ class WpPopPop_Ajax_Submissions {
             return $out;
         }
         $types = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
-            'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
+            'radio', 'radios', 'checkboxgroup', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
         $cvs = isset($cfg['canvases']) ? $cfg['canvases'] : (isset($cfg['screens']) ? $cfg['screens'] : []);
         if (empty($cvs) && !empty($cfg['elements']) && is_array($cfg['elements'])) {
             $cvs = [$cfg['elements']];

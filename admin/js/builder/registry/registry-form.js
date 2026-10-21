@@ -152,6 +152,29 @@
                     '</span><span>' + $('<div>').text(opt).html() + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (rRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (rRow ? 'center' : rJ) + ';justify-content:' + (rRow ? rJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + rHtml + '</div>';
+        } else if (canonical === 'checkboxgroup') {
+            /* WPPOPPOP_CBGROUP_STAGE */
+            var gPairs = parseOptionsList(el.optionsList || el.options, ['Choice A', 'Choice B', 'Choice C']).map(function(o) {
+                var s0 = String(o), i0 = s0.indexOf('|');
+                return i0 === -1 ? { l: $.trim(s0), v: '' } : { l: $.trim(s0.slice(0, i0)), v: $.trim(s0.slice(i0 + 1)) };
+            });
+            var gDefs = defVal ? defVal.split(',').map(function(x) { return $.trim(x).toLowerCase(); }) : [];
+            var gLay = String(el.layout || 'vertical').toLowerCase();
+            var gRow = (gLay === 'horizontal' || gLay === 'inline' || gLay === 'row');
+            var gJ = align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start');
+            var gTxt = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;' +
+                'font-weight:' + (el.fontWeight || '400') + ';' +
+                'line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';' +
+                'letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;' +
+                'color:' + (el.color || '#1e293b') + ';' +
+                ((el.fontFamily && el.fontFamily !== 'inherit') ? 'font-family:' + String(el.fontFamily).replace(/["<>]/g, '') + ';' : '');
+            var gHtml = gPairs.map(function(it, idx) {
+                var on = gDefs.length && (gDefs.indexOf(it.l.toLowerCase()) !== -1 || (it.v && gDefs.indexOf(it.v.toLowerCase()) !== -1));
+                return '<span style="display:inline-flex;align-items:center;gap:8px;' + gTxt + '">' +
+                    '<span style="width:16px;height:16px;border-radius:3px;border:1.5px solid ' + (on ? '#c2185b' : '#94a3b8') + ';background:' + (on ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;flex-shrink:0;">' + (on ? '&#10003;' : '') + '</span>' +
+                    '<span>' + $('<div>').text(it.l || it.v).html() + (idx === 0 ? reqStar : '') + '</span></span>';
+            }).join('');
+            innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (gRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (gRow ? 'center' : gJ) + ';justify-content:' + (gRow ? gJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + gHtml + '</div>';
         } else if (canonical === 'multiselect') {
             var mOpts = parseOptionsList(el.optionsList || el.options, ['Marketing', 'Design', 'Development']);
             var maxS  = parseInt(el.maxSelections || el.maxSelect, 10) || 0;
@@ -285,7 +308,7 @@
         }
         if (canonical === 'tile' && $node[0]) { $node[0].style.setProperty('background-color', 'transparent', 'important'); } /* WPPOPPOP_TILE_BG_BOX */
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'multiselect' || canonical === 'tile') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'checkboxgroup' || canonical === 'multiselect' || canonical === 'tile') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };
@@ -1245,3 +1268,47 @@
     });
 })(window, jQuery);
 /* === WPPOPPOP_SUBMIT_ICONS_SHADOW_END === */
+
+
+/* === WPPOPPOP_CBGROUP_HYDRATE_START === */
+(function(window, $) {
+    'use strict';
+    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    function cgEl() {
+        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
+        return (el && String(el.type || '').toLowerCase() === 'checkboxgroup') ? el : null;
+    }
+    function apply(el) {
+        if (!el) return;
+        $('[id$="-legacy"]').hide();
+        $('.element-panel, .wppoppop-panel-specific').hide();
+        var $p = $('#panel-elem-checkboxgroup').show();
+        $p.find('.wppoppop-gp-bind').each(function() {
+            var $i = $(this), k = $i.data('prop');
+            if (!k) return;
+            var v = el[k];
+            if (v === undefined && k === 'optionsList') v = el.options || '';
+            if (Array.isArray(v)) v = v.join('\n');
+            if ($i.is(':checkbox')) $i.prop('checked', !!v);
+            else if (v !== undefined && v !== null) $i.val(v);
+        });
+        $('#prop-checkboxgroup-layout').val(el.layout || 'vertical');
+        if (window.__wppCheckboxRebuild) { window.__wppCheckboxRebuild(true); }
+        $('#insp-tab-style').addClass('wppoppop-rd-style');
+        if (!el.bgColor) { $('#prop-bg-color').val('#ffffff'); $('#prop-bg-transparent').prop('checked', true); }
+    }
+    if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._cgHooked) {
+        Reg._cgHooked = true;
+        var orig = Reg.hydrateCoreAndStyleFields;
+        Reg.hydrateCoreAndStyleFields = function(el) {
+            var r = orig.apply(this, arguments);
+            if (el && String(el.type || '').toLowerCase() === 'checkboxgroup') { apply(el); }
+            return r;
+        };
+    }
+    $(document).off('click.wppCgHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]')
+        .on('click.wppCgHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab]', function() {
+            [40, 160, 420].forEach(function(ms) { setTimeout(function() { var e = cgEl(); if (e) apply(e); }, ms); });
+        });
+})(window, jQuery);
+/* === WPPOPPOP_CBGROUP_HYDRATE_END === */

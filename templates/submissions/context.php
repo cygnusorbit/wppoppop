@@ -59,7 +59,7 @@ if ($sel_uid !== '') {
     $__cfg = $__raw ? json_decode($__raw, true) : null;
     if (is_array($__cfg)) {
         $__form_types = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
-            'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
+            'radio', 'radios', 'checkboxgroup', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
         $__canvases = isset($__cfg['canvases']) ? $__cfg['canvases'] : (isset($__cfg['screens']) ? $__cfg['screens'] : []);
         if (empty($__canvases) && !empty($__cfg['elements']) && is_array($__cfg['elements'])) {
             $__canvases = [$__cfg['elements']];
@@ -120,7 +120,7 @@ if ($sel_uid !== '') {
 // ---- Per-popup field maps (uid => [key => label]) used to resolve cells across popups ----
 $popup_field_maps = [];
 $__ftypes = ['text', 'textfield', 'email', 'number', 'phone', 'textarea', 'select', 'dropdown', 'checkbox', 'checkboxes',
-    'radio', 'radios', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
+    'radio', 'radios', 'checkboxgroup', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'file', 'password', 'rating', 'slider', 'signature'];
 $__extract = function ($cfg) use ($__ftypes) {
     $out = [];
     if (!is_array($cfg)) {

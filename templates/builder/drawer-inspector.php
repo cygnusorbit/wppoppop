@@ -222,7 +222,7 @@ if (!defined('ABSPATH')) exit;
             </div>
 <div id="wppoppop-element-specific-settings">
                 <?php
-                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
+                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-16b-checkboxgroup.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
                     $wppoppop_mod_file = __DIR__ . '/elements/' . $wppoppop_mod;
                     if (file_exists($wppoppop_mod_file)) {
                         include $wppoppop_mod_file;

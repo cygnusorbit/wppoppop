@@ -363,6 +363,39 @@ class WpPopPop_Front_Decomposed_26 {
                 }
                 return '<div class="wppoppop-radio-group" role="radiogroup" style="width:100%;height:100%;display:flex;flex-direction:' . ($rd_row ? 'row' : 'column') . ';flex-wrap:wrap;align-items:' . ($rd_row ? 'center' : $rd_j) . ';justify-content:' . ($rd_row ? $rd_j : 'center') . ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:auto;' . $rd_ty . '">' . $rd_html . '</div>';
 
+            case 'checkboxgroup':
+                /* WPPOPPOP_CBGROUP_FRONT: Label|Value checkbox group, array submit, layout, typography, any-checked required */
+                $cg_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : '';
+                $cg_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $cg_raw)), 'strlen'));
+                if (empty($cg_items)) { $cg_items = array('Choice A', 'Choice B', 'Choice C'); }
+                $cg_lay = strtolower((string) (isset($el['layout']) ? $el['layout'] : 'vertical'));
+                $cg_row = in_array($cg_lay, array('horizontal', 'inline', 'row'), true);
+                $cg_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
+                $cg_j = ($cg_al === 'center') ? 'center' : (($cg_al === 'right') ? 'flex-end' : 'flex-start');
+                $cg_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
+                if (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) { $cg_ty .= 'font-weight:' . $el['fontWeight'] . ';'; }
+                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $cg_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
+                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $cg_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
+                if (!empty($el['color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['color'])) { $cg_ty .= 'color:' . $el['color'] . ';'; }
+                if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit' && preg_match('/^[A-Za-z0-9 ,\'"-]+$/', (string) $el['fontFamily'])) { $cg_ty .= 'font-family:' . esc_attr($el['fontFamily']) . ';'; }
+                $cg_defs = array_filter(array_map('trim', explode(',', $default_val)), 'strlen');
+                $cg_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
+                $cg_html = '';
+                foreach ($cg_items as $cg_i => $cg_item_raw) {
+                    $cg_pp = explode('|', (string) $cg_item_raw, 2);
+                    $cg_label = trim($cg_pp[0]);
+                    $cg_value = (isset($cg_pp[1]) && trim($cg_pp[1]) !== '') ? trim($cg_pp[1]) : $cg_label;
+                    if ($cg_label === '') { $cg_label = $cg_value; }
+                    $cg_id = $field_id . '-' . $cg_i;
+                    $cg_attr = ($cg_i === 0) ? $cg_data : preg_replace('/\srequired="required"|\saria-required="true"|\sdata-error-msg="[^"]*"/', '', $cg_data);
+                    $cg_on = (in_array($cg_value, $cg_defs, true) || in_array($cg_label, $cg_defs, true));
+                    $cg_html .= '<label for="' . esc_attr($cg_id) . '" style="display:inline-flex;align-items:center;gap:8px;font-size:inherit;color:inherit;cursor:pointer;line-height:inherit;">'
+                        . '<input type="checkbox" id="' . esc_attr($cg_id) . '" name="fields[' . esc_attr($field_name) . '][]" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($cg_value) . '" class="wppoppop-form-input wppoppop-input-checkbox"' . ($cg_on ? ' checked' : '') . $cg_attr
+                        . ' style="width:16px;height:16px;margin:0;flex-shrink:0;cursor:pointer;pointer-events:auto;" />'
+                        . '<span>' . esc_html($cg_label) . '</span></label>';
+                }
+                return '<div class="wppoppop-checkbox-group wppoppop-checkboxgroup" role="group" style="width:100%;height:100%;display:flex;flex-direction:' . ($cg_row ? 'row' : 'column') . ';flex-wrap:wrap;align-items:' . ($cg_row ? 'center' : $cg_j) . ';justify-content:' . ($cg_row ? $cg_j : 'center') . ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:auto;' . $cg_ty . '">' . $cg_html . '</div>';
+
             case 'textarea':
                 /* WPPOPPOP_TEXTAREA_FRONT: alignment + rows min-height + live counter */
                 $ta_rows  = !empty($el['rows']) ? max(2, min(15, intval($el['rows']))) : 4;

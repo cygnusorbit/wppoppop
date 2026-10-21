@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 class WpPopPop_Ajax_Element_Inputs {
 
     public static function register() {
-        $types = ['textfield', 'email', 'number', 'select', 'dropdown', 'radios', 'radio', 'checkboxes', 'checkbox', 'date', 'file'];
+        $types = ['textfield', 'email', 'number', 'select', 'dropdown', 'radios', 'radio', 'checkboxgroup', 'checkboxes', 'checkbox', 'date', 'file'];
         foreach ($types as $t) {
             WpPopPop_Ajax_Element_Registry::register($t, [__CLASS__, 'sanitize_input']);
         }

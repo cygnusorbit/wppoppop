@@ -276,6 +276,7 @@
                 case 'number':      return 'dashicons-calculator';
                 case 'select':      return 'dashicons-menu-alt';
                 case 'radios':      return 'dashicons-marker';
+                case 'checkboxgroup': return 'dashicons-yes-alt';
                 case 'checkboxes':  return 'dashicons-yes';
                 case 'rating':      return 'dashicons-star-filled';
                 case 'date':        return 'dashicons-calendar-alt';

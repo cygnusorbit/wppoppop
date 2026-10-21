@@ -1212,6 +1212,7 @@
             if (type === 'textarea') { newEl.height = 100; newEl.h = 100; if (!newEl.rows) { newEl.rows = 4; } } /* WPPOPPOP_TEXTAREA_H100 */
             if (type === 'checkbox' || type === 'checkboxes') { newEl.width = 300; newEl.w = 300; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_CHECKBOX_DEFAULTS */
             if (type === 'radio' || type === 'radios') { newEl.width = 100; newEl.w = 100; newEl.height = 100; newEl.h = 100; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_RADIO_DEFAULTS */
+            if (type === 'checkboxgroup') { newEl.width = 100; newEl.w = 100; newEl.height = 100; newEl.h = 100; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_CBGROUP_DEFAULTS */
             if (type === 'multiselect') { newEl.width = 125; newEl.w = 125; newEl.height = 125; newEl.h = 125; } /* WPPOPPOP_MULTISELECT_SIZE */
             if (type === 'tile') { newEl.textAlign = 'center'; newEl.hoverBgColor = '#0284c7'; newEl.hoverTextColor = '#ffffff'; newEl.hoverBorderColor = '#0284c7'; } /* WPPOPPOP_TILE_DEFAULTS */
             if (type === 'icon' || type === 'fontawesome') { /* WPPOPPOP_ICON_DEFAULTS_V1 */
@@ -1256,7 +1257,8 @@
                 case 'dropdown':
                 case 'select': return 'First Option, Second Option';
                 case 'radio':
-                case 'radios': return 'Option A, Option B';
+                case 'radios':
+                case 'checkboxgroup': return 'Option A, Option B';
                 case 'checkbox':
                 case 'checkboxes': return 'I agree to the terms';
                 case 'date': return '2026-10-10';
