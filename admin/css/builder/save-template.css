@@ -1,0 +1,49 @@
+/* WPPOPPOP_SAVE_TEMPLATE_BTN: Save As Template (green) */
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template,
+body.theme-light .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: none !important;
+    height: var(--wpp-ctl-h, 32px) !important;
+    min-height: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 6px 0 0 !important;
+    padding: 0 14px !important;
+    box-sizing: border-box !important;
+    background: #00a32a !important;
+    background-image: none !important;
+    border: 1px solid #008a20 !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    vertical-align: middle !important;
+    transition: background-color .15s ease, border-color .15s ease !important;
+}
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:hover,
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:focus {
+    background: #008a20 !important;
+    border-color: #007017 !important;
+    color: #ffffff !important;
+    outline: none !important;
+}
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:focus-visible {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #00a32a !important;
+}
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:active {
+    background: #007017 !important;
+}
+body .wppoppop-builder-wrap .wppoppop-builder-header #wppoppop-btn-save-template:disabled {
+    opacity: .6 !important;
+    cursor: not-allowed !important;
+}

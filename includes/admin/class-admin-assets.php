@@ -66,6 +66,8 @@ class WpPopPop_Admin_Assets {
         // 2. Visual Builder Assets (Equipped with Typography and Custom Fonts)
         if ($page === 'wppoppop-builder') {
             wp_enqueue_style('wppoppop-builder-css', WPPOPPOP_URL . 'admin/css/builder.css', [], self::ver());
+            $wppoppop_st_file = WPPOPPOP_PATH . 'admin/css/builder/save-template.css';
+            wp_enqueue_style('wppoppop-builder-save-template-css', WPPOPPOP_URL . 'admin/css/builder/save-template.css', ['wppoppop-builder-css'], file_exists($wppoppop_st_file) ? (string) filemtime($wppoppop_st_file) : self::ver());
             wp_enqueue_script('jquery-ui-draggable');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-sortable');
@@ -113,7 +115,7 @@ class WpPopPop_Admin_Assets {
                 'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
                 'save_template' => (function () {
                     $s = get_option('wppoppop_settings', []);
-                    return (is_array($s) && !empty($s['builder_disable_save_template'])) ? 0 : 1;
+                    return (is_array($s) && array_key_exists('builder_save_template', $s) && empty($s['builder_save_template'])) ? 0 : 1;
                 })(),
                 'alignment_tool' => (function () {
                     $s = get_option('wppoppop_settings', []);

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 $__align_on = !array_key_exists('builder_alignment_tool', (array) $settings) || !empty($settings['builder_alignment_tool']);
 $__vp_on = !array_key_exists('builder_viewport_toggle', (array) $settings) || !empty($settings['builder_viewport_toggle']);
 $__zm_on = !array_key_exists('builder_zoom_select', (array) $settings) || !empty($settings['builder_zoom_select']);
-$__st_off = !empty($settings['builder_disable_save_template']);
+$__st_on = !array_key_exists('builder_save_template', (array) $settings) || !empty($settings['builder_save_template']);
 ?>
 <style>
 .wppoppop-bld-list{max-width:720px;margin:0;padding:0;list-style:none}
@@ -55,12 +55,12 @@ $__st_off = !empty($settings['builder_disable_save_template']);
             </label>
         </li>
         <li>
-            <span class="bld-name"><?php esc_html_e('Disable Save As Template', 'wppoppop'); ?>
-                <span class="bld-desc"><?php esc_html_e('Hide the green Save As Template button in the builder header and block saving new templates.', 'wppoppop'); ?></span>
+            <span class="bld-name"><?php esc_html_e('Save As Template', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Show the green Save As Template button in the builder header so popups can be saved to the Popups Library.', 'wppoppop'); ?></span>
             </span>
-            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Disable Save As Template', 'wppoppop'); ?>">
-                <input type="hidden" name="settings[builder_disable_save_template]" value="0">
-                <input type="checkbox" name="settings[builder_disable_save_template]" value="1" <?php checked($__st_off); ?>>
+            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Save As Template', 'wppoppop'); ?>">
+                <input type="hidden" name="settings[builder_save_template]" value="0">
+                <input type="checkbox" name="settings[builder_save_template]" value="1" <?php checked($__st_on); ?>>
                 <span class="trk"></span>
             </label>
         </li>

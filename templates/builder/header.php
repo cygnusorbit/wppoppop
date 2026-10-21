@@ -7,7 +7,7 @@ $__wpp_set   = get_option('wppoppop_settings', []);
 $__wpp_set   = is_array($__wpp_set) ? $__wpp_set : [];
 $__wpp_vp_on = !array_key_exists('builder_viewport_toggle', $__wpp_set) || !empty($__wpp_set['builder_viewport_toggle']);
 $__wpp_zm_on = !array_key_exists('builder_zoom_select', $__wpp_set) || !empty($__wpp_set['builder_zoom_select']);
-$__wpp_tpl_on = empty($__wpp_set['builder_disable_save_template']);
+$__wpp_tpl_on = !array_key_exists('builder_save_template', $__wpp_set) || !empty($__wpp_set['builder_save_template']);
 ?>
 <div class="wppoppop-builder-header">
     <!-- Left Section: Navigation, Settings, Title -->
@@ -59,7 +59,7 @@ $__wpp_tpl_on = empty($__wpp_set['builder_disable_save_template']);
         <button type="button" class="wppoppop-btn wppoppop-btn-secondary wppoppop-hdr-icon-btn" id="wppoppop-btn-preview" title="Preview" aria-label="Preview"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
         <button type="button" id="wppoppop-btn-embed" class="button wppoppop-hdr-icon-btn" title="Get Embed Codes" aria-label="Embed"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
         <?php if ($__wpp_tpl_on) : ?>
-        <button type="button" class="wppoppop-btn wppoppop-btn-save-template" id="wppoppop-btn-save-template" title="Save As Template" style="background:#00a32a;border:1px solid #008a20;color:#fff;cursor:pointer;">Save As Template</button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-save-template" id="wppoppop-btn-save-template" title="Save As Template">Save As Template</button>
         <?php endif; ?>
         <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save">Save</button>
     </div>

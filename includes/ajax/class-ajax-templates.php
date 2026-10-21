@@ -35,8 +35,8 @@ class WpPopPop_Ajax_Templates {
         $this->guard();
 
         $s = get_option('wppoppop_settings', array());
-        if (is_array($s) && !empty($s['builder_disable_save_template'])) {
-            wp_send_json_error(array('message' => 'Save As Template is disabled in Settings > Builder.'));
+        if (is_array($s) && array_key_exists('builder_save_template', $s) && empty($s['builder_save_template'])) {
+            wp_send_json_error(array('message' => 'Save As Template is turned off in Settings > Builder.'));
         }
 
         $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
@@ -53,6 +53,28 @@ class WpPopPop_Ajax_Templates {
         }
         if (!class_exists('WpPopPop_Sanitizer')) {
             require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sanitizer.php';
+        }
+        /* WPPOPPOP_TPL_WHITELIST: parity with the popup save whitelists */
+        if (isset($obj->settings) && is_object($obj->settings)) {
+            if (!class_exists('WpPopPop_Overlay')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-overlay.php'; }
+            $obj->settings->overlay = json_decode(wp_json_encode(
+                WpPopPop_Overlay::sanitize(isset($obj->settings->overlay) ? $obj->settings->overlay : array())
+            ));
+            $cel_ok = array('default', 'none', 'burst', 'cannon', 'fireworks', 'rain', 'stars', 'both');
+            $cel    = (isset($obj->settings->celebration) && is_object($obj->settings->celebration) && isset($obj->settings->celebration->effect))
+                ? (string) $obj->settings->celebration->effect : 'default';
+            $obj->settings->celebration = (object) array('effect' => in_array($cel, $cel_ok, true) ? $cel : 'default');
+            $mo_in = isset($obj->settings->module_order) ? $obj->settings->module_order : array();
+            if (is_object($mo_in)) { $mo_in = array_values(get_object_vars($mo_in)); }
+            $mo = array();
+            if (is_array($mo_in)) {
+                foreach (array_slice($mo_in, 0, 60) as $mk) {
+                    if (!is_scalar($mk)) { continue; }
+                    $mk = sanitize_key((string) $mk);
+                    if ($mk !== '' && !in_array($mk, $mo, true)) { $mo[] = $mk; }
+                }
+            }
+            $obj->settings->module_order = $mo;
         }
         $obj  = WpPopPop_Sanitizer::anim_payload($obj);
         $json = wp_json_encode($obj);

@@ -84,7 +84,7 @@ class WpPopPop_Admin_Settings {
             'builder_alignment_tool' => 1,
             'builder_viewport_toggle' => 1,
             'builder_zoom_select' => 1,
-            'builder_disable_save_template' => 0,
+            'builder_save_template' => 1,
             'menu_pages' => [],
             'clean_on_uninstall' => 0,
         ];
@@ -106,7 +106,7 @@ class WpPopPop_Admin_Settings {
         };
         $admin = get_option('admin_email');
         $o = [];
-        $o['builder_disable_save_template'] = !empty($in['builder_disable_save_template']) ? 1 : 0;
+        $o['builder_save_template'] = (array_key_exists('builder_save_template', $in) && empty($in['builder_save_template'])) ? 0 : 1;
 
         // 1. General & Mailing
         $name = !empty($in['sender_name']) ? $in['sender_name'] : (!empty($in['from_name']) ? $in['from_name'] : '');

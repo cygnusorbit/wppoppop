@@ -29,6 +29,20 @@
             var settings = window.WpPopPopBuilderSettings ? window.WpPopPopBuilderSettings.getSettings() : {};
             var canv = st.canvases || { 1: [] };
             var meta = st.canvasMeta || {};
+            /* WPPOPPOP_TPL_ANIM_SYNC: same live-field sync the Save button performs */
+            var cur = st.currentCanvas || 1;
+            if (!st.canvasMeta) { st.canvasMeta = {}; }
+            if (!st.canvasMeta[cur]) { st.canvasMeta[cur] = {}; }
+            meta = st.canvasMeta;
+            var cm = meta[cur];
+            var vApp = $('#set-canvas-anim-appearance, #set-anim-appearance').val();
+            if (vApp) { cm.anim_appearance = vApp; }
+            var vDur = $('#set-canvas-anim-duration, #set-anim-duration').val();
+            if (vDur !== undefined && vDur !== '' && !isNaN(vDur)) { cm.anim_duration = parseInt(vDur, 10); }
+            var vDel = $('#set-canvas-anim-delay, #set-anim-delay').val();
+            if (vDel !== undefined && vDel !== '' && !isNaN(vDel)) { cm.anim_delay = parseInt(vDel, 10); }
+            var vDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
+            if (vDis) { cm.anim_disappearance = vDis; }
             return {
                 title: $('#wppoppop-builder-title').val() || 'Untitled Popup',
                 canvases: canv,
