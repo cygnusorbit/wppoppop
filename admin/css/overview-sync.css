@@ -1,0 +1,59 @@
+/* Dashboard overview: width parity with the Popups page, Global Theme sync, drag handle.
+   Theme rules are scoped to body.wppoppop-admin-themed so they follow the Theme page on/off switch. */
+
+/* 1. Same width as page=wppoppop */
+body.wp-admin #wpcontent .wppoppop-dash.wppoppop-overview-wrap {
+    box-sizing: border-box; width: 100%; max-width: none; padding-right: 30px; margin: 10px 20px 0 2px;
+}
+body.wp-admin #wpcontent .wppoppop-overview-wrap .wppoppop-dash-bar { box-sizing: border-box; max-width: 100%; }
+
+/* 2. Global Theme sync (fills the gaps theme-global.css does not cover) */
+body.wppoppop-admin-themed .wppoppop-overview-wrap { font-family: var(--wpp-font-base, inherit); color: var(--wpp-c-text, #1d2327); }
+
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-pop-list li { border-bottom-color: var(--wpp-c-row-border, #f0f0f1); font-size: var(--wpp-fs-small, 12px); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-pop-list li .t { color: var(--wpp-c-heading, #1d2327); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-pop-list li .m { color: var(--wpp-c-muted, #787c82); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-pop-list li .a a { color: var(--wpp-c-link, #2271b1); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-pop-list li .a a:hover,
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-pop-list li .a a:focus { color: var(--wpp-c-link-hover, #135e96); }
+
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-sub-list li { border-bottom-color: var(--wpp-c-row-border, #f0f0f1); font-size: var(--wpp-fs-small, 12px); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-sub-list li.is-unread .dot { background: var(--wpp-c-primary, #c1272d); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-sub-list .who { color: var(--wpp-c-text, #1d2327); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-sub-list li.is-unread .who { color: var(--wpp-c-link, #2271b1); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-sub-list .pop,
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-sub-list .when { color: var(--wpp-c-muted, #787c82); }
+
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-btn-red:hover,
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-btn-red:focus { background: var(--wpp-c-primary-hover, #a51f25); color: var(--wpp-c-primary-text, #fff); }
+
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .tile {
+    background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-button, 3px);
+}
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .tile:hover,
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .tile:focus { border-color: var(--wpp-c-primary, #c1272d); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .ico { color: var(--wpp-c-muted, #50575e); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .lbl { background: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-primary-text, #fff); }
+body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .tile:hover .lbl { background: var(--wpp-c-primary-hover, #a51f25); }
+
+/* 3. Drag handle + drag states */
+.wppoppop-overview-wrap .wppoppop-box { position: relative; }
+.wppoppop-overview-wrap .wppoppop-box-grip {
+    position: absolute; top: 12px; right: 12px; z-index: 3; width: 26px; height: 26px; padding: 0; margin: 0;
+    display: -webkit-inline-box; display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid transparent; border-radius: 4px; color: #787c82; opacity: .55;
+    cursor: -webkit-grab; cursor: grab; -ms-touch-action: none; touch-action: none;
+    -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-appearance: none; appearance: none; box-shadow: none;
+}
+.wppoppop-overview-wrap .wppoppop-box:hover .wppoppop-box-grip,
+.wppoppop-overview-wrap .wppoppop-box-grip:focus { opacity: 1; background: #f6f7f7; border-color: #c3c4c7; outline: 0; }
+.wppoppop-overview-wrap .wppoppop-box-grip .dashicons { width: 16px; height: 16px; font-size: 16px; line-height: 1; pointer-events: none; }
+.wppoppop-overview-wrap .wppoppop-box.is-dragging { opacity: .75; outline: 2px solid #3b82f6; box-shadow: 0 8px 22px rgba(15, 23, 42, .22); }
+.wppoppop-overview-wrap .wppoppop-box.is-dragging .wppoppop-box-grip { cursor: -webkit-grabbing; cursor: grabbing; }
+body.wppoppop-dash-dragging { -webkit-user-select: none; -moz-user-select: none; user-select: none; cursor: -webkit-grabbing; cursor: grabbing; }
+.wppoppop-dash-toast {
+    position: fixed; right: 24px; bottom: 24px; z-index: 100000; padding: 8px 14px; border-radius: 4px;
+    background: #1d2327; color: #fff; font-size: 12px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s ease;
+}
+.wppoppop-dash-toast.is-on { opacity: .95; }
+.wppoppop-dash-toast.is-error { background: #b32d2e; }

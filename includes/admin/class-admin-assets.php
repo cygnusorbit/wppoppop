@@ -170,6 +170,16 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('dashicons');
             wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $ov_ver);
             wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $ov_ver, true);
+            if ($page === 'wppoppop-dashboard') {
+                $wppoppop_sync_deps = ['wppoppop-overview-css'];
+                if (wp_style_is('wppoppop-theme-global-css', 'enqueued')) { $wppoppop_sync_deps[] = 'wppoppop-theme-global-css'; }
+                wp_enqueue_style('wppoppop-overview-sync-css', WPPOPPOP_URL . 'admin/css/overview-sync.css', $wppoppop_sync_deps, $ov_ver);
+                wp_enqueue_script('wppoppop-dash-layout-js', WPPOPPOP_URL . 'admin/js/dash-layout.js', [], $ov_ver, true);
+                wp_localize_script('wppoppop-dash-layout-js', 'wppoppop_dash_layout', [
+                    'ajax_url' => admin_url('admin-ajax.php'),
+                    'nonce'    => wp_create_nonce('wppoppop_admin_nonce'),
+                ]);
+            }
         }
 
         // A/B Campaigns Assets (previously never enqueued -> buttons were dead, no nonce)

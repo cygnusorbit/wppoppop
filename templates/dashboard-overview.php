@@ -3,79 +3,21 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$menu_links = [
-    ['wppoppop-dashboard',       'Dashboard',        'dashicons-screenoptions'],
-    ['wppoppop',                 'Popups',           'dashicons-megaphone'],
-    ['wppoppop-builder',         'Create Popup',     'dashicons-plus-alt'],
-    ['wppoppop-ab',              'A/B Campaigns',    'dashicons-randomize'],
-    ['wppoppop-submissions',     'Submissions',      'dashicons-email-alt'],
-    ['wppoppop-log',             'Activity Log',     'dashicons-list-view'],
-    ['wppoppop-stats',           'Statistics',       'dashicons-chart-bar'],
-    ['wppoppop-field-analytics', 'Field Analytics',  'dashicons-chart-pie'],
-    ['wppoppop-payments',        'Transactions',     'dashicons-money-alt'],
-    ['wppoppop-library',         'Popups Library',   'dashicons-category'],
-    ['wppoppop-settings',        'Settings',         'dashicons-admin-generic'],
-    ['wppoppop-theme',           'Theme',            'dashicons-art'],
-    ['wppoppop-tools',           'Tools & Export',   'dashicons-admin-tools'],
-];
-
 $builder_url = admin_url('admin.php?page=wppoppop-builder');
-$logo_url    = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
 ?>
-<div class="wrap wppoppop-dash">
+<div class="wrap wppoppop-dash wppoppop-overview-wrap">
     <h1 class="screen-reader-text"><?php echo esc_html__('Dashboard', 'wppoppop'); ?></h1>
 
-    <!-- Top Bar -->
-    <div class="wppoppop-dash-bar" role="navigation" aria-label="WpPopPop">
-        <div class="cell logo">
-            <img src="<?php echo esc_url($logo_url); ?>" alt="WpPopPop">
-        </div>
-
-        <div class="cell">
-            <button type="button" class="bar-btn" data-dd="wppoppop-dd-menu" aria-haspopup="true" aria-expanded="false" title="<?php echo esc_attr__('Menu', 'wppoppop'); ?>">
-                <span class="dashicons dashicons-menu"></span>
-            </button>
-            <div class="wppoppop-dd" id="wppoppop-dd-menu">
-                <?php foreach ($menu_links as $ml) : ?>
-                    <a href="<?php echo esc_url(admin_url('admin.php?page=' . $ml[0])); ?>">
-                        <span class="dashicons <?php echo esc_attr($ml[2]); ?>"></span><?php echo esc_html($ml[1]); ?>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <div class="cell">
-            <button type="button" class="bar-btn" data-dd="wppoppop-dd-popups" aria-haspopup="true" aria-expanded="false" title="<?php echo esc_attr__('Popups', 'wppoppop'); ?>">
-                <span class="dashicons dashicons-portfolio"></span>
-            </button>
-            <div class="wppoppop-dd" id="wppoppop-dd-popups">
-                <?php if (empty($dash_menu_popups)) : ?>
-                    <div class="dd-empty"><?php echo esc_html__('No popups yet.', 'wppoppop'); ?></div>
-                <?php else : foreach ($dash_menu_popups as $p) : ?>
-                    <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-builder&uid=' . rawurlencode($p->uid))); ?>">
-                        <span class="dashicons dashicons-edit"></span><?php echo esc_html($p->title !== '' ? $p->title : $p->uid); ?>
-                    </a>
-                <?php endforeach; endif; ?>
-                <div class="dd-sep"></div>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop')); ?>"><span class="dashicons dashicons-list-view"></span><?php echo esc_html__('View all popups', 'wppoppop'); ?></a>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-submissions')); ?>"><span class="dashicons dashicons-email-alt"></span><?php echo esc_html__('Submissions', 'wppoppop'); ?></a>
-            </div>
-        </div>
-
-        <div class="cell">
-            <a class="bar-btn" href="<?php echo esc_url($builder_url); ?>" title="<?php echo esc_attr__('Add New', 'wppoppop'); ?>">
-                <span class="dashicons dashicons-plus-alt2"></span>
-            </a>
-        </div>
-
-        <div class="cell title">
-            <span class="dashicons dashicons-screenoptions"></span>
-            <span><?php echo esc_html__('Dashboard', 'wppoppop'); ?></span>
-        </div>
-    </div>
+    <!-- Top Bar (shared partial) -->
+    <?php
+    $bar_title = __('Dashboard', 'wppoppop');
+    $bar_icon  = 'dashicons-screenoptions';
+    include WPPOPPOP_PATH . 'templates/partials/dash-bar.php';
+    ?>
 
     <!-- Boxes -->
-    <div class="wppoppop-dash-grid">
+    <div class="wppoppop-dash-grid" id="wppoppop-dash-grid">
+        <?php if (!class_exists('WpPopPop_Ajax_Dash_Layout')) { require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-dash-layout.php'; } $wppoppop_boxes = []; ob_start(); ?>
         <div class="wppoppop-box" id="wppoppop-box-popups">
             <h2><span class="dashicons dashicons-megaphone"></span><?php echo esc_html__('Popups', 'wppoppop'); ?></h2>
 
@@ -102,6 +44,7 @@ $logo_url    = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
             <a class="wppoppop-btn-red" href="<?php echo esc_url($builder_url); ?>"><?php echo esc_html__('Add New', 'wppoppop'); ?></a>
         </div>
 
+        <?php $wppoppop_boxes['popups'] = ob_get_clean(); ob_start(); ?>
         <!-- Recent Submissions -->
         <div class="wppoppop-box" id="wppoppop-box-recent">
             <h2><span class="dashicons dashicons-email-alt"></span><?php echo esc_html__('Recent Submissions', 'wppoppop'); ?></h2>
@@ -144,6 +87,7 @@ $logo_url    = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
             <a class="wppoppop-btn-red" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-submissions')); ?>"><?php echo esc_html__('View all submissions', 'wppoppop'); ?></a>
         </div>
 
+        <?php $wppoppop_boxes['recent'] = ob_get_clean(); ob_start(); ?>
         <!-- Tools -->
         <div class="wppoppop-box" id="wppoppop-box-tools">
             <h2><span class="dashicons dashicons-admin-tools"></span><?php echo esc_html__('Tools', 'wppoppop'); ?></h2>
@@ -162,5 +106,9 @@ $logo_url    = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
                 </a>
             </div>
         </div>
+        <?php $wppoppop_boxes['tools'] = ob_get_clean();
+        foreach (WpPopPop_Ajax_Dash_Layout::get_order() as $wppoppop_bk) {
+            if (isset($wppoppop_boxes[$wppoppop_bk])) { echo $wppoppop_boxes[$wppoppop_bk]; }
+        } ?>
     </div>
 </div>
