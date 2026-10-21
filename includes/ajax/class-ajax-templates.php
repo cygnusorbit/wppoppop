@@ -154,7 +154,7 @@ class WpPopPop_Ajax_Templates {
         $this->guard();
         global $wpdb;
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
-        $all = $this->all();
+        $all = $this->with_presets();
         if ($id === '' || !isset($all[$id])) {
             wp_send_json_error(array('message' => 'Template not found.'));
         }
@@ -204,7 +204,7 @@ class WpPopPop_Ajax_Templates {
     public function preview() {
         $this->guard();
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
-        $all = $this->all();
+        $all = $this->with_presets();
         if ($id === '' || !isset($all[$id]) || empty($all[$id]['data'])) {
             wp_send_json_error(array('message' => 'Template not found.'));
         }
@@ -363,5 +363,13 @@ class WpPopPop_Ajax_Templates {
             'filename' => ($name !== '' ? $name : 'template') . '-wppoppop-template.json',
             'payload'  => $json,
         ));
+    }
+
+    /** Saved templates + premade files from /library-presets/ (premade are read-only, never written back). */
+    private function with_presets() {
+        if (!class_exists('WpPopPop_Library_Presets')) {
+            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-library-presets.php';
+        }
+        return $this->all() + WpPopPop_Library_Presets::all();
     }
 }
