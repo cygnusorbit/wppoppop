@@ -14,6 +14,8 @@ class WpPopPop_Ajax_Templates {
         add_action('wp_ajax_wppoppop_template_save', array($this, 'save'));
         add_action('wp_ajax_wppoppop_template_use', array($this, 'use_template'));
         add_action('wp_ajax_wppoppop_template_delete', array($this, 'delete'));
+        add_action('wp_ajax_wppoppop_template_get', array($this, 'get_one'));
+        add_action('wp_ajax_wppoppop_template_update', array($this, 'update_info'));
         add_action('wp_ajax_wppoppop_library_cats_save', array($this, 'save_categories'));
         add_action('wp_ajax_wppoppop_template_preview', array($this, 'preview'));
     }
@@ -283,5 +285,49 @@ class WpPopPop_Ajax_Templates {
         }
         update_option(self::CATS_OPT, $out, false);
         wp_send_json_success(array('cats' => $out, 'message' => 'Categories saved.'));
+    }
+
+    public function get_one() {
+        $this->guard();
+        $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
+        $all = $this->all();
+        if ($id === '' || !isset($all[$id])) {
+            wp_send_json_error(array('message' => 'Template not found.'));
+        }
+        $t = $all[$id];
+        wp_send_json_success(array(
+            'id'          => $id,
+            'title'       => isset($t['title']) ? $t['title'] : '',
+            'description' => isset($t['description']) ? $t['description'] : '',
+            'image'       => isset($t['image']) ? $t['image'] : '',
+            'category'    => (isset($t['category']) && $t['category'] !== '') ? $t['category'] : 'custom',
+            'counts'      => isset($t['counts']) && is_array($t['counts']) ? $t['counts'] : array(),
+            'total'       => isset($t['total']) ? (int) $t['total'] : 0,
+            'width'       => isset($t['width']) ? (int) $t['width'] : 640,
+            'height'      => isset($t['height']) ? (int) $t['height'] : 400,
+        ));
+    }
+
+    public function update_info() {
+        $this->guard();
+        $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
+        $all = $this->all();
+        if ($id === '' || !isset($all[$id])) {
+            wp_send_json_error(array('message' => 'Template not found.'));
+        }
+        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        if ($name === '') {
+            wp_send_json_error(array('message' => 'Please enter a popup name.'));
+        }
+        $valid = array();
+        foreach (self::get_categories() as $c) { $valid[] = $c['slug']; }
+        $cat = isset($_POST['category']) ? sanitize_key(wp_unslash($_POST['category'])) : 'custom';
+        if (!in_array($cat, $valid, true)) { $cat = 'custom'; }
+        $all[$id]['title']       = $name;
+        $all[$id]['description'] = isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '';
+        $all[$id]['image']       = isset($_POST['image']) ? esc_url_raw(wp_unslash($_POST['image'])) : '';
+        $all[$id]['category']    = $cat;
+        update_option(self::OPT, $all, false);
+        wp_send_json_success(array('message' => 'Template updated.'));
     }
 }

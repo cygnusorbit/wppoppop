@@ -170,4 +170,7 @@ foreach ($templates as $wppoppop_i => $wppoppop_t) {
 
     <!-- Category Manager (gear icon) -->
     <?php include WPPOPPOP_PATH . 'templates/library/modal-categories.php'; ?>
+
+    <!-- Template info editor (Edit icon) -->
+    <?php include WPPOPPOP_PATH . 'templates/library/modal-template-edit.php'; ?>
 </div>

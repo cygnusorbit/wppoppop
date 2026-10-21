@@ -175,6 +175,12 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-library-live-preview-js', 'wppoppop_lib_vars', $wppoppop_lib_payload);
             wp_enqueue_script('wppoppop-library-categories-js', WPPOPPOP_URL . 'admin/js/library/library-categories.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-library-js'], $lib_ver, true);
             wp_localize_script('wppoppop-library-categories-js', 'wppoppop_libcat_vars', ['ajax_url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wppoppop_admin_nonce')]);
+            wp_enqueue_style('wppoppop-fa-library', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', [], '6.5.1');
+            wp_enqueue_media();
+            $wppoppop_la_css = WPPOPPOP_PATH . 'admin/css/library/actions.css';
+            wp_enqueue_style('wppoppop-library-actions-css', WPPOPPOP_URL . 'admin/css/library/actions.css', ['wppoppop-library-css', 'wppoppop-fa-library'], file_exists($wppoppop_la_css) ? (string) filemtime($wppoppop_la_css) : $lib_ver);
+            wp_enqueue_script('wppoppop-library-actions-js', WPPOPPOP_URL . 'admin/js/library/library-actions.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_localize_script('wppoppop-library-actions-js', 'wppoppop_libact_vars', ['ajax_url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wppoppop_admin_nonce')]);
             wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
         }
 
