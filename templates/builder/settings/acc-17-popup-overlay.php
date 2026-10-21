@@ -38,6 +38,12 @@ if (!defined('ABSPATH')) {
                                 <option value="animation">Animation (HTML / JS)</option>
                             </select>
 
+                            <label for="set-ov-bg-opacity" style="font-size:11px;font-weight:600;color:#475569;">Background Opacity (picture / animation)</label>
+                            <div style="display:flex;align-items:center;gap:10px;margin:2px 0 8px;">
+                                <input type="range" id="set-ov-bg-opacity" min="0" max="100" step="1" value="100" style="flex:1;">
+                                <span id="set-ov-bg-opacity-val" style="min-width:42px;text-align:right;font-size:12px;font-weight:600;">100%</span>
+                            </div>
+
                             <div id="set-ov-bg-img-wrap">
                                 <label for="set-ov-bg-url" style="font-size:11px;font-weight:600;color:#475569;">Image URL</label>
                                 <div style="display:flex;gap:6px;margin-bottom:6px;">

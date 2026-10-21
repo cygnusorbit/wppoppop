@@ -996,6 +996,9 @@ if (settings.triggers) {
     function openEditor(bg) {
         editingId = bg ? bg.id : null;
         $('#set-ov-bg-name').val(bg ? bg.name : '');
+        var wppOp = (bg && bg.opacity !== undefined && bg.opacity !== '' && !isNaN(parseInt(bg.opacity, 10))) ? Math.max(0, Math.min(100, parseInt(bg.opacity, 10))) : 100; /* WPPOPPOP_OVERLAY_BGOP */
+        $('#set-ov-bg-opacity').val(wppOp);
+        $('#set-ov-bg-opacity-val').text(wppOp + '%');
         $('#set-ov-bg-type').val(bg ? bg.type : 'image');
         $('#set-ov-bg-url').val(bg && bg.type === 'image' ? bg.url : '');
         $('#set-ov-bg-html').val(bg && bg.type === 'animation' ? bg.html : '');
@@ -1073,7 +1076,8 @@ if (settings.triggers) {
             e.preventDefault();
             var type = $('#set-ov-bg-type').val() === 'animation' ? 'animation' : 'image';
             var name = $.trim($('#set-ov-bg-name').val()) || (type === 'animation' ? 'Animation' : 'Picture');
-            var item = { id: editingId || newId(), name: name.slice(0, 60), type: type, url: '', html: '' };
+            var item = { id: editingId || newId(), name: name.slice(0, 60), type: type, url: '', html: '',
+                opacity: (function(v) { v = parseInt(v, 10); return isNaN(v) ? 100 : Math.max(0, Math.min(100, v)); })($('#set-ov-bg-opacity').val()) };
             if (type === 'image') {
                 item.url = $.trim($('#set-ov-bg-url').val());
                 if (!IMG_RE.test(item.url)) { window.alert('Please choose a JPEG or PNG image (.jpg, .jpeg, .png).'); return; }
@@ -1093,3 +1097,11 @@ if (settings.triggers) {
 
     $(function() { syncOpacityLabel(); syncTransparentUi(); renderList(); });
 })(jQuery);
+
+/* WPPOPPOP_OVERLAY_BGOP: live % label for the background opacity slider */
+jQuery(function($) {
+    $(document).off('input.wppOvBgOp change.wppOvBgOp', '#set-ov-bg-opacity')
+        .on('input.wppOvBgOp change.wppOvBgOp', '#set-ov-bg-opacity', function() {
+            $('#set-ov-bg-opacity-val').text((parseInt($(this).val(), 10) || 0) + '%');
+        });
+});

@@ -96,6 +96,7 @@ class WpPopPop_Overlay {
                 'type' => $type,
                 'url'  => $url,
                 'html' => $html,
+                'opacity' => (isset($bg['opacity']) && $bg['opacity'] !== '') ? max(0, min(100, intval($bg['opacity']))) : 100, /* WPPOPPOP_OVERLAY_BGOP */
             );
         }
 
@@ -170,6 +171,11 @@ JS;
                 }
             }
             if ($layers !== '') {
+                /* WPPOPPOP_OVERLAY_BGOP: opacity applies to the picture / animation layer, under the tint */
+                $wppoppop_bgop = (isset($active['opacity']) && $active['opacity'] !== '') ? max(0, min(100, intval($active['opacity']))) / 100 : 1;
+                if ($wppoppop_bgop < 1) {
+                    $layers = preg_replace('/(class="wppoppop-ov-bg"[^>]*?\sstyle=")/', '${1}opacity:' . number_format($wppoppop_bgop, 2, '.', '') . ';', $layers, 1);
+                }
                 /* WPPOPPOP_OVERLAY_LAZY: transparent backdrop over custom layers; iframe loads only while visible */
                 $layers .= '<style>.wppoppop-ov-bg ~ .wppoppop-backdrop{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;}.wppoppop-ov-bg{z-index:0;}</style>';
                 if (strpos($layers, 'data-srcdoc') !== false) {
