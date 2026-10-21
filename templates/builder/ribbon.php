@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <div id="wppoppop-ribbon" class="wppoppop-ribbon-bar">
-    <div class="wppoppop-ribbon-scroll" style="display:flex;align-items:center;gap:4px;overflow-x:auto;padding:4px 8px;width:100%;box-sizing:border-box;">
+    <div class="wppoppop-ribbon-scroll" style="display:flex;flex-flow:row wrap;align-items:center;align-content:flex-start;gap:4px;overflow:visible;padding:4px 8px;width:100%;box-sizing:border-box;">
         <span style="font-size:10px;font-weight:800;text-transform:uppercase;color:#f48fb1;padding:0 6px;letter-spacing:0.5px;flex-shrink:0;">Media</span>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="shape" title="1. Rectangle / Square (shape)"><span class="dashicons dashicons-screenoptions"></span><span class="btn-label">1. Rectangle</span></button>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="image" title="2. Image (image)"><span class="dashicons dashicons-format-image"></span><span class="btn-label">Image</span></button>

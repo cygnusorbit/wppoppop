@@ -222,3 +222,38 @@
     width: 16px;
     height: 16px;
 }
+
+
+/* WPPOPPOP-RIBBON-WRAP-INDIVIDUAL */
+/* Each tool is an individual flex item; the last item on the edge
+   drops to the next row when the browser is resized. */
+.wppoppop-ribbon-bar {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    white-space: normal !important;
+    flex-wrap: wrap !important;
+}
+.wppoppop-ribbon-bar .wppoppop-ribbon-scroll {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex !important;
+    -webkit-flex-flow: row wrap !important;
+    flex-flow: row wrap !important;
+    -webkit-box-align: center;
+    align-items: center !important;
+    align-content: flex-start !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    gap: 4px !important;
+    row-gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.wppoppop-ribbon-bar .wppoppop-ribbon-scroll > .wppoppop-ribbon-tool,
+.wppoppop-ribbon-bar .wppoppop-ribbon-scroll > span {
+    -webkit-flex: 0 0 auto !important;
+    flex: 0 0 auto !important;
+}
