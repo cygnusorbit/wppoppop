@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
 }
 $bar_title = __('Popups Library', 'wppoppop');
 $bar_icon  = 'dashicons-category';
+$bar_actions = WPPOPPOP_PATH . 'templates/library/bar-actions.php';
+if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-templates.php'; }
 ?>
 <h1 class="screen-reader-text"><?php esc_html_e('Popups & Templates Library', 'wppoppop'); ?></h1>
 <?php include WPPOPPOP_PATH . 'templates/partials/dash-bar.php'; ?>
@@ -22,11 +24,8 @@ $bar_icon  = 'dashicons-category';
 
     <div class="wppoppop-lib-categories wppoppop-library-categories">
         <button type="button" class="wppoppop-cat-btn active" data-cat="all"><?php esc_html_e('All Templates', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-cat-btn" data-cat="lead-gen"><?php esc_html_e('Lead Generation', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-cat-btn" data-cat="ecommerce"><?php esc_html_e('E-Commerce & Coupons', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-cat-btn" data-cat="gamified"><?php esc_html_e('Gamified & Interactive', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-cat-btn" data-cat="feedback"><?php esc_html_e('Surveys & Feedback', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-cat-btn" data-cat="announcement"><?php esc_html_e('Announcements', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-cat-btn" data-cat="custom"><?php esc_html_e('My Templates', 'wppoppop'); ?></button>
+        <?php foreach (WpPopPop_Ajax_Templates::get_categories() as $wpp_cat) : ?>
+        <button type="button" class="wppoppop-cat-btn" data-cat="<?php echo esc_attr($wpp_cat['slug']); ?>"><?php echo esc_html($wpp_cat['label']); ?></button>
+        <?php endforeach; ?>
     </div>
 </div>

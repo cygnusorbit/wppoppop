@@ -14,6 +14,8 @@ class WpPopPop_Ajax_Templates {
         add_action('wp_ajax_wppoppop_template_save', array($this, 'save'));
         add_action('wp_ajax_wppoppop_template_use', array($this, 'use_template'));
         add_action('wp_ajax_wppoppop_template_delete', array($this, 'delete'));
+        add_action('wp_ajax_wppoppop_library_cats_save', array($this, 'save_categories'));
+        add_action('wp_ajax_wppoppop_template_preview', array($this, 'preview'));
     }
 
     private function guard() {
@@ -188,5 +190,93 @@ class WpPopPop_Ajax_Templates {
         unset($all[$id]);
         update_option(self::OPT, $all, false);
         wp_send_json_success(array('message' => 'Template deleted.'));
+    }
+
+    /** Stage a saved template so the real frontend renderer can show it (admins only). */
+    public function preview() {
+        $this->guard();
+        $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
+        $all = $this->all();
+        if ($id === '' || !isset($all[$id]) || empty($all[$id]['data'])) {
+            wp_send_json_error(array('message' => 'Template not found.'));
+        }
+        $decoded = json_decode($all[$id]['data'], true);
+        if (!is_array($decoded)) {
+            wp_send_json_error(array('message' => 'Template data is damaged.'));
+        }
+        $uid = sanitize_key('tpl-' . $id);
+        /* Same key scheme as WpPopPop_Front_Preview::transient_key() */
+        set_transient('wppoppop_prev_' . get_current_user_id() . '_' . md5($uid), wp_json_encode($decoded), HOUR_IN_SECONDS);
+        $url = add_query_arg(array(
+            'wppoppop_preview' => $uid,
+            'wppoppop_draft'   => 1,
+            'wppoppop_t'       => time(),
+        ), home_url('/'));
+        wp_send_json_success(array(
+            'uid'       => $uid,
+            'frame_url' => add_query_arg('wppoppop_frame', 1, $url),
+        ));
+    }
+
+    const CATS_OPT = 'wppoppop_library_categories';
+
+    public static function default_categories() {
+        return array(
+            array('slug' => 'lead-gen',     'label' => __('Lead Generation', 'wppoppop')),
+            array('slug' => 'ecommerce',    'label' => __('E-Commerce & Coupons', 'wppoppop')),
+            array('slug' => 'gamified',     'label' => __('Gamified & Interactive', 'wppoppop')),
+            array('slug' => 'feedback',     'label' => __('Surveys & Feedback', 'wppoppop')),
+            array('slug' => 'announcement', 'label' => __('Announcements', 'wppoppop')),
+            array('slug' => 'custom',       'label' => __('My Templates', 'wppoppop')),
+        );
+    }
+
+    /** Ordered filter categories (excluding the fixed "All" pill). */
+    public static function get_categories() {
+        $c = get_option(self::CATS_OPT, null);
+        if (!is_array($c) || empty($c)) {
+            return self::default_categories();
+        }
+        $out = array();
+        $has_custom = false;
+        foreach ($c as $r) {
+            if (!is_array($r) || empty($r['slug']) || !isset($r['label']) || $r['label'] === '') { continue; }
+            if ($r['slug'] === 'custom') { $has_custom = true; }
+            $out[] = array('slug' => (string) $r['slug'], 'label' => (string) $r['label']);
+        }
+        if (!$has_custom) {
+            $out[] = array('slug' => 'custom', 'label' => __('My Templates', 'wppoppop'));
+        }
+        return $out;
+    }
+
+    public function save_categories() {
+        $this->guard();
+        $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
+        if (!is_array($raw)) {
+            wp_send_json_error(array('message' => 'Malformed category list.'));
+        }
+        $out  = array();
+        $seen = array();
+        foreach (array_slice($raw, 0, 30) as $r) {
+            if (!is_array($r)) { continue; }
+            $label = isset($r['label']) && is_scalar($r['label']) ? sanitize_text_field((string) $r['label']) : '';
+            $label = function_exists('mb_substr') ? mb_substr($label, 0, 40) : substr($label, 0, 40);
+            if ($label === '') { continue; }
+            $slug = isset($r['slug']) && is_scalar($r['slug']) ? sanitize_key((string) $r['slug']) : '';
+            if ($slug === '') { $slug = sanitize_title($label); }
+            if ($slug === '') { $slug = 'cat'; }
+            if ($slug === 'all') { $slug = 'all-cat'; }
+            $base = $slug;
+            $i = 2;
+            while (isset($seen[$slug])) { $slug = $base . '-' . $i; $i++; }
+            $seen[$slug] = 1;
+            $out[] = array('slug' => $slug, 'label' => $label);
+        }
+        if (!isset($seen['custom'])) {
+            $out[] = array('slug' => 'custom', 'label' => __('My Templates', 'wppoppop'));
+        }
+        update_option(self::CATS_OPT, $out, false);
+        wp_send_json_success(array('cats' => $out, 'message' => 'Categories saved.'));
     }
 }

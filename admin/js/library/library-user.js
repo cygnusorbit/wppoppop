@@ -5,7 +5,7 @@
     'use strict';
 
     function vars() {
-        return window.wppoppop_vars || { ajax_url: (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php'), nonce: '' };
+        return window.wppoppop_lib_vars || window.wppoppop_vars || { ajax_url: (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php'), nonce: '' };
     }
 
     function decorate() {

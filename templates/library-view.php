@@ -147,6 +147,14 @@ if (is_array($wppoppop_user_tpls)) {
     }
 }
 $templates = array_merge($wppoppop_user_cards, $templates);
+
+// Keep card badges in sync with renamed categories
+if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-templates.php'; }
+$wppoppop_cat_map = [];
+foreach (WpPopPop_Ajax_Templates::get_categories() as $wppoppop_c) { $wppoppop_cat_map[$wppoppop_c['slug']] = $wppoppop_c['label']; }
+foreach ($templates as $wppoppop_i => $wppoppop_t) {
+    if (isset($wppoppop_cat_map[$wppoppop_t['category']])) { $templates[$wppoppop_i]['cat_label'] = $wppoppop_cat_map[$wppoppop_t['category']]; }
+}
 ?>
 <div class="wrap wppoppop-dash wppoppop-library-wrap">
     <!-- Catalog Header Toolbar & Category Filters -->
@@ -157,4 +165,7 @@ $templates = array_merge($wppoppop_user_cards, $templates);
 
     <!-- Template Inspection & Preview Modal -->
     <?php include WPPOPPOP_PATH . 'templates/library/modal-preview.php'; ?>
+
+    <!-- Category Manager (gear icon) -->
+    <?php include WPPOPPOP_PATH . 'templates/library/modal-categories.php'; ?>
 </div>
