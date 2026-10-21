@@ -1672,3 +1672,139 @@ jQuery(function($) {
             if ($menu && (e.key === 'Escape' || e.keyCode === 27)) { e.stopPropagation(); close(); }
         });
 })(jQuery);
+
+
+/* WPPOPPOP_MODULE_SORT: drag-to-reorder Popup Settings modules (settings.module_order) */
+(function($) {
+    'use strict';
+    var S = window.WpPopPopBuilderSettings;
+    if (!S || S._sortWrapped) return;
+    S._sortWrapped = true;
+
+    var GROUP = '#wppoppop-settings-drawer .wppoppop-accordion-group';
+    var ITEM = '.wppoppop-acc-item';
+
+    function keyOf($it) {
+        var m = $it.attr('data-module');
+        if (m) return String(m);
+        var txt = $.trim($it.children('.wppoppop-acc-header').first().text());
+        return txt.replace(/^\d+\s*[.)\-]*\s*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    }
+
+    function items() { return $(GROUP).children(ITEM); }
+
+    function currentOrder() {
+        var out = [];
+        items().each(function() { var k = keyOf($(this)); if (k) out.push(k); });
+        return out;
+    }
+
+    function applyOrder(order) {
+        if (!$.isArray(order) || !order.length) return;
+        var $g = $(GROUP);
+        if (!$g.length) return;
+        var map = {};
+        items().each(function() { map[keyOf($(this))] = $(this); });
+        $.each(order, function(i, k) {
+            if (map[k]) { $g.append(map[k]); delete map[k]; }
+        });
+        $.each(map, function(k, $it) { $g.append($it); }); /* unknown / new modules keep their relative order at the end */
+    }
+
+    function decorate() {
+        items().each(function() {
+            var $it = $(this);
+            if ($it.children('.wppoppop-acc-grip').length) return;
+            if ($it.css('position') === 'static') { $it.css('position', 'relative'); }
+            $it.children('.wppoppop-acc-header').first().css('padding-left', '36px');
+            $('<span class="wppoppop-acc-grip" title="Drag to reorder" aria-label="Drag to reorder" role="button" tabindex="-1"></span>')
+                .css({
+                    position: 'absolute', top: '6px', left: '8px', zIndex: 3, width: '22px', height: '22px',
+                    cursor: 'grab', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: '4px', color: '#64748b', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none'
+                })
+                .html('<span class="dashicons dashicons-menu" style="width:16px;height:16px;font-size:16px;line-height:1;pointer-events:none;"></span>')
+                .appendTo($it);
+        });
+    }
+
+    /* ---------- pointer-driven sorting ---------- */
+    var drag = null;
+
+    function scroller() { return $(GROUP).closest('div[style*="overflow-y"]').get(0) || $(GROUP).parent().get(0); }
+
+    function onMove(e) {
+        if (!drag) return;
+        e.preventDefault();
+        var y = e.clientY;
+        var sc = scroller();
+        if (sc) {
+            var r = sc.getBoundingClientRect();
+            if (y < r.top + 36) { sc.scrollTop -= 14; } else if (y > r.bottom - 36) { sc.scrollTop += 14; }
+        }
+        var $cur = drag.$it;
+        var $sibs = items().not($cur);
+        var moved = false;
+        $sibs.each(function() {
+            var b = this.getBoundingClientRect();
+            var mid = b.top + b.height / 2;
+            var before = $cur.index() < $(this).index();
+            if (before && y > mid) { $(this).after($cur); moved = true; return false; }
+            if (!before && y < mid) { $(this).before($cur); moved = true; return false; }
+        });
+        if (moved) { drag.changed = true; }
+    }
+
+    function onUp() {
+        if (!drag) return;
+        var d = drag; drag = null;
+        $(document).off('.wppSort');
+        d.$it.css({ opacity: '', boxShadow: '', outline: '' });
+        d.$grip.css('cursor', 'grab');
+        $('body').css({ userSelect: '', WebkitUserSelect: '', cursor: '' });
+        d.$hidden.each(function() { $(this).css('display', ''); });
+        $.each(d.open, function(i, b) { $(b).show(); });
+        if (d.changed) {
+            var core = window.WpPopPopBuilderCore;
+            if (core && typeof core.pushHistory === 'function') { try { core.pushHistory(); } catch (e) {} }
+        }
+    }
+
+    $(document).off('pointerdown.wppSortStart', '.wppoppop-acc-grip')
+        .on('pointerdown.wppSortStart', '.wppoppop-acc-grip', function(e) {
+            if (e.button !== undefined && e.button !== 0) return;
+            e.preventDefault(); e.stopPropagation();
+            var $it = $(this).closest(ITEM);
+            var open = [];
+            var $bodies = items().children('.wppoppop-acc-body');
+            $bodies.each(function() { if ($(this).is(':visible')) { open.push(this); } });
+            $bodies.hide(); /* collapse while dragging so every module is on screen */
+            drag = { $it: $it, $grip: $(this), open: open, $hidden: $(), changed: false };
+            $it.css({ opacity: 0.85, boxShadow: '0 6px 18px rgba(15,23,42,.25)', outline: '2px solid #3b82f6' });
+            $(this).css('cursor', 'grabbing');
+            $('body').css({ userSelect: 'none', WebkitUserSelect: 'none', cursor: 'grabbing' });
+            $(document).on('pointermove.wppSort', onMove).on('pointerup.wppSort pointercancel.wppSort', onUp);
+        });
+
+    /* ---------- data lifecycle: DOM -> model -> flush -> hydrate ---------- */
+    var origGet = S.getSettings, origSet = S.setSettings;
+
+    S.getSettings = function() {
+        var out = origGet.apply(this, arguments) || {};
+        out.module_order = currentOrder();
+        return out;
+    };
+
+    S.setSettings = function(settings) {
+        var r = origSet.apply(this, arguments);
+        decorate();
+        if (settings && settings.module_order) {
+            var o = settings.module_order;
+            if (o && !$.isArray(o) && typeof o === 'object') { o = $.map(o, function(v) { return v; }); }
+            applyOrder(o);
+        }
+        return r;
+    };
+
+    $(function() { decorate(); setTimeout(decorate, 400); });
+})(jQuery);

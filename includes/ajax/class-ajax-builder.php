@@ -65,6 +65,20 @@ class WpPopPop_Ajax_Builder {
                 'effect' => in_array($wppoppop_cel, $wppoppop_cel_ok, true) ? $wppoppop_cel : 'default'
             );
         }
+        /* WPPOPPOP_MODULE_ORDER_WHITELIST: allow-list the Popup Settings module order */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            $wppoppop_mo_in = isset($wppoppop_obj->settings->module_order) ? $wppoppop_obj->settings->module_order : array();
+            if (is_object($wppoppop_mo_in)) { $wppoppop_mo_in = array_values(get_object_vars($wppoppop_mo_in)); }
+            $wppoppop_mo = array();
+            if (is_array($wppoppop_mo_in)) {
+                foreach (array_slice($wppoppop_mo_in, 0, 60) as $wppoppop_mk) {
+                    if (!is_scalar($wppoppop_mk)) { continue; }
+                    $wppoppop_mk = sanitize_key((string) $wppoppop_mk);
+                    if ($wppoppop_mk !== '' && !in_array($wppoppop_mk, $wppoppop_mo, true)) { $wppoppop_mo[] = $wppoppop_mk; }
+                }
+            }
+            $wppoppop_obj->settings->module_order = $wppoppop_mo;
+        }
         /* WPPOPPOP_NOTIFICATIONS_WHITELIST: allow-list the Notifications module */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_nin = isset($wppoppop_obj->settings->notifications) ? $wppoppop_obj->settings->notifications : array();
