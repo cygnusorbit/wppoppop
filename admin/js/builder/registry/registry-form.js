@@ -130,7 +130,11 @@
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (cbRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (cbRow ? 'center' : cbJ) + ';justify-content:' + (cbRow ? cbJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + cbItemsHtml + '</div>';
         } else if (canonical === 'radio' || canonical === 'radios') {
             /* WPPOPPOP_RADIO_STAGE_V2 */
-            var rOpts = parseOptionsList(el.optionsList || el.options, ['Choice A', 'Choice B', 'Choice C']);
+            var rPairs = parseOptionsList(el.optionsList || el.options, ['Choice A', 'Choice B', 'Choice C']).map(function(o) { /* WPPOPPOP_RADIO_LV */
+                var s = String(o), i = s.indexOf('|');
+                return i === -1 ? { l: $.trim(s), v: '' } : { l: $.trim(s.slice(0, i)), v: $.trim(s.slice(i + 1)) };
+            });
+            var rOpts = rPairs.map(function(x) { return x.l || x.v; });
             var rLay = String(el.layout || el.radioLayout || 'vertical').toLowerCase();
             var rRow = (rLay === 'horizontal' || rLay === 'inline' || rLay === 'row');
             var rJ = align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start');
@@ -141,7 +145,7 @@
                 'color:' + (el.color || '#1e293b') + ';' +
                 ((el.fontFamily && el.fontFamily !== 'inherit') ? 'font-family:' + String(el.fontFamily).replace(/["<>]/g, '') + ';' : '');
             var rHtml = rOpts.map(function(opt, idx) {
-                var isSel = defVal ? (opt.toLowerCase() === defVal.toLowerCase()) : false;
+                var isSel = defVal ? (opt.toLowerCase() === defVal.toLowerCase() || (!!rPairs[idx].v && rPairs[idx].v.toLowerCase() === defVal.toLowerCase())) : false;
                 return '<span style="display:inline-flex;align-items:center;gap:8px;' + rTxt + '">' +
                     '<span style="width:16px;height:16px;border-radius:50%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;flex-shrink:0;">' +
                     (isSel ? '<span style="width:8px;height:8px;border-radius:50%;background:#c2185b;"></span>' : '') +

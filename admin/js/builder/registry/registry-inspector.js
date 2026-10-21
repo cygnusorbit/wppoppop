@@ -419,7 +419,7 @@
             $('#prop-phone-autocomplete').val('tel');
         }
         if (type === 'checkbox' || type === 'checkboxes') { $('#prop-checkbox-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_CHECKBOX_LAYOUT */
-        if (type === 'radio' || type === 'radios') { $('#prop-radio-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_RADIO_LAYOUT */
+        if (type === 'radio' || type === 'radios') { $('#prop-radio-layout').val(el.layout || 'vertical'); } /* WPPOPPOP_RADIO_LAYOUT */ if ((type === 'radio' || type === 'radios') && window.__wppRadioRebuild) { window.__wppRadioRebuild(true); } /* WPPOPPOP_RADIO_REBUILD */
         if ((type === 'checkbox' || type === 'checkboxes') && !el.bgColor) { /* WPPOPPOP_CB_BG */
             $('#prop-bg-color').val('#ffffff');
             $('#prop-bg-transparent').prop('checked', true);

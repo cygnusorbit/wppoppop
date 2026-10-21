@@ -349,11 +349,15 @@ class WpPopPop_Front_Decomposed_26 {
                 if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit' && preg_match('/^[A-Za-z0-9 ,\'"-]+$/', (string) $el['fontFamily'])) { $rd_ty .= 'font-family:' . esc_attr($el['fontFamily']) . ';'; }
                 $rd_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
                 $rd_html = '';
-                foreach ($rd_items as $rd_i => $rd_label) {
+                foreach ($rd_items as $rd_i => $rd_item_raw) { /* WPPOPPOP_RADIO_LV_FRONT */
+                    $rd_pp = explode('|', (string) $rd_item_raw, 2);
+                    $rd_label = trim($rd_pp[0]);
+                    $rd_value = (isset($rd_pp[1]) && trim($rd_pp[1]) !== '') ? trim($rd_pp[1]) : $rd_label;
+                    if ($rd_label === '') { $rd_label = $rd_value; }
                     $rd_id = $field_id . '-' . $rd_i;
                     $rd_attr = ($rd_i === 0) ? $rd_data : preg_replace('/\srequired="required"|\saria-required="true"|\sdata-error-msg="[^"]*"/', '', $rd_data);
                     $rd_html .= '<label for="' . esc_attr($rd_id) . '" style="display:inline-flex;align-items:center;gap:8px;font-size:inherit;color:inherit;cursor:pointer;line-height:inherit;">'
-                        . '<input type="radio" id="' . esc_attr($rd_id) . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($rd_label) . '" class="wppoppop-form-input wppoppop-input-radio"' . (($default_val !== '' && $default_val === $rd_label) ? ' checked' : '') . $rd_attr
+                        . '<input type="radio" id="' . esc_attr($rd_id) . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($rd_value) . '" class="wppoppop-form-input wppoppop-input-radio"' . (($default_val !== '' && $default_val === $rd_label) ? ' checked' : '') . $rd_attr
                         . ' style="width:16px;height:16px;margin:0;flex-shrink:0;cursor:pointer;pointer-events:auto;" />'
                         . '<span>' . esc_html($rd_label) . '</span></label>';
                 }
