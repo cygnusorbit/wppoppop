@@ -130,7 +130,7 @@ if (is_array($wppoppop_user_tpls)) {
         if (!is_array($ut) || empty($ut['id'])) { continue; }
         $wppoppop_user_cards[] = [
             'id'          => $ut['id'],
-            'category'    => 'custom',
+            'category'    => (isset($ut['category']) && $ut['category'] !== '') ? $ut['category'] : 'custom',
             'cat_label'   => __('My Templates', 'wppoppop'),
             'title'       => isset($ut['title']) ? $ut['title'] : '',
             'description' => isset($ut['description']) ? $ut['description'] : '',
@@ -153,6 +153,8 @@ if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'in
 $wppoppop_cat_map = [];
 foreach (WpPopPop_Ajax_Templates::get_categories() as $wppoppop_c) { $wppoppop_cat_map[$wppoppop_c['slug']] = $wppoppop_c['label']; }
 foreach ($templates as $wppoppop_i => $wppoppop_t) {
+    /* WPPOPPOP_TPL_CAT_FALLBACK: deleted category -> My Templates */
+    if (!empty($wppoppop_t['user']) && !isset($wppoppop_cat_map[$wppoppop_t['category']])) { $templates[$wppoppop_i]['category'] = 'custom'; $wppoppop_t['category'] = 'custom'; }
     if (isset($wppoppop_cat_map[$wppoppop_t['category']])) { $templates[$wppoppop_i]['cat_label'] = $wppoppop_cat_map[$wppoppop_t['category']]; }
 }
 ?>

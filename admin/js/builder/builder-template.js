@@ -76,7 +76,7 @@
             var s = this.stats(payload), html = '', t;
             for (t in s.counts) {
                 if (Object.prototype.hasOwnProperty.call(s.counts, t)) {
-                    html += '<div>' + this.esc(t) + ' &times; <strong>' + s.counts[t] + '</strong></div>';
+                    html += '<div>' + this.esc(t) + ' x ' + s.counts[t] + '</div>';
                 }
             }
             $('#wppoppop-tpl-elements').html(html || '<em>No elements</em>');
@@ -85,6 +85,7 @@
             $('#wppoppop-tpl-name').val(payload.title);
             $('#wppoppop-tpl-desc').val('');
             this.setImage('');
+            if ($('#wppoppop-tpl-category option[value="custom"]').length) { $('#wppoppop-tpl-category').val('custom'); }
             $('#wppoppop-tpl-msg').hide().text('');
             $('#wppoppop-tpl-submit').prop('disabled', false);
             $('#wppoppop-modal-save-template').css('display', 'flex');
@@ -95,6 +96,7 @@
 
         setImage: function (url) {
             $('#wppoppop-tpl-image').val(url || '');
+            $('#wppoppop-tpl-prev').toggleClass('has-img', !!url);
             $('#wppoppop-tpl-prev').css('background-image', url ? 'url("' + url.replace(/"/g, '%22') + '")' : 'none');
         },
 
@@ -128,6 +130,7 @@
                     name: name,
                     description: $('#wppoppop-tpl-desc').val(),
                     image: $('#wppoppop-tpl-image').val(),
+                    category: $('#wppoppop-tpl-category').val() || 'custom',
                     data: JSON.stringify(this.collect())
                 },
                 success: function (res) {
@@ -149,7 +152,7 @@
                 .off('click.wppoppopTpl')
                 .on('click.wppoppopTpl', '#wppoppop-btn-save-template', function (e) { e.preventDefault(); self.open(); })
                 .on('click.wppoppopTpl', '#wppoppop-tpl-close, #wppoppop-tpl-cancel', function (e) { e.preventDefault(); self.close(); })
-                .on('click.wppoppopTpl', '#wppoppop-tpl-upload', function (e) { e.preventDefault(); self.pickImage(); })
+                .on('click.wppoppopTpl', '#wppoppop-tpl-upload, #wppoppop-tpl-prev', function (e) { e.preventDefault(); self.pickImage(); })
                 .on('click.wppoppopTpl', '#wppoppop-tpl-remove-img', function (e) { e.preventDefault(); self.setImage(''); })
                 .on('click.wppoppopTpl', '#wppoppop-tpl-submit', function (e) { e.preventDefault(); self.submit(); })
                 .on('click.wppoppopTpl', '#wppoppop-modal-save-template', function (e) { if (e.target === this) { self.close(); } })

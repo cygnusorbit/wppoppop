@@ -119,12 +119,17 @@ class WpPopPop_Ajax_Templates {
         if (count($all) >= 200) {
             wp_send_json_error(array('message' => 'Template limit reached (200). Delete some templates first.'));
         }
+        $cat = isset($_POST['category']) ? sanitize_key(wp_unslash($_POST['category'])) : 'custom';
+        $valid = array();
+        foreach (self::get_categories() as $c) { $valid[] = $c['slug']; }
+        if (!in_array($cat, $valid, true)) { $cat = 'custom'; }
         $id = 'user-' . substr(md5(uniqid('', true)), 0, 10);
         $all[$id] = array(
             'id'          => $id,
             'title'       => $name,
             'description' => $desc,
             'image'       => $image,
+            'category'    => $cat,
             'counts'      => $counts,
             'total'       => array_sum($counts),
             'width'       => $w,
