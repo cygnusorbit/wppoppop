@@ -106,6 +106,7 @@ class WpPopPop_Rest_Submissions {
             ['%s', '%s', '%s', '%s', '%s', '%s']
         );
         $submission_id = $wpdb->insert_id;
+        if (class_exists('WpPopPop_Admin_Stats')) { WpPopPop_Admin_Stats::record_device($submission_id); }
 
         // Notifications: "After successful form submission"
         if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }

@@ -121,6 +121,7 @@ class WpPopPop_Ajax_Frontend {
         }
 
         $submission_id =$wpdb->insert_id;
+        if (class_exists('WpPopPop_Admin_Stats')) { WpPopPop_Admin_Stats::record_device($submission_id); }
 
         // 7. Automated Email Notification
         $admin_notification_email = wppoppop_get_setting('admin_email', get_option('admin_email'));

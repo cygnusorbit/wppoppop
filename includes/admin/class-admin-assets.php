@@ -212,6 +212,24 @@ class WpPopPop_Admin_Assets {
             }
         }
 
+        // Statistics page: shared top bar (dropdowns) + Global Theme sync
+        if ($page === 'wppoppop-stats') {
+            $st_ver = self::ver();
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $st_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $st_ver, true);
+            $st_deps = ['wppoppop-overview-css'];
+            if (wp_style_is('wppoppop-theme-global-css', 'enqueued') || wp_style_is('wppoppop-theme-global-css', 'registered')) { $st_deps[] = 'wppoppop-theme-global-css'; }
+            wp_enqueue_style('wppoppop-stats-sync-css', WPPOPPOP_URL . 'admin/css/stats-sync.css', $st_deps, $st_ver);
+            wp_enqueue_script('wppoppop-stats-js', WPPOPPOP_URL . 'admin/js/stats.js', ['jquery'], $st_ver, true);
+            wp_localize_script('wppoppop-stats-js', 'wppoppop_stats_vars', [
+                'ajax_url'   => admin_url('admin-ajax.php'),
+                'nonce'      => wp_create_nonce('wppoppop_admin_nonce'),
+                'max_series' => 8,
+                'max_msg'    => __('Maximum of 8 series reached', 'wppoppop'),
+            ]);
+        }
+
         // A/B Campaigns Assets (previously never enqueued -> buttons were dead, no nonce)
         if ($page === 'wppoppop-ab') {
             $ab_ver = self::ver();

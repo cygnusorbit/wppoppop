@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <div class="wppoppop-stats-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-top:10px;">
     <div>
-        <h1 class="wp-heading-inline" style="margin:0;font-size:24px;font-weight:700;color:#1e293b;">Visual Statistics & Analytics</h1>
+        <h2 class="wppoppop-stats-title" style="margin:0;font-size:20px;font-weight:700;color:#1e293b;">Visual Statistics &amp; Analytics</h2>
         <p style="margin:4px 0 0;color:#64748b;font-size:13px;">Track campaign performance, conversion velocity, and audience engagement trends.</p>
     </div>
     <div style="display:flex;gap:8px;align-items:center;background:#ffffff;padding:4px;border-radius:6px;border:1px solid #cbd5e1;">

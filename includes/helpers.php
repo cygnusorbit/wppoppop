@@ -80,3 +80,8 @@ if (!class_exists('WpPopPop_Tracking') && file_exists(WPPOPPOP_PATH . 'includes/
 if (!class_exists('WpPopPop_Settings_Reset') && file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-settings-reset.php')) {
     require_once WPPOPPOP_PATH . 'includes/class-wppoppop-settings-reset.php';
 }
+
+/* WPPOPPOP_STATS_LOADER */
+if (class_exists('WpPopPop_Admin_Stats')) {
+    WpPopPop_Admin_Stats::boot();
+}

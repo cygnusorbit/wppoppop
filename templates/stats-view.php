@@ -8,11 +8,11 @@ $range = isset($_GET['range']) ? sanitize_key($_GET['range']) : '7days';
 
 // 1. Fetch Popups & Aggregate Totals
 $items_table = $wpdb->prefix . 'wppoppop_items';
-$ranked_popups = $wpdb->get_results("SELECT * FROM {$items_table} ORDER BY submissions DESC, impressions DESC LIMIT 10");
+// $ranked_popups is built (paginated) in templates/stats/data.php
 
-$total_impr = (int)$wpdb->get_var("SELECT SUM(impressions) FROM {$items_table}");
-$total_subs = (int)$wpdb->get_var("SELECT SUM(submissions) FROM {$items_table}");
-$total_conf = (int)$wpdb->get_var("SELECT SUM(confirmations) FROM {$items_table}");
+$total_impr = (int)$wpdb->get_var("SELECT SUM(impressions) FROM {$items_table} WHERE status <> 'trash'");
+$total_subs = (int)$wpdb->get_var("SELECT SUM(submissions) FROM {$items_table} WHERE status <> 'trash'");
+$total_conf = (int)$wpdb->get_var("SELECT SUM(confirmations) FROM {$items_table} WHERE status <> 'trash'");
 $conversion_rate = $total_impr > 0 ? round(($total_subs / $total_impr) * 100, 1) : 0;
 
 // 2. Generate Timeline Points
@@ -34,8 +34,7 @@ $start_date = date('Y-m-d 00:00:00', strtotime("-{$days_count} days"));
 $db_counts = $wpdb->get_results($wpdb->prepare(
     "SELECT DATE(created_at) as sub_date, COUNT(id) as count 
      FROM {$subs_table} 
-     WHERE created_at >= %s 
-     GROUP BY DATE(created_at)",
+     WHERE created_at >= %s AND popup_uid NOT IN (SELECT uid FROM {$items_table} WHERE status = 'trash') GROUP BY DATE(created_at)",
     $start_date
 ));
 
@@ -49,15 +48,25 @@ if (!empty($db_counts)) {
 /* WPPOPPOP_REAL_DAILY_IMPR: real per-day impressions */
 $daily_tbl = WpPopPop_Tracking::table();
 if ($wpdb->get_var("SHOW TABLES LIKE '{$daily_tbl}'") === $daily_tbl) {
-    $daily_rows = $wpdb->get_results($wpdb->prepare("SELECT stat_date, SUM(impressions) AS n FROM {$daily_tbl} WHERE stat_date >= %s GROUP BY stat_date", gmdate('Y-m-d', strtotime("-{$days_count} days"))));
+    $daily_rows = $wpdb->get_results($wpdb->prepare("SELECT stat_date, SUM(impressions) AS n FROM {$daily_tbl} WHERE stat_date >= %s AND popup_uid NOT IN (SELECT uid FROM {$items_table} WHERE status = 'trash') GROUP BY stat_date", gmdate('Y-m-d', strtotime("-{$days_count} days"))));
     foreach ((array) $daily_rows as $dr) {
         if (isset($timeline[$dr->stat_date])) {
             $timeline[$dr->stat_date]['impressions'] = (int) $dr->n;
         }
     }
 }
+include WPPOPPOP_PATH . 'templates/stats/data.php';
 ?>
-<div class="wrap wppoppop-stats-wrap" style="max-width:1200px;">
+<div class="wrap wppoppop-stats-wrap">
+    <?php
+    $bar_title   = __('Statistics', 'wppoppop');
+    $bar_icon    = 'dashicons-chart-bar';
+    $bar_actions = '';
+    ?>
+    <h1 class="screen-reader-text"><?php esc_html_e('Statistics', 'wppoppop'); ?></h1>
+    <div class="wppoppop-dash" style="margin:0 0 20px;max-width:none;">
+        <?php include WPPOPPOP_PATH . 'templates/partials/dash-bar.php'; ?>
+    </div>
     <!-- Timeframe Filter & Header -->
     <?php include WPPOPPOP_PATH . 'templates/stats/header.php'; ?>
 
