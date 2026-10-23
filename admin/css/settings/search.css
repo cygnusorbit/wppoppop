@@ -1,0 +1,51 @@
+/* WpPopPop Settings: dash-bar search */
+.wppoppop-settings-search { position: relative; display: inline-flex; align-items: center; margin-right: 10px; vertical-align: middle; }
+.wppoppop-settings-search .dashicons-search { position: absolute; left: 9px; top: 50%; margin-top: -8px; width: 16px; height: 16px; font-size: 16px; line-height: 16px; color: #64748b; pointer-events: none; }
+.wppoppop-settings-search-input { box-sizing: border-box; width: 220px; height: 32px; margin: 0; padding: 0 70px 0 30px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; color: #1e293b; font-size: 13px; line-height: 30px; box-shadow: none; -webkit-appearance: none; appearance: none; transition: width .2s ease, border-color .15s ease, box-shadow .15s ease; }
+.wppoppop-settings-search-input:focus { width: 300px; outline: 0; border-color: var(--wpp-c-primary, #2563eb); box-shadow: 0 0 0 2px rgba(37, 99, 235, .18); }
+.wppoppop-settings-search-input::-webkit-search-cancel-button { display: none; }
+.wppoppop-settings-search .wpp-s-count { position: absolute; right: 28px; top: 50%; margin-top: -8px; font-size: 11px; line-height: 16px; color: #64748b; pointer-events: none; white-space: nowrap; }
+.wppoppop-settings-search .wpp-s-count.is-empty { color: #dc2626; }
+.wppoppop-settings-search .wpp-s-clear { position: absolute; right: 6px; top: 50%; margin-top: -10px; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #64748b; font-size: 16px; line-height: 20px; text-align: center; cursor: pointer; }
+.wppoppop-settings-search .wpp-s-clear[hidden] { display: none; }
+.wppoppop-settings-search .wpp-s-clear:hover { background: #e2e8f0; color: #0f172a; }
+
+.wppoppop-settings-wrap .wpp-s-hide { display: none !important; }
+.wppoppop-settings-wrap tr.wpp-s-hit > th, .wppoppop-settings-wrap tr.wpp-s-hit > td, .wppoppop-settings-wrap li.wpp-s-hit { background: rgba(250, 204, 21, .16); }
+.wppoppop-tab-btn.wpp-s-dim { opacity: .45; }
+.wppoppop-tab-btn .wpp-s-badge { display: inline-block; min-width: 16px; margin-left: 6px; padding: 0 5px; border-radius: 8px; background: var(--wpp-c-primary, #2563eb); color: #fff; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; }
+
+@media (max-width: 782px) {
+    .wppoppop-settings-search-input { width: 140px; }
+    .wppoppop-settings-search-input:focus { width: 180px; }
+}
+
+/* WPP_SEARCH_ICON_FIX: beat theme / dash-bar input rules so text never sits under the icon */
+.wppoppop-dash-bar .wppoppop-settings-search,
+.wppoppop-settings-wrap .wppoppop-settings-search { position: relative !important; display: inline-flex !important; align-items: center !important; }
+.wppoppop-dash-bar .wppoppop-settings-search .wppoppop-settings-search-input,
+.wppoppop-settings-wrap .wppoppop-settings-search .wppoppop-settings-search-input {
+    padding-left: 34px !important;
+    padding-right: 74px !important;
+    text-indent: 0 !important;
+    background-image: none !important;
+    box-sizing: border-box !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    line-height: 30px !important;
+}
+.wppoppop-dash-bar .wppoppop-settings-search .dashicons-search,
+.wppoppop-settings-wrap .wppoppop-settings-search .dashicons-search {
+    position: absolute !important;
+    left: 10px !important;
+    top: 50% !important;
+    margin: -8px 0 0 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+}
+.wppoppop-dash-bar .wppoppop-settings-search .wpp-s-count,
+.wppoppop-dash-bar .wppoppop-settings-search .wpp-s-clear { z-index: 2; }

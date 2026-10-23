@@ -87,7 +87,12 @@ class WpPopPop_Admin_Settings {
             'builder_save_template' => 1,
             'menu_pages' => [],
             'clean_on_uninstall' => 0,
-        ];
+        ] + self::tracking_defaults();
+    }
+
+    protected static function tracking_defaults() {
+        if (!class_exists('WpPopPop_Tracking')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-tracking.php'; }
+        return WpPopPop_Tracking::defaults();
     }
 
     /**
@@ -226,6 +231,10 @@ class WpPopPop_Admin_Settings {
                 'order'  => isset($__mp_row['order']) ? max(0, min(999, (int) $__mp_row['order'])) : 0,
             ];
         }
+
+        // 5e. Tracking, A/B, privacy, rate limits, reporting
+        if (!class_exists('WpPopPop_Tracking')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-tracking.php'; }
+        $o = array_merge($o, WpPopPop_Tracking::sanitize_input($in));
 
         // 6. System state
         $o['clean_on_uninstall'] = $b('clean_on_uninstall');

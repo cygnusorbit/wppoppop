@@ -102,7 +102,7 @@ class WpPopPop_Ajax_Frontend {
 
         if (!empty($name)) { $clean_fields['_name'] = $name; }
         if (!empty($phone)) { $clean_fields['_phone'] = $phone; }
-        $clean_fields['_ip'] = $ip;
+        $clean_fields['_ip'] = WpPopPop_Tracking::anonymize_ip($ip);
         $visitor_country = isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : '';
 
         $wpdb->insert($table_name,

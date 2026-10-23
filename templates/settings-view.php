@@ -33,6 +33,7 @@ if (!isset($settings) || !is_array($settings)) {
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="module"><?php esc_html_e('Module', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="builder"><?php esc_html_e('Builder', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="pages"><?php esc_html_e('Pages', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="tracking"><?php esc_html_e('Tracking & A/B', 'wppoppop'); ?></button>
        
     </nav>
 
@@ -83,6 +84,11 @@ if (!isset($settings) || !is_array($settings)) {
         <!-- Tab 9 Container: Pages (menu rename / order / hide) -->
         <div id="tab-pages" class="wppoppop-tab-content" data-tab-content="pages" style="display:none;">
             <?php include WPPOPPOP_PATH . 'templates/settings/tab-pages.php'; ?>
+        </div>
+
+        <!-- Tab 10 Container: Tracking & A/B -->
+        <div id="tab-tracking" class="wppoppop-tab-content" data-tab-content="tracking" style="display:none;">
+            <?php include WPPOPPOP_PATH . 'templates/settings/tab-tracking.php'; ?>
         </div>
 
         <!-- Bottom Action Persistence Bar (Clean Text Button - No Misaligned Icons) -->

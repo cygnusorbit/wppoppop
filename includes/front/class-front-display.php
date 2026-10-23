@@ -50,6 +50,7 @@ class WpPopPop_Front_Display {
         wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery', 'wppoppop-front-triggers-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
+        wp_enqueue_script('wppoppop-front-tracking-js', WPPOPPOP_URL . 'public/js/front/front-tracking.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
 
         // Enqueue Google reCAPTCHA if enabled
         $recaptcha_enabled  = (bool) wppoppop_get_setting('enable_recaptcha', false);
@@ -89,6 +90,7 @@ class WpPopPop_Front_Display {
             ]
         ];
 
+        $runtime_payload = array_merge($runtime_payload, WpPopPop_Tracking::front_vars());
         wp_localize_script('wppoppop-front-js', 'wppoppop_front_vars', $runtime_payload);
         wp_localize_script('wppoppop-front-form-js', 'wppoppop_front_vars', $runtime_payload);
     }
@@ -188,6 +190,11 @@ class WpPopPop_Front_Display {
         foreach ($popups as $popup) {
             if (WpPopPop_Front_Shortcode::is_inline_rendered($popup->uid)) {
                 continue;
+            }
+            if (class_exists('WpPopPop_Front_Ab') && WpPopPop_Front_Ab::is_ab_member($popup->uid)
+                && !WpPopPop_Front_Shortcode::is_button_requested($popup->uid)
+                && !WpPopPop_Front_Shortcode::is_onload_requested($popup->uid)) {
+                continue; /* un-chosen A/B variant: never auto-render */
             }
             $wppoppop_forced   = WpPopPop_Front_Shortcode::is_button_requested($popup->uid) || WpPopPop_Front_Shortcode::is_onload_requested($popup->uid) || $this->is_manual_trigger_used($popup->uid);
             $wppoppop_eligible = $this->targeting->is_eligible($popup);

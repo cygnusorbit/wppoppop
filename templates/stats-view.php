@@ -43,8 +43,16 @@ if (!empty($db_counts)) {
     foreach ($db_counts as $row) {
         if (isset($timeline[$row->sub_date])) {
             $timeline[$row->sub_date]['submissions'] = (int)$row->count;
-            // Approximate view timeline proportionally
-            $timeline[$row->sub_date]['impressions'] = (int)($row->count * 5);
+        }
+    }
+}
+/* WPPOPPOP_REAL_DAILY_IMPR: real per-day impressions */
+$daily_tbl = WpPopPop_Tracking::table();
+if ($wpdb->get_var("SHOW TABLES LIKE '{$daily_tbl}'") === $daily_tbl) {
+    $daily_rows = $wpdb->get_results($wpdb->prepare("SELECT stat_date, SUM(impressions) AS n FROM {$daily_tbl} WHERE stat_date >= %s GROUP BY stat_date", gmdate('Y-m-d', strtotime("-{$days_count} days"))));
+    foreach ((array) $daily_rows as $dr) {
+        if (isset($timeline[$dr->stat_date])) {
+            $timeline[$dr->stat_date]['impressions'] = (int) $dr->n;
         }
     }
 }

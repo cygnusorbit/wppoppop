@@ -36,7 +36,7 @@ $bar_logo_custom = class_exists('WpPopPop_Admin_Theme') ? WpPopPop_Admin_Theme::
 $bar_logo        = ($bar_logo_custom !== '') ? $bar_logo_custom : WPPOPPOP_URL . 'admin/img/logo-temp.svg';
 ?>
 <div class="wppoppop-dash-bar" role="navigation" aria-label="WpPopPop">
-    <div class="cell logo"><img src="<?php echo esc_url($bar_logo); ?>" alt="WpPopPop"<?php echo ($bar_logo_custom !== '') ? ' style="width:auto;max-width:140px;height:28px;object-fit:contain;"' : ''; ?>></div>
+    <div class="cell logo"><a class="bar-logo-link" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-dashboard')); ?>" title="<?php echo esc_attr__('Dashboard', 'wppoppop'); ?>" style="display:-webkit-inline-box;display:inline-flex;align-items:center;text-decoration:none;border:0;box-shadow:none;outline:0;"><img src="<?php echo esc_url($bar_logo); ?>" alt="WpPopPop"<?php echo ($bar_logo_custom !== '') ? ' style="width:auto;max-width:140px;height:28px;object-fit:contain;"' : ''; ?>></a></div>
 
     <div class="cell">
         <button type="button" class="bar-btn" data-dd="wppoppop-dd-menu" aria-haspopup="true" aria-expanded="false" title="<?php echo esc_attr__('Menu', 'wppoppop'); ?>">

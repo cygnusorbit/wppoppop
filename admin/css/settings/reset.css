@@ -1,0 +1,7 @@
+/* WpPopPop Settings: Reset Defaults menu */
+.wppoppop-reset-wrap { position: relative; display: inline-block; margin-right: 8px; vertical-align: middle; }
+.wppoppop-reset-menu { position: absolute; right: 0; top: calc(100% + 6px); min-width: 190px; padding: 4px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, .15); z-index: 100000; }
+.wppoppop-reset-menu[hidden] { display: none; }
+.wppoppop-reset-menu button { display: block; width: 100%; padding: 8px 12px; border: 0; border-radius: 6px; background: transparent; color: #1e293b; font-size: 13px; text-align: left; cursor: pointer; }
+.wppoppop-reset-menu button:hover, .wppoppop-reset-menu button:focus { background: #f1f5f9; outline: 0; }
+.wppoppop-reset-menu button[data-scope="all"] { color: #b91c1c; }

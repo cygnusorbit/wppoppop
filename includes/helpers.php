@@ -70,3 +70,13 @@ function wppoppop_log_event($event_type, $message, $payload = []) {
         ['%s', '%s', '%s', '%s']
     );
 }
+
+/* WPPOPPOP_TRACKING_LOADER */
+if (!class_exists('WpPopPop_Tracking') && file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-tracking.php')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-tracking.php';
+}
+
+/* WPPOPPOP_SETTINGS_RESET_LOADER */
+if (!class_exists('WpPopPop_Settings_Reset') && file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-settings-reset.php')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-settings-reset.php';
+}

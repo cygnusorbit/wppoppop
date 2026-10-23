@@ -373,7 +373,19 @@ class WpPopPop_Ajax_Builder {
         if (!$row) {
             wp_send_json_error(['message' => 'Popup not found.']);
         }
-        wp_send_json_success(['filename' => sanitize_title($row['title']) . '-wppoppop-export.json', 'payload' => $row['data']]);
+        $wppoppop_payload = $row['data'];
+        $wppoppop_obj_x   = json_decode($wppoppop_payload);
+        if (is_object($wppoppop_obj_x)) {
+            if (!isset($wppoppop_obj_x->meta) || !is_object($wppoppop_obj_x->meta)) {
+                $wppoppop_obj_x->meta = new stdClass();
+            }
+            if (empty($wppoppop_obj_x->meta->title)) {
+                $wppoppop_obj_x->meta->title = $row['title'];
+            }
+            $wppoppop_re = wp_json_encode($wppoppop_obj_x);
+            if (is_string($wppoppop_re) && $wppoppop_re !== '') { $wppoppop_payload = $wppoppop_re; }
+        }
+        wp_send_json_success(['filename' => sanitize_title($row['title']) . '-wppoppop-export.json', 'payload' => $wppoppop_payload]);
     }
 
     public function import_popup() {
@@ -401,18 +413,48 @@ class WpPopPop_Ajax_Builder {
                 }
             }
         }
-if (!$data || !isset($data['meta'])) {
+/* WPPOPPOP_IMPORT_V2: accept exported popups (no "meta" key), sanitise, return uid */
+        if (!is_array($data) || empty($data)) {
+            wp_send_json_error(['message' => 'Invalid JSON definition.']);
+        }
+
+        $wppoppop_title = '';
+        if (isset($data['meta']) && is_array($data['meta']) && !empty($data['meta']['title']) && is_scalar($data['meta']['title'])) {
+            $wppoppop_title = (string) $data['meta']['title'];
+        } elseif (!empty($data['title']) && is_scalar($data['title'])) {
+            $wppoppop_title = (string) $data['title'];
+        } elseif (isset($data['settings']) && is_array($data['settings']) && !empty($data['settings']['title']) && is_scalar($data['settings']['title'])) {
+            $wppoppop_title = (string) $data['settings']['title'];
+        } elseif (isset($_POST['title'])) {
+            $wppoppop_title = (string) wp_unslash($_POST['title']);
+        }
+        $wppoppop_title = sanitize_text_field($wppoppop_title);
+        if ($wppoppop_title === '') {
+            $wppoppop_title = 'Imported Popup';
+        }
+        if (!isset($data['meta']) || !is_array($data['meta'])) {
+            $data['meta'] = [];
+        }
+        $data['meta']['title'] = $wppoppop_title;
+
+        $wppoppop_clean = $this->sanitize_anim_payload(json_decode(wp_json_encode($data)));
+        $wppoppop_enc   = wp_json_encode($wppoppop_clean);
+        if (!is_string($wppoppop_enc) || $wppoppop_enc === '') {
             wp_send_json_error(['message' => 'Invalid JSON definition.']);
         }
 
         global $wpdb;
-        $wpdb->insert($wpdb->prefix . 'wppoppop_items', [
-            'uid'    => $this->generate_unique_uid(sanitize_text_field($data['meta']['title'])),
-            'title'  => sanitize_text_field($data['meta']['title']) . ' (Imported)',
-            'data'   => $json_raw,
+        $wppoppop_new_uid = $this->generate_unique_uid($wppoppop_title);
+        $wppoppop_ok = $wpdb->insert($wpdb->prefix . 'wppoppop_items', [
+            'uid'    => $wppoppop_new_uid,
+            'title'  => $wppoppop_title . ' (Imported)',
+            'data'   => $wppoppop_enc,
             'status' => 'publish'
-        ]);
-        wp_send_json_success(['message' => 'Popup imported successfully!']);
+        ], ['%s', '%s', '%s', '%s']);
+        if ($wppoppop_ok === false) {
+            wp_send_json_error(['message' => 'Database error: could not import popup. Try Tools > Repair Tables.']);
+        }
+        wp_send_json_success(['message' => 'Popup imported successfully!', 'uid' => $wppoppop_new_uid]);
     }
 
     public function save_campaign() {

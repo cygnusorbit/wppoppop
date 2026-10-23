@@ -117,6 +117,25 @@
                 }
             });
         },
+        /* WPPOPPOP_IMPRESSION_BEACON: count one impression per popup per page view */
+        trackImpression: function(uid) {
+            this._impSent = this._impSent || {};
+            if (!uid || this._impSent[uid]) return;
+            this._impSent[uid] = true;
+            var url = vars.rest_url || '';
+            if (!url) {
+                var l = document.querySelector('link[rel="https://api.w.org/"]');
+                url = l && l.href ? l.href : '/wp-json/';
+            }
+            url = url.replace(/\/?$/, '/') + 'wppoppop/v1/impression';
+            var body = JSON.stringify({ uid: uid });
+            try {
+                if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }))) return;
+            } catch (e) {}
+            try {
+                $.ajax({ url: url, method: 'POST', contentType: 'application/json', data: body });
+            } catch (e2) {}
+        },
 
         show: function(uid) {
             var $wrap = this.getPopupWrap(uid);
@@ -126,6 +145,8 @@
             $wrap.stop(true, true).fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
             this.playCanvasIn($wrap.find('.wppoppop-canvas-active').first(), $wrap.find('.wppoppop-box').first());
             try { this.initExtensionWidgets(); } catch (eW) {} /* WPPOPPOP_DATE_REINIT: library may load after bootstrap */
+
+            this.trackImpression(uid);
 
             if (vars.ga_tracking) {
                 this.dispatchGA('wppoppop_impression', { popup_uid: uid });

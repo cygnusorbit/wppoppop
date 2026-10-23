@@ -140,17 +140,22 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $set_ver);
             wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $set_ver, true);
             wp_enqueue_style('wppoppop-settings-css', WPPOPPOP_URL . 'admin/css/settings.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css', 'wppoppop-theme-global-css'], $set_ver);
+            wp_enqueue_style('wppoppop-settings-search-css', WPPOPPOP_URL . 'admin/css/settings/search.css', ['wppoppop-settings-css'], $set_ver);
+            wp_enqueue_style('wppoppop-settings-reset-css', WPPOPPOP_URL . 'admin/css/settings/reset.css', ['wppoppop-settings-css'], $set_ver);
 
             wp_enqueue_script('wppoppop-settings-tabs-js', WPPOPPOP_URL . 'admin/js/settings/settings-tabs.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-tools-js', WPPOPPOP_URL . 'admin/js/settings/settings-tools.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-pages-js', WPPOPPOP_URL . 'admin/js/settings/settings-pages.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-settings-search-js', WPPOPPOP_URL . 'admin/js/settings/settings-search.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-settings-reset-js', WPPOPPOP_URL . 'admin/js/settings/settings-reset.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
 
             wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', [
                 'jquery',
                 'wppoppop-settings-tabs-js',
                 'wppoppop-settings-save-js',
-                'wppoppop-settings-tools-js'
+                'wppoppop-settings-tools-js',
+                'wppoppop-settings-search-js'
             ], self::ver(), true);
 
             $settings_payload = [

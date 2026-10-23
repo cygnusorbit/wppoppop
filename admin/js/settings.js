@@ -14,4 +14,7 @@ jQuery(document).ready(function($) {
     if (window.WpPopPopSettingsTools) {
         window.WpPopPopSettingsTools.init();
     }
+    if (window.WpPopPopSettingsSearch) {
+        window.WpPopPopSettingsSearch.init();
+    }
 });

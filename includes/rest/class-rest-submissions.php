@@ -19,22 +19,15 @@ class WpPopPop_Rest_Submissions {
     }
 
     public function handle_impression(WP_REST_Request $request) {
-        $params = $request->get_json_params() ?: $request->get_body_params();
-        $uid    = isset($params['uid']) ? sanitize_key($params['uid']) : '';
-
-        if (!empty($uid)) {
-            global $wpdb;
-            $table = $wpdb->prefix . 'wppoppop_items';
-            $wpdb->query($wpdb->prepare("UPDATE {$table} SET impressions = impressions + 1 WHERE uid = %s", $uid));
-        }
-
-        $res = new WP_REST_Response(['success' => true], 200);
-        $res->header('Access-Control-Allow-Origin', '*');
-        return $res;
+        return WpPopPop_Tracking::rest_impression($request);
     }
 
     public function handle_submission(WP_REST_Request $request) {
         $params = $request->get_json_params() ?: $request->get_body_params();
+
+        if (!WpPopPop_Tracking::throttle('submit', (int) WpPopPop_Tracking::get('rate_limit_submit'))) {
+            return new WP_Error('rate_limited', 'Too many requests. Please try again shortly.', ['status' => 429]);
+        }
 
         // 1. Honeypot Bot Trap Validation
         if (!empty($params['_wppoppop_hp_email'])) {
@@ -178,7 +171,7 @@ Enjoy your offer.";
             'redirect_url' => (!empty($actions['redirect_url']) && !$is_double_optin) ? esc_url_raw($actions['redirect_url']) : '',
         ], 200);
 
-        $res->header('Access-Control-Allow-Origin', '*');
+        WpPopPop_Tracking::cors($res);
         return $res;
     }
 }
