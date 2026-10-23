@@ -12,6 +12,7 @@ if (!defined('ABSPATH')) {
     <?php include WPPOPPOP_PATH . 'templates/submissions/table.php'; ?>
 
     <?php include WPPOPPOP_PATH . 'templates/submissions/modal-table-options.php'; ?>
+    <?php include WPPOPPOP_PATH . 'templates/submissions/modal-export.php'; ?>
     <!-- Lead Submission Detail & Print Receipt Modal -->
     <?php include WPPOPPOP_PATH . 'templates/submissions/modal-editor.php'; ?>
 </div>
