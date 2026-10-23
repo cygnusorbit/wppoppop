@@ -172,7 +172,7 @@ class WpPopPop_Front_Display {
         if ($raw === '') { return false; }
         $cfg = json_decode($raw, true);
         if (!is_array($cfg) || empty($cfg['settings']['triggers']) || !is_array($cfg['settings']['triggers'])) { return false; }
-        $v = isset($cfg['settings']['triggers']['always']) ? $cfg['settings']['triggers']['always'] : false;
+        $v = isset($cfg['settings']['triggers']['always_embed']) ? $cfg['settings']['triggers']['always_embed'] : false;
         return !empty($v) && $v !== 'false' && $v !== '0';
     }
 

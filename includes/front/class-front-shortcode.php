@@ -100,7 +100,7 @@ class WpPopPop_Front_Shortcode {
         /* WPPOPPOP_SC_ALWAYS: "Popup All the Time on Page Load" turns an inline embed into an on-load popup */
         if ($atts['mode'] === 'inline' || $atts['mode'] === '') {
             $wppoppop_sc_cfg = json_decode($row['data'], true);
-            $wppoppop_sc_av = (is_array($wppoppop_sc_cfg) && isset($wppoppop_sc_cfg['settings']['triggers']['always'])) ? $wppoppop_sc_cfg['settings']['triggers']['always'] : false;
+            $wppoppop_sc_av = (is_array($wppoppop_sc_cfg) && isset($wppoppop_sc_cfg['settings']['triggers']['always_embed'])) ? $wppoppop_sc_cfg['settings']['triggers']['always_embed'] : false;
             if (!empty($wppoppop_sc_av) && $wppoppop_sc_av !== 'false' && $wppoppop_sc_av !== '0') {
                 $atts['mode'] = 'onload';
             }

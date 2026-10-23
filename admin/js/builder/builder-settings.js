@@ -878,6 +878,7 @@ if (settings.triggers) {
         var out = origGet.apply(this, arguments) || {};
         out.triggers = out.triggers || {};
         out.triggers.always = $('#trig-always').is(':checked');
+        out.triggers.always_embed = $('#trig-always-embed').is(':checked');
         out.triggers.repeat = $('#trig-repeat').is(':checked');
         out.triggers.repeat_hours = clamp($('#trig-repeat-hours').val(), 1, 720, 24);
         var pct = clamp($('#set-trigger-scroll-depth').val(), 1, 100, 50);
@@ -893,6 +894,7 @@ if (settings.triggers) {
         if (settings) {
             var t = settings.triggers || {};
             $('#trig-always').prop('checked', !!t.always && t.always !== 'false');
+            $('#trig-always-embed').prop('checked', !!t.always_embed && t.always_embed !== 'false' && t.always_embed !== '0');
             $('#trig-repeat').prop('checked', !!t.repeat && t.repeat !== 'false');
             $('#trig-repeat-hours').val(clamp(t.repeat_hours, 1, 720, 24));
             var pct = clamp(t.scroll_val || settings.scroll_depth, 1, 100, 50);
@@ -1819,4 +1821,16 @@ jQuery(function($) {
     };
 
     $(function() { decorate(); setTimeout(decorate, 400); });
+})(jQuery);
+
+
+/* WPPOPPOP_ALWAYS_EMBED_UI: "All Pages" and "Embed Code Only" are mutually exclusive */
+(function($) {
+    'use strict';
+    $(document)
+        .off('change.wppAlwaysPair', '#trig-always, #trig-always-embed')
+        .on('change.wppAlwaysPair', '#trig-always, #trig-always-embed', function() {
+            if (!this.checked) { return; }
+            $(this.id === 'trig-always' ? '#trig-always-embed' : '#trig-always').prop('checked', false);
+        });
 })(jQuery);

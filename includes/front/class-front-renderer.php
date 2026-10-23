@@ -38,7 +38,7 @@ class WpPopPop_Front_Renderer {
         if ($trg_on('idle'))   { $trg_attrs .= ' data-trigger-idle="' . max(1, intval($trg['idle_seconds'] ?? ($trg['idle_time'] ?? 15))) . '"'; }
 
         /* WPPOPPOP_TRIGGER_ALWAYS_REPEAT */
-        if ($trg_on('always')) {
+        if ($trg_on('always') || $trg_on('always_embed')) {
             if (!$trg_on('load')) { $trg_attrs .= ' data-trigger-load="1" data-trigger-load-delay="0"'; }
             $trg_attrs .= ' data-trigger-always="1"';
         }
