@@ -30,9 +30,9 @@ if (!defined('ABSPATH')) {
                         <input type="number" id="trig-load-delay" min="0" max="3600" step="1" value="0" placeholder="0" class="widefat">
                     </div>
 
-                    <div class="wppoppop-trig-row"><span>Popup All the Time on Page Load</span>
+                    <div class="wppoppop-trig-row"><span>Popup All the Time on Page Load <small style="opacity:.7;font-weight:400;">(Popup on Page with Embed Code Only)</small></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-always" value="1"><span class="wppoppop-sw-track"></span></label></div>
-                    <div class="wppoppop-trig-sub" style="opacity:.8"><label style="text-transform:none;">Opens on every page load, even after the visitor closed it.</label></div>
+                    <div class="wppoppop-trig-sub" style="opacity:.8"><label style="text-transform:none;">Opens on every page load, even after the visitor closed it. Applies only on pages where this popup's embed code is placed.</label></div>
 
                     <div class="wppoppop-trig-row"><span>Appear Continuously Every X Hours</span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-repeat" value="1"><span class="wppoppop-sw-track"></span></label></div>

@@ -166,6 +166,16 @@ class WpPopPop_Front_Display {
         return ($haystack !== '' && $uid !== '' && strpos($haystack, $uid) !== false);
     }
 
+    /* WPPOPPOP_ALWAYS_EMBED_ONLY: "Popup All the Time on Page Load" is a trigger that only runs where embed code (shortcode / widget) is present */
+    protected function wppoppop_is_always($popup) {
+        $raw = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');
+        if ($raw === '') { return false; }
+        $cfg = json_decode($raw, true);
+        if (!is_array($cfg) || empty($cfg['settings']['triggers']) || !is_array($cfg['settings']['triggers'])) { return false; }
+        $v = isset($cfg['settings']['triggers']['always']) ? $cfg['settings']['triggers']['always'] : false;
+        return !empty($v) && $v !== 'false' && $v !== '0';
+    }
+
     public function render_popups() {
         if (apply_filters('wppoppop_suppress_front_popups', false)) {
             return;
@@ -198,6 +208,8 @@ class WpPopPop_Front_Display {
             }
             $wppoppop_forced   = WpPopPop_Front_Shortcode::is_button_requested($popup->uid) || WpPopPop_Front_Shortcode::is_onload_requested($popup->uid) || $this->is_manual_trigger_used($popup->uid);
             $wppoppop_eligible = $this->targeting->is_eligible($popup);
+            $wppoppop_always = $this->wppoppop_is_always($popup);
+            if ($wppoppop_always && !$wppoppop_forced) { continue; } /* embed code only */
             if ($wppoppop_forced || $wppoppop_eligible) {
                 $wppoppop_raw_cfg = !empty($popup->data) ? $popup->data : (!empty($popup->config) ? $popup->config : '');
                 $config = $wppoppop_raw_cfg !== '' ? json_decode($wppoppop_raw_cfg, true) : [];
@@ -217,7 +229,7 @@ class WpPopPop_Front_Display {
                             1
                         );
                     }
-                } elseif ($wppoppop_forced && !$wppoppop_eligible) {
+                } elseif ($wppoppop_forced && !$wppoppop_eligible && !$wppoppop_always) {
                     $wppoppop_html = preg_replace('/<div class="wppoppop-overlay/', '<div data-manual="1" class="wppoppop-overlay', $wppoppop_html, 1);
                 }
                 echo $wppoppop_html;
