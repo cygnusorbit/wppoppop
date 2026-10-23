@@ -49,8 +49,7 @@ if (!defined('ABSPATH')) {
                         <button type="button" class="button button-small button-primary <?php echo (!empty($tpl['user']) || !empty($tpl['preset'])) ? 'wppoppop-usertpl-use' : 'wppoppop-tpl-import-btn'; ?>" 
                                 data-id="<?php echo esc_attr($tpl['id']); ?>" 
                                 data-title="<?php echo esc_attr($tpl['title']); ?>" 
-                                data-config='<?php echo esc_attr($json_str); ?>'
-                                style="background:#c2185b;border-color:#ad1457;">
+                                data-config='<?php echo esc_attr($json_str); ?>'>
                             Import & Edit
                         </button>
                     </div>

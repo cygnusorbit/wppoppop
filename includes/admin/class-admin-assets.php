@@ -190,6 +190,8 @@ class WpPopPop_Admin_Assets {
             wp_localize_script('wppoppop-library-actions-js', 'wppoppop_libact_vars', ['ajax_url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wppoppop_admin_nonce')]);
             $wppoppop_ts_lib = WPPOPPOP_PATH . 'admin/css/library/theme-sync-modals.css';
             wp_enqueue_style('wppoppop-library-theme-modals-css', WPPOPPOP_URL . 'admin/css/library/theme-sync-modals.css', ['wppoppop-library-css'], file_exists($wppoppop_ts_lib) ? (string) filemtime($wppoppop_ts_lib) : $lib_ver);
+            $wppoppop_ub_css = WPPOPPOP_PATH . 'admin/css/library/uniform-buttons.css';
+            wp_enqueue_style('wppoppop-library-uniform-css', WPPOPPOP_URL . 'admin/css/library/uniform-buttons.css', ['wppoppop-library-css', 'wppoppop-library-actions-css', 'wppoppop-library-theme-modals-css'], file_exists($wppoppop_ub_css) ? (string) filemtime($wppoppop_ub_css) : $lib_ver);
             wp_enqueue_script('wppoppop-library-download-js', WPPOPPOP_URL . 'admin/js/library/library-download.js', ['jquery', 'wppoppop-library-actions-js'], $lib_ver, true);
             wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
         }

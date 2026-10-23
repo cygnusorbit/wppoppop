@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) {
             <span id="wppoppop-lp-meta"></span>
             <span>
                 <button type="button" class="button" id="wppoppop-lp-cancel"><?php esc_html_e('Close', 'wppoppop'); ?></button>
-                <button type="button" class="button button-primary" id="wppoppop-lp-use" style="display:none;background:#00a32a;border-color:#008a20;"><?php esc_html_e('Use Template', 'wppoppop'); ?></button>
+                <button type="button" class="button button-primary" id="wppoppop-lp-use" style="display:none;"><?php esc_html_e('Use Template', 'wppoppop'); ?></button>
             </span>
         </div>
     </div>

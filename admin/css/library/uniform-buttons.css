@@ -1,0 +1,125 @@
+/* WpPopPop Library: uniform buttons (colour + highlight) and centred icon buttons.
+   Loaded after every other library stylesheet. Chrome / Safari / Firefox / Edge safe. */
+
+/* ===== Card icon buttons: ONE neutral look ===== */
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-preview-btn,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-dl,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-edit,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-del {
+    background: var(--wpp-c-secondary-bg, #fff) !important;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-secondary-border, #cbd5e1) !important;
+    color: var(--wpp-c-secondary-text, #334155) !important;
+}
+/* ===== Primary action (Import / Use) ===== */
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use {
+    background: var(--wpp-c-primary, #2563eb) !important;
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-primary, #2563eb) !important;
+    color: var(--wpp-c-primary-text, #fff) !important;
+}
+/* ===== Uniform highlight (hover / focus / active) ===== */
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-preview-btn:hover,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-dl:hover,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-edit:hover,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-del:hover,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-preview-btn:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-dl:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-edit:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-del:focus {
+    background: var(--wpp-c-secondary-hover, #f1f5f9) !important;
+    border-color: var(--wpp-c-primary, #2563eb) !important;
+    color: var(--wpp-c-primary, #2563eb) !important;
+}
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn:hover,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use:hover,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use:focus {
+    background: var(--wpp-c-primary-hover, #1d4ed8) !important;
+    border-color: var(--wpp-c-primary-hover, #1d4ed8) !important;
+    color: var(--wpp-c-primary-text, #fff) !important;
+}
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-preview-btn:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-dl:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-edit:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-del:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn:focus,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use:focus {
+    outline: 0 !important;
+    box-shadow: 0 0 0 1px var(--wpp-c-primary, #2563eb) !important;
+}
+
+/* ===== Centering: button box + glyph + row ===== */
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-preview-btn,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-dl,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-edit,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-del {
+    display: -webkit-inline-box !important; display: -ms-inline-flexbox !important; display: inline-flex !important;
+    -webkit-box-align: center; -ms-flex-align: center; align-items: center;
+    -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center;
+    -webkit-box-sizing: border-box; box-sizing: border-box;
+    flex: 0 0 32px; float: none; vertical-align: middle;
+    text-align: center; text-indent: 0; text-transform: none; overflow: visible;
+}
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-preview-btn::before,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn::before,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use::before,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-dl::before,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-edit::before,
+body .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-del::before {
+    position: static !important; display: block !important;
+    width: 14px; height: 14px; margin: 0 !important; padding: 0 !important;
+    font-size: 14px !important; line-height: 14px !important; text-align: center;
+    -webkit-box-flex: 0; -ms-flex: none; flex: none; vertical-align: middle;
+}
+body .wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-foot > div {
+    display: -webkit-box; display: -ms-flexbox; display: flex;
+    -webkit-box-align: center; -ms-flex-align: center; align-items: center;
+    -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center;
+    gap: 6px;
+}
+
+/* ===== Preview modal + template editor modal: same palette ===== */
+body .wppoppop-library-wrap #wppoppop-lib-preview-modal .button,
+body .wppoppop-library-wrap #wppoppop-te-modal .te-ghost {
+    background: var(--wpp-c-secondary-bg, #fff) !important;
+    border-color: var(--wpp-c-secondary-border, #cbd5e1) !important;
+    color: var(--wpp-c-secondary-text, #334155) !important;
+}
+body .wppoppop-library-wrap #wppoppop-lib-preview-modal .button:hover,
+body .wppoppop-library-wrap #wppoppop-te-modal .te-ghost:hover {
+    background: var(--wpp-c-secondary-hover, #f1f5f9) !important;
+    border-color: var(--wpp-c-primary, #2563eb) !important;
+    color: var(--wpp-c-primary, #2563eb) !important;
+}
+body .wppoppop-library-wrap #wppoppop-lib-preview-modal .button.is-on,
+body .wppoppop-library-wrap #wppoppop-lib-preview-modal #wppoppop-lp-use,
+body .wppoppop-library-wrap #wppoppop-te-modal .te-blue,
+body .wppoppop-library-wrap #wppoppop-te-modal .te-orange {
+    background: var(--wpp-c-primary, #2563eb) !important;
+    border-color: var(--wpp-c-primary, #2563eb) !important;
+    color: var(--wpp-c-primary-text, #fff) !important;
+    -webkit-filter: none; filter: none;
+}
+body .wppoppop-library-wrap #wppoppop-lib-preview-modal .button.is-on:hover,
+body .wppoppop-library-wrap #wppoppop-lib-preview-modal #wppoppop-lp-use:hover,
+body .wppoppop-library-wrap #wppoppop-te-modal .te-blue:hover,
+body .wppoppop-library-wrap #wppoppop-te-modal .te-orange:hover {
+    background: var(--wpp-c-primary-hover, #1d4ed8) !important;
+    border-color: var(--wpp-c-primary-hover, #1d4ed8) !important;
+    color: var(--wpp-c-primary-text, #fff) !important;
+    -webkit-filter: none; filter: none;
+}
+
+/* ===== Category pills: same hover highlight ===== */
+#wpbody-content .wppoppop-library-wrap .wppoppop-cat-btn:hover {
+    background: var(--wpp-c-secondary-hover, #f1f5f9);
+    border-color: var(--wpp-c-primary, #2563eb);
+    color: var(--wpp-c-primary, #2563eb);
+}
+#wpbody-content .wppoppop-library-wrap .wppoppop-cat-btn.active:hover {
+    background: var(--wpp-c-primary-hover, #1d4ed8);
+    border-color: var(--wpp-c-primary-hover, #1d4ed8);
+    color: var(--wpp-c-primary-text, #fff);
+}
