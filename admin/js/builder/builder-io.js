@@ -188,8 +188,8 @@
                 if (core) {
                     core.state.canvases = { 1: [], 2: [] };
                     core.state.canvasMeta = {
-                        1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fadeOut', logic_enabled: false },
-                        2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fadeOut', logic_enabled: false }
+                        1: { name: 'Canvas 1', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fadeOut', logic_enabled: false },
+                        2: { name: 'Canvas 2', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'fadeOut', logic_enabled: false }
                     };
                     core.renderCanvasTabs();
                     core.switchCanvas(1);
@@ -242,7 +242,7 @@
                                 if (!core.state.canvasMeta[k]) {
                                     core.state.canvasMeta[k] = {
                                         name: 'Canvas ' + k,
-                                        width: (cfg.settings && cfg.settings.box && cfg.settings.box.width) || 640,
+                                        width: (cfg.settings && cfg.settings.box && cfg.settings.box.width) || 300,
                                         height: (cfg.settings && cfg.settings.box && cfg.settings.box.height) || 400,
                                         bg_mode: (cfg.settings && cfg.settings.box && cfg.settings.box.bg_mode) || 'solid',
                                         bg_color: (cfg.settings && cfg.settings.box && cfg.settings.box.bg_color) || '#ffffff',

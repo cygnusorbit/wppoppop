@@ -7,7 +7,7 @@ class WpPopPop_Front_Renderer {
 
     public function render_popup_markup($uid, array $config, $is_inline = false, $preload = false) {
         $box = $config['box'] ?? ($config['settings']['box'] ?? []);
-        $width = intval($box['width'] ?? 640);
+        $width = intval($box['width'] ?? 300);
         $height = intval($box['height'] ?? 400);
         $bg_mode = $box['bg_mode'] ?? 'solid';
         $bg_color = $box['bg_color'] ?? '#ffffff';

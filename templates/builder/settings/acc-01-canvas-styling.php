@@ -36,7 +36,7 @@ if (!defined('ABSPATH')) {
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                                 <div>
                                     <label style="font-size:10px;color:#64748b;">Width (px)</label>
-                                    <input type="number" id="set-canvas-width" value="640" min="200" max="1600" class="widefat" style="font-size:12px;">
+                                    <input type="number" id="set-canvas-width" value="300" min="200" max="1600" class="widefat" style="font-size:12px;">
                                 </div>
                                 <div>
                                     <label style="font-size:10px;color:#64748b;">Height (px)</label>

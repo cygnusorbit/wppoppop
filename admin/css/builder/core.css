@@ -374,7 +374,7 @@ body.folded .wppoppop-builder-wrap {
 /* Canvas Box Stage */
 #wppoppop-canvas-box {
     position: relative;
-    width: 640px;
+    width: 300px;
     height: 400px;
     background: #ffffff;
     border-radius: 8px;

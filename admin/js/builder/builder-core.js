@@ -12,8 +12,8 @@
             set currentScreen(v) { this.currentCanvas = parseInt(v, 10) || 1; },
             canvases: { 1: [], 2: [] },
             canvasMeta: {
-                1: { name: 'Canvas 1', width: 640, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' },
-                2: { name: 'Canvas 2', width: 640, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' }
+                1: { name: 'Canvas 1', width: 300, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' },
+                2: { name: 'Canvas 2', width: 300, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' }
             },
             get screens() { return this.canvases; },
             set screens(v) { this.canvases = v || { 1: [], 2: [] }; },
@@ -547,7 +547,7 @@
             this.state.canvases[nextNum] = [];
             this.state.canvasMeta[nextNum] = {
                 name: 'Canvas ' + nextNum,
-                width: 640,
+                width: 300,
                 height: 400,
                 bg_mode: 'solid',
                 bg_transparent: true,
@@ -581,7 +581,7 @@
             if (!this.state.canvasMeta[canvasNum]) {
                 this.state.canvasMeta[canvasNum] = {
                     name: 'Canvas ' + canvasNum,
-                    width: 640,
+                    width: 300,
                     height: 400,
                     bg_mode: 'solid',
                     bg_color: '#ffffff',
@@ -604,7 +604,7 @@
 
             // 2. Restore Dedicated Dimensions for this Canvas
             if (this.state.viewport === 'desktop') {
-                var w = meta.width || 640;
+                var w = meta.width || 300;
                 var h = meta.height || 400;
                 var $box = $('#wppoppop-canvas-box');
             if ($box.length) {
@@ -656,11 +656,11 @@
 
             var $box = $('#wppoppop-canvas-box');
             if (mode === 'mobile') {
-                $box.css({ width: '360px', height: '540px' });
+                $box.css({ width: '300px', height: '540px' });
             } else {
                 var cur = this.state.currentCanvas || 1;
-                var meta = this.state.canvasMeta[cur] || { width: 640, height: 400 };
-                var w = meta.width || 640;
+                var meta = this.state.canvasMeta[cur] || { width: 300, height: 400 };
+                var w = meta.width || 300;
                 var h = meta.height || 400;
                 $box.css({ width: w + 'px', height: h + 'px' });
             }

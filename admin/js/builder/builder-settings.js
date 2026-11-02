@@ -190,7 +190,7 @@
             var meta = core.state.canvasMeta[cur] || {};
 
             $('#set-canvas-name').val(meta.name || ('Canvas ' + cur));
-            $('#set-canvas-width').val(meta.width || 640);
+            $('#set-canvas-width').val(meta.width || 300);
             $('#set-canvas-height').val(meta.height || 400);
 
             var isTransparent = (meta.bg_color === 'transparent');

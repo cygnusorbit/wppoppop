@@ -4225,7 +4225,7 @@
             right: '0px',
             bottom: '0px',
             left: 'auto',
-            width: '360px',
+            width: '300px',
             maxWidth: '360px',
             height: '100%'
         });
