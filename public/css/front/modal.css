@@ -108,3 +108,25 @@
     z-index: 2147483000 !important;
 }
 .air-datepicker.-inline- { z-index: auto !important; }
+
+/* WPPOPPOP_FIT_STAGE: canvas + all layers scale together as one unified group (see front-scale.js) */
+.wppoppop-fit-stage {
+    position: relative;
+    z-index: 2;
+    display: block;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+}
+
+.wppoppop-fit-stage > .wppoppop-box,
+.wppoppop-fit-stage > .wppoppop-box-container {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.wppoppop-fit-stage .wppoppop-canvas-container {
+    max-width: none !important;
+}
+/* /WPPOPPOP_FIT_STAGE */

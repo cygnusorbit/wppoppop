@@ -1,0 +1,158 @@
+/**
+ * WpPopPop Frontend: Unified Canvas Group Scaling (live preview + real render)
+ * The whole popup (canvas + every layer) scales as ONE group whenever the screen is
+ * smaller than the canvas, keeping a minimum 20px gap left/right (and top/bottom).
+ * Layout is never reflowed: only a uniform transform is applied to the fit stage.
+ * Cross-browser: Chrome, Safari, Firefox, Edge (no arrow functions / optional chaining).
+ */
+(function (window, document) {
+    'use strict';
+    if (window.WpPopPopFrontScale) { return; }
+
+    var PAD = 20;
+    var MIN_SCALE = 0.05;
+    var queued = false;
+
+    function num(v) {
+        v = parseFloat(v);
+        return isNaN(v) ? 0 : v;
+    }
+
+    function activeCanvas(wrap) {
+        return wrap.querySelector('.wppoppop-canvas-container.active, .wppoppop-canvas-container.wppoppop-canvas-active') ||
+            wrap.querySelector('.wppoppop-canvas-container');
+    }
+
+    function canvasSize(canvas) {
+        var w = num(canvas.getAttribute('data-width')) || canvas.offsetWidth;
+        var h = num(canvas.getAttribute('data-height')) || canvas.offsetHeight;
+        return { w: w, h: h };
+    }
+
+    function setTransform(el, value) {
+        el.style.webkitTransform = value;
+        el.style.transform = value;
+    }
+
+    function setOrigin(el, value) {
+        el.style.webkitTransformOrigin = value;
+        el.style.transformOrigin = value;
+    }
+
+    function resetInline(wrap, stage) {
+        setTransform(stage, '');
+        setOrigin(stage, '');
+        stage.style.position = '';
+        stage.style.left = '';
+        stage.style.top = '';
+        stage.style.width = '';
+        stage.style.height = '';
+        wrap.style.removeProperty('width');
+        wrap.style.removeProperty('height');
+    }
+
+    function fit(wrap) {
+        var stage = wrap.querySelector('.wppoppop-fit-stage');
+        if (!stage) { return; }
+        var canvas = activeCanvas(wrap);
+        if (!canvas) { return; }
+        var size = canvasSize(canvas);
+        if (!size.w || !size.h) { return; }
+
+        var inline = wrap.getAttribute('data-inline') === '1';
+        var docEl = document.documentElement;
+        var availW, availH, pad, parent;
+
+        if (inline) {
+            parent = wrap.parentNode;
+            availW = (parent && parent.clientWidth) || docEl.clientWidth || window.innerWidth;
+            availH = Infinity;
+            pad = 0;
+        } else {
+            availW = wrap.clientWidth || docEl.clientWidth || window.innerWidth;
+            availH = wrap.clientHeight || window.innerHeight || docEl.clientHeight;
+            pad = PAD;
+        }
+
+        var scale = Math.min(1, (availW - pad * 2) / size.w, (availH - pad * 2) / size.h);
+        if (!isFinite(scale) || scale > 1) { scale = 1; }
+        if (scale < MIN_SCALE) { scale = MIN_SCALE; }
+        scale = Math.round(scale * 10000) / 10000;
+
+        var key = scale + '|' + size.w + 'x' + size.h + '|' + (inline ? 'i' : 'o');
+        if (wrap.getAttribute('data-wpp-fit-key') === key) { return; }
+        wrap.setAttribute('data-wpp-fit-key', key);
+
+        if (scale >= 1) {
+            if (inline) { resetInline(wrap, stage); } else { setTransform(stage, ''); }
+            wrap.removeAttribute('data-wpp-scale');
+            return;
+        }
+
+        wrap.setAttribute('data-wpp-scale', String(scale));
+        if (inline) {
+            // Reserve only the scaled footprint in the page flow; the stage scales from its top-left corner.
+            wrap.style.setProperty('width', Math.ceil(size.w * scale) + 'px', 'important');
+            wrap.style.setProperty('height', Math.ceil(size.h * scale) + 'px', 'important');
+            stage.style.position = 'absolute';
+            stage.style.left = '0';
+            stage.style.top = '0';
+            stage.style.width = size.w + 'px';
+            stage.style.height = size.h + 'px';
+            setOrigin(stage, '0 0');
+        }
+        // Popup overlay: the stage is flex-centered, so scaling from its center keeps it centered.
+        setTransform(stage, 'scale(' + scale + ')');
+    }
+
+    function fitAll() {
+        var list = document.querySelectorAll('.wppoppop-popup-wrap, .wppoppop-overlay[data-uid]');
+        for (var i = 0; i < list.length; i++) { fit(list[i]); }
+    }
+
+    function refresh() {
+        if (queued) { return; }
+        queued = true;
+        var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 16); };
+        raf(function () {
+            queued = false;
+            fitAll();
+        });
+    }
+
+    function observe() {
+        if (!window.MutationObserver) { return; }
+        var stages = document.querySelectorAll('.wppoppop-fit-stage');
+        var mo = new window.MutationObserver(refresh);
+        for (var i = 0; i < stages.length; i++) {
+            // Canvas switching toggles the "active" class; re-fit to the newly visible canvas.
+            mo.observe(stages[i], { attributes: true, attributeFilter: ['class'], subtree: true });
+        }
+    }
+
+    function hookDisplay() {
+        var D = window.WpPopPopFrontDisplay;
+        if (!D || D.__wppFitHooked || typeof D.show !== 'function') { return; }
+        D.__wppFitHooked = true;
+        var origShow = D.show;
+        D.show = function () {
+            fitAll();
+            var r = origShow.apply(this, arguments);
+            refresh();
+            return r;
+        };
+    }
+
+    window.WpPopPopFrontScale = { refresh: refresh, fitAll: fitAll, fit: fit };
+
+    hookDisplay();
+    window.addEventListener('resize', refresh, false);
+    window.addEventListener('orientationchange', refresh, false);
+    window.addEventListener('load', function () { fitAll(); observe(); }, false);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { fitAll(); observe(); }, false);
+    } else {
+        fitAll();
+        observe();
+    }
+})(window, document);

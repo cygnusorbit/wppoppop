@@ -50,6 +50,7 @@ class WpPopPop_Front_Display {
         wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery', 'wppoppop-front-triggers-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
+        wp_enqueue_script('wppoppop-front-scale-js', WPPOPPOP_URL . 'public/js/front/front-scale.js', ['wppoppop-front-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-tracking-js', WPPOPPOP_URL . 'public/js/front/front-tracking.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
 
         // Enqueue Google reCAPTCHA if enabled

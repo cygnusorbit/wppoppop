@@ -123,6 +123,7 @@ class WpPopPop_Front_Renderer {
             <div class="wppoppop-backdrop" data-uid="<?php echo esc_attr($uid); ?>"></div>
             <?php endif; ?>
 
+            <div class="wppoppop-fit-stage" data-wpp-fit="1">
             <div class="wppoppop-box wppoppop-box-container"
                  data-uid="<?php echo esc_attr($uid); ?>"
                  style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr('border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);' . $box_bg); ?>">
@@ -208,6 +209,7 @@ class WpPopPop_Front_Renderer {
                     </div>
                 <?php endforeach; ?>
             </div>
+            </div><!-- /.wppoppop-fit-stage -->
         </div>
         <?php
     }
