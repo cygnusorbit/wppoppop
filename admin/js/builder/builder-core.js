@@ -344,15 +344,29 @@
             });
         },
 
+        /**
+         * Unified Canvas Group Scaling: canvas + all child elements scale as one group.
+         * Max scale keeps the scaled group inside the workspace with STAGE_PAD px on each side.
+         */
+        STAGE_PAD: 10,
+
+        getStageBounds: function($box, $ws) {
+            var pad = this.STAGE_PAD;
+            var bw = $box[0].offsetWidth || 640, bh = $box[0].offsetHeight || 400;
+            var ww = $ws.length ? ($ws.innerWidth() || 800) : 800;
+            var wh = $ws.length ? ($ws.innerHeight() || 600) : 600;
+            var max = Math.min((ww - pad * 2) / bw, (wh - pad * 2) / bh);
+            max = Math.max(0.05, max);
+            return { max: max, fit: Math.min(max, 1), ww: ww, wh: wh, gw: bw, gh: bh };
+        },
+
         setZoom: function(level) {
             var st = this.state;
             var $box = $('#wppoppop-canvas-box');
             var $ws = $('.wppoppop-builder-workspace').first();
             if (!$box.length) return;
             if (level === 'fit') {
-                var bw = $box[0].offsetWidth || 640, bh = $box[0].offsetHeight || 400;
-                var aw = ($ws.innerWidth() || 800) - 80, ah = ($ws.innerHeight() || 600) - 80;
-                level = Math.max(0.25, Math.min(aw / bw, ah / bh, 1));
+                level = this.getStageBounds($box, $ws).fit;
                 st.pan = { x: 0, y: 0 };
                 st.zoomMode = 'fit';
             } else {
@@ -363,6 +377,12 @@
             }
             st.zoom = level;
             this.updateCanvasTransform();
+        },
+
+        clampStageAxis: function(pan, wsSize, groupSize) {
+            var slack = (wsSize - groupSize) / 2 - this.STAGE_PAD;
+            if (slack <= 0) return 0;
+            return Math.max(-slack, Math.min(slack, pan));
         },
 
         bindZoom: function() {
@@ -376,10 +396,18 @@
                 clearTimeout(t);
                 t = setTimeout(function() {
                     if (self.state.zoomMode === 'fit') self.setZoom('fit');
+                    else self.updateCanvasTransform();
                 }, 120);
             });
             var v = $('#wppoppop-zoom-select').val();
             if (v) this.setZoom(v);
+            if (window.ResizeObserver) {
+                var ro = new ResizeObserver(function() { self.updateCanvasTransform(); });
+                var boxEl = $('#wppoppop-canvas-box')[0];
+                var wsEl = $('.wppoppop-builder-workspace').first()[0];
+                if (boxEl) ro.observe(boxEl);
+                if (wsEl) ro.observe(wsEl);
+            }
         },
 
         updateCanvasTransform: function() {
@@ -391,9 +419,23 @@
                 }
             }
             var pan = (this.state && this.state.pan) ? this.state.pan : { x: 0, y: 0 };
-            var transformVal = 'translate(' + pan.x + 'px, ' + pan.y + 'px) scale(' + zoom + ')';
 
             var $box = $('#wppoppop-canvas-box');
+            var $ws = $('.wppoppop-builder-workspace').first();
+            if ($box.length && $ws.length) {
+                var b = this.getStageBounds($box, $ws);
+                zoom = Math.min(zoom, b.max);
+                pan = {
+                    x: this.clampStageAxis(pan.x, b.ww, b.gw * zoom),
+                    y: this.clampStageAxis(pan.y, b.wh, b.gh * zoom)
+                };
+                if (this.state) this.state.pan = pan;
+            }
+            if (this.state) this.state.effectiveZoom = zoom;
+            if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.currentZoom = zoom;
+
+            var transformVal = 'translate(' + pan.x + 'px, ' + pan.y + 'px) scale(' + zoom + ')';
+
             if ($box.length) {
                 $box.css({
                     'transform': transformVal,
