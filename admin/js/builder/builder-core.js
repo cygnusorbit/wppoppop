@@ -344,10 +344,8 @@
             });
         },
 
-        /**
-         * Unified Canvas Group Scaling: canvas + all child elements scale as one group.
-         * Max scale keeps the scaled group inside the workspace with STAGE_PAD px on each side.
-         */
+        /* Unified Canvas Group Scaling: canvas + children scale as one group,
+           kept inside the workspace with STAGE_PAD px on every side. */
         STAGE_PAD: 10,
 
         getStageBounds: function($box, $ws) {
@@ -355,9 +353,14 @@
             var bw = $box[0].offsetWidth || 640, bh = $box[0].offsetHeight || 400;
             var ww = $ws.length ? ($ws.innerWidth() || 800) : 800;
             var wh = $ws.length ? ($ws.innerHeight() || 600) : 600;
-            var max = Math.min((ww - pad * 2) / bw, (wh - pad * 2) / bh);
-            max = Math.max(0.05, max);
+            var max = Math.max(0.05, Math.min((ww - pad * 2) / bw, (wh - pad * 2) / bh));
             return { max: max, fit: Math.min(max, 1), ww: ww, wh: wh, gw: bw, gh: bh };
+        },
+
+        clampStageAxis: function(pan, wsSize, groupSize) {
+            var slack = (wsSize - groupSize) / 2 - this.STAGE_PAD;
+            if (slack <= 0) return 0;
+            return Math.max(-slack, Math.min(slack, pan));
         },
 
         setZoom: function(level) {
@@ -377,12 +380,6 @@
             }
             st.zoom = level;
             this.updateCanvasTransform();
-        },
-
-        clampStageAxis: function(pan, wsSize, groupSize) {
-            var slack = (wsSize - groupSize) / 2 - this.STAGE_PAD;
-            if (slack <= 0) return 0;
-            return Math.max(-slack, Math.min(slack, pan));
         },
 
         bindZoom: function() {
@@ -435,7 +432,6 @@
             if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.currentZoom = zoom;
 
             var transformVal = 'translate(' + pan.x + 'px, ' + pan.y + 'px) scale(' + zoom + ')';
-
             if ($box.length) {
                 $box.css({
                     'transform': transformVal,
