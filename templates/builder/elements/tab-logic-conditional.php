@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) exit;
     <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;">CONDITIONAL LOGIC</div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <label for="prop-logic-enabled" style="font-size:11px; font-weight:700; color:#e2e8f0; margin:0; cursor:pointer;">Enable Conditional Logic</label>
-        <input type="checkbox" id="prop-logic-enabled" class="wppoppop-switch wppoppop-logic-bind" data-logic-prop="logicEnabled" />
+        <label class="wppoppop-insp-switch" title="Enable / Disable"><input type="checkbox" id="prop-logic-enabled" class="wppoppop-logic-bind" data-logic-prop="logicEnabled" /><span class="wppoppop-insp-slider"></span></label>
     </div>
     <div id="wppoppop-logic-body" style="display:none; margin-top:10px; border-top:1px solid #1e293b; padding-top:10px;">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
