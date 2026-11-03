@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 4. Sticky Side Tabs -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">4. Sticky Side Tabs</button>
+                <button type="button" class="wppoppop-acc-header">Sticky Side Tabs</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label><input type="checkbox" id="set-sidetab-enable" value="1"> Enable Sticky Side Tab</label>
                     <input type="text" id="set-sidetab-label" placeholder="Feedback / Offer" class="widefat" style="margin:6px 0;">

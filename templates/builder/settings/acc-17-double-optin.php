@@ -13,7 +13,7 @@ $wppoppop_dopt_label = function ($for, $text, $target = '') {
 ?>
 <!-- 17. Double Opt-In -->
 <div class="wppoppop-acc-item" id="wppoppop-dopt-acc">
-    <button type="button" class="wppoppop-acc-header">17. Double Opt-In</button>
+    <button type="button" class="wppoppop-acc-header">Double Opt-In</button>
     <div class="wppoppop-acc-body" style="display:none;">
         <label style="display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px;">
             <input type="checkbox" id="set-dopt-enable" value="1"> <?php esc_html_e('Enable Double Opt-In', 'wppoppop'); ?>

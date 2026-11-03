@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 2. Display Triggers -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">2. Display Triggers</button>
+                <button type="button" class="wppoppop-acc-header">Display Triggers</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <style id="wppoppop-trig-switch-css">
                         .wppoppop-trig-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 4px;font-size:13px;}

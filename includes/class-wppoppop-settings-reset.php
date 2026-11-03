@@ -27,7 +27,7 @@ class WpPopPop_Settings_Reset {
             'security'    => ['email_validation', 'enable_recaptcha', 'recaptcha_site_key', 'recaptcha_secret_key', 'recaptcha_threshold',
                               'max_submissions_per_ip', 'ip_geotargeting', 'geoip_service', 'geoip_api_service'],
             'custom-code' => ['custom_css', 'custom_js', 'custom_header_html', 'custom_footer_html'],
-            'module'      => ['modules'],
+            'module'      => ['modules', 'module_order'],
             'builder'     => ['builder_alignment_tool', 'builder_viewport_toggle', 'builder_zoom_select', 'builder_save_template'],
             'pages'       => ['menu_pages'],
             'tracking'    => array_keys(WpPopPop_Tracking::defaults()),

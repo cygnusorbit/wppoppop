@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 <!-- 1. Dedicated Per-Canvas Settings with Bullets, Color, Animate.style & Logic -->
             <div class="wppoppop-acc-item">
                 <button type="button" class="wppoppop-acc-header active">
-                    <span>1. Canvas Settings (<strong id="set-current-canvas-badge">Canvas 1</strong>)</span>
+                    <span>Canvas Settings</span>
                 </button>
                 <div class="wppoppop-acc-body" style="display:block;">
                     

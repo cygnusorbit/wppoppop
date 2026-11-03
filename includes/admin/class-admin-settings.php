@@ -27,7 +27,7 @@ class WpPopPop_Admin_Settings {
         );
     }
 
-    /** Campaign Settings accordions that are listed in Settings > Module (key = acc-*.php basename). */
+    /** Popup Settings accordions that are listed in Settings > Module (key = acc-*.php basename). */
     public static function get_modules() {
         return [
             'acc-01-canvas-styling' => __('Canvas Settings', 'wppoppop'),
@@ -55,6 +55,35 @@ class WpPopPop_Admin_Settings {
     /** Modules that are always on and cannot be switched off. */
     public static function get_locked_modules() {
         return ['acc-01-canvas-styling', 'acc-02-triggers'];
+    }
+
+    public static function get_default_module_order() {
+        return array_keys(self::get_modules());
+    }
+
+    /** Whitelist + de-duplicate an order; modules missing from it are appended in default order. */
+    public static function normalize_module_order($order) {
+        $known = self::get_default_module_order();
+        $out   = [];
+        if (is_array($order)) {
+            foreach ($order as $k) {
+                if (is_string($k) && in_array($k, $known, true) && !in_array($k, $out, true)) {
+                    $out[] = $k;
+                }
+            }
+        }
+        foreach ($known as $k) {
+            if (!in_array($k, $out, true)) {
+                $out[] = $k;
+            }
+        }
+        return $out;
+    }
+
+    /** Global Popup Settings module order (Settings > Module). */
+    public static function get_module_order() {
+        $s = get_option('wppoppop_settings', []);
+        return self::normalize_module_order((is_array($s) && isset($s['module_order'])) ? $s['module_order'] : []);
     }
 
     public static function get_module_defaults() {
@@ -119,6 +148,7 @@ class WpPopPop_Admin_Settings {
             'recaptcha_threshold' => 0.4, 'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
             'custom_css' => '', 'custom_js' => '', 'custom_header_html' => '', 'custom_footer_html' => '',
             'modules' => self::get_module_defaults(),
+            'module_order' => self::get_default_module_order(),
             'builder_alignment_tool' => 0,
             'builder_viewport_toggle' => 0,
             'builder_zoom_select' => 0,
@@ -230,7 +260,7 @@ class WpPopPop_Admin_Settings {
             $o['custom_footer_html'] = isset($prev['custom_footer_html']) ? $prev['custom_footer_html'] : '';
         }
 
-        // 5b. Campaign Settings modules (whitelist; missing = current default)
+        // 5b. Popup Settings modules (whitelist; missing = current default)
         $module_defaults = self::get_module_defaults();
         $o['modules'] = [];
         foreach (array_keys(self::get_modules()) as $__mk) {
@@ -242,6 +272,13 @@ class WpPopPop_Admin_Settings {
                 ? (!empty($in['modules'][$__mk]) ? 1 : 0)
                 : $module_defaults[$__mk];
         }
+
+        // 5b2. Module order (whitelist; missing key = keep the stored order)
+        $__mo_prev = get_option('wppoppop_settings', []);
+        $__mo_src  = isset($in['module_order'])
+            ? $in['module_order']
+            : ((is_array($__mo_prev) && isset($__mo_prev['module_order'])) ? $__mo_prev['module_order'] : []);
+        $o['module_order'] = self::normalize_module_order($__mo_src);
 
         // 5c. Builder tools (missing = disabled by default)
         $builder_defaults = self::get_builder_defaults();

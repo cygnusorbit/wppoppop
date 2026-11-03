@@ -69,17 +69,7 @@ class WpPopPop_Ajax_Templates {
             $cel    = (isset($obj->settings->celebration) && is_object($obj->settings->celebration) && isset($obj->settings->celebration->effect))
                 ? (string) $obj->settings->celebration->effect : 'default';
             $obj->settings->celebration = (object) array('effect' => in_array($cel, $cel_ok, true) ? $cel : 'default');
-            $mo_in = isset($obj->settings->module_order) ? $obj->settings->module_order : array();
-            if (is_object($mo_in)) { $mo_in = array_values(get_object_vars($mo_in)); }
-            $mo = array();
-            if (is_array($mo_in)) {
-                foreach (array_slice($mo_in, 0, 60) as $mk) {
-                    if (!is_scalar($mk)) { continue; }
-                    $mk = sanitize_key((string) $mk);
-                    if ($mk !== '' && !in_array($mk, $mo, true)) { $mo[] = $mk; }
-                }
-            }
-            $obj->settings->module_order = $mo;
+            unset($obj->settings->module_order); /* order is global (Settings > Module) */
         }
         $obj  = WpPopPop_Sanitizer::anim_payload($obj);
         $json = wp_json_encode($obj);

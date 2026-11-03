@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- WPPOPPOP_CELEBRATION_UI: 19. Success Celebration -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">19. Success Celebration</button>
+                <button type="button" class="wppoppop-acc-header">Success Celebration</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label for="set-celebration-effect">Animation on successful form submit</label>
                     <select id="set-celebration-effect" class="widefat">

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 11. Targeting & Attribution -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">11. Targeting &amp; Attribution</button>
+                <button type="button" class="wppoppop-acc-header">Targeting &amp; Attribution</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Visitor Authentication</label>
                     <select id="set-target-auth" class="widefat" style="margin-bottom:6px;">

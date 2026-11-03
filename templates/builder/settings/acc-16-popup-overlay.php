@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 16. Popup Overlay -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">16. Popup Overlay</button>
+                <button type="button" class="wppoppop-acc-header">Popup Overlay</button>
                 <div class="wppoppop-acc-body" style="display:none;">
 
                     <label for="set-ov-opacity" style="display:block;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;">Background Overlay Opacity</label>

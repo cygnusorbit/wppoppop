@@ -23,6 +23,18 @@ if (!defined('ABSPATH')) {
                 if (!class_exists('WpPopPop_Admin_Settings')) {
                     require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
                 }
+                /* Order is controlled globally in Settings > Module */
+                $wppoppop_acc_order = array_flip(WpPopPop_Admin_Settings::get_module_order());
+                usort($wppoppop_acc_files, function ($a, $b) use ($wppoppop_acc_order) {
+                    $ka = basename($a, '.php');
+                    $kb = basename($b, '.php');
+                    $pa = isset($wppoppop_acc_order[$ka]) ? $wppoppop_acc_order[$ka] : PHP_INT_MAX;
+                    $pb = isset($wppoppop_acc_order[$kb]) ? $wppoppop_acc_order[$kb] : PHP_INT_MAX;
+                    return $pa === $pb ? strcmp($ka, $kb) : ($pa < $pb ? -1 : 1);
+                });
+                if (!class_exists('WpPopPop_Admin_Settings')) {
+                    require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
+                }
                 foreach ($wppoppop_acc_files as $wppoppop_acc_file) {
                     $wppoppop_acc_key = basename($wppoppop_acc_file, '.php');
                     if (WpPopPop_Admin_Settings::module_enabled($wppoppop_acc_key)) {

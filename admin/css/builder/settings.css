@@ -280,6 +280,23 @@ body.folded .wppoppop-settings-drawer {
     transform: rotate(180deg);
 }
 
+.wppoppop-acc-header::after {
+    margin-left: auto;
+}
+
+/* Module numbers are positions (CSS counter), not part of the title text */
+.wppoppop-accordion-group {
+    counter-reset: wppoppop-acc;
+}
+.wppoppop-accordion-group > .wppoppop-acc-item {
+    counter-increment: wppoppop-acc;
+}
+.wppoppop-accordion-group > .wppoppop-acc-item > .wppoppop-acc-header::before {
+    content: counter(wppoppop-acc) ".";
+    margin-right: 6px;
+    flex: none;
+}
+
 .wppoppop-acc-body {
     padding: 14px;
     border-top: 1px solid #e2e8f0;

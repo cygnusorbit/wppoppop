@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 15. Quiz & Lead Scoring -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">15. Quiz &amp; Lead Scoring</button>
+                <button type="button" class="wppoppop-acc-header">Quiz &amp; Lead Scoring</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label><input type="checkbox" id="set-quiz-enable" value="1"> Enable Lead Scoring</label>
                     <input type="number" id="set-quiz-pass" placeholder="Pass Threshold Score" class="widefat" style="margin:6px 0;">

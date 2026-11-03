@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 12. Frequency Capping & Cookies -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">12. Frequency Capping &amp; Cookies</button>
+                <button type="button" class="wppoppop-acc-header">Frequency Capping &amp; Cookies</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Show Frequency</label>
                     <select id="set-freq-mode" class="widefat">

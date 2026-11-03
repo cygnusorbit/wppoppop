@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 5. Payments & Checkout -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">5. Payments &amp; Checkout</button>
+                <button type="button" class="wppoppop-acc-header">Payments &amp; Checkout</button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <label>Gateway</label>
                     <select id="set-pay-gateway" class="widefat" style="margin-bottom:6px;">
