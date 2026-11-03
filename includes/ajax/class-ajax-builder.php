@@ -554,6 +554,7 @@ class WpPopPop_Ajax_Builder {
         if (isset($el['objectFit'])) $clean['objectFit'] = sanitize_key($el['objectFit']);
         if (isset($el['alt'])) $clean['alt'] = sanitize_text_field($el['alt']);
         if (isset($el['linkUrl'])) $clean['linkUrl'] = esc_url_raw($el['linkUrl']);
+        if (isset($el['linkTarget']) && !is_array($el['linkTarget'])) $clean['linkTarget'] = ((string) $el['linkTarget'] === '_blank') ? '_blank' : '_self';
         if (isset($el['linkBlank'])) $clean['linkBlank'] = !empty($el['linkBlank']);
         if (isset($el['videoProvider'])) $clean['videoProvider'] = sanitize_key($el['videoProvider']);
         if (isset($el['aspectRatio'])) $clean['aspectRatio'] = sanitize_text_field($el['aspectRatio']);

@@ -31,6 +31,11 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['linkUrl']) && !is_array($el['linkUrl'])) {
             $clean['linkUrl'] = esc_url_raw(trim(wp_unslash((string) $el['linkUrl'])));
         }
+        if (isset($el['linkTarget']) && !is_array($el['linkTarget'])) {
+            $clean['linkTarget'] = ((string) $el['linkTarget'] === '_blank') ? '_blank' : '_self';
+            $clean['targetBlank'] = $clean['linkTarget'] === '_blank';
+            $clean['linkBlank'] = $clean['targetBlank'];
+        }
         $wppoppop_alt = null;
         foreach (array('alt', 'altText', 'imageAlt') as $wppoppop_k) {
             if (isset($el[$wppoppop_k]) && !is_array($el[$wppoppop_k])) {

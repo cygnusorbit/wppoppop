@@ -502,9 +502,14 @@ class WpPopPop_Front_Renderer {
                 $wppoppop_v_inner = WpPopPop_Front_Element_Media::render_video($el);
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-video ' . $anim_class . '" style="' . $style_attr . ';overflow:hidden;">' . $wppoppop_v_inner . '</div>';
             case 'image':
+                if (!class_exists('WpPopPop_Front_Element_Media')) {
+                    require_once WPPOPPOP_PATH . 'includes/front/elements/class-front-element-media.php';
+                }
+                $wppoppop_i_inner = WpPopPop_Front_Element_Media::render_image($el);
+                if ($wppoppop_i_inner !== '') { $inner_html = $wppoppop_i_inner; break; }
                 $img_src = esc_url($el['imgUrl'] ?? ($el['imageUrl'] ?? ($el['src'] ?? ($el['content'] ?? ''))));
-                $img_fit_raw = $el['objectFit'] ?? ($el['imageFit'] ?? 'cover');
-                $img_fit = esc_attr(in_array($img_fit_raw, array('cover', 'contain', 'fill', 'none', 'scale-down'), true) ? $img_fit_raw : 'cover');
+                $img_fit_raw = $el['objectFit'] ?? ($el['imageFit'] ?? 'contain');
+                $img_fit = esc_attr(in_array($img_fit_raw, array('cover', 'contain', 'fill', 'none', 'scale-down'), true) ? $img_fit_raw : 'contain');
                 $img_alt = esc_attr($el['altText'] ?? ($el['alt'] ?? ($el['imageAlt'] ?? '')));
                 $inner_html = "<img src=\"{$img_src}\" alt=\"{$img_alt}\" style=\"width:100%;height:100%;object-fit:{$img_fit};display:block;border-radius:inherit;\" />";
                 break;

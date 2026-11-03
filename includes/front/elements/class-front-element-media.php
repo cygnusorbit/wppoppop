@@ -45,8 +45,8 @@ class WpPopPop_Front_Element_Media {
         }
         $alt = esc_attr($alt_raw);
 
-        $fit_raw = !empty($el['objectFit']) ? $el['objectFit'] : (!empty($el['imageFit']) ? $el['imageFit'] : 'cover');
-        $fit = in_array($fit_raw, array('cover', 'contain', 'fill', 'none', 'scale-down'), true) ? $fit_raw : 'cover';
+        $fit_raw = !empty($el['objectFit']) ? $el['objectFit'] : (!empty($el['imageFit']) ? $el['imageFit'] : 'contain');
+        $fit = in_array($fit_raw, array('cover', 'contain', 'fill', 'none', 'scale-down'), true) ? $fit_raw : 'contain';
 
         $img = sprintf(
             '<img src="%1$s" alt="%2$s" loading="lazy" draggable="false" style="width:100%%;height:100%%;object-fit:%3$s;border:inherit;border-radius:inherit;display:block;">',
@@ -57,7 +57,11 @@ class WpPopPop_Front_Element_Media {
 
         $link = !empty($el['linkUrl']) && is_string($el['linkUrl']) ? esc_url($el['linkUrl']) : '';
         if ($link) {
-            $blank = !empty($el['targetBlank']) && $el['targetBlank'] !== 'false';
+            if (isset($el['linkTarget']) && in_array($el['linkTarget'], array('_self', '_blank'), true)) {
+                $blank = $el['linkTarget'] === '_blank';
+            } else {
+                $blank = (!empty($el['targetBlank']) && $el['targetBlank'] !== 'false') || (!empty($el['linkBlank']) && $el['linkBlank'] !== 'false');
+            }
             $img = '<a href="' . $link . '"' . ($blank ? ' target="_blank" rel="noopener noreferrer"' : '') . ' style="display:block;width:100%;height:100%;">' . $img . '</a>';
         }
         return $img;

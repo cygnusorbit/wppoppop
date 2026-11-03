@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) exit;
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">OBJECT FIT</label>
             <select id="prop-image-fit" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="objectFit" style="font-size:12px;">
+                <option value="contain" selected>Contain (Full)</option>
                 <option value="cover">Cover (Crop)</option>
-                <option value="contain">Contain (Full)</option>
                 <option value="fill">Stretch Fill</option>
                 <option value="scale-down">Scale Down</option>
             </select>
@@ -25,5 +25,11 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
     <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">OPTIONAL CLICK REDIRECT URL</label>
-    <input type="text" id="prop-image-link" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="linkUrl" placeholder="https://example.com" style="font-size:12px;">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:8px;">
+        <input type="text" id="prop-image-link" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="linkUrl" placeholder="https://example.com" style="font-size:12px;min-width:0;">
+        <select id="prop-image-link-target" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="linkTarget" title="Link target" style="font-size:12px;">
+            <option value="_self" selected>Same tab</option>
+            <option value="_blank">New tab</option>
+        </select>
+    </div>
 </div>

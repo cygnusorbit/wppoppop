@@ -830,7 +830,7 @@
                     return '<input type="text" placeholder="' + (el.content || 'Enter text...') + '" style="width:100%;height:100%;padding:0 ' + (padVal > 0 ? padVal : 10) + 'px;border:1px solid #cbd5e1;border-radius:inherit;text-align:' + align + ';box-sizing:border-box;">';
                 case 'image':
                     var imgSrc = el.imageUrl || el.src || el.url || (el.content && String(el.content).indexOf('http') === 0 ? el.content : '');
-                    var imgFit = el.objectFit || el.imageFit || 'cover';
+                    var imgFit = el.objectFit || el.imageFit || 'contain';
                     var imgAlt = el.imageAlt || el.alt || 'Popup Image';
                     if (imgSrc) {
                         return '<img src="' + imgSrc + '" alt="' + imgAlt.replace(/"/g, '&quot;') + '" style="width:100%;height:100%;object-fit:' + imgFit + ';display:block;border-radius:inherit;pointer-events:none;" />';
@@ -1163,8 +1163,8 @@
                 name: type.toUpperCase() + ' ' + (elements.length + 1),
                 top: (typeof spawnY === 'number' && !isNaN(spawnY)) ? spawnY : (50 + (elements.length * 15) % 150),
                 left: (typeof spawnX === 'number' && !isNaN(spawnX)) ? spawnX : (50 + (elements.length * 15) % 200),
-                width: (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'text' || type === 'textfield') ? 200 : (type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
-                height: (type === 'progress') ? 20 /* WPPOPPOP_PROGRESS_SPAWN_20 */ : (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'signature') ? 60 : 42),
+                width: (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape' || type === 'image') ? 120 : ((type === 'text' || type === 'textfield') ? 200 : (type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
+                height: (type === 'image') ? 150 /* WPPOPPOP_IMAGE_SPAWN_120x150 */ : (type === 'progress') ? 20 /* WPPOPPOP_PROGRESS_SPAWN_20 */ : (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'signature') ? 60 : 42),
                 zIndex: nextZ, /* WPPOPPOP_CLOSE_SPAWN_35 */
                 sizePresetApplied: (type === 'close' || type === 'close_icon'),
                 borderRadius: 0,
@@ -1210,6 +1210,7 @@
                 newEl.shapeRotate = 0;
             }
 
+            if (type === 'image') { newEl.objectFit = 'contain'; newEl.imageFit = 'contain'; newEl.linkTarget = '_self'; newEl.targetBlank = false; newEl.linkBlank = false; newEl.sizePresetApplied = true; } /* WPPOPPOP_IMAGE_DEFAULTS */
             if (type === 'textarea') { newEl.height = 100; newEl.h = 100; if (!newEl.rows) { newEl.rows = 4; } } /* WPPOPPOP_TEXTAREA_H100 */
             if (type === 'checkbox' || type === 'checkboxes') { newEl.width = 300; newEl.w = 300; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_CHECKBOX_DEFAULTS */
             if (type === 'radio' || type === 'radios') { newEl.width = 100; newEl.w = 100; newEl.height = 100; newEl.h = 100; newEl.fontSize = 12; newEl.bgColor = 'transparent'; newEl.transparentFill = true; } /* WPPOPPOP_RADIO_DEFAULTS */

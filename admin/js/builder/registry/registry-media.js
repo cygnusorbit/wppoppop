@@ -72,8 +72,8 @@
                 return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             };
             var alt = escAttr(el.alt || el.imageAlt || el.altText || '');
-            var fit = el.objectFit || el.imageFit || 'cover';
-            if (['cover', 'contain', 'fill', 'none', 'scale-down'].indexOf(fit) === -1) fit = 'cover';
+            var fit = el.objectFit || el.imageFit || 'contain';
+            if (['cover', 'contain', 'fill', 'none', 'scale-down'].indexOf(fit) === -1) fit = 'contain';
             if (src) {
                 innerHtml = '<img src="' + escAttr(src) + '" alt="' + alt + '" draggable="false" style="width:100%;height:100%;object-fit:' + fit + ';display:block;border-radius:inherit;pointer-events:none;">';
             } else {
@@ -229,7 +229,7 @@
                     if (el.type === 'image' || el.type === 'img') {
                         $('#prop-image-url').val(el.src || el.imageUrl || el.imgUrl || '');
                         $('#prop-image-alt').val(el.alt || el.imageAlt || el.altText || '');
-                        $('#prop-image-fit').val(el.objectFit || el.imageFit || 'cover');
+                        $('#prop-image-fit').val(el.objectFit || el.imageFit || 'contain');
                         $('#prop-image-link').val(el.linkUrl || '');
                     }
                     Reg.syncMediaSubRows(el);
