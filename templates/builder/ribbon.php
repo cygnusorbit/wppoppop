@@ -1,6 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 ?>
+<div id="wppoppop-ribbon-wrap" class="wppoppop-ribbon-wrap">
 <div id="wppoppop-ribbon" class="wppoppop-ribbon-bar">
     <div class="wppoppop-ribbon-scroll" style="display:flex;flex-flow:row wrap;align-items:center;align-content:flex-start;gap:4px;overflow:visible;padding:4px 8px;width:100%;box-sizing:border-box;">
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="shape" title="1. Rectangle / Square (shape)"><span class="dashicons dashicons-screenoptions"></span><span class="btn-label">1. Rectangle</span></button>
@@ -36,8 +37,10 @@ if (!defined('ABSPATH')) exit;
             <label class="wppoppop-snap-switch" title="Snap to other objects' edges and centers (hold Alt to bypass)">
                 <input type="checkbox" id="wppoppop-snap-object" class="wppoppop-snap-toggle" aria-label="Snap to objects" data-snap="object">
                 <span class="wppoppop-snap-slider" aria-hidden="true"></span>
-                <span class="wppoppop-snap-text">Snap</span>
+                <span class="wppoppop-snap-text">Snap Object</span>
             </label>
         </div>
     </div>
+</div>
+    <button type="button" id="wppoppop-ribbon-toggle" class="wppoppop-ribbon-toggle" aria-controls="wppoppop-ribbon" aria-expanded="true" title="Hide Elements Ribbon" aria-label="Hide Elements Ribbon"><span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span></button>
 </div>
