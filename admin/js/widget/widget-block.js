@@ -70,7 +70,7 @@
                    (a.mode === 'onload' ? ' (delay ' + (a.delay || 0) + 's)' : ''))
                 : 'Choose a popup below.';
 
-            return el('div', { style: { border: '1px dashed #94a3b8', borderRadius: '6px', padding: '14px', background: '#f8fafc' } },
+            return el('div', { style: { border: '1px dashed #94a3b8', borderRadius: '0px', padding: '14px', background: '#f8fafc' } },
                 el(InspectorControls, null,
                     el(comps.PanelBody, { title: 'WpPopPop Popup', initialOpen: true }, buildControls('s_'))
                 ),

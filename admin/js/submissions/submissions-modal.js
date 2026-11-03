@@ -51,11 +51,11 @@
                         $('#wppoppop-modal-sig-img').attr('src', val);
                     } else if (key.indexOf('utm_') === 0) {
                         hasUtm = true;
-                        $utmList.append('<span style="background:#e2e8f0;padding:2px 8px;border-radius:4px;"><strong>' + key + ':</strong> ' + val + '</span>');
+                        $utmList.append('<span style="background:#e2e8f0;padding:2px 8px;border-radius:0px;"><strong>' + key + ':</strong> ' + val + '</span>');
                     } else {
                         var displayVal = Array.isArray(val) ? val.join(', ') : val;
                         if (key.charAt(0) === '_') { key = key.substring(1); }
-                        $fieldsList.append('<div style="background:#f8fafc;padding:8px 12px;border-radius:6px;border:1px solid #e2e8f0;"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">' + escHtml(key) + '</label><div style="font-weight:600;font-size:13px;color:#1e293b;">' + escHtml(displayVal) + '</div></div>');
+                        $fieldsList.append('<div style="background:#f8fafc;padding:8px 12px;border-radius:0px;border:1px solid #e2e8f0;"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">' + escHtml(key) + '</label><div style="font-weight:600;font-size:13px;color:#1e293b;">' + escHtml(displayVal) + '</div></div>');
                     }
                 });
 

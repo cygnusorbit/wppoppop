@@ -352,7 +352,7 @@ class WpPopPop_Front_Renderer {
         $width  = intval($el['width'] ?? $el['w'] ?? 200);
         $height = intval($el['height'] ?? $el['h'] ?? 40);
         $zIndex = intval($el['zIndex'] ?? 10);
-        $bRad   = intval($el['borderRadius'] ?? 4);
+        $bRad   = intval($el['borderRadius'] ?? 0);
         $opac   = floatval($el['opacity'] ?? 1); if ($opac > 1) { $opac = $opac / 100; } /* WPPOPPOP_OPACITY_PCT */
         $content = $el['content'] ?? '';
 

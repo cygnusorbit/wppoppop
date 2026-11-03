@@ -24,7 +24,7 @@
                 color: '#ffffff',
                 hoverBg: '#059669',
                 hoverColor: '#ffffff',
-                borderRadius: 6,
+                borderRadius: 0,
                 borderWidth: 0,
                 borderColor: '#047857',
                 fontSize: 14,

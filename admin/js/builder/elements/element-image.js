@@ -19,7 +19,7 @@
                 imgUrl: '',
                 altText: 'Popup Image',
                 objectFit: 'cover',
-                borderRadius: 4,
+                borderRadius: 0,
                 borderWidth: 0,
                 borderColor: '#cbd5e1'
             };

@@ -63,7 +63,7 @@ if (!defined('ABSPATH')) {
 
             <div style="display:flex;gap:10px;margin-top:10px;">
                 <div style="flex:1;"><label>BACKGROUND</label><input type="color" id="wppoppop-prop-bgcolor" value="#2271b1"></div>
-                <div style="flex:1;"><label>BORDER RADIUS</label><input type="number" id="wppoppop-prop-radius" value="4"></div>
+                <div style="flex:1;"><label>BORDER RADIUS</label><input type="number" id="wppoppop-prop-radius" value="0"></div>
             </div>
 
             <label style="margin-top:12px;display:block;">ANIMATION ENTRANCE</label>

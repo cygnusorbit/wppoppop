@@ -19,7 +19,7 @@
                 iconSize: 32,
                 iconColor: '#3b82f6',
                 bgColor: 'transparent',
-                borderRadius: 24
+                borderRadius: 0
             };
         },
 

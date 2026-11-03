@@ -440,3 +440,124 @@ html body #wppoppop-layers-list .wppoppop-layer-btn-duplicate.is-clicked .dashic
 html body #wppoppop-layers-list .wppoppop-layer-btn-del.is-clicked .dashicons {
     color: #c2185b !important;
 }
+
+/* === WPPOPPOP_DROPDOWN_ARROW_FIX_START === */
+/* 1. All Styling <select> controls: High-Contrast Crisp SVG Dropdown Arrow */
+.wppoppop-builder select,
+.wppoppop-inspector select,
+.wppoppop-sidebar select,
+.wppoppop-layer-settings select,
+.wppoppop-element-settings select,
+.wppoppop-control select,
+.wppoppop-field select,
+.wppoppop-control-group select,
+.wppoppop-style-section select,
+.wppoppop-panel select,
+select.wppoppop-select,
+select.wppoppop-input {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 10px) center !important;
+    background-size: 12px 12px !important;
+    padding-right: 32px !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+/* Dark mode / dark theme inspector select support */
+.wppoppop-dark select,
+.wppoppop-theme-dark select,
+[data-theme="dark"] .wppoppop-inspector select {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+}
+
+/* 2. Custom Select Wrappers & Dropdowns */
+.wppoppop-select-wrapper,
+.wppoppop-custom-select,
+.wppoppop-dropdown {
+    position: relative !important;
+    display: inline-block !important;
+    width: 100% !important;
+}
+
+.wppoppop-select-wrapper::after,
+.wppoppop-custom-select::after,
+.wppoppop-dropdown-toggle::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 12px !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-right: 2px solid #64748b !important;
+    border-bottom: 2px solid #64748b !important;
+    transform: translateY(-65%) rotate(45deg) !important;
+    pointer-events: none !important;
+    z-index: 3 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* If native select is directly inside the wrapper, let the native background arrow handle it */
+.wppoppop-select-wrapper:has(select)::after {
+    display: none !important;
+}
+
+/* 3. Collapsible Styling Section / Accordion Dropdown Arrows */
+.wppoppop-section-header,
+.wppoppop-accordion-header,
+.wppoppop-panel-heading,
+.wppoppop-group-header,
+.wppoppop-collapse-toggle {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    cursor: pointer !important;
+    user-select: none !important;
+}
+
+.wppoppop-section-header .toggle-arrow,
+.wppoppop-section-header .dashicons-arrow-down,
+.wppoppop-section-header .dashicons-arrow-right,
+.wppoppop-accordion-header .arrow,
+.wppoppop-accordion-header .chevron,
+.wppoppop-group-header .wppoppop-arrow {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 16px !important;
+    height: 16px !important;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Fallback SVG arrow for section headers lacking an icon child */
+.wppoppop-section-header:not(:has(.toggle-arrow)):not(:has(.chevron)):not(:has(.dashicons))::after,
+.wppoppop-accordion-header:not(:has(.toggle-arrow)):not(:has(.chevron)):not(:has(.dashicons))::after {
+    content: "" !important;
+    display: inline-block !important;
+    width: 8px !important;
+    height: 8px !important;
+    margin-left: auto !important;
+    border-right: 2px solid #64748b !important;
+    border-bottom: 2px solid #64748b !important;
+    transform: rotate(45deg) !important;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Rotate section arrow on collapsed states */
+.wppoppop-section-header.is-collapsed::after,
+.wppoppop-accordion-header.is-closed::after,
+.wppoppop-section-header.collapsed::after {
+    transform: rotate(-45deg) !important;
+}
+/* === WPPOPPOP_DROPDOWN_ARROW_FIX_END === */

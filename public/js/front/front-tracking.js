@@ -65,7 +65,7 @@
             $('<div/>').text(txt).css({
                 position: 'fixed', left: '8px', bottom: '8px', zIndex: 2147483647,
                 background: '#111827', color: '#fff', font: '12px/1.4 sans-serif',
-                padding: '6px 10px', borderRadius: '6px', maxWidth: '90vw'
+                padding: '6px 10px', borderRadius: '0px', maxWidth: '90vw'
             }).appendTo(document.body);
         });
     }

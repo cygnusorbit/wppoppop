@@ -475,7 +475,7 @@
         $('body').append($b);
         var off = $f.offset() || { top: 0, left: 0 };
         $b.css({ position: 'absolute', top: (off.top - $b.outerHeight() - 8) + 'px', left: off.left + 'px',
-            background: '#ef4444', color: '#ffffff', padding: '6px 12px', borderRadius: '4px', fontSize: '12px',
+            background: '#ef4444', color: '#ffffff', padding: '6px 12px', borderRadius: '0px', fontSize: '12px',
             fontWeight: '600', zIndex: 9999999, boxShadow: '0 4px 12px rgba(239,68,68,0.3)' });
         try { $f.trigger('focus'); } catch (err) {}
         setTimeout(function() { $b.fadeOut(300, function() { $b.remove(); }); }, 3500);
@@ -755,7 +755,7 @@
         $list.empty();
         if (err) {
             $('<div class="wppoppop-upload-error" role="alert"></div>').text(err).css({
-                color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px',
+                color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0px',
                 padding: '3px 6px', fontSize: '11px', boxSizing: 'border-box'
             }).appendTo($list);
         }
@@ -764,7 +764,7 @@
         for (var i = 0; i < files.length; i++) {
             var $row = $('<div class="wppoppop-upload-item"></div>').css({
                 display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1px solid #cbd5e1',
-                borderRadius: '6px', padding: '3px 6px', fontSize: '11px', color: '#334155', boxSizing: 'border-box'
+                borderRadius: '0px', padding: '3px 6px', fontSize: '11px', color: '#334155', boxSizing: 'border-box'
             });
             $('<span class="wppoppop-upload-item-name"></span>').text(files[i].name).css({ flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }).appendTo($row);
             $('<span></span>').text(fmtSize(files[i].size)).css({ fontSize: '9px', color: '#94a3b8', flexShrink: 0 }).appendTo($row);
@@ -894,7 +894,7 @@
     if (!document.getElementById('wppoppop-rating-runtime-css')) {
         var st = document.createElement('style');
         st.id = 'wppoppop-rating-runtime-css';
-        st.appendChild(document.createTextNode('.wppoppop-interactive-rating,.wppoppop-interactive-rating .wppoppop-rating-glyph{pointer-events:auto!important;touch-action:manipulation;}.wppoppop-rating-glyph:focus{outline:2px solid rgba(2,132,199,.5);outline-offset:2px;border-radius:3px;}'));
+        st.appendChild(document.createTextNode('.wppoppop-interactive-rating,.wppoppop-interactive-rating .wppoppop-rating-glyph{pointer-events:auto!important;touch-action:manipulation;}.wppoppop-rating-glyph:focus{outline:2px solid rgba(2,132,199,.5);outline-offset:2px;border-radius:0px;}'));
         (document.head || document.documentElement).appendChild(st);
     }
 
@@ -1012,7 +1012,7 @@
             b.setAttribute('data-rating', '1');
             b.textContent = inp.getAttribute('data-error-msg') || 'Please select a rating.';
             var r = w.getBoundingClientRect();
-            b.style.cssText = 'position:absolute;top:' + (r.top + window.pageYOffset - 34) + 'px;left:' + (r.left + window.pageXOffset) + 'px;background:#ef4444;color:#fff;padding:6px 12px;border-radius:4px;font-size:12px;font-weight:600;z-index:9999999;box-shadow:0 4px 12px rgba(239,68,68,.3);';
+            b.style.cssText = 'position:absolute;top:' + (r.top + window.pageYOffset - 34) + 'px;left:' + (r.left + window.pageXOffset) + 'px;background:#ef4444;color:#fff;padding:6px 12px;border-radius:0px;font-size:12px;font-weight:600;z-index:9999999;box-shadow:0 4px 12px rgba(239,68,68,.3);';
             document.body.appendChild(b);
             setTimeout(function() { if (b.parentNode) { b.parentNode.removeChild(b); } }, 3500);
             return;

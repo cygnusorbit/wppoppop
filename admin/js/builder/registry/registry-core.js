@@ -484,8 +484,8 @@
                                 var lbl = $.trim(parts[0] || 'Choice');
                                 var imgUrl = parts[1] ? $.trim(parts[1]) : '';
                                 var borderCol = idx === 0 ? '#0284c7' : '#cbd5e1';
-                                var thumb = imgUrl ? '<img src="' + imgUrl + '" style="width:100%;height:32px;object-fit:cover;border-radius:3px;margin-bottom:2px;" />' : '<span class="dashicons dashicons-format-image" style="display:block;margin:0 auto 2px;color:#64748b;"></span>';
-                                return '<div style="border:2px solid ' + borderCol + ';border-radius:6px;padding:4px;text-align:center;font-size:11px;font-weight:600;background:#f8fafc;">' + thumb + lbl + '</div>';
+                                var thumb = imgUrl ? '<img src="' + imgUrl + '" style="width:100%;height:32px;object-fit:cover;border-radius:0px;margin-bottom:2px;" />' : '<span class="dashicons dashicons-format-image" style="display:block;margin:0 auto 2px;color:#64748b;"></span>';
+                                return '<div style="border:2px solid ' + borderCol + ';border-radius:0px;padding:4px;text-align:center;font-size:11px;font-weight:600;background:#f8fafc;">' + thumb + lbl + '</div>';
                             }).join('');
                             return '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:6px;width:100%;height:100%;align-items:center;">' + cards + '</div>';
                         }
@@ -495,7 +495,7 @@
                             var actBg = el.activeColor || '#0284c7';
                             var tiles = tlOpts.slice(0, 4).map(function(o, i) {
                                 var styleStr = i === 0 ? ('background:' + actBg + ';color:#ffffff;border:1px solid ' + actBg + ';') : 'background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;';
-                                return '<div style="padding:6px;border-radius:6px;text-align:center;font-weight:700;font-size:12px;' + styleStr + '">' + $.trim(o) + '</div>';
+                                return '<div style="padding:6px;border-radius:0px;text-align:center;font-weight:700;font-size:12px;' + styleStr + '">' + $.trim(o) + '</div>';
                             }).join('');
                             return '<div style="display:grid;grid-template-columns:repeat(' + tlCols + ',1fr);gap:6px;width:100%;height:100%;align-items:center;">' + tiles + '</div>';
                         }

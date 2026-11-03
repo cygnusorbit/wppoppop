@@ -75,7 +75,7 @@
                 background: '#ef4444',
                 color: '#ffffff',
                 padding: '6px 12px',
-                borderRadius: '4px',
+                borderRadius: '0px',
                 fontSize: '12px',
                 fontWeight: '600',
                 zIndex: 9999999,

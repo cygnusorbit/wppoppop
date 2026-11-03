@@ -34,7 +34,7 @@ if (!defined('ABSPATH')) exit;
         </div>
         <div>
             <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">STROKE WIDTH (PX)</label>
-            <input type="number" id="prop-shape-stroke-width" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="strokeWidth" min="0" max="40" value="0" style="font-size:12px;">
+            <input type="number" id="prop-shape-stroke-width" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="strokeWidth" min="0" max="40" value="0" style="font-size:12px;" placeholder="0">
         </div>
     </div>
     <div style="margin-bottom:10px;">

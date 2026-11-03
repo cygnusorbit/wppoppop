@@ -21,7 +21,7 @@
                 videoAutoplay: false,
                 videoMute: true,
                 videoLoop: false,
-                borderRadius: 4
+                borderRadius: 0
             };
         },
 

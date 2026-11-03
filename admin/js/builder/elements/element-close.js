@@ -22,7 +22,7 @@
                 color: '#64748b',
                 hoverColor: '#0f172a',
                 bgColor: 'transparent',
-                borderRadius: 18,
+                borderRadius: 0,
                 borderWidth: 0,
                 textAlign: 'center'
             };

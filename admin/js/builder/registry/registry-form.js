@@ -55,7 +55,7 @@
         var align   = el.textAlign || 'left';
         var defVal  = $.trim(el.defaultValue || '');
         var reqStar = el.required ? ' <span style="color:#f43f5e;font-weight:700;">*</span>' : '';
-        var roBadge = el.readOnly ? '<span style="font-size:9px;background:#e2e8f0;color:#475569;padding:1px 4px;border-radius:3px;margin-left:6px;flex-shrink:0;">RO</span>' : '';
+        var roBadge = el.readOnly ? '<span style="font-size:9px;background:#e2e8f0;color:#475569;padding:1px 4px;border-radius:0px;margin-left:6px;flex-shrink:0;">RO</span>' : '';
 
         var iLeft  = $.trim(el.iconLeft || ((canonical === 'date' ? 'dashicons-calendar-alt' : (canonical === 'time' ? 'dashicons-clock' : (canonical === 'password' ? '' : (canonical === 'upload' ? 'dashicons-cloud-upload' : ''))))));
         var iRight = $.trim(el.iconRight || '');
@@ -72,7 +72,7 @@
         if (canonical === 'text' || canonical === 'email') {
             var ph = defVal || el.placeholder || (canonical === 'email' ? 'Enter your email address...' : 'Enter text...');
             var textCol = defVal ? '#0f172a' : '#64748b';
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;padding-left:' + padL + 'px;padding-right:' + padR + 'px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;padding-left:' + padL + 'px;padding-right:' + padR + 'px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="width:100%;text-align:' + align + ';color:' + textCol + ';font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(ph).html() + reqStar + '</span>' +
                 roBadge + rightIconHtml +
@@ -81,7 +81,7 @@
             var nPh = defVal || el.placeholder || '0';
             var minV = (el.minValue !== undefined && el.minValue !== '') ? el.minValue : (el.min !== undefined ? el.min : 0);
             var maxV = (el.maxValue !== undefined && el.maxValue !== '') ? el.maxValue : (el.max !== undefined ? el.max : 100);
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;">' + $('<div>').text(nPh).html() + reqStar + '</span>' +
                 (el.unitSuffix ? '<span style="font-size:11px;color:#64748b;margin-right:6px;">' + $('<div>').text(el.unitSuffix).html() + '</span>' : '') + '<span style="font-size:9px;color:#94a3b8;margin-right:6px;">[' + minV + '–' + maxV + ']</span>' +
@@ -89,21 +89,21 @@
                 '</div>';
         } else if (canonical === 'tel') {
             var tPh  = defVal || el.placeholder || el.inputMask || '(555) 000-0000';
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;overflow:hidden;box-sizing:border-box;pointer-events:none;">' +
                 /* WPPOPPOP_TEL_ICONS */ leftIconHtml + '<span style="flex:1;padding:0 ' + (iRight ? padR : 12) + 'px 0 ' + padL + 'px;text-align:' + align + ';color:#64748b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(tPh).html() + reqStar + '</span>' +
                 rightIconHtml +
                 '</div>';
         } else if (canonical === 'textarea') {
             var taPh = defVal || el.placeholder || 'Write your message...';
             var maxC = parseInt(el.maxLength, 10) || 0;
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 '<div style="text-align:' + align + ';color:#64748b;font-size:12px;line-height:1.4;overflow:hidden;">' + $('<div>').text(taPh).html() + reqStar + '</div>' +
                 (maxC > 0 ? '<div style="text-align:right;font-size:9px;color:#94a3b8;">0 / ' + maxC + '</div>' : '') +
                 '</div>';
         } else if (canonical === 'select') {
             var sOpts = parseOptionsList(el.optionsList || el.options, ['Option 1', 'Option 2', 'Option 3']);
             var sDisp = defVal || el.firstOption || el.placeholder || 'Select an option...';
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(sDisp).html() + reqStar + '</span>' +
                 '<span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;width:16px;height:16px;color:#64748b;"></span>' +
                 '</div>';
@@ -124,7 +124,7 @@
             var cbItemsHtml = cbOpts.map(function(opt, idx) {
                 var active = (idx === 0 && isChecked);
                 return '<span style="display:inline-flex;align-items:center;gap:8px;' + cbTxt + '">' +
-                    '<span style="width:16px;height:16px;border-radius:3px;border:1.5px solid ' + (active ? '#c2185b' : '#94a3b8') + ';background:' + (active ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;flex-shrink:0;">' + (active ? '&#10003;' : '') + '</span>' +
+                    '<span style="width:16px;height:16px;border-radius:0px;border:1.5px solid ' + (active ? '#c2185b' : '#94a3b8') + ';background:' + (active ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;flex-shrink:0;">' + (active ? '&#10003;' : '') + '</span>' +
                     '<span>' + $('<div>').text(opt).html() + (idx === 0 && el.termsUrl ? ' <u style="color:#0284c7;">(view)</u>' : '') + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (cbRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (cbRow ? 'center' : cbJ) + ';justify-content:' + (cbRow ? cbJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + cbItemsHtml + '</div>';
@@ -147,8 +147,8 @@
             var rHtml = rOpts.map(function(opt, idx) {
                 var isSel = defVal ? (opt.toLowerCase() === defVal.toLowerCase() || (!!rPairs[idx].v && rPairs[idx].v.toLowerCase() === defVal.toLowerCase())) : false;
                 return '<span style="display:inline-flex;align-items:center;gap:8px;' + rTxt + '">' +
-                    '<span style="width:16px;height:16px;border-radius:50%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;flex-shrink:0;">' +
-                    (isSel ? '<span style="width:8px;height:8px;border-radius:50%;background:#c2185b;"></span>' : '') +
+                    '<span style="width:16px;height:16px;border-radius:0%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;flex-shrink:0;">' +
+                    (isSel ? '<span style="width:8px;height:8px;border-radius:0%;background:#c2185b;"></span>' : '') +
                     '</span><span>' + $('<div>').text(opt).html() + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (rRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (rRow ? 'center' : rJ) + ';justify-content:' + (rRow ? rJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + rHtml + '</div>';
@@ -171,7 +171,7 @@
             var gHtml = gPairs.map(function(it, idx) {
                 var on = gDefs.length && (gDefs.indexOf(it.l.toLowerCase()) !== -1 || (it.v && gDefs.indexOf(it.v.toLowerCase()) !== -1));
                 return '<span style="display:inline-flex;align-items:center;gap:8px;' + gTxt + '">' +
-                    '<span style="width:16px;height:16px;border-radius:3px;border:1.5px solid ' + (on ? '#c2185b' : '#94a3b8') + ';background:' + (on ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;flex-shrink:0;">' + (on ? '&#10003;' : '') + '</span>' +
+                    '<span style="width:16px;height:16px;border-radius:0px;border:1.5px solid ' + (on ? '#c2185b' : '#94a3b8') + ';background:' + (on ? '#c2185b' : '#ffffff') + ';color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;flex-shrink:0;">' + (on ? '&#10003;' : '') + '</span>' +
                     '<span>' + $('<div>').text(it.l || it.v).html() + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (gRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (gRow ? 'center' : gJ) + ';justify-content:' + (gRow ? gJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + gHtml + '</div>';
@@ -180,9 +180,9 @@
             var maxS  = parseInt(el.maxSelections || el.maxSelect, 10) || 0;
             var pills = mOpts.slice(0, 4).map(function(o, i) {
                 var sel = (i === 0);
-                return '<span style="padding:2px 7px;border-radius:4px;font-size:' + (parseInt(el.fontSize, 10) || 10) + 'px;font-weight:600;background:' + (sel ? '#c2185b' : '#f1f5f9') + ';color:' + (sel ? '#ffffff' : '#475569') + ';border:1px solid ' + (sel ? '#c2185b' : '#cbd5e1') + ';">' + $('<div>').text(o).html() + '</span>';
+                return '<span style="padding:2px 7px;border-radius:0px;font-size:' + (parseInt(el.fontSize, 10) || 10) + 'px;font-weight:600;background:' + (sel ? '#c2185b' : '#f1f5f9') + ';color:' + (sel ? '#ffffff' : '#475569') + ';border:1px solid ' + (sel ? '#c2185b' : '#cbd5e1') + ';">' + $('<div>').text(o).html() + '</span>';
             }).join('');
-            innerHtml = '<div style="width:100%;height:100%;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="width:100%;height:100%;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;box-sizing:border-box;pointer-events:none;">' +
                 pills + (maxS > 0 ? '<span style="margin-left:auto;font-size:9px;color:#94a3b8;">Max: ' + maxS + '</span>' : '') +
                 '</div>';
         } else if (canonical === 'imageselect') {
@@ -208,9 +208,9 @@
                 var it = parseImg(line);
                 var active = (idx === 0);
                 var thumb = (it.i && /^((https?:)?\/\/|\/)/i.test(it.i))
-                    ? '<img src="' + String(it.i).replace(/"/g, '%22').replace(/</g, '%3C') + '" alt="" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;border-radius:3px;display:block;" />'
+                    ? '<img src="' + String(it.i).replace(/"/g, '%22').replace(/</g, '%3C') + '" alt="" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;border-radius:0px;display:block;" />'
                     : '<span class="dashicons dashicons-format-image" style="font-size:18px;width:18px;height:18px;color:' + (active ? iAcc : '#94a3b8') + ';"></span>';
-                return '<div style="min-width:0;min-height:0;box-sizing:border-box;border:2px solid ' + (active ? iAcc : '#cbd5e1') + ';border-radius:6px;background:#ffffff;padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;">' + thumb +
+                return '<div style="min-width:0;min-height:0;box-sizing:border-box;border:2px solid ' + (active ? iAcc : '#cbd5e1') + ';border-radius:0px;background:#ffffff;padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;">' + thumb +
                     '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' + iTxt + '">' + $('<div>').text(it.l || 'Choice').html() + (idx === 0 ? reqStar : '') + '</span></div>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + iCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + cards + '</div>';
@@ -241,19 +241,19 @@
         } else if (canonical === 'date') {
             var dFmt = el.dateFormat || 'YYYY-MM-DD';
             var dPh  = defVal || el.placeholder || dFmt;
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;">' + $('<div>').text(dPh).html() + reqStar + '</span>' +
-                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:3px;">' + dFmt + '</span>' + rightIconHtml +
+                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:0px;">' + dFmt + '</span>' + rightIconHtml +
                 '</div>';
         } else if (canonical === 'time') {
             var tFmt  = el.timeFormat || '12h';
             var tStep = parseInt(el.timeStep, 10) || parseInt(el.minuteStep, 10) || 15;
             var tmPh  = defVal || el.placeholder || (tFmt === '24h' ? '14:00' : '02:00 PM');
-            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding-left:' + padL + 'px;padding-right:10px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span style="flex:1;text-align:' + align + ';color:#334155;font-size:12px;">' + $('<div>').text(tmPh).html() + reqStar + '</span>' +
-                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:3px;">' + tFmt + ' (' + tStep + 'm)</span>' + rightIconHtml +
+                '<span style="font-size:9px;color:#94a3b8;background:#f1f5f9;padding:2px 5px;border-radius:0px;">' + tFmt + ' (' + tStep + 'm)</span>' + rightIconHtml +
                 '</div>';
         } else if (canonical === 'upload') {
             /* WPPOPPOP_UPLOAD_STAGE_V2: icons + offsets + default text */
@@ -262,7 +262,7 @@
             var uMax  = parseInt(el.maxFileSize, 10) || 5;
             var uAl   = el.textAlign || 'center';
             var uJ    = uAl === 'left' ? 'flex-start' : (uAl === 'right' ? 'flex-end' : 'center');
-            innerHtml = '<div style="position:relative;width:100%;height:100%;border:1.5px dashed #94a3b8;border-radius:6px;background:#f8fafc;display:flex;align-items:center;justify-content:' + uJ + ';gap:8px;padding:6px ' + padR + 'px 6px ' + padL + 'px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div style="position:relative;width:100%;height:100%;border:1.5px dashed #94a3b8;border-radius:0px;background:#f8fafc;display:flex;align-items:center;justify-content:' + uJ + ';gap:8px;padding:6px ' + padR + 'px 6px ' + padL + 'px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<div style="display:flex;flex-direction:column;line-height:1.2;min-width:0;text-align:' + uAl + ';">' +
                     '<span style="font-size:11px;font-weight:600;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(uPh).html() + reqStar + '</span>' +
@@ -277,7 +277,7 @@
             var pwRightPos = offR + (showEye ? 40 : 0);
             var pwRightIcon = formatIconTag(iRight, 'position:absolute;right:' + pwRightPos + 'px;top:50%;transform:translateY(-50%);');
             var pwPadR = Math.max(showEye ? 44 : 12, iRight ? (pwRightPos + 22) : 0);
-            innerHtml = '<div class="wppoppop-pw-stage" style="position:relative;width:100%;height:100%;display:flex;align-items:center;padding-left:' + padL + 'px;padding-right:' + pwPadR + 'px;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;pointer-events:none;">' +
+            innerHtml = '<div class="wppoppop-pw-stage" style="position:relative;width:100%;height:100%;display:flex;align-items:center;padding-left:' + padL + 'px;padding-right:' + pwPadR + 'px;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;box-sizing:border-box;pointer-events:none;">' +
                 leftIconHtml +
                 '<span class="wppoppop-pw-prev-text" data-ph="' + $('<div>').text(pwPh).html().replace(/"/g, '&quot;') + '" style="flex:1;text-align:' + align + ';color:#64748b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(pwPh).html() + reqStar + '</span>' +
                 pwRightIcon +
@@ -615,13 +615,13 @@
             display: 'flex', flexDirection: 'column', gap: '4px', pointerEvents: 'auto'
         });
         if (lastErr) {
-            $('<div class="wppoppop-up-prev-err"></div>').text(lastErr).css({ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', padding: '3px 6px', fontSize: '11px', boxSizing: 'border-box' }).appendTo($list);
+            $('<div class="wppoppop-up-prev-err"></div>').text(lastErr).css({ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0px', padding: '3px 6px', fontSize: '11px', boxSizing: 'border-box' }).appendTo($list);
             lastErr = '';
         }
         files.forEach(function(f, i) {
             var $row = $('<div></div>').css({
                 display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1px solid #cbd5e1',
-                borderRadius: '6px', padding: '3px 6px', fontSize: '11px', color: '#334155', boxSizing: 'border-box'
+                borderRadius: '0px', padding: '3px 6px', fontSize: '11px', color: '#334155', boxSizing: 'border-box'
             });
             $('<span></span>').text(f.name).css({ flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }).appendTo($row);
             $('<span></span>').text(fmtSize(f.size)).css({ fontSize: '9px', color: '#94a3b8', flexShrink: 0 }).appendTo($row);
@@ -913,13 +913,13 @@
             '#insp-rating-data{display:none;padding:14px;}' +
             '#insp-tab-data.wppoppop-rt-data > #insp-rating-data{display:block !important;}' +
             '#insp-rating-data .rt-lbl{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#e2e8f0;text-transform:uppercase;margin:0 0 6px;}' +
-            '#insp-rating-data .rt-help{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#e2e8f0;color:#0f172a;font-size:10px;font-weight:800;line-height:1;cursor:help;flex-shrink:0;}' +
-            '#insp-rating-data .rt-field{width:100%;height:36px;background:#090d16;border:1px solid #1e293b;color:#f8fafc;border-radius:6px;padding:0 10px;font-size:12px;box-sizing:border-box;}' +
+            '#insp-rating-data .rt-help{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:0%;background:#e2e8f0;color:#0f172a;font-size:10px;font-weight:800;line-height:1;cursor:help;flex-shrink:0;}' +
+            '#insp-rating-data .rt-field{width:100%;height:36px;background:#090d16;border:1px solid #1e293b;color:#f8fafc;border-radius:0px;padding:0 10px;font-size:12px;box-sizing:border-box;}' +
             '#insp-rating-data .rt-row{margin-bottom:16px;}' +
             '#insp-rating-data .rt-sw{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;}' +
             '#insp-rating-data .rt-sw input{position:absolute;opacity:0;width:0;height:0;}' +
-            '#insp-rating-data .rt-sl{position:absolute;inset:0;background:#475569;border-radius:26px;cursor:pointer;transition:background .15s ease;}' +
-            '#insp-rating-data .rt-sl::before{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .15s ease;}' +
+            '#insp-rating-data .rt-sl{position:absolute;inset:0;background:#475569;border-radius:0px;cursor:pointer;transition:background .15s ease;}' +
+            '#insp-rating-data .rt-sl::before{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;background:#fff;border-radius:0%;transition:transform .15s ease;}' +
             '#insp-rating-data .rt-sw input:checked + .rt-sl{background:' + ACC + ';}' +
             '#insp-rating-data .rt-sw input:checked + .rt-sl::before{transform:translateX(20px);}' +
             '#insp-rating-data .rt-sw input:focus + .rt-sl{box-shadow:0 0 0 2px rgba(163,25,91,.45);}'
