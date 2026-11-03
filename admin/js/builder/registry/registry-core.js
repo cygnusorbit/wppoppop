@@ -246,7 +246,7 @@
                 $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(t) !== -1);
             }
 
-            var activeTab = (inspector && inspector.activeTab) ? inspector.activeTab : 'basic';
+            var activeTab = (inspector && inspector.activeTab) ? inspector.activeTab : (jQuery('#wppoppop-inspector-drawer .wppoppop-insp-tab.active').first().attr('data-tab') || 'basic') /* WPPOPPOP_ACTIVE_TAB_KEEP */;
             if (!isForm && (activeTab === 'data' || activeTab === 'advanced')) {
                 if (inspector && typeof inspector.switchTab === 'function') {
                     inspector.switchTab('basic');
@@ -261,7 +261,7 @@
             if (typeof this.syncMediaSubRows === 'function') { this.syncMediaSubRows(el); }
 
             // Ensure both #insp-tab-settings and #insp-tab-basic show when on Content/Basic tab
-            var curTab = (inspector && inspector.activeTab) ? inspector.activeTab : 'basic';
+            var curTab = (inspector && inspector.activeTab) ? inspector.activeTab : (jQuery('#wppoppop-inspector-drawer .wppoppop-insp-tab.active').first().attr('data-tab') || 'basic') /* WPPOPPOP_ACTIVE_TAB_KEEP */;
             if (curTab === 'basic' || curTab === 'content' || curTab === 'settings') {
                 $('#insp-tab-settings, #insp-tab-basic').addClass('active').show();
             }

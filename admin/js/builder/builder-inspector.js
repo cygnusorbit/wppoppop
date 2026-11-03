@@ -3890,7 +3890,7 @@
         $('#prop-default-value').val(el.defaultValue || '');
         $('#prop-dynamic-default').prop('checked', !!el.dynamicDefault);
         $('#prop-dynamic-param-row').toggle(!!el.dynamicDefault);
-        $('#prop-dynamic-param').val(el.paramName || el.dynamicParam || '');
+        $('#prop-dynamic-param').val(el.paramName || el.dynamicParam || ''); $('#prop-dynamic-param-row').toggle(!!el.dynamicDefault); /* WPPOPPOP_DYN_ROW */
         $('#prop-readonly').prop('checked', !!el.readOnly);
         $('#prop-save-to-db').prop('checked', el.saveToDb !== false);
 
@@ -4580,7 +4580,7 @@
         // 5. DATA TAB (#insp-tab-data)
         $('#prop-default-value').val(el.defaultValue || '');
         $('#prop-dynamic-default').prop('checked', !!el.dynamicDefault);
-        $('#prop-dynamic-param').val(el.paramName || el.dynamicParam || '');
+        $('#prop-dynamic-param').val(el.paramName || el.dynamicParam || ''); $('#prop-dynamic-param-row').toggle(!!el.dynamicDefault); /* WPPOPPOP_DYN_ROW */
         $('#prop-readonly').prop('checked', !!el.readOnly);
         $('#prop-save-to-db').prop('checked', el.saveToDb !== false);
 

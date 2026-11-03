@@ -199,7 +199,7 @@ class WpPopPop_Front_Renderer {
                             if (is_array($elements)) {
                                 foreach ($elements as $el) {
                                     if (is_array($el) && empty($el['hidden'])) {
-                                        echo $this->wppoppop_apply_fg($this->render_canvas_element($el), $el);
+                                        echo $this->wppoppop_apply_logic($this->wppoppop_apply_fg($this->render_canvas_element($el), $el), $el); /* WPPOPPOP_LOGIC_ATTRS */
                                     }
                                 }
                             }
@@ -220,6 +220,42 @@ class WpPopPop_Front_Renderer {
             </div><!-- /.wppoppop-fit-stage -->
         </div>
         <?php
+    }
+
+    /* WPPOPPOP_LOGIC_ATTRS: expose layer id + conditional-logic config on the layer wrapper for the frontend runtime */
+    private function wppoppop_apply_logic($html, array $el) {
+        if (!is_string($html) || $html === '') { return $html; }
+        $norm = function ($raw) {
+            $s = (string) $raw;
+            foreach (array('/^wppoppop-layer-item-/', '/^wppoppop-layer-/', '/^layer-/', '/^wppoppop-el-/', '/^el-/') as $re) {
+                $s = preg_replace($re, '', $s);
+            }
+            return trim($s);
+        };
+        $attrs = '';
+        $id = isset($el['id']) ? $norm($el['id']) : '';
+        if ($id !== '') { $attrs .= ' data-layer-id="' . esc_attr($id) . '"'; }
+        $on = !empty($el['logicEnabled']) && $el['logicEnabled'] !== 'false' && $el['logicEnabled'] !== '0';
+        if ($on && !empty($el['logicRules']) && is_array($el['logicRules'])) {
+            $rules = array();
+            foreach ($el['logicRules'] as $r) {
+                if (!is_array($r) || !isset($r['field']) || $r['field'] === '') { continue; }
+                $rules[] = array(
+                    'field'    => $norm($r['field']),
+                    'operator' => isset($r['operator']) ? sanitize_key($r['operator']) : 'equal',
+                    'value'    => isset($r['value']) ? (string) $r['value'] : '',
+                );
+            }
+            if (!empty($rules)) {
+                $action = (isset($el['logicAction']) && $el['logicAction'] === 'hide') ? 'hide' : 'show';
+                $match  = (isset($el['logicMatch']) && $el['logicMatch'] === 'any') ? 'any' : 'all';
+                $attrs .= ' data-logic-enabled="1" data-logic-action="' . $action . '" data-logic-match="' . $match . '" data-logic-rules="' . esc_attr(wp_json_encode($rules)) . '"';
+            }
+        }
+        if ($attrs === '') { return $html; }
+        return preg_replace_callback('/<div\b(?=[^>]*\bwppoppop-layer-item\b)([^>]*)>/', function ($m) use ($attrs) {
+            return '<div' . $m[1] . $attrs . '>';
+        }, $html, 1);
     }
 
     /* WPPOPPOP_FG_COLOR: expose the layer's foreground colour as a CSS variable on its wrapper */

@@ -1368,3 +1368,13 @@ body #wppoppop-inspector-drawer .element-panel select{
 #wppoppop-inspector-drawer{max-height:100% !important;}
 #wppoppop-inspector-body{min-height:0 !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch;padding-bottom:32px !important;}
 /* === WPPOPPOP_SHAPE_PANEL_V2_END === */
+
+/* === WPPOPPOP_LOGIC_DATA_UI_START === */
+#insp-section-action-routing { display: none !important; }
+.wppoppop-insp-switch { position: relative; display: inline-block; width: 34px; height: 18px; margin: 0; cursor: pointer; flex: 0 0 auto; }
+.wppoppop-insp-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.wppoppop-insp-switch .wppoppop-insp-slider { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: #475569; border-radius: 18px; -webkit-transition: background .2s ease; transition: background .2s ease; }
+.wppoppop-insp-switch .wppoppop-insp-slider:before { content: ""; position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; background: #fff; border-radius: 50%; -webkit-transition: -webkit-transform .2s ease; transition: transform .2s ease; }
+.wppoppop-insp-switch input:checked + .wppoppop-insp-slider { background: #2563eb; }
+.wppoppop-insp-switch input:checked + .wppoppop-insp-slider:before { -webkit-transform: translateX(16px); transform: translateX(16px); }
+/* === WPPOPPOP_LOGIC_DATA_UI_END === */

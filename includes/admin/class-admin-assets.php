@@ -87,6 +87,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-style-stable-js', WPPOPPOP_URL . 'admin/js/builder/registry/registry-style-stable.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-hotkeys-js', WPPOPPOP_URL . 'admin/js/builder/builder-hotkeys.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js', 'wppoppop-builder-layers-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-inspector-js', WPPOPPOP_URL . 'admin/js/builder/builder-inspector.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-data-tab-sync-js', WPPOPPOP_URL . 'admin/js/builder/builder-data-tab-sync.js', ['jquery', 'wppoppop-builder-inspector-js'], self::ver(), true);
         $wppoppop_reg_mods = array('registry-core', 'registry-style', 'registry-media', 'registry-label', 'registry-form', 'registry-lifecycle', 'registry-token', 'registry-compat', 'registry-inspector', 'registry-icons');
         $wppoppop_reg_prev = array('jquery');
         foreach ($wppoppop_reg_mods as $wppoppop_reg_i => $wppoppop_reg_m) {

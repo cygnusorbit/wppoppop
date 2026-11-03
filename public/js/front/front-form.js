@@ -299,23 +299,47 @@
 (function($) {
     'use strict';
 
-    function applyDynamicUrlParams() {
-        if (!window.location || !window.location.search) return;
-        var params = new URLSearchParams(window.location.search);
-        $('[data-param-name]').each(function() {
-            var $el =$(this);
-            var pName = $el.attr('data-param-name');
-            if (pName && params.has(pName)) {
-                var val = params.get(pName);
-                if ($el.is('input, textarea, select')) {$el.val(val).trigger('change');
-                } else {
-                    $el.find('input, textarea, select').first().val(val).trigger('change');
-                }
+    /* WPPOPPOP_DYN_DEFAULT_V2: URL parameter first, then cookie (names matched case-insensitively) */
+    function wppReadCookie(name) {
+        var want = String(name || '').toLowerCase(), parts = (document.cookie || '').split(';');
+        for (var i = 0; i < parts.length; i++) {
+            var idx = parts[i].indexOf('=');
+            if (idx < 0) { continue; }
+            var k = $.trim(parts[i].slice(0, idx));
+            if (k.toLowerCase() === want) {
+                try { return decodeURIComponent(parts[i].slice(idx + 1)); } catch (e) { return parts[i].slice(idx + 1); }
             }
+        }
+        return null;
+    }
+
+    function applyDynamicUrlParams() {
+        var params = null;
+        try { params = new URLSearchParams(window.location.search || ''); } catch (e) { params = null; }
+        function lookup(name) {
+            var want = String(name || '').toLowerCase(), found = null;
+            if (params) {
+                params.forEach(function (val, key) { if (found === null && String(key).toLowerCase() === want) { found = val; } });
+            }
+            return (found !== null && found !== '') ? found : wppReadCookie(name);
+        }
+        $('[data-param-name]').each(function () {
+            var $el = $(this);
+            var val = lookup($el.attr('data-param-name'));
+            if (val === null || val === '') { return; }
+            var $t = $el.is('input, textarea, select') ? $el : $el.find('input, textarea, select').first();
+            if (!$t.length) { return; }
+            if ($t.is(':checkbox, :radio')) {
+                $t.prop('checked', /^(1|true|on|yes)$/i.test(val) || String($t.val()).toLowerCase() === String(val).toLowerCase());
+            } else {
+                $t.val(val);
+            }
+            $t.trigger('input').trigger('change');
         });
     }
 
     function evaluateConditionalLogic($scope) {
+        if (window.__wppLogicV2) { return; } /* WPPOPPOP_LOGIC_V1_RETIRED */
         var $root = ($scope && $scope.length) ?$scope : $(document);$root.find('[data-logic-enabled="1"], [data-logic-enabled="true"]').each(function() {
             var $target =$(this);
             var action  = $target.attr('data-logic-action') || 'show';
