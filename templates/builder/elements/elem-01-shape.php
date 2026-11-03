@@ -2,46 +2,70 @@
 if (!defined('ABSPATH')) exit;
 ?>
 <!-- DECOMPOSED MODULE 01: RECTANGLE / SQUARE / VECTOR SHAPE (shape) -->
-<div class="element-panel wppoppop-panel-specific" id="panel-elem-shape" data-elem-family="media" style="display:none;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
-    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">1. Shape / Vector Geometry</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+<div class="element-panel wppoppop-panel-specific wppoppop-shape-panel" id="panel-elem-shape" data-elem-family="media" style="display:none;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
+    <div class="wppoppop-shape-head">
+        <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;letter-spacing:0.5px;">1. Shape / Vector Geometry</div>
+        <button type="button" id="prop-shape-reset" class="button button-small wppoppop-shape-reset" title="Reset stroke width and rotation to 0">&#8634; Reset</button>
+    </div>
+    <div class="wppoppop-shape-field">
+        <label class="wppoppop-shape-label" for="prop-shape-type">SVG SHAPE PRESET</label>
+        <select id="prop-shape-type" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shapePreset" style="font-size:12px;">
+            <option value="square" selected>Square</option>
+            <option value="rectangle">Rectangle</option>
+            <option value="rounded">Rounded Box</option>
+            <option value="circle">Circle / Oval</option>
+            <option value="pill">Pill / Stadium</option>
+            <option value="triangle">Triangle</option>
+            <option value="diamond">Diamond / Rhombus</option>
+            <option value="pentagon">Pentagon</option>
+            <option value="hexagon">Hexagon</option>
+            <option value="star">5-Point Star</option>
+            <option value="heart">Heart</option>
+            <option value="badge">Seal / Burst Badge</option>
+        </select>
+    </div>
+    <div class="wppoppop-shape-row">
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">SVG SHAPE PRESET</label>
-            <select id="prop-shape-type" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="shapePreset" style="font-size:12px;">
-                <option value="square" selected>Square</option>
-                <option value="rectangle">Rectangle</option>
-                <option value="rounded">Rounded Box</option>
-                <option value="circle">Circle / Oval</option>
-                <option value="pill">Pill / Stadium</option>
-                <option value="triangle">Triangle</option>
-                <option value="diamond">Diamond / Rhombus</option>
-                <option value="pentagon">Pentagon</option>
-                <option value="hexagon">Hexagon</option>
-                <option value="star">5-Point Star</option>
-                <option value="heart">Heart</option>
-                <option value="badge">Seal / Burst Badge</option>
-            </select>
+            <label class="wppoppop-shape-label" for="prop-size-width">WIDTH (PX)</label>
+            <input type="number" id="prop-size-width" class="widefat wppoppop-input" min="16" step="1" value="120" style="font-size:12px;">
         </div>
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">ROTATION (0°–360°)</label>
-            <input type="number" id="prop-shape-rotate" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="rotate" min="0" max="360" value="0" style="font-size:12px;">
+            <label class="wppoppop-shape-label" for="prop-size-height">HEIGHT (PX)</label>
+            <input type="number" id="prop-size-height" class="widefat wppoppop-input" min="16" step="1" value="120" style="font-size:12px;">
         </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+    <div class="wppoppop-shape-field">
+        <label class="wppoppop-shape-label" for="prop-shape-fill">FILL COLOR</label>
+        <div class="wppoppop-shape-color" data-wpp-clear-for="prop-shape-transparent">
+            <input type="color" id="prop-shape-fill" class="wppoppop-gp-bind" data-prop="shapeFill" value="#3b82f6">
+            <label class="wppoppop-shape-clear" title="Transparent (no fill)">
+                <input type="checkbox" id="prop-shape-transparent" class="wppoppop-gp-bind" data-prop="shapeNoFill" value="1" aria-label="Transparent fill">
+                <span class="wppoppop-shape-clear-sw" aria-hidden="true"></span>
+                <span class="wppoppop-shape-clear-tx">Transparent</span>
+            </label>
+        </div>
+    </div>
+    <div class="wppoppop-shape-row">
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">FILL COLOR</label>
-            <input type="color" id="prop-shape-fill" class="widefat wppoppop-gp-bind" data-prop="shapeFill" value="#3b82f6" style="height:34px;padding:2px;background:#090d16;border:1px solid #1e293b;border-radius:6px;cursor:pointer;">
+            <label class="wppoppop-shape-label" for="prop-shape-stroke-color">STROKE COLOR</label>
+            <div class="wppoppop-shape-color" data-wpp-clear-for="prop-shape-stroke-transparent">
+                <input type="color" id="prop-shape-stroke-color" data-wpp-prop="strokeColor" value="#0284c7">
+                <label class="wppoppop-shape-clear wppoppop-shape-clear-icon" title="Transparent stroke">
+                    <input type="checkbox" id="prop-shape-stroke-transparent" aria-label="Transparent stroke">
+                    <span class="wppoppop-shape-clear-sw" aria-hidden="true"></span>
+                </label>
+            </div>
         </div>
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">STROKE WIDTH (PX)</label>
+            <label class="wppoppop-shape-label" for="prop-shape-stroke-width">STROKE WIDTH (PX)</label>
             <input type="number" id="prop-shape-stroke-width" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="strokeWidth" min="0" max="40" value="0" style="font-size:12px;" placeholder="0">
         </div>
     </div>
-    <div style="margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">STROKE COLOR</label><button type="button" id="prop-shape-stroke-none" class="button button-small" aria-pressed="false" title="Disable stroke" style="font-size:10px;font-weight:700;line-height:1.6;padding:0 8px;min-height:0;">&#8856; No Stroke</button></div>
-        <input type="color" id="prop-shape-stroke-color" class="widefat wppoppop-gp-bind" data-prop="strokeColor" value="#0284c7" style="height:34px;padding:2px;background:#090d16;border:1px solid #1e293b;border-radius:6px;cursor:pointer;">
+    <div class="wppoppop-shape-field" style="margin-bottom:0;">
+        <div class="wppoppop-shape-rot-head">
+            <label class="wppoppop-shape-label" for="prop-shape-rotate" style="margin:0;">ROTATION (0&deg;&ndash;360&deg;)</label>
+            <span id="prop-shape-rotate-val" class="wppoppop-shape-rot-val">0&deg;</span>
+        </div>
+        <input type="range" id="prop-shape-rotate" class="wppoppop-gp-bind wppoppop-shape-range" data-prop="rotate" min="0" max="360" step="1" value="0">
     </div>
-    <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#cbd5e1;cursor:pointer;">
-        <input type="checkbox" id="prop-shape-transparent" class="wppoppop-gp-bind" data-prop="shapeNoFill" value="1"> Transparent Fill (Outline Mode)
-    </label>
 </div>
