@@ -17,8 +17,9 @@ if (!defined('ABSPATH')) exit;
             </select>
         </div>
         <div id="prop-button-step-wrap">
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">TARGET CANVAS #</label>
-            <input type="number" id="prop-goto-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" min="1" max="10" value="2" style="font-size:12px;">
+            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">TARGET CANVAS</label>
+            <!-- WPPOPPOP_BTN_CANVAS_SELECT: options are built live from the available canvases (builder-button-canvas-select.js) -->
+            <select id="prop-goto-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" style="font-size:12px;"><option value="2">Canvas 2</option></select>
         </div>
     </div>
     <div id="prop-button-url-wrap">
