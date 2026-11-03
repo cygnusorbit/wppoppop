@@ -23,8 +23,10 @@ $__locked = WpPopPop_Admin_Settings::get_locked_modules();
 .wppoppop-switch-mod input:checked + .trk{background:#00a32a}
 .wppoppop-switch-mod input:checked + .trk:before{transform:translateX(20px)}
 .wppoppop-switch-mod input:focus + .trk{box-shadow:0 0 0 2px #2271b1}
-.wppoppop-switch-mod.is-locked{opacity:.6}
-.wppoppop-switch-mod.is-locked input{cursor:not-allowed}
+.wppoppop-switch-mod.is-locked{cursor:not-allowed}
+.wppoppop-switch-mod.is-locked input[type=checkbox]{display:none !important}
+.wppoppop-switch-mod.is-locked .trk{background:#00a32a;opacity:.55}
+.wppoppop-switch-mod.is-locked .trk:before{transform:translateX(20px)}
 .wppoppop-mod-list .mod-lock{margin-left:8px;font-size:11px;font-weight:400;color:#787c82}
 </style>
 <div class="wppoppop-settings-section">
