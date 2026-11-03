@@ -27,9 +27,11 @@ class WpPopPop_Admin_Settings {
         );
     }
 
-    /** Campaign Settings accordions 3-15 that can be switched on/off (key = acc-*.php basename). */
+    /** Campaign Settings accordions that are listed in Settings > Module (key = acc-*.php basename). */
     public static function get_modules() {
         return [
+            'acc-01-canvas-styling' => __('Canvas Settings', 'wppoppop'),
+            'acc-02-triggers'     => __('Display Triggers', 'wppoppop'),
             'acc-03-logic-math'   => __('Conditional Logic & Math', 'wppoppop'),
             'acc-04-side-tabs'    => __('Side Tabs', 'wppoppop'),
             'acc-05-payments'     => __('Payments', 'wppoppop'),
@@ -50,8 +52,13 @@ class WpPopPop_Admin_Settings {
         ];
     }
 
+    /** Modules that are always on and cannot be switched off. */
+    public static function get_locked_modules() {
+        return ['acc-01-canvas-styling', 'acc-02-triggers'];
+    }
+
     public static function get_module_defaults() {
-        $enabled = ['acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration'];
+        $enabled = array_merge(self::get_locked_modules(), ['acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration']);
         $defaults = [];
         foreach (array_keys(self::get_modules()) as $key) {
             $defaults[$key] = in_array($key, $enabled, true) ? 1 : 0;
@@ -78,6 +85,9 @@ class WpPopPop_Admin_Settings {
 
     /** Use the saved value when present; otherwise use the current module default. */
     public static function module_enabled($key) {
+        if (in_array($key, self::get_locked_modules(), true)) {
+            return true;
+        }
         $s = get_option('wppoppop_settings', []);
         /* WPPOPPOP_MODULE_LEGACY_KEYS: keep toggles saved under the pre-renumber keys */
         $legacy = ['acc-17-double-optin' => 'acc-16-double-optin', 'acc-16-popup-overlay' => 'acc-17-popup-overlay'];
@@ -224,6 +234,10 @@ class WpPopPop_Admin_Settings {
         $module_defaults = self::get_module_defaults();
         $o['modules'] = [];
         foreach (array_keys(self::get_modules()) as $__mk) {
+            if (in_array($__mk, self::get_locked_modules(), true)) {
+                $o['modules'][$__mk] = 1;
+                continue;
+            }
             $o['modules'][$__mk] = (isset($in['modules']) && is_array($in['modules']) && array_key_exists($__mk, $in['modules']))
                 ? (!empty($in['modules'][$__mk]) ? 1 : 0)
                 : $module_defaults[$__mk];
