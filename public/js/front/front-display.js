@@ -175,7 +175,7 @@
                     self.clearFx($wrap.find('.wppoppop-box').first());
                 }, outDur + 20);
             } else {
-                $wrap[exitOn ? 'fadeOut' : 'hide'](exitOn ? 200 : 0).attr('aria-hidden', 'true');
+                $wrap.hide(0).attr('aria-hidden', 'true');
             }
 
             try {

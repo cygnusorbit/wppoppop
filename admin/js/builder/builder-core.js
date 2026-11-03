@@ -601,7 +601,8 @@
                 anim_appearance: 'fade',
                 anim_duration: 1000,
                 anim_delay: 0,
-                anim_disappearance: 'fade',
+                anim_disappearance: 'none',
+                anim_exit_enabled: false,
                 logic_enabled: false
             };
 
@@ -635,7 +636,8 @@
                     anim_appearance: 'fade',
                     anim_duration: 1000,
                     anim_delay: 0,
-                    anim_disappearance: 'fade',
+                    anim_disappearance: 'none',
+                    anim_exit_enabled: false,
                     logic_enabled: false
                 };
             }

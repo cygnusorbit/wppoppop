@@ -202,7 +202,7 @@
             var animApp = (!meta.anim_appearance || meta.anim_appearance === 'fade') ? 'fadeIn' : meta.anim_appearance;
             var animDur = (meta.anim_duration !== undefined && meta.anim_duration !== '') ? parseInt(meta.anim_duration, 10) : 1000;
             var animDel = (meta.anim_delay !== undefined && meta.anim_delay !== '') ? parseInt(meta.anim_delay, 10) : 0;
-            var animDis = (!meta.anim_disappearance || meta.anim_disappearance === 'fade') ? 'fadeOut' : meta.anim_disappearance;
+            var animDis = !meta.anim_disappearance ? 'none' : (meta.anim_disappearance === 'fade' ? 'fadeOut' : meta.anim_disappearance);
 
             $('#set-canvas-anim-appearance, #set-anim-appearance').val(animApp);
             $('#set-canvas-anim-duration, #set-anim-duration').val(animDur);
@@ -577,7 +577,7 @@
                     appearance: $('#set-canvas-anim-appearance, #set-anim-appearance').val() || 'fadeIn',
                     duration: parseInt($('#set-canvas-anim-duration, #set-anim-duration').val(), 10) || 1000,
                     delay: parseInt($('#set-canvas-anim-delay, #set-anim-delay').val(), 10) || 0,
-                    disappearance: $('#set-canvas-anim-disappearance, #set-anim-disappearance').val() || 'fadeOut'
+                    disappearance: $('#set-canvas-anim-disappearance, #set-anim-disappearance').val() || 'none'
                 },
                 box: {
                     width: parseInt($('#set-canvas-width').val(), 10) || 640,
@@ -726,7 +726,7 @@ if (settings.triggers) {
 
     function isOn(meta) {
         var v = meta ? meta.anim_exit_enabled : undefined;
-        return !(v === false || v === 0 || v === '0' || v === 'false');
+        return v === true || v === 1 || v === '1' || v === 'true';
     }
 
     function applyExitUi(on) {

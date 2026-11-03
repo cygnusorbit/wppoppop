@@ -155,7 +155,7 @@ class WpPopPop_Front_Renderer {
                     $c_anim_app = esc_attr($cm['anim_appearance'] ?? 'fade');
                     $c_anim_dur = intval($cm['anim_duration'] ?? 1000);
                     $c_anim_del = intval($cm['anim_delay'] ?? 0);
-                    $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
+                    $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'none');
                     $c_radius_style = (is_array($cm) && !empty($cm['canvas_radius'])) ? 'border-radius:' . max(0, min(500, intval($cm['canvas_radius']))) . 'px;' : '';
                     $c_allow_ovf = !empty($cm['allow_overflow']) && $cm['allow_overflow'] !== 'false';
                     $c_overflow_style = $c_allow_ovf ? 'overflow:visible;' : 'overflow:hidden;';
@@ -187,7 +187,7 @@ class WpPopPop_Front_Renderer {
                          data-anim-duration="<?php echo $c_anim_dur; ?>"
                          data-anim-delay="<?php echo $c_anim_del; ?>"
                          data-anim-disappearance="<?php echo $c_anim_dis; ?>"
-                         data-anim-exit="<?php echo (isset($cm['anim_exit_enabled']) && in_array($cm['anim_exit_enabled'], array(false, 0, '0', 'false'), true)) ? '0' : '1'; ?>"
+                         data-anim-exit="<?php echo (isset($cm['anim_exit_enabled']) && in_array($cm['anim_exit_enabled'], array(true, 1, '1', 'true'), true)) ? '1' : '0'; ?>"
                          data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
                          style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style . $c_radius_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
 
