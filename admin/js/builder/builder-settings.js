@@ -58,7 +58,7 @@
                 self.openDrawer();
             });
 
-            $('#wppoppop-settings-drawer-close, #wppoppop-settings-backdrop').on('click', function(e) {
+            $('#wppoppop-settings-drawer-close').on('click', function(e) {
                 e.preventDefault();
                 self.closeDrawer();
             });
@@ -66,44 +66,9 @@
             self.bindOutsideClose();
         },
 
-        // Click on any background / checker area outside the drawer slides it out
+        // WPPOPPOP_DRAWER_CLOSE_BUTTON_ONLY: Popup Settings closes ONLY via its top-corner close button
         bindOutsideClose: function() {
-            var self = this;
-            var SAFE = '#wppoppop-settings-drawer, #wppoppop-btn-settings, .wppoppop-btn-settings, ' +
-                       '#wppoppop-inspector-drawer, #wppoppop-floating-layers-panel, ' +
-                       '.media-modal, .media-modal-backdrop, .wp-picker-container, .wp-picker-holder, ' +
-                       '.iris-picker, .ui-datepicker, .ui-dialog, .ui-widget-overlay, .ui-autocomplete, ' +
-                       '.wppoppop-modal, #wppoppop-embed-modal, .wppoppop-canvas-bullet, ' +
-                       '#wppoppop-settings-add-canvas-bullet, ' +
-                       '.wppoppop-canvas-tab, .wppoppop-screen-tab, .wppoppop-canvas-tab-wrapper, ' +
-                       '#wppoppop-canvas-tabs-container, #wppoppop-add-canvas-btn, ' +
-                       '#wppoppop-canvas-duplicate-btn, .wppoppop-tab-delete-canvas, ' +
-                       '.wppoppop-hdr-canvas-label, .wppoppop-quick-dimensions-wrap';
-            var downInside = false;
-
-            // Remember whether the press started inside the drawer (text-selection drags)
-            $(document).off('mousedown.wppoppop_outside_close touchstart.wppoppop_outside_close')
-                .on('mousedown.wppoppop_outside_close touchstart.wppoppop_outside_close', function(e) {
-                    downInside = $(e.target).closest(SAFE).length > 0;
-                });
-
-            $(document).off('click.wppoppop_outside_close').on('click.wppoppop_outside_close', function(e) {
-                if (!$('#wppoppop-settings-drawer').hasClass('open')) return;
-                if (downInside) { downInside = false; return; }
-                var t = e.target;
-                // Target re-rendered/removed during the click (e.g. canvas bullets) - ignore
-                if (!t || !document.documentElement.contains(t)) return;
-                if ($(t).closest(SAFE).length) return;
-                self.closeDrawer();
-            });
-
-            $(document).off('keydown.wppoppop_outside_close').on('keydown.wppoppop_outside_close', function(e) {
-                if ((e.key === 'Escape' || e.keyCode === 27) && $('#wppoppop-settings-drawer').hasClass('open')) {
-                    var tag = (e.target.tagName || '').toLowerCase();
-                    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-                    self.closeDrawer();
-                }
-            });
+            $(document).off('mousedown.wppoppop_outside_close touchstart.wppoppop_outside_close click.wppoppop_outside_close keydown.wppoppop_outside_close');
         },
 
         bindAccordions: function() {
