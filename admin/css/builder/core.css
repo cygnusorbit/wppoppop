@@ -2151,3 +2151,8 @@ body.wppoppop-preview-locked .wppoppop-canvas-item::after {
     z-index: 1;
 }
 body.wppoppop-preview-locked #wppoppop-canvas-size-guide { display: none; }
+
+/* === WPPOPPOP_NUDGE_START === */
+.wppoppop-nudge-btn .dashicons { font-size: 18px; width: 18px; height: 18px; }
+.wppoppop-nudge-btn:active { background: rgba(56, 189, 248, 0.25); color: #e0f2fe; }
+/* === WPPOPPOP_NUDGE_END === */

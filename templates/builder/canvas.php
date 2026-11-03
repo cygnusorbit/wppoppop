@@ -41,11 +41,17 @@ if (!defined('ABSPATH')) {
             <span class="dashicons dashicons-arrow-down-alt2"></span>
         </button>
         <span class="wppoppop-toolbar-sep wppoppop-align-separator"></span>
-        <button type="button" class="wppoppop-align-btn" data-align="distribute-h" title="Distribute Horizontally">
-            <span class="dashicons dashicons-leftright"></span>
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="left" title="Move Left 1px (Shift = 10px)" aria-label="Move Left">
+            <span class="dashicons dashicons-arrow-left"></span>
         </button>
-        <button type="button" class="wppoppop-align-btn" data-align="distribute-v" title="Distribute Vertically">
-            <span class="dashicons dashicons-sort"></span>
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="right" title="Move Right 1px (Shift = 10px)" aria-label="Move Right">
+            <span class="dashicons dashicons-arrow-right"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="up" title="Move Up 1px (Shift = 10px)" aria-label="Move Up">
+            <span class="dashicons dashicons-arrow-up"></span>
+        </button>
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="down" title="Move Down 1px (Shift = 10px)" aria-label="Move Down">
+            <span class="dashicons dashicons-arrow-down"></span>
         </button>
     </div>
 
