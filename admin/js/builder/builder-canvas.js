@@ -760,7 +760,7 @@
             preset = preset || 'square';
             fill = fill || '#3b82f6';
             stroke = stroke || '#1d4ed8';
-            var sw = (strokeWidth !== undefined) ? parseInt(strokeWidth, 10) : 2;
+            var sw = (strokeWidth !== undefined) ? (parseInt(strokeWidth, 10) || 0) : 0;
             var rot = parseInt(rotate, 10) || 0;
 
             var sAttr = (sw > 0 && stroke !== 'transparent') ? 'stroke="' + stroke + '" stroke-width="' + sw + '" vector-effect="non-scaling-stroke"' : 'stroke="none"';
@@ -817,7 +817,7 @@
 
             switch (el.type) {
                 case 'shape':
-                    return this.renderShapeSvg(el.shapePreset, el.shapeFill, el.shapeStroke, el.shapeStrokeWidth, el.shapeRotate);
+                    return this.renderShapeSvg(el.shapePreset, el.shapeNoFill ? 'none' : el.shapeFill, el.strokeColor || el.shapeStroke, (el.strokeWidth !== undefined ? el.strokeWidth : el.shapeStrokeWidth), el.shapeRotate);
                 case 'title':
             case 'heading':
                 var tTag = el.titleTag || el.htmlTag || 'h2';
@@ -1205,7 +1205,8 @@
                 newEl.shapePreset = 'square';
                 newEl.shapeFill = '#3b82f6';
                 newEl.shapeStroke = '#1d4ed8';
-                newEl.shapeStrokeWidth = 2;
+                newEl.shapeStrokeWidth = 0;
+                newEl.strokeWidth = 0;
                 newEl.shapeRotate = 0;
             }
 

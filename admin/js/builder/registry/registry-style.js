@@ -136,6 +136,7 @@
             $('#wppoppop-hover-state-card').toggle(hoverMedia.indexOf(canonical) !== -1);
         }
 
+        $('#insp-tab-style').toggleClass('wppoppop-shape-style', canonical === 'shape'); /* WPPOPPOP_SHAPE_STYLE */
         /* WPPOPPOP_DATE_STYLE: keep Date's hidden sections hidden through this secondary hydration pass */
         $('#insp-tab-style').toggleClass('wppoppop-date-style', canonical === 'date' || canonical === 'time' || rawType === 'time'); /* WPPOPPOP_TIME_STYLE */
 

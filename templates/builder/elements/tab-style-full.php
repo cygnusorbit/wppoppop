@@ -28,6 +28,17 @@ if (!defined('ABSPATH')) exit;
 #insp-tab-style.wppoppop-tl-style #prop-btn-hover-section { display: block !important; }
 </style>
 
+<!-- WPPOPPOP_SHAPE_STYLE: Shape hides Opacity & Visibility and Background Color (fill is set in Shape / Vector Geometry); CSS-only so selection never flashes hidden cards -->
+<style>
+#insp-tab-style.wppoppop-shape-style #insp-section-opacity,
+#insp-tab-style.wppoppop-shape-style #insp-section-bg-color,
+#insp-tab-style.wppoppop-shape-style #insp-section-text-align,
+#insp-tab-style.wppoppop-shape-style #insp-section-submit-text-align,
+#insp-tab-style.wppoppop-shape-style #insp-section-typography,
+#insp-tab-style.wppoppop-shape-style #wppoppop-form-style-module,
+#insp-tab-style.wppoppop-shape-style #prop-btn-hover-section { display: none !important; }
+</style>
+
 <!-- WPPOPPOP_RD_STYLE: Radio hides everything except Alignment and Typography -->
 <style>
 #insp-tab-style.wppoppop-rd-style #wppoppop-form-icons-card,
