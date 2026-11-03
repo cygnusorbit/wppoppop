@@ -31,6 +31,20 @@ $bar_links = [
     ['wppoppop-theme',           'Theme',            'dashicons-art'],
     ['wppoppop-tools',           'Tools & Export',   'dashicons-admin-tools'],
 ];
+/* WPPOPPOP_BAR_MENU_SYNC: Menu dropdown mirrors Settings > Pages (label, order, hidden), live from the registered submenu. */
+$bar_icons = [];
+foreach ($bar_links as $bl) { $bar_icons[$bl[0]] = $bl[2]; }
+$bar_menu = [];
+if (class_exists('WpPopPop_Admin_Menu')) {
+    $bar_orig = WpPopPop_Admin_Menu::get_original_pages();
+    if (!empty($bar_orig)) {
+        foreach (WpPopPop_Admin_Menu::resolve_pages($bar_orig, WpPopPop_Admin_Menu::get_prefs()) as $br) {
+            if (!empty($br['hidden'])) { continue; }
+            $bar_menu[] = [$br['slug'], $br['label'], isset($bar_icons[$br['slug']]) ? $bar_icons[$br['slug']] : 'dashicons-admin-page'];
+        }
+    }
+}
+if (empty($bar_menu)) { $bar_menu = $bar_links; }
 $bar_builder = admin_url('admin.php?page=wppoppop-builder');
 $bar_logo_custom = class_exists('WpPopPop_Admin_Theme') ? WpPopPop_Admin_Theme::logo_url() : '';
 $bar_logo        = ($bar_logo_custom !== '') ? $bar_logo_custom : WPPOPPOP_URL . 'admin/img/logo-temp.svg';
@@ -43,7 +57,7 @@ $bar_logo        = ($bar_logo_custom !== '') ? $bar_logo_custom : WPPOPPOP_URL .
             <span class="dashicons dashicons-menu"></span>
         </button>
         <div class="wppoppop-dd" id="wppoppop-dd-menu">
-            <?php foreach ($bar_links as $ml) : ?>
+            <?php foreach ($bar_menu as $ml) : ?>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=' . $ml[0])); ?>"><span class="dashicons <?php echo esc_attr($ml[2]); ?>"></span><?php echo esc_html($ml[1]); ?></a>
             <?php endforeach; ?>
         </div>

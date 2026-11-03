@@ -26,6 +26,18 @@ class WpPopPop_Admin_Menu {
         add_action('admin_footer', [$this, 'print_hidden_js']);
     }
 
+    /* WPPOPPOP_MENU_ICON: SVG data URI (WordPress recolors it); falls back to a dashicon. */
+    protected function menu_icon() {
+        $file = WPPOPPOP_PATH . 'admin/img/wppoppop-menu-icon.svg';
+        if (is_readable($file)) {
+            $svg = file_get_contents($file);
+            if ($svg !== false && $svg !== '') {
+                return 'data:image/svg+xml;base64,' . base64_encode($svg);
+            }
+        }
+        return 'dashicons-external';
+    }
+
     public function register_menus() {
         /* WPPOPPOP_MENU_V2: Dashboard is the parent page, so WordPress adds no duplicate first item. */
         $parent = 'wppoppop-dashboard';
@@ -37,7 +49,7 @@ class WpPopPop_Admin_Menu {
             'manage_options',
             $parent,
             $overview_cb,
-            'dashicons-external',
+            $this->menu_icon(),
             30
         );
 
