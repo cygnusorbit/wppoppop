@@ -120,6 +120,7 @@ class WpPopPop_Admin_Assets {
 
             wp_enqueue_script('wppoppop-builder-button-canvas-select-js', WPPOPPOP_URL . 'admin/js/builder/builder-button-canvas-select.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-inspector-js', 'wppoppop-builder-elements-registry'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-ribbon-toggle-js', WPPOPPOP_URL . 'admin/js/builder/builder-ribbon-toggle.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-align-dock-js', WPPOPPOP_URL . 'admin/js/builder/builder-align-dock.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-nudge-js', WPPOPPOP_URL . 'admin/js/builder/builder-nudge.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-click-open-js', WPPOPPOP_URL . 'admin/js/builder/builder-click-open.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-ribbon-tooltip-js', WPPOPPOP_URL . 'admin/js/builder/builder-ribbon-tooltip.js', [], self::ver(), true);

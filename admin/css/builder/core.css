@@ -2156,3 +2156,12 @@ body.wppoppop-preview-locked #wppoppop-canvas-size-guide { display: none; }
 .wppoppop-nudge-btn .dashicons { font-size: 18px; width: 18px; height: 18px; }
 .wppoppop-nudge-btn:active { background: rgba(56, 189, 248, 0.25); color: #e0f2fe; }
 /* === WPPOPPOP_NUDGE_END === */
+
+/* === WPPOPPOP_ALIGN_DOCK_START === */
+/* Alignment Tool is docked under the canvas; exact top/left are set by builder-align-dock.js */
+.wppoppop-alignment-toolbar {
+    top: auto;
+    bottom: 24px;
+    white-space: nowrap;
+}
+/* === WPPOPPOP_ALIGN_DOCK_END === */
