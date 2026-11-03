@@ -103,6 +103,8 @@ class WpPopPop_Admin_Settings {
             'builder_zoom_select' => 0,
             'builder_save_template' => 0,
             'builder_extra_elements' => 0,
+            'builder_click_canvas_settings' => 0,
+            'builder_click_element_settings' => 0,
         ];
     }
 
@@ -156,6 +158,8 @@ class WpPopPop_Admin_Settings {
             'builder_zoom_select' => 0,
             'builder_save_template' => 0,
             'builder_extra_elements' => 0,
+            'builder_click_canvas_settings' => 0,
+            'builder_click_element_settings' => 0,
             'menu_pages' => self::get_default_menu_pages(),
             'clean_on_uninstall' => 0,
         ] + self::tracking_defaults();

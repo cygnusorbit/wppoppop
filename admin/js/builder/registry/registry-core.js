@@ -569,7 +569,9 @@
                 if (typeof origSelectElement === 'function') {
                     canvas.selectElement = function(id) {
                         var res = origSelectElement.apply(canvas, arguments);
-                        if (id && window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+                        /* WPPOPPOP_CLICK_OPEN: canvas click opens Layer Settings only when enabled */
+                        var wppSkipOpen = arguments[1] === true && !!window.WpPopPopClickOpen && !window.WpPopPopClickOpen.element();
+                        if (id && !wppSkipOpen && window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
                             window.WpPopPopBuilderInspector.open(id);
                         }
                         return res;
@@ -610,7 +612,9 @@
                 var clickedId = $(this).attr('data-id') || $(this).data('id') ||$(this).attr('id') || '';
                 var clickedEl = self.resolveElement(clickedId);
                 if (clickedEl && clickedEl.type) {
-                    self.forceSlideInDrawer(true);
+                    /* WPPOPPOP_CLICK_OPEN: stage click slides Layer Settings in only when enabled */
+                    var wppSkipSlide = $(this).hasClass('wppoppop-canvas-item') && !!window.WpPopPopClickOpen && !window.WpPopPopClickOpen.element();
+                    if (!wppSkipSlide) { self.forceSlideInDrawer(true); }
                     self.hydrateElement(clickedEl, window.WpPopPopBuilderInspector);
                 }
             });

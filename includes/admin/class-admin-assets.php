@@ -120,6 +120,7 @@ class WpPopPop_Admin_Assets {
 
             wp_enqueue_script('wppoppop-builder-button-canvas-select-js', WPPOPPOP_URL . 'admin/js/builder/builder-button-canvas-select.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-inspector-js', 'wppoppop-builder-elements-registry'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-ribbon-toggle-js', WPPOPPOP_URL . 'admin/js/builder/builder-ribbon-toggle.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-click-open-js', WPPOPPOP_URL . 'admin/js/builder/builder-click-open.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-ribbon-tooltip-js', WPPOPPOP_URL . 'admin/js/builder/builder-ribbon-tooltip.js', [], self::ver(), true);
 
             $builder_payload = array_merge($shared_payload, [
@@ -131,6 +132,14 @@ class WpPopPop_Admin_Assets {
                 'alignment_tool' => (function () {
                     $s = get_option('wppoppop_settings', []);
                     return (is_array($s) && !empty($s['builder_alignment_tool'])) ? 1 : 0;
+                })(),
+                'click_canvas_open_settings' => (function () {
+                    $s = get_option('wppoppop_settings', []);
+                    return (is_array($s) && !empty($s['builder_click_canvas_settings'])) ? 1 : 0;
+                })(),
+                'click_element_open_settings' => (function () {
+                    $s = get_option('wppoppop_settings', []);
+                    return (is_array($s) && !empty($s['builder_click_element_settings'])) ? 1 : 0;
                 })(),
                 'custom_fonts' => WpPopPop_Libraries::get_custom_font_families()
             ]);

@@ -8,6 +8,8 @@ $__vp_on = !empty($__bld['builder_viewport_toggle']);
 $__zm_on = !empty($__bld['builder_zoom_select']);
 $__st_on = !empty($__bld['builder_save_template']);
 $__ex_on = !empty($__bld['builder_extra_elements']);
+$__cc_on = !empty($__bld['builder_click_canvas_settings']);
+$__ce_on = !empty($__bld['builder_click_element_settings']);
 ?>
 <style>
 .wppoppop-bld-list{max-width:720px;margin:0;padding:0;list-style:none}
@@ -73,6 +75,26 @@ $__ex_on = !empty($__bld['builder_extra_elements']);
             <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Additional Ribbon Bar Elements', 'wppoppop'); ?>">
                 <input type="hidden" name="settings[builder_extra_elements]" value="0">
                 <input type="checkbox" name="settings[builder_extra_elements]" value="1" <?php checked($__ex_on); ?>>
+                <span class="trk"></span>
+            </label>
+        </li>
+        <li>
+            <span class="bld-name"><?php esc_html_e('Click Canvas - Open Popup Settings', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Clicking an empty area of the canvas slides in Popup Settings. Off by default.', 'wppoppop'); ?></span>
+            </span>
+            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Click Canvas - Open Popup Settings', 'wppoppop'); ?>">
+                <input type="hidden" name="settings[builder_click_canvas_settings]" value="0">
+                <input type="checkbox" name="settings[builder_click_canvas_settings]" value="1" <?php checked($__cc_on); ?>>
+                <span class="trk"></span>
+            </label>
+        </li>
+        <li>
+            <span class="bld-name"><?php esc_html_e('Click Element - Open Layer Settings', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Clicking an element on the canvas slides in Layer Settings. Off by default.', 'wppoppop'); ?></span>
+            </span>
+            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Click Element - Open Layer Settings', 'wppoppop'); ?>">
+                <input type="hidden" name="settings[builder_click_element_settings]" value="0">
+                <input type="checkbox" name="settings[builder_click_element_settings]" value="1" <?php checked($__ce_on); ?>>
                 <span class="trk"></span>
             </label>
         </li>

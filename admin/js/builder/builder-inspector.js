@@ -3598,7 +3598,7 @@
         return String(raw).replace(/^wppoppop-el-/, '').replace(/^el-/, '').replace(/^layer-/, '');
     }
 
-    function selectAndInspectLayer(cleanId) {
+    function selectAndInspectLayer(cleanId, fromStage) {
         if (!cleanId) return;
 
         // 1. Update core state activeId
@@ -3627,6 +3627,9 @@
                 try { $el.draggable('option', 'cancel', '.ui-resizable-handle'); } catch (err) {}
             }
         });
+
+        /* WPPOPPOP_CLICK_OPEN: stage click selects only; Layer Settings slides in when enabled */
+        if (fromStage === true && window.WpPopPopClickOpen && !window.WpPopPopClickOpen.element()) { return; }
 
         // 5. Close Popup Settings drawer if open so drawers don't collide
         if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
@@ -3670,7 +3673,7 @@
             e.stopPropagation();
             var cleanId = extractCleanElementId($(this));
             if (cleanId) {
-                selectAndInspectLayer(cleanId);
+                selectAndInspectLayer(cleanId, true);
             }
         });
 

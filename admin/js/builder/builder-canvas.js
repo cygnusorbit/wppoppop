@@ -1287,7 +1287,7 @@
                     e.stopPropagation();
                     var id = $(this).data('id') || $(this).attr('id') || '';
                     if (id && String(id).indexOf('el-') === 0) id = String(id).replace(/^el-/, '');
-                    self.selectElement(id);
+                    self.selectElement(id, true);
                 });
 
             // Pointer / touch / mousedown for improved cross-browser selection and to work around draggable click suppression
@@ -1299,7 +1299,7 @@
                     var id = $el.data('id') || $el.attr('id') || '';
                     if (id && String(id).indexOf('el-') === 0) id = String(id).replace(/^el-/, '');
                     // allow UI events (drag) to settle; immediate selection still occurs
-                    setTimeout(function() { self.selectElement(id); }, 0);
+                    setTimeout(function() { self.selectElement(id, true); }, 0);
                 });
 
             // Deselect handlers (preserve original behavior)
@@ -1307,7 +1307,8 @@
                 if (self.isPreview) return;
                 if ($(e.target).closest('.wppoppop-canvas-item, #wppoppop-canvas-corner-handle, #wppoppop-canvas-stage-bar').length === 0) {
                     self.deselect();
-                    if (window.WpPopPopBuilderSettings) {
+                    /* WPPOPPOP_CLICK_OPEN: canvas click opens Popup Settings only when enabled */
+                    if (window.WpPopPopBuilderSettings && (!window.WpPopPopClickOpen || window.WpPopPopClickOpen.canvas())) {
                         window.WpPopPopBuilderSettings.openDrawer();
                     }
                 }
@@ -1322,9 +1323,11 @@
 
         },
 
-        selectElement: function(id) {
+        selectElement: function(id, fromStage) {
 
             if (!id) return;
+            /* WPPOPPOP_CLICK_OPEN: element click opens Layer Settings only when enabled */
+            var wppSkipOpen = fromStage === true && !!window.WpPopPopClickOpen && !window.WpPopPopClickOpen.element();
             // Normalize many possible id shapes: '#el-xxx', 'el-xxx', 'wppoppop-el-xxx', or raw id
             var raw = String(id || '');
             raw = raw.replace(/^#/, '').replace(/^wppoppop-el-/, '').replace(/^el-/, '');
@@ -1338,13 +1341,13 @@
             $('.wppoppop-canvas-item').removeClass('wppoppop-selected');
             $('#el-' + raw).addClass('wppoppop-selected');
 
-            if (window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
+            if (!wppSkipOpen && window.WpPopPopBuilderSettings && typeof window.WpPopPopBuilderSettings.closeDrawer === 'function') {
                 window.WpPopPopBuilderSettings.closeDrawer();
             }
             if (window.WpPopPopBuilderLayers && typeof window.WpPopPopBuilderLayers.highlightLayer === 'function') {
                 window.WpPopPopBuilderLayers.highlightLayer(raw);
             }
-            if (window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
+            if (!wppSkipOpen && window.WpPopPopBuilderInspector && typeof window.WpPopPopBuilderInspector.open === 'function') {
                 window.WpPopPopBuilderInspector.open(raw);
             }
 
