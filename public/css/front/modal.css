@@ -129,4 +129,12 @@
 .wppoppop-fit-stage .wppoppop-canvas-container {
     max-width: none !important;
 }
+/* WPPOPPOP_INLINE_COLUMN_FIT: inline shortcode embeds never exceed the post/page column */
+.wppoppop-popup-wrap[data-inline="1"] {
+    box-sizing: border-box;
+}
+/* Until front-scale.js has fitted the embed, clip it to the column so nothing overflows */
+.wppoppop-popup-wrap[data-inline="1"]:not([data-wpp-fit-key]) {
+    overflow: hidden;
+}
 /* /WPPOPPOP_FIT_STAGE */

@@ -51,6 +51,36 @@
         wrap.style.removeProperty('height');
     }
 
+    /* WPPOPPOP_INLINE_COLUMN_FIT: real width the theme gives an inline embed (post/page column) */
+    function contentWidth(el) {
+        var w = el.clientWidth, cs = null;
+        try { cs = window.getComputedStyle(el); } catch (e) { cs = null; }
+        if (cs) { w -= num(cs.paddingLeft) + num(cs.paddingRight); }
+        return w;
+    }
+
+    function inlineAvailWidth(wrap, stage) {
+        // Measure with the stage out of flow and our own footprint cleared, so the theme's column width wins.
+        var prevPos = stage.style.position;
+        var prevW = wrap.style.getPropertyValue('width'), prevWP = wrap.style.getPropertyPriority('width');
+        var prevH = wrap.style.getPropertyValue('height'), prevHP = wrap.style.getPropertyPriority('height');
+        wrap.style.removeProperty('width');
+        wrap.style.removeProperty('height');
+        stage.style.position = 'absolute';
+        var own = wrap.getBoundingClientRect ? wrap.getBoundingClientRect().width : wrap.clientWidth;
+        stage.style.position = prevPos;
+        if (prevW) { wrap.style.setProperty('width', prevW, prevWP); }
+        if (prevH) { wrap.style.setProperty('height', prevH, prevHP); }
+
+        var parent = wrap.parentNode;
+        while (parent && parent.nodeType === 1 && !parent.clientWidth && parent !== document.body) { parent = parent.parentNode; }
+        var par = (parent && parent.nodeType === 1) ? contentWidth(parent) : 0;
+
+        var avail = own > 1 ? own : par;
+        if (par > 1 && par < avail) { avail = par; }
+        return avail > 1 ? Math.floor(avail) : (document.documentElement.clientWidth || window.innerWidth);
+    }
+
     function fit(wrap) {
         var stage = wrap.querySelector('.wppoppop-fit-stage');
         if (!stage) { return; }
@@ -64,8 +94,7 @@
         var availW, availH, pad, parent;
 
         if (inline) {
-            parent = wrap.parentNode;
-            availW = (parent && parent.clientWidth) || docEl.clientWidth || window.innerWidth;
+            availW = inlineAvailWidth(wrap, stage);
             availH = Infinity;
             pad = 0;
         } else {
@@ -92,8 +121,8 @@
         wrap.setAttribute('data-wpp-scale', String(scale));
         if (inline) {
             // Reserve only the scaled footprint in the page flow; the stage scales from its top-left corner.
-            wrap.style.setProperty('width', Math.ceil(size.w * scale) + 'px', 'important');
-            wrap.style.setProperty('height', Math.ceil(size.h * scale) + 'px', 'important');
+            wrap.style.setProperty('width', (Math.floor(size.w * scale * 100) / 100) + 'px', 'important');
+            wrap.style.setProperty('height', (Math.floor(size.h * scale * 100) / 100) + 'px', 'important');
             stage.style.position = 'absolute';
             stage.style.left = '0';
             stage.style.top = '0';
@@ -130,6 +159,16 @@
         }
     }
 
+    function observeColumns() {
+        if (!window.ResizeObserver) { return; }
+        var wraps = document.querySelectorAll('.wppoppop-popup-wrap[data-inline="1"]');
+        if (!wraps.length) { return; }
+        var ro = new window.ResizeObserver(refresh);
+        for (var i = 0; i < wraps.length; i++) {
+            if (wraps[i].parentNode && wraps[i].parentNode.nodeType === 1) { ro.observe(wraps[i].parentNode); }
+        }
+    }
+
     function hookDisplay() {
         var D = window.WpPopPopFrontDisplay;
         if (!D || D.__wppFitHooked || typeof D.show !== 'function') { return; }
@@ -148,11 +187,12 @@
     hookDisplay();
     window.addEventListener('resize', refresh, false);
     window.addEventListener('orientationchange', refresh, false);
-    window.addEventListener('load', function () { fitAll(); observe(); }, false);
+    window.addEventListener('load', function () { fitAll(); observe(); observeColumns(); }, false);
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () { fitAll(); observe(); }, false);
+        document.addEventListener('DOMContentLoaded', function () { fitAll(); observe(); observeColumns(); }, false);
     } else {
         fitAll();
         observe();
+        observeColumns();
     }
 })(window, document);
