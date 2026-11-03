@@ -24,10 +24,10 @@ $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid']
 
         <!-- 4. Pushing Frame Layer Inspector Drawer -->
         <?php include WPPOPPOP_PATH . 'templates/builder/drawer-inspector.php'; ?>
-    </div>
 
-    <!-- 5. Slide-Out Popup Settings Drawer -->
-    <?php include WPPOPPOP_PATH . 'templates/builder/drawer-settings.php'; ?>
+        <!-- 5. Popup Settings Drawer (slides in within the checker area, below top bar & ribbon) -->
+        <?php include WPPOPPOP_PATH . 'templates/builder/drawer-settings.php'; ?>
+    </div>
 
     <!-- 6. Embed Codes & Live Sandbox Preview Modals -->
     <?php include WPPOPPOP_PATH . 'templates/builder/modals.php'; ?>

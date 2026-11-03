@@ -25,6 +25,13 @@ class WpPopPop_Front_Renderer {
         }
 
         $canvas_meta = $config['canvasMeta'] ?? $config['canvas_meta'] ?? [];
+        $box_radius_css = 'border-radius:8px;';
+        if (is_array($canvas_meta) && !empty($canvas_meta)) {
+            $first_cm = isset($canvas_meta[1]) ? $canvas_meta[1] : reset($canvas_meta);
+            if (is_array($first_cm) && isset($first_cm['canvas_radius'])) {
+                $box_radius_css = 'border-radius:' . max(0, min(500, intval($first_cm['canvas_radius']))) . 'px;';
+            }
+        }
         $encoded_config = esc_attr(wp_json_encode($config));
 
         $trg = (isset($config['settings']['triggers']) && is_array($config['settings']['triggers'])) ? $config['settings']['triggers'] : [];
@@ -126,7 +133,7 @@ class WpPopPop_Front_Renderer {
             <div class="wppoppop-fit-stage" data-wpp-fit="1">
             <div class="wppoppop-box wppoppop-box-container"
                  data-uid="<?php echo esc_attr($uid); ?>"
-                 style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr('border-radius:8px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);' . $box_bg); ?>">
+                 style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr($box_radius_css . 'box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);' . $box_bg); ?>">
 
                 <?php /* WPPOPPOP_DEFAULT_CLOSE: the default close button is now drawn inside each canvas */ ?>
 
@@ -149,6 +156,7 @@ class WpPopPop_Front_Renderer {
                     $c_anim_dur = intval($cm['anim_duration'] ?? 1000);
                     $c_anim_del = intval($cm['anim_delay'] ?? 0);
                     $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'fade');
+                    $c_radius_style = (is_array($cm) && !empty($cm['canvas_radius'])) ? 'border-radius:' . max(0, min(500, intval($cm['canvas_radius']))) . 'px;' : '';
                     $c_allow_ovf = !empty($cm['allow_overflow']) && $cm['allow_overflow'] !== 'false';
                     $c_overflow_style = $c_allow_ovf ? 'overflow:visible;' : 'overflow:hidden;';
                     $c_close_on = !(is_array($cm) && isset($cm['close_btn_enabled']) && in_array($cm['close_btn_enabled'], array(false, 0, '0', 'false'), true)); /* WPPOPPOP_DEFAULT_CLOSE */
@@ -181,7 +189,7 @@ class WpPopPop_Front_Renderer {
                          data-anim-disappearance="<?php echo $c_anim_dis; ?>"
                          data-anim-exit="<?php echo (isset($cm['anim_exit_enabled']) && in_array($cm['anim_exit_enabled'], array(false, 0, '0', 'false'), true)) ? '0' : '1'; ?>"
                          data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
-                         style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
+                         style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style . $c_radius_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
 
                         <?php if (!$is_inline && $c_close_on): ?>
                             <button type="button" class="wppoppop-close-btn wppoppop-default-close" data-uid="<?php echo esc_attr($uid); ?>" aria-label="Close" style="position:absolute;top:10px;right:10px;width:auto;height:auto;display:block;padding:0 4px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>

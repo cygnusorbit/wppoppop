@@ -209,6 +209,7 @@
             $('#set-canvas-grad-color1').val(meta.grad_color1 || '#3b82f6');
             $('#set-canvas-grad-color2').val(meta.grad_color2 || '#1d4ed8');
             $('#set-canvas-grad-angle').val(meta.grad_angle || 135);
+            $('#set-canvas-radius').val(Math.max(0, parseInt(meta.canvas_radius, 10) || 0));
 
             // WPPOPPOP_CANVAS_OVERFLOW: per-canvas overflow, auto-close & logic hydration
             var ovOn = (meta.allow_overflow === true || meta.allow_overflow === 1 || meta.allow_overflow === '1' || meta.allow_overflow === 'true');
@@ -470,6 +471,17 @@
                 }
             });
 
+            /* WPPOPPOP_CANVAS_RADIUS: per-canvas corner radius (px) */
+            $('#set-canvas-radius').off('input.canvasRadius change.canvasRadius').on('input.canvasRadius change.canvasRadius', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                core.state.canvasMeta[cur].canvas_radius = Math.max(0, Math.min(500, parseInt($(this).val(), 10) || 0));
+                self.applyActiveCanvasBackground();
+                core.pushHistory();
+            });
+
             $('#set-anim-appearance, #set-anim-duration, #set-anim-delay').off('change.canvasAnim input.canvasAnim').on('change.canvasAnim input.canvasAnim', function() {
                 var core = window.WpPopPopBuilderCore;
                 if (!core) return;
@@ -529,6 +541,7 @@
             var cur = core.state.currentCanvas || 1;
             var meta = core.state.canvasMeta[cur] || {};
             var $box = $('#wppoppop-canvas-box');
+            $box.css('border-radius', (Math.max(0, parseInt(meta.canvas_radius, 10) || 0)) + 'px');
 
             if (meta.bg_color === 'transparent') {
                 $box.addClass('wppoppop-canvas-transparent');

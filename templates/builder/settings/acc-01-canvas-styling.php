@@ -56,13 +56,12 @@ if (!defined('ABSPATH')) {
                         </style>
                         <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
                             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                                <label for="set-canvas-allow-overflow" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;">ALLOW CANVAS ELEMENT OVERFLOW <span id="set-canvas-overflow-state" style="color:#2563eb;">OFF</span></label>
+                                <label for="set-canvas-allow-overflow" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;">ELEMENT OVERFLOW <span id="set-canvas-overflow-state" style="color:#2563eb;">OFF</span></label>
                                 <span class="wppoppop-ovf-switch">
                                     <input type="checkbox" id="set-canvas-allow-overflow" value="1" role="switch" aria-label="Allow canvas element overflow">
                                     <span class="wppoppop-ovf-track"></span>
                                 </span>
                             </div>
-                            <span style="font-size:10px;color:#64748b;display:block;margin-top:4px;">ON: elements may extend beyond the canvas edges (visible). OFF: anything outside the canvas is clipped.</span>
                         </div>
 
                         <!-- WPPOPPOP_DEFAULT_CLOSE: per-canvas default close button toggle -->
@@ -74,7 +73,6 @@ if (!defined('ABSPATH')) {
                                     <span class="wppoppop-ovf-track"></span>
                                 </span>
                             </div>
-                            <span style="font-size:10px;color:#64748b;display:block;margin-top:4px;">ON: visitors see the round &times; button in the top-right corner of this canvas. OFF: hidden. Use a Close element or a Close-action button instead.</span>
                         </div>
 
                         <!-- Phase 4: Canvas Auto-Close Countdown -->
@@ -88,11 +86,12 @@ if (!defined('ABSPATH')) {
                         </div>
 
 
-                        <div style="margin-bottom:12px;">
-                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                        <label style="font-size:11px;font-weight:700;color:#475569;margin:0;">CANVAS BACKGROUND FILL</label>
-                        <button type="button" id="set-canvas-bg-transparent-btn" class="wppoppop-checker-btn" title="Toggle Transparent Background (Click to Enable / Disable)" aria-label="Toggle Transparent Background" aria-pressed="false" style="width:18px;height:18px;border-radius:3px;border:1px solid #64748b;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);background-size:8px 8px;background-position:0 0, 0 4px, 4px -4px, -4px 0px;transition:all 0.15s ease;"></button>
-                    </div>
+                        <div id="set-canvas-color-grid" style="display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:12px;align-items:start;margin-bottom:12px;">
+                            <div style="min-width:0;">
+                                <div style="display:flex;align-items:center;gap:6px;height:18px;margin-bottom:4px;">
+                                    <label style="font-size:11px;font-weight:700;color:#475569;margin:0;white-space:nowrap;">CANVAS COLOR</label>
+                                    <button type="button" id="set-canvas-bg-transparent-btn" class="wppoppop-checker-btn" title="Toggle Transparent Background (Click to Enable / Disable)" aria-label="Toggle Transparent Background" aria-pressed="false" style="width:18px;height:18px;border-radius:3px;border:1px solid #64748b;cursor:pointer;padding:0;background-color:#ffffff;background-image:linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);background-size:8px 8px;background-position:0 0, 0 4px, 4px -4px, -4px 0px;transition:all 0.15s ease;"></button>
+                                </div>
                             <select id="set-canvas-bg-mode" class="widefat" style="margin-bottom:8px;font-size:12px;">
                                 <option value="solid">Solid Background Color</option>
                                 <option value="gradient">Linear Gradient</option>
@@ -116,135 +115,12 @@ if (!defined('ABSPATH')) {
                                 <label style="font-size:10px;color:#64748b;">Gradient Angle (0-360&deg;)</label>
                                 <input type="number" id="set-canvas-grad-angle" value="135" min="0" max="360" class="widefat" style="font-size:12px;">
                             </div>
-                        </div>
-
-                        <!-- ANIMATE.STYLE ANIMATION SECTION -->
-                        <!-- ANIMATION SECTION -->
-                        <div class="wppoppop-anim-setting-wrap" style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;">
-                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                                <div style="display:flex;align-items:center;gap:6px;">
-                                    <span style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">ANIMATION</span>
-                                    <span class="dashicons dashicons-editor-help" style="font-size:16px;width:16px;height:16px;color:#64748b;cursor:help;" title="Configure appearance entrance and disappearance exit animations for this canvas."></span>
+                            </div>
+                            <div>
+                                <div style="display:flex;align-items:center;height:18px;margin-bottom:4px;">
+                                    <label for="set-canvas-radius" style="font-size:11px;font-weight:700;color:#475569;margin:0;white-space:nowrap;">RADIUS (PX)</label>
                                 </div>
-                                <button type="button" id="set-canvas-anim-play" class="button wppoppop-anim-play-btn" title="Play Canvas Animation" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;font-size:11px;font-weight:600;color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;line-height:1.4;height:24px;">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="pointer-events:none;"><polygon points="6,4 20,12 6,20"/></svg>
-                                    <span>Play</span>
-                                </button>
-                            </div>
-
-                            <div style="margin-bottom:10px;">
-                                <select id="set-canvas-anim-appearance" class="widefat" style="font-size:12px;height:34px;">
-                                    <option value="none">None</option>
-                                    <optgroup label="Fading Entrances">
-                                        <option value="fadeIn" selected>fadeIn</option>
-                                        <option value="fadeInDown">fadeInDown</option>
-                                        <option value="fadeInDownBig">fadeInDownBig</option>
-                                        <option value="fadeInLeft">fadeInLeft</option>
-                                        <option value="fadeInLeftBig">fadeInLeftBig</option>
-                                        <option value="fadeInRight">fadeInRight</option>
-                                        <option value="fadeInRightBig">fadeInRightBig</option>
-                                        <option value="fadeInUp">fadeInUp</option>
-                                        <option value="fadeInUpBig">fadeInUpBig</option>
-                                    </optgroup>
-                                    <optgroup label="Zooming Entrances">
-                                        <option value="zoomIn">zoomIn</option>
-                                        <option value="zoomInDown">zoomInDown</option>
-                                        <option value="zoomInLeft">zoomInLeft</option>
-                                        <option value="zoomInRight">zoomInRight</option>
-                                        <option value="zoomInUp">zoomInUp</option>
-                                    </optgroup>
-                                    <optgroup label="Bouncing Entrances">
-                                        <option value="bounceIn">bounceIn</option>
-                                        <option value="bounceInDown">bounceInDown</option>
-                                        <option value="bounceInLeft">bounceInLeft</option>
-                                        <option value="bounceInRight">bounceInRight</option>
-                                        <option value="bounceInUp">bounceInUp</option>
-                                    </optgroup>
-                                    <optgroup label="Sliding Entrances">
-                                        <option value="slideInDown">slideInDown</option>
-                                        <option value="slideInLeft">slideInLeft</option>
-                                        <option value="slideInRight">slideInRight</option>
-                                        <option value="slideInUp">slideInUp</option>
-                                    </optgroup>
-                                    <optgroup label="Back Entrances">
-                                        <option value="backInDown">backInDown</option>
-                                        <option value="backInLeft">backInLeft</option>
-                                        <option value="backInRight">backInRight</option>
-                                        <option value="backInUp">backInUp</option>
-                                    </optgroup>
-                                </select>
-                                <span class="wppoppop-anim-sublabel">Appearance</span>
-                            </div>
-
-                            <!-- Duration & Start delay Inputs Row -->
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                                <div>
-                                    <div class="wppoppop-input-suffix-wrap">
-                                        <input type="number" id="set-canvas-anim-duration" value="1000" min="0" step="50" class="widefat">
-                                        <span class="wppoppop-input-suffix">ms</span>
-                                    </div>
-                                    <span class="wppoppop-anim-sublabel">Duration</span>
-                                </div>
-                                <div>
-                                    <div class="wppoppop-input-suffix-wrap">
-                                        <input type="number" id="set-canvas-anim-delay" value="0" min="0" step="50" class="widefat">
-                                        <span class="wppoppop-input-suffix">ms</span>
-                                    </div>
-                                    <span class="wppoppop-anim-sublabel">Start delay</span>
-                                </div>
-                            </div>
-
-                            <!-- Disappearance on/off switch -->
-                            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 8px;">
-                                <label for="set-canvas-anim-exit-enable" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;">Play disappearance on close</label>
-                                <span class="wppoppop-ovf-switch">
-                                    <input type="checkbox" id="set-canvas-anim-exit-enable" value="1" role="switch" aria-label="Play disappearance animation when the canvas closes" checked>
-                                    <span class="wppoppop-ovf-track"></span>
-                                </span>
-                            </div>
-                            <!-- Disappearance Dropdown (Animate.css Exits) -->
-                            <div style="margin-bottom:4px;">
-                                <select id="set-canvas-anim-disappearance" class="widefat" style="font-size:12px;height:34px;">
-                                    <option value="none">None</option>
-                                    <optgroup label="Fading Exits">
-                                        <option value="fadeOut" selected>fadeOut</option>
-                                        <option value="fadeOutDown">fadeOutDown</option>
-                                        <option value="fadeOutDownBig">fadeOutDownBig</option>
-                                        <option value="fadeOutLeft">fadeOutLeft</option>
-                                        <option value="fadeOutLeftBig">fadeOutLeftBig</option>
-                                        <option value="fadeOutRight">fadeOutRight</option>
-                                        <option value="fadeOutRightBig">fadeOutRightBig</option>
-                                        <option value="fadeOutUp">fadeOutUp</option>
-                                        <option value="fadeOutUpBig">fadeOutUpBig</option>
-                                    </optgroup>
-                                    <optgroup label="Zooming Exits">
-                                        <option value="zoomOut">zoomOut</option>
-                                        <option value="zoomOutDown">zoomOutDown</option>
-                                        <option value="zoomOutLeft">zoomOutLeft</option>
-                                        <option value="zoomOutRight">zoomOutRight</option>
-                                        <option value="zoomOutUp">zoomOutUp</option>
-                                    </optgroup>
-                                    <optgroup label="Bouncing Exits">
-                                        <option value="bounceOut">bounceOut</option>
-                                        <option value="bounceOutDown">bounceOutDown</option>
-                                        <option value="bounceOutLeft">bounceOutLeft</option>
-                                        <option value="bounceOutRight">bounceOutRight</option>
-                                        <option value="bounceOutUp">bounceOutUp</option>
-                                    </optgroup>
-                                    <optgroup label="Sliding Exits">
-                                        <option value="slideOutDown">slideOutDown</option>
-                                        <option value="slideOutLeft">slideOutLeft</option>
-                                        <option value="slideOutRight">slideOutRight</option>
-                                        <option value="slideOutUp">slideOutUp</option>
-                                    </optgroup>
-                                    <optgroup label="Back Exits">
-                                        <option value="backOutDown">backOutDown</option>
-                                        <option value="backOutLeft">backOutLeft</option>
-                                        <option value="backOutRight">backOutRight</option>
-                                        <option value="backOutUp">backOutUp</option>
-                                    </optgroup>
-                                </select>
-                                <span class="wppoppop-anim-sublabel">Disappearance</span>
+                                <input type="number" id="set-canvas-radius" value="0" min="0" max="500" step="1" aria-label="Canvas corner radius in pixels" style="width:100%;height:34px;min-height:34px;padding:2px 8px;font-size:12px;box-sizing:border-box;">
                             </div>
                         </div>
 

@@ -31,6 +31,7 @@ class WpPopPop_Admin_Settings {
     public static function get_modules() {
         return [
             'acc-01-canvas-styling' => __('Canvas Settings', 'wppoppop'),
+            'acc-20-animation'    => __('Animation', 'wppoppop'),
             'acc-02-triggers'     => __('Display Triggers', 'wppoppop'),
             'acc-03-logic-math'   => __('Conditional Logic & Math', 'wppoppop'),
             'acc-04-side-tabs'    => __('Side Tabs', 'wppoppop'),
@@ -87,7 +88,7 @@ class WpPopPop_Admin_Settings {
     }
 
     public static function get_module_defaults() {
-        $enabled = array_merge(self::get_locked_modules(), ['acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration']);
+        $enabled = array_merge(self::get_locked_modules(), ['acc-20-animation', 'acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration']);
         $defaults = [];
         foreach (array_keys(self::get_modules()) as $key) {
             $defaults[$key] = in_array($key, $enabled, true) ? 1 : 0;

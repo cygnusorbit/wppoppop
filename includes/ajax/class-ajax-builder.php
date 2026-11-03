@@ -267,7 +267,7 @@ class WpPopPop_Ajax_Builder {
 
     private function sanitize_anim_value($k, $v) {
         static $txt = array('anim_appearance', 'anim_disappearance', 'anim_effect', 'animEffect', 'animation', 'animIn', 'animOut');
-        static $int = array('anim_duration', 'anim_delay', 'animDuration', 'animDelay');
+        static $int = array('anim_duration', 'anim_delay', 'animDuration', 'animDelay', 'canvas_radius');
         if (is_scalar($v) || $v === null) {
             if (in_array($k, $txt, true)) { return preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $v); }
             if (in_array($k, $int, true)) { return max(0, intval($v)); }
@@ -390,6 +390,7 @@ class WpPopPop_Ajax_Builder {
                     if (isset($cVal['anim_duration'])) $data['canvasMeta'][$cKey]['anim_duration'] = intval($cVal['anim_duration']);
                     if (isset($cVal['anim_delay'])) $data['canvasMeta'][$cKey]['anim_delay'] = intval($cVal['anim_delay']);
                     if (isset($cVal['anim_disappearance'])) $data['canvasMeta'][$cKey]['anim_disappearance'] = sanitize_text_field($cVal['anim_disappearance']);
+                    if (isset($cVal['canvas_radius'])) $data['canvasMeta'][$cKey]['canvas_radius'] = max(0, min(500, intval($cVal['canvas_radius'])));
                 }
             }
         }
@@ -400,6 +401,7 @@ class WpPopPop_Ajax_Builder {
                     if (isset($cVal['anim_duration'])) $data['canvas_meta'][$cKey]['anim_duration'] = intval($cVal['anim_duration']);
                     if (isset($cVal['anim_delay'])) $data['canvas_meta'][$cKey]['anim_delay'] = intval($cVal['anim_delay']);
                     if (isset($cVal['anim_disappearance'])) $data['canvas_meta'][$cKey]['anim_disappearance'] = sanitize_text_field($cVal['anim_disappearance']);
+                    if (isset($cVal['canvas_radius'])) $data['canvas_meta'][$cKey]['canvas_radius'] = max(0, min(500, intval($cVal['canvas_radius'])));
                 }
             }
         }

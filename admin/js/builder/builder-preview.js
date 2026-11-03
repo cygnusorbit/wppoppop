@@ -49,6 +49,8 @@
                 if (l !== undefined && l !== '' && !isNaN(l)) m.anim_delay = parseInt(l, 10);
                 var o = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
                 if (o) m.anim_disappearance = o;
+                var $radP = $('#set-canvas-radius');
+                if ($radP.length) m.canvas_radius = Math.max(0, Math.min(500, parseInt($radP.val(), 10) || 0));
 
                 /* WPPOPPOP_PREVIEW_GEOM_SYNC: the stage DOM is the visual truth for the current canvas */
                 var geoList = (core.state.canvases && core.state.canvases[cur]) || [];

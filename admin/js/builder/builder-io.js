@@ -117,6 +117,9 @@
             var liveAnimDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
             if (liveAnimDis) curCanvasMeta.anim_disappearance = liveAnimDis;
 
+            var $liveRadius = $('#set-canvas-radius');
+            if ($liveRadius.length) { curCanvasMeta.canvas_radius = Math.max(0, Math.min(500, parseInt($liveRadius.val(), 10) || 0)); }
+
             /* WPPOPPOP_DEFAULT_CLOSE: pre-save flush */
             var $dcBtn = $('#set-canvas-close-btn');
             if ($dcBtn.length) { curCanvasMeta.close_btn_enabled = $dcBtn.is(':checked'); }

@@ -60,10 +60,10 @@ class WpPopPop_Settings_Defaults {
             'layer_lock'    => 0,
         ];
 
-        // Task 2: Campaign Settings Modules - All disabled except 16, 17, 18, 19
+        // Task 2: Campaign Settings Modules - All disabled except 16, 17, 18, 19, 20
         $campaign_modules = [];
         for ( $i = 1; $i <= 30; $i++ ) {
-            $is_enabled = in_array( $i, [ 16, 17, 18, 19 ], true ) ? 1 : 0;
+            $is_enabled = in_array( $i, [ 16, 17, 18, 19, 20 ], true ) ? 1 : 0;
             $campaign_modules[ (string) $i ]           = $is_enabled;
             $campaign_modules[ 'module_' . $i ]        = $is_enabled;
         }
@@ -99,12 +99,12 @@ class WpPopPop_Settings_Defaults {
             0
         );
 
-        // Merge Campaign Modules (All disabled except 16, 17, 18, 19)
+        // Merge Campaign Modules (All disabled except 16, 17, 18, 19, 20)
         if ( isset( $defaults['campaign_settings_modules'] ) && is_array( $defaults['campaign_settings_modules'] ) ) {
             foreach ( $defaults['campaign_settings_modules'] as $mod_key => $val ) {
                 preg_match( '/\d+/', (string) $mod_key, $m );
                 $mod_num = ! empty( $m ) ? (int) $m[0] : null;
-                $defaults['campaign_settings_modules'][ $mod_key ] = ( in_array( $mod_num, [ 16, 17, 18, 19 ], true ) ) ? 1 : 0;
+                $defaults['campaign_settings_modules'][ $mod_key ] = ( in_array( $mod_num, [ 16, 17, 18, 19, 20 ], true ) ) ? 1 : 0;
             }
         } else {
             $defaults['campaign_settings_modules'] = $canonical['campaign_settings_modules'];
@@ -114,7 +114,7 @@ class WpPopPop_Settings_Defaults {
             foreach ( $defaults['modules'] as $mod_key => $val ) {
                 preg_match( '/\d+/', (string) $mod_key, $m );
                 $mod_num = ! empty( $m ) ? (int) $m[0] : null;
-                $defaults['modules'][ $mod_key ] = ( in_array( $mod_num, [ 16, 17, 18, 19 ], true ) ) ? 1 : 0;
+                $defaults['modules'][ $mod_key ] = ( in_array( $mod_num, [ 16, 17, 18, 19, 20 ], true ) ) ? 1 : 0;
             }
         }
 
@@ -190,7 +190,7 @@ class WpPopPop_Settings_Defaults {
                     cb.dispatchEvent(new Event('change', { bubbles: true }));
                 });
 
-                // 2. Campaign Settings Modules: Uncheck all except 16, 17, 18, 19
+                // 2. Campaign Settings Modules: Uncheck all except 16, 17, 18, 19, 20
                 var moduleCheckboxes = document.querySelectorAll(
                     '[name*="campaign_modules"], [name*="campaign_settings_modules"], [name*="modules["], .wppoppop-module-checkbox'
                 );
@@ -198,7 +198,7 @@ class WpPopPop_Settings_Defaults {
                     var val = (cb.value || cb.name || cb.id || '').toLowerCase();
                     var numMatches = val.match(/\d+/);
                     var modNum = numMatches ? parseInt(numMatches[0], 10) : null;
-                    var shouldEnable = [16, 17, 18, 19].indexOf(modNum) !== -1;
+                    var shouldEnable = [16, 17, 18, 19, 20].indexOf(modNum) !== -1;
 
                     cb.checked = shouldEnable;
                     if (shouldEnable) {

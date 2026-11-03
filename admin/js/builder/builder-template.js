@@ -43,6 +43,7 @@
             if (vDel !== undefined && vDel !== '' && !isNaN(vDel)) { cm.anim_delay = parseInt(vDel, 10); }
             var vDis = $('#set-canvas-anim-disappearance, #set-anim-disappearance').val();
             if (vDis) { cm.anim_disappearance = vDis; }
+            var $radT = $('#set-canvas-radius'); if ($radT.length) { cm.canvas_radius = Math.max(0, Math.min(500, parseInt($radT.val(), 10) || 0)); }
             var $dcT = $('#set-canvas-close-btn'); if ($dcT.length) { cm.close_btn_enabled = $dcT.is(':checked'); } /* WPPOPPOP_DEFAULT_CLOSE */
             return {
                 title: $('#wppoppop-builder-title').val() || 'Untitled Popup',
