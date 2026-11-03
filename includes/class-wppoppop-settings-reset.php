@@ -28,7 +28,7 @@ class WpPopPop_Settings_Reset {
                               'max_submissions_per_ip', 'ip_geotargeting', 'geoip_service', 'geoip_api_service'],
             'custom-code' => ['custom_css', 'custom_js', 'custom_header_html', 'custom_footer_html'],
             'module'      => ['modules', 'module_order'],
-            'builder'     => ['builder_alignment_tool', 'builder_viewport_toggle', 'builder_zoom_select', 'builder_save_template'],
+            'builder'     => ['builder_alignment_tool', 'builder_viewport_toggle', 'builder_zoom_select', 'builder_save_template', 'builder_extra_elements'],
             'pages'       => ['menu_pages'],
             'tracking'    => array_keys(WpPopPop_Tracking::defaults()),
         ];

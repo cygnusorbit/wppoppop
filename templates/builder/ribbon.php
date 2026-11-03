@@ -1,5 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
+$__wpp_rs = get_option('wppoppop_settings', []);
+$__wpp_extra_on = is_array($__wpp_rs) && !empty($__wpp_rs['builder_extra_elements']);
 ?>
 <div id="wppoppop-ribbon-wrap" class="wppoppop-ribbon-wrap">
 <div id="wppoppop-ribbon" class="wppoppop-ribbon-bar">
@@ -24,13 +26,13 @@ if (!defined('ABSPATH')) exit;
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="checkboxgroup" title="16. Checkbox (checkboxgroup)"><span class="dashicons dashicons-yes-alt"></span><span class="btn-label">Checkbox</span></button>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="radio" title="17. Radio Button (radio)"><span class="dashicons dashicons-marker"></span><span class="btn-label">Radio</span></button>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="multiselect" title="18. Multiselect (multiselect)"><span class="dashicons dashicons-list-view"></span><span class="btn-label">Multi</span></button>
-        <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="imageselect" title="19. Image Select (imageselect)"><span class="dashicons dashicons-images-alt2"></span><span class="btn-label">ImgSel</span></button>
-        <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="tile" title="20. Tile (tile)"><span class="dashicons dashicons-grid-view"></span><span class="btn-label">Tile</span></button>
-        <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="date" title="21. Date (date)"><span class="dashicons dashicons-calendar-alt"></span><span class="btn-label">Date</span></button>
+        <?php if ($__wpp_extra_on) : ?><button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="imageselect" title="19. Image Select (imageselect)"><span class="dashicons dashicons-images-alt2"></span><span class="btn-label">ImgSel</span></button><?php endif; ?>
+        <?php if ($__wpp_extra_on) : ?><button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="tile" title="20. Tile (tile)"><span class="dashicons dashicons-grid-view"></span><span class="btn-label">Tile</span></button><?php endif; ?>
+        <?php if ($__wpp_extra_on) : ?><button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="date" title="21. Date (date)"><span class="dashicons dashicons-calendar-alt"></span><span class="btn-label">Date</span></button><?php endif; ?>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="time" title="22. Time (time)"><span class="dashicons dashicons-clock"></span><span class="btn-label">Time</span></button>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="upload" title="23. Upload / File (upload)"><span class="dashicons dashicons-upload"></span><span class="btn-label">Upload</span></button>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="password" title="24. Password (password)"><span class="dashicons dashicons-lock"></span><span class="btn-label">Password</span></button>
-        <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="rating" title="25. Rating (rating)"><span class="dashicons dashicons-star-half"></span><span class="btn-label">Rating</span></button>
+        <?php if ($__wpp_extra_on) : ?><button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="rating" title="25. Rating (rating)"><span class="dashicons dashicons-star-half"></span><span class="btn-label">Rating</span></button><?php endif; ?>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="checkbox" title="Agreement Checkbox (checkbox)"><span class="dashicons dashicons-privacy"></span><span class="btn-label">Agreement</span></button>
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="submit" title="26. Button Submit (submit)"><span class="dashicons dashicons-yes"></span><span class="btn-label">Submit</span></button>
         <div class="wppoppop-snap-group wppoppop-ribbon-snap" role="group" aria-label="Snapping" style="margin-left:auto;flex:0 0 auto;">
