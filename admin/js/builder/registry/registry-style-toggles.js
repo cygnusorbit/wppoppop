@@ -4,14 +4,15 @@
  */
 (function(window, $) {
     'use strict';
-    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
+    // The registry global is replaced by registry-core.js after this file loads, so always read it lazily.
+    function R() { return window.WpPopPopElementsRegistry || {}; }
     var MAP = {
         'prop-border-enabled': { prop: 'borderEnabled', sec: '#insp-section-border' },
         'prop-shadow-enabled': { prop: 'shadowEnabled', sec: '#insp-section-shadow' }
     };
 
     function isOn(v) { return !(v === false || v === 'false' || v === 0 || v === '0'); }
-    function getEl() { return (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null; }
+    function getEl() { var Reg = R(); return (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null; }
 
     function paint(id, on) {
         var m = MAP[id];
@@ -26,6 +27,7 @@
     }
 
     function rerender(el) {
+        var Reg = R();
         var raw = String(el.type || '').toLowerCase();
         var can = (Reg.ALIAS_MAP && Reg.ALIAS_MAP[raw]) ? Reg.ALIAS_MAP[raw] : raw;
         var isForm = Reg.FORM_FAMILY && Reg.FORM_FAMILY.indexOf(can) !== -1;
@@ -54,12 +56,30 @@
                 [60, 250, 600].forEach(function(ms) { setTimeout(function() { hydrate(); }, ms); });
             });
 
+        var Reg = R();
         if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._styleToggleHooked) {
             Reg._styleToggleHooked = true;
             var orig = Reg.hydrateCoreAndStyleFields;
             Reg.hydrateCoreAndStyleFields = function(el) { var r = orig.apply(this, arguments); hydrate(el); return r; };
         }
     }
+
+    // Flip the Shape style layout before the inspector re-renders so hidden cards never flash on selection.
+    function presetShapeStyle(e) {
+        var node = e.target && e.target.closest ? e.target.closest('.wppoppop-canvas-item, .wppoppop-layer-item') : null;
+        var id = node && node.getAttribute('data-id');
+        if (!id) return;
+        var core = window.WpPopPopBuilderCore;
+        var list = (core && core.state && core.state.canvases && core.state.canvases[core.state.currentCanvas || 1]) || [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && list[i].id === id) {
+                $('#insp-tab-style').toggleClass('wppoppop-shape-style', String(list[i].type || '').toLowerCase() === 'shape');
+                return;
+            }
+        }
+    }
+    document.addEventListener('mousedown', presetShapeStyle, true);
+    document.addEventListener('click', presetShapeStyle, true);
 
     $(function() { bind(); setTimeout(bind, 150); });
     bind();

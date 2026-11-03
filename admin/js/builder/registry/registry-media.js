@@ -61,8 +61,8 @@
             var preset = el.shapePreset || 'square';
             var svgInner = SVG_SHAPE_PATHS[preset] || SVG_SHAPE_PATHS['square'];
             var fillCol = el.shapeNoFill ? 'none' : (el.shapeFill || '#3b82f6');
-            var stWidth = parseInt(el.strokeWidth, 10) || 0;
-            var stCol   = el.strokeColor || '#0284c7';
+            var stWidth = parseInt(el.strokeWidth !== undefined ? el.strokeWidth : el.shapeStrokeWidth, 10) || 0;
+            var stCol   = el.strokeColor || el.shapeStroke || '#0284c7';
             var rot     = parseInt(el.rotate, 10) || 0;
             $node.css({ 'transform': 'rotate(' + rot + 'deg)' });
             innerHtml = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;display:block;pointer-events:none;overflow:visible;" fill="' + fillCol + '" stroke="' + (stWidth > 0 ? stCol : 'none') + '" stroke-width="' + stWidth + '">' + svgInner + '</svg>';

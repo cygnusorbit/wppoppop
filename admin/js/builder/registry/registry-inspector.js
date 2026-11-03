@@ -465,6 +465,7 @@
         $('#prop-btn-hover-section').toggle(isButton);
         $('#insp-section-opacity, #insp-section-bg-color, #insp-section-typography, #insp-section-padding, #insp-section-border, #insp-section-shadow, #insp-section-custom-css').show();
         $('#insp-section-typography').toggle(['shape', 'rect', 'rectangle', 'square'].indexOf(type) === -1);
+        $('#insp-tab-style').toggleClass('wppoppop-shape-style', String(type).toLowerCase() === 'shape'); /* WPPOPPOP_SHAPE_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-rd-style', ['radio', 'radios', 'checkboxgroup', 'multiselect', 'imageselect'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_RD_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-tl-style', String(type).toLowerCase() === 'tile'); /* WPPOPPOP_TL_STYLE */
         $('#insp-tab-style').toggleClass('wppoppop-cb-style', ['checkbox', 'checkboxes'].indexOf(String(type).toLowerCase()) !== -1); /* WPPOPPOP_CB_STYLE */
