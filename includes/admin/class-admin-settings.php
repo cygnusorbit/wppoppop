@@ -50,7 +50,33 @@ class WpPopPop_Admin_Settings {
         ];
     }
 
-    /** True unless the module was explicitly switched off. */
+    public static function get_module_defaults() {
+        $enabled = ['acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration'];
+        $defaults = [];
+        foreach (array_keys(self::get_modules()) as $key) {
+            $defaults[$key] = in_array($key, $enabled, true) ? 1 : 0;
+        }
+        return $defaults;
+    }
+
+    public static function get_builder_defaults() {
+        return [
+            'builder_alignment_tool' => 0,
+            'builder_viewport_toggle' => 0,
+            'builder_zoom_select' => 0,
+            'builder_save_template' => 0,
+        ];
+    }
+
+    public static function get_default_menu_pages() {
+        return [
+            'wppoppop-log'             => ['hidden' => 1],
+            'wppoppop-field-analytics' => ['hidden' => 1],
+            'wppoppop-payments'       => ['hidden' => 1],
+        ];
+    }
+
+    /** Use the saved value when present; otherwise use the current module default. */
     public static function module_enabled($key) {
         $s = get_option('wppoppop_settings', []);
         /* WPPOPPOP_MODULE_LEGACY_KEYS: keep toggles saved under the pre-renumber keys */
@@ -59,8 +85,9 @@ class WpPopPop_Admin_Settings {
             && isset($legacy[$key]) && array_key_exists($legacy[$key], $s['modules'])) {
             return !empty($s['modules'][$legacy[$key]]);
         }
+        $defaults = self::get_module_defaults();
         if (!is_array($s) || !isset($s['modules']) || !is_array($s['modules']) || !array_key_exists($key, $s['modules'])) {
-            return true;
+            return !empty($defaults[$key]);
         }
         return !empty($s['modules'][$key]);
     }
@@ -81,11 +108,12 @@ class WpPopPop_Admin_Settings {
             'recaptcha_site_key' => '', 'recaptcha_secret_key' => '',
             'recaptcha_threshold' => 0.4, 'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
             'custom_css' => '', 'custom_js' => '', 'custom_header_html' => '', 'custom_footer_html' => '',
-            'builder_alignment_tool' => 1,
-            'builder_viewport_toggle' => 1,
-            'builder_zoom_select' => 1,
-            'builder_save_template' => 1,
-            'menu_pages' => [],
+            'modules' => self::get_module_defaults(),
+            'builder_alignment_tool' => 0,
+            'builder_viewport_toggle' => 0,
+            'builder_zoom_select' => 0,
+            'builder_save_template' => 0,
+            'menu_pages' => self::get_default_menu_pages(),
             'clean_on_uninstall' => 0,
         ] + self::tracking_defaults();
     }
@@ -192,26 +220,28 @@ class WpPopPop_Admin_Settings {
             $o['custom_footer_html'] = isset($prev['custom_footer_html']) ? $prev['custom_footer_html'] : '';
         }
 
-        // 5b. Campaign Settings modules (whitelist; missing = enabled)
+        // 5b. Campaign Settings modules (whitelist; missing = current default)
+        $module_defaults = self::get_module_defaults();
         $o['modules'] = [];
         foreach (array_keys(self::get_modules()) as $__mk) {
             $o['modules'][$__mk] = (isset($in['modules']) && is_array($in['modules']) && array_key_exists($__mk, $in['modules']))
                 ? (!empty($in['modules'][$__mk]) ? 1 : 0)
-                : 1;
+                : $module_defaults[$__mk];
         }
 
-        // 5c. Builder tools (missing = enabled so unrelated saves never switch it off)
-        $o['builder_alignment_tool'] = (array_key_exists('builder_alignment_tool', $in) && empty($in['builder_alignment_tool'])) ? 0 : 1;
-
-        $o['builder_viewport_toggle'] = (array_key_exists('builder_viewport_toggle', $in) && empty($in['builder_viewport_toggle'])) ? 0 : 1;
-        $o['builder_zoom_select']     = (array_key_exists('builder_zoom_select', $in) && empty($in['builder_zoom_select'])) ? 0 : 1;
+        // 5c. Builder tools (missing = disabled by default)
+        $builder_defaults = self::get_builder_defaults();
+        foreach ($builder_defaults as $__bk => $__bv) {
+            $o[$__bk] = (array_key_exists($__bk, $in) && !empty($in[$__bk])) ? 1 : $__bv;
+        }
 
         // 5d. Admin menu pages (rename / reorder / hide). Whitelist: wppoppop* slugs only.
         // Missing key = keep what is stored, so unrelated saves never reset it.
         $__mp_prev = get_option('wppoppop_settings', []);
+        $__mp_defaults = self::get_default_menu_pages();
         $__mp_src  = (isset($in['menu_pages']) && is_array($in['menu_pages']))
             ? $in['menu_pages']
-            : ((is_array($__mp_prev) && isset($__mp_prev['menu_pages']) && is_array($__mp_prev['menu_pages'])) ? $__mp_prev['menu_pages'] : []);
+            : ((is_array($__mp_prev) && isset($__mp_prev['menu_pages']) && is_array($__mp_prev['menu_pages'])) ? $__mp_prev['menu_pages'] : $__mp_defaults);
         $__mp_pin  = ['wppoppop-dashboard', 'wppoppop-settings'];
         $o['menu_pages'] = [];
         foreach ($__mp_src as $__mp_slug => $__mp_row) {

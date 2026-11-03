@@ -5,7 +5,10 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WpPopPop_Admin_Settings')) {
     require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
 }
-$__mods = (isset($settings['modules']) && is_array($settings['modules'])) ? $settings['modules'] : [];
+$__mods = array_merge(
+    WpPopPop_Admin_Settings::get_module_defaults(),
+    (isset($settings['modules']) && is_array($settings['modules'])) ? $settings['modules'] : []
+);
 ?>
 <style>
 .wppoppop-mod-list{max-width:720px;margin:0;padding:0;list-style:none}
@@ -25,7 +28,7 @@ $__mods = (isset($settings['modules']) && is_array($settings['modules'])) ? $set
     <p class="description"><?php esc_html_e('Switch a module off to hide it from Campaign Settings in the builder. Saved values are kept, so switching it back on restores them. Save settings, then reload the builder.', 'wppoppop'); ?></p>
     <ul class="wppoppop-mod-list">
         <?php foreach (WpPopPop_Admin_Settings::get_modules() as $__k => $__label) :
-            $__on = !array_key_exists($__k, $__mods) || !empty($__mods[$__k]);
+            $__on = !empty($__mods[$__k]);
             $__n  = (int) substr($__k, 4, 2);
             ?>
             <li>

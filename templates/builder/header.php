@@ -5,9 +5,9 @@ if (!defined('ABSPATH')) {
 }
 $__wpp_set   = get_option('wppoppop_settings', []);
 $__wpp_set   = is_array($__wpp_set) ? $__wpp_set : [];
-$__wpp_vp_on = !array_key_exists('builder_viewport_toggle', $__wpp_set) || !empty($__wpp_set['builder_viewport_toggle']);
-$__wpp_zm_on = !array_key_exists('builder_zoom_select', $__wpp_set) || !empty($__wpp_set['builder_zoom_select']);
-$__wpp_tpl_on = !array_key_exists('builder_save_template', $__wpp_set) || !empty($__wpp_set['builder_save_template']);
+$__wpp_vp_on = !empty($__wpp_set['builder_viewport_toggle']);
+$__wpp_zm_on = !empty($__wpp_set['builder_zoom_select']);
+$__wpp_tpl_on = !empty($__wpp_set['builder_save_template']);
 ?>
 <div class="wppoppop-builder-header">
     <!-- Left Section: Navigation, Settings, Title -->

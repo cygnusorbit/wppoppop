@@ -75,11 +75,9 @@ class WpPopPop_Settings_Reset {
         foreach ($tabs as $t) {
             foreach ($map[$t] as $key) {
                 if ($key === 'modules') {
-                    $mods = [];
-                    foreach (array_keys(WpPopPop_Admin_Settings::get_modules()) as $mk) { $mods[$mk] = 1; }
-                    $raw['modules'] = $mods;
+                    $raw['modules'] = WpPopPop_Admin_Settings::get_module_defaults();
                 } elseif ($key === 'menu_pages') {
-                    $raw['menu_pages'] = [];
+                    $raw['menu_pages'] = WpPopPop_Admin_Settings::get_default_menu_pages();
                 } else {
                     $src = isset($aliases[$key]) ? $aliases[$key] : $key;
                     if (array_key_exists($src, $defaults)) {

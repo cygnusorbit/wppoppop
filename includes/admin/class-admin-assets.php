@@ -117,11 +117,11 @@ class WpPopPop_Admin_Assets {
                 'nonce'        => wp_create_nonce('wppoppop_builder_nonce'),
                 'save_template' => (function () {
                     $s = get_option('wppoppop_settings', []);
-                    return (is_array($s) && array_key_exists('builder_save_template', $s) && empty($s['builder_save_template'])) ? 0 : 1;
+                    return (is_array($s) && !empty($s['builder_save_template'])) ? 1 : 0;
                 })(),
                 'alignment_tool' => (function () {
                     $s = get_option('wppoppop_settings', []);
-                    return (is_array($s) && array_key_exists('builder_alignment_tool', $s) && empty($s['builder_alignment_tool'])) ? 0 : 1;
+                    return (is_array($s) && !empty($s['builder_alignment_tool'])) ? 1 : 0;
                 })(),
                 'custom_fonts' => WpPopPop_Libraries::get_custom_font_families()
             ]);

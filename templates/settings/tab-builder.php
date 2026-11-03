@@ -2,10 +2,11 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-$__align_on = !array_key_exists('builder_alignment_tool', (array) $settings) || !empty($settings['builder_alignment_tool']);
-$__vp_on = !array_key_exists('builder_viewport_toggle', (array) $settings) || !empty($settings['builder_viewport_toggle']);
-$__zm_on = !array_key_exists('builder_zoom_select', (array) $settings) || !empty($settings['builder_zoom_select']);
-$__st_on = !array_key_exists('builder_save_template', (array) $settings) || !empty($settings['builder_save_template']);
+$__bld = array_merge(WpPopPop_Admin_Settings::get_builder_defaults(), (array) $settings);
+$__align_on = !empty($__bld['builder_alignment_tool']);
+$__vp_on = !empty($__bld['builder_viewport_toggle']);
+$__zm_on = !empty($__bld['builder_zoom_select']);
+$__st_on = !empty($__bld['builder_save_template']);
 ?>
 <style>
 .wppoppop-bld-list{max-width:720px;margin:0;padding:0;list-style:none}

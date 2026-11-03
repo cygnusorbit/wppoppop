@@ -72,7 +72,16 @@ class WpPopPop_Admin_Menu {
 
     public static function get_prefs() {
         $s = get_option('wppoppop_settings', []);
-        return (is_array($s) && isset($s['menu_pages']) && is_array($s['menu_pages'])) ? $s['menu_pages'] : [];
+        $prefs = (is_array($s) && isset($s['menu_pages']) && is_array($s['menu_pages'])) ? $s['menu_pages'] : [];
+        if (!class_exists('WpPopPop_Admin_Settings')) {
+            require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
+        }
+        foreach (WpPopPop_Admin_Settings::get_default_menu_pages() as $slug => $defaults) {
+            $prefs[$slug] = (isset($prefs[$slug]) && is_array($prefs[$slug]))
+                ? array_merge($defaults, $prefs[$slug])
+                : $defaults;
+        }
+        return $prefs;
     }
 
     /** Merge live pages with saved prefs; returns ordered rows. */

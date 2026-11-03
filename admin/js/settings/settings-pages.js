@@ -55,7 +55,11 @@
             $.each(items, function (_, li) {
                 var $li = $(li);
                 $li.find('.wpp-pg-label').val('');
-                $li.find('.wpp-pg-hidden-cb').prop('checked', false);
+                $li.find('.wpp-pg-hidden-cb').prop('checked', [
+                    'wppoppop-log',
+                    'wppoppop-field-analytics',
+                    'wppoppop-payments'
+                ].indexOf($li.attr('data-slug')) !== -1);
                 $list.append($li);
             });
             reindex();
