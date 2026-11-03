@@ -64,6 +64,7 @@ class WpPopPop_Ajax_Element_Media {
         if (isset($el['altText']))            $clean['altText']            = sanitize_text_field($el['altText']);
         if (isset($el['objectFit']))          $clean['objectFit']          = sanitize_text_field($el['objectFit']);
         if (isset($el['videoUrl']))           $clean['videoUrl']           = esc_url_raw($el['videoUrl']);
+        if (isset($el['videoThumb']) && !is_array($el['videoThumb'])) $clean['videoThumb'] = esc_url_raw(trim(wp_unslash((string) $el['videoThumb'])));
         if (isset($el['videoAutoplay'])) $clean['videoAutoplay'] = !in_array($el['videoAutoplay'], array(false, 'false', '0', 0, '', null, 'off'), true);
         if (isset($el['videoMute'])) $clean['videoMute'] = !in_array($el['videoMute'], array(false, 'false', '0', 0, '', null, 'off'), true);
         if (isset($el['videoLoop'])) $clean['videoLoop'] = !in_array($el['videoLoop'], array(false, 'false', '0', 0, '', null, 'off'), true);

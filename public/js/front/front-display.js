@@ -624,3 +624,46 @@
     };
 })(window, jQuery);
 /* === WPPOPPOP_TRIGGER_REPEAT_END === */
+
+
+/* === WPPOPPOP_VIDEO_FACADE_START === */
+(function (window, document) {
+    'use strict';
+    if (window.__wppoppopVideoFacade) { return; }
+    window.__wppoppopVideoFacade = true;
+
+    function play(node) {
+        var src = node.getAttribute('data-wppoppop-embed');
+        if (!src || node.getAttribute('data-wppoppop-played')) { return; }
+        node.setAttribute('data-wppoppop-played', '1');
+        var f = document.createElement('iframe');
+        f.setAttribute('src', src);
+        f.setAttribute('frameborder', '0');
+        f.setAttribute('allow', node.getAttribute('data-wppoppop-allow') || 'autoplay; fullscreen; picture-in-picture');
+        f.setAttribute('allowfullscreen', '');
+        f.style.cssText = 'width:100%;height:100%;border:0;border-radius:inherit;display:block;background:#000;';
+        while (node.firstChild) { node.removeChild(node.firstChild); }
+        node.appendChild(f);
+    }
+
+    function facadeOf(t) {
+        while (t && t !== document) {
+            if (t.nodeType === 1 && t.className && String(t.className).indexOf('wppoppop-video-facade') !== -1) { return t; }
+            t = t.parentNode;
+        }
+        return null;
+    }
+
+    document.addEventListener('click', function (e) {
+        var n = facadeOf(e.target);
+        if (n) { e.preventDefault(); play(n); }
+    }, true);
+
+    document.addEventListener('keydown', function (e) {
+        var k = e.key || e.keyCode;
+        if (k !== 'Enter' && k !== ' ' && k !== 13 && k !== 32) { return; }
+        var n = facadeOf(e.target);
+        if (n) { e.preventDefault(); play(n); }
+    }, true);
+})(window, document);
+/* === WPPOPPOP_VIDEO_FACADE_END === */

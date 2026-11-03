@@ -94,21 +94,28 @@
             var ytId = (vRaw.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|v\/))([\w-]{11})/) || [])[1];
             var vimId = (vRaw.match(/vimeo\.com\/(?:video\/|channels\/[^\/]+\/|groups\/[^\/]+\/videos\/)?(\d+)/) || [])[1];
 
+            var vThumb = $.trim(el.videoThumb || '');
+            var vFacade = function(src) {
+                if (!vThumb || vAuto) return '';
+                return '<div class="wppoppop-video-facade" data-wppoppop-embed="' + vEsc(String(src).replace('autoplay=0', 'autoplay=1')) + '" role="button" tabindex="0" aria-label="Play video" style="position:relative;width:100%;height:100%;overflow:hidden;cursor:pointer;background:#000;border-radius:inherit;">' +
+                    '<img src="' + vEsc(vThumb) + '" alt="" draggable="false" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">' +
+                    '<span style="position:absolute;top:50%;left:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(0,0,0,.6);"><span style="position:absolute;top:50%;left:50%;margin:-11px 0 0 -7px;border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;"></span></span></div>';
+            };
             if (!vRaw) {
                 innerHtml = '<div style="width:100%;height:100%;background:#0f172a;color:#94a3b8;display:flex;align-items:center;justify-content:center;font-size:11px;border-radius:inherit;pointer-events:none;">No video URL set</div>';
             } else if (inPreview) {
                 var frameCss = 'width:100%;height:100%;border:0;border-radius:inherit;display:block;background:#000;';
                 if (ytId) {
                     var ysrc = 'https://www.youtube.com/embed/' + ytId + '?playsinline=1&rel=0&autoplay=' + (vAuto ? 1 : 0) + '&mute=' + (vMute ? 1 : 0) + '&controls=' + (vCtl ? 1 : 0) + (vLoop ? '&loop=1&playlist=' + ytId : '');
-                    innerHtml = '<iframe src="' + vEsc(ysrc) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="' + frameCss + '"></iframe>';
+                    innerHtml = vFacade(ysrc) || '<iframe src="' + vEsc(ysrc) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="' + frameCss + '"></iframe>';
                 } else if (vimId) {
                     var vsrc = 'https://player.vimeo.com/video/' + vimId + '?playsinline=1&autoplay=' + (vAuto ? 1 : 0) + '&muted=' + (vMute ? 1 : 0) + '&loop=' + (vLoop ? 1 : 0) + '&controls=' + (vCtl ? 1 : 0);
-                    innerHtml = '<iframe src="' + vEsc(vsrc) + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="' + frameCss + '"></iframe>';
+                    innerHtml = vFacade(vsrc) || '<iframe src="' + vEsc(vsrc) + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="' + frameCss + '"></iframe>';
                 } else {
-                    innerHtml = '<video src="' + vEsc(vRaw) + '" playsinline webkit-playsinline preload="metadata"' + (vCtl ? ' controls' : '') + (vAuto ? ' autoplay' : '') + (vMute ? ' muted' : '') + (vLoop ? ' loop' : '') + ' style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;background:#000;"></video>';
+                    innerHtml = '<video src="' + vEsc(vRaw) + '"' + (vThumb ? ' poster="' + vEsc(vThumb) + '"' : '') + ' playsinline webkit-playsinline preload="metadata"' + (vCtl ? ' controls' : '') + (vAuto ? ' autoplay' : '') + (vMute ? ' muted' : '') + (vLoop ? ' loop' : '') + ' style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;background:#000;"></video>';
                 }
             } else {
-                var thumb = ytId ? ('<img src="https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg" alt="" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8;">') : '';
+                var thumb = vThumb ? ('<img src="' + vEsc(vThumb) + '" alt="" draggable="false" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">') : ytId ? ('<img src="https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg" alt="" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8;">') : '';
                 var provLabel = ytId ? 'YOUTUBE' : (vimId ? 'VIMEO' : 'MP4');
                 var vb = [];
                 if (vAuto) vb.push('Autoplay');

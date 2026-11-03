@@ -4927,13 +4927,13 @@
 })(window, jQuery);
 
 /* === WPPOPPOP_VIDEO_SIZE_PRESET_START === */
-/* Video layers: default COORDINATES & BOUNDS preset WIDTH 320px x HEIGHT 240px.
+/* Video layers: default COORDINATES & BOUNDS preset WIDTH 200px x HEIGHT 150px.
    Applied on creation, plus an "Apply preset" button in the Content tab. */
 (function(window, $) {
     'use strict';
 
-    var PRESET_W = 320;
-    var PRESET_H = 240;
+    var PRESET_W = 200;
+    var PRESET_H = 150;
     var TYPE = 'video';
 
     function cleanId(raw) {
@@ -5017,7 +5017,7 @@
         $coords.append(
             '<div id="wppoppop-video-preset-wrap" style="display:none; margin-top:8px;">' +
                 '<button type="button" id="wppoppop-video-preset-btn" class="button button-small" ' +
-                'style="width:100%; font-size:11px; font-weight:700;">Apply Video Preset (320 x 240)</button>' +
+                'style="width:100%; font-size:11px; font-weight:700;">Apply Video Preset (200 x 150)</button>' +
             '</div>'
         );
     }

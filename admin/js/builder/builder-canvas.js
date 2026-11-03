@@ -1163,8 +1163,8 @@
                 name: type.toUpperCase() + ' ' + (elements.length + 1),
                 top: (typeof spawnY === 'number' && !isNaN(spawnY)) ? spawnY : (50 + (elements.length * 15) % 150),
                 left: (typeof spawnX === 'number' && !isNaN(spawnX)) ? spawnX : (50 + (elements.length * 15) % 200),
-                width: (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape' || type === 'image') ? 120 : ((type === 'text' || type === 'textfield') ? 200 : (type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
-                height: (type === 'image') ? 150 /* WPPOPPOP_IMAGE_SPAWN_120x150 */ : (type === 'progress') ? 20 /* WPPOPPOP_PROGRESS_SPAWN_20 */ : (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'signature') ? 60 : 42),
+                width: (type === 'close' || type === 'close_icon') ? 35 : (type === 'video') ? 200 /* WPPOPPOP_VIDEO_SPAWN_200x150 */ : (type === 'shape' || type === 'image') ? 120 : ((type === 'text' || type === 'textfield') ? 200 : (type === 'html') ? 240 : (type === 'rating' ? 140 : 200)),
+                height: (type === 'image') ? 150 /* WPPOPPOP_IMAGE_SPAWN_120x150 */ : (type === 'video') ? 150 : (type === 'progress') ? 20 /* WPPOPPOP_PROGRESS_SPAWN_20 */ : (type === 'close' || type === 'close_icon') ? 35 : (type === 'shape') ? 120 : ((type === 'signature') ? 60 : 42),
                 zIndex: nextZ, /* WPPOPPOP_CLOSE_SPAWN_35 */
                 sizePresetApplied: (type === 'close' || type === 'close_icon'),
                 borderRadius: 0,

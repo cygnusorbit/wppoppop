@@ -559,6 +559,7 @@ class WpPopPop_Ajax_Builder {
         if (isset($el['videoProvider'])) $clean['videoProvider'] = sanitize_key($el['videoProvider']);
         if (isset($el['aspectRatio'])) $clean['aspectRatio'] = sanitize_text_field($el['aspectRatio']);
         if (isset($el['videoUrl'])) $clean['videoUrl'] = esc_url_raw($el['videoUrl']);
+        if (isset($el['videoThumb']) && !is_array($el['videoThumb'])) $clean['videoThumb'] = esc_url_raw(trim(wp_unslash((string) $el['videoThumb'])));
         if (isset($el['videoAutoplay'])) $clean['videoAutoplay'] = !empty($el['videoAutoplay']);
         if (isset($el['videoMute'])) $clean['videoMute'] = !empty($el['videoMute']);
         if (isset($el['videoLoop'])) $clean['videoLoop'] = !empty($el['videoLoop']);
