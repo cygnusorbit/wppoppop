@@ -81,7 +81,8 @@ class WpPopPop_Admin_Assets {
 
             if (function_exists('wp_enqueue_media')) { wp_enqueue_media(); }
         wp_enqueue_script('wppoppop-builder-core-js', WPPOPPOP_URL . 'admin/js/builder/builder-core.js', ['jquery'], self::ver(), true);
-            wp_enqueue_script('wppoppop-builder-canvas-js', WPPOPPOP_URL . 'admin/js/builder/builder-canvas.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'wppoppop-builder-core-js', 'jquery-ui-droppable'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-spawn-place-js', WPPOPPOP_URL . 'admin/js/builder/builder-spawn-place.js', [], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-canvas-js', WPPOPPOP_URL . 'admin/js/builder/builder-canvas.js', ['jquery', 'jquery-ui-draggable', 'jquery-ui-resizable', 'wppoppop-builder-core-js', 'jquery-ui-droppable', 'wppoppop-builder-spawn-place-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-layers-js', WPPOPPOP_URL . 'admin/js/builder/builder-layers.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-style-toggles-js', WPPOPPOP_URL . 'admin/js/builder/registry/registry-style-toggles.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-style-stable-js', WPPOPPOP_URL . 'admin/js/builder/registry/registry-style-stable.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-canvas-js'], self::ver(), true);

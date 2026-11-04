@@ -1233,6 +1233,7 @@
                 newEl.textAlign = 'center';
             }
             if (type === 'submit') { newEl.textAlign = 'center'; } /* WPPOPPOP_SUBMIT_ALIGN_DEFAULT */
+            if (window.WpPopPopSpawnPlace) { window.WpPopPopSpawnPlace.place(newEl, elements); } /* WPPOPPOP_SPAWN_PLACE */
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;
             this.renderCanvas();
