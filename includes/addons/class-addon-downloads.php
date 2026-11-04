@@ -49,13 +49,14 @@ class WpPopPop_Addon_Downloads {
                 header('Cache-Control: must-revalidate');
                 header('Pragma: public');
                 header('Content-Length: ' . filesize($file_path));
-                readfile($file_path);
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+        readfile($file_path);
                 exit;
             }
         }
 
         // External file fallback
-        wp_redirect($file_url);
+        wp_safe_redirect( $file_url ); exit;
         exit;
     }
 }

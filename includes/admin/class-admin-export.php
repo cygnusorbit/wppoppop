@@ -101,7 +101,8 @@ class WpPopPop_Admin_Export {
         global $wpdb;
         $items = $wpdb->prefix . 'wppoppop_items';
         $maps = [];
-        foreach ((array) $wpdb->get_results("SELECT uid, data FROM {$items}") as $ir) {
+        foreach ((array) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT uid, data FROM {$wpdb->prefix}wppoppop_items" ) as $ir) {
             if ($popup_uid !== '' && $ir->uid !== $popup_uid) {
                 continue;
             }
@@ -177,9 +178,11 @@ class WpPopPop_Admin_Export {
         if (empty($defined)) {
             /* no popup-defined fields: fall back to keys found in stored submissions */
             if ($uid !== '') {
-                $raws = $wpdb->get_col($wpdb->prepare("SELECT fields_data FROM {$table} WHERE popup_uid = %s ORDER BY id DESC LIMIT 500", $uid));
+                $raws = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_col( $wpdb->prepare( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions WHERE popup_uid = %s ORDER BY id DESC LIMIT 500", $uid ) );
             } else {
-                $raws = $wpdb->get_col("SELECT fields_data FROM {$table} ORDER BY id DESC LIMIT 500");
+                $raws = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_col( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions ORDER BY id DESC LIMIT 500" );
             }
             $skip = ['signature', 'quiz_score', '_name', '_phone', '_ip'];
             $seen = [];
@@ -203,14 +206,14 @@ class WpPopPop_Admin_Export {
 
     public function export_submissions_csv() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized capability.', 'wppoppop'));
+            wp_die( esc_html__( 'Unauthorized capability.', "wppoppop" ) );
         }
 
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'wppoppop_export_nonce')
             && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')
             && !wp_verify_nonce($nonce, 'wppoppop_builder_nonce')) {
-            wp_die(__('Security verification failed.', 'wppoppop'));
+            wp_die( esc_html__( 'Security verification failed.', "wppoppop" ) );
         }
 
         global $wpdb;
@@ -220,11 +223,11 @@ class WpPopPop_Admin_Export {
 
         if ($popup_uid !== '') {
             $rows = $wpdb->get_results($wpdb->prepare(
-                "SELECT s.*, i.title AS popup_title FROM {$table} s LEFT JOIN {$items} i ON s.popup_uid = i.uid WHERE s.popup_uid = %s ORDER BY s.id DESC LIMIT 5000",
+                "SELECT s.*, i.title AS popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid WHERE s.popup_uid = %s ORDER BY s.id DESC LIMIT 5000",
                 $popup_uid
             ));
         } else {
-            $rows = $wpdb->get_results("SELECT s.*, i.title AS popup_title FROM {$table} s LEFT JOIN {$items} i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 5000");
+            $rows = $wpdb->get_results("SELECT s.*, i.title AS popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 5000");
         }
 
         $csv_sep   = wppoppop_get_setting('csv_separator', ',');

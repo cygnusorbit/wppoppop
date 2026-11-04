@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
         <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Payment Gateways</span>
         <div style="font-size:18px;font-weight:700;color:#6366f1;margin-top:8px;">
-            Stripe (<?php echo $stripe_count; ?>) &bull; PayPal (<?php echo $paypal_count; ?>)
+            Stripe (<?php echo absint( $stripe_count ); ?>) &bull; PayPal (<?php echo absint( $paypal_count ); ?>)
         </div>
         <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;">Gateway distribution</span>
     </div>

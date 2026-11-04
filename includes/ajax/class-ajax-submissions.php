@@ -16,6 +16,15 @@ class WpPopPop_Ajax_Submissions {
     }
 
     public function save_table_options() {
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized'], 403);
@@ -74,6 +83,15 @@ class WpPopPop_Ajax_Submissions {
 
 
     public function get_popup_fields() {
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized'], 403);
@@ -165,6 +183,19 @@ class WpPopPop_Ajax_Submissions {
     }
 
     public function assign_sub_labels() {
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'wppoppop_nonce' ) )
+            || ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'wppoppop_admin' ) );
+        if ( ! $wpp_verified ) {
+            if ( wp_doing_ajax() ) {
+                wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            }
+            wp_die( esc_html__( 'Invalid security token.', 'wppoppop' ), 403 );
+        }
+
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized'], 403);
@@ -273,6 +304,15 @@ class WpPopPop_Ajax_Submissions {
     }
 
     public function delete_submission() {
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized action.']);
@@ -283,6 +323,15 @@ class WpPopPop_Ajax_Submissions {
     }
 
     public function anonymize_submission() {
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized action.']);

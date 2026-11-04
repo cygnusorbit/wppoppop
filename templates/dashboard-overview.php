@@ -2,6 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 
 $builder_url = admin_url('admin.php?page=wppoppop-builder');
 ?>
@@ -108,7 +110,7 @@ $builder_url = admin_url('admin.php?page=wppoppop-builder');
         </div>
         <?php $wppoppop_boxes['tools'] = ob_get_clean();
         foreach (WpPopPop_Ajax_Dash_Layout::get_order() as $wppoppop_bk) {
-            if (isset($wppoppop_boxes[$wppoppop_bk])) { echo $wppoppop_boxes[$wppoppop_bk]; }
+            if (isset($wppoppop_boxes[$wppoppop_bk])) { echo wp_kses_post( $wppoppop_boxes[$wppoppop_bk] ); }
         } ?>
     </div>
 </div>

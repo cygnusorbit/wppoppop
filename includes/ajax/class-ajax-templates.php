@@ -37,6 +37,19 @@ class WpPopPop_Ajax_Templates {
     }
 
     public function save() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->guard();
 
         $s = get_option('wppoppop_settings', array());
@@ -141,6 +154,19 @@ class WpPopPop_Ajax_Templates {
     }
 
     public function use_template() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->guard();
         global $wpdb;
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
@@ -179,6 +205,19 @@ class WpPopPop_Ajax_Templates {
     }
 
     public function delete() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->guard();
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->all();
@@ -192,6 +231,19 @@ class WpPopPop_Ajax_Templates {
 
     /** Stage a saved template so the real frontend renderer can show it (admins only). */
     public function preview() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->guard();
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->with_presets();
@@ -279,6 +331,19 @@ class WpPopPop_Ajax_Templates {
     }
 
     public function get_one() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->guard();
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->all();
@@ -324,6 +389,19 @@ class WpPopPop_Ajax_Templates {
 
     /** Returns a portable template JSON (drop-in format for /library-presets/). */
     public function download() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->guard();
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = method_exists($this, 'with_presets') ? $this->with_presets() : $this->all();

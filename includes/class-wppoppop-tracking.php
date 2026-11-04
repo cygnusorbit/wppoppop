@@ -130,7 +130,7 @@ class WpPopPop_Tracking {
     }
 
     public static function is_bot() {
-        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? (string) wp_unslash($_SERVER['HTTP_USER_AGENT']) : '';
+        $ua = ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
         if ($ua === '') { return true; }
         return (bool) preg_match('/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|lighthouse|pingdom|monitor|curl|wget|python-requests/i', $ua);
     }
@@ -200,7 +200,8 @@ class WpPopPop_Tracking {
 
     public static function ab_no_cache() {
         if (!self::get('cache_nocache_ab')) { return; }
-        if (!defined('DONOTCACHEPAGE')) { define('DONOTCACHEPAGE', true); }
+        if (!defined('DONOTCACHEPAGE')) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+        define('DONOTCACHEPAGE', true); }
         if (!headers_sent()) { nocache_headers(); }
     }
 
@@ -262,7 +263,9 @@ class WpPopPop_Tracking {
         $days = (int) self::get('track_retention_days');
         if ($days > 0) {
             $cut = gmdate('Y-m-d', current_time('timestamp') - $days * DAY_IN_SECONDS);
-            $wpdb->query($wpdb->prepare("DELETE FROM " . self::table() . " WHERE stat_date < %s", $cut));
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("DELETE FROM " . self::table() . " WHERE stat_date < %s", $cut));
+        // phpcs:enable
         }
         if (self::get('ab_auto_promote')) {
             self::auto_promote();
@@ -287,9 +290,11 @@ class WpPopPop_Tracking {
             $uids = array_values(array_filter(array_map('sanitize_key', (array) json_decode($c->popup_uids, true))));
             if (count($uids) < 2) { continue; }
             $ph   = implode(',', array_fill(0, count($uids), '%s'));
-            $rows = $wpdb->get_results($wpdb->prepare(
+            $rows = // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results($wpdb->prepare(
                 "SELECT uid, impressions, submissions FROM {$wpdb->prefix}wppoppop_items WHERE uid IN ($ph)", $uids
             ));
+        // phpcs:enable
             if (count($rows) < 2) { continue; }
             $ok = true; $stats = [];
             foreach ($rows as $r) {

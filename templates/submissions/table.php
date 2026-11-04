@@ -2,6 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 
 $colspan = 1 + count($active_cols);
 
@@ -200,9 +202,9 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                             <svg class="m-closed" viewBox="0 0 24 24" width="16" height="16" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
                             <svg class="m-open" viewBox="0 0 24 24" width="16" height="16" focusable="false"><path d="M3 10l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 10l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
                         </span>
-                        <?php echo ($c === $dot_col) ? $unread_dot : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>><?php echo esc_html($val); ?></a>
+                        <?php echo ($c === $dot_col) ? $unread_dot : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>><?php echo esc_html($val); ?></a>
                         <div class="row-actions">
-                            <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo $view_attrs; ?>>View</a> | </span>
+                            <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>>View</a> | </span>
                             <span class="mark-unread-wrap"><a href="#" class="wppoppop-mark-unread-btn" data-id="<?php echo esc_attr($s->id); ?>">Mark as unread</a> | </span>
                             <span class="mark-read-wrap"><a href="#" class="wppoppop-mark-read-btn" data-id="<?php echo esc_attr($s->id); ?>">Mark as read</a> | </span>
                             <span class="anon"><a href="#" class="wppoppop-anon-sub-btn" data-id="<?php echo esc_attr($s->id); ?>" title="Anonymize PII (GDPR)">Anonymize</a> | </span>

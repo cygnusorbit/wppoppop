@@ -190,11 +190,13 @@ class WpPopPop_Front_Display {
 
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") !== $table_name) {
+        if (// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_items' ) ) ) !== $table_name) {
             return;
         }
 
-        $popups = $wpdb->get_results("SELECT * FROM {$table_name} WHERE status = 'publish' ORDER BY id DESC");
+        $popups = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE status = 'publish' ORDER BY id DESC" );
         if (empty($popups)) {
             return;
         }
@@ -236,7 +238,7 @@ class WpPopPop_Front_Display {
                 } elseif ($wppoppop_forced && !$wppoppop_eligible && !$wppoppop_always) {
                     $wppoppop_html = preg_replace('/<div class="wppoppop-overlay/', '<div data-manual="1" class="wppoppop-overlay', $wppoppop_html, 1);
                 }
-                echo $wppoppop_html;
+                echo $wppoppop_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             }
         }
     }

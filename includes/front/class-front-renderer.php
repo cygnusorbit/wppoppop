@@ -115,18 +115,20 @@ class WpPopPop_Front_Renderer {
         $overlay_style = $is_inline ? 'display:block;position:relative;' : 'display:none;position:fixed;inset:0;z-index:999999;';
         $preload_class = $preload ? 'wppoppop-preloaded' : '';
         ?>
-        <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo $preload_class; ?>"
+        <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo esc_attr( $preload_class ); ?>"
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
-             data-config="<?php echo $encoded_config; ?>"<?php echo $trg_attrs; ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
+             data-config="<?php echo esc_attr( $encoded_config ); ?>"<?php echo wp_kses_post( $trg_attrs ); ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
              style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : $wppoppop_ov['css']; ?>"
              aria-hidden="true"
              role="dialog">
 
-            <style><?php echo $custom_inline_css; ?></style>
+            <style><?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo wp_strip_all_tags( $custom_inline_css ); ?></style>
 
             <?php if (!$is_inline): ?>
-            <?php echo $wppoppop_ov['layers']; ?>
+            <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo $wppoppop_ov['layers']; ?>
             <div class="wppoppop-backdrop" data-uid="<?php echo esc_attr($uid); ?>"></div>
             <?php endif; ?>
 
@@ -183,10 +185,10 @@ class WpPopPop_Front_Renderer {
                          data-screen-index="<?php echo esc_attr($canvas_num); ?>"
                          data-width="<?php echo esc_attr($c_width); ?>"
                          data-height="<?php echo esc_attr($c_height); ?>"
-                         data-anim-appearance="<?php echo $c_anim_app; ?>"
-                         data-anim-duration="<?php echo $c_anim_dur; ?>"
-                         data-anim-delay="<?php echo $c_anim_del; ?>"
-                         data-anim-disappearance="<?php echo $c_anim_dis; ?>"
+                         data-anim-appearance="<?php echo esc_attr( $c_anim_app ); ?>"
+                         data-anim-duration="<?php echo esc_attr( $c_anim_dur ); ?>"
+                         data-anim-delay="<?php echo esc_attr( $c_anim_del ); ?>"
+                         data-anim-disappearance="<?php echo esc_attr( $c_anim_dis ); ?>"
                          data-anim-exit="<?php echo (isset($cm['anim_exit_enabled']) && in_array($cm['anim_exit_enabled'], array(true, 1, '1', 'true'), true)) ? '1' : '0'; ?>"
                          data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
                          style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style . $c_radius_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">

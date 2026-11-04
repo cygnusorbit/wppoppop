@@ -20,7 +20,7 @@ class WpPopPop_Libraries {
                 'name'    => 'Font Awesome 6',
                 'type'    => 'style',
                 'handle'  => 'wppoppop-font-awesome',
-                'src'     => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+                'src'     => plugins_url( 'public/vendor/all.min.css', dirname( __FILE__ ) ),
                 'deps'    => [],
                 'ver'     => '6.5.1',
                 'setting' => 'font_awesome',
@@ -29,7 +29,7 @@ class WpPopPop_Libraries {
                 'name'      => 'Canvas Confetti',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-canvas-confetti',
-                'src'       => 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js',
+                'src'       => plugins_url( 'public/vendor/confetti.browser.min.js', dirname( __FILE__ ) ),
                 'deps'      => [],
                 'ver'       => '1.9.2',
                 'in_footer' => true,
@@ -39,7 +39,7 @@ class WpPopPop_Libraries {
                 'name'      => 'Canvas Fireworks',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-canvas-fireworks',
-                'src'       => 'https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/dist/index.umd.js',
+                'src'       => plugins_url( 'public/vendor/index.umd.js', dirname( __FILE__ ) ),
                 'deps'      => [],
                 'ver'       => '2.10.7',
                 'in_footer' => true,
@@ -49,7 +49,7 @@ class WpPopPop_Libraries {
                 'name'    => 'Air Datepicker CSS',
                 'type'    => 'style',
                 'handle'  => 'wppoppop-air-datepicker-css',
-                'src'     => 'https://cdn.jsdelivr.net/npm/air-datepicker@3.5.0/air-datepicker.min.css',
+                'src'     => plugins_url( 'public/vendor/air-datepicker.min.css', dirname( __FILE__ ) ),
                 'deps'    => [],
                 'ver'     => '3.5.0',
                 'setting' => 'load_air_datepicker',
@@ -58,7 +58,7 @@ class WpPopPop_Libraries {
                 'name'      => 'Air Datepicker JS',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-air-datepicker-js',
-                'src'       => 'https://cdn.jsdelivr.net/npm/air-datepicker@3.5.0/air-datepicker.min.js',
+                'src'       => plugins_url( 'public/vendor/air-datepicker.min.js', dirname( __FILE__ ) ),
                 'deps'      => [],
                 'ver'       => '3.5.0',
                 'in_footer' => true,
@@ -68,7 +68,7 @@ class WpPopPop_Libraries {
                 'name'      => 'jQuery Mask Plugin',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-jquery-mask',
-                'src'       => 'https://cdn.jsdelivr.net/npm/jquery-mask-plugin@1.14.16/dist/jquery.mask.min.js',
+                'src'       => plugins_url( 'public/vendor/jquery.mask.min.js', dirname( __FILE__ ) ),
                 'deps'      => ['jquery'],
                 'ver'       => '1.14.16',
                 'in_footer' => true,
@@ -78,7 +78,7 @@ class WpPopPop_Libraries {
                 'name'      => 'Signature Pad',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-signature-pad',
-                'src'       => 'https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js',
+                'src'       => plugins_url( 'public/vendor/signature_pad.umd.min.js', dirname( __FILE__ ) ),
                 'deps'      => [],
                 'ver'       => '4.1.7',
                 'in_footer' => true,
@@ -88,7 +88,7 @@ class WpPopPop_Libraries {
                 'name'    => 'Ion Range Slider CSS',
                 'type'    => 'style',
                 'handle'  => 'wppoppop-range-slider-css',
-                'src'     => 'https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css',
+                'src'     => plugins_url( 'public/vendor/ion.rangeSlider.min.css', dirname( __FILE__ ) ),
                 'deps'    => [],
                 'ver'     => '2.3.1',
                 'setting' => 'load_range_slider',
@@ -97,7 +97,7 @@ class WpPopPop_Libraries {
                 'name'      => 'Ion Range Slider JS',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-range-slider-js',
-                'src'       => 'https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js',
+                'src'       => plugins_url( 'public/vendor/ion.rangeSlider.min.js', dirname( __FILE__ ) ),
                 'deps'      => ['jquery'],
                 'ver'       => '2.3.1',
                 'in_footer' => true,
@@ -107,7 +107,7 @@ class WpPopPop_Libraries {
                 'name'      => 'Math Formula Parser',
                 'type'      => 'script',
                 'handle'    => 'wppoppop-math-parser',
-                'src'       => 'https://cdn.jsdelivr.net/npm/expr-eval@2.0.2/dist/bundle.min.js',
+                'src'       => plugins_url( 'public/vendor/bundle.min.js', dirname( __FILE__ ) ),
                 'deps'      => [],
                 'ver'       => '2.0.2',
                 'in_footer' => true,
@@ -171,7 +171,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['font_awesome'])) {
             wp_enqueue_style(
                 'wppoppop-font-awesome',
-                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+                plugins_url( 'public/vendor/all.min.css', dirname( __FILE__ ) ),
                 [],
                 '6.5.1'
             );
@@ -181,7 +181,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_canvas_confetti'])) {
             wp_enqueue_script(
                 'wppoppop-canvas-confetti',
-                'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js',
+                plugins_url( 'public/vendor/confetti.browser.min.js', dirname( __FILE__ ) ),
                 [],
                 '1.9.2',
                 true
@@ -192,7 +192,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_canvas_fireworks'])) {
             wp_enqueue_script(
                 'wppoppop-canvas-fireworks',
-                'https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/dist/index.umd.js',
+                plugins_url( 'public/vendor/index.umd.js', dirname( __FILE__ ) ),
                 [],
                 '2.10.7',
                 true
@@ -203,13 +203,13 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_air_datepicker']) || !empty($settings['air_datepicker'])) {
             wp_enqueue_style(
                 'wppoppop-air-datepicker-css',
-                'https://cdn.jsdelivr.net/npm/air-datepicker@3.5.0/air-datepicker.min.css',
+                plugins_url( 'public/vendor/air-datepicker.min.css', dirname( __FILE__ ) ),
                 [],
                 '3.5.0'
             );
             wp_enqueue_script(
                 'wppoppop-air-datepicker-js',
-                'https://cdn.jsdelivr.net/npm/air-datepicker@3.5.0/air-datepicker.min.js',
+                plugins_url( 'public/vendor/air-datepicker.min.js', dirname( __FILE__ ) ),
                 [],
                 '3.5.0',
                 true
@@ -220,7 +220,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_jquery_mask']) || !empty($settings['jquery_mask'])) {
             wp_enqueue_script(
                 'wppoppop-jquery-mask',
-                'https://cdn.jsdelivr.net/npm/jquery-mask-plugin@1.14.16/dist/jquery.mask.min.js',
+                plugins_url( 'public/vendor/jquery.mask.min.js', dirname( __FILE__ ) ),
                 ['jquery'],
                 '1.14.16',
                 true
@@ -231,7 +231,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_signature_pad']) || !empty($settings['signature_pad'])) {
             wp_enqueue_script(
                 'wppoppop-signature-pad',
-                'https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js',
+                plugins_url( 'public/vendor/signature_pad.umd.min.js', dirname( __FILE__ ) ),
                 [],
                 '4.1.7',
                 true
@@ -242,13 +242,13 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_range_slider']) || !empty($settings['range_slider'])) {
             wp_enqueue_style(
                 'wppoppop-range-slider-css',
-                'https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css',
+                plugins_url( 'public/vendor/ion.rangeSlider.min.css', dirname( __FILE__ ) ),
                 [],
                 '2.3.1'
             );
             wp_enqueue_script(
                 'wppoppop-range-slider-js',
-                'https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js',
+                plugins_url( 'public/vendor/ion.rangeSlider.min.js', dirname( __FILE__ ) ),
                 ['jquery'],
                 '2.3.1',
                 true
@@ -259,7 +259,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['load_math_parser']) || !empty($settings['js_parser'])) {
             wp_enqueue_script(
                 'wppoppop-math-parser',
-                'https://cdn.jsdelivr.net/npm/expr-eval@2.0.2/dist/bundle.min.js',
+                plugins_url( 'public/vendor/bundle.min.js', dirname( __FILE__ ) ),
                 [],
                 '2.0.2',
                 true
@@ -279,7 +279,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['font_awesome'])) {
             wp_enqueue_style(
                 'wppoppop-font-awesome',
-                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+                plugins_url( 'public/vendor/all.min.css', dirname( __FILE__ ) ),
                 [],
                 '6.5.1'
             );
@@ -375,7 +375,8 @@ class WpPopPop_Libraries {
 
         $css = '';
         $lines = explode("
-", str_replace("", '', $raw));
+", str_replace("
+", '', $raw));
         foreach ($lines as $line) {
             $line = trim($line);
             if (empty($line)) {
@@ -411,7 +412,8 @@ class WpPopPop_Libraries {
         }
 
         $lines = explode("
-", str_replace("", '', $raw));
+", str_replace("
+", '', $raw));
         foreach ($lines as $line) {
             $line = trim($line);
             if (empty($line)) {

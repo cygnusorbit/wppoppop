@@ -2,6 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 
 $chart_width  = 900;
 $chart_height = 260;
@@ -61,9 +63,9 @@ $pt = function ($i, $v) use ($padding, $step_x, $chart_height, $plot_height, $ma
 
     <div style="width:100%;overflow-x:auto;">
         <svg viewBox="0 0 <?php echo (int) $chart_width; ?> <?php echo (int) $chart_height; ?>" style="width:100%;height:auto;display:block;">
-            <line x1="<?php echo $padding; ?>" y1="<?php echo $padding; ?>" x2="<?php echo $chart_width - $padding; ?>" y2="<?php echo $padding; ?>" stroke="#f1f5f9" stroke-width="1" />
-            <line x1="<?php echo $padding; ?>" y1="<?php echo $padding + ($plot_height / 2); ?>" x2="<?php echo $chart_width - $padding; ?>" y2="<?php echo $padding + ($plot_height / 2); ?>" stroke="#f1f5f9" stroke-width="1" />
-            <line x1="<?php echo $padding; ?>" y1="<?php echo $chart_height - $padding; ?>" x2="<?php echo $chart_width - $padding; ?>" y2="<?php echo $chart_height - $padding; ?>" stroke="#cbd5e1" stroke-width="1" />
+            <line x1="<?php echo esc_attr( $padding ); ?>" y1="<?php echo esc_attr( $padding ); ?>" x2="<?php echo $chart_width - $padding; ?>" y2="<?php echo esc_attr( $padding ); ?>" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="<?php echo esc_attr( $padding ); ?>" y1="<?php echo $padding + ($plot_height / 2); ?>" x2="<?php echo $chart_width - $padding; ?>" y2="<?php echo $padding + ($plot_height / 2); ?>" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="<?php echo esc_attr( $padding ); ?>" y1="<?php echo $chart_height - $padding; ?>" x2="<?php echo $chart_width - $padding; ?>" y2="<?php echo $chart_height - $padding; ?>" stroke="#cbd5e1" stroke-width="1" />
             <text x="<?php echo $padding - 10; ?>" y="<?php echo $padding + 4; ?>" font-size="10" fill="#94a3b8" text-anchor="end"><?php echo number_format($max_val); ?></text>
             <text x="<?php echo $padding - 10; ?>" y="<?php echo $chart_height - $padding + 4; ?>" font-size="10" fill="#94a3b8" text-anchor="end">0</text>
 
@@ -88,7 +90,7 @@ $pt = function ($i, $v) use ($padding, $step_x, $chart_height, $plot_height, $ma
             foreach ($timeline as $day) :
                 $x = $padding + ($n_idx * $step_x);
                 if ($n_idx % $skip === 0 || $n_idx === $point_count - 1) : ?>
-                    <text x="<?php echo round($x, 1); ?>" y="<?php echo $chart_height - $padding + 16; ?>" font-size="10" fill="#64748b" text-anchor="middle"><?php echo esc_html($day['date']); ?></text>
+                    <text x="<?php echo esc_attr( round($x, 1) ); ?>" y="<?php echo $chart_height - $padding + 16; ?>" font-size="10" fill="#64748b" text-anchor="middle"><?php echo esc_html($day['date']); ?></text>
                 <?php endif;
                 $n_idx++;
             endforeach; ?>

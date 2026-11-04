@@ -75,7 +75,8 @@ class WpPopPop_List_Table extends WP_List_Table {
     protected function get_views() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $rows = $wpdb->get_results("SELECT status FROM {$table_name}");
+        $rows = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT status FROM {$wpdb->prefix}wppoppop_items" );
 
         $all = 0; $active = 0; $inactive = 0; $trash = 0;
         foreach ((array) $rows as $row) {
@@ -120,7 +121,8 @@ class WpPopPop_List_Table extends WP_List_Table {
     protected function get_views_legacy() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $all_rows   = $wpdb->get_results("SELECT id, status, impressions, submissions FROM {$table_name}");
+        $all_rows   = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT id, status, impressions, submissions FROM {$wpdb->prefix}wppoppop_items" );
 
         $all_count     = 0;
         $pub_count     = 0;
@@ -207,7 +209,7 @@ class WpPopPop_List_Table extends WP_List_Table {
             $empty_prompt = esc_attr(wp_json_encode(__('Are you sure you want to permanently empty the trash? This cannot be undone.', 'wppoppop')));
             ?>
             <div class="alignleft actions">
-                <a href="<?php echo esc_url($empty_trash_url); ?>" class="button button-secondary apply" onclick="return confirm(<?php echo $empty_prompt; ?>);">
+                <a href="<?php echo esc_url($empty_trash_url); ?>" class="button button-secondary apply" onclick="return confirm(<?php echo wp_kses_post( $empty_prompt ); ?>);">
                     <?php esc_html_e('Empty Trash', 'wppoppop'); ?>
                 </a>
             </div>
@@ -500,7 +502,8 @@ class WpPopPop_List_Table extends WP_List_Table {
             }
 
             $wpdb->delete($items_table, ['uid' => $uid]);
-            if ($wpdb->get_var("SHOW TABLES LIKE '{$subs_table}'") === $subs_table) {
+            if (// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_submissions' ) ) ) === $subs_table) {
                 $wpdb->delete($subs_table, ['popup_uid' => $uid]);
             }
 
@@ -517,12 +520,16 @@ class WpPopPop_List_Table extends WP_List_Table {
                 wp_die(__('You do not have permission to empty the trash.', 'wppoppop'));
             }
 
-            $trashed_uids = $wpdb->get_col("SELECT uid FROM {$items_table} WHERE status = 'trash'");
+            $trashed_uids = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_col( "SELECT uid FROM {$wpdb->prefix}wppoppop_items WHERE status = 'trash'" );
             if (!empty($trashed_uids)) {
-                $wpdb->query("DELETE FROM {$items_table} WHERE status = 'trash'");
-                if ($wpdb->get_var("SHOW TABLES LIKE '{$subs_table}'") === $subs_table) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query( "DELETE FROM {$wpdb->prefix}wppoppop_items WHERE status = 'trash'" );
+                if (// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_submissions' ) ) ) === $subs_table) {
                     $placeholders = implode(',', array_fill(0, count($trashed_uids), '%s'));
-                    $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $trashed_uids));
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $trashed_uids));
                 }
             }
 
@@ -556,21 +563,26 @@ class WpPopPop_List_Table extends WP_List_Table {
                     if (!current_user_can('delete_wppoppop_campaigns')) {
                         wp_die(__('You do not have permission to move campaigns to the trash.', 'wppoppop'));
                     }
-                    $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = 'trash' WHERE uid IN ($placeholders)", $uids));
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = 'trash' WHERE uid IN ($placeholders)", $uids));
                     $arg = ['trashed' => $count];
                 } elseif ($action === 'untrash') {
                     if (!current_user_can('edit_wppoppop_campaigns')) {
                         wp_die(__('You do not have permission to restore campaigns.', 'wppoppop'));
                     }
-                    $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = 'draft' WHERE uid IN ($placeholders)", $uids));
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = 'draft' WHERE uid IN ($placeholders)", $uids));
                     $arg = ['untrashed' => $count];
                 } elseif ($action === 'delete') {
                     if (!current_user_can('purge_wppoppop_campaigns')) {
                         wp_die(__('You do not have permission to permanently delete campaigns.', 'wppoppop'));
                     }
-                    $wpdb->query($wpdb->prepare("DELETE FROM {$items_table} WHERE uid IN ($placeholders)", $uids));
-                    if ($wpdb->get_var("SHOW TABLES LIKE '{$subs_table}'") === $subs_table) {
-                        $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $uids));
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("DELETE FROM {$items_table} WHERE uid IN ($placeholders)", $uids));
+                    if (// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_submissions' ) ) ) === $subs_table) {
+                        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $uids));
                     }
                     $arg = ['deleted' => $count];
                 } elseif ($action === 'duplicate') {

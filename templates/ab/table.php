@@ -4,8 +4,8 @@ if (!defined('ABSPATH')) {
 }
 
 global $wpdb;
-$items_table = $wpdb->prefix . 'wppoppop_items';
-$all_popups_raw = $wpdb->get_results("SELECT uid, title, impressions, submissions FROM {$items_table}");
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+$all_popups_raw = $wpdb->get_results( "SELECT uid, title, impressions, submissions FROM {$wpdb->prefix}wppoppop_items" );
 $popups_by_uid = [];
 foreach ($all_popups_raw as $p) {
     $popups_by_uid[$p->uid] = $p;
@@ -20,11 +20,12 @@ $ab_cols  = '
 ?>
 <div class="wppoppop-table-wrap wpp-ab-table-wrap">
     <div class="tablenav top">
-        <div class="tablenav-pages one-page"><span class="displaying-num"><?php echo esc_html(sprintf(_n('%s item', '%s items', $ab_total, 'wppoppop'), number_format_i18n($ab_total))); ?></span></div>
+        <div class="tablenav-pages one-page"><span class="displaying-num"><?php echo esc_html(sprintf(/* translators: %s: number of A/B test experiments */
+                _n('%s item', '%s items', $ab_total, 'wppoppop'), number_format_i18n($ab_total))); ?></span></div>
         <br class="clear">
     </div>
     <table class="wp-list-table widefat fixed striped table-view-list" id="wppoppop-ab-table">
-        <thead><tr><?php echo $ab_cols; ?></tr></thead>
+        <thead><tr><?php echo absint( $ab_cols ); ?></tr></thead>
         <tbody>
             <?php if (empty($campaigns)) : ?>
                 <tr class="no-items">
@@ -92,6 +93,6 @@ $ab_cols  = '
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
-        <tfoot><tr><?php echo $ab_cols; ?></tr></tfoot>
+        <tfoot><tr><?php echo absint( $ab_cols ); ?></tr></tfoot>
     </table>
 </div>

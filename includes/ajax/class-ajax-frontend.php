@@ -138,7 +138,8 @@ class WpPopPop_Ajax_Frontend {
 
             $msg  = '<div style="font-family: -apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">';
             $msg .= '<h2 style="color:#0f172a;margin-top:0;">' . esc_html__('New Lead Captured', 'wppoppop') . '</h2>';
-            $msg .= '<p style="color:#475569;">' . sprintf(esc_html__('A new submission was received on %s for Campaign UID: %s.', 'wppoppop'), esc_html(current_time('mysql')), '<code>' . esc_html($popup_uid) . '</code>') . '</p>';$msg .= '<table style="width:100%;border-collapse:collapse;margin-top:16px;background:#ffffff;border-radius:6px;overflow:hidden;border:1px solid #e2e8f0;">';
+            $msg .= '<p style="color:#475569;">' . sprintf(/* translators: 1: site name or date, 2: campaign UID */
+            esc_html__( 'A new submission was received on %1$s for Campaign UID: %2$s.', 'wppoppop' ), esc_html(current_time('mysql')), '<code>' . esc_html($popup_uid) . '</code>') . '</p>';$msg .= '<table style="width:100%;border-collapse:collapse;margin-top:16px;background:#ffffff;border-radius:6px;overflow:hidden;border:1px solid #e2e8f0;">';
 
             foreach ($clean_fields as $field_label =>$field_val) {
                 if (strpos($field_label, '_path') !== false) {
@@ -208,7 +209,8 @@ class WpPopPop_Ajax_Frontend {
 
         // Purge files if user_uploads is set to 'delete'
         $user_uploads = wppoppop_get_setting('user_uploads', 'keep');
-        if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT fields_data AS payload FROM {$table_name} WHERE id = %d", $id));
+        if ($user_uploads === 'delete') {$row = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_row( $wpdb->prepare( "SELECT fields_data AS payload FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id ) );
             if ($row && !empty($row->payload)) {
                 $payload = json_decode($row->payload, true);
                 if (is_array($payload)) {$upload_dir = wp_upload_dir();
@@ -217,7 +219,7 @@ class WpPopPop_Ajax_Frontend {
                         if (is_string($val) && (strpos($key, '_path') !== false || file_exists($val))) {
                             $real_path = realpath($val);
                             if ($real_path && strpos($real_path,$base_dir) === 0) {
-                                @unlink($real_path);
+                                @wp_delete_file( $real_path );
                             }
                         }
                     }
@@ -254,7 +256,8 @@ class WpPopPop_Ajax_Frontend {
         $base_dir = realpath($upload_dir['basedir']);
 
         foreach ($ids as$id) {
-            if ($user_uploads === 'delete') {$row = $wpdb->get_row($wpdb->prepare("SELECT fields_data AS payload FROM {$table_name} WHERE id = %d", $id));
+            if ($user_uploads === 'delete') {$row = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_row( $wpdb->prepare( "SELECT fields_data AS payload FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id ) );
                 if ($row && !empty($row->payload)) {
                     $payload = json_decode($row->payload, true);
                     if (is_array($payload)) {
@@ -262,7 +265,7 @@ class WpPopPop_Ajax_Frontend {
                             if (is_string($val) && (strpos($key, '_path') !== false || file_exists($val))) {
                                 $real_path = realpath($val);
                                 if ($real_path && strpos($real_path,$base_dir) === 0) {
-                                    @unlink($real_path);
+                                    @wp_delete_file( $real_path );
                                 }
                             }
                         }

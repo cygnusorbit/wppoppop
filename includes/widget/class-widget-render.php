@@ -13,10 +13,10 @@ class WpPopPop_Widget_Render {
             return;
         }
 
-        echo $args['before_widget'];
+        echo wp_kses_post( $args['before_widget'] );
 
         if (!empty($instance['title'])) {
-            echo $args['before_title'] . apply_filters('widget_title', $instance['title']) . $args['after_title'];
+            echo wp_kses_post( $args['before_title'] . apply_filters('widget_title', $instance['title']) . $args['after_title'] );
         }
 
         if ($mode === 'button') {
@@ -38,6 +38,6 @@ class WpPopPop_Widget_Render {
             echo do_shortcode('[wppoppop uid="' . esc_attr($popup_uid) . '" mode="inline"]');
         }
 
-        echo $args['after_widget'];
+        echo wp_kses_post( $args['after_widget'] );
     }
 }

@@ -2,6 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 ?>
 <div class="wppoppop-card-table" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
     <table class="wp-list-table widefat fixed striped table-view-list" id="wppoppop-logs-table" style="border:none;">
@@ -46,7 +48,7 @@ if (!defined('ABSPATH')) {
                     <tr class="wppoppop-log-row" data-id="<?php echo esc_attr($l->id); ?>" data-type="<?php echo esc_attr($type); ?>" data-msg="<?php echo esc_attr(strtolower($l->message)); ?>">
                         <td style="text-align:center;color:#94a3b8;"><?php echo esc_html($l->id); ?></td>
                         <td>
-                            <span class="badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;<?php echo $badge_style; ?>">
+                            <span class="badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;<?php echo esc_attr( $badge_style ); ?>">
                                 <?php echo esc_html($l->event_type); ?>
                             </span>
                         </td>

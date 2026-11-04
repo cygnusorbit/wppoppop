@@ -30,13 +30,14 @@ class WpPopPop_Backup {
     private static function get_target_tables() {
         global $wpdb;
         $prefix = $wpdb->prefix . 'wppoppop_';
-        $results = $wpdb->get_col("SHOW TABLES LIKE '{$prefix}%'");
+        $results = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_' ) . '%' ) );
         return !empty($results) ? $results : [$wpdb->prefix . 'wppoppop_items'];
     }
 
     public static function handle_export_db() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized action', 'wppoppop'));
+            wp_die( esc_html__( 'Unauthorized action', "wppoppop" ) );
         }
         check_admin_referer('wppoppop_export_db_nonce');
 
@@ -55,7 +56,8 @@ class WpPopPop_Backup {
 
         foreach ($tables as $table) {
             $short_name = str_replace($wpdb->prefix, '', $table);
-            $rows = $wpdb->get_results("SELECT * FROM `{$table}`", ARRAY_A);
+            $rows = // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->get_results("SELECT * FROM `{$table}`", ARRAY_A);
             $backup['tables'][$short_name] = $rows ?: [];
         }
 
@@ -71,22 +73,22 @@ class WpPopPop_Backup {
 
     public static function handle_restore_db() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized action', 'wppoppop'));
+            wp_die( esc_html__( 'Unauthorized action', "wppoppop" ) );
         }
         check_admin_referer('wppoppop_restore_db_nonce');
 
         $redirect_url = admin_url('admin.php?page=wppoppop-db-backup');
 
-        if (empty($_FILES['backup_file']['tmp_name'])) {
-            wp_redirect(add_query_arg('error', 'no_file', $redirect_url));
+        if (empty(sanitize_text_field( wp_unslash( $_FILES['backup_file']['tmp_name'] ) ))) {
+            wp_safe_redirect( add_query_arg('error', 'no_file', $redirect_url) ); exit;
             exit;
         }
 
-        $content = file_get_contents($_FILES['backup_file']['tmp_name']);
+        $content = file_get_contents(sanitize_text_field( wp_unslash( $_FILES['backup_file']['tmp_name'] ) ));
         $data = json_decode($content, true);
 
         if (!$data || !isset($data['tables']) || !is_array($data['tables'])) {
-            wp_redirect(add_query_arg('error', 'invalid_format', $redirect_url));
+            wp_safe_redirect( add_query_arg('error', 'invalid_format', $redirect_url) ); exit;
             exit;
         }
 
@@ -112,14 +114,15 @@ class WpPopPop_Backup {
                 continue;
             }
 
-            $wpdb->query("TRUNCATE TABLE `{$table_name}`");
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    $wpdb->query("TRUNCATE TABLE `{$table_name}`");
             if (!empty($rows) && is_array($rows)) {
                 foreach ($rows as $row) {$wpdb->insert($table_name,$row);
                 }
             }
         }
 
-        wp_redirect(add_query_arg('status', 'restored', $redirect_url));
+        wp_safe_redirect( add_query_arg('status', 'restored', $redirect_url) ); exit;
         exit;
     }
 

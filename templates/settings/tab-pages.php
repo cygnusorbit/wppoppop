@@ -2,6 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $__pg_rows = class_exists('WpPopPop_Admin_Menu')
     ? WpPopPop_Admin_Menu::resolve_pages(WpPopPop_Admin_Menu::get_original_pages(), WpPopPop_Admin_Menu::get_prefs())
     : [];
@@ -33,7 +35,7 @@ $__pg_pin = class_exists('WpPopPop_Admin_Menu') ? WpPopPop_Admin_Menu::pinned() 
         <li data-slug="<?php echo esc_attr($__r['slug']); ?>" data-idx="<?php echo (int) $__r['idx']; ?>" data-default="<?php echo esc_attr($__r['default']); ?>" class="<?php echo $__r['hidden'] ? 'is-hidden-page' : ''; ?>">
             <span class="dashicons dashicons-menu wpp-pg-handle" title="<?php esc_attr_e('Drag to reorder', 'wppoppop'); ?>"></span>
             <input type="text" class="regular-text wpp-pg-label" maxlength="60"
-                   name="<?php echo $__n; ?>[label]"
+                   name="<?php echo esc_attr( $__n ); ?>[label]"
                    value="<?php echo esc_attr($__r['custom'] ? $__r['label'] : ''); ?>"
                    placeholder="<?php echo esc_attr($__r['default']); ?>">
             <code class="wpp-pg-slug"><?php echo esc_html($__r['slug']); ?></code>
@@ -42,11 +44,11 @@ $__pg_pin = class_exists('WpPopPop_Admin_Menu') ? WpPopPop_Admin_Menu::pinned() 
                 <button type="button" class="button button-small wpp-pg-down" aria-label="<?php esc_attr_e('Move down', 'wppoppop'); ?>">&darr;</button>
             </span>
             <label class="wpp-pg-hide">
-                <input type="hidden" name="<?php echo $__n; ?>[hidden]" value="0">
-                <input type="checkbox" class="wpp-pg-hidden-cb" name="<?php echo $__n; ?>[hidden]" value="1" <?php checked(!empty($__r['hidden'])); ?> <?php disabled($__is_pin); ?>>
+                <input type="hidden" name="<?php echo esc_attr( $__n ); ?>[hidden]" value="0">
+                <input type="checkbox" class="wpp-pg-hidden-cb" name="<?php echo esc_attr( $__n ); ?>[hidden]" value="1" <?php checked(!empty($__r['hidden'])); ?> <?php disabled($__is_pin); ?>>
                 <?php echo $__is_pin ? esc_html__('Always visible', 'wppoppop') : esc_html__('Hide', 'wppoppop'); ?>
             </label>
-            <input type="hidden" class="wpp-pg-order" name="<?php echo $__n; ?>[order]" value="<?php echo (int) ($__i + 1); ?>">
+            <input type="hidden" class="wpp-pg-order" name="<?php echo esc_attr( $__n ); ?>[order]" value="<?php echo (int) ($__i + 1); ?>">
         </li>
         <?php endforeach; ?>
     </ul>

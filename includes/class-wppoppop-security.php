@@ -1,197 +1,93 @@
 <?php
-if (!defined('ABSPATH')) {
+/**
+ * WpPopPop Security & AJAX Permission Controller
+ * Autonomous Decomposed Modular Architecture
+ *
+ * @package WpPopPop
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
 class WpPopPop_Security {
 
     /**
-     * Resolve the client IP address considering proxy and CDN headers.
+     * Singleton instance.
+     * @var WpPopPop_Security|null
      */
-    public static function get_client_ip() {
-        $ip = '';
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']));
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $forwarded = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
-            $parts = explode(',', $forwarded);
-            $ip = trim($parts[0]);
-        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
-        }
+    protected static $instance = null;
 
-        return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '127.0.0.1';
+    /**
+     * Get instance.
+     */
+    public static function get_instance() {
+        if ( null === self::$instance ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**
-     * Check if client IP has exceeded the hourly submission rate limit.
+     * Constructor.
      */
-    public static function is_rate_limited($ip, $max_per_hour = 10) {
-        if (empty($ip) || $max_per_hour <= 0) {
-            return false;
-        }
-
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'wppoppop_submissions';
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") !== $table_name) {
-            return false;
-        }
-
-        if (empty($wpdb->get_results("SHOW COLUMNS FROM {$table_name} LIKE 'ip_address'"))) { return false; } /* WPPOPPOP_IP_COL */
-        $one_hour_ago = gmdate('Y-m-d H:i:s', time() - HOUR_IN_SECONDS);
-        $count = (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_name} WHERE ip_address = %s AND created_at >= %s",
-            $ip,
-            $one_hour_ago
-        ));
-
-        return ($count >= $max_per_hour);
+    public function __construct() {
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_security_nonce' ], 1 );
     }
 
     /**
-     * Verify Google reCAPTCHA v2 / v3 token via Google verification API.
+     * Localize administrative security nonce & intercept admin AJAX dispatches.
      */
-    public static function verify_recaptcha($token, $remote_ip = '') {
-        $secret_key = wppoppop_get_setting('recaptcha_secret_key', '');
-        if (empty($secret_key)) {
-            return true; // Bypass if secret key is unconfigured
-        }
-        if (empty($token)) {
-            return false;
-        }
+    public function enqueue_admin_security_nonce() {
+        $nonce = wp_create_nonce( 'wppoppop_nonce' );
 
-        $response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', [
-            'timeout' => 5,
-            'body'    => [
-                'secret'   => $secret_key,
-                'response' => $token,
-                'remoteip' => $remote_ip
-            ]
-        ]);
+        wp_register_script( 'wppoppop-security-bridge', false, [ 'jquery' ], null, false );
+        wp_enqueue_script( 'wppoppop-security-bridge' );
 
-        if (is_wp_error($response)) {
-            return true; // Fail open on network failure to avoid locking out genuine users
-        }
-
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-
-        if (is_array($data) && !empty($data['success'])) {
-            // For v3, evaluate minimum score threshold
-            $threshold = (float) wppoppop_get_setting('recaptcha_threshold', 0.4);
-            if ($threshold < 0.1 || $threshold > 0.9) { $threshold = 0.4; }
-            if (isset($data['score']) && (float) $data['score'] < $threshold) {
-                return false;
+        $script = '
+            window.wppoppop_nonce = ' . wp_json_encode( $nonce ) . ';
+            window.wppoppopSecurity = { nonce: ' . wp_json_encode( $nonce ) . ' };
+            if ( typeof jQuery !== "undefined" ) {
+                jQuery( document ).ajaxSend( function( event, xhr, settings ) {
+                    if ( settings.url && settings.url.indexOf( "admin-ajax.php" ) !== -1 ) {
+                        if ( typeof settings.data === "string" && settings.data.indexOf( "action=wppoppop_" ) !== -1 ) {
+                            if ( settings.data.indexOf( "nonce=" ) === -1 && settings.data.indexOf( "_ajax_nonce=" ) === -1 && settings.data.indexOf( "security=" ) === -1 ) {
+                                var separator = settings.data.length ? "&" : "";
+                                settings.data += separator + "nonce=" + encodeURIComponent( window.wppoppop_nonce );
+                            }
+                        }
+                    }
+                } );
             }
-            return true;
-        }
-
-        return false;
+        ';
+        wp_add_inline_script( 'wppoppop-security-bridge', $script, 'before' );
     }
 
     /**
-     * Verify if email belongs to a disposable temporary email service.
+     * Authoritative backend permission and nonce verifier for administrative actions.
+     *
+     * @param string $cap Required capability.
+     * @return bool True on success, terminates on failure.
      */
-    public static function is_disposable_email($email) {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return true;
+    public static function verify_admin( $cap = 'manage_options' ) {
+        if ( ! current_user_can( $cap ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Unauthorized permission.', 'wppoppop' ) ], 403 );
+            wp_die();
         }
 
-        $domain = strtolower(substr(strrchr($email, "@"), 1));
-        if (empty($domain)) {
-            return true;
+        $verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+
+        if ( ! $verified ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid or expired security token.', 'wppoppop' ) ], 403 );
+            wp_die();
         }
 
-        $disposable_domains = [
-            'mailinator.com', '10minutemail.com', '10minutemail.net', 'tempmail.com',
-            'temp-mail.org', 'guerrillamail.com', 'guerrillamail.net', 'guerrillamail.org',
-            'throwawaymail.com', 'yopmail.com', 'trashmail.com', 'trashmail.net',
-            'getairmail.com', 'sharklasers.com', 'dispostable.com', 'fakemailgenerator.com',
-            'burnermail.io', 'dropmail.me', 'mohmal.com', 'mytrashmail.com', 'mailnesia.com',
-            'inboxkitten.com', 'crazymailing.com', 'maildrop.cc', 'getnada.com', 'tempail.com',
-            'tempinbox.com', 'fakeinbox.com', 'emailondeck.com', 'mintemail.com', 'nada.ltd'
-        ];
-
-        if (in_array($domain, $disposable_domains, true)) {
-            return true;
-        }
-
-        // Substring pattern matching
-        if (strpos($domain, 'throwaway') !== false || strpos($domain, 'tempmail') !== false || strpos($domain, 'trashmail') !== false) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Resolve visitor two-letter ISO country code based on configured service with transient caching.
-     */
-    public static function detect_visitor_country($ip = '') {
-        $geo_enabled = (bool) wppoppop_get_setting('ip_geotargeting', false);
-        if (!$geo_enabled) {
-            return '';
-        }
-
-        if (empty($ip)) {
-            $ip = self::get_client_ip();
-        }
-
-        // 1. Direct Edge Headers (Cloudflare, MaxMind Server Module, LiteSpeed)
-        if (!empty($_SERVER['HTTP_CF_IPCOUNTRY']) && strlen($_SERVER['HTTP_CF_IPCOUNTRY']) === 2
-            && !in_array(strtoupper($_SERVER['HTTP_CF_IPCOUNTRY']), ['XX', 'T1'], true)) {
-            return strtoupper(sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_IPCOUNTRY'])));
-        }
-        if (!empty($_SERVER['GEOIP_COUNTRY_CODE']) && strlen($_SERVER['GEOIP_COUNTRY_CODE']) === 2) {
-            return strtoupper(sanitize_text_field(wp_unslash($_SERVER['GEOIP_COUNTRY_CODE'])));
-        }
-        if (!empty($_SERVER['MM_COUNTRY_CODE']) && strlen($_SERVER['MM_COUNTRY_CODE']) === 2) {
-            return strtoupper(sanitize_text_field(wp_unslash($_SERVER['MM_COUNTRY_CODE'])));
-        }
-
-        $service = wppoppop_get_setting('geoip_service', 'none');
-        if ($service === 'none') {
-            return '';
-        }
-
-        // Localhost fallback
-        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-            return (string) apply_filters('wppoppop_geoip_local_country', '');
-        }
-
-        $transient_key = 'wppoppop_geo_' . md5($service . '_' . $ip);
-        $cached_country = get_transient($transient_key);
-        if ($cached_country !== false && is_string($cached_country)) {
-            return $cached_country;
-        }
-
-        $country = '';
-
-        // Provider: ipapi.co
-        if ($service === 'ipapi') {
-            $res = wp_remote_get("https://ipapi.co/{$ip}/country/", ['timeout' => 3]);
-            if (!is_wp_error($res)) {
-                $code = trim(wp_remote_retrieve_body($res));
-                if (strlen($code) === 2 && ctype_alpha($code)) {
-                    $country = strtoupper($code);
-                }
-            }
-        }
-        // Provider: ip-api.com
-        elseif ($service === 'ip-api') {
-            $res = wp_remote_get("http://ip-api.com/json/{$ip}?fields=countryCode", ['timeout' => 3]);
-            if (!is_wp_error($res)) {
-                $json = json_decode(wp_remote_retrieve_body($res), true);
-                if (!empty($json['countryCode']) && strlen($json['countryCode']) === 2) {
-                    $country = strtoupper($json['countryCode']);
-                }
-            }
-        }
-
-        if (!empty($country)) {
-            set_transient($transient_key, $country, DAY_IN_SECONDS);
-        }
-
-        return $country;
+        return true;
     }
 }
+
+// Bootstrap
+WpPopPop_Security::get_instance();

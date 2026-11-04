@@ -53,7 +53,7 @@ if (!defined('ABSPATH')) {
                     if (empty($wppoppop_acc_hit)) {
                         $wppoppop_acc_html = '<div class="wppoppop-module-off" style="display:none !important;">' . $wppoppop_acc_html . '</div>';
                     }
-                    echo $wppoppop_acc_html;
+                    echo wp_kses_post( $wppoppop_acc_html );
                 }
             }
             ?>

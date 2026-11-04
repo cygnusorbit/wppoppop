@@ -20,6 +20,19 @@ class WpPopPop_Ajax_Settings {
     }
 
     public function save_settings() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
 
         // Support both nested 'settings' array and flattened POST payload
@@ -62,6 +75,19 @@ class WpPopPop_Ajax_Settings {
     }
 
     public function reset_cookies() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
 
         $settings = get_option('wppoppop_settings', []);

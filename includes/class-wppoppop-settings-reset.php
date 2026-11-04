@@ -54,6 +54,19 @@ class WpPopPop_Settings_Reset {
     }
 
     public static function handle() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         self::verify();
 
         $tab = isset($_POST['tab']) ? sanitize_key(wp_unslash($_POST['tab'])) : '';

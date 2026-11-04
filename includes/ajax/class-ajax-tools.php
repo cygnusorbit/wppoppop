@@ -51,7 +51,8 @@ class WpPopPop_Ajax_Tools {
             $rows = 0;
             $size = '0 KB';
             if ($exists) {
-                $rows = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$name}`");
+                $rows = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->get_var("SELECT COUNT(*) FROM `{$name}`");
                 $st = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS LIKE %s', $wpdb->esc_like($name)), ARRAY_A);
                 if ($st && isset($st['Data_length'])) {
                     $size = size_format((int) $st['Data_length'] + (int) $st['Index_length'], 2);
@@ -287,6 +288,19 @@ class WpPopPop_Ajax_Tools {
     }
 
     public function bulk_import() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
         $raw = '';
         if (!empty($_FILES['wppoppop_bulk_import_file']['tmp_name'])) {
@@ -307,6 +321,19 @@ class WpPopPop_Ajax_Tools {
     }
 
     public function repair_tables() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
         $r = self::repair();
         if (!$r[2]) {
@@ -316,6 +343,19 @@ class WpPopPop_Ajax_Tools {
     }
 
     public function reset_counters() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
         wp_send_json_success([
             'message'  => 'All popup impressions, leads captured, and confirmation counters have been reset to 0.',
@@ -324,6 +364,19 @@ class WpPopPop_Ajax_Tools {
     }
 
     public function purge_logs() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
         global $wpdb;
         $days = isset($_POST['days']) ? max(1, min(3650, (int) $_POST['days'])) : 30;
@@ -332,11 +385,25 @@ class WpPopPop_Ajax_Tools {
     }
 
     public function optimize_tables() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
         global $wpdb;
         $done = 0;
         foreach (self::table_status() as $t) {
             if (!empty($t['exists'])) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->query('OPTIMIZE TABLE `' . $t['table'] . '`');
                 $done++;
             }
@@ -346,11 +413,26 @@ class WpPopPop_Ajax_Tools {
 
     /** Read-only: nothing is deleted. */
     public function orphan_report() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
         $this->verify_security();
         global $wpdb;
         $p = $wpdb->prefix;
-        $subs  = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_submissions s LEFT JOIN {$p}wppoppop_items i ON s.popup_uid = i.uid WHERE i.uid IS NULL");
-        $trans = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_transactions t LEFT JOIN {$p}wppoppop_items i ON t.popup_uid = i.uid WHERE i.uid IS NULL");
+        $subs  = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_submissions s LEFT JOIN {$p}wppoppop_items i ON s.popup_uid = i.uid WHERE i.uid IS NULL");
+        $trans = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_transactions t LEFT JOIN {$p}wppoppop_items i ON t.popup_uid = i.uid WHERE i.uid IS NULL");
         wp_send_json_success(['message' => sprintf('Orphaned records (popup no longer exists): %d submissions, %d transactions. Nothing was deleted.', $subs, $trans)]);
     }
 }

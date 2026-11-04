@@ -2,6 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $all_cols  = WpPopPop_Admin_Stats::columns();
 $on_cols   = $stats_prefs['columns'];
 $cc = function ($k) use ($on_cols) {
@@ -51,7 +53,7 @@ $page_links = paginate_links([
             <tr>
                 <?php foreach ($all_cols as $k => $label) :
                     $al = in_array($k, ['impressions', 'leads', 'conversion', 'action'], true) ? 'right' : (in_array($k, ['rank', 'status'], true) ? 'center' : 'left'); ?>
-                    <th class="<?php echo esc_attr($cc($k)); ?>" style="text-align:<?php echo $al; ?>;font-weight:600;"><?php echo esc_html($label); ?></th>
+                    <th class="<?php echo esc_attr($cc($k)); ?>" style="text-align:<?php echo esc_html( $al ); ?>;font-weight:600;"><?php echo esc_html($label); ?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
@@ -97,11 +99,11 @@ $page_links = paginate_links([
                         <td class="<?php echo esc_attr($cc('conversion')); ?>" style="text-align:right;">
                             <div style="display:inline-flex;align-items:center;gap:6px;">
                                 <strong style="color:#f59e0b;"><?php echo esc_html($p_cr); ?>%</strong>
-                                <div style="width:50px;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="width:<?php echo min(100, $p_cr * 2); ?>%;height:100%;background:#f59e0b;"></div></div>
+                                <div style="width:50px;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="width:<?php echo esc_attr( (string) min( 100, $p_cr * 2 ) ); ?>%;height:100%;background:#f59e0b;"></div></div>
                             </div>
                         </td>
                         <td class="<?php echo esc_attr($cc('status')); ?>" style="text-align:center;">
-                            <span class="badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;<?php echo $st_style; ?>"><?php echo esc_html(ucfirst($p->status)); ?></span>
+                            <span class="badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;<?php echo esc_attr( $st_style ); ?>"><?php echo esc_html(ucfirst($p->status)); ?></span>
                         </td>
                         <td class="<?php echo esc_attr($cc('action')); ?>" style="text-align:right;"><a href="<?php echo esc_url($edit_url); ?>" class="button button-small"><?php esc_html_e('Edit Builder', 'wppoppop'); ?></a></td>
                     </tr>
@@ -114,7 +116,7 @@ $page_links = paginate_links([
     <div class="wpp-table-foot">
         <span class="wpp-foot-count"><?php echo esc_html(sprintf(__('%1$d popups - page %2$d of %3$d', 'wppoppop'), $total_popups, $pg, $pages)); ?></span>
         <?php if (!empty($page_links)) : ?>
-            <span class="wpp-pager"><?php echo implode('', array_map(function ($l) { return '<span class="wpp-pg">' . $l . '</span>'; }, $page_links)); ?></span>
+            <span class="wpp-pager"><?php echo wp_kses_post( implode( "", array_map(function ($l) { return '<span class="wpp-pg">' . $l . '</span>'; }, $page_links))); ?></span>
         <?php endif; ?>
     </div>
 </div>

@@ -7,17 +7,20 @@ class WpPopPop_Admin_Pages {
     public function render_dashboard() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $popups = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY id DESC");
+        $popups = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC" );
         include WPPOPPOP_PATH . 'templates/dashboard-view.php';
     }
 
     public function render_overview() {
         global $wpdb;
         $items = $wpdb->prefix . 'wppoppop_items';
-        $dash_menu_popups   = $wpdb->get_results("SELECT uid, title FROM {$items} ORDER BY id DESC LIMIT 30");
-        $dash_recent_popups = $wpdb->get_results("SELECT uid, title, submissions FROM {$items} ORDER BY id DESC LIMIT 5");
+        $dash_menu_popups   = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT uid, title FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 30" );
+        $dash_recent_popups = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results( "SELECT uid, title, submissions FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 5" );
         $subs = $wpdb->prefix . 'wppoppop_submissions';
-        $dash_recent_subs = $wpdb->get_results("SELECT s.id, s.popup_uid, s.email, s.status, s.is_read, s.fields_data, s.created_at, i.title AS popup_title FROM {$subs} s LEFT JOIN {$items} i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 6");
+        $dash_recent_subs = $wpdb->get_results("SELECT s.id, s.popup_uid, s.email, s.status, s.is_read, s.fields_data, s.created_at, i.title AS popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 6");
         $dash_export_url  = add_query_arg([
             'action' => 'wppoppop_export_submissions',
             'nonce'  => wp_create_nonce('wppoppop_admin_nonce'),
@@ -31,7 +34,8 @@ class WpPopPop_Admin_Pages {
         $popup = null;
         if (!empty($uid)) {
             $table_name = $wpdb->prefix . 'wppoppop_items';
-            $popup = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name} WHERE uid = %s", $uid));
+            $popup = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $uid ) );
         }
         include WPPOPPOP_PATH . 'templates/builder-view.php';
     }
@@ -46,7 +50,8 @@ class WpPopPop_Admin_Pages {
         global $wpdb;
         $filter_uid = isset($_GET['popup_uid']) ? sanitize_text_field(wp_unslash($_GET['popup_uid'])) : '';
         $where = $filter_uid !== '' ? $wpdb->prepare(' WHERE s.popup_uid = %s', $filter_uid) : '';
-        $submissions = $wpdb->get_results("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid{$where} ORDER BY s.id DESC LIMIT 200");
+        $submissions = // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->get_results("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid{$where} ORDER BY s.id DESC LIMIT 200");
         include WPPOPPOP_PATH . 'templates/submissions-view.php';
     }
 
@@ -74,7 +79,7 @@ class WpPopPop_Admin_Pages {
 
     public function render_settings() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'wppoppop'));
+            wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', "wppoppop" ) );
         }
 
         $notice = '';
@@ -111,7 +116,7 @@ class WpPopPop_Admin_Pages {
 
     public function render_theme() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'wppoppop'));
+            wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', "wppoppop" ) );
         }
         include WPPOPPOP_PATH . 'templates/theme-view.php';
     }

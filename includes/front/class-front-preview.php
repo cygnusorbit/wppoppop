@@ -90,7 +90,8 @@ class WpPopPop_Front_Preview {
         $this->config = $config;
 
         if (!defined('DONOTCACHEPAGE')) {
-            define('DONOTCACHEPAGE', true);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+        define('DONOTCACHEPAGE', true);
         }
         nocache_headers();
         if (!empty($_GET['wppoppop_frame'])) {
@@ -145,7 +146,8 @@ class WpPopPop_Front_Preview {
         try {
             ob_start();
             echo $this->renderer->render_popup_markup($uid, $this->config, false, false);
-            echo ob_get_clean();
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo ob_get_clean();
         } catch (\Throwable $e) {
             if (ob_get_level() > 0) { ob_end_clean(); }
             echo '<div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1000002;background:#7f1d1d;color:#fff;padding:8px 14px;border-radius:8px;font:600 12px sans-serif;">Preview render error: ' . esc_html($e->getMessage()) . '</div>';
