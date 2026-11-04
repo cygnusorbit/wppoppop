@@ -53,6 +53,10 @@ class WpPopPop_Front_Renderer {
             $trg_attrs .= ' data-repeat-hours="' . max(1, min(720, intval($trg['repeat_hours']))) . '"';
         }
 
+        /* WPPOPPOP_BG_CLOSE_ATTR: backdrop click closes only when enabled (default off) */
+        $bgc_raw = isset($config['settings']['close_on_backdrop']) ? $config['settings']['close_on_backdrop'] : false;
+        $trg_attrs .= ' data-close-backdrop="' . (in_array($bgc_raw, array(true, 1, '1', 'true'), true) ? '1' : '0') . '"';
+
         // Settings Integrations
         $default_font   = function_exists('wppoppop_get_setting') ? wppoppop_get_setting('default_font', 'inherit') : 'inherit';
         $show_watermark = function_exists('wppoppop_get_setting') ? (bool) wppoppop_get_setting('powered_by_badge', false) : false;

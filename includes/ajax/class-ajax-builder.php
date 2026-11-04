@@ -83,6 +83,11 @@ class WpPopPop_Ajax_Builder {
                 'effect' => in_array($wppoppop_cel, $wppoppop_cel_ok, true) ? $wppoppop_cel : 'default'
             );
         }
+        /* WPPOPPOP_BG_CLOSE_WHITELIST: normalize Click Background to Close to a strict boolean */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            $wppoppop_bgc = isset($wppoppop_obj->settings->close_on_backdrop) ? $wppoppop_obj->settings->close_on_backdrop : false;
+            $wppoppop_obj->settings->close_on_backdrop = in_array($wppoppop_bgc, array(true, 1, '1', 'true'), true);
+        }
         /* WPPOPPOP_POPUP_POSITION_WHITELIST: allow-list the Popup Positions module */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             if (!class_exists('WpPopPop_Popup_Position')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-popup-position.php'; }

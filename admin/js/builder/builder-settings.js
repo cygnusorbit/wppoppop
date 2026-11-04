@@ -1956,3 +1956,28 @@ jQuery(function($) {
     });
 })();
 /* === WPPOPPOP_SHAPE_STROKE_ZERO_ENGINE_END === */
+
+
+/* WPPOPPOP_BG_CLOSE_UI: popup-level "Click Background to Close" (default false) */
+(function($) {
+    'use strict';
+    var S = window.WpPopPopBuilderSettings;
+    if (!S || S._bgCloseWrapped) return;
+    S._bgCloseWrapped = true;
+    function truthy(v) { return v === true || v === 1 || v === '1' || v === 'true'; }
+    var origGet = S.getSettings, origSet = S.setSettings;
+    S.getSettings = function() {
+        var out = origGet.apply(this, arguments) || {};
+        out.close_on_backdrop = $('#set-canvas-bg-close').is(':checked');
+        return out;
+    };
+    S.setSettings = function(settings) {
+        var r = origSet.apply(this, arguments);
+        $('#set-canvas-bg-close').prop('checked', !!settings && truthy(settings.close_on_backdrop));
+        return r;
+    };
+    $(document).off('change.wppoppop_bgclose', '#set-canvas-bg-close').on('change.wppoppop_bgclose', '#set-canvas-bg-close', function() {
+        var core = window.WpPopPopBuilderCore;
+        if (core && typeof core.pushHistory === 'function') core.pushHistory();
+    });
+})(jQuery);

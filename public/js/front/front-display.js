@@ -59,6 +59,8 @@
                 e.preventDefault();
                 var $wrap = $(this).closest('.wppoppop-popup-wrap, .wppoppop-overlay');
                 if ($wrap.attr('data-inline') === '1') { return; }
+                /* WPPOPPOP_BG_CLOSE_JS: backdrop clicks close only when "Click Background to Close" is on */
+                if ($(this).hasClass('wppoppop-backdrop') && !$(this).hasClass('wppoppop-close-btn') && $wrap.attr('data-close-backdrop') !== '1') { return; }
                 var uid = $(this).data('uid') || $wrap.data('uid');
                 self.close(uid);
             });

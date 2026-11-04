@@ -75,6 +75,17 @@ if (!defined('ABSPATH')) {
                             </div>
                         </div>
 
+                        <!-- WPPOPPOP_BG_CLOSE: click outside the popup to close (popup-level, default off) -->
+                        <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                                <label for="set-canvas-bg-close" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;"><?php esc_html_e('CLICK BACKGROUND TO CLOSE', 'wppoppop'); ?></label>
+                                <span class="wppoppop-ovf-switch">
+                                    <input type="checkbox" id="set-canvas-bg-close" value="1" role="switch" aria-label="<?php esc_attr_e('Close the popup when the background outside it is clicked', 'wppoppop'); ?>">
+                                    <span class="wppoppop-ovf-track"></span>
+                                </span>
+                            </div>
+                        </div>
+
                         <!-- Phase 4: Canvas Auto-Close Countdown -->
                         <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
                             <label for="set-canvas-autoclose" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;"><?php esc_html_e('AUTO-CLOSE COUNTDOWN (SECONDS)', 'wppoppop'); ?></label>
