@@ -6,6 +6,17 @@ if (!defined('ABSPATH')) {
 $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : ($popup ? $popup->uid : '');
 ?>
 <style id="wppoppop-fouc-guard">.wppoppop-builder-wrap{opacity:0 !important;}</style>
+<style id="wppoppop-boot-style">
+#wppoppop-boot-loader{position:fixed;top:32px;left:160px;right:0;bottom:0;z-index:99990;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;background:#0f172a;opacity:1;-webkit-transition:opacity .25s ease;transition:opacity .25s ease;}
+body.folded #wppoppop-boot-loader{left:36px;}
+@media (max-width:960px){#wppoppop-boot-loader{left:36px;}}
+@media (max-width:782px){#wppoppop-boot-loader{top:46px;left:0;}}
+#wppoppop-boot-loader.is-done{opacity:0;pointer-events:none;}
+#wppoppop-boot-loader .wppoppop-boot-spin{width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.14);border-top-color:#38bdf8;-webkit-box-shadow:0 0 24px rgba(56,189,248,.25);box-shadow:0 0 24px rgba(56,189,248,.25);-webkit-animation:wppoppopBootSpin .8s linear infinite;animation:wppoppopBootSpin .8s linear infinite;}
+@-webkit-keyframes wppoppopBootSpin{to{-webkit-transform:rotate(360deg);transform:rotate(360deg);}}
+@keyframes wppoppopBootSpin{to{-webkit-transform:rotate(360deg);transform:rotate(360deg);}}
+</style>
+<div id="wppoppop-boot-loader" role="status" aria-live="polite" aria-label="<?php esc_attr_e('Loading builder', 'wppoppop'); ?>"><span class="wppoppop-boot-spin"></span></div>
 <div class="wppoppop-builder-wrap">
     <!-- Hidden Security Nonce & Popup Identifier State -->
     <?php wp_nonce_field('wppoppop_builder_nonce', 'wppoppop-builder-nonce'); ?>
@@ -42,6 +53,15 @@ $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid']
             done = true;
             var s = document.getElementById('wppoppop-fouc-guard');
             if (s && s.parentNode) { s.parentNode.removeChild(s); }
+            var l = document.getElementById('wppoppop-boot-loader');
+            if (l) {
+                l.className += ' is-done';
+                setTimeout(function () {
+                    var st = document.getElementById('wppoppop-boot-style');
+                    if (l.parentNode) { l.parentNode.removeChild(l); }
+                    if (st && st.parentNode) { st.parentNode.removeChild(st); }
+                }, 300);
+            }
         }
         function go() {
             if (window.requestAnimationFrame) {
