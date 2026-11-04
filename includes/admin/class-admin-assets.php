@@ -126,6 +126,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-builder-align-dock-js', WPPOPPOP_URL . 'admin/js/builder/builder-align-dock.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-nudge-js', WPPOPPOP_URL . 'admin/js/builder/builder-nudge.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-click-open-js', WPPOPPOP_URL . 'admin/js/builder/builder-click-open.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-panel-memory-js', WPPOPPOP_URL . 'admin/js/builder/builder-panel-memory.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-inspector-js', 'wppoppop-builder-settings-js', 'wppoppop-builder-io-js'], self::ver(), true); /* WPPOPPOP_PANEL_MEMORY */
             wp_enqueue_script('wppoppop-builder-ribbon-tooltip-js', WPPOPPOP_URL . 'admin/js/builder/builder-ribbon-tooltip.js', [], self::ver(), true);
 
             $builder_payload = array_merge($shared_payload, [
