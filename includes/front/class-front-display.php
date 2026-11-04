@@ -50,6 +50,7 @@ class WpPopPop_Front_Display {
         wp_enqueue_style('wppoppop-front-forms-css', WPPOPPOP_URL . 'public/css/front/form-elements.css', ['wppoppop-animations-core-css'], $asset_version); /* WPPOPPOP_FORM_HARMONY_V1 */
         wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery', 'wppoppop-front-triggers-js'], $asset_version, true);
+        wp_enqueue_script('wppoppop-front-autoclose-js', WPPOPPOP_URL . 'public/js/front/front-autoclose.js', ['jquery', 'wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_AUTOCLOSE_JS */
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-conditional-logic-js', WPPOPPOP_URL . 'public/js/front/front-conditional-logic.js', ['jquery', 'wppoppop-front-form-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-scale-js', WPPOPPOP_URL . 'public/js/front/front-scale.js', ['wppoppop-front-js'], $asset_version, true);

@@ -25,7 +25,7 @@ class WpPopPop_Sanitizer {
 
     protected static function anim_value($k, $v) {
         static $txt = ['anim_appearance', 'anim_disappearance', 'anim_effect', 'animEffect', 'animation', 'animIn', 'animOut'];
-        static $int = ['anim_duration', 'anim_delay', 'animDuration', 'animDelay', 'canvas_radius'];
+        static $int = ['anim_duration', 'anim_delay', 'animDuration', 'animDelay', 'canvas_radius', 'autoclose', 'autoclose_delay'];
         static $bool = ['close_btn_enabled', 'anim_exit_enabled']; /* WPPOPPOP_DEFAULT_CLOSE */
         if (is_scalar($v) || $v === null) {
             if (in_array($k, $bool, true)) {

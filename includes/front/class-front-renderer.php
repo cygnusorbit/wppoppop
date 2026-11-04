@@ -169,6 +169,8 @@ class WpPopPop_Front_Renderer {
                     $c_allow_ovf = !empty($cm['allow_overflow']) && $cm['allow_overflow'] !== 'false';
                     $c_overflow_style = $c_allow_ovf ? 'overflow:visible;' : 'overflow:hidden;';
                     $c_close_on = !(is_array($cm) && isset($cm['close_btn_enabled']) && in_array($cm['close_btn_enabled'], array(false, 0, '0', 'false'), true)); /* WPPOPPOP_DEFAULT_CLOSE */
+                    $c_autoclose = (is_array($cm) && isset($cm['autoclose_delay']) && $cm['autoclose_delay'] !== '') ? intval($cm['autoclose_delay']) : ((is_array($cm) && isset($cm['autoclose'])) ? intval($cm['autoclose']) : 0);
+                    $c_autoclose = max(0, min(300, $c_autoclose)); /* WPPOPPOP_AUTOCLOSE_BADGE */
 
                     $c_bg_mode = $cm['bg_mode'] ?? 'solid';
                     $c_bg_color = $cm['bg_color'] ?? '';
@@ -198,10 +200,14 @@ class WpPopPop_Front_Renderer {
                          data-anim-disappearance="<?php echo esc_attr( $c_anim_dis ); ?>"
                          data-anim-exit="<?php echo (isset($cm['anim_exit_enabled']) && in_array($cm['anim_exit_enabled'], array(true, 1, '1', 'true'), true)) ? '1' : '0'; ?>"
                          data-allow-overflow="<?php echo $c_allow_ovf ? '1' : '0'; ?>"
+                         data-autoclose="<?php echo esc_attr($c_autoclose); ?>"
                          style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style . $c_radius_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
 
                         <?php if (!$is_inline && $c_close_on): ?>
                             <button type="button" class="wppoppop-close-btn wppoppop-default-close" data-uid="<?php echo esc_attr($uid); ?>" aria-label="<?php esc_attr_e('Close', 'wppoppop'); ?>" style="position:absolute;top:10px;right:10px;width:auto;height:auto;display:block;padding:0 4px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>
+                        <?php endif; ?>
+                        <?php if (!$is_inline && $c_autoclose > 0): ?>
+                            <span class="wppoppop-autoclose-timer" role="timer" aria-hidden="true" style="right:<?php echo $c_close_on ? 40 : 10; ?>px;"><span class="wppoppop-autoclose-num"><?php echo esc_html($c_autoclose); ?></span>s</span>
                         <?php endif; ?>
                         <div class="wppoppop-canvas-content">
                             <?php 

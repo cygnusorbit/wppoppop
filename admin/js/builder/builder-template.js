@@ -46,6 +46,7 @@
             var $exT = $('#set-canvas-anim-exit-enable'); if ($exT.length) { cm.anim_exit_enabled = $exT.is(':checked'); }
             var $radT = $('#set-canvas-radius'); if ($radT.length) { cm.canvas_radius = Math.max(0, Math.min(500, parseInt($radT.val(), 10) || 0)); }
             var $dcT = $('#set-canvas-close-btn'); if ($dcT.length) { cm.close_btn_enabled = $dcT.is(':checked'); } /* WPPOPPOP_DEFAULT_CLOSE */
+            var $acT = $('#set-canvas-autoclose'); if ($acT.length) { var acT = Math.max(0, Math.min(300, parseInt($acT.val(), 10) || 0)); cm.autoclose = acT; cm.autoclose_delay = acT; } /* WPPOPPOP_AUTOCLOSE_FLUSH */
             return {
                 title: $('#wppoppop-builder-title').val() || 'Untitled Popup',
                 canvases: canv,

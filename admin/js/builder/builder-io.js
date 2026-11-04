@@ -125,6 +125,13 @@
             /* WPPOPPOP_DEFAULT_CLOSE: pre-save flush */
             var $dcBtn = $('#set-canvas-close-btn');
             if ($dcBtn.length) { curCanvasMeta.close_btn_enabled = $dcBtn.is(':checked'); }
+            /* WPPOPPOP_AUTOCLOSE_FLUSH: pre-save flush of the auto-close countdown */
+            var $acBtn = $('#set-canvas-autoclose');
+            if ($acBtn.length) {
+                var acFlush = Math.max(0, Math.min(300, parseInt($acBtn.val(), 10) || 0));
+                curCanvasMeta.autoclose = acFlush;
+                curCanvasMeta.autoclose_delay = acFlush;
+            }
         }
 
 

@@ -273,8 +273,8 @@
 
         bindCanvasMetaInputs: function() {
             var self = this;
-            $(document).off('input.wppoppop_cac change.wppoppop_cac', '#set-canvas-autoclose').on('input.wppoppop_cac change.wppoppop_cac', '#set-canvas-autoclose', function() {
-                var val = parseInt($(this).val(), 10) || 0;
+            $(document).off('input.wppoppop_cac change.wppoppop_cac', '#set-canvas-autoclose').on('input.wppoppop_cac change.wppoppop_cac', '#set-canvas-autoclose', function(e) {
+                var val = Math.max(0, Math.min(300, parseInt($(this).val(), 10) || 0)); /* WPPOPPOP_AUTOCLOSE_CLAMP */
                 var core = window.WpPopPopBuilderCore;
                 if (!core) return;
                 var cur = core.state.currentCanvas || 1;
@@ -282,6 +282,7 @@
                 core.state.canvasMeta[cur].autoclose = val;
                 core.state.canvasMeta[cur].autoclose_delay = val;
                 if (core.state.settings) core.state.settings.autoclose_delay = val;
+                if (e && e.type === 'change' && typeof core.pushHistory === 'function') core.pushHistory();
             });
             $(document).off('input.wppoppop_exit change.wppoppop_exit', '#set-exit-intent-sensitivity').on('input.wppoppop_exit change.wppoppop_exit', '#set-exit-intent-sensitivity', function() {
                 var val = parseInt($(this).val(), 10) || 20;

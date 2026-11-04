@@ -295,7 +295,7 @@ class WpPopPop_Ajax_Builder {
 
     private function sanitize_anim_value($k, $v) {
         static $txt = array('anim_appearance', 'anim_disappearance', 'anim_effect', 'animEffect', 'animation', 'animIn', 'animOut');
-        static $int = array('anim_duration', 'anim_delay', 'animDuration', 'animDelay', 'canvas_radius');
+        static $int = array('anim_duration', 'anim_delay', 'animDuration', 'animDelay', 'canvas_radius', 'autoclose', 'autoclose_delay');
         if (is_scalar($v) || $v === null) {
             if (in_array($k, $txt, true)) { return preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $v); }
             if (in_array($k, $int, true)) { return max(0, intval($v)); }
