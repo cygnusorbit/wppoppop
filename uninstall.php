@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * WpPopPop Uninstall Procedure
  * Executes automatically when the plugin is deleted via the WordPress Admin.
