@@ -955,9 +955,9 @@ if (settings.triggers) {
     }
 
     function syncOpacityLabel() { $('#set-ov-opacity-val').text(clampOpacity($('#set-ov-opacity').val()) + '%'); }
-    function syncTransparentUi() {
-        var on = $('#set-ov-transparent').is(':checked');
-        $('#set-ov-color').prop('disabled', on).css('opacity', on ? 0.4 : 1);
+    function syncEnableUi() { /* WPPOPPOP_OVERLAY_ENABLE_UI */
+        var on = $('#set-ov-enable').is(':checked');
+        $('#set-ov-enable').closest('.wppoppop-acc-body').children().not('.wppoppop-ov-enable-row').css({ opacity: on ? 1 : 0.45, 'pointer-events': on ? '' : 'none' });
     }
 
     /* WPPOPPOP_OVERLAY_PAGER: paginated custom background list (default 5 per page) */
@@ -1054,7 +1054,7 @@ if (settings.triggers) {
         out.overlay = {
             opacity: clampOpacity($('#set-ov-opacity').val()),
             color: $('#set-ov-color').val() || '#0f172a',
-            transparent: $('#set-ov-transparent').is(':checked'),
+            enabled: $('#set-ov-enable').is(':checked'),
             selected: model.selected || '',
             backgrounds: $.map(model.backgrounds, function(b) { return $.extend({}, b); })
         };
@@ -1066,7 +1066,9 @@ if (settings.triggers) {
         var ov = (settings && settings.overlay) || {};
         $('#set-ov-opacity').val(ov.opacity !== undefined && ov.opacity !== '' ? clampOpacity(ov.opacity) : 65);
         $('#set-ov-color').val(/^#[0-9a-f]{6}$/i.test(ov.color || '') ? ov.color : '#0f172a');
-        $('#set-ov-transparent').prop('checked', !!ov.transparent && ov.transparent !== 'false' && ov.transparent !== '0');
+        var legacyOff = !!ov.transparent && ov.transparent !== 'false' && ov.transparent !== '0'; /* old 'Transparent' = overlay off */
+        var ovOn = (ov.enabled === undefined || ov.enabled === null || ov.enabled === '') ? !legacyOff : !(ov.enabled === false || ov.enabled === 0 || ov.enabled === '0' || ov.enabled === 'false');
+        $('#set-ov-enable').prop('checked', ovOn);
         var list = ov.backgrounds;
         if (list && !$.isArray(list) && typeof list === 'object') { list = $.map(list, function(v) { return v; }); }
         model.backgrounds = $.isArray(list) ? $.map(list, function(b) { return $.extend({ id: newId(), name: '', type: 'image', url: '', html: '' }, b); }) : [];
@@ -1074,14 +1076,18 @@ if (settings.triggers) {
         ovPage = -1;
         closeEditor();
         syncOpacityLabel();
-        syncTransparentUi();
+        syncEnableUi();
         renderList();
         return r;
     };
 
     $(document)
         .off('input.wppOv change.wppOv', '#set-ov-opacity').on('input.wppOv change.wppOv', '#set-ov-opacity', syncOpacityLabel)
-        .off('change.wppOvT', '#set-ov-transparent').on('change.wppOvT', '#set-ov-transparent', syncTransparentUi)
+        .off('change.wppOvT', '#set-ov-enable').on('change.wppOvT', '#set-ov-enable', function() {
+            syncEnableUi();
+            var core = window.WpPopPopBuilderCore;
+            if (core && typeof core.pushHistory === 'function') core.pushHistory();
+        })
         .off('change.wppOvType', '#set-ov-bg-type').on('change.wppOvType', '#set-ov-bg-type', toggleType)
         .off('input.wppOvUrl change.wppOvUrl', '#set-ov-bg-url').on('input.wppOvUrl change.wppOvUrl', '#set-ov-bg-url', function() { setPreview($.trim($(this).val())); })
         .off('click.wppOvAdd', '#set-ov-bg-add').on('click.wppOvAdd', '#set-ov-bg-add', function(e) { e.preventDefault(); if (model.backgrounds.length >= 20) { window.alert(wp.i18n.__('Maximum of 20 custom backgrounds.', 'wppoppop')); return; } openEditor(null); })
@@ -1135,7 +1141,7 @@ if (settings.triggers) {
             renderList();
         });
 
-    $(function() { syncOpacityLabel(); syncTransparentUi(); renderList(); });
+    $(function() { syncOpacityLabel(); syncEnableUi(); renderList(); });
 })(jQuery);
 
 /* WPPOPPOP_OVERLAY_BGOP: live % label for the background opacity slider */

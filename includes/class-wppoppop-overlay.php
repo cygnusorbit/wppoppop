@@ -18,6 +18,14 @@ class WpPopPop_Overlay {
         return !empty($v) && $v !== 'false' && $v !== '0';
     }
 
+    /** Overlay master switch. Missing = on; legacy 'transparent' = off. */
+    private static function is_enabled($ov) {
+        if (isset($ov['enabled']) && $ov['enabled'] !== '') {
+            return self::truthy($ov['enabled']);
+        }
+        return !self::truthy(isset($ov['transparent']) ? $ov['transparent'] : false);
+    }
+
     private static function hex($c, $def) {
         $c = is_string($c) ? sanitize_hex_color($c) : '';
         return $c ? $c : $def;
@@ -53,7 +61,7 @@ class WpPopPop_Overlay {
         $out = array(
             'opacity'     => (isset($ov['opacity']) && $ov['opacity'] !== '') ? max(0, min(100, intval($ov['opacity']))) : 65,
             'color'       => self::hex(isset($ov['color']) ? $ov['color'] : '', '#0f172a'),
-            'transparent' => self::truthy(isset($ov['transparent']) ? $ov['transparent'] : false),
+            'enabled'     => self::is_enabled($ov), /* WPPOPPOP_OVERLAY_ENABLE: strict boolean, default true */
             'selected'    => '',
             'backgrounds' => array(),
         );
@@ -139,7 +147,13 @@ JS;
         $ov    = $settings['overlay'];
         $op    = (isset($ov['opacity']) && $ov['opacity'] !== '') ? max(0, min(100, intval($ov['opacity']))) : 65;
         $color = self::hex(isset($ov['color']) ? $ov['color'] : '', '#0f172a');
-        $alpha = self::truthy(isset($ov['transparent']) ? $ov['transparent'] : false) ? 0 : ($op / 100);
+        if (!self::is_enabled($ov)) {
+            /* WPPOPPOP_OVERLAY_ENABLE: overlay fully off. No tint, blur or custom background; the invisible backdrop stays so Click Background to Close still works */
+            $res['css']    = 'align-items:center;justify-content:center;background:transparent;';
+            $res['layers'] = '<span class="wppoppop-ov-off" hidden></span><style>.wppoppop-ov-off ~ .wppoppop-backdrop{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;}</style>';
+            return $res;
+        }
+        $alpha = $op / 100;
         $tint  = self::rgba($color, $alpha);
 
         $active = null;

@@ -8,6 +8,15 @@ if (!defined('ABSPATH')) {
                 <button type="button" class="wppoppop-acc-header"><?php esc_html_e('Popup Overlay', 'wppoppop'); ?></button>
                 <div class="wppoppop-acc-body" style="display:none;">
 
+                    <!-- WPPOPPOP_OVERLAY_ENABLE: master switch, default ON -->
+                    <div class="wppoppop-ov-enable-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #e2e8f0;">
+                        <label for="set-ov-enable" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;"><?php esc_html_e('Enable Overlay', 'wppoppop'); ?></label>
+                        <span class="wppoppop-ovf-switch">
+                            <input type="checkbox" id="set-ov-enable" value="1" role="switch" aria-label="<?php esc_attr_e('Show the overlay behind the popup', 'wppoppop'); ?>" checked>
+                            <span class="wppoppop-ovf-track"></span>
+                        </span>
+                    </div>
+
                     <label for="set-ov-opacity" style="display:block;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;"><?php esc_html_e('Background Overlay Opacity', 'wppoppop'); ?></label>
                     <div style="display:flex;align-items:center;gap:10px;margin:4px 0 12px;">
                         <input type="range" id="set-ov-opacity" min="0" max="100" step="1" value="65" style="flex:1;">
@@ -17,7 +26,6 @@ if (!defined('ABSPATH')) {
                     <label for="set-ov-color" style="display:block;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;"><?php esc_html_e('Overlay Color', 'wppoppop'); ?></label>
                     <div style="display:flex;align-items:center;gap:12px;margin:4px 0 14px;">
                         <input type="color" id="set-ov-color" value="#0f172a" style="width:44px;height:30px;padding:0;border:1px solid #cbd5e1;border-radius:4px;background:#fff;cursor:pointer;">
-                        <label style="font-size:12px;"><input type="checkbox" id="set-ov-transparent" value="1"> <?php esc_html_e('Transparent', 'wppoppop'); ?></label>
                     </div>
 
                     <div style="border-top:1px solid #e2e8f0;padding-top:12px;">
