@@ -13,13 +13,15 @@
     var POSITIONS = ['top-left', 'top-center', 'top-right', 'middle-left', 'center', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'];
     var SIDES = ['top', 'right', 'bottom', 'left'];
     var MAX_PAD = 1000;
+    var DEFAULT_PAD = 50; // WPPOPPOP_PP_DEFAULT_PAD
     var model = blank();
 
-    function blank() { return { position: 'center', top: 0, right: 0, bottom: 0, left: 0 }; }
+    function blank() { return { position: 'center', top: DEFAULT_PAD, right: DEFAULT_PAD, bottom: DEFAULT_PAD, left: DEFAULT_PAD }; }
     function normPos(v) { return $.inArray(v, POSITIONS) !== -1 ? v : 'center'; }
     function normPad(v) {
         v = parseInt(v, 10);
-        if (isNaN(v) || v < 0) { v = 0; }
+        if (isNaN(v)) { v = DEFAULT_PAD; }
+        if (v < 0) { v = 0; }
         return Math.min(MAX_PAD, v);
     }
 

@@ -54,13 +54,13 @@ $wppoppop_pp_cells = array(
                     <div style="border-top:1px solid #e2e8f0;padding-top:12px;">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                             <strong style="font-size:11px;color:#475569;text-transform:uppercase;"><?php esc_html_e('Screen edge padding', 'wppoppop'); ?></strong>
-                            <button type="button" id="set-pp-edge" class="button button-secondary" style="font-size:11px;"><?php esc_html_e('Stick to edge', 'wppoppop'); ?></button>
+                            <button type="button" id="set-pp-edge" class="button button-small" style="display:inline-flex;align-items:center;justify-content:center;padding:0 4px;min-height:24px;line-height:1;" title="<?php esc_attr_e('Stick to edge (set all padding to 0)', 'wppoppop'); ?>" aria-label="<?php esc_attr_e('Stick to edge (set all padding to 0)', 'wppoppop'); ?>"><span class="dashicons dashicons-image-rotate" style="font-size:16px;width:16px;height:16px;" aria-hidden="true"></span></button>
                         </div>
                         <div class="wppoppop-pp-pads">
-                            <div><label for="set-pp-top"><?php esc_html_e('Top', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-top" class="widefat" min="0" max="1000" step="1" value="0"><span>px</span></div></div>
-                            <div><label for="set-pp-bottom"><?php esc_html_e('Bottom', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-bottom" class="widefat" min="0" max="1000" step="1" value="0"><span>px</span></div></div>
-                            <div><label for="set-pp-left"><?php esc_html_e('Left', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-left" class="widefat" min="0" max="1000" step="1" value="0"><span>px</span></div></div>
-                            <div><label for="set-pp-right"><?php esc_html_e('Right', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-right" class="widefat" min="0" max="1000" step="1" value="0"><span>px</span></div></div>
+                            <div><label for="set-pp-top"><?php esc_html_e('Top', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-top" class="widefat" min="0" max="1000" step="1" value="50"><span>px</span></div></div>
+                            <div><label for="set-pp-bottom"><?php esc_html_e('Bottom', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-bottom" class="widefat" min="0" max="1000" step="1" value="50"><span>px</span></div></div>
+                            <div><label for="set-pp-left"><?php esc_html_e('Left', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-left" class="widefat" min="0" max="1000" step="1" value="50"><span>px</span></div></div>
+                            <div><label for="set-pp-right"><?php esc_html_e('Right', 'wppoppop'); ?></label><div class="wppoppop-pp-pad"><input type="number" id="set-pp-right" class="widefat" min="0" max="1000" step="1" value="50"><span>px</span></div></div>
                         </div>
                         <p style="font-size:11px;color:#64748b;margin:0;"><?php esc_html_e('Distance kept between the popup and each screen edge. 0 sticks the popup to the edge; a higher value moves it away. On screens smaller than the popup it scales down to fit.', 'wppoppop'); ?></p>
                     </div>

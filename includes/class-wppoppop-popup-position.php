@@ -12,6 +12,7 @@ class WpPopPop_Popup_Position {
 
     const DEFAULT_POSITION = 'center';
     const MAX_PAD          = 1000;
+    const DEFAULT_PAD      = 50; // WPPOPPOP_PP_DEFAULT_PAD
 
     /** slug => array(vertical, horizontal) */
     private static function map() {
@@ -33,12 +34,12 @@ class WpPopPop_Popup_Position {
     }
 
     public static function defaults() {
-        return array('position' => self::DEFAULT_POSITION, 'top' => 0, 'right' => 0, 'bottom' => 0, 'left' => 0);
+        return array('position' => self::DEFAULT_POSITION, 'top' => self::DEFAULT_PAD, 'right' => self::DEFAULT_PAD, 'bottom' => self::DEFAULT_PAD, 'left' => self::DEFAULT_PAD);
     }
 
     private static function pad($v) {
         if (!is_scalar($v) || !is_numeric($v)) {
-            return 0;
+            return self::DEFAULT_PAD;
         }
         return max(0, min(self::MAX_PAD, (int) round((float) $v)));
     }
@@ -56,10 +57,10 @@ class WpPopPop_Popup_Position {
         }
         return array(
             'position' => self::slug(isset($in['position']) ? $in['position'] : ''),
-            'top'      => self::pad(isset($in['top']) ? $in['top'] : 0),
-            'right'    => self::pad(isset($in['right']) ? $in['right'] : 0),
-            'bottom'   => self::pad(isset($in['bottom']) ? $in['bottom'] : 0),
-            'left'     => self::pad(isset($in['left']) ? $in['left'] : 0),
+            'top'      => self::pad(isset($in['top']) ? $in['top'] : self::DEFAULT_PAD),
+            'right'    => self::pad(isset($in['right']) ? $in['right'] : self::DEFAULT_PAD),
+            'bottom'   => self::pad(isset($in['bottom']) ? $in['bottom'] : self::DEFAULT_PAD),
+            'left'     => self::pad(isset($in['left']) ? $in['left'] : self::DEFAULT_PAD),
         );
     }
 
