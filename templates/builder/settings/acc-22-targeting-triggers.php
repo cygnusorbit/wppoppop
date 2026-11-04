@@ -51,8 +51,9 @@ $wppoppop_tt_allspec = function ($key, $label_all, $label_spec) use ($wppoppop_t
                 <div class="wppoppop-acc-body" style="display:none;">
                     <style>
                         #wppoppop-tt-item{position:relative}
-                        #wppoppop-tt-item > .wppoppop-acc-header{min-height:38px;box-sizing:border-box;padding-right:76px}
-                        #wppoppop-tt-item .tt-master{position:absolute;top:0;right:34px;height:38px;display:flex;align-items:center;margin:0;padding:0}
+                        #wppoppop-tt-item .tt-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+                        #wppoppop-tt-item .tt-top .tt-h{margin:0}
+                        #wppoppop-tt-item .tt-master{position:relative;display:flex;align-items:center;flex:none;margin:0;padding:0}
                         #wppoppop-tt-item .tt-master input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
                         #wppoppop-tt-item .tt-track{position:relative;display:block;width:34px;height:18px;border-radius:9px;background:#cbd5e1;transition:background .15s;cursor:pointer}
                         #wppoppop-tt-item .tt-track:after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
@@ -85,9 +86,15 @@ $wppoppop_tt_allspec = function ($key, $label_all, $label_spec) use ($wppoppop_t
                         #wppoppop-tt-item textarea{width:100%;min-height:64px;resize:vertical;box-sizing:border-box}
                     </style>
 
+                    <div class="tt-top">
+                        <span class="tt-h"><?php esc_html_e('Popup Targeting', 'wppoppop'); ?></span>
+                        <label class="tt-master" title="<?php esc_attr_e('Turn the entire Targeting Triggers setting on or off', 'wppoppop'); ?>">
+                            <input type="checkbox" id="set-tt-enabled" checked aria-label="<?php esc_attr_e('Enable Targeting Triggers', 'wppoppop'); ?>">
+                            <span class="tt-track" aria-hidden="true"></span>
+                        </label>
+                    </div>
                     <fieldset id="wppoppop-tt-fs">
                         <div class="tt-sec">
-                            <span class="tt-h"><?php esc_html_e('Popup Targeting', 'wppoppop'); ?></span>
                             <?php $wppoppop_tt_seg('event', __('Popup Targeting', 'wppoppop'), array(
                                 'onload'       => __('OnLoad', 'wppoppop'),
                                 'onscroll'     => __('OnScroll', 'wppoppop'),
@@ -221,8 +228,4 @@ $wppoppop_tt_allspec = function ($key, $label_all, $label_spec) use ($wppoppop_t
                         </div>
                     </fieldset>
                 </div>
-                <label class="tt-master" title="<?php esc_attr_e('Turn the entire Targeting Triggers setting on or off', 'wppoppop'); ?>">
-                    <input type="checkbox" id="set-tt-enabled" checked aria-label="<?php esc_attr_e('Enable Targeting Triggers', 'wppoppop'); ?>">
-                    <span class="tt-track" aria-hidden="true"></span>
-                </label>
             </div>
