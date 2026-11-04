@@ -37,7 +37,7 @@ $__wpp_extra_on = is_array($__wpp_rs) && !empty($__wpp_rs['builder_extra_element
         <button type="button" class="wppoppop-ribbon-btn wppoppop-ribbon-tool wppoppop-draggable-tool" data-type="submit" title="<?php esc_attr_e('26. Button Submit (submit)', 'wppoppop'); ?>"><span class="dashicons dashicons-button"></span><span class="btn-label"><?php esc_html_e('Submit', 'wppoppop'); ?></span></button>
         <div class="wppoppop-snap-group wppoppop-ribbon-snap" role="group" aria-label="<?php esc_attr_e('Snapping', 'wppoppop'); ?>" style="margin-left:auto;flex:0 0 auto;">
             <label class="wppoppop-snap-switch" title="<?php esc_attr_e('Snap to other objects\' edges and centers (hold Alt to bypass)', 'wppoppop'); ?>">
-                <input type="checkbox" id="wppoppop-snap-object" class="wppoppop-snap-toggle" aria-label="<?php esc_attr_e('Snap to objects', 'wppoppop'); ?>" data-snap="object">
+                <input type="checkbox" id="wppoppop-snap-object" class="wppoppop-snap-toggle" checked aria-label="<?php esc_attr_e('Snap to objects', 'wppoppop'); ?>" data-snap="object">
                 <span class="wppoppop-snap-slider" aria-hidden="true"></span>
                 <span class="wppoppop-snap-text"><?php esc_html_e('Snap Object', 'wppoppop'); ?></span>
             </label>

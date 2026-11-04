@@ -57,6 +57,7 @@ $__wpp_tpl_on = !empty($__wpp_set['builder_save_template']);
             <option value="fit"><?php esc_html_e('Fit', 'wppoppop'); ?></option>
         </select>
         <button type="button" class="wppoppop-btn wppoppop-btn-secondary wppoppop-hdr-icon-btn" id="wppoppop-btn-preview" title="<?php esc_attr_e('Preview', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Preview', 'wppoppop'); ?>"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-secondary wppoppop-hdr-icon-btn" id="wppoppop-btn-preview-home" title="<?php esc_attr_e('Preview on Homepage', 'wppoppop'); ?>" aria-label="<?php esc_attr_e('Preview on Homepage', 'wppoppop'); ?>"><i class="fa-solid fa-desktop" aria-hidden="true"></i></button>
         <button type="button" id="wppoppop-btn-embed" class="button wppoppop-hdr-icon-btn" title="<?php esc_attr_e('Get Embed Codes', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Embed', 'wppoppop'); ?>"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
         <?php if ($__wpp_tpl_on) : ?>
         <button type="button" class="wppoppop-btn wppoppop-btn-save-template" id="wppoppop-btn-save-template" title="<?php esc_attr_e('Save As Template', 'wppoppop'); ?>"><?php esc_html_e('Save As Template', 'wppoppop'); ?></button>

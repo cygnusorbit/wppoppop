@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid'])) : ($popup ? $popup->uid : '');
 ?>
+<style id="wppoppop-fouc-guard">.wppoppop-builder-wrap{opacity:0 !important;}</style>
 <div class="wppoppop-builder-wrap">
     <!-- Hidden Security Nonce & Popup Identifier State -->
     <?php wp_nonce_field('wppoppop_builder_nonce', 'wppoppop-builder-nonce'); ?>
@@ -31,4 +32,33 @@ $current_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash($_GET['uid']
 
     <!-- 6. Embed Codes & Live Sandbox Preview Modals -->
     <?php include WPPOPPOP_PATH . 'templates/builder/modals.php'; ?>
+
+    <script>
+    /* WPPOPPOP_FOUC_GUARD: reveal once stylesheets and icon fonts have loaded (hard cap 3s) */
+    (function () {
+        var done = false;
+        function reveal() {
+            if (done) { return; }
+            done = true;
+            var s = document.getElementById('wppoppop-fouc-guard');
+            if (s && s.parentNode) { s.parentNode.removeChild(s); }
+        }
+        function go() {
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(function () { window.requestAnimationFrame(reveal); });
+            } else {
+                setTimeout(reveal, 50);
+            }
+        }
+        function ready() {
+            if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+                document.fonts.ready.then(go, go);
+            } else {
+                go();
+            }
+        }
+        if (document.readyState === 'complete') { ready(); } else { window.addEventListener('load', ready); }
+        setTimeout(reveal, 3000);
+    })();
+    </script>
 </div>

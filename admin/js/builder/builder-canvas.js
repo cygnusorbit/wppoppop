@@ -939,7 +939,7 @@
         },
 
         // WPPOPPOP_SNAP_OBJECTS: snap-to-object toggle (hold Alt to bypass)
-        snapObjects: false,
+        snapObjects: true,
 
         setSnapObjects: function(on) {
             this.snapObjects = !!on;
@@ -955,7 +955,7 @@
             var self = this;
             var o = '0';
             try { o = window.localStorage.getItem('wppoppop_snap_objects'); } catch (e) {}
-            self.snapObjects = (o === '1');
+            self.snapObjects = (o !== '0'); /* WPPOPPOP_SNAP_DEFAULT_ON */
             self.syncSnapUI();
             $(document).off('change.wppoppop_snap', '.wppoppop-snap-toggle')
                 .on('change.wppoppop_snap', '.wppoppop-snap-toggle', function() {
