@@ -71,7 +71,7 @@
                     var on = res.data.status === 'active';
                     $input.prop('checked', on);
                     $sw.attr('title', on ? 'Active' : 'Inactive');
-                    $row.find('.wpp-badge').removeClass('is-on is-off').addClass(on ? 'is-on' : 'is-off').text(on ? 'Active' : 'Inactive');
+                    $row.find('.wpp-ab-state-badge').removeClass('wppoppop-active-badge wppoppop-inactive-badge').addClass(on ? 'wppoppop-active-badge' : 'wppoppop-inactive-badge').text(on ? wp.i18n.__('ACTIVE', 'wppoppop') : wp.i18n.__('INACTIVE', 'wppoppop'));
                 } else {
                     $input.prop('checked', !want);
                     window.alert((res && res.data && res.data.message) || wp.i18n.__('Could not update status.', 'wppoppop'));

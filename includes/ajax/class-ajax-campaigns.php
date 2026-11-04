@@ -11,6 +11,8 @@ class WpPopPop_Ajax_Campaigns {
     public function __construct() {
         add_action('wp_ajax_wppoppop_update_campaign', [$this, 'update_campaign']);
         add_action('wp_ajax_wppoppop_toggle_campaign', [$this, 'toggle_campaign']);
+        add_action('wp_ajax_wppoppop_trash_campaign', [$this, 'trash_campaign']);
+        add_action('wp_ajax_wppoppop_restore_campaign', [$this, 'restore_campaign']);
     }
 
     private function verify_security() {
@@ -110,11 +112,39 @@ class WpPopPop_Ajax_Campaigns {
         if ($uid === '' || !$this->find($uid)) {
             wp_send_json_error(['message' => __('Campaign not found.', 'wppoppop')]);
         }
+        $row = $this->find($uid);
+        if ($row && strtolower((string) $row['status']) === 'trash') {
+            wp_send_json_error(['message' => __('Restore this campaign before changing its status.', 'wppoppop')]);
+        }
         $status = $active ? 'active' : 'paused';
         $ok = $wpdb->update($wpdb->prefix . 'wppoppop_campaigns', ['status' => $status], ['uid' => $uid], ['%s'], ['%s']);
         if ($ok === false) {
             wp_send_json_error(['message' => __('Database error while saving.', 'wppoppop')]);
         }
         wp_send_json_success(['uid' => $uid, 'status' => $status]);
+    }
+
+    /* WPPOPPOP_AB_FILTERS: soft trash / restore (permanent delete stays wppoppop_delete_campaign) */
+    private function set_status($status) {
+        $this->verify_security();
+        global $wpdb;
+
+        $uid = isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : '';
+        if ($uid === '' || !$this->find($uid)) {
+            wp_send_json_error(['message' => __('Campaign not found.', 'wppoppop')]);
+        }
+        $ok = $wpdb->update($wpdb->prefix . 'wppoppop_campaigns', ['status' => $status], ['uid' => $uid], ['%s'], ['%s']);
+        if ($ok === false) {
+            wp_send_json_error(['message' => __('Database error while saving.', 'wppoppop')]);
+        }
+        wp_send_json_success(['uid' => $uid, 'status' => $status]);
+    }
+
+    public function trash_campaign() {
+        $this->set_status('trash');
+    }
+
+    public function restore_campaign() {
+        $this->set_status('paused');
     }
 }

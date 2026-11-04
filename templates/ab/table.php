@@ -10,29 +10,41 @@ $popups_by_uid = [];
 foreach ($all_popups_raw as $p) {
     $popups_by_uid[$p->uid] = $p;
 }
-$ab_total = is_array($campaigns) ? count($campaigns) : 0;
-$ab_cols  = '
-    <th scope="col" class="manage-column column-num">#</th>
-    <th scope="col" class="manage-column column-title">Campaign</th>
-    <th scope="col" class="manage-column column-variations">Variations &amp; Performance</th>
-    <th scope="col" class="manage-column column-status">Status</th>
-    <th scope="col" class="manage-column column-shortcode">Shortcode</th>';
+if (!isset($ab_state) || !is_array($ab_state)) { // WPPOPPOP_AB_FILTERS
+    require_once WPPOPPOP_PATH . 'includes/admin/class-admin-ab-query.php';
+    $ab_state = WpPopPop_Admin_AB_Query::run();
+}
+$campaigns = $ab_state['items'];
+$ab_total  = (int) $ab_state['total'];
+/* WPPOPPOP_AB_COLS_FIX: header cells are built from escaped, translatable labels (absint() on HTML printed "0" and hid the columns) */
+$ab_col_defs = [
+    'column-num'        => '#',
+    'column-title'      => __('Campaign', 'wppoppop'),
+    'column-variations' => __('Variations & Performance', 'wppoppop'),
+    'column-status'     => __('Status', 'wppoppop'),
+    'column-shortcode'  => __('Shortcode', 'wppoppop'),
+];
+$ab_cols = '';
+foreach ($ab_col_defs as $ab_col_class => $ab_col_label) {
+    $ab_cols .= '<th scope="col" class="manage-column ' . esc_attr($ab_col_class) . '">' . esc_html($ab_col_label) . '</th>';
+}
 ?>
 <div class="wppoppop-table-wrap wpp-ab-table-wrap">
-    <div class="tablenav top">
-        <div class="tablenav-pages one-page"><span class="displaying-num"><?php echo esc_html(sprintf(/* translators: %s: number of A/B test experiments */
-                _n('%s item', '%s items', $ab_total, 'wppoppop'), number_format_i18n($ab_total))); ?></span></div>
-        <br class="clear">
-    </div>
+    <?php include WPPOPPOP_PATH . 'templates/ab/toolbar.php'; ?>
+    <?php $ab_pos = 'top'; include WPPOPPOP_PATH . 'templates/ab/pagination.php'; ?>
     <table class="wp-list-table widefat fixed striped table-view-list" id="wppoppop-ab-table">
-        <thead><tr><?php echo absint( $ab_cols ); ?></tr></thead>
+        <thead><tr><?php echo $ab_cols; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr()/esc_html() above ?></tr></thead>
         <tbody>
             <?php if (empty($campaigns)) : ?>
                 <tr class="no-items">
                     <td class="colspanchange" colspan="5">
                         <div class="wpp-ab-empty">
                             <span class="dashicons dashicons-randomize"></span>
-                            <?php esc_html_e('No A/B testing campaigns found. Click "New A/B Campaign" in the top bar to launch your first split-test experiment.', 'wppoppop'); ?>
+                            <?php if ($ab_state['search'] !== '' || $ab_state['status'] !== 'all') :
+                                esc_html_e('No campaigns match your filters.', 'wppoppop');
+                            else :
+                                esc_html_e('No A/B testing campaigns found. Click "New A/B Campaign" in the top bar to launch your first split-test experiment.', 'wppoppop');
+                            endif; ?>
                         </div>
                     </td>
                 </tr>
@@ -42,16 +54,24 @@ $ab_cols  = '
                     $shortcode = '[wppoppop_ab uid="' . $c->uid . '"]';
                     $status    = strtolower((string) $c->status);
                     $is_off    = in_array($status, ['draft', 'paused', 'inactive', 'trash'], true);
+                    $is_trash  = ($status === 'trash');
                     ?>
                     <tr class="wppoppop-ab-row" data-uid="<?php echo esc_attr($c->uid); ?>" data-title="<?php echo esc_attr($c->title); ?>" data-popups="<?php echo esc_attr(wp_json_encode(array_values($uids))); ?>">
-                        <td class="column-num"><?php echo (int) ($idx + 1); ?></td>
+                        <td class="column-num"><?php echo (int) ($ab_state['offset'] + $idx + 1); ?></td>
                         <td class="column-title has-row-actions">
-                            <strong class="wpp-ab-title"><?php echo esc_html($c->title); ?></strong>
+                            <strong class="wpp-ab-title"><?php if ($is_trash) :
+                                echo esc_html($c->title);
+                            else : ?><a class="row-title wppoppop-edit-ab-btn" href="#" data-uid="<?php echo esc_attr($c->uid); ?>"><?php echo esc_html($c->title); ?></a> <span class="wpp-ab-state-badge <?php echo $is_off ? 'wppoppop-inactive-badge' : 'wppoppop-active-badge'; ?>"><?php echo $is_off ? esc_html__('INACTIVE', 'wppoppop') : esc_html__('ACTIVE', 'wppoppop'); ?></span><?php endif; ?></strong>
                             <div class="wpp-ab-meta"><code><?php echo esc_html($c->uid); ?></code></div>
                             <div class="wpp-ab-meta"><?php esc_html_e('Created:', 'wppoppop'); ?> <?php echo esc_html($c->created_at); ?></div>
                             <div class="row-actions">
-                                <span class="edit"><button type="button" class="button-link wppoppop-edit-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Edit', 'wppoppop'); ?></button> | </span>
-                                <span class="delete"><button type="button" class="button-link wppoppop-del-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Delete', 'wppoppop'); ?></button></span>
+                                <?php if ($is_trash) : ?>
+                                    <span class="untrash"><button type="button" class="button-link wppoppop-restore-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Restore', 'wppoppop'); ?></button> | </span>
+                                    <span class="delete"><button type="button" class="button-link wppoppop-del-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Delete Permanently', 'wppoppop'); ?></button></span>
+                                <?php else : ?>
+                                    <span class="edit"><button type="button" class="button-link wppoppop-edit-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Edit', 'wppoppop'); ?></button> | </span>
+                                    <span class="delete"><button type="button" class="button-link wppoppop-trash-ab-btn" data-uid="<?php echo esc_attr($c->uid); ?>"><?php esc_html_e('Trash', 'wppoppop'); ?></button></span>
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td class="column-variations">
@@ -80,11 +100,14 @@ $ab_cols  = '
                             <?php endif; ?>
                         </td>
                         <td class="column-status">
+                            <?php if ($is_trash) : ?>
+                            <span class="wpp-badge is-off"><?php esc_html_e('Trash', 'wppoppop'); ?></span>
+                            <?php else : ?>
                             <label class="wpp-ab-switch" title="<?php echo esc_attr($is_off ? __('Inactive', 'wppoppop') : __('Active', 'wppoppop')); ?>">
                                 <input type="checkbox" class="wpp-ab-status-toggle" data-uid="<?php echo esc_attr($c->uid); ?>" role="switch" aria-label="<?php esc_attr_e('Campaign active', 'wppoppop'); ?>"<?php echo $is_off ? '' : ' checked="checked"'; ?> />
                                 <span class="wpp-ab-switch-slider" aria-hidden="true"></span>
                             </label>
-                            <span class="wpp-badge <?php echo $is_off ? 'is-off' : 'is-on'; ?>"><?php echo $is_off ? esc_html__('Inactive', 'wppoppop') : esc_html__('Active', 'wppoppop'); ?></span>
+                            <?php endif; /* WPPOPPOP_AB_MATCH */ ?>
                         </td>
                         <td class="column-shortcode">
                             <code class="wppoppop-shortcode-chip wppoppop-copy-ab-sc-btn" data-shortcode="<?php echo esc_attr($shortcode); ?>" title="<?php esc_attr_e('Click to copy shortcode', 'wppoppop'); ?>"><?php echo esc_html($shortcode); ?></code>
@@ -93,6 +116,7 @@ $ab_cols  = '
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
-        <tfoot><tr><?php echo absint( $ab_cols ); ?></tr></tfoot>
+        <tfoot><tr><?php echo $ab_cols; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr()/esc_html() above ?></tr></tfoot>
     </table>
+    <?php $ab_pos = 'bottom'; include WPPOPPOP_PATH . 'templates/ab/pagination.php'; ?>
 </div>

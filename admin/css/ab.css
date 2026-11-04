@@ -69,3 +69,64 @@
 .wpp-ab-table-wrap td.column-status { white-space: nowrap; }
 .wpp-ab-table-wrap .row-actions .edit .button-link { color: var(--wpp-c-link, #2271b1); }
 .wpp-ab-pop-off { color: var(--wpp-c-warning, #d97706); font-size: 11px; }
+
+/* WPPOPPOP_AB_FILTERS: status views + search + pagination */
+.wppoppop-ab-wrap .wppoppop-ab-toolbar { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 8px; }
+.wppoppop-ab-wrap .wppoppop-ab-toolbar ul.subsubsub { float: none; display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 8px; margin: 8px 0; padding: 0; font-size: 0; line-height: 1; white-space: normal; -webkit-box-flex: 1; -ms-flex: 1 1 auto; flex: 1 1 auto; }
+.wppoppop-ab-wrap .wppoppop-ab-toolbar ul.subsubsub li { display: block; margin: 0; padding: 0; font-size: 0; }
+.wppoppop-ab-wrap a.wppoppop-view-btn { position: relative; display: inline-block; padding: 10px 16px; font-size: 14px; line-height: 1; color: var(--wpp-c-secondary-text, #3c434a); text-decoration: none; background: var(--wpp-c-secondary-bg, #f6f7f7); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-button, 4px); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.wppoppop-ab-wrap a.wppoppop-view-btn:hover { background: var(--wpp-c-secondary-hover, #fff); border-color: var(--wpp-c-border-strong, #c3c4c7); }
+.wppoppop-ab-wrap a.wppoppop-view-btn .count { color: var(--wpp-c-danger, #d63638); font-size: var(--wpp-fs-small, 12px); font-weight: 400; }
+.wppoppop-ab-wrap a.wppoppop-view-btn.current { background: var(--wpp-c-primary, #c0281c); border-color: var(--wpp-c-primary-hover, #a62016); color: var(--wpp-c-primary-text, #fff); font-weight: 700; }
+.wppoppop-ab-wrap a.wppoppop-view-btn.current .count { color: var(--wpp-c-primary-text, #fff); font-weight: 700; }
+.wppoppop-ab-wrap .wppoppop-ab-toolbar .search-box { float: none; position: static; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 6px; margin: 0; padding: 0; width: auto; max-width: 100%; -webkit-box-flex: 0; -ms-flex: 0 0 auto; flex: 0 0 auto; }
+.wppoppop-ab-wrap .wppoppop-ab-toolbar .search-box input[type="search"] { float: none; margin: 0; min-width: 220px; -webkit-appearance: none; appearance: none; }
+.wppoppop-ab-wrap .wppoppop-ab-toolbar .search-box .button { float: none; margin: 0; }
+.wppoppop-ab-wrap .wppoppop-ab-search-clear { text-decoration: none; font-size: var(--wpp-fs-small, 12px); }
+.wppoppop-ab-wrap .tablenav .tablenav-pages { float: right; margin: 4px 0 8px; }
+.wppoppop-ab-wrap .tablenav .tablenav-pages .pagination-links { margin-left: 6px; }
+.wppoppop-ab-wrap .row-actions .untrash .button-link { color: var(--wpp-c-link, #2271b1); text-decoration: none; font-size: var(--wpp-fs-small, 12px); min-height: 0; height: auto; border: 0; background: none; padding: 0; cursor: pointer; }
+.wppoppop-ab-wrap .row-actions .untrash .button-link:hover { text-decoration: underline; }
+@media (max-width: 782px) {
+    .wppoppop-ab-wrap .wppoppop-ab-toolbar .search-box { width: 100%; }
+    .wppoppop-ab-wrap .wppoppop-ab-toolbar .search-box input[type="search"] { -webkit-box-flex: 1; -ms-flex: 1 1 auto; flex: 1 1 auto; min-width: 0; }
+}
+
+/* WPPOPPOP_AB_MATCH: mirror the Popups page look (same tokens, same sizes) */
+.wppoppop-ab-wrap .wpp-modal-backdrop,
+.wppoppop-ab-wrap .wpp-modal-backdrop *,
+.wppoppop-ab-wrap .wpp-ab-vars,
+.wppoppop-ab-wrap .wpp-ab-var,
+.wppoppop-ab-wrap .wpp-ab-switch,
+.wppoppop-ab-wrap .wpp-ab-switch * { box-sizing: border-box; }
+
+.wppoppop-ab-wrap .row-actions button.button-link { display: inline; gap: 0; height: auto; min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 13px; font-weight: 400; line-height: inherit; }
+.wppoppop-ab-wrap .row-actions .edit button.button-link,
+.wppoppop-ab-wrap .row-actions .untrash button.button-link { color: var(--wpp-c-link, #2271b1); }
+.wppoppop-ab-wrap .row-actions .delete button.button-link { color: var(--wpp-c-danger, #b32d2e); }
+.wppoppop-ab-wrap button.wpp-modal-close { display: block; gap: 0; height: auto; min-height: 0; padding: 0; border-radius: 0; font-size: 22px; font-weight: 400; line-height: 1; }
+
+.wppoppop-ab-wrap .wppoppop-table-wrap { width: 100%; margin-top: 16px; }
+.wppoppop-ab-wrap .wppoppop-table-wrap table.wp-list-table { border: var(--wpp-bw, 1px) solid var(--wpp-c-border-strong, #c3c4c7); }
+.wppoppop-ab-wrap .wppoppop-table-wrap table.wp-list-table td { vertical-align: middle; }
+.wppoppop-ab-wrap .wppoppop-table-wrap .tablenav.top { clear: both; }
+.wppoppop-ab-wrap .wppoppop-table-wrap .tablenav .tablenav-pages { float: right; margin: 0 0 9px; }
+
+.wppoppop-ab-wrap .wppoppop-table-wrap ul.subsubsub { float: none; display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; padding: 0; font-size: 0; line-height: 1; white-space: normal; }
+.wppoppop-ab-wrap .wppoppop-table-wrap ul.subsubsub li { display: block; margin: 0; padding: 0; font-size: 0; }
+.wppoppop-ab-wrap .wppoppop-table-wrap a.wppoppop-view-btn { position: relative; display: inline-block; padding: 11px 16px; font-size: 14px; line-height: 1; color: var(--wpp-c-secondary-text, #3c434a); text-decoration: none; background: var(--wpp-c-secondary-bg, #f6f7f7); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-button, 4px); box-shadow: 0 1px 2px rgba(0,0,0,.08); font-weight: 400; }
+.wppoppop-ab-wrap .wppoppop-table-wrap a.wppoppop-view-btn:hover { background: var(--wpp-c-secondary-hover, #fff); border-color: var(--wpp-c-border-strong, #c3c4c7); color: var(--wpp-c-secondary-text, #1d2327); }
+.wppoppop-ab-wrap .wppoppop-table-wrap a.wppoppop-view-btn .count { color: var(--wpp-c-danger, #d63638); font-size: var(--wpp-fs-small, 12px); font-weight: 400; }
+.wppoppop-ab-wrap .wppoppop-table-wrap a.wppoppop-view-btn.current { background: var(--wpp-c-primary, #c0281c); border-color: var(--wpp-c-primary-hover, #a62016); color: var(--wpp-c-primary-text, #fff); font-weight: 700; }
+.wppoppop-ab-wrap .wppoppop-table-wrap a.wppoppop-view-btn.current .count { color: var(--wpp-c-primary-text, #fff); font-weight: 700; }
+.wppoppop-ab-wrap .wppoppop-table-wrap a.wppoppop-view-btn.current::after { content: ""; position: absolute; left: 14px; bottom: -9px; width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 9px solid var(--wpp-c-primary, #c0281c); }
+.wppoppop-ab-wrap .wppoppop-list-toolbar .search-box input[type="search"] { min-width: 200px; }
+
+.wppoppop-ab-wrap .wppoppop-table-wrap td.column-title a.row-title,
+.wppoppop-ab-wrap .wppoppop-table-wrap td.column-title .wpp-ab-title { font-size: var(--wpp-fs-table, 14px); font-weight: var(--wpp-fw-heading, 600); }
+.wppoppop-ab-wrap .wppoppop-table-wrap .wppoppop-inactive-badge,
+.wppoppop-ab-wrap .wppoppop-table-wrap .wppoppop-active-badge { display: inline-block; margin-left: 6px; padding: 2px 8px; vertical-align: middle; background: var(--wpp-c-warning, #d97706); color: #fff; border-radius: var(--wpp-r-badge, 12px); font-size: var(--wpp-fs-badge, 11px); font-weight: 700; line-height: 1.5; letter-spacing: .4px; text-transform: uppercase; white-space: nowrap; }
+.wppoppop-ab-wrap .wppoppop-table-wrap .wppoppop-active-badge { background: var(--wpp-c-success, #16a34a); }
+
+.wppoppop-ab-wrap .wpp-ab-table-wrap label.wpp-ab-switch { margin: 0; }
+.wppoppop-ab-wrap .wppoppop-table-wrap td.column-shortcode code.wppoppop-shortcode-chip { display: block; min-width: 0; max-width: 100%; padding: 8px 12px; margin: 0; background: var(--wpp-c-chip-bg, #e9e9e9); border: var(--wpp-bw, 1px) solid var(--wpp-c-chip-border, #e9e9e9); border-radius: var(--wpp-r-button, 4px); color: var(--wpp-c-chip-text, #50575e); font-family: var(--wpp-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace); font-size: var(--wpp-fs-small, 11px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; -webkit-user-select: all; user-select: all; }

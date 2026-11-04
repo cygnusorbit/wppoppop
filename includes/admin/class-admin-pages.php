@@ -42,7 +42,9 @@ class WpPopPop_Admin_Pages {
 
     public function render_ab() {
         global $wpdb;
-        $campaigns = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wppoppop_campaigns ORDER BY id DESC");
+        require_once WPPOPPOP_PATH . 'includes/admin/class-admin-ab-query.php'; // WPPOPPOP_AB_FILTERS
+        $ab_state  = WpPopPop_Admin_AB_Query::run();
+        $campaigns = $ab_state['items'];
         include WPPOPPOP_PATH . 'templates/ab-view.php';
     }
 

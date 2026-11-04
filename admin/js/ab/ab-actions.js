@@ -77,7 +77,7 @@
         bindDelete: function() {
             var self = this;
             $('.wppoppop-del-ab-btn').on('click', function() {
-                if (!confirm(wp.i18n.__('Are you sure you want to delete this A/B testing campaign?', 'wppoppop'))) {
+                if (!confirm(wp.i18n.__('Permanently delete this A/B testing campaign? This cannot be undone.', 'wppoppop'))) {
                     return;
                 }
 
@@ -91,7 +91,7 @@
                     uid: uid
                 }).done(function(res) {
                     if (res.success) {
-                        $row.fadeOut(200, function() { $(this).remove(); });
+                        window.location.reload();
                     } else {
                         alert(wp.i18n.__('Deletion Error:', 'wppoppop') + ' ' + (res.data ? res.data.message : wp.i18n.__('Unable to delete campaign.', 'wppoppop')));
                     }
