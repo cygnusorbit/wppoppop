@@ -3,10 +3,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 $msgs = [
-    'saved'        => ['success', 'Theme saved.'],
-    'reset'        => ['success', 'Theme reset to defaults.'],
-    'imported'     => ['success', 'Theme imported.'],
-    'import_error' => ['error', 'Import failed: invalid JSON.'],
+    'saved'        => ['success', __('Theme saved.', 'wppoppop')],
+    'reset'        => ['success', __('Theme reset to defaults.', 'wppoppop')],
+    'imported'     => ['success', __('Theme imported.', 'wppoppop')],
+    'import_error' => ['error', __('Import failed: invalid JSON.', 'wppoppop')],
 ];
 $bar_title   = __('Theme', 'wppoppop');
 $bar_icon    = 'dashicons-art';

@@ -13,7 +13,7 @@
             $('#wppoppop-reset-cookies-btn').on('click', function(e) {
                 e.preventDefault();
 
-                if (!confirm('Are you sure you want to invalidate all visitor cookies? All dismissed or submitted popups will reappear immediately.')) {
+                if (!confirm(wp.i18n.__('Are you sure you want to invalidate all visitor cookies? All dismissed or submitted popups will reappear immediately.', 'wppoppop'))) {
                     return;
                 }
 

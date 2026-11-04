@@ -27,14 +27,14 @@ class WpPopPop_Ajax_Submissions {
 
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized'], 403);
+            wp_send_json_error(['message' => __('Unauthorized', 'wppoppop')], 403);
         }
 
         $uid = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
         $key = ($uid !== '') ? $uid : '_default';
         $raw = isset($_POST['config']) ? json_decode(wp_unslash($_POST['config']), true) : null;
         if (!is_array($raw)) {
-            wp_send_json_error(['message' => 'Invalid payload.']);
+            wp_send_json_error(['message' => __('Invalid payload.', 'wppoppop')]);
         }
 
         // Whitelist: labels
@@ -94,7 +94,7 @@ class WpPopPop_Ajax_Submissions {
 
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized'], 403);
+            wp_send_json_error(['message' => __('Unauthorized', 'wppoppop')], 403);
         }
         $uid = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
         global $wpdb;
@@ -198,7 +198,7 @@ class WpPopPop_Ajax_Submissions {
 
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized'], 403);
+            wp_send_json_error(['message' => __('Unauthorized', 'wppoppop')], 403);
         }
 
         $ids   = isset($_POST['ids']) && is_array($_POST['ids']) ? array_map('intval', wp_unslash($_POST['ids'])) : [];
@@ -209,7 +209,7 @@ class WpPopPop_Ajax_Submissions {
         }
         $ids   = array_slice(array_filter($ids), 0, 500);
         if (empty($ids) || ($mode !== 'clear' && $label === '')) {
-            wp_send_json_error(['message' => 'Nothing to update.']);
+            wp_send_json_error(['message' => __('Nothing to update.', 'wppoppop')]);
         }
 
         $map = get_option('wppoppop_sub_label_map', []);
@@ -242,7 +242,7 @@ class WpPopPop_Ajax_Submissions {
     private function verify_nonce() {
         $n = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
         if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
-            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')], 403);
         }
     }
 
@@ -259,7 +259,7 @@ class WpPopPop_Ajax_Submissions {
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=wppoppop-submissions-' . date('Y-m-d') . '.csv');
         $output = fopen('php://output', 'w');
-        fputcsv($output, ['ID', 'Popup', 'Email', 'Country', 'Status', 'Form Fields', 'Date']);
+        fputcsv($output, ['ID', 'Popup', 'Email', 'Country', 'Status', __('Form Fields', 'wppoppop'), 'Date']);
         foreach ($rows as $row) {
             fputcsv($output, [$row['id'], $row['popup_title'], $row['email'], $row['country_code'], ucfirst($row['status']), $row['fields_data'], $row['created_at']]);
         }
@@ -270,10 +270,10 @@ class WpPopPop_Ajax_Submissions {
     public function mark_submission_read() {
         $n = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
         if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
-            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')], 403);
         }
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.'], 403);
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')], 403);
         }
         $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
         if ($id > 0) {
@@ -286,19 +286,19 @@ class WpPopPop_Ajax_Submissions {
     public function mark_submission_unread() {
         $n = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
         if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
-            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')], 403);
         }
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.'], 403);
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')], 403);
         }
         $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
         if ($id <= 0) {
-            wp_send_json_error(['message' => 'Invalid submission.']);
+            wp_send_json_error(['message' => __('Invalid submission.', 'wppoppop')]);
         }
         global $wpdb;
         $ok = $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['is_read' => 0], ['id' => $id], ['%d'], ['%d']);
         if ($ok === false) {
-            wp_send_json_error(['message' => 'Database error while saving.']);
+            wp_send_json_error(['message' => __('Database error while saving.', 'wppoppop')]);
         }
         wp_send_json_success(['id' => $id]);
     }
@@ -315,11 +315,11 @@ class WpPopPop_Ajax_Submissions {
 
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.']);
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')]);
         }
         global $wpdb;
         $wpdb->delete($wpdb->prefix . 'wppoppop_submissions', ['id' => intval($_POST['id'])]);
-        wp_send_json_success(['message' => 'Record permanently deleted.']);
+        wp_send_json_success(['message' => __('Record permanently deleted.', 'wppoppop')]);
     }
 
     public function anonymize_submission() {
@@ -334,11 +334,11 @@ class WpPopPop_Ajax_Submissions {
 
         $this->verify_nonce();
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.']);
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')]);
         }
         $id = intval($_POST['id']);
         global $wpdb;
         $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['email' => 'anonymized_' . $id . '@privacy.local', 'fields_data' => wp_json_encode(['gdpr' => 'anonymized'])], ['id' => $id]);
-        wp_send_json_success(['message' => 'PII anonymized.']);
+        wp_send_json_success(['message' => __('PII anonymized.', 'wppoppop')]);
     }
 }

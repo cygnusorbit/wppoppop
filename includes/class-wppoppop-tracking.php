@@ -331,7 +331,7 @@ class WpPopPop_Tracking {
             $lines[] = sprintf('%s: %d impressions, %d leads, %s%% CR', $it->title, $i, $l, $i > 0 ? round($l / $i * 100, 1) : 0);
         }
         $body = sprintf("WpPopPop weekly report (since %s)\n\nTotal impressions: %d\nTotal leads: %d\nConversion rate: %s%%\n\n%s\n",
-            $since_d, $ti, $tl, $ti > 0 ? round($tl / $ti * 100, 1) : 0, $lines ? implode("\n", $lines) : 'No activity recorded.');
+            $since_d, $ti, $tl, $ti > 0 ? round($tl / $ti * 100, 1) : 0, $lines ? implode("\n", $lines) : __('No activity recorded.', 'wppoppop'));
         wp_mail($to, sprintf('[%s] WpPopPop weekly report', get_bloginfo('name')), $body);
     }
 }

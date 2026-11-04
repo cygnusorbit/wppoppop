@@ -194,7 +194,7 @@ class WpPopPop_Front_Renderer {
                          style="<?php echo esc_attr($display_style . $c_bg_style . $c_overflow_style . $c_radius_style); ?>width:<?php echo esc_attr($c_width); ?>px;height:<?php echo esc_attr($c_height); ?>px;max-width:100%;flex:0 0 auto;box-sizing:border-box;position:relative;">
 
                         <?php if (!$is_inline && $c_close_on): ?>
-                            <button type="button" class="wppoppop-close-btn wppoppop-default-close" data-uid="<?php echo esc_attr($uid); ?>" aria-label="Close" style="position:absolute;top:10px;right:10px;width:auto;height:auto;display:block;padding:0 4px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>
+                            <button type="button" class="wppoppop-close-btn wppoppop-default-close" data-uid="<?php echo esc_attr($uid); ?>" aria-label="<?php esc_attr_e('Close', 'wppoppop'); ?>" style="position:absolute;top:10px;right:10px;width:auto;height:auto;display:block;padding:0 4px;background:transparent;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1;z-index:9999999;">&times;</button>
                         <?php endif; ?>
                         <div class="wppoppop-canvas-content">
                             <?php 
@@ -212,7 +212,7 @@ class WpPopPop_Front_Renderer {
                         <?php if ($show_watermark): ?>
                             <div class="wppoppop-watermark-badge" style="position:absolute;bottom:8px;right:12px;z-index:9999;user-select:none;">
                                 <a href="https://github.com/cygnusorbit/wppoppop" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.85);border:1px solid #e2e8f0;border-radius:12px;padding:2px 8px;font-size:10px;color:#64748b;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-                                    <span>Powered by</span> <strong style="color:#1e293b;">WpPopPop</strong>
+                                    <span><?php esc_html_e('Powered by', 'wppoppop'); ?></span> <strong style="color:#1e293b;">WpPopPop</strong>
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -593,7 +593,7 @@ class WpPopPop_Front_Renderer {
                         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email wppoppop-el-textfield ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_em_inner . '</div>';
                     }
                 }
-                $ph = !empty($content) ? esc_attr($content) : 'Enter your email...';
+                $ph = !empty($content) ? esc_attr($content) : esc_attr__('Enter your email...', 'wppoppop');
                 return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-email ' . $anim_class . '" style="' . $style_attr . '"><input type="email" name="email"' . $wppoppop_ac_attr . ' class="wppoppop-field-email" placeholder="' . $ph . '" required style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
             case 'number':
@@ -608,7 +608,7 @@ class WpPopPop_Front_Renderer {
                         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-number wppoppop-el-textfield ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_nm_inner . '</div>';
                     }
                 }
-                $ph = !empty($content) ? esc_attr($content) : 'Enter number...';
+                $ph = !empty($content) ? esc_attr($content) : esc_attr__('Enter number...', 'wppoppop');
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="number" name="number_field"' . $wppoppop_ac_attr . ' placeholder="' . $ph . '" style="width:100%;height:100%;padding:0 10px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;"></div>';
 
             case 'select':
@@ -675,7 +675,7 @@ class WpPopPop_Front_Renderer {
                         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-checkbox ' . $anim_class . '" style="' . $style_attr . ';padding:0!important' . (!empty($box_shadow_val) ? ';box-shadow:' . esc_attr($box_shadow_val) : '') . '">' . $wppoppop_cb_inner . '</div>';
                     }
                 }
-                $label = !empty($content) ? esc_html($content) : 'I agree to the terms';
+                $label = !empty($content) ? esc_html($content) : esc_html__('I agree to the terms', 'wppoppop');
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;gap:6px;font-size:12px;"><label style="cursor:pointer;"><input type="checkbox" name="agreement" value="1" checked> <span>' . $label . '</span></label></div>';
 
             case 'rating':
@@ -700,7 +700,7 @@ class WpPopPop_Front_Renderer {
                         return '<div class="wppoppop-layer-item wppoppop-element wppoppop-el-date ' . $anim_class . '" style="' . $style_attr . ';padding:0!important">' . $wppoppop_dt_inner . '</div>';
                     }
                 }
-                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="text" name="date_picker" class="wppoppop-datepicker-input wppoppop-datepicker wppoppop-front-date" style="width:100%;height:100%;padding:0 8px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;" placeholder="Select date..."></div>'; /* WPPOPPOP_DATE_FIX: class parity with decomposed renderer */
+                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><input type="text" name="date_picker" class="wppoppop-datepicker-input wppoppop-datepicker wppoppop-front-date" style="width:100%;height:100%;padding:0 8px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;" placeholder="' . esc_attr__('Select date...', 'wppoppop') . '"></div>'; /* WPPOPPOP_DATE_FIX: class parity with decomposed renderer */
 
             case 'slider':
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . ';display:flex;align-items:center;padding:0 8px;"><input type="range" name="range_slider" min="1" max="100" style="width:100%;"></div>';
@@ -756,14 +756,14 @@ class WpPopPop_Front_Renderer {
 
             case 'step_btn':
                 $target_canvas = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : (!empty($el['goto_screen']) ? intval($el['goto_screen']) : 2);
-                $btn_text = !empty($content) ? esc_html($content) : 'Next Canvas &rarr;';
+                $btn_text = !empty($content) ? esc_html($content) : esc_html__('Next Canvas →', 'wppoppop');
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-next-canvas-btn wppoppop-next-screen-btn wppoppop-next-step" data-goto-canvas="' . esc_attr($target_canvas) . '" data-goto-screen="' . esc_attr($target_canvas) . '" data-goto="' . esc_attr($target_canvas) . '" style="width:100%;height:100%;background:#2563eb;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
 
             case 'button':
             case 'link':
             case 'link_btn':
                 /* WPPOPPOP_BUTTON_CASE: honour label, click action, new tab, nofollow and visual style */
-                $bt_label = (isset($el['content']) && trim((string) $el['content']) !== '') ? esc_html($el['content']) : 'Click Here';
+                $bt_label = (isset($el['content']) && trim((string) $el['content']) !== '') ? esc_html($el['content']) : esc_html__('Click Here', 'wppoppop');
                 $bt_act = isset($el['buttonAction']) ? (string) $el['buttonAction'] : 'link';
                 if ($bt_act === 'url') { $bt_act = 'link'; }
                 if ($bt_act === 'goto_canvas') { $bt_act = 'step'; }
@@ -808,7 +808,7 @@ class WpPopPop_Front_Renderer {
 
             case 'submit':
                 /* WPPOPPOP_SUBMIT_CASE: label, loading text, post-submit routing, typography, hover */
-                $sb_label = (isset($el['content']) && trim((string) $el['content']) !== '') ? esc_html($el['content']) : 'Submit Form';
+                $sb_label = (isset($el['content']) && trim((string) $el['content']) !== '') ? esc_html($el['content']) : esc_html__('Submit Form', 'wppoppop');
                 $sb_loading = (isset($el['loadingText']) && trim((string) $el['loadingText']) !== '') ? (string) $el['loadingText'] : 'Submitting...';
                 $sb_act = (isset($el['submitAction']) && in_array($el['submitAction'], array('default', 'next_canvas', 'redirect'), true)) ? $el['submitAction'] : 'default';
                 $sb_canvas = !empty($el['goto_canvas']) ? max(1, intval($el['goto_canvas'])) : (!empty($el['goto_screen']) ? max(1, intval($el['goto_screen'])) : 2);
@@ -880,7 +880,7 @@ class WpPopPop_Front_Renderer {
                     . '</button>'
                     . (isset($sb_hover) ? $sb_hover : $hover_style_tag) . '</div>';
             case 'pay':
-                $btn_text = !empty($content) ? esc_html($content) : 'Pay Now';
+                $btn_text = !empty($content) ? esc_html($content) : esc_html__('Pay Now', 'wppoppop');
                 return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-pay-trigger" data-amount="19.99" data-currency="USD" style="width:100%;height:100%;background:#059669;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
 
             case 'close':

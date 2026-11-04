@@ -20,7 +20,7 @@ class WpPopPop_Widget extends WP_Widget {
             'WpPopPop Popup Widget',
             [
                 'classname'   => 'widget_wppoppop',
-                'description' => 'Display an embedded popup campaign or click trigger button in any sidebar or widget area.',
+                'description' => __('Display an embedded popup campaign or click trigger button in any sidebar or widget area.', 'wppoppop'),
             ]
         );
 

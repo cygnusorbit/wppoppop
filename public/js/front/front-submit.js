@@ -222,19 +222,19 @@
                     body: JSON.stringify(payload)
                 }).then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); }).then(function(o) {
                     if (!o.ok || (o.json && o.json.code && !o.json.success)) {
-                        $btn.prop('disabled', false).text('Submit');
-                        alert((o.json && o.json.message) || 'Submission failed. Please try again.');
+                        $btn.prop('disabled', false).text(wp.i18n.__('Submit', 'wppoppop'));
+                        alert((o.json && o.json.message) || wp.i18n.__('Submission failed. Please try again.', 'wppoppop'));
                         return;
                     }
                     handleSuccess(o.json);
                 }).catch(function() {
-                    $btn.prop('disabled', false).text('Submit');
-                    alert('Submission error. Please check your connection.');
+                    $btn.prop('disabled', false).text(wp.i18n.__('Submit', 'wppoppop'));
+                    alert(wp.i18n.__('Submission error. Please check your connection.', 'wppoppop'));
                 });
             } else {
                 $.post(ajaxUrl, Object.assign({ action: 'wppoppop_submit_form', nonce: (window.wppoppop_front_vars && window.wppoppop_front_vars.nonce) || '', popup_uid: uid }, payload)).done(function(res) {
-                    if (res && res.success) { handleSuccess(res); } else { $btn.prop('disabled', false).text('Submit'); alert((res && res.data && res.data.message) || 'Submission failed.'); }
-                }).fail(function() { $btn.prop('disabled', false).text('Submit'); alert('Submission error. Please check your connection.'); });
+                    if (res && res.success) { handleSuccess(res); } else { $btn.prop('disabled', false).text(wp.i18n.__('Submit', 'wppoppop')); alert((res && res.data && res.data.message) || wp.i18n.__('Submission failed.', 'wppoppop')); }
+                }).fail(function() { $btn.prop('disabled', false).text(wp.i18n.__('Submit', 'wppoppop')); alert(wp.i18n.__('Submission error. Please check your connection.', 'wppoppop')); });
             }
         },
 
@@ -256,7 +256,7 @@
                 gateway: 'Stripe'
             }).done(function(res) {
                 if (res.success) {
-                    alert(res.data.message || 'Payment completed!');
+                    alert(res.data.message || wp.i18n.__('Payment completed!', 'wppoppop'));
                     window.WpPopPopFront.Display.close($popup, config);
                 }
             }).always(function() {

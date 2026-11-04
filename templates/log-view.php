@@ -11,7 +11,7 @@ $notice_msg = '';
 if (isset($_POST['wppoppop_clear_logs']) && check_admin_referer('wppoppop_clear_logs_action', 'wppoppop_clear_logs_nonce')) {
     if (current_user_can('manage_options')) {
         $wpdb->query("TRUNCATE TABLE {$table}");
-        $notice_msg = 'All event logs have been successfully cleared.';
+        $notice_msg = __('All event logs have been successfully cleared.', 'wppoppop');
     }
 }
 

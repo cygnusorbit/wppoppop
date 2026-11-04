@@ -114,7 +114,7 @@
             .on('click.wppLc', '#wppoppop-lc-save', function (e) { e.preventDefault(); save(); })
             .on('click.wppLc', '#wppoppop-lc-reset', function (e) {
                 e.preventDefault();
-                if (window.confirm('Reset categories to the defaults? Your changes in this dialog will be replaced.')) { render(DEFAULTS); }
+                if (window.confirm(wp.i18n.__('Reset categories to the defaults? Your changes in this dialog will be replaced.', 'wppoppop'))) { render(DEFAULTS); }
             })
             .on('click.wppLc', '#wppoppop-lib-cats-modal .lc-up', function (e) {
                 e.preventDefault();

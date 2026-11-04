@@ -44,13 +44,13 @@ if (!defined('ABSPATH')) {
                                 data-width="<?php echo esc_attr($tpl['config']['meta']['width']); ?>"
                                 data-height="<?php echo esc_attr($tpl['config']['meta']['height']); ?>"
                                 data-config='<?php echo esc_attr($json_str); ?>'>
-                            Preview
+                            <?php esc_html_e('Preview', 'wppoppop'); ?>
                         </button>
                         <button type="button" class="button button-small button-primary <?php echo (!empty($tpl['user']) || !empty($tpl['preset'])) ? 'wppoppop-usertpl-use' : 'wppoppop-tpl-import-btn'; ?>" 
                                 data-id="<?php echo esc_attr($tpl['id']); ?>" 
                                 data-title="<?php echo esc_attr($tpl['title']); ?>" 
                                 data-config='<?php echo esc_attr($json_str); ?>'>
-                            Import & Edit
+                            <?php esc_html_e('Import & Edit', 'wppoppop'); ?>
                         </button>
                     </div>
                 </div>

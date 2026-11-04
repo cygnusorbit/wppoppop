@@ -13,15 +13,15 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
         <div class="tablenav <?php echo esc_attr($pos); ?>">
             <div class="alignleft actions bulkactions">
                 <select class="wppoppop-bulk-select">
-                    <option value="">Bulk actions</option>
-                    <option value="delete">Delete</option>
-                    <option value="anonymize">Anonymize (GDPR)</option>
+                    <option value=""><?php esc_html_e('Bulk actions', 'wppoppop'); ?></option>
+                    <option value="delete"><?php esc_html_e('Delete', 'wppoppop'); ?></option>
+                    <option value="anonymize"><?php esc_html_e('Anonymize (GDPR)', 'wppoppop'); ?></option>
                     <?php foreach ((array) $labels as $l) : if (empty($l['id'])) { continue; } ?>
                         <option value="label:<?php echo esc_attr($l['id']); ?>">Add label: <?php echo esc_html($l['name']); ?></option>
                     <?php endforeach; ?>
-                    <option value="unlabel">Remove all labels</option>
+                    <option value="unlabel"><?php esc_html_e('Remove all labels', 'wppoppop'); ?></option>
                 </select>
-                <button type="button" class="button wppoppop-bulk-apply">Apply</button>
+                <button type="button" class="button wppoppop-bulk-apply"><?php esc_html_e('Apply', 'wppoppop'); ?></button>
             </div>
             <div class="tablenav-pages wppoppop-pager">
                 <span class="displaying-num"></span>
@@ -102,7 +102,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
     <?php if (empty($submissions)) : ?>
         <tr class="wppoppop-empty-row">
             <td colspan="<?php echo (int) $colspan; ?>" style="text-align:center;padding:30px 10px;color:#64748b;">
-                No leads captured yet. Published popups with form elements will log submission records here.
+                <?php esc_html_e('No leads captured yet. Published popups with form elements will log submission records here.', 'wppoppop'); ?>
             </td>
         </tr>
     <?php else : foreach ($submissions as $s) :
@@ -117,7 +117,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
         $country      = !empty($s->country_code) ? $s->country_code : '—';
         $ts           = strtotime($s->created_at);
         $date_label   = $ts ? date_i18n('j/n/Y g:i A', $ts) : $s->created_at;
-        $popup_title  = $s->popup_title ? $s->popup_title : 'Untitled Popup';
+        $popup_title  = $s->popup_title ? $s->popup_title : __('Untitled Popup', 'wppoppop');
         $row_labels   = [];
         if (!empty($label_map[$s->id]) && is_array($label_map[$s->id])) {
             foreach ($label_map[$s->id] as $lid) {
@@ -204,11 +204,11 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                         </span>
                         <?php echo ($c === $dot_col) ? $unread_dot : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>><?php echo esc_html($val); ?></a>
                         <div class="row-actions">
-                            <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>>View</a> | </span>
-                            <span class="mark-unread-wrap"><a href="#" class="wppoppop-mark-unread-btn" data-id="<?php echo esc_attr($s->id); ?>">Mark as unread</a> | </span>
-                            <span class="mark-read-wrap"><a href="#" class="wppoppop-mark-read-btn" data-id="<?php echo esc_attr($s->id); ?>">Mark as read</a> | </span>
-                            <span class="anon"><a href="#" class="wppoppop-anon-sub-btn" data-id="<?php echo esc_attr($s->id); ?>" title="Anonymize PII (GDPR)">Anonymize</a> | </span>
-                            <span class="trash"><a href="#" class="wppoppop-del-sub-btn" data-id="<?php echo esc_attr($s->id); ?>">Delete</a></span>
+                            <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>><?php esc_html_e('View', 'wppoppop'); ?></a> | </span>
+                            <span class="mark-unread-wrap"><a href="#" class="wppoppop-mark-unread-btn" data-id="<?php echo esc_attr($s->id); ?>"><?php esc_html_e('Mark as unread', 'wppoppop'); ?></a> | </span>
+                            <span class="mark-read-wrap"><a href="#" class="wppoppop-mark-read-btn" data-id="<?php echo esc_attr($s->id); ?>"><?php esc_html_e('Mark as read', 'wppoppop'); ?></a> | </span>
+                            <span class="anon"><a href="#" class="wppoppop-anon-sub-btn" data-id="<?php echo esc_attr($s->id); ?>" title="<?php esc_attr_e('Anonymize PII (GDPR)', 'wppoppop'); ?>"><?php esc_html_e('Anonymize', 'wppoppop'); ?></a> | </span>
+                            <span class="trash"><a href="#" class="wppoppop-del-sub-btn" data-id="<?php echo esc_attr($s->id); ?>"><?php esc_html_e('Delete', 'wppoppop'); ?></a></span>
                         </div>
                     </td>
                 <?php else : ?>

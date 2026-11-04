@@ -69,8 +69,8 @@
             if (xhr.readyState !== 4) { return; }
             var res = null;
             try { res = JSON.parse(xhr.responseText); } catch (e) { res = null; }
-            if (xhr.status === 200 && res && res.success) { lastSaved = key; toast('Layout saved'); }
-            else { toast('Could not save the layout', true); }
+            if (xhr.status === 200 && res && res.success) { lastSaved = key; toast(wp.i18n.__('Layout saved', 'wppoppop')); }
+            else { toast(wp.i18n.__('Could not save the layout', 'wppoppop'), true); }
         };
         xhr.send(parts.join('&'));
     }

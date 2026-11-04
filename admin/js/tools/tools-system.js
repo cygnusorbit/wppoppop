@@ -19,7 +19,7 @@
                 var reportText = $('#wppoppop-system-report-text').val() || '';
 
                 if (!reportText) {
-                    alert('System report data is currently unavailable.');
+                    alert(wp.i18n.__('System report data is currently unavailable.', 'wppoppop'));
                     return;
                 }
 
@@ -48,10 +48,10 @@
                         if (successful) {
                             showSuccess();
                         } else {
-                            alert('Unable to copy to clipboard. Please manually copy the report text.');
+                            alert(wp.i18n.__('Unable to copy to clipboard. Please manually copy the report text.', 'wppoppop'));
                         }
                     } catch (err) {
-                        alert('Clipboard copy is not supported in this browser. Please use the Download option.');
+                        alert(wp.i18n.__('Clipboard copy is not supported in this browser. Please use the Download option.', 'wppoppop'));
                     }
                     $textarea.css('display', 'none');
                 }
@@ -63,7 +63,7 @@
                 e.preventDefault();
                 var reportText = $('#wppoppop-system-report-text').val() || '';
                 if (!reportText) {
-                    alert('System report data is currently unavailable.');
+                    alert(wp.i18n.__('System report data is currently unavailable.', 'wppoppop'));
                     return;
                 }
 

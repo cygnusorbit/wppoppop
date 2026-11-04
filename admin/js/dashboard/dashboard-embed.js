@@ -81,7 +81,7 @@
                 if (successful) {
                     triggerSuccess();
                 } else {
-                    window.prompt('Copy to clipboard (Cmd/Ctrl+C, Enter):', str);
+                    window.prompt(wp.i18n.__('Copy to clipboard (Cmd/Ctrl+C, Enter):', 'wppoppop'), str);
                 }
             }
 

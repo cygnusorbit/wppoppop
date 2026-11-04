@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 18. Notifications -->
 <div class="wppoppop-acc-item" id="wppoppop-ntf-acc">
-    <button type="button" class="wppoppop-acc-header">Notifications</button>
+    <button type="button" class="wppoppop-acc-header"><?php esc_html_e('Notifications', 'wppoppop'); ?></button>
     <div class="wppoppop-acc-body" style="display:none;">
         <p class="description" style="margin:0 0 10px;font-style:italic;"><?php esc_html_e('After a successful form submission the notification, welcome, thank-you or any other email can be sent. You can customize these emails and use conditional logic.', 'wppoppop'); ?></p>
         <div id="wppoppop-ntf-list"></div>

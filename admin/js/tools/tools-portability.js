@@ -58,7 +58,7 @@
                             if ($form.length) {
                                 $form.off('submit').submit();
                             } else {
-                                alert((response.data && response.data.message) ? response.data.message : 'Backup generation failed.');
+                                alert((response.data && response.data.message) ? response.data.message : wp.i18n.__('Backup generation failed.', 'wppoppop'));
                                 $btn.prop('disabled', false).html(origText);
                             }
                         }
@@ -68,7 +68,7 @@
                         if ($form.length) {
                             $form.off('submit').submit();
                         } else {
-                            alert('Server communication error. Please try again.');
+                            alert(wp.i18n.__('Server communication error. Please try again.', 'wppoppop'));
                             $btn.prop('disabled', false).html(origText);
                         }
                     }
@@ -86,7 +86,7 @@
 
                 var file = fileInput.files[0];
                 if (file.type && file.type !== 'application/json' && !file.name.endsWith('.json')) {
-                    alert('Please select a valid JSON file (*.json).');
+                    alert(wp.i18n.__('Please select a valid JSON file (*.json).', 'wppoppop'));
                     e.preventDefault();
                     return;
                 }
@@ -106,7 +106,7 @@
                         try {
                             var parsed = JSON.parse(evt.target.result);
                             if (!parsed || (typeof parsed !== 'object') || (!parsed.items && !parsed.campaigns)) {
-                                alert('Invalid backup file. The selected JSON does not contain valid WpPopPop campaigns or items.');
+                                alert(wp.i18n.__('Invalid backup file. The selected JSON does not contain valid WpPopPop campaigns or items.', 'wppoppop'));
                                 $btn.prop('disabled', false).html(origText);
                                 $status.hide();
                                 return;
@@ -139,7 +139,7 @@
                                         if (response.data && response.data.dry_run) { $btn.prop('disabled', false).html(origText); } else { setTimeout(function() { window.location.reload(); }, 1400); }
                                     } else {
                                         var errMsg = (response.data && response.data.message) ? response.data.message : 'Import failed.';
-                                        alert('Import Error: ' + errMsg);
+                                        alert(wp.i18n.__('Import Error:', 'wppoppop') + ' ' + errMsg);
                                         $btn.prop('disabled', false).html(origText);
                                         $status.hide();
                                     }
@@ -150,7 +150,7 @@
                                     if (form) {
                                         form.submit();
                                     } else {
-                                        alert('Network error while processing import.');
+                                        alert(wp.i18n.__('Network error while processing import.', 'wppoppop'));
                                         $btn.prop('disabled', false).html(origText);
                                         $status.hide();
                                     }
@@ -158,14 +158,14 @@
                             });
 
                         } catch (err) {
-                            alert('JSON Syntax Error: The file contents could not be parsed as valid JSON.');
+                            alert(wp.i18n.__('JSON Syntax Error: The file contents could not be parsed as valid JSON.', 'wppoppop'));
                             $btn.prop('disabled', false).html(origText);
                             $status.hide();
                         }
                     };
 
                     reader.onerror = function() {
-                        alert('Could not read the selected file.');
+                        alert(wp.i18n.__('Could not read the selected file.', 'wppoppop'));
                         $btn.prop('disabled', false).html(origText);
                         $status.hide();
                     };

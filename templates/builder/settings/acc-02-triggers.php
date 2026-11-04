@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 2. Display Triggers -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">Display Triggers</button>
+                <button type="button" class="wppoppop-acc-header"><?php esc_html_e('Display Triggers', 'wppoppop'); ?></button>
                 <div class="wppoppop-acc-body" style="display:none;">
                     <style id="wppoppop-trig-switch-css">
                         .wppoppop-trig-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 4px;font-size:13px;}
@@ -23,49 +23,49 @@ if (!defined('ABSPATH')) {
                         .wppoppop-trig-hr{border:0;border-top:1px solid #e2e8f0;margin:10px 0;}
                     </style>
 
-                    <div class="wppoppop-trig-row"><span>On Page Load</span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('On Page Load', 'wppoppop'); ?></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-load" value="1"><span class="wppoppop-sw-track"></span></label></div>
                     <div class="wppoppop-trig-sub" data-for="trig-load">
-                        <label for="trig-load-delay">Delay (seconds)</label>
+                        <label for="trig-load-delay"><?php esc_html_e('Delay (seconds)', 'wppoppop'); ?></label>
                         <input type="number" id="trig-load-delay" min="0" max="3600" step="1" value="0" placeholder="0" class="widefat">
                     </div>
 
-                    <div class="wppoppop-trig-row"><span>Popup All the Time on Page Load <small style="opacity:.7;font-weight:400;">(All Pages)</small></span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('Popup All the Time on Page Load', 'wppoppop'); ?> <small style="opacity:.7;font-weight:400;"><?php esc_html_e('(All Pages)', 'wppoppop'); ?></small></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-always" value="1"><span class="wppoppop-sw-track"></span></label></div>
-                    <div class="wppoppop-trig-sub" style="opacity:.8"><label style="text-transform:none;">Opens on every page load, even after the visitor closed it. Shows on every page of the site (subject to targeting rules).</label></div>
+                    <div class="wppoppop-trig-sub" style="opacity:.8"><label style="text-transform:none;"><?php esc_html_e('Opens on every page load, even after the visitor closed it. Shows on every page of the site (subject to targeting rules).', 'wppoppop'); ?></label></div>
 
-                    <div class="wppoppop-trig-row"><span>Popup All the Time on Page Load <small style="opacity:.7;font-weight:400;">(Embed Code Only)</small></span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('Popup All the Time on Page Load', 'wppoppop'); ?> <small style="opacity:.7;font-weight:400;"><?php esc_html_e('(Embed Code Only)', 'wppoppop'); ?></small></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-always-embed" value="1"><span class="wppoppop-sw-track"></span></label></div>
-                    <div class="wppoppop-trig-sub" style="opacity:.8"><label style="text-transform:none;">Opens on every page load, only on pages that contain this popup's shortcode or widget code. Not shown anywhere else.</label></div>
+                    <div class="wppoppop-trig-sub" style="opacity:.8"><label style="text-transform:none;"><?php esc_html_e('Opens on every page load, only on pages that contain this popup\'s shortcode or widget code. Not shown anywhere else.', 'wppoppop'); ?></label></div>
 
-                    <div class="wppoppop-trig-row"><span>Appear Continuously Every X Hours</span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('Appear Continuously Every X Hours', 'wppoppop'); ?></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-repeat" value="1"><span class="wppoppop-sw-track"></span></label></div>
                     <div class="wppoppop-trig-sub" data-for="trig-repeat">
-                        <label for="trig-repeat-hours">Repeat every (hours)</label>
+                        <label for="trig-repeat-hours"><?php esc_html_e('Repeat every (hours)', 'wppoppop'); ?></label>
                         <input type="number" id="trig-repeat-hours" min="1" max="720" step="1" value="24" placeholder="24" class="widefat">
                     </div>
 
                     <hr class="wppoppop-trig-hr">
 
-                    <div class="wppoppop-trig-row"><span>On Exit Intent</span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('On Exit Intent', 'wppoppop'); ?></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-exit" value="1"><span class="wppoppop-sw-track"></span></label></div>
                     <div class="wppoppop-trig-sub" data-for="trig-exit">
-                        <label for="set-exit-intent-sensitivity">Sensitivity Threshold (px top)</label>
+                        <label for="set-exit-intent-sensitivity"><?php esc_html_e('Sensitivity Threshold (px top)', 'wppoppop'); ?></label>
                         <input type="number" id="set-exit-intent-sensitivity" class="widefat" min="1" max="200" step="1" value="20" placeholder="20">
                     </div>
 
-                    <div class="wppoppop-trig-row"><span>On Scroll Depth (%)</span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('On Scroll Depth (%)', 'wppoppop'); ?></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-scroll" value="1"><span class="wppoppop-sw-track"></span></label></div>
                     <div class="wppoppop-trig-sub" data-for="trig-scroll">
-                        <label for="set-trigger-scroll-depth">Scroll Depth Trigger (%)</label>
+                        <label for="set-trigger-scroll-depth"><?php esc_html_e('Scroll Depth Trigger (%)', 'wppoppop'); ?></label>
                         <input type="number" id="set-trigger-scroll-depth" class="widefat" min="1" max="100" step="1" value="50" placeholder="50">
                         <input type="hidden" id="trig-scroll-val" value="50">
                     </div>
 
-                    <div class="wppoppop-trig-row"><span>On AdBlock Detected</span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('On AdBlock Detected', 'wppoppop'); ?></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-adblock" value="1"><span class="wppoppop-sw-track"></span></label></div>
 
-                    <div class="wppoppop-trig-row"><span>On Mobile Back-Button</span>
+                    <div class="wppoppop-trig-row"><span><?php esc_html_e('On Mobile Back-Button', 'wppoppop'); ?></span>
                         <label class="wppoppop-sw"><input type="checkbox" id="trig-backbutton" value="1"><span class="wppoppop-sw-track"></span></label></div>
                 </div>
             </div>

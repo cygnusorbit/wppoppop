@@ -16,7 +16,7 @@ class WpPopPop_Notifications {
             'enable'       => true,
             'send'         => 'after_submission',
             'recipient'    => '',
-            'subject'      => 'New submission from {{form-name}}',
+            'subject'      => __('New submission from {{form-name}}', 'wppoppop'),
             'message'      => '{{form-data}}',
             'attachments'  => array(),
             'reply_to'     => '',

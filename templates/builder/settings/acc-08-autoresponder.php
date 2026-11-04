@@ -5,10 +5,10 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 8. Subscriber Autoresponder -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">Subscriber Autoresponder</button>
+                <button type="button" class="wppoppop-acc-header"><?php esc_html_e('Subscriber Autoresponder', 'wppoppop'); ?></button>
                 <div class="wppoppop-acc-body" style="display:none;">
-                    <label><input type="checkbox" id="set-auto-enable" value="1"> Send Welcome Email</label>
-                    <input type="text" id="set-auto-subject" placeholder="Email Subject" class="widefat" style="margin:6px 0;">
+                    <label><input type="checkbox" id="set-auto-enable" value="1"> <?php esc_html_e('Send Welcome Email', 'wppoppop'); ?></label>
+                    <input type="text" id="set-auto-subject" placeholder="<?php esc_attr_e('Email Subject', 'wppoppop'); ?>" class="widefat" style="margin:6px 0;">
                     <textarea id="set-auto-body" rows="3" placeholder="Thank you for subscribing!" class="widefat"></textarea>
                 </div>
             </div>

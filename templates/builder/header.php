@@ -13,24 +13,24 @@ $__wpp_tpl_on = !empty($__wpp_set['builder_save_template']);
     <!-- Left Section: Navigation, Settings, Title -->
     <div class="wppoppop-hdr-group wppoppop-hdr-left">
                         <!-- Day / Night Mode Toggle -->
-        <button type="button" class="wppoppop-btn-icon wppoppop-btn-theme" id="wppoppop-btn-theme-toggle" title="Toggle Day / Night Mode" aria-label="Toggle Day / Night Mode" style="cursor:pointer;pointer-events:auto;">
+        <button type="button" class="wppoppop-btn-icon wppoppop-btn-theme" id="wppoppop-btn-theme-toggle" title="<?php esc_attr_e('Toggle Day / Night Mode', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Toggle Day / Night Mode', 'wppoppop'); ?>" style="cursor:pointer;pointer-events:auto;">
             <svg class="wppoppop-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;pointer-events:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
             <svg class="wppoppop-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;pointer-events:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-        <button type="button" class="wppoppop-btn-icon wppoppop-btn-settings" id="wppoppop-btn-settings" data-action="settings" title="Popup Settings" aria-label="Popup Settings" style="cursor:pointer;pointer-events:auto;"><span class="dashicons dashicons-admin-generic" style="pointer-events:none;"></span></button>
-        <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : 'Untitled Popup'); ?>" placeholder="Popup Title..." title="Popup Title">
+        <button type="button" class="wppoppop-btn-icon wppoppop-btn-settings" id="wppoppop-btn-settings" data-action="settings" title="<?php esc_attr_e('Popup Settings', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Popup Settings', 'wppoppop'); ?>" style="cursor:pointer;pointer-events:auto;"><span class="dashicons dashicons-admin-generic" style="pointer-events:none;"></span></button>
+        <input type="text" id="wppoppop-builder-title" value="<?php echo esc_attr($popup ? $popup->title : __('Untitled Popup', 'wppoppop')); ?>" placeholder="<?php esc_attr_e('Popup Title...', 'wppoppop'); ?><?php esc_html_e('" title="', 'wppoppop'); ?><?php esc_attr_e('Popup Title', 'wppoppop'); ?>">
         <div class="wppoppop-canvas-tabs wppoppop-screen-tabs" id="wppoppop-canvas-tabs-container">
             <div class="wppoppop-canvas-tab-wrapper active">
-                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1">Canvas 1</button>
+                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="1" data-screen="1"><?php esc_html_e('Canvas 1', 'wppoppop'); ?></button>
             </div>
-        <button type="button" class="wppoppop-btn-tool" id="wppoppop-canvas-duplicate-btn" title="Duplicate Active Canvas" aria-label="Duplicate Active Canvas">
+        <button type="button" class="wppoppop-btn-tool" id="wppoppop-canvas-duplicate-btn" title="<?php esc_attr_e('Duplicate Active Canvas', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Duplicate Active Canvas', 'wppoppop'); ?>">
             <span class="dashicons dashicons-admin-page"></span>
         </button>
             <div class="wppoppop-canvas-tab-wrapper">
-                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="2" data-screen="2">Canvas 2</button>
-                <span class="wppoppop-tab-delete-canvas" data-canvas="2" title="Delete Canvas">&times;</span>
+                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="2" data-screen="2"><?php esc_html_e('Canvas 2', 'wppoppop'); ?></button>
+                <span class="wppoppop-tab-delete-canvas" data-canvas="2" title="<?php esc_attr_e('Delete Canvas', 'wppoppop'); ?>">&times;</span>
             </div>
-            <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="Add Canvas">+</button>
+            <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="<?php esc_attr_e('Add Canvas', 'wppoppop'); ?>">+</button>
         </div>
     </div>
 
@@ -38,10 +38,10 @@ $__wpp_tpl_on = !empty($__wpp_set['builder_save_template']);
     <div class="wppoppop-hdr-group wppoppop-hdr-center">
 
         <div class="wppoppop-viewport-toggles"<?php echo $__wpp_vp_on ? '' : ' style="display:none !important;" aria-hidden="true"'; ?>>
-            <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="Desktop Viewport (640px)">
+            <button type="button" class="wppoppop-viewport-btn active" data-mode="desktop" title="<?php esc_attr_e('Desktop Viewport (640px)', 'wppoppop'); ?>">
                 <span class="dashicons dashicons-desktop"></span>
             </button>
-            <button type="button" class="wppoppop-viewport-btn" data-mode="mobile" title="Mobile Viewport (360px)">
+            <button type="button" class="wppoppop-viewport-btn" data-mode="mobile" title="<?php esc_attr_e('Mobile Viewport (360px)', 'wppoppop'); ?>">
                 <span class="dashicons dashicons-smartphone"></span>
             </button>
         </div>
@@ -49,18 +49,18 @@ $__wpp_tpl_on = !empty($__wpp_set['builder_save_template']);
 
     <!-- Right Section: Preview, Embed, Save Actions (Clean Text Buttons) -->
     <div class="wppoppop-hdr-group wppoppop-hdr-right">
-        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select"<?php echo $__wpp_zm_on ? '' : ' style="display:none !important;" aria-hidden="true" tabindex="-1"'; ?> autocomplete="off" title="Stage Zoom" aria-label="Stage Zoom">
+        <select id="wppoppop-zoom-select" class="wppoppop-zoom-select"<?php echo $__wpp_zm_on ? '' : ' style="display:none !important;" aria-hidden="true" tabindex="-1"'; ?> autocomplete="off" title="<?php esc_attr_e('Stage Zoom', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Stage Zoom', 'wppoppop'); ?>">
             <option value="0.5">50%</option>
             <option value="0.75">75%</option>
             <option value="1" selected>100%</option>
             <option value="1.25">125%</option>
-            <option value="fit">Fit</option>
+            <option value="fit"><?php esc_html_e('Fit', 'wppoppop'); ?></option>
         </select>
-        <button type="button" class="wppoppop-btn wppoppop-btn-secondary wppoppop-hdr-icon-btn" id="wppoppop-btn-preview" title="Preview" aria-label="Preview"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
-        <button type="button" id="wppoppop-btn-embed" class="button wppoppop-hdr-icon-btn" title="Get Embed Codes" aria-label="Embed"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-secondary wppoppop-hdr-icon-btn" id="wppoppop-btn-preview" title="<?php esc_attr_e('Preview', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Preview', 'wppoppop'); ?>"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+        <button type="button" id="wppoppop-btn-embed" class="button wppoppop-hdr-icon-btn" title="<?php esc_attr_e('Get Embed Codes', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Embed', 'wppoppop'); ?>"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
         <?php if ($__wpp_tpl_on) : ?>
-        <button type="button" class="wppoppop-btn wppoppop-btn-save-template" id="wppoppop-btn-save-template" title="Save As Template">Save As Template</button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-save-template" id="wppoppop-btn-save-template" title="<?php esc_attr_e('Save As Template', 'wppoppop'); ?>"><?php esc_html_e('Save As Template', 'wppoppop'); ?></button>
         <?php endif; ?>
-        <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save">Save</button>
+        <button type="button" class="wppoppop-btn wppoppop-btn-primary wppoppop-btn-save" id="wppoppop-btn-save"><?php esc_html_e('Save', 'wppoppop'); ?></button>
     </div>
 </div>

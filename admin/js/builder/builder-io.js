@@ -179,7 +179,7 @@
                         }
                     },
                     error: function() {
-                        alert('Server error while saving popup.');
+                        alert(wp.i18n.__('Server error while saving popup.', 'wppoppop'));
                         $btn.prop('disabled', false).html(origText);
                     }
                 });

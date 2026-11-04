@@ -28,7 +28,7 @@
                 var uid = $btn.data('uid') || $btn.closest('tr').find('input[name="popup_id[]"]').val();
                 if (!uid) return;
 
-                if (!window.confirm('Duplicate this popup campaign?')) return;
+                if (!window.confirm(wp.i18n.__('Duplicate this popup campaign?', 'wppoppop'))) return;
 
                 var vars = self.getVars();
                 $btn.prop('disabled', true);
@@ -46,12 +46,12 @@
                         if (res && res.success) {
                             window.location.reload();
                         } else {
-                            alert((res && res.data && res.data.message) || 'Duplication failed.');
+                            alert((res && res.data && res.data.message) || wp.i18n.__('Duplication failed.', 'wppoppop'));
                             $btn.prop('disabled', false);
                         }
                     },
                     error: function() {
-                        alert('Server error while duplicating popup.');
+                        alert(wp.i18n.__('Server error while duplicating popup.', 'wppoppop'));
                         $btn.prop('disabled', false);
                     }
                 });
@@ -66,7 +66,7 @@
                 var uid = $btn.data('uid') || $btn.closest('tr').find('input[name="popup_id[]"]').val();
                 if (!uid) return;
 
-                if (!window.confirm('Are you sure you want to delete this popup? This cannot be undone.')) return;
+                if (!window.confirm(wp.i18n.__('Are you sure you want to delete this popup? This cannot be undone.', 'wppoppop'))) return;
 
                 var vars = self.getVars();
                 $btn.prop('disabled', true);
@@ -86,12 +86,12 @@
                                 $(this).remove();
                             });
                         } else {
-                            alert((res && res.data && res.data.message) || 'Deletion failed.');
+                            alert((res && res.data && res.data.message) || wp.i18n.__('Deletion failed.', 'wppoppop'));
                             $btn.prop('disabled', false);
                         }
                     },
                     error: function() {
-                        alert('Server error while deleting popup.');
+                        alert(wp.i18n.__('Server error while deleting popup.', 'wppoppop'));
                         $btn.prop('disabled', false);
                     }
                 });
@@ -140,11 +140,11 @@
                                 window.URL.revokeObjectURL(blobUrl);
                             }, 1500);
                         } else {
-                            alert((res && res.data && res.data.message) || 'Export failed.');
+                            alert((res && res.data && res.data.message) || wp.i18n.__('Export failed.', 'wppoppop'));
                         }
                     },
                     error: function() {
-                        alert('Server error while exporting popup.');
+                        alert(wp.i18n.__('Server error while exporting popup.', 'wppoppop'));
                     }
                 });
             });

@@ -51,8 +51,10 @@
             var label = $.trim($tabBtn.clone().children().remove().end().text()) || tab;
 
             var msg = scope === 'all'
-                ? 'Reset ALL settings to defaults?\n\nThis includes API keys, custom code and menu changes. Your popups, campaigns and leads are not affected. This cannot be undone.'
-                : 'Reset the "' + label + '" tab to defaults?\n\nYour popups, campaigns and leads are not affected.';
+                ? wp.i18n.__('Reset ALL settings to defaults?\n\nThis includes API keys, custom code and menu changes. Your popups, campaigns and leads are not affected. This cannot be undone.', 'wppoppop')
+                : wp.i18n.sprintf(
+                    /* translators: %s: settings tab name. */
+                    wp.i18n.__('Reset the "%s" tab to defaults?\n\nYour popups, campaigns and leads are not affected.', 'wppoppop'), label);
             if (!window.confirm(msg)) { return; }
 
             var v = this.vars();
@@ -66,7 +68,7 @@
                 data: { action: 'wppoppop_reset_settings', nonce: v.nonce, tab: tab }
             }).done(function (res) {
                 if (res && res.success) {
-                    $m.css('color', '#16a34a').text('\u2713 ' + (res.data && res.data.message ? res.data.message : 'Reset.'));
+                    $m.css('color', '#16a34a').text('\u2713 ' + (res.data && res.data.message ? res.data.message : wp.i18n.__('Reset.', 'wppoppop')));
                     setTimeout(function () { window.location.reload(); }, 600);
                 } else {
                     self.$btn.prop('disabled', false);

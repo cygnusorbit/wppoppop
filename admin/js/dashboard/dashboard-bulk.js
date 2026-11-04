@@ -39,9 +39,9 @@
                     document.body.appendChild(a); a.click();
                     setTimeout(function () { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 1500);
                 } else {
-                    window.alert((res && res.data && res.data.message) || 'Export failed.');
+                    window.alert((res && res.data && res.data.message) || wp.i18n.__('Export failed.', 'wppoppop'));
                 }
-            }).fail(function () { window.alert('Server error while exporting.'); });
+            }).fail(function () { window.alert(wp.i18n.__('Server error while exporting.', 'wppoppop')); });
         }
     };
 

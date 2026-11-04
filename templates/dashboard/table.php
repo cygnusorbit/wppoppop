@@ -114,7 +114,7 @@ $list_table->prepare_items();
             <p>
                 <?php 
                 printf(
-                    _n('%d campaign moved to the Trash.', '%d campaigns moved to the Trash.', $trashed_count, 'wppoppop'),
+                    /* translators: number of campaigns. */ _n('%d campaign moved to the Trash.', '%d campaigns moved to the Trash.', $trashed_count, 'wppoppop'),
                     number_format_i18n($trashed_count)
                 ); 
                 if ($undo_url) : ?>
@@ -129,7 +129,7 @@ $list_table->prepare_items();
             <p>
                 <?php 
                 printf(
-                    _n('%d campaign restored from the Trash.', '%d campaigns restored from the Trash.', $untrashed_count, 'wppoppop'),
+                    /* translators: number of campaigns. */ _n('%d campaign restored from the Trash.', '%d campaigns restored from the Trash.', $untrashed_count, 'wppoppop'),
                     number_format_i18n($untrashed_count)
                 ); 
                 ?>
@@ -142,7 +142,7 @@ $list_table->prepare_items();
             <p>
                 <?php 
                 printf(
-                    _n('%d campaign permanently deleted.', '%d campaigns permanently deleted.', $deleted_count, 'wppoppop'),
+                    /* translators: number of campaigns. */ _n('%d campaign permanently deleted.', '%d campaigns permanently deleted.', $deleted_count, 'wppoppop'),
                     number_format_i18n($deleted_count)
                 ); 
                 ?>
@@ -152,7 +152,7 @@ $list_table->prepare_items();
         $duplicated_count = intval($_GET['duplicated']);
     ?>
         <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
-            <p><?php printf(_n('%d campaign duplicated (saved as Draft).', '%d campaigns duplicated (saved as Draft).', $duplicated_count, 'wppoppop'), number_format_i18n($duplicated_count)); ?></p>
+            <p><?php printf(/* translators: number of campaigns. */ _n('%d campaign duplicated (saved as Draft).', '%d campaigns duplicated (saved as Draft).', $duplicated_count, 'wppoppop'), number_format_i18n($duplicated_count)); ?></p>
         </div>
     <?php elseif (!empty($_GET['updated'])) : 
         $updated_count = intval($_GET['updated']);
@@ -161,7 +161,7 @@ $list_table->prepare_items();
             <p>
                 <?php 
                 printf(
-                    _n('%d campaign status updated.', '%d campaigns status updated.', $updated_count, 'wppoppop'),
+                    /* translators: number of campaigns. */ _n('%d campaign status updated.', '%d campaigns status updated.', $updated_count, 'wppoppop'),
                     number_format_i18n($updated_count)
                 ); 
                 ?>

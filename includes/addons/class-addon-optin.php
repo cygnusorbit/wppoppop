@@ -28,11 +28,11 @@ class WpPopPop_Addon_Optin {
         ), ARRAY_A);
 
         if (!$submission) {
-            wp_die('The confirmation link is invalid or has already been used.', 'Verification Error', ['response' => 400]);
+            wp_die(__('The confirmation link is invalid or has already been used.', 'wppoppop'), __('Verification Error', 'wppoppop'), ['response' => 400]);
         }
 
         if ($submission['status'] === 'confirmed') {
-            wp_die('Your subscription has already been confirmed. Thank you!', 'Already Confirmed', ['response' => 200]);
+            wp_die(__('Your subscription has already been confirmed. Thank you!', 'wppoppop'), __('Already Confirmed', 'wppoppop'), ['response' => 200]);
         }
 
         // Transition status to confirmed and invalidate token
@@ -90,7 +90,7 @@ class WpPopPop_Addon_Optin {
         <html <?php language_attributes(); ?>>
         <head>
             <meta charset="<?php bloginfo('charset'); ?>">
-            <title>Subscription Confirmed</title>
+            <title><?php esc_html_e('Subscription Confirmed', 'wppoppop'); ?></title>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
                 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
@@ -104,13 +104,13 @@ class WpPopPop_Addon_Optin {
         <body>
             <div class="card">
                 <div class="icon">&#10004;</div>
-                <?php if ($wppoppop_dopt_msg === '') : ?><h1>Subscription Confirmed!</h1><?php endif; ?>
+                <?php if ($wppoppop_dopt_msg === '') : ?><h1><?php esc_html_e('Subscription Confirmed!', 'wppoppop'); ?></h1><?php endif; ?>
                 <?php if ($wppoppop_dopt_msg !== '') : ?>
                 <div class="wppoppop-dopt-thanks"><?php echo wp_kses_post(wpautop($wppoppop_dopt_msg)); ?></div>
                 <?php else : ?>
-                <p>Thank you. Your email address <strong><?php echo esc_html($submission['email']); ?></strong> has been verified successfully.</p>
+                <p><?php esc_html_e('Thank you. Your email address', 'wppoppop'); ?> <strong><?php echo esc_html($submission['email']); ?></strong> <?php esc_html_e('has been verified successfully.', 'wppoppop'); ?></p>
                 <?php endif; ?>
-                <a href="<?php echo esc_url(home_url()); ?>" class="btn">Return to Site</a>
+                <a href="<?php echo esc_url(home_url()); ?>" class="btn"><?php esc_html_e('Return to Site', 'wppoppop'); ?></a>
             </div>
         </body>
         </html>

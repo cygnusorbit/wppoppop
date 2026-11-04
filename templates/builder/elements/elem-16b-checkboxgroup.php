@@ -3,8 +3,8 @@ if (!defined('ABSPATH')) exit;
 ?>
 <!-- DECOMPOSED MODULE 16B: CHECKBOX CHOICES GROUP (checkboxgroup) -->
 <div class="element-panel wppoppop-panel-specific" id="panel-elem-checkboxgroup" data-elem-family="form" style="display:none;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
-    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">16. Checkbox Choices (Label + Value)</div>
-    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">CHECKBOX CHOICES (LABEL + VALUE)</label>
+    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;"><?php esc_html_e('16. Checkbox Choices (Label + Value)', 'wppoppop'); ?></div>
+    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('CHECKBOX CHOICES (LABEL + VALUE)', 'wppoppop'); ?></label>
     <textarea id="prop-checkboxgroup-options" rows="4" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="optionsList" tabindex="-1" aria-hidden="true" style="display:none;"></textarea>
     <!-- WPPOPPOP_CHECKBOX_REPEATER -->
     <style>
@@ -20,12 +20,12 @@ if (!defined('ABSPATH')) exit;
     </style>
     <div style="display:flex;gap:3px;margin-bottom:3px;padding:0 3px;">
         <span style="flex:0 0 14px;"></span>
-        <span style="flex:1 1 0;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Label</span>
-        <span style="flex:1 1 0;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Value <em style="font-weight:400;text-transform:none;">(optional)</em></span>
+        <span style="flex:1 1 0;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;"><?php esc_html_e('Label', 'wppoppop'); ?></span>
+        <span style="flex:1 1 0;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;"><?php esc_html_e('Value', 'wppoppop'); ?> <em style="font-weight:400;text-transform:none;"><?php esc_html_e('(optional)', 'wppoppop'); ?></em></span>
         <span style="flex:0 0 43px;"></span>
     </div>
     <div id="wppoppop-checkboxgroup-rows" style="margin-bottom:4px;"></div>
-    <button type="button" id="wppoppop-checkboxgroup-add" class="button button-small">+ Add choice</button>
+    <button type="button" id="wppoppop-checkboxgroup-add" class="button button-small"><?php esc_html_e('+ Add choice', 'wppoppop'); ?></button>
     <script>
     (function () {
         'use strict';
@@ -214,9 +214,9 @@ if (!defined('ABSPATH')) exit;
         } else { watch(); rebuild(false); }
     })();
     </script>
-    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">LAYOUT ORIENTATION</label>
+    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('LAYOUT ORIENTATION', 'wppoppop'); ?></label>
     <select id="prop-checkboxgroup-layout" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="layout" style="font-size:12px;">
-        <option value="vertical">Vertical (Stacked)</option>
-        <option value="horizontal">Horizontal (Inline Row)</option>
+        <option value="vertical"><?php esc_html_e('Vertical (Stacked)', 'wppoppop'); ?></option>
+        <option value="horizontal"><?php esc_html_e('Horizontal (Inline Row)', 'wppoppop'); ?></option>
     </select>
 </div>

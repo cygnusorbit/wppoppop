@@ -91,7 +91,7 @@
         /* ---- Import / Reset buttons set the action; Pre-save flush ---- */
         $all('[data-action]', form).forEach(function (btn) {
             btn.addEventListener('click', function (e) {
-                if (btn.getAttribute('data-action') === 'reset' && !window.confirm('Reset the whole theme to defaults?')) {
+                if (btn.getAttribute('data-action') === 'reset' && !window.confirm(wp.i18n.__('Reset the whole theme to defaults?', 'wppoppop'))) {
                     e.preventDefault();
                     return;
                 }

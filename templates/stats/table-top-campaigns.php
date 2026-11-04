@@ -114,7 +114,7 @@ $page_links = paginate_links([
     </div>
 
     <div class="wpp-table-foot">
-        <span class="wpp-foot-count"><?php echo esc_html(sprintf(__('%1$d popups - page %2$d of %3$d', 'wppoppop'), $total_popups, $pg, $pages)); ?></span>
+        <span class="wpp-foot-count"><?php echo esc_html(sprintf(/* translators: 1: total popups, 2: current page, 3: total pages. */ __('%1$d popups - page %2$d of %3$d', 'wppoppop'), $total_popups, $pg, $pages)); ?></span>
         <?php if (!empty($page_links)) : ?>
             <span class="wpp-pager"><?php echo wp_kses_post( implode( "", array_map(function ($l) { return '<span class="wpp-pg">' . $l . '</span>'; }, $page_links))); ?></span>
         <?php endif; ?>

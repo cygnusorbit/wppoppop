@@ -15,7 +15,7 @@ $available_popups = $wpdb->get_results("SELECT uid, title, status FROM {$wpdb->p
         <div class="wpp-modal-body">
             <input type="hidden" id="wppoppop-ab-edit-uid" value="">
             <label for="wppoppop-ab-title-input"><?php esc_html_e('Campaign Title', 'wppoppop'); ?></label>
-            <input type="text" id="wppoppop-ab-title-input" class="widefat" placeholder="e.g. Summer Promo Headline Test">
+            <input type="text" id="wppoppop-ab-title-input" class="widefat" placeholder="<?php esc_attr_e('e.g. Summer Promo Headline Test', 'wppoppop'); ?>">
 
             <label class="wpp-modal-sep"><?php esc_html_e('Select Popups for Testing (Minimum 2)', 'wppoppop'); ?></label>
             <p class="description"><?php esc_html_e('Traffic will be distributed randomly across your selected variations.', 'wppoppop'); ?></p>

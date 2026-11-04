@@ -26,12 +26,12 @@ class WpPopPop_Rest_Submissions {
         $params = $request->get_json_params() ?: $request->get_body_params();
 
         if (!WpPopPop_Tracking::throttle('submit', (int) WpPopPop_Tracking::get('rate_limit_submit'))) {
-            return new WP_Error('rate_limited', 'Too many requests. Please try again shortly.', ['status' => 429]);
+            return new WP_Error('rate_limited', __('Too many requests. Please try again shortly.', 'wppoppop'), ['status' => 429]);
         }
 
         // 1. Honeypot Bot Trap Validation
         if (!empty($params['_wppoppop_hp_email'])) {
-            return new WP_Error('spam_detected', 'Spam detected by security shield.', ['status' => 400]);
+            return new WP_Error('spam_detected', __('Spam detected by security shield.', 'wppoppop'), ['status' => 400]);
         }
 
         $uid   = isset($params['uid']) ? sanitize_text_field($params['uid']) : '';
@@ -54,14 +54,14 @@ class WpPopPop_Rest_Submissions {
         }
         $fields = $clean;
         if ($email !== '' && !is_email($email)) {
-            return new WP_Error('invalid_email', 'Please enter a valid email address.', ['status' => 422]);
+            return new WP_Error('invalid_email', __('Please enter a valid email address.', 'wppoppop'), ['status' => 422]);
         }
 
         // 2. Disposable Email Filter
         $disposable_domains = ['mailinator.com', '10minutemail.com', 'guerrillamail.com', 'trashmail.com', 'tempmail.com', 'sharklasers.com'];
         $domain = $email !== '' ? substr(strrchr($email, '@'), 1) : '';
         if (in_array(strtolower($domain), $disposable_domains, true)) {
-            return new WP_Error('disposable_email', 'Disposable and temporary email addresses are not allowed.', ['status' => 422]);
+            return new WP_Error('disposable_email', __('Disposable and temporary email addresses are not allowed.', 'wppoppop'), ['status' => 422]);
         }
 
         global $wpdb;
@@ -70,7 +70,7 @@ class WpPopPop_Rest_Submissions {
 
         $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $uid), ARRAY_A);
         if (!$row) {
-            return new WP_Error('popup_not_found', 'Associated popup configuration was not found.', ['status' => 404]);
+            return new WP_Error('popup_not_found', __('Associated popup configuration was not found.', 'wppoppop'), ['status' => 404]);
         }
 
         $config = json_decode($row['data'], true) ?: [];
@@ -120,10 +120,8 @@ class WpPopPop_Rest_Submissions {
         // Autoresponder dispatch
         $autoresponder = $config['autoresponder'] ?? [];
         if (!empty($autoresponder['enable_user_email']) && !$is_double_optin && $email !== '') {
-            $ar_subject = !empty($autoresponder['subject']) ? sanitize_text_field($autoresponder['subject']) : 'Welcome! Here is your reward';
-            $ar_body    = !empty($autoresponder['message']) ? $autoresponder['message'] : "Thank you for subscribing!
-
-Enjoy your offer.";
+            $ar_subject = !empty($autoresponder['subject']) ? sanitize_text_field($autoresponder['subject']) : __('Welcome! Here is your reward', 'wppoppop');
+            $ar_body    = !empty($autoresponder['message']) ? $autoresponder['message'] : __("Thank you for subscribing!\n\nEnjoy your offer.", 'wppoppop');
 
             $ar_body = str_replace('{email}', $email, $ar_body);
             foreach ($fields as $k => $v) {
@@ -163,8 +161,8 @@ Enjoy your offer.";
 
         $actions = $config['actions'] ?? [];
         $success_message = $is_double_optin
-            ? 'Thank you! A verification link has been dispatched to your email address.'
-            : (!empty($actions['success_message']) ? esc_html($actions['success_message']) : 'Thank you! Your information has been registered.');
+            ? __('Thank you! A verification link has been dispatched to your email address.', 'wppoppop')
+            : (!empty($actions['success_message']) ? esc_html($actions['success_message']) : __('Thank you! Your information has been registered.', 'wppoppop'));
 
         $res = new WP_REST_Response([
             'success'      => true,

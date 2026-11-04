@@ -4,11 +4,11 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="wppoppop-ratings-section" style="margin-bottom:24px;">
-    <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 14px 0;">Star Ratings & Customer Satisfaction</h3>
+    <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 14px 0;"><?php esc_html_e('Star Ratings & Customer Satisfaction', 'wppoppop'); ?></h3>
     
     <?php if ($total_rating_count === 0) : ?>
         <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;text-align:center;color:#64748b;">
-            No 5-star rating element data submitted yet.
+            <?php esc_html_e('No 5-star rating element data submitted yet.', 'wppoppop'); ?>
         </div>
     <?php else : ?>
         <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-wrap:wrap;gap:24px;align-items:center;">

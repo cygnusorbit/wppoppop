@@ -6,11 +6,11 @@ if (!defined('ABSPATH')) {
 global $wpdb;
 
 $custom_tables = [
-    'items'        => ['label' => 'Popups & Designs', 'name' => $wpdb->prefix . 'wppoppop_items'],
-    'submissions'  => ['label' => 'Captured Leads', 'name' => $wpdb->prefix . 'wppoppop_submissions'],
+    'items'        => ['label' => __('Popups & Designs', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_items'],
+    'submissions'  => ['label' => __('Captured Leads', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_submissions'],
     'campaigns'    => ['label' => 'A/B Experiments', 'name' => $wpdb->prefix . 'wppoppop_campaigns'],
-    'logs'         => ['label' => 'Audit & System Logs', 'name' => $wpdb->prefix . 'wppoppop_logs'],
-    'transactions' => ['label' => 'Payment Records', 'name' => $wpdb->prefix . 'wppoppop_transactions'],
+    'logs'         => ['label' => __('Audit & System Logs', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_logs'],
+    'transactions' => ['label' => __('Payment Records', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_transactions'],
 ];
 ?>
 <?php

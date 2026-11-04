@@ -25,7 +25,7 @@ class WpPopPop_Admin_Theme {
                 if (isset($item[2]) && $item[2] === self::PAGE) { return; }
             }
         }
-        add_submenu_page('wppoppop-dashboard', 'Theme', 'Theme', 'manage_options', self::PAGE, [$this, 'render_page']);
+        add_submenu_page('wppoppop-dashboard', __('Theme', 'wppoppop'), __('Theme', 'wppoppop'), 'manage_options', self::PAGE, [$this, 'render_page']);
     }
 
     public function render_page() {
@@ -60,124 +60,124 @@ class WpPopPop_Admin_Theme {
     public static function schema() {
         $sans = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
         $mono = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
-        $weights = ['300' => '300 Light', '400' => '400 Regular', '500' => '500 Medium', '600' => '600 Semi-bold', '700' => '700 Bold', '800' => '800 Extra-bold', '900' => '900 Black'];
-        $transforms = ['none' => 'None', 'uppercase' => 'UPPERCASE', 'lowercase' => 'lowercase', 'capitalize' => 'Capitalize'];
+        $weights = ['300' => '300 ' . __('Light', 'wppoppop'), '400' => '400 ' . __('Regular', 'wppoppop'), '500' => '500 ' . __('Medium', 'wppoppop'), '600' => '600 ' . __('Semi-bold', 'wppoppop'), '700' => '700 ' . __('Bold', 'wppoppop'), '800' => '800 ' . __('Extra-bold', 'wppoppop'), '900' => '900 ' . __('Black', 'wppoppop')];
+        $transforms = ['none' => __('None', 'wppoppop'), 'uppercase' => __('UPPERCASE', 'wppoppop'), 'lowercase' => __('lowercase', 'wppoppop'), 'capitalize' => __('Capitalize', 'wppoppop')];
 
         $f = function ($label, $type, $default, $opts = []) {
             return array_merge(['label' => $label, 'type' => $type, 'default' => $default], $opts);
         };
 
         return [
-            'general' => ['label' => 'General', 'fields' => [
-                'enabled'       => $f('Enable global theme on all WpPopPop pages', 'bool', 1),
-                'apply_builder' => $f('Also apply to the Builder page', 'bool', 0),
-                'logo_id'       => $f('Top bar logo', 'media', 0),
-                'c_bg_page'     => $f('Page background', 'color', '#f0f0f1'),
-                'c_bg_card'     => $f('Card / panel background', 'color', '#ffffff'),
-                'c_border'      => $f('Border color', 'color', '#dcdcde'),
-                'c_border_strong' => $f('Strong border color', 'color', '#c3c4c7'),
-                'bw'            => $f('Border width', 'size', '1px'),
+            'general' => ['label' => __('General', 'wppoppop'), 'fields' => [
+                'enabled'       => $f(__('Enable global theme on all WpPopPop pages', 'wppoppop'), 'bool', 1),
+                'apply_builder' => $f(__('Also apply to the Builder page', 'wppoppop'), 'bool', 0),
+                'logo_id'       => $f(__('Top bar logo', 'wppoppop'), 'media', 0),
+                'c_bg_page'     => $f(__('Page background', 'wppoppop'), 'color', '#f0f0f1'),
+                'c_bg_card'     => $f(__('Card / panel background', 'wppoppop'), 'color', '#ffffff'),
+                'c_border'      => $f(__('Border color', 'wppoppop'), 'color', '#dcdcde'),
+                'c_border_strong' => $f(__('Strong border color', 'wppoppop'), 'color', '#c3c4c7'),
+                'bw'            => $f(__('Border width', 'wppoppop'), 'size', '1px'),
             ]],
-            'typography' => ['label' => 'Typography', 'fields' => [
-                'font_base'    => $f('Body font family', 'font', $sans),
-                'font_heading' => $f('Heading font family', 'font', $sans),
-                'font_mono'    => $f('Monospace font family', 'font', $mono),
-                'fs_base'      => $f('Body font size', 'size', '13px'),
-                'fs_h1'        => $f('H1 size', 'size', '22px'),
-                'fs_h2'        => $f('H2 size', 'size', '15px'),
-                'fs_h3'        => $f('H3 size', 'size', '15px'),
-                'fs_small'     => $f('Small / helper text size', 'size', '12px'),
-                'fs_label'     => $f('Label size', 'size', '11px'),
-                'fs_button'    => $f('Button text size', 'size', '13px'),
-                'fs_input'     => $f('Input text size', 'size', '12px'),
-                'fs_table'     => $f('Table text size', 'size', '13px'),
-                'fs_badge'     => $f('Badge text size', 'size', '11px'),
-                'fs_kpi'       => $f('KPI value size', 'size', '24px'),
-                'fs_modal_title' => $f('Modal title size', 'size', '14px'),
-                'fw_body'      => $f('Body weight', 'enum', '400', ['options' => $weights]),
-                'fw_heading'   => $f('Heading weight', 'enum', '600', ['options' => $weights]),
-                'fw_label'     => $f('Label weight', 'enum', '700', ['options' => $weights]),
-                'fw_button'    => $f('Button weight', 'enum', '600', ['options' => $weights]),
-                'fw_kpi'       => $f('KPI value weight', 'enum', '800', ['options' => $weights]),
-                'lh_base'      => $f('Line height (unitless)', 'number', '1.5'),
-                'ls_label'     => $f('Label letter spacing', 'size', '0.5px'),
-                'tt_label'     => $f('Label text transform', 'enum', 'uppercase', ['options' => $transforms]),
-                'tt_badge'     => $f('Badge text transform', 'enum', 'uppercase', ['options' => $transforms]),
+            'typography' => ['label' => __('Typography', 'wppoppop'), 'fields' => [
+                'font_base'    => $f(__('Body font family', 'wppoppop'), 'font', $sans),
+                'font_heading' => $f(__('Heading font family', 'wppoppop'), 'font', $sans),
+                'font_mono'    => $f(__('Monospace font family', 'wppoppop'), 'font', $mono),
+                'fs_base'      => $f(__('Body font size', 'wppoppop'), 'size', '13px'),
+                'fs_h1'        => $f(__('H1 size', 'wppoppop'), 'size', '22px'),
+                'fs_h2'        => $f(__('H2 size', 'wppoppop'), 'size', '15px'),
+                'fs_h3'        => $f(__('H3 size', 'wppoppop'), 'size', '15px'),
+                'fs_small'     => $f(__('Small / helper text size', 'wppoppop'), 'size', '12px'),
+                'fs_label'     => $f(__('Label size', 'wppoppop'), 'size', '11px'),
+                'fs_button'    => $f(__('Button text size', 'wppoppop'), 'size', '13px'),
+                'fs_input'     => $f(__('Input text size', 'wppoppop'), 'size', '12px'),
+                'fs_table'     => $f(__('Table text size', 'wppoppop'), 'size', '13px'),
+                'fs_badge'     => $f(__('Badge text size', 'wppoppop'), 'size', '11px'),
+                'fs_kpi'       => $f(__('KPI value size', 'wppoppop'), 'size', '24px'),
+                'fs_modal_title' => $f(__('Modal title size', 'wppoppop'), 'size', '14px'),
+                'fw_body'      => $f(__('Body weight', 'wppoppop'), 'enum', '400', ['options' => $weights]),
+                'fw_heading'   => $f(__('Heading weight', 'wppoppop'), 'enum', '600', ['options' => $weights]),
+                'fw_label'     => $f(__('Label weight', 'wppoppop'), 'enum', '700', ['options' => $weights]),
+                'fw_button'    => $f(__('Button weight', 'wppoppop'), 'enum', '600', ['options' => $weights]),
+                'fw_kpi'       => $f(__('KPI value weight', 'wppoppop'), 'enum', '800', ['options' => $weights]),
+                'lh_base'      => $f(__('Line height (unitless)', 'wppoppop'), 'number', '1.5'),
+                'ls_label'     => $f(__('Label letter spacing', 'wppoppop'), 'size', '0.5px'),
+                'tt_label'     => $f(__('Label text transform', 'wppoppop'), 'enum', 'uppercase', ['options' => $transforms]),
+                'tt_badge'     => $f(__('Badge text transform', 'wppoppop'), 'enum', 'uppercase', ['options' => $transforms]),
             ]],
-            'text' => ['label' => 'Text & Links', 'fields' => [
-                'c_text'       => $f('Body text', 'color', '#1d2327'),
-                'c_heading'    => $f('Headings', 'color', '#1d2327'),
-                'c_muted'      => $f('Muted / description text', 'color', '#787c82'),
-                'c_link'       => $f('Link', 'color', '#2237c9'),
-                'c_link_hover' => $f('Link hover', 'color', '#c1272d'),
+            'text' => ['label' => __('Text & Links', 'wppoppop'), 'fields' => [
+                'c_text'       => $f(__('Body text', 'wppoppop'), 'color', '#1d2327'),
+                'c_heading'    => $f(__('Headings', 'wppoppop'), 'color', '#1d2327'),
+                'c_muted'      => $f(__('Muted / description text', 'wppoppop'), 'color', '#787c82'),
+                'c_link'       => $f(__('Link', 'wppoppop'), 'color', '#2237c9'),
+                'c_link_hover' => $f(__('Link hover', 'wppoppop'), 'color', '#c1272d'),
             ]],
-            'buttons' => ['label' => 'Buttons', 'fields' => [
-                'c_primary'        => $f('Primary background', 'color', '#c1272d'),
-                'c_primary_hover'  => $f('Primary hover background', 'color', '#a51f25'),
-                'c_primary_text'   => $f('Primary text', 'color', '#ffffff'),
-                'c_secondary_bg'   => $f('Secondary background', 'color', '#ffffff'),
-                'c_secondary_hover' => $f('Secondary hover background', 'color', '#f1f5f9'),
-                'c_secondary_text' => $f('Secondary text', 'color', '#1d2327'),
-                'c_secondary_border' => $f('Secondary border', 'color', '#c3c4c7'),
-                'c_danger'         => $f('Danger background', 'color', '#b32d2e'),
-                'c_danger_text'    => $f('Danger text', 'color', '#ffffff'),
-                'r_button'         => $f('Button radius', 'size', '3px'),
-                'h_button'         => $f('Button height', 'size', '34px'),
+            'buttons' => ['label' => __('Buttons', 'wppoppop'), 'fields' => [
+                'c_primary'        => $f(__('Primary background', 'wppoppop'), 'color', '#c1272d'),
+                'c_primary_hover'  => $f(__('Primary hover background', 'wppoppop'), 'color', '#a51f25'),
+                'c_primary_text'   => $f(__('Primary text', 'wppoppop'), 'color', '#ffffff'),
+                'c_secondary_bg'   => $f(__('Secondary background', 'wppoppop'), 'color', '#ffffff'),
+                'c_secondary_hover' => $f(__('Secondary hover background', 'wppoppop'), 'color', '#f1f5f9'),
+                'c_secondary_text' => $f(__('Secondary text', 'wppoppop'), 'color', '#1d2327'),
+                'c_secondary_border' => $f(__('Secondary border', 'wppoppop'), 'color', '#c3c4c7'),
+                'c_danger'         => $f(__('Danger background', 'wppoppop'), 'color', '#b32d2e'),
+                'c_danger_text'    => $f(__('Danger text', 'wppoppop'), 'color', '#ffffff'),
+                'r_button'         => $f(__('Button radius', 'wppoppop'), 'size', '3px'),
+                'h_button'         => $f(__('Button height', 'wppoppop'), 'size', '34px'),
             ]],
-            'forms' => ['label' => 'Form Fields', 'fields' => [
-                'c_input_bg'          => $f('Input background', 'color', '#ffffff'),
-                'c_input_text'        => $f('Input text', 'color', '#1e293b'),
-                'c_input_border'      => $f('Input border', 'color', '#8c8f94'),
-                'c_input_focus'       => $f('Input focus border', 'color', '#c1272d'),
-                'c_input_placeholder' => $f('Placeholder text', 'color', '#94a3b8'),
-                'r_input'             => $f('Input radius', 'size', '3px'),
-                'h_input'             => $f('Input height', 'size', '32px'),
+            'forms' => ['label' => __('Form Fields', 'wppoppop'), 'fields' => [
+                'c_input_bg'          => $f(__('Input background', 'wppoppop'), 'color', '#ffffff'),
+                'c_input_text'        => $f(__('Input text', 'wppoppop'), 'color', '#1e293b'),
+                'c_input_border'      => $f(__('Input border', 'wppoppop'), 'color', '#8c8f94'),
+                'c_input_focus'       => $f(__('Input focus border', 'wppoppop'), 'color', '#c1272d'),
+                'c_input_placeholder' => $f(__('Placeholder text', 'wppoppop'), 'color', '#94a3b8'),
+                'r_input'             => $f(__('Input radius', 'wppoppop'), 'size', '3px'),
+                'h_input'             => $f(__('Input height', 'wppoppop'), 'size', '32px'),
             ]],
-            'tables' => ['label' => 'Tables', 'fields' => [
-                'c_th_bg'      => $f('Header background', 'color', '#f6f7f7'),
-                'c_th_text'    => $f('Header text', 'color', '#1d2327'),
-                'c_row_bg'     => $f('Row background', 'color', '#ffffff'),
-                'c_row_stripe' => $f('Striped row background', 'color', '#f6f7f7'),
-                'c_row_hover'  => $f('Row hover background', 'color', '#f6f7f7'),
-                'c_row_border' => $f('Row border', 'color', '#f0f0f1'),
+            'tables' => ['label' => __('Tables', 'wppoppop'), 'fields' => [
+                'c_th_bg'      => $f(__('Header background', 'wppoppop'), 'color', '#f6f7f7'),
+                'c_th_text'    => $f(__('Header text', 'wppoppop'), 'color', '#1d2327'),
+                'c_row_bg'     => $f(__('Row background', 'wppoppop'), 'color', '#ffffff'),
+                'c_row_stripe' => $f(__('Striped row background', 'wppoppop'), 'color', '#f6f7f7'),
+                'c_row_hover'  => $f(__('Row hover background', 'wppoppop'), 'color', '#f6f7f7'),
+                'c_row_border' => $f(__('Row border', 'wppoppop'), 'color', '#f0f0f1'),
             ]],
-            'cards' => ['label' => 'Cards & KPI', 'fields' => [
-                'c_kpi_label' => $f('KPI label color', 'color', '#787c82'),
-                'c_kpi_value' => $f('KPI value color', 'color', '#1d2327'),
-                'r_card'      => $f('Card radius', 'size', '3px'),
-                'p_card'      => $f('Card padding', 'size', '16px'),
-                'gap'         => $f('Grid gap', 'size', '16px'),
-                'shadow_card' => $f('Card shadow', 'shadow', '0 1px 1px rgba(0,0,0,0.04)'),
+            'cards' => ['label' => __('Cards & KPI', 'wppoppop'), 'fields' => [
+                'c_kpi_label' => $f(__('KPI label color', 'wppoppop'), 'color', '#787c82'),
+                'c_kpi_value' => $f(__('KPI value color', 'wppoppop'), 'color', '#1d2327'),
+                'r_card'      => $f(__('Card radius', 'wppoppop'), 'size', '3px'),
+                'p_card'      => $f(__('Card padding', 'wppoppop'), 'size', '16px'),
+                'gap'         => $f(__('Grid gap', 'wppoppop'), 'size', '16px'),
+                'shadow_card' => $f(__('Card shadow', 'wppoppop'), 'shadow', '0 1px 1px rgba(0,0,0,0.04)'),
             ]],
-            'badges' => ['label' => 'Badges & Chips', 'fields' => [
-                'c_badge_pub_bg'    => $f('Published badge background', 'color', '#dcfce7'),
-                'c_badge_pub_text'  => $f('Published badge text', 'color', '#15803d'),
-                'c_badge_draft_bg'  => $f('Draft badge background', 'color', '#f1f5f9'),
-                'c_badge_draft_text' => $f('Draft badge text', 'color', '#475569'),
-                'c_chip_bg'         => $f('Shortcode chip background', 'color', '#f1f5f9'),
-                'c_chip_text'       => $f('Shortcode chip text', 'color', '#334155'),
-                'c_chip_border'     => $f('Shortcode chip border', 'color', '#e2e8f0'),
-                'r_badge'           => $f('Badge radius', 'size', '12px'),
+            'badges' => ['label' => __('Badges & Chips', 'wppoppop'), 'fields' => [
+                'c_badge_pub_bg'    => $f(__('Published badge background', 'wppoppop'), 'color', '#dcfce7'),
+                'c_badge_pub_text'  => $f(__('Published badge text', 'wppoppop'), 'color', '#15803d'),
+                'c_badge_draft_bg'  => $f(__('Draft badge background', 'wppoppop'), 'color', '#f1f5f9'),
+                'c_badge_draft_text' => $f(__('Draft badge text', 'wppoppop'), 'color', '#475569'),
+                'c_chip_bg'         => $f(__('Shortcode chip background', 'wppoppop'), 'color', '#f1f5f9'),
+                'c_chip_text'       => $f(__('Shortcode chip text', 'wppoppop'), 'color', '#334155'),
+                'c_chip_border'     => $f(__('Shortcode chip border', 'wppoppop'), 'color', '#e2e8f0'),
+                'r_badge'           => $f(__('Badge radius', 'wppoppop'), 'size', '12px'),
             ]],
-            'status' => ['label' => 'Status & Notices', 'fields' => [
-                'c_success' => $f('Success', 'color', '#16a34a'),
-                'c_warning' => $f('Warning', 'color', '#d97706'),
-                'c_info'    => $f('Info', 'color', '#0284c7'),
+            'status' => ['label' => __('Status & Notices', 'wppoppop'), 'fields' => [
+                'c_success' => $f(__('Success', 'wppoppop'), 'color', '#16a34a'),
+                'c_warning' => $f(__('Warning', 'wppoppop'), 'color', '#d97706'),
+                'c_info'    => $f(__('Info', 'wppoppop'), 'color', '#0284c7'),
             ]],
-            'modals' => ['label' => 'Modals', 'fields' => [
-                'c_modal_bg'        => $f('Modal background', 'color', '#ffffff'),
-                'c_modal_head_bg'   => $f('Modal header background', 'color', '#0f172a'),
-                'c_modal_head_text' => $f('Modal header text', 'color', '#ffffff'),
-                'c_modal_close'     => $f('Modal close icon', 'color', '#94a3b8'),
-                'c_modal_backdrop'  => $f('Backdrop (rgba)', 'color', 'rgba(15,23,42,0.7)'),
-                'shadow_modal'      => $f('Modal shadow', 'shadow', '0 20px 25px -5px rgba(0,0,0,0.25)'),
+            'modals' => ['label' => __('Modals', 'wppoppop'), 'fields' => [
+                'c_modal_bg'        => $f(__('Modal background', 'wppoppop'), 'color', '#ffffff'),
+                'c_modal_head_bg'   => $f(__('Modal header background', 'wppoppop'), 'color', '#0f172a'),
+                'c_modal_head_text' => $f(__('Modal header text', 'wppoppop'), 'color', '#ffffff'),
+                'c_modal_close'     => $f(__('Modal close icon', 'wppoppop'), 'color', '#94a3b8'),
+                'c_modal_backdrop'  => $f(__('Backdrop (rgba)', 'wppoppop'), 'color', 'rgba(15,23,42,0.7)'),
+                'shadow_modal'      => $f(__('Modal shadow', 'wppoppop'), 'shadow', '0 20px 25px -5px rgba(0,0,0,0.25)'),
             ]],
-            'scrollbar' => ['label' => 'Scrollbars', 'fields' => [
-                'c_scroll_thumb' => $f('Scrollbar thumb', 'color', '#cbd5e1'),
-                'c_scroll_track' => $f('Scrollbar track', 'color', '#f8fafc'),
+            'scrollbar' => ['label' => __('Scrollbars', 'wppoppop'), 'fields' => [
+                'c_scroll_thumb' => $f(__('Scrollbar thumb', 'wppoppop'), 'color', '#cbd5e1'),
+                'c_scroll_track' => $f(__('Scrollbar track', 'wppoppop'), 'color', '#f8fafc'),
             ]],
-            'custom' => ['label' => 'Custom CSS', 'fields' => [
-                'custom_css' => $f('Extra CSS (applied after theme, admin pages only)', 'textarea', ''),
+            'custom' => ['label' => __('Custom CSS', 'wppoppop'), 'fields' => [
+                'custom_css' => $f(__('Extra CSS (applied after theme, admin pages only)', 'wppoppop'), 'textarea', ''),
             ]],
         ];
     }

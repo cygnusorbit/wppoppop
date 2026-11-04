@@ -99,7 +99,7 @@ class WpPopPop_Front_Element_Media {
             if (!$thumb || $autoplay) {
                 return '';
             }
-            return '<div class="wppoppop-video-facade" data-wppoppop-embed="' . esc_attr(str_replace('autoplay=0', 'autoplay=1', $embed_src)) . '" data-wppoppop-allow="' . esc_attr($allow) . '" role="button" tabindex="0" aria-label="Play video" style="position:relative;width:100%;height:100%;overflow:hidden;cursor:pointer;background:#000;border-radius:inherit;">'
+            return '<div class="wppoppop-video-facade" data-wppoppop-embed="' . esc_attr(str_replace('autoplay=0', 'autoplay=1', $embed_src)) . '" data-wppoppop-allow="' . esc_attr($allow) . '" role="button" tabindex="0" aria-label="' . esc_attr__('Play video', 'wppoppop') . '" style="position:relative;width:100%;height:100%;overflow:hidden;cursor:pointer;background:#000;border-radius:inherit;">'
                 . '<img src="' . $thumb . '" alt="" loading="lazy" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">'
                 . '<span style="position:absolute;top:50%;left:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(0,0,0,.6);"><span style="position:absolute;top:50%;left:50%;margin:-11px 0 0 -7px;border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;"></span></span></div>';
         };

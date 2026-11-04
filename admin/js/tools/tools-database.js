@@ -48,7 +48,7 @@
                                 });
                             }
 
-                            self.showNotice('success', data.message || 'Database schema tables verified successfully!');
+                            self.showNotice('success', data.message || wp.i18n.__('Database schema tables verified successfully!', 'wppoppop'));
                             $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Schema Optimal!');
                             setTimeout(function() {
                                 $btn.html(origHtml);
@@ -58,7 +58,7 @@
                             if (form) {
                                 form.submit();
                             } else {
-                                self.showNotice('error', (response.data && response.data.message) ? response.data.message : 'Database repair failed.');
+                                self.showNotice('error', (response.data && response.data.message) ? response.data.message : wp.i18n.__('Database repair failed.', 'wppoppop'));
                                 $btn.prop('disabled', false).html(origHtml);
                             }
                         }
@@ -68,7 +68,7 @@
                         if (form) {
                             form.submit();
                         } else {
-                            self.showNotice('error', 'Network error while attempting database verification.');
+                            self.showNotice('error', wp.i18n.__('Network error while attempting database verification.', 'wppoppop'));
                             $btn.prop('disabled', false).html(origHtml);
                         }
                     }
@@ -106,7 +106,7 @@
                     },
                     success: function(response) {
                         if (response && response.success) {
-                            self.showNotice('success', response.data.message || 'All campaign counters have been reset to zero.');
+                            self.showNotice('success', response.data.message || wp.i18n.__('All campaign counters have been reset to zero.', 'wppoppop'));
                             $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Counters Reset!');
                             setTimeout(function() {
                                 $btn.html(origHtml);
@@ -116,7 +116,7 @@
                             if (form) {
                                 form.submit();
                             } else {
-                                self.showNotice('error', (response.data && response.data.message) ? response.data.message : 'Counter reset failed.');
+                                self.showNotice('error', (response.data && response.data.message) ? response.data.message : wp.i18n.__('Counter reset failed.', 'wppoppop'));
                                 $btn.prop('disabled', false).html(origHtml);
                             }
                         }
@@ -126,7 +126,7 @@
                         if (form) {
                             form.submit();
                         } else {
-                            self.showNotice('error', 'Network error while attempting to reset counters.');
+                            self.showNotice('error', wp.i18n.__('Network error while attempting to reset counters.', 'wppoppop'));
                             $btn.prop('disabled', false).html(origHtml);
                         }
                     }

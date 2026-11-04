@@ -4,11 +4,11 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="wppoppop-breakdown-section" style="margin-bottom:24px;">
-    <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 14px 0;">Selection & Option Distributions</h3>
+    <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 14px 0;"><?php esc_html_e('Selection & Option Distributions', 'wppoppop'); ?></h3>
     
     <?php if (empty($choice_fields)) : ?>
         <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;text-align:center;color:#64748b;">
-            No multiple choice, dropdown, or checkbox form submissions recorded yet.
+            <?php esc_html_e('No multiple choice, dropdown, or checkbox form submissions recorded yet.', 'wppoppop'); ?>
         </div>
     <?php else : ?>
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:16px;">

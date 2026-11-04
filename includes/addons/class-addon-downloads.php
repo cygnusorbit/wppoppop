@@ -28,7 +28,7 @@ class WpPopPop_Addon_Downloads {
         $data = get_transient($transient_key);
 
         if (!$data || empty($data['file_url'])) {
-            wp_die('Download link has expired or is invalid.', 'Invalid Download', ['response' => 403]);
+            wp_die(__('Download link has expired or is invalid.', 'wppoppop'), __('Invalid Download', 'wppoppop'), ['response' => 403]);
         }
 
         // Delete transient to enforce single-use protection

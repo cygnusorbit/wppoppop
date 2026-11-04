@@ -6,18 +6,18 @@ if (!defined('ABSPATH')) exit;
     <header id="wppoppop-inspector-titlebar" class="wppoppop-inspector-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#090d16;border-bottom:1px solid #1e293b;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:8px;">
             <span id="wppoppop-inspector-header-icon" class="dashicons dashicons-admin-generic wppoppop-insp-icon-btn" style="color:#94a3b8;font-size:16px;width:16px;height:16px;cursor:pointer;transition:color 0.15s ease;"></span>
-            <span class="wppoppop-inspector-title" style="font-size:12px;font-weight:800;letter-spacing:0.05em;color:#f8fafc;text-transform:uppercase;">Layer Settings</span>  
+            <span class="wppoppop-inspector-title" style="font-size:12px;font-weight:800;letter-spacing:0.05em;color:#f8fafc;text-transform:uppercase;"><?php esc_html_e('Layer Settings', 'wppoppop'); ?></span>  
         </div>
-        <button type="button" id="wppoppop-inspector-close" class="wppoppop-inspector-close" title="Close Layer Settings" style="background:transparent;border:none;color:#94a3b8;font-size:20px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
+        <button type="button" id="wppoppop-inspector-close" class="wppoppop-inspector-close" title="<?php esc_attr_e('Close Layer Settings', 'wppoppop'); ?>" style="background:transparent;border:none;color:#94a3b8;font-size:20px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
     </header>
 
     <!-- ROW 2: 5-TAB NAVIGATION BAR -->
     <div id="wppoppop-inspector-tabs-bar" class="wppoppop-inspector-tabs" style="display:flex;width:100%;background:#1e293b;border-bottom:1px solid #334155;padding:0 4px;box-sizing:border-box;flex-shrink:0;">
-        <button type="button" class="wppoppop-insp-tab active" data-tab="basic">Content</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="style">Style</button>
-        <button type="button" class="wppoppop-insp-tab" data-tab="logic">Logic</button>
-        <button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="data" style="display:none;">Data</button>
-        <button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="advanced" style="display:none;">Advanced</button>
+        <button type="button" class="wppoppop-insp-tab active" data-tab="basic"><?php esc_html_e('Content', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="style"><?php esc_html_e('Style', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-insp-tab" data-tab="logic"><?php esc_html_e('Logic', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="data" style="display:none;"><?php esc_html_e('Data', 'wppoppop'); ?></button>
+        <button type="button" class="wppoppop-insp-tab wppoppop-form-only-tab" data-tab="advanced" style="display:none;"><?php esc_html_e('Advanced', 'wppoppop'); ?></button>
     </div>
 
     <!-- SCROLLABLE INSPECTOR BODY CONTAINING ALL 5 TAB PANES -->
@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) exit;
         <!-- TAB 1: CONTENT (BASIC) -->
         <div id="insp-tab-basic" class="wppoppop-tab-pane wppoppop-insp-content active" style="display:block;">
             <div class="wppoppop-inspector-section" style="margin-bottom:12px;">
-                <label style="display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:4px;">LAYER NAME</label>
+                <label style="display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:4px;"><?php esc_html_e('LAYER NAME', 'wppoppop'); ?></label>
                 <input type="text" id="prop-layer-name" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
             </div>
             <div style="display:flex;flex-direction:column;gap:12px;">
@@ -53,17 +53,17 @@ if (!defined('ABSPATH')) exit;
                             <select id="prop-anim-in" class="wppoppop-select">
 <option value="none"><?php esc_html_e( 'None', 'wppoppop' ); ?></option>
 <optgroup label="Attention">
-<option value="bounce">bounce</option>
-<option value="flash">flash</option>
-<option value="pulse">pulse</option>
+<option value="bounce"><?php esc_html_e('bounce', 'wppoppop'); ?></option>
+<option value="flash"><?php esc_html_e('flash', 'wppoppop'); ?></option>
+<option value="pulse"><?php esc_html_e('pulse', 'wppoppop'); ?></option>
 <option value="rubberBand">rubberBand</option>
 <option value="shakeX">shakeX</option>
 <option value="shakeY">shakeY</option>
 <option value="headShake">headShake</option>
-<option value="swing">swing</option>
-<option value="tada">tada</option>
-<option value="wobble">wobble</option>
-<option value="jello">jello</option>
+<option value="swing"><?php esc_html_e('swing', 'wppoppop'); ?></option>
+<option value="tada"><?php esc_html_e('tada', 'wppoppop'); ?></option>
+<option value="wobble"><?php esc_html_e('wobble', 'wppoppop'); ?></option>
+<option value="jello"><?php esc_html_e('jello', 'wppoppop'); ?></option>
 <option value="heartBeat">heartBeat</option>
 </optgroup>
 <optgroup label="Back">
@@ -95,7 +95,7 @@ if (!defined('ABSPATH')) exit;
 <option value="fadeInBottomRight">fadeInBottomRight</option>
 </optgroup>
 <optgroup label="Flippers">
-<option value="flip">flip</option>
+<option value="flip"><?php esc_html_e('flip', 'wppoppop'); ?></option>
 <option value="flipInX">flipInX</option>
 <option value="flipInY">flipInY</option>
 </optgroup>
@@ -177,7 +177,7 @@ if (!defined('ABSPATH')) exit;
 <option value="rotateOutUpRight">rotateOutUpRight</option>
 </optgroup>
 <optgroup label="Specials">
-<option value="hinge">hinge</option>
+<option value="hinge"><?php esc_html_e('hinge', 'wppoppop'); ?></option>
 <option value="rollOut">rollOut</option>
 </optgroup>
 <optgroup label="Zooming">
@@ -236,26 +236,26 @@ if (!defined('ABSPATH')) exit;
 
                 <!-- NUMBER FIELD -->
                 <div class="element-panel" id="panel-elem-number-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PLACEHOLDER TEXT', 'wppoppop'); ?></label>
                     <input type="text" id="prop-num-placeholder" class="widefat" placeholder="e.g. 10" style="font-size:12px;margin-bottom:8px;">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
                         <div>
-                            <label style="font-size:10px;color:#64748b;">MIN</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('MIN', 'wppoppop'); ?></label>
                             <input type="number" id="prop-num-min" value="0" class="widefat" style="font-size:11px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;">MAX</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('MAX', 'wppoppop'); ?></label>
                             <input type="number" id="prop-num-max" value="100" class="widefat" style="font-size:11px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;">STEP</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('STEP', 'wppoppop'); ?></label>
                             <input type="number" id="prop-num-step" value="1" class="widefat" style="font-size:11px;">
                         </div>
                     </div>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME / TOKEN', 'wppoppop'); ?></label>
                     <input type="text" id="prop-num-name" class="widefat" value="number_field" style="font-size:12px;margin-bottom:8px;">
                     <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                        <input type="checkbox" id="prop-num-required" value="1"> Required Field
+                        <input type="checkbox" id="prop-num-required" value="1"> <?php esc_html_e('Required Field', 'wppoppop'); ?>
                     </label>
                 </div>
 
@@ -269,16 +269,16 @@ if (!defined('ABSPATH')) exit;
 
                 <!-- CHECKBOXES -->
                 <div class="element-panel" id="panel-elem-checkboxes-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CHECKBOX LABEL</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('CHECKBOX LABEL', 'wppoppop'); ?></label>
                     <input type="text" id="prop-cb-label" class="widefat" value="I agree to terms" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME / TOKEN', 'wppoppop'); ?></label>
                     <input type="text" id="prop-cb-name" class="widefat" value="terms_agreement" style="font-size:12px;margin-bottom:8px;">
                     <div style="display:flex;gap:12px;align-items:center;">
                         <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                            <input type="checkbox" id="prop-cb-checked" value="1"> Default Checked
+                            <input type="checkbox" id="prop-cb-checked" value="1"> <?php esc_html_e('Default Checked', 'wppoppop'); ?>
                         </label>
                         <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                            <input type="checkbox" id="prop-cb-required" value="1"> Required
+                            <input type="checkbox" id="prop-cb-required" value="1"> <?php esc_html_e('Required', 'wppoppop'); ?>
                         </label>
                     </div>
                 </div>
@@ -290,30 +290,30 @@ if (!defined('ABSPATH')) exit;
 
                 <!-- PROGRESS BAR -->
                 <div class="element-panel" id="panel-elem-progress-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PROGRESS VALUE: <span id="prop-progress-val-num">50</span>%</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PROGRESS VALUE:', 'wppoppop'); ?> <span id="prop-progress-val-num">50</span>%</label>
                     <input type="range" id="prop-progress-val" min="0" max="100" value="50" style="width:100%;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BAR FILL COLOR</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('BAR FILL COLOR', 'wppoppop'); ?></label>
                     <input type="color" id="prop-progress-bar-color" value="#3b82f6" class="widefat" style="height:32px;">
                 </div>
 
                 <!-- FILE UPLOAD -->
                 <div class="element-panel" id="panel-elem-file-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ALLOWED EXTENSIONS</label>
-                    <input type="text" id="prop-file-extensions" class="widefat" placeholder="jpg, png, pdf, docx" value="jpg, png, pdf" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">MAX FILE SIZE (MB)</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('ALLOWED EXTENSIONS', 'wppoppop'); ?></label>
+                    <input type="text" id="prop-file-extensions" class="widefat" placeholder="<?php esc_attr_e('jpg, png, pdf, docx', 'wppoppop'); ?>" value="jpg, png, pdf" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('MAX FILE SIZE (MB)', 'wppoppop'); ?></label>
                     <input type="number" id="prop-file-max-size" value="5" min="1" max="50" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME / TOKEN', 'wppoppop'); ?></label>
                     <input type="text" id="prop-file-name" class="widefat" value="attachment" style="font-size:12px;margin-bottom:8px;">
                     <label style="font-size:12px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                        <input type="checkbox" id="prop-file-required" value="1"> Required Field
+                        <input type="checkbox" id="prop-file-required" value="1"> <?php esc_html_e('Required Field', 'wppoppop'); ?>
                     </label>
                 </div>
 
                 <!-- STEP BUTTON -->
                 <div class="element-panel" id="panel-elem-step_btn-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('BUTTON LABEL', 'wppoppop'); ?></label>
                     <input type="text" id="prop-step-label" value="Next Step &rarr;" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">TARGET CANVAS NUMBER</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('TARGET CANVAS NUMBER', 'wppoppop'); ?></label>
                     <input type="number" id="prop-step-canvas" value="2" min="1" max="10" class="widefat" style="font-size:12px;">
                 </div>
 
@@ -322,23 +322,23 @@ if (!defined('ABSPATH')) exit;
 
                 <!-- PAY BUTTON -->
                 <div class="element-panel" id="panel-elem-pay" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">BUTTON LABEL</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('BUTTON LABEL', 'wppoppop'); ?></label>
                     <input type="text" id="prop-pay-label" value="Pay Now" class="widefat" style="font-size:12px;margin-bottom:8px;">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
                         <div>
-                            <label style="font-size:10px;color:#64748b;">AMOUNT</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('AMOUNT', 'wppoppop'); ?></label>
                             <input type="number" id="prop-pay-amount" value="19.99" step="0.01" class="widefat" style="font-size:11px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;">CURRENCY</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('CURRENCY', 'wppoppop'); ?></label>
                             <select id="prop-pay-currency" class="widefat" style="font-size:11px;">
-                                <option value="USD" selected>USD ($)</option>
-                                <option value="EUR">EUR (€)</option>
-                                <option value="GBP">GBP (£)</option>
+                                <option value="USD" selected><?php esc_html_e('USD ($)', 'wppoppop'); ?></option>
+                                <option value="EUR"><?php esc_html_e('EUR (€)', 'wppoppop'); ?></option>
+                                <option value="GBP"><?php esc_html_e('GBP (£)', 'wppoppop'); ?></option>
                             </select>
                         </div>
                     </div>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PAYMENT GATEWAY</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PAYMENT GATEWAY', 'wppoppop'); ?></label>
                     <select id="prop-pay-gateway" class="widefat" style="font-size:12px;">
                         <option value="stripe" selected>Stripe</option>
                         <option value="paypal">PayPal</option>
@@ -349,42 +349,42 @@ if (!defined('ABSPATH')) exit;
 
                 <!-- DIVIDER ELEMENT -->
                 <div class="element-panel" id="panel-elem-divider" style="display:none;">
-                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;">DIVIDER SETTINGS</div>
+                    <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #334155;padding-bottom:4px;"><?php esc_html_e('DIVIDER SETTINGS', 'wppoppop'); ?></div>
                     
                     <div style="margin-bottom:10px;">
-                        <label for="prop-divider-style" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">DIVIDER TYPE</label>
+                        <label for="prop-divider-style" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;"><?php esc_html_e('DIVIDER TYPE', 'wppoppop'); ?></label>
                         <select id="prop-divider-style" class="widefat wppoppop-input" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
-                            <option value="solid" selected>Solid Line</option>
-                            <option value="dashed">Dashed Line</option>
-                            <option value="dotted">Dotted Line</option>
-                            <option value="double">Double Line</option>
-                            <option value="groove">Groove Line</option>
-                            <option value="ridge">Ridge Line</option>
+                            <option value="solid" selected><?php esc_html_e('Solid Line', 'wppoppop'); ?></option>
+                            <option value="dashed"><?php esc_html_e('Dashed Line', 'wppoppop'); ?></option>
+                            <option value="dotted"><?php esc_html_e('Dotted Line', 'wppoppop'); ?></option>
+                            <option value="double"><?php esc_html_e('Double Line', 'wppoppop'); ?></option>
+                            <option value="groove"><?php esc_html_e('Groove Line', 'wppoppop'); ?></option>
+                            <option value="ridge"><?php esc_html_e('Ridge Line', 'wppoppop'); ?></option>
                         </select>
                     </div>
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                         <div>
-                            <label for="prop-divider-weight" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">THICKNESS (PX)</label>
+                            <label for="prop-divider-weight" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;"><?php esc_html_e('THICKNESS (PX)', 'wppoppop'); ?></label>
                             <input type="number" id="prop-divider-weight" class="widefat wppoppop-input" min="1" max="30" value="2" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
                         </div>
                         <div>
-                            <label for="prop-divider-color" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">LINE COLOR</label>
+                            <label for="prop-divider-color" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;"><?php esc_html_e('LINE COLOR', 'wppoppop'); ?></label>
                             <input type="color" id="prop-divider-color" class="widefat wppoppop-input" value="#94a3b8" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;border-radius:4px;padding:2px;cursor:pointer;">
                         </div>
                     </div>
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                         <div>
-                            <label for="prop-divider-width-pct" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">WIDTH (%)</label>
+                            <label for="prop-divider-width-pct" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;"><?php esc_html_e('WIDTH (%)', 'wppoppop'); ?></label>
                             <input type="number" id="prop-divider-width-pct" class="widefat wppoppop-input" min="10" max="100" step="5" value="100" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
                         </div>
                         <div>
-                            <label for="prop-divider-align" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;">ALIGNMENT</label>
+                            <label for="prop-divider-align" style="display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:4px;"><?php esc_html_e('ALIGNMENT', 'wppoppop'); ?></label>
                             <select id="prop-divider-align" class="widefat wppoppop-input" style="width:100%;height:32px;background:#0f172a !important;border:1px solid #334155 !important;color:#f8fafc !important;font-size:12px;border-radius:4px;padding:4px 8px;">
-                                <option value="center" selected>Center</option>
-                                <option value="left">Left</option>
-                                <option value="right">Right</option>
+                                <option value="center" selected><?php esc_html_e('Center', 'wppoppop'); ?></option>
+                                <option value="left"><?php esc_html_e('Left', 'wppoppop'); ?></option>
+                                <option value="right"><?php esc_html_e('Right', 'wppoppop'); ?></option>
                             </select>
                         </div>
                     </div>
@@ -396,68 +396,68 @@ if (!defined('ABSPATH')) exit;
                 <!-- CLOSE BUTTON -->
                 <!-- WHEEL -->
                 <div class="element-panel" id="panel-elem-wheel" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PRIZE SLICES (COMMA SEPARATED)</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PRIZE SLICES (COMMA SEPARATED)', 'wppoppop'); ?></label>
                     <textarea id="prop-wheel-slices" rows="4" class="widefat" placeholder="10% OFF, FREE SHIPPING, 25% OFF, JACKPOT" style="font-size:12px;margin-bottom:8px;"></textarea>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SPIN BUTTON LABEL</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('SPIN BUTTON LABEL', 'wppoppop'); ?></label>
                     <input type="text" id="prop-wheel-btn-text" value="SPIN TO WIN!" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">WIN MESSAGE</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('WIN MESSAGE', 'wppoppop'); ?></label>
                     <input type="text" id="prop-wheel-win-msg" value="Congratulations! You won {prize}!" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SCRATCH -->
                 <div class="element-panel" id="panel-elem-scratch" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">SECRET WINNING / REVEAL TEXT</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('SECRET WINNING / REVEAL TEXT', 'wppoppop'); ?></label>
                     <input type="text" id="prop-scratch-prize" value="YOU WON 25% OFF! USE CODE: WIN25" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FOIL COVER COLOR</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FOIL COVER COLOR', 'wppoppop'); ?></label>
                     <input type="color" id="prop-scratch-foil" value="#94a3b8" class="widefat" style="height:32px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PERCENT UNCOVERED TO REVEAL (10-90%)</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PERCENT UNCOVERED TO REVEAL (10-90%)', 'wppoppop'); ?></label>
                     <input type="number" id="prop-scratch-pct" min="10" max="90" value="45" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- COUNTDOWN -->
                 <div class="element-panel" id="panel-elem-countdown" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DURATION (SECONDS)</label>
-                    <input type="number" id="prop-countdown-seconds" value="900" class="widefat" placeholder="e.g. 900 for 15 minutes" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">ACTION ON EXPIRE</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('DURATION (SECONDS)', 'wppoppop'); ?></label>
+                    <input type="number" id="prop-countdown-seconds" value="900" class="widefat" placeholder="<?php esc_attr_e('e.g. 900 for 15 minutes', 'wppoppop'); ?>" style="font-size:12px;margin-bottom:8px;">
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('ACTION ON EXPIRE', 'wppoppop'); ?></label>
                     <select id="prop-countdown-expire" class="widefat" style="font-size:12px;">
-                        <option value="none">Stay at 00:00</option>
-                        <option value="close">Close Popup</option>
-                        <option value="redirect">Redirect URL</option>
+                        <option value="none"><?php esc_html_e('Stay at 00:00', 'wppoppop'); ?></option>
+                        <option value="close"><?php esc_html_e('Close Popup', 'wppoppop'); ?></option>
+                        <option value="redirect"><?php esc_html_e('Redirect URL', 'wppoppop'); ?></option>
                     </select>
                 </div>
                 <!-- RATING -->
                 <div class="element-panel" id="panel-elem-rating-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">DEFAULT STAR RATING (1-5)</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('DEFAULT STAR RATING (1-5)', 'wppoppop'); ?></label>
                     <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">STAR COLOR</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('STAR COLOR', 'wppoppop'); ?></label>
                     <input type="color" id="prop-rating-color" value="#f59e0b" class="widefat" style="height:32px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME / TOKEN', 'wppoppop'); ?></label>
                     <input type="text" id="prop-rating-fieldname" value="rating" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SIGNATURE -->
                 <div class="element-panel" id="panel-elem-signature" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">PEN INK COLOR</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PEN INK COLOR', 'wppoppop'); ?></label>
                     <input type="color" id="prop-sig-color" value="#0f172a" class="widefat" style="height:32px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">CLEAR BUTTON LABEL</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('CLEAR BUTTON LABEL', 'wppoppop'); ?></label>
                     <input type="text" id="prop-sig-clear-label" value="Clear Signature" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME', 'wppoppop'); ?></label>
                     <input type="text" id="prop-sig-fieldname" value="digital_signature" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SLIDER -->
                 <div class="element-panel" id="panel-elem-slider" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
                         <div>
-                            <label style="font-size:10px;color:#64748b;">MIN</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('MIN', 'wppoppop'); ?></label>
                             <input type="number" id="prop-slider-min" value="0" class="widefat" style="font-size:11px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;">MAX</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('MAX', 'wppoppop'); ?></label>
                             <input type="number" id="prop-slider-max" value="100" class="widefat" style="font-size:11px;">
                         </div>
                         <div>
-                            <label style="font-size:10px;color:#64748b;">DEFAULT</label>
+                            <label style="font-size:10px;color:#64748b;"><?php esc_html_e('DEFAULT', 'wppoppop'); ?></label>
                             <input type="number" id="prop-slider-val" value="50" class="widefat" style="font-size:11px;">
                         </div>
                     </div>
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;">FIELD NAME / TOKEN</label>
+                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME / TOKEN', 'wppoppop'); ?></label>
                     <input type="text" id="prop-slider-fieldname" value="range_val" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SUBMIT BUTTON -->
@@ -470,7 +470,7 @@ if (!defined('ABSPATH')) exit;
                     <!-- Element #3: Text Field -->
                     <div id="panel-elem-textfield-legacy" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
-                            <label for="prop-textfield-placeholder" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">PLACEHOLDER TEXT</label>
+                            <label for="prop-textfield-placeholder" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;"><?php esc_html_e('PLACEHOLDER TEXT', 'wppoppop'); ?></label>
                             <input type="text" id="prop-textfield-placeholder" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;">
                         </div>
                     </div>
@@ -480,7 +480,7 @@ if (!defined('ABSPATH')) exit;
                     <!-- General Content Fallback -->
                     <div id="panel-elem-general" class="element-panel wppoppop-elem-panel" style="display:none;">
                         <div class="wppoppop-prop-group">
-                            <label for="prop-content" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;">ELEMENT CONTENT / LABEL</label>
+                            <label for="prop-content" style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px;"><?php esc_html_e('ELEMENT CONTENT / LABEL', 'wppoppop'); ?></label>
                             <textarea id="prop-content" class="wppoppop-input" rows="3" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:6px 10px;border-radius:4px;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
                         </div>
                     </div>
@@ -488,22 +488,22 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <!-- Position & Dimensions -->
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;">COORDINATES &amp; BOUNDS</div>
+                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;"><?php esc_html_e('COORDINATES & BOUNDS', 'wppoppop'); ?></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                     <div>
-                        <label for="prop-left" style="font-size:10px;font-weight:700;color:#94a3b8;">X POS (PX)</label>
+                        <label for="prop-left" style="font-size:10px;font-weight:700;color:#94a3b8;"><?php esc_html_e('X POS (PX)', 'wppoppop'); ?></label>
                         <input type="number" id="prop-left" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label for="prop-top" style="font-size:10px;font-weight:700;color:#94a3b8;">Y POS (PX)</label>
+                        <label for="prop-top" style="font-size:10px;font-weight:700;color:#94a3b8;"><?php esc_html_e('Y POS (PX)', 'wppoppop'); ?></label>
                         <input type="number" id="prop-top" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label for="prop-width" style="font-size:10px;font-weight:700;color:#94a3b8;">WIDTH (PX)</label>
+                        <label for="prop-width" style="font-size:10px;font-weight:700;color:#94a3b8;"><?php esc_html_e('WIDTH (PX)', 'wppoppop'); ?></label>
                         <input type="number" id="prop-width" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label for="prop-height" style="font-size:10px;font-weight:700;color:#94a3b8;">HEIGHT (PX)</label>
+                        <label for="prop-height" style="font-size:10px;font-weight:700;color:#94a3b8;"><?php esc_html_e('HEIGHT (PX)', 'wppoppop'); ?></label>
                         <input type="number" id="prop-height" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">
                     </div>
                 </div>

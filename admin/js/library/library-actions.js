@@ -38,7 +38,7 @@
     }
 
     function pickImage() {
-        if (!window.wp || !window.wp.media) { var u = window.prompt('Image URL'); if (u) { setImage(u); } return; }
+        if (!window.wp || !window.wp.media) { var u = window.prompt(wp.i18n.__('Image URL', 'wppoppop')); if (u) { setImage(u); } return; }
         if (!frame) {
             frame = window.wp.media({ title: 'Popup Image', button: { text: 'Use image' }, library: { type: 'image' }, multiple: false });
             frame.on('select', function () { setImage(frame.state().get('selection').first().toJSON().url || ''); });
@@ -65,7 +65,7 @@
             url: v.ajax_url, type: 'POST', dataType: 'json',
             data: { action: 'wppoppop_template_get', nonce: v.nonce, id: id },
             success: function (res) {
-                if (!(res && res.success && res.data)) { window.alert((res && res.data && res.data.message) || 'Could not load template.'); return; }
+                if (!(res && res.success && res.data)) { window.alert((res && res.data && res.data.message) || wp.i18n.__('Could not load template.', 'wppoppop')); return; }
                 var d = res.data, html = '', k;
                 $('#wppoppop-te-name').val(d.title);
                 $('#wppoppop-te-desc').val(d.description);
@@ -81,7 +81,7 @@
                 $m().css('display', 'flex');
                 $('#wppoppop-te-name').focus();
             },
-            error: function () { window.alert('Server error.'); }
+            error: function () { window.alert(wp.i18n.__('Server error.', 'wppoppop')); }
         });
     }
 

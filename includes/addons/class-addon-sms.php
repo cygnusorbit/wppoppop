@@ -10,7 +10,7 @@ class WpPopPop_Addon_Sms {
         $from  = $credentials['from_number'] ?? '';
 
         if (empty($sid) || empty($token) || empty($from) || empty($to_number)) {
-            return new WP_Error('missing_params', 'Twilio account SID, auth token, from number, and recipient number are required.');
+            return new WP_Error('missing_params', __('Twilio account SID, auth token, from number, and recipient number are required.', 'wppoppop'));
         }
 
         $url = 'https://api.twilio.com/2010-04-01/Accounts/' . urlencode($sid) . '/Messages.json';

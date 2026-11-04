@@ -121,7 +121,7 @@
 
                     frame.open();
                 } else {
-                    var promptUrl = prompt('Enter Image URL:', el.imgUrl || '');
+                    var promptUrl = prompt(wp.i18n.__('Enter Image URL:', 'wppoppop'), el.imgUrl || '');
                     if (promptUrl) {
                         el.imgUrl = promptUrl.trim();
                         el.content = el.imgUrl;

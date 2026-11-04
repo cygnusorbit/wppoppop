@@ -5,13 +5,13 @@ if (!defined('ABSPATH')) {
 ?>
 <!-- 11. Targeting & Attribution -->
             <div class="wppoppop-acc-item">
-                <button type="button" class="wppoppop-acc-header">Targeting &amp; Attribution</button>
+                <button type="button" class="wppoppop-acc-header"><?php esc_html_e('Targeting & Attribution', 'wppoppop'); ?></button>
                 <div class="wppoppop-acc-body" style="display:none;">
-                    <label>Visitor Authentication</label>
+                    <label><?php esc_html_e('Visitor Authentication', 'wppoppop'); ?></label>
                     <select id="set-target-auth" class="widefat" style="margin-bottom:6px;">
-                        <option value="all">All Visitors</option>
-                        <option value="guest">Guests Only</option>
-                        <option value="user">Logged-In Users Only</option>
+                        <option value="all"><?php esc_html_e('All Visitors', 'wppoppop'); ?></option>
+                        <option value="guest"><?php esc_html_e('Guests Only', 'wppoppop'); ?></option>
+                        <option value="user"><?php esc_html_e('Logged-In Users Only', 'wppoppop'); ?></option>
                     </select>
                 </div>
             </div>

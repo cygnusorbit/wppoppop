@@ -19,7 +19,7 @@
 
     /* Destructive actions require typing RESET. */
     window.WpPopPopTypedConfirm = function(message) {
-        var v = window.prompt(message + '\n\nType RESET to confirm.');
+        var v = window.prompt(message + '\n\n' + wp.i18n.__('Type RESET to confirm.', 'wppoppop'));
         return v !== null && v.replace(/^\s+|\s+$/g, '') === 'RESET';
     };
 

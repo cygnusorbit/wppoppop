@@ -13,11 +13,11 @@ class WpPopPop_Double_Optin {
         return array(
             'enable'        => false,
             'recipient'     => '',
-            'subject'       => 'Please confirm your email address',
-            'message'       => "Dear visitor!\n\nPlease confirm your email address by clicking the following link:\n<a href=\"{{confirmation-url}}\">{{confirmation-url}}</a>\n\nThanks.",
+            'subject'       => __('Please confirm your email address', 'wppoppop'),
+            'message'       => __("Dear visitor!\n\nPlease confirm your email address by clicking the following link:\n<a href=\"{{confirmation-url}}\">{{confirmation-url}}</a>\n\nThanks.", 'wppoppop'),
             'from_email'    => '{{global-from-email}}',
             'from_name'     => '{{global-from-name}}',
-            'thank_message' => '<h4 style="text-align: center;">Thank you!</h4><p style="text-align: center;">Your email address successfully confirmed.</p>',
+            'thank_message' => '<h4 style="text-align: center;">' . __('Thank you!', 'wppoppop') . '</h4><p style="text-align: center;">' . __('Your email address successfully confirmed.', 'wppoppop') . '</p>',
             'thank_url'     => '',
         );
     }

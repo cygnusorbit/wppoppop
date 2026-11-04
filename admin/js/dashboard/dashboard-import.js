@@ -57,7 +57,7 @@
                 if (!input.files || !input.files[0]) { return; }
                 var file = input.files[0];
                 if (!window.FileReader) {
-                    alert('Your browser cannot read files. Please paste the JSON instead.');
+                    alert(wp.i18n.__('Your browser cannot read files. Please paste the JSON instead.', 'wppoppop'));
                     return;
                 }
                 self.fileName = (file.name || '').replace(/\.json$/i, '');
@@ -66,7 +66,7 @@
                     $('#wppoppop-import-raw').val(String(evt.target.result || ''));
                 };
                 reader.onerror = function() {
-                    alert('Unable to read the selected file.');
+                    alert(wp.i18n.__('Unable to read the selected file.', 'wppoppop'));
                 };
                 reader.readAsText(file);
             });
@@ -81,17 +81,17 @@
 
                 var raw = $.trim(String($('#wppoppop-import-raw').val() || '')).replace(/^\uFEFF/, '');
                 if (!raw) {
-                    alert('Please choose a JSON file or paste JSON first.');
+                    alert(wp.i18n.__('Please choose a JSON file or paste JSON first.', 'wppoppop'));
                     return;
                 }
 
                 var parsed;
                 try { parsed = JSON.parse(raw); } catch (err) {
-                    alert('Invalid JSON: ' + err.message);
+                    alert(wp.i18n.__('Invalid JSON:', 'wppoppop') + ' ' + err.message);
                     return;
                 }
                 if (!parsed || typeof parsed !== 'object' || $.isArray(parsed)) {
-                    alert('Invalid popup definition. Expected a JSON object.');
+                    alert(wp.i18n.__('Invalid popup definition. Expected a JSON object.', 'wppoppop'));
                     return;
                 }
 
@@ -120,12 +120,12 @@
                             $btn.text('Imported!');
                             setTimeout(function() { window.location.reload(); }, 400);
                         } else {
-                            alert((res && res.data && res.data.message) || 'Import failed.');
+                            alert((res && res.data && res.data.message) || wp.i18n.__('Import failed.', 'wppoppop'));
                             $btn.prop('disabled', false).html(origHtml);
                         }
                     },
                     error: function() {
-                        alert('Server error while importing popup.');
+                        alert(wp.i18n.__('Server error while importing popup.', 'wppoppop'));
                         $btn.prop('disabled', false).html(origHtml);
                     }
                 });

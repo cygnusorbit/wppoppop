@@ -30,7 +30,7 @@
         bindAnonymize: function() {
             var self = this;
             $('.wppoppop-anon-sub-btn').on('click', function() {
-                if (!confirm('Anonymize this lead record for GDPR compliance?')) {
+                if (!confirm(wp.i18n.__('Anonymize this lead record for GDPR compliance?', 'wppoppop'))) {
                     return;
                 }
 
@@ -45,12 +45,12 @@
                 }).done(function(res) {
                     if (res.success) {
                         $row.find('td:nth-child(2) strong').text('anonymized_' + id + '@privacy.local');
-                        alert(res.data.message || 'Lead PII scrubbed successfully.');
+                        alert(res.data.message || wp.i18n.__('Lead PII scrubbed successfully.', 'wppoppop'));
                     } else {
-                        alert('Anonymization Error: ' + (res.data ? res.data.message : 'Action failed.'));
+                        alert(wp.i18n.__('Anonymization Error:', 'wppoppop') + ' ' + (res.data ? res.data.message : wp.i18n.__('Action failed.', 'wppoppop')));
                     }
                 }).fail(function() {
-                    alert('Network error while anonymizing lead.');
+                    alert(wp.i18n.__('Network error while anonymizing lead.', 'wppoppop'));
                 });
             });
         },
@@ -77,10 +77,10 @@
                         var L = window.WpPopPopSubmissions && window.WpPopPopSubmissions.List;
                         if (L && typeof L.render === 'function') { L.render(); }
                     } else {
-                        alert((res && res.data && res.data.message) || 'Could not update read state.');
+                        alert((res && res.data && res.data.message) || wp.i18n.__('Could not update read state.', 'wppoppop'));
                     }
                 }).fail(function() {
-                    alert('Network error while updating read state.');
+                    alert(wp.i18n.__('Network error while updating read state.', 'wppoppop'));
                 }).always(function() { $a.data('busy', false); });
             });
         },
@@ -88,7 +88,7 @@
         bindDelete: function() {
             var self = this;
             $('.wppoppop-del-sub-btn').on('click', function() {
-                if (!confirm('Permanently delete this submission record?')) {
+                if (!confirm(wp.i18n.__('Permanently delete this submission record?', 'wppoppop'))) {
                     return;
                 }
 
@@ -104,10 +104,10 @@
                     if (res.success) {
                         $row.fadeOut(200, function() { $(this).remove(); });
                     } else {
-                        alert('Deletion Error: ' + (res.data ? res.data.message : 'Action failed.'));
+                        alert(wp.i18n.__('Deletion Error:', 'wppoppop') + ' ' + (res.data ? res.data.message : wp.i18n.__('Action failed.', 'wppoppop')));
                     }
                 }).fail(function() {
-                    alert('Network error while deleting submission.');
+                    alert(wp.i18n.__('Network error while deleting submission.', 'wppoppop'));
                 });
             });
         }
@@ -180,7 +180,7 @@
         go: function() {
             var ids = [];
             $('#wex-body .wex-col:checked').each(function() { ids.push($(this).val()); });
-            if (!ids.length) { window.alert('Select at least one column.'); return; }
+            if (!ids.length) { window.alert(wp.i18n.__('Select at least one column.', 'wppoppop')); return; }
             store(ids);
             var v = vars();
             window.location.href = v.ajax_url + '?action=wppoppop_export_submissions&nonce=' + encodeURIComponent(v.nonce)
