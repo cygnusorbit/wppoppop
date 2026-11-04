@@ -83,6 +83,13 @@ class WpPopPop_Ajax_Builder {
                 'effect' => in_array($wppoppop_cel, $wppoppop_cel_ok, true) ? $wppoppop_cel : 'default'
             );
         }
+        /* WPPOPPOP_POPUP_POSITION_WHITELIST: allow-list the Popup Positions module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Popup_Position')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-popup-position.php'; }
+            $wppoppop_obj->settings->popup_position = json_decode(wp_json_encode(
+                WpPopPop_Popup_Position::sanitize(isset($wppoppop_obj->settings->popup_position) ? $wppoppop_obj->settings->popup_position : array())
+            ));
+        }
         /* Popup Settings module order is global (Settings > Module); never stored per popup */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             unset($wppoppop_obj->settings->module_order);

@@ -85,6 +85,10 @@ class WpPopPop_Ajax_Templates {
             $cel    = (isset($obj->settings->celebration) && is_object($obj->settings->celebration) && isset($obj->settings->celebration->effect))
                 ? (string) $obj->settings->celebration->effect : 'default';
             $obj->settings->celebration = (object) array('effect' => in_array($cel, $cel_ok, true) ? $cel : 'default');
+            if (!class_exists('WpPopPop_Popup_Position')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-popup-position.php'; }
+            $obj->settings->popup_position = json_decode(wp_json_encode( /* WPPOPPOP_POPUP_POSITION_WHITELIST */
+                WpPopPop_Popup_Position::sanitize(isset($obj->settings->popup_position) ? $obj->settings->popup_position : array())
+            ));
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
         }
         $obj  = WpPopPop_Sanitizer::anim_payload($obj);

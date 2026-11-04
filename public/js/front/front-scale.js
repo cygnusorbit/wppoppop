@@ -39,6 +39,42 @@
         el.style.transformOrigin = value;
     }
 
+    /* WPPOPPOP_POPUP_POSITION_FIT: position-aware gap + anchor for the Popup Positions module */
+    var POS_MAP = {
+        'top-left': ['top', 'left'], 'top-center': ['top', 'center'], 'top-right': ['top', 'right'],
+        'middle-left': ['middle', 'left'], 'center': ['middle', 'center'], 'middle-right': ['middle', 'right'],
+        'bottom-left': ['bottom', 'left'], 'bottom-center': ['bottom', 'center'], 'bottom-right': ['bottom', 'right']
+    };
+
+    function posParts(wrap) {
+        return POS_MAP[wrap.getAttribute('data-wpp-pos') || 'center'] || POS_MAP.center;
+    }
+
+    function axisGap(a, b, anchor, startName, endName) {
+        if (anchor === startName) { return a + Math.max(b, PAD); }
+        if (anchor === endName) { return b + Math.max(a, PAD); }
+        return Math.max(a + b, PAD * 2);
+    }
+
+    // Space the overlay reserves around the popup (its own padding), never less than the legacy 20px gap.
+    function overlayGap(wrap) {
+        var cs = null, pT = 0, pR = 0, pB = 0, pL = 0;
+        try { cs = window.getComputedStyle(wrap); } catch (e) { cs = null; }
+        if (cs) { pT = num(cs.paddingTop); pR = num(cs.paddingRight); pB = num(cs.paddingBottom); pL = num(cs.paddingLeft); }
+        var parts = posParts(wrap);
+        return {
+            w: axisGap(pL, pR, parts[1], 'left', 'right'),
+            h: axisGap(pT, pB, parts[0], 'top', 'bottom')
+        };
+    }
+
+    function anchorOrigin(wrap) {
+        var parts = posParts(wrap);
+        var x = parts[1] === 'left' ? '0%' : (parts[1] === 'right' ? '100%' : '50%');
+        var y = parts[0] === 'top' ? '0%' : (parts[0] === 'bottom' ? '100%' : '50%');
+        return x + ' ' + y;
+    }
+
     function resetInline(wrap, stage) {
         setTransform(stage, '');
         setOrigin(stage, '');
@@ -91,19 +127,24 @@
 
         var inline = wrap.getAttribute('data-inline') === '1';
         var docEl = document.documentElement;
-        var availW, availH, pad, parent;
+        var availW, availH, pad, parent, gapW, gapH;
 
         if (inline) {
             availW = inlineAvailWidth(wrap, stage);
             availH = Infinity;
             pad = 0;
+            gapW = 0;
+            gapH = 0;
         } else {
             availW = wrap.clientWidth || docEl.clientWidth || window.innerWidth;
             availH = wrap.clientHeight || window.innerHeight || docEl.clientHeight;
             pad = PAD;
+            var gap = overlayGap(wrap);
+            gapW = gap.w;
+            gapH = gap.h;
         }
 
-        var scale = Math.min(1, (availW - pad * 2) / size.w, (availH - pad * 2) / size.h);
+        var scale = Math.min(1, (availW - gapW) / size.w, (availH - gapH) / size.h);
         if (!isFinite(scale) || scale > 1) { scale = 1; }
         if (scale < MIN_SCALE) { scale = MIN_SCALE; }
         scale = Math.round(scale * 10000) / 10000;
@@ -130,7 +171,8 @@
             stage.style.height = size.h + 'px';
             setOrigin(stage, '0 0');
         }
-        // Popup overlay: the stage is flex-centered, so scaling from its center keeps it centered.
+        // Popup overlay: scale from the anchored corner / edge so a positioned popup stays where it was placed.
+        if (!inline) { setOrigin(stage, anchorOrigin(wrap)); }
         setTransform(stage, 'scale(' + scale + ')');
     }
 

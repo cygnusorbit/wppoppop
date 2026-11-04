@@ -112,14 +112,17 @@ class WpPopPop_Front_Renderer {
         /* WPPOPPOP_OVERLAY_SETTINGS */
         if (!class_exists('WpPopPop_Overlay')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-overlay.php'; }
         $wppoppop_ov = WpPopPop_Overlay::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+        /* WPPOPPOP_POPUP_POSITION_RENDER */
+        if (!class_exists('WpPopPop_Popup_Position')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-popup-position.php'; }
+        $wppoppop_pp = WpPopPop_Popup_Position::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
         $overlay_style = $is_inline ? 'display:block;position:relative;' : 'display:none;position:fixed;inset:0;z-index:999999;';
         $preload_class = $preload ? 'wppoppop-preloaded' : '';
         ?>
         <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo esc_attr( $preload_class ); ?>"
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
-             data-config="<?php echo esc_attr( $encoded_config ); ?>"<?php echo wp_kses_post( $trg_attrs ); ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
-             style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : $wppoppop_ov['css']; ?>"
+             data-config="<?php echo esc_attr( $encoded_config ); ?>"<?php echo (!$is_inline && $wppoppop_pp['pos'] !== '') ? ' data-wpp-pos="' . esc_attr($wppoppop_pp['pos']) . '"' : ''; ?><?php echo wp_kses_post( $trg_attrs ); ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
+             style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : $wppoppop_ov['css'] . $wppoppop_pp['css']; ?>"
              aria-hidden="true"
              role="dialog">
 
