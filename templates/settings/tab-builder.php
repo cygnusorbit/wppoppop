@@ -70,7 +70,7 @@ $__ce_on = !empty($__bld['builder_click_element_settings']);
         </li>
         <li>
             <span class="bld-name"><?php esc_html_e('Additional Ribbon Bar Elements', 'wppoppop'); ?>
-                <span class="bld-desc"><?php esc_html_e('Show the extra elements (Image Select, Tile, Date, Rating) in the builder ribbon bar. Off by default.', 'wppoppop'); ?></span>
+                <span class="bld-desc"><?php esc_html_e('Show the extra elements (Image Select, Tile, Rating) in the builder ribbon bar. Off by default.', 'wppoppop'); ?></span>
             </span>
             <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Additional Ribbon Bar Elements', 'wppoppop'); ?>">
                 <input type="hidden" name="settings[builder_extra_elements]" value="0">
