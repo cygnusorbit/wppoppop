@@ -201,7 +201,7 @@ class WpPopPop_Front_Renderer {
                             if (is_array($elements)) {
                                 foreach ($elements as $el) {
                                     if (is_array($el) && empty($el['hidden'])) {
-                                        echo $this->wppoppop_apply_logic($this->wppoppop_apply_fg($this->render_canvas_element($el), $el), $el); /* WPPOPPOP_LOGIC_ATTRS */
+                                        echo $this->wppoppop_apply_logic($this->wppoppop_apply_fg($this->render_canvas_element($this->wppoppop_fit_shape_to_edges($el, $c_width, $c_height, !$c_allow_ovf)), $el), $el); /* WPPOPPOP_LOGIC_ATTRS */
                                     }
                                 }
                             }
@@ -317,6 +317,29 @@ class WpPopPop_Front_Renderer {
         }
 
         return sprintf('<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="%s">%s</svg>', esc_attr($svg_style), $path);
+    }
+
+    /* WPPOPPOP_SHAPE_EDGE_FIT: a shape ending within 2px of a canvas edge is extended to that edge (+1px bleed when the canvas clips) so no sub-pixel/rounded white line shows */
+    private function wppoppop_fit_shape_to_edges(array $el, $cw, $ch, $clip) {
+        if (($el['type'] ?? '') !== 'shape') { return $el; }
+        $t = (float) ($el['top'] ?? $el['y'] ?? 20);
+        $l = (float) ($el['left'] ?? $el['x'] ?? 20);
+        $w = (float) ($el['width'] ?? $el['w'] ?? 200);
+        $h = (float) ($el['height'] ?? $el['h'] ?? 40);
+        if ($w < 20 || $h < 20 || $cw <= 0 || $ch <= 0) { return $el; }
+        $tol = 2;
+        $bleed = $clip ? 1 : 0;
+        $r = $l + $w;
+        $b = $t + $h;
+        $nt = abs($t) <= $tol ? -$bleed : $t;
+        $nl = abs($l) <= $tol ? -$bleed : $l;
+        $nb = abs($b - $ch) <= $tol ? $ch + $bleed : $b;
+        $nr = abs($r - $cw) <= $tol ? $cw + $bleed : $r;
+        $el['top'] = (int) round($nt);
+        $el['left'] = (int) round($nl);
+        $el['height'] = (int) round($nb - $nt);
+        $el['width'] = (int) round($nr - $nl);
+        return $el;
     }
 
     private function render_canvas_element(array $el, array $config = array()) {

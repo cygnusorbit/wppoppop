@@ -296,7 +296,10 @@ class WpPopPop_Ajax_Tools {
         $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
             || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
             || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
         if ( ! $wpp_verified ) {
             wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
             wp_die();
@@ -329,7 +332,10 @@ class WpPopPop_Ajax_Tools {
         $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
             || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
             || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
         if ( ! $wpp_verified ) {
             wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
             wp_die();
@@ -351,7 +357,10 @@ class WpPopPop_Ajax_Tools {
         $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
             || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
             || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
         if ( ! $wpp_verified ) {
             wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
             wp_die();
@@ -372,7 +381,10 @@ class WpPopPop_Ajax_Tools {
         $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
             || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
             || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
         if ( ! $wpp_verified ) {
             wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
             wp_die();
@@ -398,7 +410,10 @@ class WpPopPop_Ajax_Tools {
         $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
             || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
             || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
         if ( ! $wpp_verified ) {
             wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
             wp_die();
@@ -430,7 +445,10 @@ class WpPopPop_Ajax_Tools {
         $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
             || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
             || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false );
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
         if ( ! $wpp_verified ) {
             wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
             wp_die();

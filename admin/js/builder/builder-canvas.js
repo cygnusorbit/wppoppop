@@ -1021,6 +1021,22 @@
             if (gy !== null) { $gh.css({ top: gy + 'px', display: 'block' }); }
         },
 
+        // WPPOPPOP_RESIZE_EDGE_FIT: whole-pixel sizes; a bottom/right edge within 2px of the canvas edge lands exactly on it (0 gap)
+        fitSizeToCanvasEdges: function($node, ui) {
+            var boxEl = $('#wppoppop-canvas-box')[0];
+            if (!boxEl || !ui || !ui.size || !$node || !$node[0]) return;
+            var w = Math.round(ui.size.width);
+            var h = Math.round(ui.size.height);
+            var top = Math.round(parseFloat($node.css('top')) || 0);
+            var left = Math.round(parseFloat($node.css('left')) || 0);
+            var boxW = Math.round(boxEl.clientWidth);
+            var boxH = Math.round(boxEl.clientHeight);
+            if (boxH > 0 && Math.abs((top + h) - boxH) <= 2) { h = boxH - top; }
+            if (boxW > 0 && Math.abs((left + w) - boxW) <= 2) { w = boxW - left; }
+            ui.size.width = w;
+            ui.size.height = h;
+        },
+
         attachInteractions: function($node, el) {
             var self = this;
             if (el.locked) {
@@ -1057,6 +1073,7 @@
                 containment: self.getContainment(),
                 handles: 'se',
                 resize: function(event, ui) {
+                    self.fitSizeToCanvasEdges($node, ui);
                     el.width = ui.size.width;
                     el.height = ui.size.height;
                     if (window.WpPopPopBuilderInspector) {
@@ -1064,8 +1081,10 @@
                     }
                 },
                 stop: function(event, ui) {
+                    self.fitSizeToCanvasEdges($node, ui);
                     el.width = ui.size.width;
                     el.height = ui.size.height;
+                    $node.css({ width: el.width + 'px', height: el.height + 'px' });
                     if (window.WpPopPopBuilderInspector) {
                         window.WpPopPopBuilderInspector.syncCoordinates(el);
                     }
