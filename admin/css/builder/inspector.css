@@ -1378,3 +1378,12 @@ body #wppoppop-inspector-drawer .element-panel select{
 .wppoppop-insp-switch input:checked + .wppoppop-insp-slider { background: #2563eb; }
 .wppoppop-insp-switch input:checked + .wppoppop-insp-slider:before { -webkit-transform: translateX(16px); transform: translateX(16px); }
 /* === WPPOPPOP_LOGIC_DATA_UI_END === */
+
+/* === WPPOPPOP_INSPECTOR_EDGE_FIX_START === */
+html body #wppoppop-inspector-drawer.wppoppop-inspector-drawer {
+    background: #0f172a !important;
+    border-left: 0 none transparent !important;
+    outline: 0 none !important;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3) !important;
+}
+/* === WPPOPPOP_INSPECTOR_EDGE_FIX_END === */
