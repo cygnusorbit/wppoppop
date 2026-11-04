@@ -27,7 +27,7 @@ $__wpp_tpl_on = !empty($__wpp_set['builder_save_template']);
             <span class="dashicons dashicons-admin-page"></span>
         </button>
             <div class="wppoppop-canvas-tab-wrapper">
-                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="2" data-screen="2"><?php esc_html_e('Canvas 2', 'wppoppop'); ?></button>
+                <button type="button" class="wppoppop-canvas-tab wppoppop-screen-tab" data-canvas="2" data-screen="2"><?php esc_html_e('Confirmation', 'wppoppop'); ?></button>
                 <span class="wppoppop-tab-delete-canvas" data-canvas="2" title="<?php esc_attr_e('Delete Canvas', 'wppoppop'); ?>">&times;</span>
             </div>
             <button type="button" id="wppoppop-add-canvas-btn" class="wppoppop-canvas-add-btn" title="<?php esc_attr_e('Add Canvas', 'wppoppop'); ?>">+</button>

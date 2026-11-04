@@ -13,7 +13,7 @@
             canvases: { 1: [], 2: [] },
             canvasMeta: {
                 1: { name: 'Canvas 1', width: 300, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' },
-                2: { name: 'Canvas 2', width: 300, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' }
+                2: { name: 'Confirmation', width: 300, height: 400, bg_mode: 'solid', bg_transparent: true, bg_color: 'transparent' }
             },
             get screens() { return this.canvases; },
             set screens(v) { this.canvases = v || { 1: [], 2: [] }; },
@@ -495,8 +495,8 @@
             var canDelete = canvasKeys.length > 1;
 
             canvasKeys.forEach(function(cNum) {
-                var meta = self.state.canvasMeta[cNum] || { name: 'Canvas ' + cNum };
-                var name = meta.name || ('Canvas ' + cNum);
+                var meta = self.state.canvasMeta[cNum] || { name: (cNum === 2 ? 'Confirmation' : 'Canvas ' + cNum) };
+                var name = meta.name || (cNum === 2 ? 'Confirmation' : 'Canvas ' + cNum);
                 var isActive = (cNum === self.state.currentCanvas);
 
                 var $wrapper = $('<div></div>')
@@ -561,8 +561,8 @@
                 return;
             }
 
-            var meta = this.state.canvasMeta[cNum] || { name: 'Canvas ' + cNum };
-            var canvasName = meta.name || ('Canvas ' + cNum);
+            var meta = this.state.canvasMeta[cNum] || { name: (cNum === 2 ? 'Confirmation' : 'Canvas ' + cNum) };
+            var canvasName = meta.name || (cNum === 2 ? 'Confirmation' : 'Canvas ' + cNum);
 
             if (!window.confirm(wp.i18n.sprintf(
             /* translators: %s: canvas name. */
@@ -626,7 +626,7 @@
             }
             if (!this.state.canvasMeta[canvasNum]) {
                 this.state.canvasMeta[canvasNum] = {
-                    name: 'Canvas ' + canvasNum,
+                    name: (canvasNum === 2 ? 'Confirmation' : 'Canvas ' + canvasNum),
                     width: 300,
                     height: 400,
                     bg_mode: 'solid',

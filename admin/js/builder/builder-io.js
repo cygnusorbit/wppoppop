@@ -201,7 +201,7 @@
                     core.state.canvases = { 1: [], 2: [] };
                     core.state.canvasMeta = {
                         1: { name: 'Canvas 1', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'none', anim_exit_enabled: false, logic_enabled: false },
-                        2: { name: 'Canvas 2', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'none', anim_exit_enabled: false, logic_enabled: false }
+                        2: { name: 'Confirmation', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'none', anim_exit_enabled: false, logic_enabled: false }
                     };
                     core.renderCanvasTabs();
                     core.switchCanvas(1);
@@ -246,6 +246,8 @@
                             }
 
                             core.state.canvasMeta = cfg.canvasMeta || cfg.canvas_meta || {};
+                            /* WPPOPPOP_CANVAS2_NAME: previous default name on saved popups becomes the new default */
+                            if (core.state.canvasMeta[2] && core.state.canvasMeta[2].name === 'Canvas 2') { core.state.canvasMeta[2].name = 'Confirmation'; }
 
                             if (!core.state.canvases[1]) core.state.canvases[1] = [];
                             if (!core.state.canvases[2]) core.state.canvases[2] = [];
@@ -253,7 +255,7 @@
                             Object.keys(core.state.canvases).forEach(function(k) {
                                 if (!core.state.canvasMeta[k]) {
                                     core.state.canvasMeta[k] = {
-                                        name: 'Canvas ' + k,
+                                        name: (String(k) === '2' ? 'Confirmation' : 'Canvas ' + k),
                                         width: (cfg.settings && cfg.settings.box && cfg.settings.box.width) || 300,
                                         height: (cfg.settings && cfg.settings.box && cfg.settings.box.height) || 400,
                                         bg_mode: (cfg.settings && cfg.settings.box && cfg.settings.box.bg_mode) || 'solid',

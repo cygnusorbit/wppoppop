@@ -92,7 +92,7 @@
                 },
                 canvasMeta: {
                     1: { name: 'Canvas 1', width: 300, height: 400 },
-                    2: { name: 'Canvas 2', width: 300, height: 400 }
+                    2: { name: 'Confirmation', width: 300, height: 400 }
                 },
                 settings: {
                     box: { width: 300, height: 400 },

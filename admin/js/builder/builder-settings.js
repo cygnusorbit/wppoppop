@@ -108,8 +108,8 @@
             if (canvasKeys.length === 0) canvasKeys = [1, 2];
 
             canvasKeys.forEach(function(cNum) {
-                var meta = core.state.canvasMeta[cNum] || { name: 'Canvas ' + cNum };
-                var name = meta.name || ('Canvas ' + cNum);
+                var meta = core.state.canvasMeta[cNum] || { name: (cNum === 2 ? 'Confirmation' : 'Canvas ' + cNum) };
+                var name = meta.name || (cNum === 2 ? 'Confirmation' : 'Canvas ' + cNum);
                 var isActive = (cNum === core.state.currentCanvas);
 
                 var $btn = $('<button type="button" class="wppoppop-canvas-bullet"></button>')
@@ -154,7 +154,7 @@
             var cur = core.state.currentCanvas || 1;
             var meta = core.state.canvasMeta[cur] || {};
 
-            $('#set-canvas-name').val(meta.name || ('Canvas ' + cur));
+            $('#set-canvas-name').val(meta.name || (cur === 2 ? 'Confirmation' : 'Canvas ' + cur));
             $('#set-canvas-width').val(meta.width || 300);
             $('#set-canvas-height').val(meta.height || 400);
 
