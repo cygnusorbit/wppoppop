@@ -69,7 +69,7 @@
 
             $('#wto-reset-cols').on('click', function() {
                 var pf = $.isArray(self.cfg.popup_fields) ? self.cfg.popup_fields : [];
-                if (!pf.length) { alert('This popup has no saved form fields yet.'); return; }
+                if (!pf.length) { alert(wp.i18n.__('This popup has no saved form fields yet.', 'wppoppop')); return; }
                 var keep = self.flush();               // preserve unsaved label / per-page edits
                 self.cfg.labels = keep.labels;
                 self.cfg.per_page = keep.per_page;

@@ -17,19 +17,19 @@ $bar_popups = $wpdb->get_results("SELECT i.uid, i.title,
     GROUP BY i.id, i.uid, i.title ORDER BY i.id DESC LIMIT 30");
 
 $bar_links = [
-    ['wppoppop-dashboard',       'Dashboard',        'dashicons-screenoptions'],
-    ['wppoppop',                 'Popups',           'dashicons-megaphone'],
-    ['wppoppop-builder',         'Create Popup',     'dashicons-plus-alt'],
-    ['wppoppop-ab',              'A/B Campaigns',    'dashicons-randomize'],
-    ['wppoppop-submissions',     'Submissions',      'dashicons-email-alt'],
-    ['wppoppop-log',             'Activity Log',     'dashicons-list-view'],
-    ['wppoppop-stats',           'Statistics',       'dashicons-chart-bar'],
-    ['wppoppop-field-analytics', 'Field Analytics',  'dashicons-chart-pie'],
-    ['wppoppop-payments',        'Transactions',     'dashicons-money-alt'],
-    ['wppoppop-library',         'Popups Library',   'dashicons-category'],
-    ['wppoppop-settings',        'Settings',         'dashicons-admin-generic'],
-    ['wppoppop-theme',           'Theme',            'dashicons-art'],
-    ['wppoppop-tools',           'Tools & Export',   'dashicons-admin-tools'],
+    ['wppoppop-dashboard',       __('Dashboard', 'wppoppop'),        'dashicons-screenoptions'],
+    ['wppoppop',                 __('Popups', 'wppoppop'),           'dashicons-megaphone'],
+    ['wppoppop-builder',         __('Create Popup', 'wppoppop'),     'dashicons-plus-alt'],
+    ['wppoppop-ab',              __('A/B Campaigns', 'wppoppop'),    'dashicons-randomize'],
+    ['wppoppop-submissions',     __('Submissions', 'wppoppop'),      'dashicons-email-alt'],
+    ['wppoppop-log',             __('Activity Log', 'wppoppop'),     'dashicons-list-view'],
+    ['wppoppop-stats',           __('Statistics', 'wppoppop'),       'dashicons-chart-bar'],
+    ['wppoppop-field-analytics', __('Field Analytics', 'wppoppop'),  'dashicons-chart-pie'],
+    ['wppoppop-payments',        __('Transactions', 'wppoppop'),     'dashicons-money-alt'],
+    ['wppoppop-library',         __('Popups Library', 'wppoppop'),   'dashicons-category'],
+    ['wppoppop-settings',        __('Settings', 'wppoppop'),         'dashicons-admin-generic'],
+    ['wppoppop-theme',           __('Theme', 'wppoppop'),            'dashicons-art'],
+    ['wppoppop-tools',           __('Tools & Export', 'wppoppop'),   'dashicons-admin-tools'],
 ];
 /* WPPOPPOP_BAR_MENU_SYNC: Menu dropdown mirrors Settings > Pages (label, order, hidden), live from the registered submenu. */
 $bar_icons = [];

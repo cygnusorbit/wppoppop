@@ -36,6 +36,10 @@ No. WpPopPop runs locally on your WordPress installation and does not track pers
 = Can I use custom CSS? =
 Yes, custom CSS and styling rules can be applied directly to individual layers and popup containers.
 
+= How do I translate WpPopPop? =
+
+The plugin is fully internationalized (text domain `wppoppop`, domain path `/languages`). Use `languages/wppoppop.pot` as the template, save your `.po`/`.mo` as `languages/wppoppop-{locale}.po/.mo`, then run `wp i18n make-json languages --no-purge` to create the JSON files used by the JavaScript strings.
+
 == Changelog ==
 
 = 3.0.836 =

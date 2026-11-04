@@ -23,11 +23,11 @@ class WpPopPop_Ajax_Tools {
 
     private function verify_security() {
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.']);
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')]);
         }
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'wppoppop_builder_nonce') && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
-            wp_send_json_error(['message' => 'Security check failed. Please refresh the page.']);
+            wp_send_json_error(['message' => __('Security check failed. Please refresh the page.', 'wppoppop')]);
         }
     }
 
@@ -116,14 +116,14 @@ class WpPopPop_Ajax_Tools {
     public static function import_payload($raw, $dry_run = false, $with_settings = false) {
         global $wpdb;
         if (!is_string($raw) || $raw === '') {
-            return new WP_Error('empty', 'No backup data was provided for restoration.');
+            return new WP_Error('empty', __('No backup data was provided for restoration.', 'wppoppop'));
         }
         if (strlen($raw) > self::MAX_IMPORT_BYTES) {
-            return new WP_Error('size', 'Backup file is too large (10 MB maximum).');
+            return new WP_Error('size', __('Backup file is too large (10 MB maximum).', 'wppoppop'));
         }
         $decoded = json_decode($raw, true);
         if (!is_array($decoded) || (empty($decoded['items']) && empty($decoded['campaigns']))) {
-            return new WP_Error('format', 'Invalid or unrecognized backup format.');
+            return new WP_Error('format', __('Invalid or unrecognized backup format.', 'wppoppop'));
         }
 
         $res = ['items' => 0, 'campaigns' => 0, 'skipped' => 0, 'renamed' => 0, 'settings' => false, 'dry_run' => (bool) $dry_run];
@@ -136,7 +136,7 @@ class WpPopPop_Ajax_Tools {
             foreach ($decoded['items'] as $item) {
                 if (!is_array($item)) { $res['skipped']++; continue; }
                 $title = isset($item['title']) ? sanitize_text_field($item['title']) : '';
-                if ($title === '') { $title = 'Restored Popup'; }
+                if ($title === '') { $title = __('Restored Popup', 'wppoppop'); }
                 $data = isset($item['data']) ? $item['data'] : '{}';
                 if (is_array($data) || is_object($data)) { $data = wp_json_encode($data); }
                 if (!is_string($data) || json_decode($data) === null) { $res['skipped']++; continue; }
@@ -156,7 +156,7 @@ class WpPopPop_Ajax_Tools {
                         'uid' => $new, 'title' => $title, 'data' => $data,
                         'status' => $status, 'impressions' => 0, 'submissions' => 0, 'confirmations' => 0,
                     ], ['%s', '%s', '%s', '%s', '%d', '%d', '%d']);
-                    if ($ok === false) { $wpdb->query('ROLLBACK'); return new WP_Error('db', 'Database error during restore. No changes were kept.'); }
+                    if ($ok === false) { $wpdb->query('ROLLBACK'); return new WP_Error('db', __('Database error during restore. No changes were kept.', 'wppoppop')); }
                 }
                 $res['items']++;
             }
@@ -166,7 +166,7 @@ class WpPopPop_Ajax_Tools {
             foreach ($decoded['campaigns'] as $camp) {
                 if (!is_array($camp)) { $res['skipped']++; continue; }
                 $title = isset($camp['title']) ? sanitize_text_field($camp['title']) : '';
-                if ($title === '') { $title = 'Restored A/B Test'; }
+                if ($title === '') { $title = __('Restored A/B Test', 'wppoppop'); }
                 $uids = isset($camp['popup_uids']) ? $camp['popup_uids'] : [];
                 if (is_string($uids)) { $uids = json_decode($uids, true); }
                 $remap = [];
@@ -185,7 +185,7 @@ class WpPopPop_Ajax_Tools {
                     $ok = $wpdb->insert($camps_table, [
                         'uid' => $cuid, 'title' => $title, 'popup_uids' => wp_json_encode(array_values($remap)), 'status' => $cstatus ? $cstatus : 'active',
                     ], ['%s', '%s', '%s', '%s']);
-                    if ($ok === false) { $wpdb->query('ROLLBACK'); return new WP_Error('db', 'Database error during restore. No changes were kept.'); }
+                    if ($ok === false) { $wpdb->query('ROLLBACK'); return new WP_Error('db', __('Database error during restore. No changes were kept.', 'wppoppop')); }
                 }
                 $res['campaigns']++;
             }
@@ -211,7 +211,8 @@ class WpPopPop_Ajax_Tools {
     }
 
     private static function summary($r) {
-        $msg = sprintf('%s %d popups and %d A/B campaigns', !empty($r['dry_run']) ? 'Preview: would restore' : 'Successfully restored', $r['items'], $r['campaigns']);
+        /* translators: 1: action label (e.g. Successfully restored), 2: number of popups, 3: number of A/B campaigns. */
+        $msg = sprintf(__('%1$s %2$d popups and %3$d A/B campaigns', 'wppoppop'), !empty($r['dry_run']) ? __('Preview: would restore', 'wppoppop') : __('Successfully restored', 'wppoppop'), $r['items'], $r['campaigns']);
         if (!empty($r['renamed'])) { $msg .= sprintf(' (%d uid(s) changed because they already exist)', $r['renamed']); }
         if (!empty($r['skipped'])) { $msg .= sprintf('; %d entr%s skipped as invalid', $r['skipped'], $r['skipped'] === 1 ? 'y' : 'ies'); }
         if (!empty($r['settings'])) { $msg .= '; settings/theme applied'; }
@@ -224,8 +225,8 @@ class WpPopPop_Ajax_Tools {
         $status  = self::table_status();
         $missing = array_filter($status, function ($t) { return empty($t['exists']); });
         $msg = count($missing)
-            ? 'Some tables are still missing after repair. Check that the database user has CREATE/ALTER privileges.'
-            : 'All 5 database tables successfully verified and schema confirmed healthy!';
+            ? __('Some tables are still missing after repair. Check that the database user has CREATE/ALTER privileges.', 'wppoppop')
+            : __('All 5 database tables successfully verified and schema confirmed healthy!', 'wppoppop');
         return [$msg, $status, count($missing) === 0];
     }
 
@@ -238,7 +239,7 @@ class WpPopPop_Ajax_Tools {
     /** Native POST path used by templates/tools-view.php. Returns [message, type]. */
     public static function handle_post() {
         if (!current_user_can('manage_options')) {
-            return ['Unauthorized.', 'error'];
+            return [__('Unauthorized.', 'wppoppop'), 'error'];
         }
         check_admin_referer('wppoppop_tools_action', 'wppoppop_tools_nonce');
         if (isset($_POST['wppoppop_repair_tables'])) {
@@ -247,13 +248,13 @@ class WpPopPop_Ajax_Tools {
         }
         if (isset($_POST['wppoppop_reset_counters'])) {
             self::reset();
-            return ['All popup impressions, leads, and confirmation counters have been reset to 0.', 'success'];
+            return [__('All popup impressions, leads, and confirmation counters have been reset to 0.', 'wppoppop'), 'success'];
         }
         if (isset($_POST['wppoppop_bulk_import'])) {
             $raw = '';
             if (!empty($_FILES['wppoppop_bulk_import_file']['tmp_name']) && is_uploaded_file($_FILES['wppoppop_bulk_import_file']['tmp_name'])) {
                 if (filesize($_FILES['wppoppop_bulk_import_file']['tmp_name']) > self::MAX_IMPORT_BYTES) {
-                    return ['Backup file is too large (10 MB maximum).', 'error'];
+                    return [__('Backup file is too large (10 MB maximum).', 'wppoppop'), 'error'];
                 }
                 $raw = file_get_contents($_FILES['wppoppop_bulk_import_file']['tmp_name']);
             }
@@ -358,7 +359,7 @@ class WpPopPop_Ajax_Tools {
 
         $this->verify_security();
         wp_send_json_success([
-            'message'  => 'All popup impressions, leads captured, and confirmation counters have been reset to 0.',
+            'message'  => __('All popup impressions, leads captured, and confirmation counters have been reset to 0.', 'wppoppop'),
             'affected' => self::reset(),
         ]);
     }
@@ -381,7 +382,12 @@ class WpPopPop_Ajax_Tools {
         global $wpdb;
         $days = isset($_POST['days']) ? max(1, min(3650, (int) $_POST['days'])) : 30;
         $n = $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->prefix}wppoppop_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)", $days));
-        wp_send_json_success(['message' => sprintf('Removed %d log entr%s older than %d days.', (int) $n, ((int) $n === 1 ? 'y' : 'ies'), $days)]);
+        wp_send_json_success(['message' => sprintf(
+            /* translators: 1: number of log entries removed, 2: number of days. */
+            _n('Removed %1$d log entry older than %2$d days.', 'Removed %1$d log entries older than %2$d days.', (int) $n, 'wppoppop'),
+            (int) $n,
+            $days
+        )]);
     }
 
     public function optimize_tables() {
@@ -408,7 +414,11 @@ class WpPopPop_Ajax_Tools {
                 $done++;
             }
         }
-        wp_send_json_success(['message' => sprintf('Optimized %d tables.', $done), 'tables' => self::table_status()]);
+        wp_send_json_success(['message' => sprintf(
+            /* translators: %d: number of database tables optimized. */
+            _n('Optimized %d table.', 'Optimized %d tables.', (int) $done, 'wppoppop'),
+            (int) $done
+        ), 'tables' => self::table_status()]);
     }
 
     /** Read-only: nothing is deleted. */
@@ -433,6 +443,11 @@ class WpPopPop_Ajax_Tools {
         $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_submissions s LEFT JOIN {$p}wppoppop_items i ON s.popup_uid = i.uid WHERE i.uid IS NULL");
         $trans = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_transactions t LEFT JOIN {$p}wppoppop_items i ON t.popup_uid = i.uid WHERE i.uid IS NULL");
-        wp_send_json_success(['message' => sprintf('Orphaned records (popup no longer exists): %d submissions, %d transactions. Nothing was deleted.', $subs, $trans)]);
+        wp_send_json_success(['message' => sprintf(
+            /* translators: 1: number of orphaned submissions, 2: number of orphaned transactions. */
+            __('Orphaned records (popup no longer exists): %1$d submissions, %2$d transactions. Nothing was deleted.', 'wppoppop'),
+            $subs,
+            $trans
+        )]);
     }
 }

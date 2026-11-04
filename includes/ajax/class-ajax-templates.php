@@ -23,11 +23,11 @@ class WpPopPop_Ajax_Templates {
 
     private function guard() {
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => 'Unauthorized action.'));
+            wp_send_json_error(array('message' => __('Unauthorized action.', 'wppoppop')));
         }
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'wppoppop_builder_nonce') && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
-            wp_send_json_error(array('message' => 'Security check failed. Please refresh the page.'));
+            wp_send_json_error(array('message' => __('Security check failed. Please refresh the page.', 'wppoppop')));
         }
     }
 
@@ -54,12 +54,12 @@ class WpPopPop_Ajax_Templates {
 
         $s = get_option('wppoppop_settings', array());
         if (is_array($s) && array_key_exists('builder_save_template', $s) && empty($s['builder_save_template'])) {
-            wp_send_json_error(array('message' => 'Save As Template is turned off in Settings > Builder.'));
+            wp_send_json_error(array('message' => __('Save As Template is turned off in Settings > Builder.', 'wppoppop')));
         }
 
         $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
         if ($name === '') {
-            wp_send_json_error(array('message' => 'Please enter a popup name.'));
+            wp_send_json_error(array('message' => __('Please enter a popup name.', 'wppoppop')));
         }
         $desc  = isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '';
         $image = isset($_POST['image']) ? esc_url_raw(wp_unslash($_POST['image'])) : '';
@@ -67,7 +67,7 @@ class WpPopPop_Ajax_Templates {
         $raw = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
         $obj = json_decode($raw);
         if (!is_object($obj)) {
-            wp_send_json_error(array('message' => 'Malformed popup definition.'));
+            wp_send_json_error(array('message' => __('Malformed popup definition.', 'wppoppop')));
         }
         if (!class_exists('WpPopPop_Sanitizer')) {
             require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sanitizer.php';
@@ -87,7 +87,7 @@ class WpPopPop_Ajax_Templates {
         $obj  = WpPopPop_Sanitizer::anim_payload($obj);
         $json = wp_json_encode($obj);
         if (!is_string($json) || $json === '') {
-            wp_send_json_error(array('message' => 'Could not encode template.'));
+            wp_send_json_error(array('message' => __('Could not encode template.', 'wppoppop')));
         }
 
         // Recompute counter + size server-side (never trust the client).
@@ -123,7 +123,7 @@ class WpPopPop_Ajax_Templates {
 
         $all = $this->all();
         if (count($all) >= 200) {
-            wp_send_json_error(array('message' => 'Template limit reached (200). Delete some templates first.'));
+            wp_send_json_error(array('message' => __('Template limit reached (200). Delete some templates first.', 'wppoppop')));
         }
         $cat = isset($_POST['category']) ? sanitize_key(wp_unslash($_POST['category'])) : 'custom';
         $valid = array();
@@ -148,7 +148,7 @@ class WpPopPop_Ajax_Templates {
 
         wp_send_json_success(array(
             'id'      => $id,
-            'message' => 'Template saved to Popups Library!',
+            'message' => __('Template saved to Popups Library!', 'wppoppop'),
             'library' => admin_url('admin.php?page=wppoppop-library'),
         ));
     }
@@ -172,7 +172,7 @@ class WpPopPop_Ajax_Templates {
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->with_presets();
         if ($id === '' || !isset($all[$id])) {
-            wp_send_json_error(array('message' => 'Template not found.'));
+            wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $t    = $all[$id];
         $base = sanitize_title($t['title']);
@@ -187,7 +187,7 @@ class WpPopPop_Ajax_Templates {
             }
         }
         if ($uid === '') {
-            wp_send_json_error(array('message' => 'Could not generate a unique UID.'));
+            wp_send_json_error(array('message' => __('Could not generate a unique UID.', 'wppoppop')));
         }
         $ok = $wpdb->insert($wpdb->prefix . 'wppoppop_items', array(
             'uid'    => $uid,
@@ -196,7 +196,7 @@ class WpPopPop_Ajax_Templates {
             'status' => 'draft',
         ), array('%s', '%s', '%s', '%s'));
         if ($ok === false) {
-            wp_send_json_error(array('message' => 'Database error while creating popup.'));
+            wp_send_json_error(array('message' => __('Database error while creating popup.', 'wppoppop')));
         }
         wp_send_json_success(array(
             'uid'      => $uid,
@@ -222,11 +222,11 @@ class WpPopPop_Ajax_Templates {
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->all();
         if ($id === '' || !isset($all[$id])) {
-            wp_send_json_error(array('message' => 'Template not found.'));
+            wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         unset($all[$id]);
         update_option(self::OPT, $all, false);
-        wp_send_json_success(array('message' => 'Template deleted.'));
+        wp_send_json_success(array('message' => __('Template deleted.', 'wppoppop')));
     }
 
     /** Stage a saved template so the real frontend renderer can show it (admins only). */
@@ -248,11 +248,11 @@ class WpPopPop_Ajax_Templates {
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->with_presets();
         if ($id === '' || !isset($all[$id]) || empty($all[$id]['data'])) {
-            wp_send_json_error(array('message' => 'Template not found.'));
+            wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $decoded = json_decode($all[$id]['data'], true);
         if (!is_array($decoded)) {
-            wp_send_json_error(array('message' => 'Template data is damaged.'));
+            wp_send_json_error(array('message' => __('Template data is damaged.', 'wppoppop')));
         }
         $uid = sanitize_key('tpl-' . $id);
         /* Same key scheme as WpPopPop_Front_Preview::transient_key() */
@@ -304,7 +304,7 @@ class WpPopPop_Ajax_Templates {
         $this->guard();
         $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
         if (!is_array($raw)) {
-            wp_send_json_error(array('message' => 'Malformed category list.'));
+            wp_send_json_error(array('message' => __('Malformed category list.', 'wppoppop')));
         }
         $out  = array();
         $seen = array();
@@ -327,7 +327,7 @@ class WpPopPop_Ajax_Templates {
             $out[] = array('slug' => 'custom', 'label' => __('My Templates', 'wppoppop'));
         }
         update_option(self::CATS_OPT, $out, false);
-        wp_send_json_success(array('cats' => $out, 'message' => 'Categories saved.'));
+        wp_send_json_success(array('cats' => $out, 'message' => __('Categories saved.', 'wppoppop')));
     }
 
     public function get_one() {
@@ -348,7 +348,7 @@ class WpPopPop_Ajax_Templates {
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->all();
         if ($id === '' || !isset($all[$id])) {
-            wp_send_json_error(array('message' => 'Template not found.'));
+            wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $t = $all[$id];
         wp_send_json_success(array(
@@ -369,11 +369,11 @@ class WpPopPop_Ajax_Templates {
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = $this->all();
         if ($id === '' || !isset($all[$id])) {
-            wp_send_json_error(array('message' => 'Template not found.'));
+            wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
         if ($name === '') {
-            wp_send_json_error(array('message' => 'Please enter a popup name.'));
+            wp_send_json_error(array('message' => __('Please enter a popup name.', 'wppoppop')));
         }
         $valid = array();
         foreach (self::get_categories() as $c) { $valid[] = $c['slug']; }
@@ -384,7 +384,7 @@ class WpPopPop_Ajax_Templates {
         $all[$id]['image']       = isset($_POST['image']) ? esc_url_raw(wp_unslash($_POST['image'])) : '';
         $all[$id]['category']    = $cat;
         update_option(self::OPT, $all, false);
-        wp_send_json_success(array('message' => 'Template updated.'));
+        wp_send_json_success(array('message' => __('Template updated.', 'wppoppop')));
     }
 
     /** Returns a portable template JSON (drop-in format for /library-presets/). */
@@ -406,12 +406,12 @@ class WpPopPop_Ajax_Templates {
         $id  = isset($_POST['id']) ? sanitize_key(wp_unslash($_POST['id'])) : '';
         $all = method_exists($this, 'with_presets') ? $this->with_presets() : $this->all();
         if ($id === '' || !isset($all[$id]) || empty($all[$id]['data'])) {
-            wp_send_json_error(array('message' => 'Template not found.'));
+            wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $t    = $all[$id];
         $data = json_decode($t['data']);
         if (!is_object($data)) {
-            wp_send_json_error(array('message' => 'Template data is damaged.'));
+            wp_send_json_error(array('message' => __('Template data is damaged.', 'wppoppop')));
         }
         $payload = array(
             'template' => array(
@@ -424,7 +424,7 @@ class WpPopPop_Ajax_Templates {
         );
         $json = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (!is_string($json) || $json === '') {
-            wp_send_json_error(array('message' => 'Could not encode template.'));
+            wp_send_json_error(array('message' => __('Could not encode template.', 'wppoppop')));
         }
         $name = sanitize_title(isset($t['title']) ? $t['title'] : '');
         wp_send_json_success(array(

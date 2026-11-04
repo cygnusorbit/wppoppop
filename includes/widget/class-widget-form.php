@@ -8,7 +8,7 @@ class WpPopPop_Widget_Form {
         $title       = !empty($instance['title']) ? $instance['title'] : '';
         $popup_uid   = !empty($instance['popup_uid']) ? $instance['popup_uid'] : '';
         $mode        = !empty($instance['mode']) ? $instance['mode'] : 'inline';
-        $button_text = !empty($instance['button_text']) ? $instance['button_text'] : 'Open Popup';
+        $button_text = !empty($instance['button_text']) ? $instance['button_text'] : __('Open Popup', 'wppoppop');
         $onload_delay = isset($instance['onload_delay']) ? max(0, (int) $instance['onload_delay']) : 0;
 
         global $wpdb;
@@ -99,7 +99,7 @@ class WpPopPop_Widget_Form {
         $instance['title']       = !empty($new_instance['title']) ? sanitize_text_field($new_instance['title']) : '';
         $instance['popup_uid']   = !empty($new_instance['popup_uid']) ? sanitize_key($new_instance['popup_uid']) : '';
         $instance['mode']        = (isset($new_instance['mode']) && in_array($new_instance['mode'], ['inline', 'onload', 'button'], true)) ? $new_instance['mode'] : 'inline';
-        $instance['button_text'] = !empty($new_instance['button_text']) ? sanitize_text_field($new_instance['button_text']) : 'Open Popup';
+        $instance['button_text'] = !empty($new_instance['button_text']) ? sanitize_text_field($new_instance['button_text']) : __('Open Popup', 'wppoppop');
         $instance['onload_delay'] = isset($new_instance['onload_delay']) ? max(0, min(3600, (int) $new_instance['onload_delay'])) : 0;
         return $instance;
     }

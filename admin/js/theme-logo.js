@@ -27,7 +27,7 @@
 
         pick.addEventListener('click', function (e) {
             e.preventDefault();
-            if (!window.wp || !window.wp.media) { window.alert('WordPress Media is unavailable on this screen.'); return; }
+            if (!window.wp || !window.wp.media) { window.alert(wp.i18n.__('WordPress Media is unavailable on this screen.', 'wppoppop')); return; }
             if (!frame) {
                 frame = window.wp.media({ title: 'Select top bar logo', button: { text: 'Use as logo' }, multiple: false, library: { type: 'image' } });
                 frame.on('select', function () {

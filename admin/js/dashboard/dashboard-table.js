@@ -42,12 +42,14 @@
 
                 if (selectedUids.length === 0) {
                     e.preventDefault();
-                    alert('Please select at least one popup to perform this action.');
+                    alert(wp.i18n.__('Please select at least one popup to perform this action.', 'wppoppop'));
                     return;
                 }
 
                 if (action === 'delete') {
-                    if (!window.confirm('Delete ' + selectedUids.length + ' selected popup campaign(s)?')) {
+                    if (!window.confirm(wp.i18n.sprintf(
+                        /* translators: %d: number of selected popup campaigns. */
+                        wp.i18n._n('Delete %d selected popup campaign?', 'Delete %d selected popup campaigns?', selectedUids.length, 'wppoppop'), selectedUids.length))) {
                         e.preventDefault();
                         return;
                     }

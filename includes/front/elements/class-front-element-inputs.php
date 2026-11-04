@@ -36,7 +36,7 @@ class WpPopPop_Front_Element_Inputs {
 
     public static function render_email(array $el, array $config = []) {
         $field_name = !empty($el['field_name']) ? sanitize_key($el['field_name']) : 'email';
-        $placeholder = isset($el['placeholder']) ? esc_attr($el['placeholder']) : 'Enter your email...';
+        $placeholder = isset($el['placeholder']) ? esc_attr($el['placeholder']) : esc_attr__('Enter your email...', 'wppoppop');
         $default_val = isset($el['content']) ? esc_attr($el['content']) : '';
         $required = isset($el['required']) && !$el['required'] ? '' : 'required';
 
@@ -134,7 +134,7 @@ class WpPopPop_Front_Element_Inputs {
 
     public static function render_checkboxes(array $el, array $config = []) {
         $field_name = !empty($el['field_name']) ? sanitize_key($el['field_name']) : 'checkbox_consent';
-        $text = isset($el['content']) ? $el['content'] : 'I agree to the terms';
+        $text = isset($el['content']) ? $el['content'] : __('I agree to the terms', 'wppoppop');
         $checked = !empty($el['checked']) ? ' checked' : '';
         $required = !empty($el['required']) ? 'required' : '';
 
@@ -168,7 +168,7 @@ class WpPopPop_Front_Element_Inputs {
 
     public static function render_file(array $el, array $config = []) {
         $field_name = !empty($el['field_name']) ? sanitize_key($el['field_name']) : 'file_upload';
-        $label = !empty($el['label_text']) ? esc_html($el['label_text']) : 'Choose File';
+        $label = !empty($el['label_text']) ? esc_html($el['label_text']) : esc_html__('Choose File', 'wppoppop');
         $exts = !empty($el['fileExts']) ? esc_attr($el['fileExts']) : '.pdf, .jpg, .png';
         $max_size = !empty($el['max_size_mb']) ? intval($el['max_size_mb']) : 10;
         $required = !empty($el['required']) ? 'required' : '';

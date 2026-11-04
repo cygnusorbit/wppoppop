@@ -3,23 +3,23 @@ if (!defined('ABSPATH')) exit;
 ?>
 <!-- DECOMPOSED MODULE 09: BUTTON / LINK / STEP TRIGGER (button / link / link_btn / step_btn) -->
 <div class="element-panel wppoppop-panel-specific" id="panel-elem-button" data-elem-family="media" style="display:none;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
-    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">9. Button Label &amp; Click Action</div>
-    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">BUTTON LABEL TEXT</label>
-    <input type="text" id="prop-button-label" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="content" value="Click Here" placeholder="Click Here" style="margin-bottom:10px;font-size:12px;">
+    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;"><?php esc_html_e('9. Button Label & Click Action', 'wppoppop'); ?></div>
+    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('BUTTON LABEL TEXT', 'wppoppop'); ?></label>
+    <input type="text" id="prop-button-label" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="content" value="Click Here" placeholder="<?php esc_attr_e('Click Here', 'wppoppop'); ?>" style="margin-bottom:10px;font-size:12px;">
     <input type="hidden" id="prop-link-text" class="wppoppop-gp-bind" data-prop="content">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">CLICK ACTION</label>
+            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('CLICK ACTION', 'wppoppop'); ?></label>
             <select id="prop-button-action" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="buttonAction" style="font-size:12px;">
-                <option value="link">Open URL Link</option>
-                <option value="step">Go to Canvas Step</option>
-                <option value="close">Close Popup</option>
+                <option value="link"><?php esc_html_e('Open URL Link', 'wppoppop'); ?></option>
+                <option value="step"><?php esc_html_e('Go to Canvas Step', 'wppoppop'); ?></option>
+                <option value="close"><?php esc_html_e('Close Popup', 'wppoppop'); ?></option>
             </select>
         </div>
         <div id="prop-button-step-wrap">
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">TARGET CANVAS</label>
+            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('TARGET CANVAS', 'wppoppop'); ?></label>
             <!-- WPPOPPOP_BTN_CANVAS_SELECT: options are built live from the available canvases (builder-button-canvas-select.js) -->
-            <select id="prop-goto-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" style="font-size:12px;"><option value="2">Canvas 2</option></select>
+            <select id="prop-goto-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" style="font-size:12px;"><option value="2"><?php esc_html_e('Canvas 2', 'wppoppop'); ?></option></select>
         </div>
     </div>
     <div id="prop-button-url-wrap">
@@ -37,10 +37,10 @@ if (!defined('ABSPATH')) exit;
 #panel-elem-button label.wpp-sw code{font-family:inherit !important;font-size:inherit !important;font-weight:700 !important;background:transparent !important;padding:0 !important;margin:0 !important;color:#38bdf8 !important}
 </style>
 
-        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">DESTINATION URL</label>
+        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('DESTINATION URL', 'wppoppop'); ?></label>
         <input type="text" id="prop-link-url" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="linkUrl" placeholder="https://example.com" style="margin-bottom:10px;font-size:12px;">
         <div style="display:flex;flex-direction:column;gap:10px;">
-            <label class="wpp-sw"><input type="checkbox" id="prop-link-blank" class="wppoppop-gp-bind" data-prop="linkBlank" value="1"><span class="wpp-sw-track"></span><span>Open in new tab (<code>_blank</code>)</span></label>
+            <label class="wpp-sw"><input type="checkbox" id="prop-link-blank" class="wppoppop-gp-bind" data-prop="linkBlank" value="1"><span class="wpp-sw-track"></span><span><?php esc_html_e('Open in new tab (<code>_blank</code>)', 'wppoppop'); ?></span></label>
             <label class="wpp-sw"><input type="checkbox" id="prop-link-nofollow" class="wppoppop-gp-bind" data-prop="nofollow" value="1"><span class="wpp-sw-track"></span><span><code>rel="nofollow"</code></span></label>
         </div>
     </div>

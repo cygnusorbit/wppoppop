@@ -59,7 +59,7 @@ class WpPopPop_Front_Element_Gamification {
 
     public static function render_signature(array $el, array $config = []) {
         $color = !empty($el['sigColor']) ? esc_attr($el['sigColor']) : '#0f172a';
-        $label = !empty($el['clearLabel']) ? esc_html($el['clearLabel']) : 'Clear Signature';
+        $label = !empty($el['clearLabel']) ? esc_html($el['clearLabel']) : esc_html__('Clear Signature', 'wppoppop');
         $field = !empty($el['field_name']) ? sanitize_key($el['field_name']) : 'digital_signature';
 
         return sprintf(
@@ -72,7 +72,7 @@ class WpPopPop_Front_Element_Gamification {
 
     public static function render_wheel(array $el, array $config = []) {
         $slices = !empty($el['slices']) ? esc_attr($el['slices']) : '10% OFF, FREE SHIPPING, 25% OFF, JACKPOT';
-        $btn = !empty($el['btnText']) ? esc_html($el['btnText']) : 'SPIN TO WIN!';
+        $btn = !empty($el['btnText']) ? esc_html($el['btnText']) : esc_html__('SPIN TO WIN!', 'wppoppop');
         $win_msg = !empty($el['winMsg']) ? esc_attr($el['winMsg']) : 'Congratulations! You won {prize}!';
 
         return sprintf(

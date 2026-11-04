@@ -179,11 +179,11 @@
                     }
                 } else {
                     $input.prop('checked', !want);
-                    window.alert((res && res.data && res.data.message) || 'Could not update status.');
+                    window.alert((res && res.data && res.data.message) || wp.i18n.__('Could not update status.', 'wppoppop'));
                 }
             }).fail(function () {
                 $input.prop('checked', !want);
-                window.alert('Server error while updating status.');
+                window.alert(wp.i18n.__('Server error while updating status.', 'wppoppop'));
             }).always(function () {
                 $sw.removeClass('is-busy');
                 $input.prop('disabled', false);

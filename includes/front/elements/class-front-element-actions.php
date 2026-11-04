@@ -20,7 +20,7 @@ class WpPopPop_Front_Element_Actions {
     }
 
     public static function render_submit(array $el, array $config = []) {
-        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : 'Submit Now');
+        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : __('Submit Now', 'wppoppop'));
         $action = !empty($el['submit_action']) ? esc_attr($el['submit_action']) : (!empty($el['action']) ? esc_attr($el['action']) : 'close');
         $redirect = !empty($el['redirect_url']) ? esc_url($el['redirect_url']) : '';
 
@@ -33,7 +33,7 @@ class WpPopPop_Front_Element_Actions {
     }
 
     public static function render_step(array $el, array $config = []) {
-        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : 'Next Step →');
+        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : __('Next Step →', 'wppoppop'));
         $target = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : (!empty($el['goto_screen']) ? intval($el['goto_screen']) : 2);
 
         return sprintf(
@@ -44,7 +44,7 @@ class WpPopPop_Front_Element_Actions {
     }
 
     public static function render_link(array $el, array $config = []) {
-        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : 'Learn More →');
+        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : __('Learn More →', 'wppoppop'));
         $url = !empty($el['link_url']) ? esc_url($el['link_url']) : (!empty($el['url']) ? esc_url($el['url']) : '#');
         $target = (!empty($el['link_target']) && $el['link_target'] === '_blank') ? '_blank' : '_self';
         $rel = !empty($el['nofollow']) ? 'rel="nofollow noopener"' : 'rel="noopener"';
@@ -59,11 +59,11 @@ class WpPopPop_Front_Element_Actions {
     }
 
     public static function render_pay(array $el, array $config = []) {
-        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : 'Pay Now');
+        $label = !empty($el['btnText']) ? $el['btnText'] : (!empty($el['content']) ? $el['content'] : __('Pay Now', 'wppoppop'));
         $gateway = !empty($el['gateway']) ? esc_attr($el['gateway']) : 'stripe';
         $amount = !empty($el['amount']) ? esc_attr($el['amount']) : '19.99';
         $currency = !empty($el['currency']) ? esc_attr($el['currency']) : 'USD';
-        $item_desc = !empty($el['item_desc']) ? esc_attr($el['item_desc']) : 'Popup Order';
+        $item_desc = !empty($el['item_desc']) ? esc_attr($el['item_desc']) : esc_attr__('Popup Order', 'wppoppop');
 
         return sprintf(
             '<button type="button" class="wppoppop-pay-btn" data-gateway="%1$s" data-amount="%2$s" data-currency="%3$s" data-desc="%4$s" style="width:100%%;height:100%%;border:inherit;border-radius:inherit;background:inherit;color:inherit;font-size:inherit;font-weight:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;box-sizing:border-box;outline:none;"><span>💳</span> <span>%5$s</span></button>',

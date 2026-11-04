@@ -29,7 +29,7 @@ $pt = function ($i, $v) use ($padding, $step_x, $chart_height, $plot_height, $ma
             <span class="wpp-chart-key"><i class="wpp-key-solid"></i><?php esc_html_e('Impressions', 'wppoppop'); ?></span>
             <span class="wpp-chart-key"><i class="wpp-key-dash"></i><?php esc_html_e('Leads', 'wppoppop'); ?></span>
             <details class="wpp-pick" id="wpp-chart-pick">
-                <summary class="button button-small"><span class="dashicons dashicons-filter" style="font-size:14px;width:14px;height:14px;line-height:18px;"></span> <?php echo esc_html(sprintf(__('Chart data (%d)', 'wppoppop'), count($sel))); ?></summary>
+                <summary class="button button-small"><span class="dashicons dashicons-filter" style="font-size:14px;width:14px;height:14px;line-height:18px;"></span> <?php echo esc_html(sprintf(/* translators: number of selected series. */ __('Chart data (%d)', 'wppoppop'), count($sel))); ?></summary>
                 <div class="wpp-pick-panel">
                     <label class="wpp-pick-row"><input type="checkbox" class="wpp-chart-cb" value="__all__" <?php checked(in_array('__all__', $sel, true)); ?>> <strong><?php esc_html_e('All popups (total)', 'wppoppop'); ?></strong></label>
                     <div class="wpp-pick-list">
@@ -43,7 +43,7 @@ $pt = function ($i, $v) use ($padding, $step_x, $chart_height, $plot_height, $ma
                         <?php endforeach; ?>
                     </div>
                     <div class="wpp-pick-foot">
-                        <small class="wpp-pick-msg"><?php echo esc_html(sprintf(__('Max %d series', 'wppoppop'), WpPopPop_Admin_Stats::MAX_SERIES)); ?></small>
+                        <small class="wpp-pick-msg"><?php echo esc_html(sprintf(/* translators: maximum number of chart series. */ __('Max %d series', 'wppoppop'), WpPopPop_Admin_Stats::MAX_SERIES)); ?></small>
                         <button type="button" class="button button-primary button-small" id="wpp-chart-apply"><?php esc_html_e('Apply', 'wppoppop'); ?></button>
                     </div>
                 </div>

@@ -557,14 +557,16 @@
             var keys = Object.keys(this.state.canvases).map(Number).sort(function(a, b) { return a - b; });
 
             if (keys.length <= 1) {
-                alert('Your popup must have at least one canvas.');
+                alert(wp.i18n.__('Your popup must have at least one canvas.', 'wppoppop'));
                 return;
             }
 
             var meta = this.state.canvasMeta[cNum] || { name: 'Canvas ' + cNum };
             var canvasName = meta.name || ('Canvas ' + cNum);
 
-            if (!window.confirm('Are you sure you want to delete "' + canvasName + '"? All elements on this canvas will be permanently removed.')) {
+            if (!window.confirm(wp.i18n.sprintf(
+            /* translators: %s: canvas name. */
+            wp.i18n.__('Are you sure you want to delete "%s"? All elements on this canvas will be permanently removed.', 'wppoppop'), canvasName))) {
                 return;
             }
 

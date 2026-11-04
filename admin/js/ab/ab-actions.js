@@ -26,12 +26,12 @@
                 });
 
                 if (!title) {
-                    alert('Please enter a campaign title.');
+                    alert(wp.i18n.__('Please enter a campaign title.', 'wppoppop'));
                     return;
                 }
 
                 if (selectedUids.length < 2) {
-                    alert('Please select at least 2 popups for split-testing.');
+                    alert(wp.i18n.__('Please select at least 2 popups for split-testing.', 'wppoppop'));
                     return;
                 }
 
@@ -51,11 +51,11 @@
                     if (res.success) {
                         location.reload();
                     } else {
-                        alert('Error: ' + (res.data ? res.data.message : 'Unable to create campaign.'));
+                        alert(wp.i18n.__('Error:', 'wppoppop') + ' ' + (res.data ? res.data.message : wp.i18n.__('Unable to create campaign.', 'wppoppop')));
                         $btn.prop('disabled', false).text(origLabel);
                     }
                 }).fail(function() {
-                    alert('Network error while saving campaign.');
+                    alert(wp.i18n.__('Network error while saving campaign.', 'wppoppop'));
                     $btn.prop('disabled', false).text(origLabel);
                 });
             });
@@ -77,7 +77,7 @@
         bindDelete: function() {
             var self = this;
             $('.wppoppop-del-ab-btn').on('click', function() {
-                if (!confirm('Are you sure you want to delete this A/B testing campaign?')) {
+                if (!confirm(wp.i18n.__('Are you sure you want to delete this A/B testing campaign?', 'wppoppop'))) {
                     return;
                 }
 
@@ -93,10 +93,10 @@
                     if (res.success) {
                         $row.fadeOut(200, function() { $(this).remove(); });
                     } else {
-                        alert('Deletion Error: ' + (res.data ? res.data.message : 'Unable to delete campaign.'));
+                        alert(wp.i18n.__('Deletion Error:', 'wppoppop') + ' ' + (res.data ? res.data.message : wp.i18n.__('Unable to delete campaign.', 'wppoppop')));
                     }
                 }).fail(function() {
-                    alert('Network error while deleting campaign.');
+                    alert(wp.i18n.__('Network error while deleting campaign.', 'wppoppop'));
                 });
             });
         }

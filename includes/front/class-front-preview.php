@@ -25,11 +25,11 @@ class WpPopPop_Front_Preview {
 
     public function ajax_stage() {
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized action.']);
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')]);
         }
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'wppoppop_builder_nonce') && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
-            wp_send_json_error(['message' => 'Security check failed. Please refresh the page.']);
+            wp_send_json_error(['message' => __('Security check failed. Please refresh the page.', 'wppoppop')]);
         }
 
         $uid = isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : '';
@@ -39,7 +39,7 @@ class WpPopPop_Front_Preview {
         $raw     = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
         $decoded = json_decode($raw, true);
         if (!is_array($decoded)) {
-            wp_send_json_error(['message' => 'Malformed preview payload.']);
+            wp_send_json_error(['message' => __('Malformed preview payload.', 'wppoppop')]);
         }
 
         set_transient($this->transient_key($uid), wp_json_encode($decoded), HOUR_IN_SECONDS);
@@ -125,7 +125,7 @@ class WpPopPop_Front_Preview {
 <meta charset="<?php bloginfo('charset'); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Popup Preview</title>
+<title><?php esc_html_e('Popup Preview', 'wppoppop'); ?></title>
 <style>html,body{margin:0;padding:0;min-height:100%;background:#f1f5f9;}</style>
 <?php wp_head(); ?>
 </head>
@@ -156,9 +156,9 @@ class WpPopPop_Front_Preview {
         $back = admin_url('admin.php?page=wppoppop-builder' . ($uid !== 'draft' ? '&uid=' . rawurlencode($uid) : ''));
         ?>
         <div id="wppoppop-preview-banner" style="position:fixed;left:12px;bottom:12px;z-index:1000001;background:#0f172a;color:#f8fafc;border:1px solid #334155;border-radius:20px;padding:6px 14px;font:600 12px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;gap:10px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.35);">
-            <span style="color:#10b981;">&#9679; PREVIEW MODE</span>
-            <a href="<?php echo esc_url($back); ?>" style="color:#38bdf8;text-decoration:none;">Back to Builder</a>
-            <a href="#" id="wppoppop-preview-replay" style="color:#e2e8f0;text-decoration:none;">Replay</a>
+            <span style="color:#10b981;">&#9679; <?php esc_html_e('PREVIEW MODE', 'wppoppop'); ?></span>
+            <a href="<?php echo esc_url($back); ?>" style="color:#38bdf8;text-decoration:none;"><?php esc_html_e('Back to Builder', 'wppoppop'); ?></a>
+            <a href="#" id="wppoppop-preview-replay" style="color:#e2e8f0;text-decoration:none;"><?php esc_html_e('Replay', 'wppoppop'); ?></a>
         </div>
         <script>
         (function () {

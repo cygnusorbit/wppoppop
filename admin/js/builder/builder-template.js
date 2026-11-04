@@ -105,7 +105,7 @@
 
         pickImage: function () {
             var self = this;
-            if (!window.wp || !window.wp.media) { var u = window.prompt('Image URL'); if (u) { self.setImage(u); } return; }
+            if (!window.wp || !window.wp.media) { var u = window.prompt(wp.i18n.__('Image URL', 'wppoppop')); if (u) { self.setImage(u); } return; }
             if (!this.frame) {
                 this.frame = window.wp.media({ title: 'Popup Image', button: { text: 'Use image' }, library: { type: 'image' }, multiple: false });
                 this.frame.on('select', function () {

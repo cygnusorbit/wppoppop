@@ -88,7 +88,7 @@
 
     function openMedia() {
         if (!window.wp || !window.wp.media) {
-            var u = window.prompt('Thumbnail image URL:', $('#prop-video-thumb').val() || '');
+            var u = window.prompt(wp.i18n.__('Thumbnail image URL:', 'wppoppop'), $('#prop-video-thumb').val() || '');
             if (u !== null) { applyThumb(u); }
             return;
         }

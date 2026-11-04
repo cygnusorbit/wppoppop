@@ -305,7 +305,7 @@
             e.preventDefault();
             e.stopPropagation();
             if (!window.wp || !window.wp.media) {
-                var manual = window.prompt('WordPress Media is unavailable. Enter image URL:', $('#prop-image-url').val() || '');
+                var manual = window.prompt(wp.i18n.__('WordPress Media is unavailable. Enter image URL:', 'wppoppop'), $('#prop-image-url').val() || '');
                 if (manual) { $('#prop-image-url').val($.trim(manual)).trigger('change'); }
                 return;
             }

@@ -44,46 +44,46 @@ if (!defined('ABSPATH')) {
 <div id="wppoppop-table-options-modal" data-config="<?php echo esc_attr(wp_json_encode($tbl_config_payload)); ?>">
     <div class="wto-panel">
         <div class="wto-side">
-            <button type="button" class="wto-save" id="wto-save" title="Save">&#10003;</button>
-            <button type="button" class="wto-close" id="wto-close" title="Close">&#10005;</button>
+            <button type="button" class="wto-save" id="wto-save" title="<?php esc_attr_e('Save', 'wppoppop'); ?>">&#10003;</button>
+            <button type="button" class="wto-close" id="wto-close" title="<?php esc_attr_e('Close', 'wppoppop'); ?>">&#10005;</button>
         </div>
-        <h2><span class="dashicons dashicons-list-view"></span> Table options
-            <small style="font-size:11px;color:#666;">(<?php echo $sel_uid === '' ? 'All popups / default' : esc_html($sel_uid); ?>)</small>
+        <h2><span class="dashicons dashicons-list-view"></span> <?php esc_html_e('Table options', 'wppoppop'); ?>
+            <small style="font-size:11px;color:#666;">(<?php echo $sel_uid === '' ? esc_html__('All popups / default', 'wppoppop') : esc_html($sel_uid); ?>)</small>
         </h2>
 
         <div class="wto-row">
-            <div class="wto-label">Labels</div>
+            <div class="wto-label"><?php esc_html_e('Labels', 'wppoppop'); ?></div>
             <div class="wto-body">
                 <div id="wto-labels"></div>
-                <button type="button" class="wto-add-btn" id="wto-add-label">+ Add New</button>
+                <button type="button" class="wto-add-btn" id="wto-add-label"><?php esc_html_e('+ Add New', 'wppoppop'); ?></button>
             </div>
         </div>
 
         <div class="wto-row">
-            <div class="wto-label">Column layout</div>
+            <div class="wto-label"><?php esc_html_e('Column layout', 'wppoppop'); ?></div>
             <div class="wto-body">
                 <div class="wto-cols">
                     <div>
-                        <h4>Active columns</h4>
+                        <h4><?php esc_html_e('Active columns', 'wppoppop'); ?></h4>
                         <ul id="wppoppop-cols-active" class="wppoppop-cols-list"></ul>
                     </div>
                     <div>
-                        <h4>Inactive columns</h4>
+                        <h4><?php esc_html_e('Inactive columns', 'wppoppop'); ?></h4>
                         <ul id="wppoppop-cols-inactive" class="wppoppop-cols-list"></ul>
                     </div>
                 </div>
                 <div style="margin-top:10px;">
-                    <span class="wto-custom-wrap" hidden style="display:none !important;"><input type="text" class="wto-custom" id="wto-custom-key" placeholder="Custom form field name (e.g. mobile_number)"><button type="button" class="button" id="wto-add-custom">Add field</button></span>
+                    <span class="wto-custom-wrap" hidden style="display:none !important;"><input type="text" class="wto-custom" id="wto-custom-key" placeholder="<?php esc_attr_e('Custom form field name (e.g. mobile_number)', 'wppoppop'); ?>"><button type="button" class="button" id="wto-add-custom"><?php esc_html_e('Add field', 'wppoppop'); ?></button></span>
                     <?php if ($sel_uid !== '') : ?>
                         
-                        <p style="margin:8px 0 0;font-size:11px;color:#666;">Form fields on this popup sync live &mdash; new fields appear under Inactive columns without refreshing.</p>
+                        <p style="margin:8px 0 0;font-size:11px;color:#666;"><?php esc_html_e('Form fields on this popup sync live — new fields appear under Inactive columns without refreshing.', 'wppoppop'); ?></p>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
 
         <div class="wto-row">
-            <div class="wto-label">Entries per page</div>
+            <div class="wto-label"><?php esc_html_e('Entries per page', 'wppoppop'); ?></div>
             <div class="wto-body"><select id="wto-per-page"><option value="10">10</option><option value="20">20</option><option value="30">30</option></select></div>
         </div>
     </div>

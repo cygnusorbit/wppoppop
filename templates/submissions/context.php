@@ -47,7 +47,7 @@ if ($sel_uid !== '' && !empty($submissions)) {
 $avail_cols = [
     'date'    => 'Date',
     'popup'   => 'Popup',
-    'email'   => 'Email address',
+    'email'   => __('Email address', 'wppoppop'),
     'country' => 'Country',
     'status'  => 'Status',
 ];

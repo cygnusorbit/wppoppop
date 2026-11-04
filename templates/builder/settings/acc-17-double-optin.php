@@ -13,7 +13,7 @@ $wppoppop_dopt_label = function ($for, $text, $target = '') {
 ?>
 <!-- 17. Double Opt-In -->
 <div class="wppoppop-acc-item" id="wppoppop-dopt-acc">
-    <button type="button" class="wppoppop-acc-header">Double Opt-In</button>
+    <button type="button" class="wppoppop-acc-header"><?php esc_html_e('Double Opt-In', 'wppoppop'); ?></button>
     <div class="wppoppop-acc-body" style="display:none;">
         <label style="display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px;">
             <input type="checkbox" id="set-dopt-enable" value="1"> <?php esc_html_e('Enable Double Opt-In', 'wppoppop'); ?>
@@ -27,25 +27,25 @@ $wppoppop_dopt_label = function ($for, $text, $target = '') {
 
         <div style="margin:0 0 10px;">
             <?php echo $wppoppop_dopt_label('set-dopt-subject', __('Subject', 'wppoppop'), '#set-dopt-subject'); ?>
-            <input type="text" id="set-dopt-subject" class="widefat" value="Please confirm your email address">
+            <input type="text" id="set-dopt-subject" class="widefat" value="<?php echo esc_attr__('Please confirm your email address', 'wppoppop'); ?>">
         </div>
 
         <div style="margin:0 0 10px;">
             <?php echo $wppoppop_dopt_label('set-dopt-message', __('Message', 'wppoppop'), '#set-dopt-message'); ?>
-            <textarea id="set-dopt-message" rows="6" class="widefat"><?php echo esc_textarea("Dear visitor!\n\nPlease confirm your email address by clicking the following link:\n<a href=\"{{confirmation-url}}\">{{confirmation-url}}</a>\n\nThanks."); ?></textarea>
+            <textarea id="set-dopt-message" rows="6" class="widefat"><?php echo esc_textarea(__("Dear visitor!\n\nPlease confirm your email address by clicking the following link:\n<a href=\"{{confirmation-url}}\">{{confirmation-url}}</a>\n\nThanks.", 'wppoppop')); ?></textarea>
         </div>
 
         <div style="margin:0 0 10px;">
             <?php echo $wppoppop_dopt_label('set-dopt-from-email', __('From', 'wppoppop')); ?>
             <div style="display:flex;gap:6px;">
-                <input type="text" id="set-dopt-from-email" class="widefat" value="{{global-from-email}}" placeholder="email">
-                <input type="text" id="set-dopt-from-name" class="widefat" value="{{global-from-name}}" placeholder="name">
+                <input type="text" id="set-dopt-from-email" class="widefat" value="{{global-from-email}}" placeholder="<?php esc_attr_e('email', 'wppoppop'); ?>">
+                <input type="text" id="set-dopt-from-name" class="widefat" value="{{global-from-name}}" placeholder="<?php esc_attr_e('name', 'wppoppop'); ?>">
             </div>
         </div>
 
         <div style="margin:0 0 10px;">
             <?php echo $wppoppop_dopt_label('set-dopt-thank-message', __('Thank-you message', 'wppoppop'), '#set-dopt-thank-message'); ?>
-            <textarea id="set-dopt-thank-message" rows="4" class="widefat"><?php echo esc_textarea('<h4 style="text-align: center;">Thank you!</h4><p style="text-align: center;">Your email address successfully confirmed.</p>'); ?></textarea>
+            <textarea id="set-dopt-thank-message" rows="4" class="widefat"><?php echo esc_textarea('<h4 style="text-align: center;">' . __('Thank you!', 'wppoppop') . '</h4><p style="text-align: center;">' . __('Your email address successfully confirmed.', 'wppoppop') . '</p>'); ?></textarea>
         </div>
 
         <div style="margin:0;">

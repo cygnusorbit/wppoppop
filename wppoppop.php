@@ -8,6 +8,7 @@
  * Author URI: https://github.com/cygnusorbit
  * License: GPL-2.0+
  * Text Domain: wppoppop
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) {
@@ -48,6 +49,7 @@ final class WpPopPop {
     }
 
     private function init_components() {
+        new WpPopPop_I18n();
         new WpPopPop_Hooks();
         new WpPopPop_Capabilities();
         new WpPopPop_Ajax();

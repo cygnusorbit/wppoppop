@@ -3,13 +3,13 @@ if (!defined('ABSPATH')) exit;
 ?>
 <!-- DECOMPOSED MODULE 19: IMAGE SELECT (imageselect) -->
 <div class="element-panel wppoppop-panel-specific" id="panel-elem-imageselect" data-elem-family="form" style="display:none;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-bottom:14px;">
-    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">19. Visual Image Select Grid</div>
-    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">IMAGE CHOICES (LABEL + IMAGE URL)</label>
+    <div style="font-size:10px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;"><?php esc_html_e('19. Visual Image Select Grid', 'wppoppop'); ?></div>
+    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('IMAGE CHOICES (LABEL + IMAGE URL)', 'wppoppop'); ?></label>
     <textarea id="prop-imageselect-options" rows="3" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="optionsList" tabindex="-1" aria-hidden="true" style="display:none;"></textarea>
     <!-- WPPOPPOP_IMGSEL_REPEATER -->
     <div style="display:flex;gap:4px;margin-bottom:4px;padding-right:62px;">
-        <span style="flex:1 1 36%;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Label</span>
-        <span style="flex:1 1 64%;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Image URL</span>
+        <span style="flex:1 1 36%;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;"><?php esc_html_e('Label', 'wppoppop'); ?></span>
+        <span style="flex:1 1 64%;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;"><?php esc_html_e('Image URL', 'wppoppop'); ?></span>
     </div>
     <div id="wppoppop-imgsel-rows" style="margin-bottom:10px;"></div>
     <script>
@@ -202,19 +202,19 @@ if (!defined('ABSPATH')) exit;
     </script>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">GRID COLUMNS</label>
+            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('GRID COLUMNS', 'wppoppop'); ?></label>
             <select id="prop-imageselect-cols" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="gridCols" style="font-size:12px;">
-                <option value="2">2 Columns</option>
-                <option value="3">3 Columns</option>
-                <option value="4">4 Columns</option>
+                <option value="2"><?php esc_html_e('2 Columns', 'wppoppop'); ?></option>
+                <option value="3"><?php esc_html_e('3 Columns', 'wppoppop'); ?></option>
+                <option value="4"><?php esc_html_e('4 Columns', 'wppoppop'); ?></option>
             </select>
         </div>
         <div>
-            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;">ACTIVE BORDER</label>
+            <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('ACTIVE BORDER', 'wppoppop'); ?></label>
             <input type="color" id="prop-imageselect-accent" class="widefat wppoppop-gp-bind" data-prop="activeColor" value="#38bdf8" style="height:34px;padding:2px;background:#090d16;border:1px solid #1e293b;border-radius:6px;cursor:pointer;">
         </div>
     </div>
     <label style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#cbd5e1;cursor:pointer;">
-        <input type="checkbox" id="prop-imageselect-multi" class="wppoppop-gp-bind" data-prop="multiSelect" value="1"> Allow Multiple Image Selections
+        <input type="checkbox" id="prop-imageselect-multi" class="wppoppop-gp-bind" data-prop="multiSelect" value="1"> <?php esc_html_e('Allow Multiple Image Selections', 'wppoppop'); ?>
     </label>
 </div>

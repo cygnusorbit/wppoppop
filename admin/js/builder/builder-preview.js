@@ -156,9 +156,9 @@
             self.setBusy('#wppoppop-btn-preview', true, 'Loading...');
             self.stage().done(function (res) {
                 if (res && res.success && res.data) { self.enter(res.data.frame_url); }
-                else { window.alert((res && res.data && res.data.message) || 'Preview failed.'); }
+                else { window.alert((res && res.data && res.data.message) || wp.i18n.__('Preview failed.', 'wppoppop')); }
             }).fail(function () {
-                window.alert('Server error while preparing preview.');
+                window.alert(wp.i18n.__('Server error while preparing preview.', 'wppoppop'));
             }).always(function () { self.setBusy('#wppoppop-btn-preview', false); });
         },
 
@@ -174,11 +174,11 @@
                     else { window.location.href = res.data.url; }   // popup blocked: redirect this tab
                 } else {
                     if (win) win.close();
-                    window.alert((res && res.data && res.data.message) || 'Preview failed.');
+                    window.alert((res && res.data && res.data.message) || wp.i18n.__('Preview failed.', 'wppoppop'));
                 }
             }).fail(function () {
                 if (win) win.close();
-                window.alert('Server error while preparing preview.');
+                window.alert(wp.i18n.__('Server error while preparing preview.', 'wppoppop'));
             }).always(function () { self.setBusy('#wppoppop-btn-preview-home', false); });
         },
 

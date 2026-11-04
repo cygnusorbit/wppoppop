@@ -7,9 +7,11 @@
     var InspectorControls = be.InspectorControls;
     var comps = wp.components;
     var data = window.wppoppopBlockData || { popups: [] };
+    var __ = wp.i18n.__;
+    var sprintf = wp.i18n.sprintf;
 
     function popupOptions() {
-        var opts = [{ label: '\u2014 Choose a popup \u2014', value: '' }];
+        var opts = [{ label: __('\u2014 Choose a popup \u2014', 'wppoppop'), value: '' }];
         (data.popups || []).forEach(function (p) {
             opts.push({ label: p.title + ' (' + p.uid + ')', value: p.uid });
         });
@@ -17,13 +19,13 @@
     }
 
     var MODES = [
-        { label: 'Inline Popup', value: 'inline' },
-        { label: 'Onload Popup', value: 'onload' }
+        { label: __('Inline Popup', 'wppoppop'), value: 'inline' },
+        { label: __('Onload Popup', 'wppoppop'), value: 'onload' }
     ];
 
     wp.blocks.registerBlockType('wppoppop/popup', {
-        title: 'WpPopPop Popup',
-        description: 'Embed a popup inline or open it on page load.',
+        title: __('WpPopPop Popup', 'wppoppop'),
+        description: __('Embed a popup inline or open it on page load.', 'wppoppop'),
         icon: 'megaphone',
         category: 'widgets',
         keywords: ['popup', 'wppoppop', 'modal', 'lead'],
@@ -42,22 +44,22 @@
                 var c = [];
                 if (hasList) {
                     c.push(el(comps.SelectControl, {
-                        key: prefix + 'uid', label: 'Popup', value: a.uid, options: popupOptions(),
+                        key: prefix + 'uid', label: __('Popup', 'wppoppop'), value: a.uid, options: popupOptions(),
                         onChange: function (v) { set({ uid: v }); }
                     }));
                 } else {
                     c.push(el(comps.TextControl, {
-                        key: prefix + 'uidtxt', label: 'Popup UID (no published popups found)', value: a.uid || '',
+                        key: prefix + 'uidtxt', label: __('Popup UID (no published popups found)', 'wppoppop'), value: a.uid || '',
                         onChange: function (v) { set({ uid: String(v || '').toLowerCase().replace(/[^a-z0-9_\-]/g, '') }); }
                     }));
                 }
                 c.push(el(comps.SelectControl, {
-                    key: prefix + 'mode', label: 'Embed Type', value: a.mode, options: MODES,
+                    key: prefix + 'mode', label: __('Embed Type', 'wppoppop'), value: a.mode, options: MODES,
                     onChange: function (v) { set({ mode: v }); }
                 }));
                 if (a.mode === 'onload') {
                     c.push(el(comps.TextControl, {
-                        key: prefix + 'delay', label: 'Onload Delay (seconds)', type: 'number', min: 0,
+                        key: prefix + 'delay', label: __('Onload Delay (seconds)', 'wppoppop'), type: 'number', min: 0,
                         value: String(a.delay || 0),
                         onChange: function (v) { set({ delay: Math.max(0, parseInt(v, 10) || 0) }); }
                     }));
@@ -65,16 +67,19 @@
                 return c;
             }
 
+            var modeLabel = a.mode === 'onload' ? __('Onload Popup', 'wppoppop') : __('Inline Popup', 'wppoppop');
             var summary = a.uid
-                ? ((a.mode === 'onload' ? 'Onload Popup' : 'Inline Popup') + ' \u2192 ' + a.uid +
-                   (a.mode === 'onload' ? ' (delay ' + (a.delay || 0) + 's)' : ''))
-                : 'Choose a popup below.';
+                ? (modeLabel + ' \u2192 ' + a.uid +
+                   (a.mode === 'onload' ? ' ' + sprintf(
+                       /* translators: %d: onload delay in seconds. */
+                       __('(delay %ds)', 'wppoppop'), a.delay || 0) : ''))
+                : __('Choose a popup below.', 'wppoppop');
 
             return el('div', { style: { border: '1px dashed #94a3b8', borderRadius: '0px', padding: '14px', background: '#f8fafc' } },
                 el(InspectorControls, null,
-                    el(comps.PanelBody, { title: 'WpPopPop Popup', initialOpen: true }, buildControls('s_'))
+                    el(comps.PanelBody, { title: __('WpPopPop Popup', 'wppoppop'), initialOpen: true }, buildControls('s_'))
                 ),
-                el('strong', null, 'WpPopPop Popup'),
+                el('strong', null, __('WpPopPop Popup', 'wppoppop')),
                 el('p', { style: { margin: '6px 0 10px', color: '#475569' } }, summary),
                 el('div', null, buildControls('b_'))
             );

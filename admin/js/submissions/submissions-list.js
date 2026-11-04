@@ -81,13 +81,19 @@
                     mode: action === 'unlabel' ? 'clear' : 'add'
                 }).done(function(res) {
                     if (res && res.success) { window.location.reload(); }
-                    else { alert('Label update failed.'); }
-                }).fail(function() { alert('Network error while updating labels.'); });
+                    else { alert(wp.i18n.__('Label update failed.', 'wppoppop')); }
+                }).fail(function() { alert(wp.i18n.__('Network error while updating labels.', 'wppoppop')); });
                 return;
             }
             var vars = this.getVars();
             var ajaxAction = action === 'delete' ? 'wppoppop_delete_submission' : 'wppoppop_anonymize_submission';
-            var msg = action === 'delete' ? 'Delete ' + ids.length + ' submission(s)? This cannot be undone.' : 'Anonymize PII for ' + ids.length + ' submission(s)?';
+            var msg = action === 'delete'
+                ? wp.i18n.sprintf(
+                    /* translators: %d: number of submissions. */
+                    wp.i18n._n('Delete %d submission? This cannot be undone.', 'Delete %d submissions? This cannot be undone.', ids.length, 'wppoppop'), ids.length)
+                : wp.i18n.sprintf(
+                    /* translators: %d: number of submissions. */
+                    wp.i18n._n('Anonymize PII for %d submission?', 'Anonymize PII for %d submissions?', ids.length, 'wppoppop'), ids.length);
             if (!window.confirm(msg)) return;
 
             var done = 0;

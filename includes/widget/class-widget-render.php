@@ -7,7 +7,7 @@ class WpPopPop_Widget_Render {
     public function render_widget($widget, $args, $instance) {
         $popup_uid   = !empty($instance['popup_uid']) ? sanitize_key($instance['popup_uid']) : '';
         $mode        = !empty($instance['mode']) ? $instance['mode'] : 'inline';
-        $button_text = !empty($instance['button_text']) ? $instance['button_text'] : 'Open Popup';
+        $button_text = !empty($instance['button_text']) ? $instance['button_text'] : __('Open Popup', 'wppoppop');
 
         if (empty($popup_uid)) {
             return;

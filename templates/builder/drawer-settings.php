@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
 <!-- Hardware-Accelerated Slide-In Popup Settings Drawer -->
 <div id="wppoppop-settings-drawer" class="wppoppop-settings-drawer">
     <div class="wppoppop-settings-drawer-header" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#0f172a;color:#ffffff;flex-shrink:0;">
-        <h3 class="wppoppop-settings-drawer-title" style="margin:0;font-size:15px;font-weight:700;color:#ffffff !important;line-height:1.3;">Popup Settings</h3>
+        <h3 class="wppoppop-settings-drawer-title" style="margin:0;font-size:15px;font-weight:700;color:#ffffff !important;line-height:1.3;"><?php esc_html_e('Popup Settings', 'wppoppop'); ?></h3>
         <button type="button" id="wppoppop-settings-drawer-close" style="background:transparent;border:none;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1;">&times;</button>
     </div>
 

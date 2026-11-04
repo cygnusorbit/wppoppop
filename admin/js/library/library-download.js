@@ -41,9 +41,9 @@
                 data: { action: 'wppoppop_template_download', nonce: v.nonce, id: $b.attr('data-id') },
                 success: function (res) {
                     if (res && res.success && res.data && res.data.payload) { saveText(res.data.filename || 'template.json', res.data.payload); }
-                    else { window.alert((res && res.data && res.data.message) || 'Download failed.'); }
+                    else { window.alert((res && res.data && res.data.message) || wp.i18n.__('Download failed.', 'wppoppop')); }
                 },
-                error: function () { window.alert('Server error while preparing the download.'); },
+                error: function () { window.alert(wp.i18n.__('Server error while preparing the download.', 'wppoppop')); },
                 complete: function () { $b.prop('disabled', false); }
             });
         });

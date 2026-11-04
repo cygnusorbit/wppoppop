@@ -30,7 +30,7 @@
                 var templateTitle = $btn.closest('.wppoppop-template-card').find('.wppoppop-tpl-info h3').text() || 'Starter Template';
 
                 if (!templateKey) {
-                    alert('Unable to identify template configuration.');
+                    alert(wp.i18n.__('Unable to identify template configuration.', 'wppoppop'));
                     return;
                 }
 
@@ -64,12 +64,12 @@
                                 }
                             }, 500);
                         } else {
-                            alert((res && res.data && res.data.message) || 'Template import failed.');
+                            alert((res && res.data && res.data.message) || wp.i18n.__('Template import failed.', 'wppoppop'));
                             $btn.prop('disabled', false).html(origText);
                         }
                     },
                     error: function() {
-                        alert('Server communication error while cloning template.');
+                        alert(wp.i18n.__('Server communication error while cloning template.', 'wppoppop'));
                         $btn.prop('disabled', false).html(origText);
                     }
                 });

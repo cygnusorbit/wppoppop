@@ -88,7 +88,7 @@
                 var done = false;
                 try { done = document.execCommand('copy'); } catch (e) {}
                 document.body.removeChild(ta);
-                if (done) { ok(); } else { window.prompt('Copy to clipboard (Cmd/Ctrl+C, Enter):', text); }
+                if (done) { ok(); } else { window.prompt(wp.i18n.__('Copy to clipboard (Cmd/Ctrl+C, Enter):', 'wppoppop'), text); }
             }
 
             if (navigator.clipboard && window.isSecureContext) {

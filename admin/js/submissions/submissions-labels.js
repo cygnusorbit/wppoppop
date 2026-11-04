@@ -92,10 +92,10 @@
                     self.paint($row, ids);
                     self.close();
                 } else {
-                    window.alert((res && res.data && res.data.message) || 'Could not update label.');
+                    window.alert((res && res.data && res.data.message) || wp.i18n.__('Could not update label.', 'wppoppop'));
                 }
             }).fail(function () {
-                window.alert('Network error while updating label.');
+                window.alert(wp.i18n.__('Network error while updating label.', 'wppoppop'));
             });
         },
 

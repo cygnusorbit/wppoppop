@@ -5,25 +5,25 @@ if (!defined('ABSPATH')) {
 ?>
 <div class="wppoppop-kpi-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:24px;">
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Gross Revenue</span>
+        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;"><?php esc_html_e('Gross Revenue', 'wppoppop'); ?></span>
         <div style="font-size:28px;font-weight:700;color:#10b981;margin-top:6px;">$<?php echo number_format($total_revenue, 2); ?></div>
-        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;">All captured checkouts</span>
+        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;"><?php esc_html_e('All captured checkouts', 'wppoppop'); ?></span>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Successful Orders</span>
+        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;"><?php esc_html_e('Successful Orders', 'wppoppop'); ?></span>
         <div style="font-size:28px;font-weight:700;color:#2563eb;margin-top:6px;"><?php echo number_format($completed_count); ?></div>
-        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;">Completed transactions</span>
+        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;"><?php esc_html_e('Completed transactions', 'wppoppop'); ?></span>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Average Order Value (AOV)</span>
+        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;"><?php esc_html_e('Average Order Value (AOV)', 'wppoppop'); ?></span>
         <div style="font-size:28px;font-weight:700;color:#f59e0b;margin-top:6px;">$<?php echo number_format($avg_order_val, 2); ?></div>
-        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;">Per completed sale</span>
+        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;"><?php esc_html_e('Per completed sale', 'wppoppop'); ?></span>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Payment Gateways</span>
+        <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;"><?php esc_html_e('Payment Gateways', 'wppoppop'); ?></span>
         <div style="font-size:18px;font-weight:700;color:#6366f1;margin-top:8px;">
-            Stripe (<?php echo absint( $stripe_count ); ?>) &bull; PayPal (<?php echo absint( $paypal_count ); ?>)
+            <?php /* translators: 1: Stripe payment count, 2: PayPal payment count. */ echo esc_html(sprintf(__('Stripe (%1$d) • PayPal (%2$d)', 'wppoppop'), absint($stripe_count), absint($paypal_count))); ?>
         </div>
-        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;">Gateway distribution</span>
+        <span style="font-size:12px;color:#94a3b8;margin-top:4px;display:block;"><?php esc_html_e('Gateway distribution', 'wppoppop'); ?></span>
     </div>
 </div>

@@ -28,8 +28,10 @@
                 if (r && r.success) {
                     $w.removeClass('is-empty').addClass('has-label').find('.wpp-lbl-del').prop('hidden', false);
                     $('.wpp-name-dot[data-uid="' + uid + '"]').css({ background: color, display: 'inline-block' });
-                } else { toast((r && r.data && r.data.message) || 'Error', true); }
-            }).fail(function (xhr) { toast('Request failed' + (xhr && xhr.status ? ' (HTTP ' + xhr.status + ')' : ''), true); });
+                } else { toast((r && r.data && r.data.message) || wp.i18n.__('Error', 'wppoppop'), true); }
+            }).fail(function (xhr) { toast(xhr && xhr.status ? wp.i18n.sprintf(
+                /* translators: %s: HTTP status code. */
+                wp.i18n.__('Request failed (HTTP %s)', 'wppoppop'), xhr.status) : wp.i18n.__('Request failed', 'wppoppop'), true); });
         }, 250);
     });
 
@@ -40,7 +42,7 @@
                 $w.removeClass('has-label').addClass('is-empty').find('.wpp-lbl-input').val('#94a3b8');
                 $w.find('.wpp-lbl-del').prop('hidden', true);
                 $('.wpp-name-dot[data-uid="' + uid + '"]').css('display', 'none');
-            } else { toast((r && r.data && r.data.message) || 'Error', true); }
+            } else { toast((r && r.data && r.data.message) || wp.i18n.__('Error', 'wppoppop'), true); }
         });
     });
 

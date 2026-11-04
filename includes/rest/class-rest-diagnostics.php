@@ -28,13 +28,13 @@ class WpPopPop_Rest_Diagnostics {
         $secret   = isset($params['secret']) ? sanitize_text_field($params['secret']) : '';
 
         if (empty($url)) {
-            return new WP_Error('missing_url', 'Webhook URL is required.', ['status' => 400]);
+            return new WP_Error('missing_url', __('Webhook URL is required.', 'wppoppop'), ['status' => 400]);
         }
 
         $payload = [
             'event'     => 'diagnostic_ping',
             'timestamp' => current_time('mysql'),
-            'message'   => 'Ping test dispatched from WpPopPop REST diagnostic tool.',
+            'message'   => __('Ping test dispatched from WpPopPop REST diagnostic tool.', 'wppoppop'),
         ];
         $body = wp_json_encode($payload);
         $headers = ['Content-Type' => 'application/json'];
@@ -57,7 +57,8 @@ class WpPopPop_Rest_Diagnostics {
         return new WP_REST_Response([
             'success'     => ($code >= 200 && $code < 300),
             'status_code' => $code,
-            'message'     => 'Webhook responded with HTTP status ' . $code,
+            /* translators: %s: HTTP status code returned by the webhook. */
+            'message'     => sprintf(__('Webhook responded with HTTP status %s', 'wppoppop'), $code),
         ], 200);
     }
 
@@ -71,7 +72,7 @@ class WpPopPop_Rest_Diagnostics {
         ];
 
         if (!class_exists('WpPopPop_Addons')) {
-            return new WP_Error('addons_missing', 'Addons module not loaded.', ['status' => 500]);
+            return new WP_Error('addons_missing', __('Addons module not loaded.', 'wppoppop'), ['status' => 500]);
         }
 
         $addons = new WpPopPop_Addons();
@@ -83,7 +84,7 @@ class WpPopPop_Rest_Diagnostics {
 
         return new WP_REST_Response([
             'success' => true,
-            'message' => 'Test SMS dispatched successfully via Twilio.',
+            'message' => __('Test SMS dispatched successfully via Twilio.', 'wppoppop'),
         ], 200);
     }
 }

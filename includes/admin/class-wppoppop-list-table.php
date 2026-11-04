@@ -252,7 +252,7 @@ class WpPopPop_List_Table extends WP_List_Table {
                     admin_url('admin.php?page=wppoppop&action=delete&uid=' . rawurlencode($uid)),
                     'wppoppop_delete_' . $uid
                 );
-                $confirm_prompt = sprintf(__('Are you sure you want to permanently delete "%s"? This action cannot be undone.', 'wppoppop'), $title);
+                $confirm_prompt = /* translators: popup title. */ sprintf(__('Are you sure you want to permanently delete "%s"? This action cannot be undone.', 'wppoppop'), $title);
                 $actions['delete'] = sprintf(
                     '<a href="%s" class="submitdelete" onclick="return confirm(%s);">%s</a>',
                     esc_url($delete_url),
@@ -385,7 +385,7 @@ class WpPopPop_List_Table extends WP_List_Table {
         $unread = isset($counts[$uid]) ? $counts[$uid]['unread'] : 0;
         $url    = admin_url('admin.php?page=wppoppop-submissions&popup_uid=' . rawurlencode($uid));
         $label  = sprintf(
-            __('%1$s unread (%2$s entries)', 'wppoppop'),
+            /* translators: 1: number of unread submissions, 2: total number of submissions. */ __('%1$s unread (%2$s entries)', 'wppoppop'),
             number_format_i18n($unread),
             number_format_i18n($total)
         );

@@ -67,14 +67,14 @@ if (!empty($all_popups) || true) {
 </div>
 <div class="wppoppop-subs-toolbar">
     <div class="wppoppop-subs-tabs" id="wppoppop-subs-tabs">
-        <button type="button" class="active" data-filter="all">All <small>(<span data-count="all"><?php echo (int) $wppoppop_total; ?></span>)</small></button>
-        <button type="button" data-filter="unread">Unread <small>(<span data-count="unread"><?php echo (int) $wppoppop_unread; ?></span>)</small></button>
-        <button type="button" data-filter="pending">Pending <small>(<span data-count="pending"><?php echo (int) $wppoppop_pending; ?></span>)</small></button>
-        <button type="button" data-filter="confirmed">Confirmed <small>(<span data-count="confirmed"><?php echo (int) $wppoppop_confirmed; ?></span>)</small></button>
+        <button type="button" class="active" data-filter="all"><?php esc_html_e('All', 'wppoppop'); ?> <small>(<span data-count="all"><?php echo (int) $wppoppop_total; ?></span>)</small></button>
+        <button type="button" data-filter="unread"><?php esc_html_e('Unread', 'wppoppop'); ?> <small>(<span data-count="unread"><?php echo (int) $wppoppop_unread; ?></span>)</small></button>
+        <button type="button" data-filter="pending"><?php esc_html_e('Pending', 'wppoppop'); ?> <small>(<span data-count="pending"><?php echo (int) $wppoppop_pending; ?></span>)</small></button>
+        <button type="button" data-filter="confirmed"><?php esc_html_e('Confirmed', 'wppoppop'); ?> <small>(<span data-count="confirmed"><?php echo (int) $wppoppop_confirmed; ?></span>)</small></button>
     </div>
     <div class="wppoppop-subs-searchbox">
         <span class="dashicons dashicons-tag" style="color:#50575e;"></span>
         <input type="search" id="wppoppop-subs-search" placeholder="">
-        <button type="button" class="button button-primary" id="wppoppop-subs-search-btn">Search</button>
+        <button type="button" class="button button-primary" id="wppoppop-subs-search-btn"><?php esc_html_e('Search', 'wppoppop'); ?></button>
     </div>
 </div>

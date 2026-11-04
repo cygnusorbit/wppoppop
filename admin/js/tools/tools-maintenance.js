@@ -25,7 +25,9 @@
                 var data = { action: action, nonce: v.nonce };
                 if (action === 'wppoppop_purge_logs') {
                     data.days = parseInt($('#wppoppop-purge-days').val(), 10) || 30;
-                    if (!window.confirm('Delete all log entries older than ' + data.days + ' days? This cannot be undone.')) { return; }
+                    if (!window.confirm(wp.i18n.sprintf(
+                    /* translators: %s: number of days. */
+                    wp.i18n.__('Delete all log entries older than %s days? This cannot be undone.', 'wppoppop'), data.days))) { return; }
                 }
                 $btn.prop('disabled', true);
                 $.ajax({ url: v.url, type: 'POST', dataType: 'json', data: data })

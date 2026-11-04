@@ -69,11 +69,11 @@ $ab_cols  = '
                                         ?>
                                         <div class="wpp-ab-var">
                                             <div class="head">
-                                                <span class="letter">Variant <?php echo esc_html($letter); ?></span>
-                                                <span class="cr"><?php echo esc_html($v_cr); ?>% CR</span>
+                                                <span class="letter"><?php /* translators: %s: variant letter, e.g. A or B. */ echo esc_html(sprintf(__('Variant %s', 'wppoppop'), $letter)); ?></span>
+                                                <span class="cr"><?php /* translators: %s: conversion rate value. */ echo esc_html(sprintf(__('%s%% CR', 'wppoppop'), $v_cr)); ?></span>
                                             </div>
                                             <div class="name" title="<?php echo esc_attr($v_title); ?>"><?php echo esc_html($v_title); ?></div>
-                                            <div class="stats">Impr: <strong><?php echo esc_html(number_format($v_impr)); ?></strong> &bull; Leads: <strong><?php echo esc_html(number_format($v_subs)); ?></strong></div>
+                                            <div class="stats"><?php esc_html_e('Impr:', 'wppoppop'); ?> <strong><?php echo esc_html(number_format($v_impr)); ?></strong> <?php esc_html_e('• Leads:', 'wppoppop'); ?> <strong><?php echo esc_html(number_format($v_subs)); ?></strong></div>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>

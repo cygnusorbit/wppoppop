@@ -137,7 +137,7 @@ class WpPopPop_Front_Decomposed_26 {
                 return '<' . $tag . ' class="wppoppop-front-label" style="margin:0;padding:0;box-sizing:border-box;width:100%;height:100%;display:flex;align-items:center;' . self::label_typo($el) . $tf . '">' . $content . '</' . $tag . '>';
 
             case 'button':
-                $btn_label = isset($el['content']) && $el['content'] !== '' ? esc_html($el['content']) : 'Click Here';
+                $btn_label = isset($el['content']) && $el['content'] !== '' ? esc_html($el['content']) : esc_html__('Click Here', 'wppoppop');
                 $action = !empty($el['buttonAction']) ? esc_attr($el['buttonAction']) : 'link';
                 $url = !empty($el['linkUrl']) ? esc_url($el['linkUrl']) : (!empty($el['url']) ? esc_url($el['url']) : '#');
                 $step = !empty($el['goto_canvas']) ? intval($el['goto_canvas']) : 2;
@@ -183,7 +183,7 @@ class WpPopPop_Front_Decomposed_26 {
                 };
                 return $tf_css . '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
                     . $tf_ico('left')
-                    . '<input type="' . ($t === 'email' ? 'email' : 'text') . '" id="' . $field_id . '" name="' . $tf_nm_attr . '" data-field-name="' . esc_attr($tf_name) . '" value="' . esc_attr($tf_val) . '" placeholder="' . esc_attr($placeholder ?: ($t === 'email' ? 'Enter your email...' : 'Enter text...')) . '" class="wppoppop-form-input wppoppop-input-text' . ($t === 'email' ? ' wppoppop-field-email' : '') . '"' . $data_attrs
+                    . '<input type="' . ($t === 'email' ? 'email' : 'text') . '" id="' . $field_id . '" name="' . $tf_nm_attr . '" data-field-name="' . esc_attr($tf_name) . '" value="' . esc_attr($tf_val) . '" placeholder="' . esc_attr($placeholder ?: ($t === 'email' ? __('Enter your email...', 'wppoppop') : __('Enter text...', 'wppoppop'))) . '" class="wppoppop-form-input wppoppop-input-text' . ($t === 'email' ? ' wppoppop-field-email' : '') . '"' . $data_attrs
                     . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $tf_pr . 'px 0 ' . $tf_pl . 'px;text-align:' . esc_attr($tf_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;" />'
                     . $tf_ico('right')
                     . '</div>';
@@ -230,7 +230,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $nm_unit_html = ($nm_unit !== '') ? '<span class="wppoppop-num-unit" style="position:absolute;right:26px;top:50%;transform:translateY(-50%);color:#64748b;font-size:12px;pointer-events:none;">' . esc_html($nm_unit) . '</span>' : '';
                 return $nm_css . '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
                     . $nm_ico('left')
-                    . '<input type="number" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder !== '' ? $placeholder : 'Enter number...') . '"' . $nm_bounds . ' class="wppoppop-form-input wppoppop-input-number"' . $nm_data
+                    . '<input type="number" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder !== '' ? $placeholder : __('Enter number...', 'wppoppop')) . '"' . $nm_bounds . ' class="wppoppop-form-input wppoppop-input-number"' . $nm_data
                     . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $nm_pr . 'px 0 ' . $nm_pl . 'px;text-align:' . esc_attr($nm_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;" />'
                     . $nm_ico('right') . $nm_unit_html
                     . '</div>';
@@ -298,7 +298,7 @@ class WpPopPop_Front_Decomposed_26 {
                 /* WPPOPPOP_CHECKBOX_FRONT_V2: value yes, layout, alignment, typography, unchecked by default */
                 $cb_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['checkboxLabel']) ? (string) $el['checkboxLabel'] : '');
                 $cb_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $cb_raw)), 'strlen'));
-                if (empty($cb_items)) { $cb_items = array('I agree to the Terms & Privacy Policy'); }
+                if (empty($cb_items)) { $cb_items = array(__('I agree to the Terms & Privacy Policy', 'wppoppop')); }
                 $cb_lay = strtolower((string) (isset($el['layout']) ? $el['layout'] : (isset($el['checkboxLayout']) ? $el['checkboxLayout'] : 'vertical')));
                 $cb_row = in_array($cb_lay, array('horizontal', 'inline', 'row'), true);
                 $cb_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'left';
@@ -404,7 +404,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $ta_minh  = $ta_rows * 20 + 16;
                 $ta_cnt   = $ta_max > 0 ? '<div class="wppoppop-ta-count" data-max="' . $ta_max . '" style="position:absolute;right:10px;bottom:6px;font-size:10px;color:#94a3b8;pointer-events:none;">0 / ' . $ta_max . '</div>' : '';
                 return '<div class="wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;min-height:' . $ta_minh . 'px;pointer-events:auto;">'
-                    . '<textarea id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" rows="' . $ta_rows . '" placeholder="' . esc_attr($placeholder !== '' ? $placeholder : 'Write your message...') . '" class="wppoppop-form-input wppoppop-input-textarea"' . $data_attrs
+                    . '<textarea id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" rows="' . $ta_rows . '" placeholder="' . esc_attr($placeholder !== '' ? $placeholder : __('Write your message...', 'wppoppop')) . '" class="wppoppop-form-input wppoppop-input-textarea"' . $data_attrs
                     . ' style="width:100%;height:100%;min-height:' . $ta_minh . 'px;box-sizing:border-box;padding:8px 12px;resize:none;text-align:' . esc_attr($ta_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;">' . esc_textarea($default_val) . '</textarea>'
                     . $ta_cnt . '</div>';
 
@@ -628,7 +628,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $multi_attr = $up_multi ? ' multiple="multiple"' : '';
                 $up_max = !empty($el['maxFileSize']) ? max(1, intval($el['maxFileSize'])) : 5;
                 $up_maxfiles = ($up_multi && !empty($el['maxFiles'])) ? min(20, max(1, intval($el['maxFiles']))) : 0;
-                $up_errmsg = (isset($el['uploadErrorMessage']) && trim((string) $el['uploadErrorMessage']) !== '') ? (string) $el['uploadErrorMessage'] : 'File too large. Maximum size is {max}MB.'; /* WPPOPPOP_UPLOAD_LIMITS */
+                $up_errmsg = (isset($el['uploadErrorMessage']) && trim((string) $el['uploadErrorMessage']) !== '') ? (string) $el['uploadErrorMessage'] : __('File too large. Maximum size is {max}MB.', 'wppoppop'); /* WPPOPPOP_UPLOAD_LIMITS */
                 $up_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
                 $up_j = ($up_al === 'left') ? 'flex-start' : (($up_al === 'right') ? 'flex-end' : 'center');
                 $up_icons = array('left' => array('cls' => 'fas fa-cloud-arrow-up', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
@@ -659,7 +659,7 @@ class WpPopPop_Front_Decomposed_26 {
                     if ($up_icons[$side]['cls'] === '') { return ''; }
                     return '<i class="' . esc_attr($up_icons[$side]['cls']) . '" aria-hidden="true" style="position:absolute;' . $side . ':' . intval($up_icons[$side]['off']) . 'px;top:50%;transform:translateY(-50%);color:#64748b;font-size:14px;line-height:1;pointer-events:none;z-index:2;"></i>';
                 };
-                $prompt = $placeholder ?: 'Choose file or drag here...';
+                $prompt = $placeholder ?: __('Choose file or drag here...', 'wppoppop');
                 $up_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly"|data-readonly="true")(="[^"]*")?/', '', $data_attrs);
                 return $up_css . '<div class="wppoppop-upload-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
                      . '<label class="wppoppop-upload-dropzone" style="position:relative;width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;display:flex;align-items:center;justify-content:' . $up_j . ';gap:6px;font-size:12px;color:#475569;background:#f8fafc;cursor:pointer;box-sizing:border-box;padding:0 ' . $up_pr . 'px 0 ' . $up_pl . 'px;">'
@@ -706,10 +706,10 @@ class WpPopPop_Front_Decomposed_26 {
                 };
                 $pw_ac = !empty($el['autocomplete']) ? $el['autocomplete'] : 'current-password';
                 $pw_data = preg_replace('/\s(data-input-mask|data-filters|autocomplete)(="[^"]*")?/', '', $data_attrs);
-                $eye_btn = $pw_eye_on ? '<button type="button" class="wppoppop-pw-toggle wp-hide-pw" aria-label="Show password" aria-pressed="false"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></button>' : '';
+                $eye_btn = $pw_eye_on ? '<button type="button" class="wppoppop-pw-toggle wp-hide-pw" aria-label="' . esc_attr__('Show password', 'wppoppop') . '" aria-pressed="false"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></button>' : '';
                 return $pw_css . '<div class="wp-pwd wppoppop-password-wrap wppoppop-tf-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
                      . $pw_ico('left', $pw_icons['left']['off'])
-                     . '<input type="password" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder ?: 'Enter password...') . '" autocomplete="' . esc_attr($pw_ac) . '" spellcheck="false" autocapitalize="off" class="wppoppop-form-input wppoppop-input-password"' . $pw_data . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $pw_pr . 'px 0 ' . $pw_pl . 'px;text-align:' . esc_attr($pw_al) . ';pointer-events:auto;" />'
+                     . '<input type="password" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($placeholder ?: __('Enter password...', 'wppoppop')) . '" autocomplete="' . esc_attr($pw_ac) . '" spellcheck="false" autocapitalize="off" class="wppoppop-form-input wppoppop-input-password"' . $pw_data . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $pw_pr . 'px 0 ' . $pw_pl . 'px;text-align:' . esc_attr($pw_al) . ';pointer-events:auto;" />'
                      . $pw_ico('right', $pw_rpos)
                      . $eye_btn . '</div>';
 

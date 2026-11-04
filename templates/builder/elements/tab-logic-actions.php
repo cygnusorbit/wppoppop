@@ -35,7 +35,7 @@ if (!defined('ABSPATH')) {
             <option value="redirect"><?php esc_html_e('Redirect to External URL', 'wppoppop'); ?></option>
         </select>
         <div style="display:grid;grid-template-columns:1fr 2fr;gap:6px;">
-            <input type="number" id="prop-logic-goto-canvas" class="widefat wppoppop-gp-bind" data-prop="goto_canvas" min="1" max="10" placeholder="Step #" style="font-size:12px;">
+            <input type="number" id="prop-logic-goto-canvas" class="widefat wppoppop-gp-bind" data-prop="goto_canvas" min="1" max="10" placeholder="<?php esc_attr_e('Step #', 'wppoppop'); ?>" style="font-size:12px;">
             <input type="url" id="prop-logic-redirect-url" class="widefat wppoppop-gp-bind" data-prop="redirect_url" placeholder="https://redirect-url..." style="font-size:12px;">
         </div>
     </div>
@@ -44,7 +44,7 @@ if (!defined('ABSPATH')) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
         <div>
             <label style="display:block;font-size:10.5px;font-weight:600;color:#64748b;margin-bottom:3px;"><?php esc_html_e('Custom CSS Class', 'wppoppop'); ?></label>
-            <input type="text" id="prop-logic-css-class" class="widefat wppoppop-gp-bind" data-prop="custom_css_class" placeholder="my-layer-class" style="font-size:12px;">
+            <input type="text" id="prop-logic-css-class" class="widefat wppoppop-gp-bind" data-prop="custom_css_class" placeholder="<?php esc_attr_e('my-layer-class', 'wppoppop'); ?>" style="font-size:12px;">
         </div>
         <div>
             <label style="display:block;font-size:10.5px;font-weight:600;color:#64748b;margin-bottom:3px;"><?php esc_html_e('Custom CSS ID', 'wppoppop'); ?></label>

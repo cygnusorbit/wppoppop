@@ -21,7 +21,7 @@ class WpPopPop_Rest_Delivery {
     public function get_popup_payload(WP_REST_Request $request) {
         $uid = $request->get_param('uid');
         if (empty($uid)) {
-            return new WP_Error('invalid_uid', 'Missing popup identifier.', ['status' => 400]);
+            return new WP_Error('invalid_uid', __('Missing popup identifier.', 'wppoppop'), ['status' => 400]);
         }
 
         global $wpdb;
@@ -29,12 +29,12 @@ class WpPopPop_Rest_Delivery {
         $row   = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$table} WHERE uid = %s AND status = 'publish'", $uid), ARRAY_A);
 
         if (!$row) {
-            return new WP_Error('not_found', 'Popup not found or inactive.', ['status' => 404]);
+            return new WP_Error('not_found', __('Popup not found or inactive.', 'wppoppop'), ['status' => 404]);
         }
 
         $config = json_decode($row['data'], true);
         if (!$config) {
-            return new WP_Error('corrupted_data', 'Popup configuration data corrupted.', ['status' => 500]);
+            return new WP_Error('corrupted_data', __('Popup configuration data corrupted.', 'wppoppop'), ['status' => 500]);
         }
 
         ob_start();

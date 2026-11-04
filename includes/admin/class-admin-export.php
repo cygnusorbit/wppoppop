@@ -146,13 +146,13 @@ class WpPopPop_Admin_Export {
     /* WPPOPPOP_EXPORT_COLUMNS: columns offered by the Export modal (built-ins + fields really present in the filtered popup's submissions) */
     public function list_export_columns() {
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized'], 403);
+            wp_send_json_error(['message' => __('Unauthorized', 'wppoppop')], 403);
         }
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'wppoppop_export_nonce')
             && !wp_verify_nonce($nonce, 'wppoppop_admin_nonce')
             && !wp_verify_nonce($nonce, 'wppoppop_builder_nonce')) {
-            wp_send_json_error(['message' => 'Security verification failed.'], 403);
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')], 403);
         }
         global $wpdb;
         $table = $wpdb->prefix . 'wppoppop_submissions';

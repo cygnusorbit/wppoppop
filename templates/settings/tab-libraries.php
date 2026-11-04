@@ -23,12 +23,12 @@ $js_parser             = (!empty($settings['js_parser']) || !empty($settings['lo
             <td>
                 <select id="setting-default-font" name="settings[default_font]">
                     <option value="inherit" <?php selected($default_font, 'inherit'); ?>><?php esc_html_e('Theme Inherited (Default)', 'wppoppop'); ?></option>
-                    <option value="Inter, sans-serif" <?php selected($default_font, 'Inter, sans-serif'); ?>>Inter</option>
-                    <option value="Roboto, sans-serif" <?php selected($default_font, 'Roboto, sans-serif'); ?>>Roboto</option>
-                    <option value="Montserrat, sans-serif" <?php selected($default_font, 'Montserrat, sans-serif'); ?>>Montserrat</option>
-                    <option value="Poppins, sans-serif" <?php selected($default_font, 'Poppins, sans-serif'); ?>>Poppins</option>
-                    <option value="Open Sans, sans-serif" <?php selected($default_font, 'Open Sans, sans-serif'); ?>>Open Sans</option>
-                    <option value="Lato, sans-serif" <?php selected($default_font, 'Lato, sans-serif'); ?>>Lato</option>
+                    <option value="Inter, sans-serif" <?php selected($default_font, 'Inter, sans-serif'); ?>><?php esc_html_e('Inter', 'wppoppop'); ?></option>
+                    <option value="Roboto, sans-serif" <?php selected($default_font, 'Roboto, sans-serif'); ?>><?php esc_html_e('Roboto', 'wppoppop'); ?></option>
+                    <option value="Montserrat, sans-serif" <?php selected($default_font, 'Montserrat, sans-serif'); ?>><?php esc_html_e('Montserrat', 'wppoppop'); ?></option>
+                    <option value="Poppins, sans-serif" <?php selected($default_font, 'Poppins, sans-serif'); ?>><?php esc_html_e('Poppins', 'wppoppop'); ?></option>
+                    <option value="Open Sans, sans-serif" <?php selected($default_font, 'Open Sans, sans-serif'); ?>><?php esc_html_e('Open Sans', 'wppoppop'); ?></option>
+                    <option value="Lato, sans-serif" <?php selected($default_font, 'Lato, sans-serif'); ?>><?php esc_html_e('Lato', 'wppoppop'); ?></option>
                 </select>
                 <p class="description"><?php esc_html_e('Fallback typography applied to campaign elements when no specific custom font is defined.', 'wppoppop'); ?></p>
             </td>
@@ -49,7 +49,7 @@ $js_parser             = (!empty($settings['js_parser']) || !empty($settings['lo
         <tr>
             <th scope="row"><label for="setting-custom-fonts"><?php esc_html_e('Custom Fonts Definitions', 'wppoppop'); ?></label></th>
             <td>
-                <textarea id="setting-custom-fonts" name="settings[custom_fonts]" rows="3" class="large-text" placeholder="FontName: url(https://.../font.woff2)"><?php echo esc_textarea($custom_fonts); ?></textarea>
+                <textarea id="setting-custom-fonts" name="settings[custom_fonts]" rows="3" class="large-text" placeholder="<?php esc_attr_e('FontName: url(https://.../font.woff2)', 'wppoppop'); ?>"><?php echo esc_textarea($custom_fonts); ?></textarea>
                 <p class="description"><?php esc_html_e('Custom web font declarations (one declaration per line) for the visual builder dropdown.', 'wppoppop'); ?></p>
             </td>
         </tr>

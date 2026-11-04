@@ -10,11 +10,11 @@ if (!defined('ABSPATH')) {
         <thead>
             <tr>
                 <th style="width:60px;text-align:center;">#</th>
-                <th style="width:170px;font-weight:600;">Event Type</th>
-                <th style="font-weight:600;">Message / Description</th>
-                <th style="width:260px;font-weight:600;">Payload Metadata</th>
-                <th style="width:160px;font-weight:600;">Timestamp</th>
-                <th style="width:90px;text-align:right;font-weight:600;">Action</th>
+                <th style="width:170px;font-weight:600;"><?php esc_html_e('Event Type', 'wppoppop'); ?></th>
+                <th style="font-weight:600;"><?php esc_html_e('Message / Description', 'wppoppop'); ?></th>
+                <th style="width:260px;font-weight:600;"><?php esc_html_e('Payload Metadata', 'wppoppop'); ?></th>
+                <th style="width:160px;font-weight:600;"><?php esc_html_e('Timestamp', 'wppoppop'); ?></th>
+                <th style="width:90px;text-align:right;font-weight:600;"><?php esc_html_e('Action', 'wppoppop'); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
                 <tr>
                     <td colspan="6" style="text-align:center;padding:36px 10px;color:#64748b;">
                         <span class="dashicons dashicons-clipboard" style="font-size:32px;width:32px;height:32px;margin:0 auto 8px auto;display:block;color:#94a3b8;"></span>
-                        No activity log entries found matching the filter criteria.
+                        <?php esc_html_e('No activity log entries found matching the filter criteria.', 'wppoppop'); ?>
                     </td>
                 </tr>
             <?php else : ?>
@@ -70,7 +70,7 @@ if (!defined('ABSPATH')) {
                                     data-msg="<?php echo esc_attr($l->message); ?>"
                                     data-date="<?php echo esc_attr($l->created_at); ?>"
                                     data-payload='<?php echo esc_attr($raw_payload); ?>'>
-                                Inspect
+                                <?php esc_html_e('Inspect', 'wppoppop'); ?>
                             </button>
                         </td>
                     </tr>

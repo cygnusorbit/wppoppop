@@ -16,14 +16,14 @@ foreach ($all_popups as $p) {
         <thead>
             <tr>
                 <th style="width:50px;text-align:center;">#</th>
-                <th style="width:180px;font-weight:600;">Transaction ID</th>
-                <th style="width:220px;font-weight:600;">Customer Email</th>
-                <th style="font-weight:600;">Popup Campaign</th>
-                <th style="width:120px;text-align:right;font-weight:600;">Amount</th>
-                <th style="width:110px;text-align:center;font-weight:600;">Gateway</th>
-                <th style="width:110px;text-align:center;font-weight:600;">Status</th>
-                <th style="width:140px;font-weight:600;">Date</th>
-                <th style="width:120px;text-align:right;font-weight:600;">Actions</th>
+                <th style="width:180px;font-weight:600;"><?php esc_html_e('Transaction ID', 'wppoppop'); ?></th>
+                <th style="width:220px;font-weight:600;"><?php esc_html_e('Customer Email', 'wppoppop'); ?></th>
+                <th style="font-weight:600;"><?php esc_html_e('Popup Campaign', 'wppoppop'); ?></th>
+                <th style="width:120px;text-align:right;font-weight:600;"><?php esc_html_e('Amount', 'wppoppop'); ?></th>
+                <th style="width:110px;text-align:center;font-weight:600;"><?php esc_html_e('Gateway', 'wppoppop'); ?></th>
+                <th style="width:110px;text-align:center;font-weight:600;"><?php esc_html_e('Status', 'wppoppop'); ?></th>
+                <th style="width:140px;font-weight:600;"><?php esc_html_e('Date', 'wppoppop'); ?></th>
+                <th style="width:120px;text-align:right;font-weight:600;"><?php esc_html_e('Actions', 'wppoppop'); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -31,12 +31,12 @@ foreach ($all_popups as $p) {
                 <tr>
                     <td colspan="9" style="text-align:center;padding:36px 10px;color:#64748b;">
                         <span class="dashicons dashicons-cart" style="font-size:32px;width:32px;height:32px;margin:0 auto 8px auto;display:block;color:#94a3b8;"></span>
-                        No sales transactions recorded yet. Popups configured with payment buttons will log checkout records here.
+                        <?php esc_html_e('No sales transactions recorded yet. Popups configured with payment buttons will log checkout records here.', 'wppoppop'); ?>
                     </td>
                 </tr>
             <?php else : ?>
                 <?php foreach ($transactions as $idx => $t) : 
-                    $pop_title = $popups_by_uid[$t->popup_uid] ?? 'Untitled Popup';
+                    $pop_title = $popups_by_uid[$t->popup_uid] ?? __('Untitled Popup', 'wppoppop');
                     $is_completed = ($t->status === 'completed');
                     ?>
                     <tr class="wppoppop-tx-row" data-id="<?php echo esc_attr($t->id); ?>" data-email="<?php echo esc_attr(strtolower($t->email)); ?>" data-txid="<?php echo esc_attr(strtolower($t->transaction_id)); ?>">
@@ -76,7 +76,7 @@ foreach ($all_popups as $p) {
                                     data-status="<?php echo esc_attr(ucfirst($t->status)); ?>"
                                     data-popup="<?php echo esc_attr($pop_title); ?>"
                                     data-date="<?php echo esc_attr($t->created_at); ?>">
-                                Receipt
+                                <?php esc_html_e('Receipt', 'wppoppop'); ?>
                             </button>
                         </td>
                     </tr>
