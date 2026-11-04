@@ -1822,13 +1822,13 @@ body.theme-light #wppoppop-canvas-box,
 
 #wppoppop-canvas-box {
     border: 1px dashed #777777 !important;
-    border-radius: 0 !important;
+    border-radius: var(--wppoppop-canvas-radius, 0px) !important; /* WPPOPPOP_CANVAS_RADIUS_LIVE */
     box-shadow: none !important;
     box-sizing: border-box !important;
 }
 
 #wppoppop-canvas-elements-root {
-    border-radius: 0 !important;
+    border-radius: inherit !important;
 }
 
 #wppoppop-canvas-corner-handle {

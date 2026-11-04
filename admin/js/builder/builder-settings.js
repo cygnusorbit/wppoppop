@@ -437,14 +437,14 @@
             });
 
             /* WPPOPPOP_CANVAS_RADIUS: per-canvas corner radius (px) */
-            $('#set-canvas-radius').off('input.canvasRadius change.canvasRadius').on('input.canvasRadius change.canvasRadius', function() {
+            $('#set-canvas-radius').off('input.canvasRadius change.canvasRadius').on('input.canvasRadius change.canvasRadius', function(e) {
                 var core = window.WpPopPopBuilderCore;
                 if (!core) return;
                 var cur = core.state.currentCanvas || 1;
                 if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
                 core.state.canvasMeta[cur].canvas_radius = Math.max(0, Math.min(500, parseInt($(this).val(), 10) || 0));
                 self.applyActiveCanvasBackground();
-                core.pushHistory();
+                if (e.type === 'change') core.pushHistory();
             });
 
             $('#set-anim-appearance, #set-anim-duration, #set-anim-delay').off('change.canvasAnim input.canvasAnim').on('change.canvasAnim input.canvasAnim', function() {
@@ -506,7 +506,9 @@
             var cur = core.state.currentCanvas || 1;
             var meta = core.state.canvasMeta[cur] || {};
             var $box = $('#wppoppop-canvas-box');
-            $box.css('border-radius', (Math.max(0, parseInt(meta.canvas_radius, 10) || 0)) + 'px');
+            var radPx = (Math.max(0, parseInt(meta.canvas_radius, 10) || 0)) + 'px';
+            $box.css('border-radius', radPx);
+            if ($box.length) { $box[0].style.setProperty('--wppoppop-canvas-radius', radPx); }
 
             if (meta.bg_color === 'transparent') {
                 $box.addClass('wppoppop-canvas-transparent');
