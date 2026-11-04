@@ -34,7 +34,7 @@
 
     // Settled Style-tab layout per element type (sections listed here are visible, all others hidden).
     var LAYOUT = {
-        shape:         'padding border shadow',
+        shape:         'padding shadow',
         image:         'opacity padding border shadow',
         label:         'textAlign bg typo padding border shadow',
         html:          'textAlign bg padding border shadow',

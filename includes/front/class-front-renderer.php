@@ -161,7 +161,7 @@ class WpPopPop_Front_Renderer {
                     $c_anim_dur = intval($cm['anim_duration'] ?? 1000);
                     $c_anim_del = intval($cm['anim_delay'] ?? 0);
                     $c_anim_dis = esc_attr($cm['anim_disappearance'] ?? 'none');
-                    $c_radius_style = (is_array($cm) && !empty($cm['canvas_radius'])) ? 'border-radius:' . max(0, min(500, intval($cm['canvas_radius']))) . 'px;' : '';
+                    $c_radius_style = (is_array($cm) && isset($cm['canvas_radius']) && $cm['canvas_radius'] !== '') ? 'border-radius:' . max(0, min(500, intval($cm['canvas_radius']))) . 'px;' : '';
                     $c_allow_ovf = !empty($cm['allow_overflow']) && $cm['allow_overflow'] !== 'false';
                     $c_overflow_style = $c_allow_ovf ? 'overflow:visible;' : 'overflow:hidden;';
                     $c_close_on = !(is_array($cm) && isset($cm['close_btn_enabled']) && in_array($cm['close_btn_enabled'], array(false, 0, '0', 'false'), true)); /* WPPOPPOP_DEFAULT_CLOSE */

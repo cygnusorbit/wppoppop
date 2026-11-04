@@ -30,6 +30,7 @@ if (!defined('ABSPATH')) exit;
 
 <!-- WPPOPPOP_SHAPE_STYLE: Shape hides Opacity & Visibility and Background Color (fill is set in Shape / Vector Geometry); CSS-only so selection never flashes hidden cards -->
 <style>
+#insp-tab-style.wppoppop-shape-style #insp-section-border,
 #insp-tab-style.wppoppop-shape-style #insp-section-opacity,
 #insp-tab-style.wppoppop-shape-style #insp-section-bg-color,
 #insp-tab-style.wppoppop-shape-style #insp-section-text-align,
