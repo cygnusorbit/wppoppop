@@ -63,6 +63,15 @@ class WpPopPop_Front_Targeting {
             return false;
         }
 
+        // 4. Targeting Triggers module (activity period, user roles, site area)
+        if (!class_exists('WpPopPop_Targeting_Triggers')) {
+            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php';
+        }
+        $wppoppop_tt_settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
+        if (!WpPopPop_Targeting_Triggers::is_eligible($wppoppop_tt_settings)) {
+            return false;
+        }
+
         return true;
     }
 }

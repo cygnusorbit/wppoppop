@@ -51,6 +51,7 @@ class WpPopPop_Admin_Settings {
             'acc-18-notifications' => __('Notifications', 'wppoppop'),
             'acc-19-success-celebration' => __('Success Celebration', 'wppoppop'),
             'acc-21-popup-positions' => __('Popup Positions', 'wppoppop'),
+            'acc-22-targeting-triggers' => __('Targeting Triggers', 'wppoppop'),
         ];
     }
 
@@ -89,7 +90,7 @@ class WpPopPop_Admin_Settings {
     }
 
     public static function get_module_defaults() {
-        $enabled = array_merge(self::get_locked_modules(), ['acc-20-animation', 'acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration', 'acc-21-popup-positions']);
+        $enabled = array_merge(self::get_locked_modules(), ['acc-20-animation', 'acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration', 'acc-21-popup-positions', 'acc-22-targeting-triggers']);
         $defaults = [];
         foreach (array_keys(self::get_modules()) as $key) {
             $defaults[$key] = in_array($key, $enabled, true) ? 1 : 0;

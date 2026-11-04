@@ -101,6 +101,7 @@ class WpPopPop_Admin_Assets {
         wp_enqueue_script('wppoppop-builder-shape-inspector-js', WPPOPPOP_URL . 'admin/js/builder/elements/shape-inspector.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-elements-registry'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-settings-js', WPPOPPOP_URL . 'admin/js/builder/builder-settings.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-popup-position-js', WPPOPPOP_URL . 'admin/js/builder/builder-popup-position.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-settings-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-builder-targeting-triggers-js', WPPOPPOP_URL . 'admin/js/builder/builder-targeting-triggers.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-settings-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-modals-js', WPPOPPOP_URL . 'admin/js/builder/builder-modals.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-io-js', WPPOPPOP_URL . 'admin/js/builder/builder-io.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
 
@@ -112,6 +113,7 @@ class WpPopPop_Admin_Assets {
                 'wppoppop-builder-inspector-js',
                 'wppoppop-builder-settings-js',
                 'wppoppop-builder-popup-position-js',
+                'wppoppop-builder-targeting-triggers-js',
                 'wppoppop-builder-modals-js',
                 'wppoppop-builder-io-js', 'wppoppop-builder-elements-registry', 'wppoppop-builder-animation-js'
             ], self::ver(), true);

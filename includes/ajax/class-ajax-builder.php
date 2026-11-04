@@ -95,6 +95,13 @@ class WpPopPop_Ajax_Builder {
                 WpPopPop_Popup_Position::sanitize(isset($wppoppop_obj->settings->popup_position) ? $wppoppop_obj->settings->popup_position : array())
             ));
         }
+        /* WPPOPPOP_TARGETING_TRIGGERS_WHITELIST: allow-list the Targeting Triggers module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Targeting_Triggers')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php'; }
+            $wppoppop_obj->settings->targeting_triggers = json_decode(wp_json_encode(
+                WpPopPop_Targeting_Triggers::sanitize(isset($wppoppop_obj->settings->targeting_triggers) ? $wppoppop_obj->settings->targeting_triggers : array())
+            ));
+        }
         /* Popup Settings module order is global (Settings > Module); never stored per popup */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             unset($wppoppop_obj->settings->module_order);

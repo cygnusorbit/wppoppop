@@ -53,6 +53,14 @@ class WpPopPop_Front_Renderer {
             $trg_attrs .= ' data-repeat-hours="' . max(1, min(720, intval($trg['repeat_hours']))) . '"';
         }
 
+        /* WPPOPPOP_TARGETING_TRIGGERS_RENDER: an active module owns load / exit / scroll / idle for this popup */
+        if (!class_exists('WpPopPop_Targeting_Triggers')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php'; }
+        $wppoppop_tt = WpPopPop_Targeting_Triggers::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+        if ($wppoppop_tt['attrs'] !== '') {
+            $trg_attrs = preg_replace('/\sdata-(?:trigger-load-delay|trigger-load|trigger-exit|exit-sens|trigger-scroll|trigger-idle|trigger-always|repeat-hours)="[^"]*"/', '', $trg_attrs);
+            $trg_attrs .= $wppoppop_tt['attrs'];
+        }
+
         /* WPPOPPOP_BG_CLOSE_ATTR: backdrop click closes only when enabled (default off) */
         $bgc_raw = isset($config['settings']['close_on_backdrop']) ? $config['settings']['close_on_backdrop'] : false;
         $trg_attrs .= ' data-close-backdrop="' . (in_array($bgc_raw, array(true, 1, '1', 'true'), true) ? '1' : '0') . '"';

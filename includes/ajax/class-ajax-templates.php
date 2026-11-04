@@ -89,6 +89,10 @@ class WpPopPop_Ajax_Templates {
             $obj->settings->popup_position = json_decode(wp_json_encode( /* WPPOPPOP_POPUP_POSITION_WHITELIST */
                 WpPopPop_Popup_Position::sanitize(isset($obj->settings->popup_position) ? $obj->settings->popup_position : array())
             ));
+            if (!class_exists('WpPopPop_Targeting_Triggers')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php'; }
+            $obj->settings->targeting_triggers = json_decode(wp_json_encode( /* WPPOPPOP_TARGETING_TRIGGERS_WHITELIST */
+                WpPopPop_Targeting_Triggers::sanitize(isset($obj->settings->targeting_triggers) ? $obj->settings->targeting_triggers : array())
+            ));
             $bgc = isset($obj->settings->close_on_backdrop) ? $obj->settings->close_on_backdrop : false; /* WPPOPPOP_BG_CLOSE_WHITELIST */
             $obj->settings->close_on_backdrop = in_array($bgc, array(true, 1, '1', 'true'), true);
             unset($obj->settings->module_order); /* order is global (Settings > Module) */

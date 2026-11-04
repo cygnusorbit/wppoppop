@@ -56,6 +56,7 @@ class WpPopPop_Front_Display {
         wp_enqueue_script('wppoppop-front-scale-js', WPPOPPOP_URL . 'public/js/front/front-scale.js', ['wppoppop-front-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-pickers-js', WPPOPPOP_URL . 'public/js/front/front-pickers.js', ['wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_FRONT_PICKERS_V1 */
         wp_enqueue_script('wppoppop-front-tracking-js', WPPOPPOP_URL . 'public/js/front/front-tracking.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
+        wp_enqueue_script('wppoppop-front-targeting-triggers-js', WPPOPPOP_URL . 'public/js/front/front-targeting-triggers.js', ['jquery', 'wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_TARGETING_TRIGGERS_JS */
 
         // Enqueue Google reCAPTCHA if enabled
         $recaptcha_enabled  = (bool) wppoppop_get_setting('enable_recaptcha', false);

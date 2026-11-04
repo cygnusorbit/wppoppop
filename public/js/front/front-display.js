@@ -109,7 +109,7 @@
 
                 if ($wrap.attr('data-manual') === '1') return; /* opened only by button / link / JS API */
                 var hasLoad = $wrap.attr('data-trigger-load') === '1';
-                var hasOther = $wrap.is('[data-trigger-exit],[data-trigger-scroll],[data-trigger-back],[data-trigger-idle],[data-trigger-adblock],[data-trigger-video-end]');
+                var hasOther = $wrap.is('[data-trigger-exit],[data-trigger-scroll],[data-trigger-back],[data-trigger-idle],[data-trigger-adblock],[data-trigger-video-end],[data-tt-event]');
                 if (!hasLoad && hasOther) return;
                 var loadDelay = hasLoad ? (parseFloat($wrap.attr('data-trigger-load-delay')) || 0) * 1000 : 0;
                 if (loadDelay > 0) {
