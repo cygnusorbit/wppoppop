@@ -2175,3 +2175,11 @@ body.wppoppop-preview-locked #wppoppop-canvas-size-guide { display: none; }
     pointer-events: none;
 }
 /* === WPPOPPOP_ALIGN_SVG_END === */
+
+/* === WPPOPPOP_GUIDE_INSIDE_START === */
+/* Element guide lines (hover dotted / selected solid) sit on the element's own edge, never outside it */
+#wppoppop-canvas-box .wppoppop-canvas-item:hover:not(.wppoppop-selected),
+#wppoppop-canvas-box .wppoppop-canvas-item.wppoppop-selected {
+    outline-offset: -1px !important;
+}
+/* === WPPOPPOP_GUIDE_INSIDE_END === */
