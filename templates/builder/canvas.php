@@ -22,35 +22,35 @@ if (!defined('ABSPATH')) {
         <!-- Parity Phase 3: Stage Alignment Toolbar -->
     <div id="wppoppop-alignment-toolbar" class="wppoppop-alignment-toolbar" style="display:none;">
         <button type="button" class="wppoppop-align-btn" data-align="left" title="<?php esc_attr_e('Align Left', 'wppoppop'); ?>">
-            <span class="dashicons dashicons-align-left"></span>
+            <svg class="wppoppop-align-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3" y="3" width="2" height="18"/><rect x="7" y="5" width="10" height="5"/><rect x="7" y="13" width="14" height="5"/></svg>
         </button>
-        <button type="button" class="wppoppop-align-btn" data-align="center" title="<?php esc_attr_e('Align Center (Horizontal)', 'wppoppop'); ?>">
-            <span class="dashicons dashicons-align-center"></span>
+        <button type="button" class="wppoppop-align-btn" data-align="center" title="<?php esc_attr_e('Align Center', 'wppoppop'); ?>">
+            <svg class="wppoppop-align-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="11" y="3" width="2" height="18"/><rect x="7" y="5" width="10" height="5"/><rect x="4" y="13" width="16" height="5"/></svg>
         </button>
         <button type="button" class="wppoppop-align-btn" data-align="right" title="<?php esc_attr_e('Align Right', 'wppoppop'); ?>">
-            <span class="dashicons dashicons-align-right"></span>
+            <svg class="wppoppop-align-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="19" y="3" width="2" height="18"/><rect x="7" y="5" width="10" height="5"/><rect x="3" y="13" width="14" height="5"/></svg>
         </button>
         <span class="wppoppop-toolbar-sep wppoppop-align-separator"></span>
         <button type="button" class="wppoppop-align-btn" data-align="top" title="<?php esc_attr_e('Align Top', 'wppoppop'); ?>">
-            <span class="dashicons dashicons-arrow-up-alt2"></span>
+            <svg class="wppoppop-align-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="2"/><rect x="6" y="7" width="5" height="14"/><rect x="13" y="7" width="5" height="9"/></svg>
         </button>
-        <button type="button" class="wppoppop-align-btn" data-align="middle" title="<?php esc_attr_e('Align Middle (Vertical)', 'wppoppop'); ?>">
-            <span class="dashicons dashicons-menu"></span>
+        <button type="button" class="wppoppop-align-btn" data-align="middle" title="<?php esc_attr_e('Align Middle', 'wppoppop'); ?>">
+            <svg class="wppoppop-align-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3" y="11" width="18" height="2"/><rect x="6" y="5" width="5" height="14"/><rect x="13" y="7" width="5" height="10"/></svg>
         </button>
         <button type="button" class="wppoppop-align-btn" data-align="bottom" title="<?php esc_attr_e('Align Bottom', 'wppoppop'); ?>">
-            <span class="dashicons dashicons-arrow-down-alt2"></span>
+            <svg class="wppoppop-align-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3" y="19" width="18" height="2"/><rect x="6" y="10" width="5" height="8"/><rect x="13" y="4" width="5" height="14"/></svg>
         </button>
         <span class="wppoppop-toolbar-sep wppoppop-align-separator"></span>
-        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="left" title="<?php esc_attr_e('Move Left 1px (Shift = 10px)', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Move Left', 'wppoppop'); ?>">
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="left" title="<?php esc_attr_e('Left', 'wppoppop'); ?>">
             <span class="dashicons dashicons-arrow-left"></span>
         </button>
-        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="right" title="<?php esc_attr_e('Move Right 1px (Shift = 10px)', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Move Right', 'wppoppop'); ?>">
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="right" title="<?php esc_attr_e('Right', 'wppoppop'); ?>">
             <span class="dashicons dashicons-arrow-right"></span>
         </button>
-        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="up" title="<?php esc_attr_e('Move Up 1px (Shift = 10px)', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Move Up', 'wppoppop'); ?>">
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="up" title="<?php esc_attr_e('Top', 'wppoppop'); ?>">
             <span class="dashicons dashicons-arrow-up"></span>
         </button>
-        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="down" title="<?php esc_attr_e('Move Down 1px (Shift = 10px)', 'wppoppop'); ?><?php esc_html_e('" aria-label="', 'wppoppop'); ?><?php esc_attr_e('Move Down', 'wppoppop'); ?>">
+        <button type="button" class="wppoppop-align-btn wppoppop-nudge-btn" data-nudge="down" title="<?php esc_attr_e('Bottom', 'wppoppop'); ?>">
             <span class="dashicons dashicons-arrow-down"></span>
         </button>
     </div>

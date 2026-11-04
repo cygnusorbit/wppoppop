@@ -4,7 +4,7 @@
     if (window.__wppRibbonTip) { return; }
     window.__wppRibbonTip = true;
 
-    var SEL = '.wppoppop-ribbon-tool';
+    var SEL = '.wppoppop-ribbon-tool, #wppoppop-alignment-toolbar .wppoppop-align-btn';
     var tip = null, current = null;
 
     function titleCase(s) {

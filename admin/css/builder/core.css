@@ -2165,3 +2165,13 @@ body.wppoppop-preview-locked #wppoppop-canvas-size-guide { display: none; }
     white-space: nowrap;
 }
 /* === WPPOPPOP_ALIGN_DOCK_END === */
+
+/* === WPPOPPOP_ALIGN_SVG_START === */
+.wppoppop-align-btn .wppoppop-align-svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    pointer-events: none;
+}
+/* === WPPOPPOP_ALIGN_SVG_END === */
