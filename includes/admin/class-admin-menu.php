@@ -23,6 +23,7 @@ class WpPopPop_Admin_Menu {
         add_filter('set-screen-option', [$this, 'set_screen_option'], 10, 3);
         add_action('admin_menu', [$this, 'apply_menu_prefs'], 999);
         add_action('admin_head', [$this, 'print_hidden_css']);
+        add_action('admin_head', [$this, 'print_unread_pulse_css']);
         add_action('admin_footer', [$this, 'print_hidden_js']);
     }
 
@@ -122,8 +123,18 @@ class WpPopPop_Admin_Menu {
     }
 
     public function apply_menu_prefs() {
-        global $submenu;
+        global $submenu, $menu;
         $parent = 'wppoppop-dashboard';
+
+        /* WPPOPPOP_MENU_UNREAD_PULSE: pulsing notice icon on the top-level menu while unread submissions exist */
+        if (is_array($menu) && self::has_unread_submissions()) {
+            foreach ($menu as $k => $m) {
+                if (isset($m[2]) && $m[2] === $parent) {
+                    $menu[$k][0] = $m[0] . '<span class="wppoppop-menu-pulse" title="' . esc_attr__('Unread submissions', 'wppoppop') . '" aria-hidden="true">!</span><span class="screen-reader-text">' . esc_html__('Unread submissions', 'wppoppop') . '</span>';
+                    break;
+                }
+            }
+        }
         if (empty($submenu[$parent]) || !is_array($submenu[$parent])) {
             return;
         }
@@ -151,6 +162,39 @@ class WpPopPop_Admin_Menu {
             $out[] = $it;
         }
         $submenu[$parent] = $out;
+    }
+
+    /** True when at least one submission is still unread (cheap existence check, no full count). */
+    public static function has_unread_submissions() {
+        global $wpdb;
+        if (!current_user_can('manage_options')) { return false; }
+        $table = $wpdb->prefix . 'wppoppop_submissions';
+        $prev = $wpdb->suppress_errors(true);
+        $found = $wpdb->get_var("SELECT 1 FROM {$table} WHERE is_read = 0 LIMIT 1");
+        $wpdb->suppress_errors($prev);
+        return !empty($found);
+    }
+
+    /** Pulse icon styling in the plugin primary color (Theme page), printed on every admin screen. */
+    public function print_unread_pulse_css() {
+        if (!current_user_can('manage_options') || !self::has_unread_submissions()) { return; }
+        $color = '#c1272d';
+        if (class_exists('WpPopPop_Admin_Theme')) {
+            $v = WpPopPop_Admin_Theme::get_values();
+            $c = isset($v['c_primary']) ? sanitize_hex_color($v['c_primary']) : '';
+            if ($c) { $color = $c; }
+        }
+        $hex = ltrim($color, '#');
+        if (strlen($hex) === 3) { $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2]; }
+        $rgb = hexdec(substr($hex, 0, 2)) . ',' . hexdec(substr($hex, 2, 2)) . ',' . hexdec(substr($hex, 4, 2));
+        ?>
+<style id="wppoppop-unread-pulse-css">
+#adminmenu .wppoppop-menu-pulse{display:inline-block;box-sizing:border-box;width:16px;height:16px;margin:0 0 0 7px;border-radius:50%;background:<?php echo esc_html($color); ?>;color:#fff;font:700 11px/16px Arial,Helvetica,sans-serif;text-align:center;vertical-align:text-top;-webkit-animation:wppoppop-menu-pulse 1.6s ease-out infinite;animation:wppoppop-menu-pulse 1.6s ease-out infinite}
+@-webkit-keyframes wppoppop-menu-pulse{0%{box-shadow:0 0 0 0 rgba(<?php echo esc_html($rgb); ?>,.65)}70%{box-shadow:0 0 0 8px rgba(<?php echo esc_html($rgb); ?>,0)}100%{box-shadow:0 0 0 0 rgba(<?php echo esc_html($rgb); ?>,0)}}
+@keyframes wppoppop-menu-pulse{0%{box-shadow:0 0 0 0 rgba(<?php echo esc_html($rgb); ?>,.65)}70%{box-shadow:0 0 0 8px rgba(<?php echo esc_html($rgb); ?>,0)}100%{box-shadow:0 0 0 0 rgba(<?php echo esc_html($rgb); ?>,0)}}
+@media (prefers-reduced-motion:reduce){#adminmenu .wppoppop-menu-pulse{-webkit-animation:none;animation:none}}
+</style>
+        <?php
     }
 
     /* Hidden pages stay registered (direct URLs keep working); only the menu entry is hidden. */
