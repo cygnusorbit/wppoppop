@@ -47,11 +47,13 @@ class WpPopPop_Front_Display {
         wp_enqueue_style('wppoppop-front-css', WPPOPPOP_URL . 'public/css/front/modal.css', [], $asset_version);
         wp_enqueue_style('wppoppop-front-anim-css', WPPOPPOP_URL . 'public/css/front/animations.css', ['wppoppop-front-css'], $asset_version);
         wp_enqueue_style('wppoppop-animations-core-css', WPPOPPOP_URL . 'public/css/animations-core.css', ['wppoppop-front-anim-css'], $asset_version);
+        wp_enqueue_style('wppoppop-front-forms-css', WPPOPPOP_URL . 'public/css/front/form-elements.css', ['wppoppop-animations-core-css'], $asset_version); /* WPPOPPOP_FORM_HARMONY_V1 */
         wp_enqueue_script('wppoppop-front-triggers-js', WPPOPPOP_URL . 'public/js/front/front-triggers.js', ['jquery'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-js', WPPOPPOP_URL . 'public/js/front/front-display.js', ['jquery', 'wppoppop-front-triggers-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-form-js', WPPOPPOP_URL . 'public/js/front/front-form.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-conditional-logic-js', WPPOPPOP_URL . 'public/js/front/front-conditional-logic.js', ['jquery', 'wppoppop-front-form-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-scale-js', WPPOPPOP_URL . 'public/js/front/front-scale.js', ['wppoppop-front-js'], $asset_version, true);
+        wp_enqueue_script('wppoppop-front-pickers-js', WPPOPPOP_URL . 'public/js/front/front-pickers.js', ['wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_FRONT_PICKERS_V1 */
         wp_enqueue_script('wppoppop-front-tracking-js', WPPOPPOP_URL . 'public/js/front/front-tracking.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
 
         // Enqueue Google reCAPTCHA if enabled

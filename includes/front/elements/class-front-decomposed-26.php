@@ -564,7 +564,7 @@ class WpPopPop_Front_Decomposed_26 {
                     . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr($default_val) . '" placeholder="' . esc_attr($dt_ph) . '" autocomplete="off"'
                     . ' data-format="' . esc_attr($dt_fmt) . '" data-min="' . esc_attr($dt_min) . '" data-max="' . esc_attr($dt_max) . '"'
                     . ' class="wppoppop-form-input wppoppop-front-date wppoppop-datepicker"' . $dt_data
-                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $dt_pr . 'px 0 ' . $dt_pl . 'px;text-align:' . esc_attr($dt_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;font-size:12px;color:#334155;" />'
+                    . ' style="width:100%;height:100%;box-sizing:border-box;padding:0 ' . $dt_pr . 'px 0 ' . $dt_pl . 'px;text-align:' . esc_attr($dt_align) . ';pointer-events:auto;-webkit-user-select:text;user-select:text;background:#ffffff;border:1px solid #cbd5e1;border-radius:inherit;" />'
                     . $dt_ico('right')
                     . '</div>';
 

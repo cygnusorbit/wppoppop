@@ -147,8 +147,8 @@
             var rHtml = rOpts.map(function(opt, idx) {
                 var isSel = defVal ? (opt.toLowerCase() === defVal.toLowerCase() || (!!rPairs[idx].v && rPairs[idx].v.toLowerCase() === defVal.toLowerCase())) : false;
                 return '<span style="display:inline-flex;align-items:center;gap:8px;' + rTxt + '">' +
-                    '<span style="width:16px;height:16px;border-radius:0%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;flex-shrink:0;">' +
-                    (isSel ? '<span style="width:8px;height:8px;border-radius:0%;background:#c2185b;"></span>' : '') +
+                    '<span style="width:16px;height:16px;border-radius:50%;border:1.5px solid ' + (isSel ? '#c2185b' : '#94a3b8') + ';display:inline-flex;align-items:center;justify-content:center;background:#ffffff;flex-shrink:0;">' +
+                    (isSel ? '<span style="width:8px;height:8px;border-radius:50%;background:#c2185b;"></span>' : '') +
                     '</span><span>' + $('<div>').text(opt).html() + (idx === 0 ? reqStar : '') + '</span></span>';
             }).join('');
             innerHtml = '<div style="width:100%;height:100%;display:flex;flex-direction:' + (rRow ? 'row' : 'column') + ';flex-wrap:wrap;align-items:' + (rRow ? 'center' : rJ) + ';justify-content:' + (rRow ? rJ : 'center') + ';gap:8px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + rHtml + '</div>';
