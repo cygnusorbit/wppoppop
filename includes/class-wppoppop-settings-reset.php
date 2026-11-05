@@ -20,8 +20,8 @@ class WpPopPop_Settings_Reset {
         }
         return [
             'general'     => ['sender_name', 'from_name', 'sender_email', 'from_email', 'admin_email', 'csv_separator', 'user_uploads', 'powered_by_badge', 'test_mode'],
-            'performance' => ['preload_popups', 'preload_events', 'minify_css', 'cache_busting', 'render_delay', 'ga_tracking', 'adblock_detector', 'disable_google_fonts'],
-            'libraries'   => ['default_font', 'google_fonts', 'font_awesome', 'custom_fonts', 'load_canvas_confetti', 'load_canvas_fireworks',
+            'performance' => ['preload_popups', 'preload_events', 'minify_css', 'cache_busting', 'render_delay', 'ga_tracking', 'adblock_detector', 'disable_google_fonts', 'default_embed_type'],
+            'libraries'   => ['default_font', 'default_font_weight', 'default_font_size', 'default_text_align', 'default_font_italic', 'default_font_underline', 'default_font_color', /* WPPOPPOP_DEFAULT_TYPO */ 'google_fonts', 'font_awesome', 'custom_fonts', 'load_canvas_confetti', 'load_canvas_fireworks',
                               'air_datepicker', 'load_air_datepicker', 'jquery_mask', 'load_jquery_mask', 'signature_pad', 'load_signature_pad',
                               'range_slider', 'load_range_slider', 'js_parser', 'load_math_parser'],
             'security'    => ['email_validation', 'enable_recaptcha', 'recaptcha_site_key', 'recaptcha_secret_key', 'recaptcha_threshold',

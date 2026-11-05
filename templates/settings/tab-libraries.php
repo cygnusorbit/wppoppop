@@ -4,6 +4,13 @@ if (!defined('ABSPATH')) {
 }
 
 $default_font          = isset($settings['default_font']) ? $settings['default_font'] : 'inherit';
+$df_weight             = isset($settings['default_font_weight']) ? (string) $settings['default_font_weight'] : 'inherit'; /* WPPOPPOP_DEFAULT_TYPO */
+$df_size               = isset($settings['default_font_size']) ? (int) $settings['default_font_size'] : 0;
+$df_align              = isset($settings['default_text_align']) ? (string) $settings['default_text_align'] : 'inherit';
+$df_italic             = !empty($settings['default_font_italic']);
+$df_underline          = !empty($settings['default_font_underline']);
+$df_color              = isset($settings['default_font_color']) ? (string) $settings['default_font_color'] : '';
+$df_weights            = ['inherit' => 'inherit - Inherit', '300' => '300 - Light', '400' => '400 - Regular', '500' => '500 - Medium', '600' => '600 - Semi Bold', '700' => '700 - Bold'];
 $google_fonts          = !empty($settings['google_fonts']);
 $font_awesome          = !empty($settings['font_awesome']);
 $custom_fonts          = isset($settings['custom_fonts']) ? $settings['custom_fonts'] : '';
@@ -31,6 +38,52 @@ $js_parser             = (!empty($settings['js_parser']) || !empty($settings['lo
                     <option value="Lato, sans-serif" <?php selected($default_font, 'Lato, sans-serif'); ?>><?php esc_html_e('Lato', 'wppoppop'); ?></option>
                 </select>
                 <p class="description"><?php esc_html_e('Fallback typography applied to campaign elements when no specific custom font is defined.', 'wppoppop'); ?></p>
+            </td>
+        </tr>
+        <tr class="wppoppop-typo-row">
+            <th scope="row"><?php esc_html_e('Default Font Style', 'wppoppop'); ?></th>
+            <td>
+                <div class="wppoppop-typo-grid">
+                    <div class="wppoppop-typo-cell">
+                        <select id="setting-default-font-weight" name="settings[default_font_weight]">
+                            <?php foreach ($df_weights as $wv => $wl) : ?>
+                                <option value="<?php echo esc_attr($wv); ?>" <?php selected($df_weight, (string) $wv); ?>><?php echo esc_html($wl); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span class="wppoppop-typo-cap"><?php esc_html_e('Font weight', 'wppoppop'); ?></span>
+                    </div>
+                    <div class="wppoppop-typo-cell">
+                        <div class="wppoppop-typo-color">
+                            <input type="color" id="setting-default-font-color-picker" value="<?php echo esc_attr($df_color !== '' ? $df_color : '#444444'); ?>" aria-label="<?php esc_attr_e('Pick color', 'wppoppop'); ?>">
+                            <input type="text" id="setting-default-font-color" name="settings[default_font_color]" value="<?php echo esc_attr($df_color); ?>" placeholder="<?php esc_attr_e('inherit', 'wppoppop'); ?>" maxlength="7" autocomplete="off" spellcheck="false">
+                        </div>
+                        <span class="wppoppop-typo-cap"><?php esc_html_e('Color', 'wppoppop'); ?></span>
+                    </div>
+                    <div class="wppoppop-typo-cell">
+                        <div class="wppoppop-typo-size">
+                            <input type="number" id="setting-default-font-size" name="settings[default_font_size]" value="<?php echo $df_size > 0 ? esc_attr($df_size) : ''; ?>" min="0" max="200" step="1" placeholder="<?php esc_attr_e('auto', 'wppoppop'); ?>">
+                            <span class="wppoppop-typo-unit">px</span>
+                        </div>
+                        <span class="wppoppop-typo-cap"><?php esc_html_e('Size', 'wppoppop'); ?></span>
+                    </div>
+                    <div class="wppoppop-typo-cell">
+                        <div class="wppoppop-typo-seg" role="radiogroup" aria-label="<?php esc_attr_e('Alignment', 'wppoppop'); ?>">
+                            <label title="<?php esc_attr_e('Inherit', 'wppoppop'); ?>"><input type="radio" name="settings[default_text_align]" value="inherit" <?php checked($df_align === 'left' || $df_align === 'center' || $df_align === 'right', false); ?>><span><?php esc_html_e('Auto', 'wppoppop'); ?></span></label>
+                            <label title="<?php esc_attr_e('Left', 'wppoppop'); ?>"><input type="radio" name="settings[default_text_align]" value="left" <?php checked($df_align, 'left'); ?>><span class="dashicons dashicons-editor-alignleft"></span></label>
+                            <label title="<?php esc_attr_e('Center', 'wppoppop'); ?>"><input type="radio" name="settings[default_text_align]" value="center" <?php checked($df_align, 'center'); ?>><span class="dashicons dashicons-editor-aligncenter"></span></label>
+                            <label title="<?php esc_attr_e('Right', 'wppoppop'); ?>"><input type="radio" name="settings[default_text_align]" value="right" <?php checked($df_align, 'right'); ?>><span class="dashicons dashicons-editor-alignright"></span></label>
+                        </div>
+                        <span class="wppoppop-typo-cap"><?php esc_html_e('Alignment', 'wppoppop'); ?></span>
+                    </div>
+                    <div class="wppoppop-typo-cell">
+                        <div class="wppoppop-typo-seg">
+                            <label title="<?php esc_attr_e('Italic', 'wppoppop'); ?>"><input type="checkbox" name="settings[default_font_italic]" value="1" <?php checked($df_italic); ?>><span class="dashicons dashicons-editor-italic"></span></label>
+                            <label title="<?php esc_attr_e('Underline', 'wppoppop'); ?>"><input type="checkbox" name="settings[default_font_underline]" value="1" <?php checked($df_underline); ?>><span class="dashicons dashicons-editor-underline"></span></label>
+                        </div>
+                        <span class="wppoppop-typo-cap"><?php esc_html_e('Style', 'wppoppop'); ?></span>
+                    </div>
+                </div>
+                <p class="description"><?php esc_html_e('Default weight, size, color, alignment and style for popup text. Layers with their own typography override these. Leave on inherit / auto / blank to keep theme behavior.', 'wppoppop'); ?></p>
             </td>
         </tr>
         <tr>

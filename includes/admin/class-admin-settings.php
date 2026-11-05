@@ -144,7 +144,8 @@ class WpPopPop_Admin_Settings {
             'csv_separator' => ',', 'user_uploads' => 'keep', 'powered_by_badge' => 0, 'test_mode' => 0,
             'preload_popups' => 0, 'preload_events' => 0, 'minify_css' => 0, 'cache_busting' => 0,
             'render_delay' => 0, 'ga_tracking' => 0, 'adblock_detector' => 0,
-            'default_font' => 'inherit', 'google_fonts' => 0, 'disable_google_fonts' => 0,
+            'default_embed_type' => 'inline',
+            'default_font' => 'inherit', 'default_font_weight' => 'inherit', 'default_font_size' => 0, 'default_text_align' => 'inherit', 'default_font_italic' => 0, 'default_font_underline' => 0, 'default_font_color' => '', /* WPPOPPOP_DEFAULT_TYPO */ 'google_fonts' => 0, 'disable_google_fonts' => 0,
             'font_awesome' => 0, 'custom_fonts' => '',
             'load_canvas_confetti' => 0, 'load_canvas_fireworks' => 0,
             'air_datepicker' => 0, 'jquery_mask' => 0, 'signature_pad' => 0,
@@ -222,9 +223,17 @@ class WpPopPop_Admin_Settings {
         $o['render_delay']     = isset($in['render_delay']) ? min(10000, max(0, (int) $in['render_delay'])) : 0;
         $o['ga_tracking']      = $b('ga_tracking');
         $o['adblock_detector'] = $b('adblock_detector');
+        $o['default_embed_type'] = $enum('default_embed_type', ['inline', 'onload'], 'inline');
 
         // 3. Typography & Libraries
         $o['default_font']          = !empty($in['default_font']) ? sanitize_text_field($in['default_font']) : 'inherit';
+        /* WPPOPPOP_DEFAULT_TYPO_SAVE */
+        $o['default_font_weight']    = $enum('default_font_weight', ['inherit', '300', '400', '500', '600', '700'], 'inherit');
+        $o['default_font_size']      = isset($in['default_font_size']) ? min(200, max(0, (int) $in['default_font_size'])) : 0;
+        $o['default_text_align']     = $enum('default_text_align', ['inherit', 'left', 'center', 'right'], 'inherit');
+        $o['default_font_italic']    = $b('default_font_italic');
+        $o['default_font_underline'] = $b('default_font_underline');
+        $o['default_font_color']     = (!empty($in['default_font_color']) && sanitize_hex_color(trim((string) $in['default_font_color']))) ? sanitize_hex_color(trim((string) $in['default_font_color'])) : '';
         $o['google_fonts']          = $b('google_fonts');
         $o['disable_google_fonts']  = $b('disable_google_fonts');
         $o['font_awesome']          = $b('font_awesome');

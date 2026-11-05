@@ -11,10 +11,21 @@ $cache_busting        = !empty($settings['cache_busting']);
 $render_delay         = isset($settings['render_delay']) ? (int) $settings['render_delay'] : 0;
 $ga_tracking          = !empty($settings['ga_tracking']);
 $adblock_detector     = !empty($settings['adblock_detector']);
+$default_embed_type   = (isset($settings['default_embed_type']) && $settings['default_embed_type'] === 'onload') ? 'onload' : 'inline';
 ?>
 <div class="wppoppop-settings-section">
     <h3><?php esc_html_e('Speed, Asset Delivery & Preload Engine', 'wppoppop'); ?></h3>
     <table class="form-table">
+        <tr>
+            <th scope="row"><label for="setting-default-embed-type"><?php esc_html_e('Default Embed Type', 'wppoppop'); ?></label></th>
+            <td>
+                <select id="setting-default-embed-type" name="settings[default_embed_type]">
+                    <option value="inline" <?php selected($default_embed_type, 'inline'); ?>><?php esc_html_e('Inline Popup', 'wppoppop'); ?></option>
+                    <option value="onload" <?php selected($default_embed_type, 'onload'); ?>><?php esc_html_e('Onload Popup', 'wppoppop'); ?></option>
+                </select>
+                <p class="description"><?php esc_html_e('Used by [wppoppop uid="xxx"] when the shortcode has no mode attribute.', 'wppoppop'); ?></p>
+            </td>
+        </tr>
         <tr>
             <th scope="row"><?php esc_html_e('Popup Preloading', 'wppoppop'); ?></th>
             <td>

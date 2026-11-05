@@ -70,9 +70,24 @@ class WpPopPop_Front_Renderer {
         $show_watermark = function_exists('wppoppop_get_setting') ? (bool) wppoppop_get_setting('powered_by_badge', false) : false;
         $minify_css     = function_exists('wppoppop_get_setting') ? (bool) wppoppop_get_setting('minify_css', false) : false;
 
+        /* WPPOPPOP_DEFAULT_TYPO: global fallback text style; layer-level styles still override */
+        $wppoppop_typo = '';
+        if (function_exists('wppoppop_get_setting')) {
+            $wppoppop_tw = (string) wppoppop_get_setting('default_font_weight', 'inherit');
+            if (in_array($wppoppop_tw, array('300', '400', '500', '600', '700'), true)) { $wppoppop_typo .= ' font-weight: ' . $wppoppop_tw . ';'; }
+            $wppoppop_ts = (int) wppoppop_get_setting('default_font_size', 0);
+            if ($wppoppop_ts > 0 && $wppoppop_ts <= 200) { $wppoppop_typo .= ' font-size: ' . $wppoppop_ts . 'px;'; }
+            $wppoppop_ta = (string) wppoppop_get_setting('default_text_align', 'inherit');
+            if (in_array($wppoppop_ta, array('left', 'center', 'right'), true)) { $wppoppop_typo .= ' text-align: ' . $wppoppop_ta . ';'; }
+            if (wppoppop_get_setting('default_font_italic', 0)) { $wppoppop_typo .= ' font-style: italic;'; }
+            if (wppoppop_get_setting('default_font_underline', 0)) { $wppoppop_typo .= ' text-decoration: underline;'; }
+            $wppoppop_tc = sanitize_hex_color((string) wppoppop_get_setting('default_font_color', ''));
+            if ($wppoppop_tc) { $wppoppop_typo .= ' color: ' . $wppoppop_tc . ';'; }
+        }
+
         $custom_inline_css = "
         #wppoppop-popup-{$uid}, #wppoppop-wrap-{$uid} {
-            font-family: {$default_font};
+            font-family: {$default_font};{$wppoppop_typo}
         }
         ";
 

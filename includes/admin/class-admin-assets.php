@@ -170,6 +170,8 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-settings-search-css', WPPOPPOP_URL . 'admin/css/settings/search.css', ['wppoppop-settings-css'], $set_ver);
             wp_enqueue_style('wppoppop-settings-reset-css', WPPOPPOP_URL . 'admin/css/settings/reset.css', ['wppoppop-settings-css'], $set_ver);
 
+            wp_enqueue_style('wppoppop-settings-typography-css', WPPOPPOP_URL . 'admin/css/settings/typography.css', ['wppoppop-settings-css'], $set_ver); /* WPPOPPOP_DEFAULT_TYPO */
+            wp_enqueue_script('wppoppop-settings-typography-js', WPPOPPOP_URL . 'admin/js/settings/settings-typography.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-tabs-js', WPPOPPOP_URL . 'admin/js/settings/settings-tabs.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-tools-js', WPPOPPOP_URL . 'admin/js/settings/settings-tools.js', ['jquery'], self::ver(), true);

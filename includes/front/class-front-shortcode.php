@@ -69,7 +69,7 @@ class WpPopPop_Front_Shortcode {
         $atts = shortcode_atts([
             'uid'   => '',
             'id'    => 0,
-            'mode'  => 'inline',
+            'mode'  => '',
             'text'  => __('Open Popup', 'wppoppop'),
             'class' => '',
             'delay' => 0,
@@ -77,6 +77,12 @@ class WpPopPop_Front_Shortcode {
 
         if (function_exists('wppoppop_get_setting') && (bool) wppoppop_get_setting('test_mode', false) && !current_user_can('manage_options')) {
             return '';
+        }
+
+        /* WPPOPPOP_DEFAULT_EMBED: no mode attribute -> Settings > Performance > Default Embed Type */
+        $atts['mode'] = sanitize_key($atts['mode']);
+        if ($atts['mode'] === '') {
+            $atts['mode'] = (function_exists('wppoppop_get_setting') && wppoppop_get_setting('default_embed_type', 'inline') === 'onload') ? 'onload' : 'inline';
         }
 
         $uid = sanitize_key($atts['uid']);

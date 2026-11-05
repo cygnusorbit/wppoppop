@@ -1,0 +1,94 @@
+/* WpPopPop Settings: Default typography controls (WPPOPPOP_DEFAULT_TYPO)
+   Harmonised with the Theme page: every value comes from the global --wpp-* tokens.
+   Inner fields use the #wpbody-content prefix to out-rank the global themed input rules. */
+.wppoppop-settings-wrap .wppoppop-typo-grid {
+    display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 20px;
+}
+.wppoppop-settings-wrap .wppoppop-typo-cell { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.wppoppop-settings-wrap .wppoppop-typo-cap {
+    margin-top: 6px; font-size: var(--wpp-fs-small, 12px); font-style: normal; line-height: 1.3;
+    color: var(--wpp-c-muted, #787c82);
+}
+
+/* Weight select keeps the themed select look from the settings page */
+.wppoppop-settings-wrap .wppoppop-settings-section .wppoppop-typo-cell > select {
+    min-width: 180px; height: var(--wpp-h-input, 32px); padding: 0 28px 0 10px;
+}
+
+/* Shared field shell: one border for color, size and segmented groups */
+.wppoppop-settings-wrap .wppoppop-typo-color,
+.wppoppop-settings-wrap .wppoppop-typo-size,
+.wppoppop-settings-wrap .wppoppop-typo-seg {
+    display: inline-flex; align-items: stretch; box-sizing: border-box; overflow: hidden;
+    height: var(--wpp-h-input, 32px);
+    background: var(--wpp-c-input-bg, #fff);
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-input-border, #8c8f94);
+    border-radius: var(--wpp-r-input, 3px);
+}
+.wppoppop-settings-wrap .wppoppop-typo-color:focus-within,
+.wppoppop-settings-wrap .wppoppop-typo-size:focus-within {
+    border-color: var(--wpp-c-input-focus, #c1272d); box-shadow: 0 0 0 1px var(--wpp-c-input-focus, #c1272d);
+}
+
+/* Color: swatch + hex field */
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-color input[type="color"] {
+    -webkit-appearance: none; appearance: none; flex: 0 0 auto; box-sizing: border-box;
+    width: 40px; height: 100%; min-height: 0; margin: 0; padding: 3px; cursor: pointer;
+    border: 0; border-right: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); border-radius: 0;
+    box-shadow: none; outline: 0; background: var(--wpp-c-input-bg, #fff);
+}
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-color input[type="color"]:focus { border-color: var(--wpp-c-row-border, #eee); box-shadow: none; }
+.wppoppop-settings-wrap .wppoppop-typo-color input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.wppoppop-settings-wrap .wppoppop-typo-color input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 2px; }
+.wppoppop-settings-wrap .wppoppop-typo-color input[type="color"]::-moz-color-swatch { border: 0; border-radius: 2px; }
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-color input[type="text"] {
+    flex: 1 1 auto; width: 104px; min-height: 0; height: 100%; margin: 0; padding: 0 10px;
+    border: 0; border-radius: 0; box-shadow: none; outline: 0; background: transparent;
+    font-size: var(--wpp-fs-input, 12px); color: var(--wpp-c-input-text, #1e293b);
+}
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-color input[type="text"]:focus { border: 0; box-shadow: none; outline: 0; }
+
+/* Size: number + px unit */
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-size input[type="number"] {
+    width: 64px; min-height: 0; height: 100%; margin: 0; padding: 0 4px 0 10px;
+    border: 0; border-radius: 0; box-shadow: none; outline: 0; background: transparent; text-align: right;
+    font-size: var(--wpp-fs-input, 12px); color: var(--wpp-c-input-text, #1e293b);
+    -moz-appearance: textfield;
+}
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-size input[type="number"]::-webkit-outer-spin-button,
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-size input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-size input[type="number"]:focus { border: 0; box-shadow: none; outline: 0; }
+.wppoppop-settings-wrap .wppoppop-typo-unit {
+    display: flex; align-items: center; padding: 0 10px 0 2px;
+    font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82);
+}
+
+/* Segmented buttons: alignment + style */
+.wppoppop-settings-wrap .wppoppop-typo-seg label { position: relative; display: flex; margin: 0; cursor: pointer; }
+.wppoppop-settings-wrap .wppoppop-typo-seg label + label { border-left: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
+#wpbody-content .wppoppop-settings-wrap .wppoppop-typo-seg input {
+    position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; opacity: 0; cursor: pointer;
+}
+.wppoppop-settings-wrap .wppoppop-typo-seg span {
+    display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+    min-width: 36px; height: 100%; padding: 0 10px;
+    font-size: var(--wpp-fs-small, 12px); font-weight: 600; line-height: 1;
+    color: var(--wpp-c-text, #1d2327); background: transparent;
+}
+.wppoppop-settings-wrap .wppoppop-typo-seg span.dashicons { width: auto; height: 100%; font-size: 16px; }
+.wppoppop-settings-wrap .wppoppop-typo-seg label:hover span { background: var(--wpp-c-secondary-hover, #f6f7f7); }
+.wppoppop-settings-wrap .wppoppop-typo-seg input:checked + span {
+    background: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-primary-text, #fff);
+}
+.wppoppop-settings-wrap .wppoppop-typo-seg input:focus-visible + span {
+    box-shadow: inset 0 0 0 2px var(--wpp-c-input-focus, #c1272d);
+}
+.wppoppop-settings-wrap .wppoppop-typo-seg input:checked:focus-visible + span {
+    box-shadow: inset 0 0 0 2px var(--wpp-c-primary-text, #fff);
+}
+
+@media (max-width: 782px) {
+    .wppoppop-settings-wrap .wppoppop-typo-grid { gap: 14px; }
+    .wppoppop-settings-wrap .wppoppop-typo-cell { flex: 1 1 calc(50% - 14px); }
+    .wppoppop-settings-wrap .wppoppop-settings-section .wppoppop-typo-cell > select { min-width: 0; width: 100%; }
+}
