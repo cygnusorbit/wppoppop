@@ -64,6 +64,99 @@ class WpPopPop_Security {
     }
 
     /**
+     * Resolve the visitor IP. Proxy headers are opt-in via the wppoppop_client_ip_headers filter.
+     */
+    public static function get_client_ip() {
+        $headers = (array) apply_filters( 'wppoppop_client_ip_headers', [ 'REMOTE_ADDR' ] );
+        foreach ( $headers as $h ) {
+            if ( empty( $_SERVER[ $h ] ) ) {
+                continue;
+            }
+            $raw  = sanitize_text_field( wp_unslash( $_SERVER[ $h ] ) );
+            $list = array_map( 'trim', explode( ',', $raw ) );
+            foreach ( $list as $candidate ) {
+                if ( filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
+                    return $candidate;
+                }
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Hourly per-IP submission throttle. True = limit exceeded.
+     */
+    public static function is_rate_limited( $ip, $max_per_hour ) {
+        $max_per_hour = (int) $max_per_hour;
+        if ( $max_per_hour <= 0 ) {
+            return false;
+        }
+        $key   = 'wppoppop_sub_rl_' . md5( (string) $ip );
+        $count = (int) get_transient( $key );
+        if ( $count >= $max_per_hour ) {
+            return true;
+        }
+        set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+        return false;
+    }
+
+    /**
+     * Server-side reCAPTCHA verification (v2 / v3). Unconfigured secret key cannot be verified, so it passes.
+     */
+    public static function verify_recaptcha( $token, $ip = '' ) {
+        $secret = (string) wppoppop_get_setting( 'recaptcha_secret_key', '' );
+        if ( $secret === '' ) {
+            return true;
+        }
+        if ( empty( $token ) ) {
+            return false;
+        }
+        $res = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', [
+            'timeout' => 10,
+            'body'    => [
+                'secret'   => $secret,
+                'response' => $token,
+                'remoteip' => $ip,
+            ],
+        ] );
+        if ( is_wp_error( $res ) || (int) wp_remote_retrieve_response_code( $res ) !== 200 ) {
+            return false;
+        }
+        $body = json_decode( wp_remote_retrieve_body( $res ), true );
+        if ( ! is_array( $body ) || empty( $body['success'] ) ) {
+            return false;
+        }
+        if ( isset( $body['score'] ) ) {
+            $threshold = (float) wppoppop_get_setting( 'recaptcha_threshold', 0.4 );
+            return (float) $body['score'] >= $threshold;
+        }
+        return true;
+    }
+
+    /**
+     * True when the email domain (or a parent domain) is a known disposable provider.
+     */
+    public static function is_disposable_email( $email ) {
+        $at = strrpos( (string) $email, '@' );
+        if ( $at === false ) {
+            return false;
+        }
+        $domain  = strtolower( trim( substr( $email, $at + 1 ) ) );
+        $domains = (array) apply_filters( 'wppoppop_disposable_domains', [
+            'mailinator.com', '10minutemail.com', 'guerrillamail.com', 'trashmail.com',
+            'tempmail.com', 'sharklasers.com', 'yopmail.com', 'getnada.com', 'throwawaymail.com',
+            'temp-mail.org', 'dispostable.com', 'maildrop.cc', 'fakeinbox.com',
+        ] );
+        foreach ( $domains as $d ) {
+            $d = strtolower( (string) $d );
+            if ( $d !== '' && ( $domain === $d || substr( $domain, -strlen( $d ) - 1 ) === '.' . $d ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Authoritative backend permission and nonce verifier for administrative actions.
      *
      * @param string $cap Required capability.
@@ -89,6 +182,12 @@ class WpPopPop_Security {
         }
 
         return true;
+    }
+}
+
+if ( ! function_exists( 'wppoppop_get_client_ip' ) ) {
+    function wppoppop_get_client_ip() {
+        return WpPopPop_Security::get_client_ip();
     }
 }
 
