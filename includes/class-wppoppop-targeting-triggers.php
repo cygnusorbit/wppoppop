@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
  */
 class WpPopPop_Targeting_Triggers {
 
-    const MODULE_KEY = 'acc-22-targeting-triggers';
+    const MODULE_KEY = 'acc-targeting-triggers';
 
     public static function events() {
         return array('onload', 'onscroll', 'onexit', 'oninactivity');
@@ -187,6 +187,11 @@ class WpPopPop_Targeting_Triggers {
     private static function module_active() {
         if (!class_exists('WpPopPop_Admin_Settings')) {
             require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
+        }
+        /* Not registered: the bundled package is seeded on the first admin load, so stay on until then. A deleted module is off. */
+        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::get(self::MODULE_KEY)) {
+            $orphans = WpPopPop_Modules::orphans();
+            return !isset($orphans[self::MODULE_KEY]);
         }
         return WpPopPop_Admin_Settings::module_enabled(self::MODULE_KEY);
     }
@@ -368,5 +373,77 @@ class WpPopPop_Targeting_Triggers {
             $out[(int) $p->ID] = sprintf('%1$s (ID: %2$d, Status: %3$s)', $title, (int) $p->ID, $p->post_status);
         }
         return $out;
+    }
+
+    /** Builder bridge: window.WpPopPopTargetingData feeds the module's Inspector UI (admin.js) while the module is installed. */
+    public static function localize_builder() {
+        if (!class_exists('WpPopPop_Modules') || !WpPopPop_Modules::is_installed(self::MODULE_KEY) || !wp_script_is('wppoppop-builder-ext-js', 'enqueued')) {
+            return;
+        }
+        $pairs = function ($items) {
+            $out = array();
+            foreach ($items as $k => $v) {
+                $out[] = array((string) $k, (string) $v);
+            }
+            return $out;
+        };
+        wp_localize_script('wppoppop-builder-ext-js', 'WpPopPopTargetingData', array(
+            'roles' => $pairs(array('all' => __('All roles', 'wppoppop'), 'visitor' => __('Visitors (logged out)', 'wppoppop')) + self::roles_list()),
+            'cats'  => $pairs(self::terms_list('category')),
+            'tags'  => $pairs(self::terms_list('post_tag')),
+            'posts' => $pairs(self::posts_list('post')),
+            'pages' => $pairs(self::posts_list('page')),
+            'i18n'  => array(
+                'All roles' => __('All roles', 'wppoppop'),
+                'Visitors (logged out)' => __('Visitors (logged out)', 'wppoppop'),
+                'Search...' => __('Search...', 'wppoppop'),
+                'Nothing found.' => __('Nothing found.', 'wppoppop'),
+                'Popup Targeting' => __('Popup Targeting', 'wppoppop'),
+                'Turn the entire Targeting Triggers setting on or off' => __('Turn the entire Targeting Triggers setting on or off', 'wppoppop'),
+                'Enable Targeting Triggers' => __('Enable Targeting Triggers', 'wppoppop'),
+                'OnLoad' => __('OnLoad', 'wppoppop'),
+                'OnScroll' => __('OnScroll', 'wppoppop'),
+                'OnExit' => __('OnExit', 'wppoppop'),
+                'OnInactivity' => __('OnInactivity', 'wppoppop'),
+                'Choose when the popup appears. Until one is selected the popup keeps its default behavior.' => __('Choose when the popup appears. Until one is selected the popup keeps its default behavior.', 'wppoppop'),
+                'Target Properties' => __('Target Properties', 'wppoppop'),
+                'Periodicity' => __('Periodicity', 'wppoppop'),
+                'Every time' => __('Every time', 'wppoppop'),
+                'Once only' => __('Once only', 'wppoppop'),
+                'Once per period' => __('Once per period', 'wppoppop'),
+                'Show again after' => __('Show again after', 'wppoppop'),
+                'hrs' => __('hrs', 'wppoppop'),
+                'Start delay' => __('Start delay', 'wppoppop'),
+                'sec' => __('sec', 'wppoppop'),
+                'Close delay' => __('Close delay', 'wppoppop'),
+                'Close delay 0 keeps the popup open until it is closed.' => __('Close delay 0 keeps the popup open until it is closed.', 'wppoppop'),
+                'Scrolling offset' => __('Scrolling offset', 'wppoppop'),
+                'Scrolling offset unit' => __('Scrolling offset unit', 'wppoppop'),
+                'Inactivity delay' => __('Inactivity delay', 'wppoppop'),
+                'Activity' => __('Activity', 'wppoppop'),
+                'Always' => __('Always', 'wppoppop'),
+                'Certain period' => __('Certain period', 'wppoppop'),
+                'From' => __('From', 'wppoppop'),
+                'End' => __('End', 'wppoppop'),
+                'User Roles' => __('User Roles', 'wppoppop'),
+                'Site Area' => __('Site Area', 'wppoppop'),
+                'Sitewide' => __('Sitewide', 'wppoppop'),
+                'Homepage' => __('Homepage', 'wppoppop'),
+                'Posts' => __('Posts', 'wppoppop'),
+                'Pages' => __('Pages', 'wppoppop'),
+                'URL' => __('URL', 'wppoppop'),
+                'Categories' => __('Categories', 'wppoppop'),
+                'All' => __('All', 'wppoppop'),
+                'Specific' => __('Specific', 'wppoppop'),
+                'Also show on category archive pages' => __('Also show on category archive pages', 'wppoppop'),
+                'Tags' => __('Tags', 'wppoppop'),
+                'Also show on tag archive pages' => __('Also show on tag archive pages', 'wppoppop'),
+                'A post matches when it is in any selected category, tag or post list.' => __('A post matches when it is in any selected category, tag or post list.', 'wppoppop'),
+                'All pages' => __('All pages', 'wppoppop'),
+                'Specific pages' => __('Specific pages', 'wppoppop'),
+                'URL contains' => __('URL contains', 'wppoppop'),
+                'One per line. The popup shows when the page address contains any of them. Empty = every URL.' => __('One per line. The popup shows when the page address contains any of them. Empty = every URL.', 'wppoppop'),
+            ),
+        ));
     }
 }

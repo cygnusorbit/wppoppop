@@ -2,6 +2,7 @@
  * WpPopPop Builder: Targeting Triggers module (Popup Settings > Targeting Triggers)
  * Data lifecycle: inspector DOM <-> JS model <-> getSettings()/setSettings() <-> save payload.
  * The model (not the DOM) is the source of truth: ids missing from a (limited) list are never dropped.
+ * Only loaded while the module is installed; the UI is built here from the data the core provides.
  * Cross-browser: ES5 only (Chrome, Safari, Firefox, Edge).
  */
 (function ($) {
@@ -20,6 +21,156 @@
     var FLAGS = ['cats_all', 'tags_all', 'posts_all', 'pages_all', 'cats_archive', 'tags_archive'];
     var FLAG_DEF = { cats_all: true, tags_all: true, posts_all: true, pages_all: true, cats_archive: false, tags_archive: false };
     var model = blank();
+
+    /* Everything below the header is built here: the sanitised accordion.html can't carry data-*, role or aria-*.
+       Lists and translated labels come from the core (WpPopPop_Targeting_Triggers::localize_builder). */
+    var DATA = window.WpPopPopTargetingData || {};
+    function L(s) { return (DATA.i18n && DATA.i18n[s]) ? DATA.i18n[s] : s; }
+    function items(k) { return Array.isArray(DATA[k]) ? DATA[k] : []; }
+
+    function rolesList() {
+        var r = items('roles');
+        return r.length ? r : [['all', L('All roles')], ['visitor', L('Visitors (logged out)')]];
+    }
+
+    function el(tag, attrs, text) {
+        var $e = $(document.createElement(tag));
+        if (attrs) { $.each(attrs, function (k, v) { $e.attr(k, v); }); }
+        if (text !== undefined) { $e.text(text); }
+        return $e;
+    }
+    function head(text) { return el('span', { 'class': 'tt-h' }, text); }
+    function hint(text, cond) {
+        var $p = el('p', { 'class': 'tt-hint' }, text);
+        if (cond) { $p.attr('data-tt-when', cond); }
+        return $p;
+    }
+    function when(cond, cls) {
+        var a = { 'data-tt-when': cond };
+        if (cls) { a['class'] = cls; }
+        return el('div', a).hide();
+    }
+    function seg(group, label, opts) {
+        var $s = el('div', { 'class': 'tt-segs', role: 'radiogroup', 'aria-label': label });
+        $.each(opts, function (i, o) {
+            $s.append(el('button', { type: 'button', 'class': 'tt-seg', role: 'radio', 'aria-checked': 'false', 'data-tt-group': group, 'data-tt-val': o[0] }, o[1]));
+        });
+        return $s;
+    }
+    function allSpec(key, a, b) { return seg(key + '_all', '', [['true', a], ['false', b]]); }
+    function row($r, id, label, attrs, unit) {
+        $r.append(el('label', { 'for': id }, label));
+        $r.append(el('input', $.extend({ id: id, 'class': 'widefat' }, attrs)));
+        if (unit) { $r.append(el('span', { 'class': 'tt-unit' }, unit)); }
+        return $r;
+    }
+    function numRow($r, id, label, field, min, max, val, unit) {
+        return row($r, id, label, { type: 'number', 'data-tt-field': field, min: min, max: max, step: 1, value: val }, unit);
+    }
+    function chk(key, val, label) {
+        return el('label', { 'class': 'tt-chk' })
+            .append(el('input', { type: 'checkbox', 'data-tt-item': key, value: val }))
+            .append(el('span', null, label));
+    }
+    function list($to, key, filter) {
+        var $l = el('div', { 'class': 'tt-list', 'data-tt-list': key }), data = items(key);
+        if (filter) {
+            $to.append(el('input', { type: 'search', 'class': 'widefat tt-filter', 'data-tt-filter': key, placeholder: L('Search...'), autocomplete: 'off' }));
+        }
+        if (!data.length) { $l.append(el('p', { 'class': 'tt-none' }, L('Nothing found.'))); }
+        $.each(data, function (i, d) { $l.append(chk(key, d[0], d[1])); });
+        $to.append($l);
+    }
+    function sub(title, key, a, b, flag, flagText) {
+        var $s = el('div', { 'class': 'tt-sub' }), $w = when(key + '_all:false');
+        $s.append(head(title)).append(allSpec(key, a, b));
+        list($w, key, true);
+        $s.append($w);
+        if (flag) {
+            $s.append(el('label', { 'class': 'tt-chk tt-mt6' })
+                .append(el('input', { type: 'checkbox', 'data-tt-flag': flag }))
+                .append(el('span', null, flagText)));
+        }
+        return $s;
+    }
+
+    function build() {
+        var $root = $(ROOT), $fs, $props, $sec, $w, $r, $a;
+        if (!$root.length || $root.children().length) { return; }
+
+        $root.append(el('div', { 'class': 'tt-top' })
+            .append(head(L('Popup Targeting')))
+            .append(el('label', { 'class': 'tt-master', title: L('Turn the entire Targeting Triggers setting on or off') })
+                .append(el('input', { type: 'checkbox', id: 'set-tt-enabled', checked: 'checked', 'aria-label': L('Enable Targeting Triggers') }))
+                .append(el('span', { 'class': 'tt-track', 'aria-hidden': 'true' }))));
+
+        $fs = el('fieldset', { id: 'wppoppop-tt-fs' });
+        $root.append($fs);
+
+        $fs.append(el('div', { 'class': 'tt-sec' })
+            .append(seg('event', L('Popup Targeting'), [['onload', L('OnLoad')], ['onscroll', L('OnScroll')], ['onexit', L('OnExit')], ['oninactivity', L('OnInactivity')]]))
+            .append(hint(L('Choose when the popup appears. Until one is selected the popup keeps its default behavior.'), 'event:')));
+
+        $props = el('div', { 'class': 'tt-props', 'data-tt-has': 'event' }).hide();
+        $fs.append($props);
+        $props.append(head(L('Target Properties')));
+
+        $sec = el('div', { 'class': 'tt-sec' }).append(head(L('Periodicity')))
+            .append(seg('mode', L('Periodicity'), [['every-time', L('Every time')], ['once-only', L('Once only')], ['once-per-period', L('Once per period')]]));
+        $sec.append(numRow(when('mode:once-per-period', 'tt-row'), 'set-tt-period', L('Show again after'), 'period_hours', 1, 8760, 24, L('hrs')));
+        $props.append($sec);
+
+        $sec = when('event:onload', 'tt-sec');
+        $sec.append(numRow(el('div', { 'class': 'tt-row' }), 'set-tt-start', L('Start delay'), 'start_delay', 0, 3600, 0, L('sec')));
+        $sec.append(numRow(el('div', { 'class': 'tt-row' }), 'set-tt-close', L('Close delay'), 'close_delay', 0, 3600, 0, L('sec')));
+        $sec.append(hint(L('Close delay 0 keeps the popup open until it is closed.')));
+        $props.append($sec);
+
+        $sec = when('event:onscroll', 'tt-sec');
+        $sec.append(numRow(el('div', { 'class': 'tt-row' }), 'set-tt-offset', L('Scrolling offset'), 'scroll_offset', 0, 100000, 600));
+        $sec.append(el('div', { 'class': 'tt-mt8' }).append(seg('scroll_unit', L('Scrolling offset unit'), [['px', 'px'], ['%', '%']])));
+        $props.append($sec);
+
+        $sec = when('event:oninactivity', 'tt-sec');
+        $sec.append(numRow(el('div', { 'class': 'tt-row' }), 'set-tt-idle', L('Inactivity delay'), 'idle_delay', 1, 3600, 15, L('sec')));
+        $props.append($sec);
+
+        $sec = el('div', { 'class': 'tt-sec' }).append(head(L('Activity')))
+            .append(seg('activity', L('Activity'), [['always', L('Always')], ['period', L('Certain period')]]));
+        $w = when('activity:period');
+        $w.append(row(el('div', { 'class': 'tt-row' }), 'set-tt-from', L('From'), { type: 'date', 'data-tt-field': 'from', placeholder: 'YYYY-MM-DD' }));
+        $w.append(row(el('div', { 'class': 'tt-row' }), 'set-tt-to', L('End'), { type: 'date', 'data-tt-field': 'to', placeholder: 'YYYY-MM-DD' }));
+        $sec.append($w);
+        $props.append($sec);
+
+        $sec = el('div', { 'class': 'tt-sec' }).append(head(L('User Roles')));
+        $r = el('div', { 'class': 'tt-list tt-flush', 'data-tt-list': 'roles' });
+        $.each(rolesList(), function (i, d) { $r.append(chk('roles', d[0], d[1])); });
+        $sec.append($r);
+        $props.append($sec);
+
+        $sec = el('div', { 'class': 'tt-sec' }).append(head(L('Site Area')))
+            .append(seg('area', L('Site Area'), [['sitewide', L('Sitewide')], ['homepage', L('Homepage')], ['posts', L('Posts')], ['pages', L('Pages')], ['url', L('URL')]]));
+
+        $a = when('area:posts');
+        $a.append(sub(L('Categories'), 'cats', L('All'), L('Specific'), 'cats_archive', L('Also show on category archive pages')));
+        $a.append(sub(L('Tags'), 'tags', L('All'), L('Specific'), 'tags_archive', L('Also show on tag archive pages')));
+        $a.append(sub(L('Posts'), 'posts', L('All'), L('Specific')));
+        $a.append(hint(L('A post matches when it is in any selected category, tag or post list.')));
+        $sec.append($a);
+
+        $a = when('area:pages');
+        $a.append(sub(L('Pages'), 'pages', L('All pages'), L('Specific pages')));
+        $sec.append($a);
+
+        $a = when('area:url');
+        $a.append(el('div', { 'class': 'tt-sub' })
+            .append(el('label', { 'for': 'set-tt-url', 'class': 'tt-h' }, L('URL contains')))
+            .append(el('textarea', { id: 'set-tt-url', 'class': 'widefat', 'data-tt-field': 'url_keywords', rows: 3, placeholder: '/pricing' + String.fromCharCode(10) + '/blog/summer-sale' }))
+            .append(hint(L('One per line. The popup shows when the page address contains any of them. Empty = every URL.'))));
+        $sec.append($a);
+        $props.append($sec);
+    }
 
     function blank() {
         return {
@@ -196,5 +347,5 @@
     }
 
     if ($(DRAWER).length) { bind(); }
-    $(function () { bind(); paint(); });
+    $(function () { build(); bind(); paint(); });
 })(jQuery);
