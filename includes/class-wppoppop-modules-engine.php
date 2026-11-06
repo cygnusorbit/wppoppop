@@ -25,6 +25,47 @@ class WpPopPop_Modules_Engine {
         return $out;
     }
 
+    /** Installed, compatible modules that draw an Inspector accordion from the registry (fields or accordion.html). */
+    public static function installed_ui() {
+        $out = [];
+        foreach (WpPopPop_Modules::installed() as $slug => $m) {
+            if (($m['declarative'] || !empty($m['html'])) && $m['compatible']) {
+                $out[$slug] = $m;
+            }
+        }
+        return $out;
+    }
+
+    /** Markup an accordion.html may use. Everything else (script, iframe, style, event attributes) is stripped. */
+    protected static function html_allowed() {
+        $c = ['class' => true, 'id' => true, 'title' => true];
+        return [
+            'div'      => $c + ['data-for' => true],
+            'span'     => $c,
+            'small'    => $c,
+            'strong'   => $c,
+            'em'       => $c,
+            'p'        => $c,
+            'br'       => [],
+            'hr'       => $c,
+            'label'    => $c + ['for' => true],
+            'input'    => $c + ['type' => true, 'name' => true, 'value' => true, 'min' => true, 'max' => true, 'step' => true, 'placeholder' => true, 'checked' => true, 'maxlength' => true, 'data-for' => true],
+            'select'   => $c + ['name' => true],
+            'option'   => ['value' => true, 'selected' => true],
+            'textarea' => $c + ['name' => true, 'rows' => true, 'maxlength' => true, 'placeholder' => true],
+        ];
+    }
+
+    /** Accordion shell (header + body) around a module's accordion.html. */
+    public static function render_html($m) {
+        $file = $m['dir'] . '/accordion.html';
+        $raw  = (is_file($file) && !is_link($file) && is_readable($file) && filesize($file) <= WpPopPop_Modules::MAX_HTML) ? (string) file_get_contents($file) : '';
+        $h    = '<div class="wppoppop-acc-item" data-html-module="' . esc_attr($m['slug']) . '">';
+        $h   .= '<button type="button" class="wppoppop-acc-header">' . esc_html($m['name']) . '</button>';
+        $h   .= '<div class="wppoppop-acc-body" style="display:none;">' . wp_kses($raw, self::html_allowed()) . '</div>';
+        return $h . '</div>';
+    }
+
     /** ext settings key => manifest, for every known declarative module (installed or not). */
     public static function by_key() {
         $out = [];
@@ -127,6 +168,9 @@ class WpPopPop_Modules_Engine {
 
     /** Inspector accordion markup for one declarative module (already escaped). */
     public static function render_accordion($m) {
+        if (!empty($m['html'])) {
+            return self::render_html($m);
+        }
         $name = ($m['source'] === 'core') ? translate($m['name'], 'wppoppop') : $m['name'];
         $id   = $m['ext_key'];
         $h    = '<div class="wppoppop-acc-item" data-ext-module="' . esc_attr($id) . '">';
@@ -174,7 +218,7 @@ class WpPopPop_Modules_Engine {
     /** Builder (admin) assets: JS model bridge plus each installed module's module.css / admin.js. */
     public static function enqueue_builder() {
         wp_enqueue_script('wppoppop-builder-ext-js', WPPOPPOP_URL . 'admin/js/builder/builder-modules-ext.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-settings-js'], WPPOPPOP_VERSION, true);
-        foreach (self::installed_declarative() as $slug => $m) {
+        foreach (self::installed_ui() as $slug => $m) {
             $url = WpPopPop_Modules::module_url($m);
             if ($url === '') {
                 continue;

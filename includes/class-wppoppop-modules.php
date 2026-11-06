@@ -24,6 +24,9 @@ class WpPopPop_Modules {
     const MAX_JSON  = 65536;
     const MAX_FIELDS = 40;
     const FIELD_TYPES = ['toggle', 'text', 'textarea', 'number', 'select', 'color', 'url'];
+    const MAX_HTML   = 65536;
+    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth'];
+    const ORPHAN_OPT = 'wppoppop_modules_orphans';
 
     protected static $cache = null;
 
@@ -170,7 +173,9 @@ class WpPopPop_Modules {
 
         /* Declarative modules own exactly one namespaced settings key; they can never claim a built-in key. */
         $fields      = self::fields($raw);
-        $declarative = ($fields && $template === '');
+        /* "accordion": "accordion.html" = static Inspector markup. Such a module may keep owning a few legacy settings keys. */
+        $html        = (!$core && isset($raw['accordion']) && $raw['accordion'] === 'accordion.html');
+        $declarative = ($fields && $template === '' && !$html);
         $ext_key     = 'ext_' . str_replace('-', '_', $slug);
         $data_keys   = self::slug_list($raw, 'data_keys', false);
         $in_use      = self::slug_list($raw, 'in_use', false);
@@ -180,6 +185,14 @@ class WpPopPop_Modules {
             $in_use    = array_map(function ($k) use ($ext_key) {
                 return $ext_key . '.' . $k;
             }, array_values(array_intersect($in_use, $fkeys)));
+        } elseif ($html) {
+            $allow     = apply_filters('wppoppop_module_adoptable_keys', self::ADOPTABLE);
+            $allow     = is_array($allow) ? $allow : self::ADOPTABLE;
+            $data_keys = array_values(array_intersect($data_keys, $allow));
+            $in_use    = array_values(array_filter($in_use, function ($p) use ($data_keys) {
+                $root = explode('.', $p);
+                return in_array($root[0], $data_keys, true);
+            }));
         } elseif (!$core) {
             $data_keys = [];
             $in_use    = [];
@@ -201,6 +214,7 @@ class WpPopPop_Modules {
             'in_use'         => $in_use,
             'fields'         => $declarative ? $fields : [],
             'declarative'    => $declarative,
+            'html'           => $html,
             'ext_key'        => $declarative ? $ext_key : '',
             'assets'         => ['css' => false, 'js' => false, 'admin_js' => false],
             'dir'            => '',
@@ -233,6 +247,10 @@ class WpPopPop_Modules {
             foreach (['css' => 'module.css', 'js' => 'module.js', 'admin_js' => 'admin.js'] as $k => $name) {
                 $f = $dir . '/' . $name;
                 $m['assets'][$k] = (is_file($f) && !is_link($f) && is_readable($f) && self::inside($f, $dir));
+            }
+            if ($m['html']) {
+                $f         = $dir . '/accordion.html';
+                $m['html'] = (is_file($f) && !is_link($f) && is_readable($f) && self::inside($f, $dir) && filesize($f) <= self::MAX_HTML);
             }
         }
         return $m;
@@ -430,7 +448,42 @@ class WpPopPop_Modules {
                 }
             }
         }
+        /* Keys of a deleted uploaded module stay protected (data kept, nothing rendered) until it is reinstalled or its data is removed. */
+        $all = self::all();
+        foreach (self::orphans() as $slug => $keys) {
+            if (isset($all[$slug]) || !is_array($keys)) {
+                continue;
+            }
+            foreach ($keys as $k) {
+                if (is_string($k) && !isset($kept[$k]) && !isset($out[$k])) {
+                    $out[$k] = $slug;
+                }
+            }
+        }
         return $out;
+    }
+
+    public static function orphans() {
+        $o = get_option(self::ORPHAN_OPT, []);
+        return is_array($o) ? $o : [];
+    }
+
+    public static function set_orphan($slug, array $keys) {
+        $o = self::orphans();
+        if ($keys) {
+            $o[$slug] = array_values($keys);
+        } else {
+            unset($o[$slug]);
+        }
+        update_option(self::ORPHAN_OPT, $o, false);
+    }
+
+    public static function clear_orphan($slug) {
+        $o = self::orphans();
+        if (isset($o[$slug])) {
+            unset($o[$slug]);
+            update_option(self::ORPHAN_OPT, $o, false);
+        }
     }
 
     /**

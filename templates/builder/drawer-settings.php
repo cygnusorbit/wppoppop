@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
             <?php
             /* WPPOPPOP_MODULE_ENGINE_DRAWER: built-in accordions (acc-*.php) and declarative modules share one order */
             $wppoppop_acc_files = glob(__DIR__ . '/settings/acc-*.php');
-            $wppoppop_acc_decl  = class_exists('WpPopPop_Modules_Engine') ? WpPopPop_Modules_Engine::installed_declarative() : [];
+            $wppoppop_acc_decl  = class_exists('WpPopPop_Modules_Engine') ? WpPopPop_Modules_Engine::installed_ui() : [];
             if (!empty($wppoppop_acc_files) || !empty($wppoppop_acc_decl)) {
                 if (!class_exists('WpPopPop_Admin_Settings')) {
                     require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';

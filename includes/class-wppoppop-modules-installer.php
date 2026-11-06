@@ -17,6 +17,7 @@ class WpPopPop_Modules_Installer {
     const MAX_FILE     = 2097152;
     const MAX_UNPACKED = 10485760;
     const MAX_DEPTH    = 4;
+    const SEED_OPT     = 'wppoppop_modules_seeded';
     const ALLOWED_EXT  = ['json', 'css', 'js', 'html', 'txt', 'md', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2'];
     const BAD_SEGMENT  = '/^(php\d*|phtml|pht|phps|phar|cgi|pl|py|rb|sh|bash|asp|aspx|jsp|exe|dll|so|htaccess|htpasswd)$/i';
 
@@ -372,11 +373,109 @@ class WpPopPop_Modules_Installer {
                 return self::err('delete_failed', __('Could not remove the module files. Check folder permissions.', 'wppoppop'));
             }
             WpPopPop_Modules::forget_state($slug);
+            if ($remove_data || !$m['data_keys']) {
+                WpPopPop_Modules::clear_orphan($slug);
+            } else {
+                WpPopPop_Modules::set_orphan($slug, $m['data_keys']);
+            }
         } else {
             WpPopPop_Modules::set_state($slug, 'deleted');
         }
         do_action('wppoppop_module_deleted', $slug, (bool) $remove_data);
         return ['slug' => $slug, 'message' => __('Module deleted.', 'wppoppop')];
+    }
+
+    /* ------------------------------------------------------ bundled packages */
+
+    protected static function copy_tree($src, $dst, $depth = 0) {
+        if ($depth > self::MAX_DEPTH || (!@mkdir($dst, 0755, true) && !is_dir($dst))) {
+            return false;
+        }
+        $items = scandir($src);
+        if (!is_array($items)) {
+            return false;
+        }
+        foreach ($items as $i) {
+            if ($i === '.' || $i === '..') {
+                continue;
+            }
+            $s = $src . '/' . $i;
+            $d = $dst . '/' . $i;
+            if (is_link($s)) {
+                continue;
+            }
+            if (is_dir($s)) {
+                if (!self::copy_tree($s, $d, $depth + 1)) {
+                    return false;
+                }
+                continue;
+            }
+            if (!in_array(strtolower(pathinfo($i, PATHINFO_EXTENSION)), self::ALLOWED_EXT, true)) {
+                continue;
+            }
+            if (!@copy($s, $d)) {
+                return false;
+            }
+        }
+        if ($depth === 0) {
+            @file_put_contents($dst . '/index.php', "<?php\n// Silence is golden.\n");
+        }
+        return true;
+    }
+
+    /**
+     * One-time copy of the plugin's packages/<slug>/ folders into uploads/wppoppop-modules/, so they show up
+     * on the Extend page as normal Uploaded modules. A module removed later is never copied back.
+     */
+    public static function seed_bundled() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        $src = WPPOPPOP_PATH . 'packages';
+        if (!is_dir($src)) {
+            return;
+        }
+        $dirs = glob($src . '/*', GLOB_ONLYDIR);
+        if (!is_array($dirs) || !$dirs) {
+            return;
+        }
+        $done  = get_option(self::SEED_OPT, []);
+        $done  = is_array($done) ? $done : [];
+        $dirty = false;
+        foreach ($dirs as $dir) {
+            $slug = basename($dir);
+            if (isset($done[$slug]) || is_link($dir) || !WpPopPop_Modules::slug_valid($slug) || !is_file($dir . '/module.json')) {
+                continue;
+            }
+            if (is_dir(WpPopPop_Modules::core_dir() . '/' . $slug)) {
+                $done[$slug] = 1;
+                $dirty       = true;
+                continue;
+            }
+            $base = WpPopPop_Modules::uploads_dir();
+            if ($base === '' || !self::prepare_root($base)) {
+                break;
+            }
+            $dest = $base . '/' . $slug;
+            if (!is_dir($dest) && !self::copy_tree($dir, $dest)) {
+                self::rrmdir($dest);
+                continue;
+            }
+            WpPopPop_Modules::flush();
+            $m  = WpPopPop_Modules::get($slug);
+            $st = WpPopPop_Modules::states();
+            if (!isset($st[$slug])) {
+                WpPopPop_Modules::set_state($slug, ($m && $m['default_active']) ? 'installed' : 'available');
+            } elseif ($st[$slug] === 'deleted') {
+                WpPopPop_Modules::set_state($slug, 'available');
+            }
+            WpPopPop_Modules::clear_orphan($slug);
+            $done[$slug] = 1;
+            $dirty       = true;
+        }
+        if ($dirty) {
+            update_option(self::SEED_OPT, $done, false);
+        }
     }
 
     /* ------------------------------------------------------ zip upload */
@@ -605,6 +704,10 @@ class WpPopPop_Modules_Installer {
             self::rrmdir($tmp);
             return self::err('bad_manifest', __('module.json is not a valid WpPopPop module manifest.', 'wppoppop'));
         }
+        if (!empty($m['html']) && (!is_file($tmp . '/accordion.html') || is_link($tmp . '/accordion.html') || filesize($tmp . '/accordion.html') > WpPopPop_Modules::MAX_HTML)) {
+            self::rrmdir($tmp);
+            return self::err('bad_manifest', __('accordion.html is missing or too large.', 'wppoppop'));
+        }
         if (is_dir(WpPopPop_Modules::core_dir() . '/' . $slug)) {
             self::rrmdir($tmp);
             return self::err('core_slug', __('This slug belongs to a built-in module and cannot be uploaded.', 'wppoppop'));
@@ -639,6 +742,7 @@ class WpPopPop_Modules_Installer {
             return self::err('write_failed', __('The module could not be moved into place.', 'wppoppop'));
         }
         WpPopPop_Modules::flush();
+        WpPopPop_Modules::clear_orphan($slug);
         if (!$exists) {
             WpPopPop_Modules::set_state($slug, 'available');
         }
