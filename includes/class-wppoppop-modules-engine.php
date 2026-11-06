@@ -51,7 +51,9 @@ class WpPopPop_Modules_Engine {
             'label'    => $c + ['for' => true],
             'input'    => $c + ['type' => true, 'name' => true, 'value' => true, 'min' => true, 'max' => true, 'step' => true, 'placeholder' => true, 'checked' => true, 'maxlength' => true, 'data-for' => true],
             'select'   => $c + ['name' => true],
+            'optgroup' => ['label' => true],
             'option'   => ['value' => true, 'selected' => true],
+            'button'   => $c + ['type' => true],
             'textarea' => $c + ['name' => true, 'rows' => true, 'maxlength' => true, 'placeholder' => true],
         ];
     }

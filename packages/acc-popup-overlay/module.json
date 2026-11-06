@@ -1,20 +1,19 @@
 {
     "schema": 1,
-    "slug": "acc-16-popup-overlay",
+    "slug": "acc-popup-overlay",
     "name": "Popup Overlay",
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Page overlay behind the popup: colour, opacity, image or animation.",
-    "locked": false,
     "default_active": true,
     "order": 170,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "overlay"
     ],
     "in_use": [],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-16-popup-overlay.php"
+    "deprecated": false
 }

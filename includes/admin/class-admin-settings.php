@@ -100,10 +100,13 @@ class WpPopPop_Admin_Settings {
         }
         $s = get_option('wppoppop_settings', []);
         /* WPPOPPOP_MODULE_LEGACY_KEYS: keep toggles saved under the pre-renumber keys */
-        $legacy = ['acc-17-double-optin' => 'acc-16-double-optin', 'acc-16-popup-overlay' => 'acc-17-popup-overlay'];
-        if (is_array($s) && isset($s['modules']) && is_array($s['modules']) && !array_key_exists($key, $s['modules'])
-            && isset($legacy[$key]) && array_key_exists($legacy[$key], $s['modules'])) {
-            return !empty($s['modules'][$legacy[$key]]);
+        $legacy = ['acc-17-double-optin' => ['acc-16-double-optin'], 'acc-popup-overlay' => ['acc-16-popup-overlay', 'acc-17-popup-overlay']];
+        if (is_array($s) && isset($s['modules']) && is_array($s['modules']) && !array_key_exists($key, $s['modules']) && isset($legacy[$key])) {
+            foreach ($legacy[$key] as $old_key) {
+                if (array_key_exists($old_key, $s['modules'])) {
+                    return !empty($s['modules'][$old_key]);
+                }
+            }
         }
         $defaults = self::get_module_defaults();
         if (!is_array($s) || !isset($s['modules']) || !is_array($s['modules']) || !array_key_exists($key, $s['modules'])) {

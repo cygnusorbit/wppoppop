@@ -18,6 +18,7 @@ class WpPopPop_Modules_Installer {
     const MAX_UNPACKED = 10485760;
     const MAX_DEPTH    = 4;
     const SEED_OPT     = 'wppoppop_modules_seeded';
+    const RENAMED      = ['acc-20-animation' => 'acc-animation', 'acc-16-popup-overlay' => 'acc-popup-overlay', 'acc-17-popup-overlay' => 'acc-popup-overlay'];
     const ALLOWED_EXT  = ['json', 'css', 'js', 'html', 'txt', 'md', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2'];
     const BAD_SEGMENT  = '/^(php\d*|phtml|pht|phps|phar|cgi|pl|py|rb|sh|bash|asp|aspx|jsp|exe|dll|so|htaccess|htpasswd)$/i';
 
@@ -475,6 +476,62 @@ class WpPopPop_Modules_Installer {
         return $new;
     }
 
+    /** Installed/uninstalled/deleted state follows a renamed slug (runs before seeding, so nothing is reinstalled by mistake). */
+    protected static function migrate_renamed_state() {
+        $st    = WpPopPop_Modules::states();
+        $dirty = false;
+        foreach (self::RENAMED as $old => $new) {
+            if (!array_key_exists($old, $st)) {
+                continue;
+            }
+            if (!array_key_exists($new, $st)) {
+                $st[$new] = $st[$old];
+            }
+            unset($st[$old]);
+            $dirty = true;
+        }
+        if ($dirty) {
+            update_option(WpPopPop_Modules::STATE_OPT, $st, false);
+            WpPopPop_Modules::flush();
+        }
+    }
+
+    /** The on/off switch and the position in Popup Settings follow a renamed slug (runs once the new module is registered). */
+    protected static function migrate_renamed_settings() {
+        $s = get_option('wppoppop_settings', []);
+        if (!is_array($s)) {
+            return;
+        }
+        $dirty = false;
+        foreach (self::RENAMED as $old => $new) {
+            if (!WpPopPop_Modules::get($new)) {
+                continue;
+            }
+            if (isset($s['modules']) && is_array($s['modules']) && array_key_exists($old, $s['modules'])) {
+                if (!array_key_exists($new, $s['modules'])) {
+                    $s['modules'][$new] = $s['modules'][$old];
+                }
+                unset($s['modules'][$old]);
+                $dirty = true;
+            }
+            if (isset($s['module_order']) && is_array($s['module_order'])) {
+                $i = array_search($old, $s['module_order'], true);
+                if ($i !== false) {
+                    if (in_array($new, $s['module_order'], true)) {
+                        unset($s['module_order'][$i]);
+                    } else {
+                        $s['module_order'][$i] = $new;
+                    }
+                    $s['module_order'] = array_values($s['module_order']);
+                    $dirty = true;
+                }
+            }
+        }
+        if ($dirty) {
+            update_option('wppoppop_settings', $s);
+        }
+    }
+
     /**
      * One-time copy of the plugin's packages/<slug>/ folders into uploads/wppoppop-modules/, so they show up
      * on the Extend page as normal Uploaded modules. A module removed later is never copied back.
@@ -483,6 +540,7 @@ class WpPopPop_Modules_Installer {
         if (!current_user_can('manage_options')) {
             return;
         }
+        self::migrate_renamed_state();
         $src = WPPOPPOP_PATH . 'packages';
         if (!is_dir($src)) {
             return;
@@ -537,6 +595,7 @@ class WpPopPop_Modules_Installer {
         if ($dirty) {
             update_option(self::SEED_OPT, $done, false);
         }
+        self::migrate_renamed_settings();
     }
 
     /* ------------------------------------------------------ zip upload */
