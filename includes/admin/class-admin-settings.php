@@ -29,40 +29,12 @@ class WpPopPop_Admin_Settings {
 
     /** Popup Settings accordions that are listed in Settings > Module (key = acc-*.php basename). */
     public static function get_modules() {
-        $registry = class_exists('WpPopPop_Modules') ? WpPopPop_Modules::labels() : [];
-        if (!empty($registry)) {
-            return $registry;
-        }
-        return [
-            'acc-01-canvas-styling' => __('Canvas Settings', 'wppoppop'),
-            'acc-20-animation'    => __('Animation', 'wppoppop'),
-            'acc-02-triggers'     => __('Display Triggers', 'wppoppop'),
-            'acc-03-logic-math'   => __('Conditional Logic & Math', 'wppoppop'),
-            'acc-04-side-tabs'    => __('Side Tabs', 'wppoppop'),
-            'acc-05-payments'     => __('Payments', 'wppoppop'),
-            'acc-06-downloads'    => __('Downloads', 'wppoppop'),
-            'acc-07-video'        => __('Video', 'wppoppop'),
-            'acc-08-autoresponder' => __('Autoresponder', 'wppoppop'),
-            'acc-09-webhooks'     => __('Webhooks', 'wppoppop'),
-            'acc-10-sms'          => __('SMS', 'wppoppop'),
-            'acc-11-targeting'    => __('Targeting', 'wppoppop'),
-            'acc-12-frequency'    => __('Frequency', 'wppoppop'),
-            'acc-13-woocommerce'  => __('WooCommerce', 'wppoppop'),
-            'acc-14-custom-code'  => __('Custom Code', 'wppoppop'),
-            'acc-15-quiz'         => __('Quiz', 'wppoppop'),
-            'acc-16-popup-overlay' => __('Popup Overlay', 'wppoppop'),
-            'acc-17-double-optin'  => __('Double Opt-In', 'wppoppop'),
-            'acc-18-notifications' => __('Notifications', 'wppoppop'),
-            'acc-19-success-celebration' => __('Success Celebration', 'wppoppop'),
-            'acc-21-popup-positions' => __('Popup Positions', 'wppoppop'),
-            'acc-22-targeting-triggers' => __('Targeting Triggers', 'wppoppop'),
-        ];
+        return class_exists('WpPopPop_Modules') ? WpPopPop_Modules::labels() : [];
     }
 
     /** Modules that are always on and cannot be switched off. */
     public static function get_locked_modules() {
-        $registry = class_exists('WpPopPop_Modules') ? WpPopPop_Modules::locked() : [];
-        return !empty($registry) ? $registry : ['acc-01-canvas-styling', 'acc-22-targeting-triggers'];
+        return class_exists('WpPopPop_Modules') ? WpPopPop_Modules::locked() : [];
     }
 
     public static function get_default_module_order() {
@@ -95,16 +67,7 @@ class WpPopPop_Admin_Settings {
     }
 
     public static function get_module_defaults() {
-        $registry = class_exists('WpPopPop_Modules') ? WpPopPop_Modules::defaults() : [];
-        if (!empty($registry)) {
-            return $registry;
-        }
-        $enabled = array_merge(self::get_locked_modules(), ['acc-02-triggers', 'acc-20-animation', 'acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration', 'acc-21-popup-positions', 'acc-22-targeting-triggers']);
-        $defaults = [];
-        foreach (array_keys(self::get_modules()) as $key) {
-            $defaults[$key] = in_array($key, $enabled, true) ? 1 : 0;
-        }
-        return $defaults;
+        return class_exists('WpPopPop_Modules') ? WpPopPop_Modules::defaults() : [];
     }
 
     public static function get_builder_defaults() {
