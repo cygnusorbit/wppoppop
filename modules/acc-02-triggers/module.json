@@ -1,0 +1,22 @@
+{
+    "schema": 1,
+    "slug": "acc-02-triggers",
+    "name": "Display Triggers",
+    "version": "1.0.0",
+    "author": "WpPopPop",
+    "description": "Legacy triggers: page load, scroll, exit intent and repeat. Being replaced by Targeting Triggers.",
+    "locked": false,
+    "default_active": true,
+    "order": 30,
+    "on_missing": "skip",
+    "requires": [],
+    "data_keys": [
+        "triggers",
+        "exit_intent_sensitivity",
+        "scroll_depth"
+    ],
+    "in_use": [],
+    "min_version": "",
+    "deprecated": true,
+    "template": "templates/builder/settings/acc-02-triggers.php"
+}

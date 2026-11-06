@@ -37,6 +37,14 @@ class WpPopPop_Rest_Delivery {
             return new WP_Error('corrupted_data', __('Popup configuration data corrupted.', 'wppoppop'), ['status' => 500]);
         }
 
+        if (class_exists('WpPopPop_Modules')) {
+            $wppoppop_mg = WpPopPop_Modules::prepare_render($config);
+            if (!empty($wppoppop_mg['blocked'])) {
+                return new WP_Error('module_missing', __('This popup needs a module that is not installed.', 'wppoppop'), ['status' => 404]);
+            }
+            $config = $wppoppop_mg['config'];
+        }
+
         ob_start();
         if (class_exists('WpPopPop_Front_Renderer')) {
             (new WpPopPop_Front_Renderer())->render_popup_markup($uid, $config, false);

@@ -18,6 +18,14 @@ class WpPopPop_Admin_Assets {
         return (defined('WP_DEBUG') && WP_DEBUG) ? $v . '.' . time() : $v;
     }
 
+    /** Shared module-manager UI (Module tab + Extend page): stylesheet, API script and its localized data. */
+    protected function enqueue_modules_ui($ver, array $css_deps = [], array $extra = []) {
+        wp_enqueue_style('dashicons');
+        wp_enqueue_style('wppoppop-modules-css', WPPOPPOP_URL . 'admin/css/modules.css', $css_deps, $ver);
+        wp_enqueue_script('wppoppop-modules-api-js', WPPOPPOP_URL . 'admin/js/modules/modules-api.js', ['jquery'], $ver, true);
+        wp_localize_script('wppoppop-modules-api-js', 'wppoppop_modules_vars', WpPopPop_Modules_Installer::js_vars($extra));
+    }
+
     public function enqueue_assets($hook) {
         if (strpos($hook, 'wppoppop') === false && (!isset($_GET['page']) || strpos($_GET['page'], 'wppoppop') === false)) {
             return;
@@ -102,6 +110,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-builder-settings-js', WPPOPPOP_URL . 'admin/js/builder/builder-settings.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-popup-position-js', WPPOPPOP_URL . 'admin/js/builder/builder-popup-position.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-settings-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-targeting-triggers-js', WPPOPPOP_URL . 'admin/js/builder/builder-targeting-triggers.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-settings-js'], self::ver(), true);
+            if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::enqueue_builder(); }
             wp_enqueue_script('wppoppop-builder-modals-js', WPPOPPOP_URL . 'admin/js/builder/builder-modals.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-builder-io-js', WPPOPPOP_URL . 'admin/js/builder/builder-io.js', ['jquery', 'wppoppop-builder-core-js'], self::ver(), true);
 
@@ -114,6 +123,7 @@ class WpPopPop_Admin_Assets {
                 'wppoppop-builder-settings-js',
                 'wppoppop-builder-popup-position-js',
                 'wppoppop-builder-targeting-triggers-js',
+                'wppoppop-builder-ext-js',
                 'wppoppop-builder-modals-js',
                 'wppoppop-builder-io-js', 'wppoppop-builder-elements-registry', 'wppoppop-builder-animation-js'
             ], self::ver(), true);
@@ -176,7 +186,8 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-settings-save-js', WPPOPPOP_URL . 'admin/js/settings/settings-save.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-tools-js', WPPOPPOP_URL . 'admin/js/settings/settings-tools.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-pages-js', WPPOPPOP_URL . 'admin/js/settings/settings-pages.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js'], self::ver(), true);
-            wp_enqueue_script('wppoppop-settings-modules-js', WPPOPPOP_URL . 'admin/js/settings/settings-modules.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js'], self::ver(), true);
+            $this->enqueue_modules_ui($set_ver, ['wppoppop-settings-css']);
+            wp_enqueue_script('wppoppop-settings-modules-js', WPPOPPOP_URL . 'admin/js/settings/settings-modules.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js', 'wppoppop-modules-api-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-search-js', WPPOPPOP_URL . 'admin/js/settings/settings-search.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-reset-js', WPPOPPOP_URL . 'admin/js/settings/settings-reset.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
 
@@ -320,6 +331,19 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-tools-portability-js', WPPOPPOP_URL . 'admin/js/tools/tools-portability.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-tools-js', WPPOPPOP_URL . 'admin/js/tools.js', ['jquery', 'wppoppop-tools-system-js', 'wppoppop-tools-database-js', 'wppoppop-tools-portability-js'], self::ver(), true);
             wp_localize_script('wppoppop-tools-js', 'wppoppop_vars', $shared_payload);
+        }
+
+        // 6. Extend (module manager) page
+        if ($page === 'wppoppop-extend') {
+            $ex_ver = self::ver();
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('wppoppop-dashboard-css', WPPOPPOP_URL . 'admin/css/dashboard.css', [], $ex_ver);
+            wp_enqueue_style('wppoppop-overview-css', WPPOPPOP_URL . 'admin/css/overview.css', [], $ex_ver);
+            wp_enqueue_style('wppoppop-bar-actions-css', WPPOPPOP_URL . 'admin/css/bar-actions.css', ['wppoppop-dashboard-css', 'wppoppop-overview-css'], $ex_ver);
+            wp_enqueue_script('wppoppop-overview-js', WPPOPPOP_URL . 'admin/js/overview.js', ['jquery'], $ex_ver, true);
+            $this->enqueue_modules_ui($ex_ver, ['wppoppop-bar-actions-css', 'wppoppop-theme-global-css'], ['modules' => WpPopPop_Modules_Installer::extend_items()]);
+            wp_enqueue_style('wppoppop-extend-css', WPPOPPOP_URL . 'admin/css/extend.css', ['wppoppop-modules-css'], $ex_ver);
+            wp_enqueue_script('wppoppop-extend-js', WPPOPPOP_URL . 'admin/js/modules/extend.js', ['jquery', 'wppoppop-modules-api-js'], $ex_ver, true);
         }
     }
 }

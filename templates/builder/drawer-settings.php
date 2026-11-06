@@ -17,43 +17,56 @@ if (!defined('ABSPATH')) {
         <div class="wppoppop-accordion-group">
             
             <?php
+            /* WPPOPPOP_MODULE_ENGINE_DRAWER: built-in accordions (acc-*.php) and declarative modules share one order */
             $wppoppop_acc_files = glob(__DIR__ . '/settings/acc-*.php');
-            if (!empty($wppoppop_acc_files)) {
-                sort($wppoppop_acc_files);
+            $wppoppop_acc_decl  = class_exists('WpPopPop_Modules_Engine') ? WpPopPop_Modules_Engine::installed_declarative() : [];
+            if (!empty($wppoppop_acc_files) || !empty($wppoppop_acc_decl)) {
                 if (!class_exists('WpPopPop_Admin_Settings')) {
                     require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
                 }
+                $wppoppop_acc_entries = [];
+                foreach ((array) $wppoppop_acc_files as $wppoppop_acc_f) {
+                    $wppoppop_acc_entries[basename($wppoppop_acc_f, '.php')] = $wppoppop_acc_f;
+                }
+                foreach ($wppoppop_acc_decl as $wppoppop_acc_slug => $wppoppop_acc_m) {
+                    if (!isset($wppoppop_acc_entries[$wppoppop_acc_slug])) {
+                        $wppoppop_acc_entries[$wppoppop_acc_slug] = null;
+                    }
+                }
+                ksort($wppoppop_acc_entries);
                 /* Order is controlled globally in Settings > Module */
                 $wppoppop_acc_order = array_flip(WpPopPop_Admin_Settings::get_module_order());
-                usort($wppoppop_acc_files, function ($a, $b) use ($wppoppop_acc_order) {
-                    $ka = basename($a, '.php');
-                    $kb = basename($b, '.php');
+                uksort($wppoppop_acc_entries, function ($ka, $kb) use ($wppoppop_acc_order) {
                     $pa = isset($wppoppop_acc_order[$ka]) ? $wppoppop_acc_order[$ka] : PHP_INT_MAX;
                     $pb = isset($wppoppop_acc_order[$kb]) ? $wppoppop_acc_order[$kb] : PHP_INT_MAX;
                     return $pa === $pb ? strcmp($ka, $kb) : ($pa < $pb ? -1 : 1);
                 });
-                if (!class_exists('WpPopPop_Admin_Settings')) {
-                    require_once WPPOPPOP_PATH . 'includes/admin/class-admin-settings.php';
-                }
-                foreach ($wppoppop_acc_files as $wppoppop_acc_file) {
-                    $wppoppop_acc_key = basename($wppoppop_acc_file, '.php');
-                    if (WpPopPop_Admin_Settings::module_enabled($wppoppop_acc_key)) {
+                foreach ($wppoppop_acc_entries as $wppoppop_acc_key => $wppoppop_acc_file) {
+                    $wppoppop_acc_on   = WpPopPop_Admin_Settings::module_enabled($wppoppop_acc_key);
+                    $wppoppop_acc_trusted = ($wppoppop_acc_file === null); /* engine markup is escaped at build time */
+                    if ($wppoppop_acc_on && !$wppoppop_acc_trusted) {
                         include $wppoppop_acc_file;
                         continue;
                     }
-                    // Disabled: keep the markup (so the save flush never wipes stored values) but hide it.
                     ob_start();
-                    include $wppoppop_acc_file;
-                    $wppoppop_acc_html = ob_get_clean();
-                    $wppoppop_acc_html = preg_replace(
-                        '/<div class="wppoppop-acc-item"/',
-                        '<div class="wppoppop-acc-item wppoppop-module-off" data-module="' . esc_attr($wppoppop_acc_key) . '" style="display:none !important;"',
-                        $wppoppop_acc_html, 1, $wppoppop_acc_hit
-                    );
-                    if (empty($wppoppop_acc_hit)) {
-                        $wppoppop_acc_html = '<div class="wppoppop-module-off" style="display:none !important;">' . $wppoppop_acc_html . '</div>';
+                    if ($wppoppop_acc_trusted) {
+                        echo WpPopPop_Modules_Engine::render_accordion($wppoppop_acc_decl[$wppoppop_acc_key]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                    } else {
+                        include $wppoppop_acc_file;
                     }
-                    echo wp_kses_post( $wppoppop_acc_html );
+                    $wppoppop_acc_html = ob_get_clean();
+                    if (!$wppoppop_acc_on) {
+                        // Disabled: keep the markup (so the save flush never wipes stored values) but hide it.
+                        $wppoppop_acc_html = preg_replace(
+                            '/<div class="wppoppop-acc-item"/',
+                            '<div class="wppoppop-acc-item wppoppop-module-off" data-module="' . esc_attr($wppoppop_acc_key) . '" style="display:none !important;"',
+                            $wppoppop_acc_html, 1, $wppoppop_acc_hit
+                        );
+                        if (empty($wppoppop_acc_hit)) {
+                            $wppoppop_acc_html = '<div class="wppoppop-module-off" style="display:none !important;">' . $wppoppop_acc_html . '</div>';
+                        }
+                    }
+                    echo $wppoppop_acc_trusted ? $wppoppop_acc_html : wp_kses_post( $wppoppop_acc_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 }
             }
             ?>

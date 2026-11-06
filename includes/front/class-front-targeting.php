@@ -24,6 +24,10 @@ class WpPopPop_Front_Targeting {
             $config = [];
         }
 
+        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::active('acc-11-targeting')) {
+            unset($config['targeting']); /* WPPOPPOP_MODULE_GATE */
+        }
+
         // 1. Geolocation Targeting Gate
         if ((bool) wppoppop_get_setting('ip_geotargeting', false)) {
             $visitor_country = $this->detect_visitor_country();

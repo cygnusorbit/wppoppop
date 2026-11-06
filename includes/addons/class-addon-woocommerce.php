@@ -8,6 +8,9 @@ class WpPopPop_Addon_WooCommerce {
         if (!class_exists('WooCommerce')) {
             return;
         }
+        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::active('acc-13-woocommerce')) {
+            return; /* WPPOPPOP_MODULE_GATE */
+        }
         add_action('wp_ajax_wppoppop_apply_wc_coupon', [$this, 'ajax_apply_wc_coupon']);
         add_action('wp_ajax_nopriv_wppoppop_apply_wc_coupon', [$this, 'ajax_apply_wc_coupon']);
     }

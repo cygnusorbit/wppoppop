@@ -1,0 +1,39 @@
+/* Extend page: same layout and variables as the Theme / Tools pages. */
+body.wp-admin #wpcontent .wppoppop-dash.wppoppop-extend-wrap { box-sizing: border-box; width: auto; max-width: none; margin: 0 0 0 2px; padding: 0 20px 40px 0; }
+body.wp-admin #wpcontent .wppoppop-extend-wrap .wppoppop-dash-bar { box-sizing: border-box; max-width: 100%; }
+.wppoppop-extend-wrap .wppoppop-dash-bar { position: -webkit-sticky; position: sticky; top: 32px; z-index: 30; }
+#wpbody-content .wppoppop-extend-wrap .wpp-mod-notice { margin-top: 16px; }
+
+.wpp-ext-card { background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); box-shadow: var(--wpp-shadow-card, 0 1px 1px rgba(0,0,0,.04)); padding: var(--wpp-p-card, 20px); margin: 16px 0; box-sizing: border-box; }
+.wpp-ext-card-head { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 8px; margin: 0 0 12px; padding: 0 0 12px; border-bottom: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
+.wpp-ext-card-head h3 { margin: 0; font-family: var(--wpp-font-heading, inherit); font-size: var(--wpp-fs-h2, 15px); font-weight: var(--wpp-fw-heading, 600); color: var(--wpp-c-heading, #1d2327); }
+.wpp-ext-card-head .dashicons { color: var(--wpp-c-primary, #c1272d); }
+.wpp-ext-help { margin: 0 0 12px; font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); line-height: 1.5; }
+
+.wpp-ext-upload-row { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 12px; -webkit-box-align: stretch; -ms-flex-align: stretch; align-items: stretch; }
+.wpp-ext-drop { position: relative; -webkit-box-flex: 1; -ms-flex: 1 1 320px; flex: 1 1 320px; display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 8px; padding: 14px 16px; border: 2px dashed var(--wpp-c-border, #c3c4c7); border-radius: var(--wpp-r-card, 3px); background: var(--wpp-c-bg-page, #f6f7f7); box-sizing: border-box; min-height: 56px; }
+.wpp-ext-drop.is-over, .wpp-ext-drop:focus-within { border-color: var(--wpp-c-primary, #c1272d); background: var(--wpp-c-bg-card, #fff); }
+.wpp-ext-drop .dashicons { color: var(--wpp-c-muted, #787c82); }
+.wpp-ext-browse { color: var(--wpp-c-link, #2271b1); font-weight: 600; cursor: pointer; text-decoration: underline; }
+.wpp-ext-file { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); }
+.wpp-ext-file-name { font-weight: 600; color: var(--wpp-c-heading, #1d2327); word-break: break-all; }
+#wpp-ext-upload-btn { height: var(--wpp-h-button, 34px); }
+
+.wpp-ext-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--wpp-gap, 16px); }
+.wpp-ext-item { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); box-shadow: var(--wpp-shadow-card, 0 1px 1px rgba(0,0,0,.04)); padding: 16px; box-sizing: border-box; min-width: 0; }
+.wpp-ext-item.is-busy { opacity: .55; pointer-events: none; }
+.wpp-ext-item-head { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 6px; margin: 0 0 6px; }
+.wpp-ext-item-name { margin: 0; font-size: var(--wpp-fs-h3, 14px); font-weight: var(--wpp-fw-heading, 600); color: var(--wpp-c-heading, #1d2327); word-break: break-word; }
+.wpp-ext-item-desc { margin: 0 0 8px; color: var(--wpp-c-text, #3c434a); line-height: 1.5; -webkit-box-flex: 1; -ms-flex: 1 1 auto; flex: 1 1 auto; }
+.wpp-ext-item-meta { margin: 0 0 12px; font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #646970); }
+.wpp-ext-item-meta span + span:before { content: "|"; margin: 0 8px; opacity: .6; }
+.wpp-ext-item-actions { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 8px; -webkit-box-align: center; -ms-flex-align: center; align-items: center; padding-top: 12px; border-top: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
+.wpp-ext-item-actions .button { height: var(--wpp-h-button, 32px); }
+.wpp-ext-item-actions .button-link-delete { margin-left: auto; }
+.wpp-ext-item-note { font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); }
+.wpp-ext-empty { grid-column: 1 / -1; margin: 0; padding: 20px; text-align: center; color: var(--wpp-c-muted, #646970); background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) dashed var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); }
+
+@media (max-width: 782px) {
+    body.wp-admin #wpcontent .wppoppop-dash.wppoppop-extend-wrap { padding-right: 10px; }
+    .wppoppop-extend-wrap .wppoppop-dash-bar { top: 46px; height: auto; -ms-flex-wrap: wrap; flex-wrap: wrap; }
+}

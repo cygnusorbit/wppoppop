@@ -96,6 +96,7 @@ class WpPopPop_Ajax_Templates {
             $bgc = isset($obj->settings->close_on_backdrop) ? $obj->settings->close_on_backdrop : false; /* WPPOPPOP_BG_CLOSE_WHITELIST */
             $obj->settings->close_on_backdrop = in_array($bgc, array(true, 1, '1', 'true'), true);
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
+            if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }
         $obj  = WpPopPop_Sanitizer::anim_payload($obj);
         $json = wp_json_encode($obj);

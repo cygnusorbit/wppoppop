@@ -11,7 +11,7 @@ vendor/
 *.bak-layerfx3
 *.bak-layerfx4
 *.log
-ref_greenpop/
+ref_*/
 .patch-backups/
 *.bak
 *.backup-*

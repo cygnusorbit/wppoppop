@@ -29,6 +29,10 @@ class WpPopPop_Admin_Settings {
 
     /** Popup Settings accordions that are listed in Settings > Module (key = acc-*.php basename). */
     public static function get_modules() {
+        $registry = class_exists('WpPopPop_Modules') ? WpPopPop_Modules::labels() : [];
+        if (!empty($registry)) {
+            return $registry;
+        }
         return [
             'acc-01-canvas-styling' => __('Canvas Settings', 'wppoppop'),
             'acc-20-animation'    => __('Animation', 'wppoppop'),
@@ -57,7 +61,8 @@ class WpPopPop_Admin_Settings {
 
     /** Modules that are always on and cannot be switched off. */
     public static function get_locked_modules() {
-        return ['acc-01-canvas-styling', 'acc-02-triggers'];
+        $registry = class_exists('WpPopPop_Modules') ? WpPopPop_Modules::locked() : [];
+        return !empty($registry) ? $registry : ['acc-01-canvas-styling', 'acc-22-targeting-triggers'];
     }
 
     public static function get_default_module_order() {
@@ -90,7 +95,11 @@ class WpPopPop_Admin_Settings {
     }
 
     public static function get_module_defaults() {
-        $enabled = array_merge(self::get_locked_modules(), ['acc-20-animation', 'acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration', 'acc-21-popup-positions', 'acc-22-targeting-triggers']);
+        $registry = class_exists('WpPopPop_Modules') ? WpPopPop_Modules::defaults() : [];
+        if (!empty($registry)) {
+            return $registry;
+        }
+        $enabled = array_merge(self::get_locked_modules(), ['acc-02-triggers', 'acc-20-animation', 'acc-16-popup-overlay', 'acc-17-double-optin', 'acc-18-notifications', 'acc-19-success-celebration', 'acc-21-popup-positions', 'acc-22-targeting-triggers']);
         $defaults = [];
         foreach (array_keys(self::get_modules()) as $key) {
             $defaults[$key] = in_array($key, $enabled, true) ? 1 : 0;
@@ -122,6 +131,9 @@ class WpPopPop_Admin_Settings {
     public static function module_enabled($key) {
         if (in_array($key, self::get_locked_modules(), true)) {
             return true;
+        }
+        if (class_exists('WpPopPop_Modules') && WpPopPop_Modules::get($key) && !WpPopPop_Modules::is_installed($key)) {
+            return false;
         }
         $s = get_option('wppoppop_settings', []);
         /* WPPOPPOP_MODULE_LEGACY_KEYS: keep toggles saved under the pre-renumber keys */
@@ -289,6 +301,18 @@ class WpPopPop_Admin_Settings {
             $o['modules'][$__mk] = (isset($in['modules']) && is_array($in['modules']) && array_key_exists($__mk, $in['modules']))
                 ? (!empty($in['modules'][$__mk]) ? 1 : 0)
                 : $module_defaults[$__mk];
+        }
+
+        // 5b1. Keep stored toggles of known-but-not-installed modules so a reinstall restores them
+        if (class_exists('WpPopPop_Modules')) {
+            $__mt_prev = get_option('wppoppop_settings', []);
+            if (is_array($__mt_prev) && isset($__mt_prev['modules']) && is_array($__mt_prev['modules'])) {
+                foreach (WpPopPop_Modules::not_installed() as $__ni) {
+                    if (!array_key_exists($__ni, $o['modules']) && array_key_exists($__ni, $__mt_prev['modules'])) {
+                        $o['modules'][$__ni] = !empty($__mt_prev['modules'][$__ni]) ? 1 : 0;
+                    }
+                }
+            }
         }
 
         // 5b2. Module order (whitelist; missing key = keep the stored order)

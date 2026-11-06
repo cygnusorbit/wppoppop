@@ -29,6 +29,7 @@ $bar_links = [
     ['wppoppop-library',         __('Popups Library', 'wppoppop'),   'dashicons-category'],
     ['wppoppop-settings',        __('Settings', 'wppoppop'),         'dashicons-admin-generic'],
     ['wppoppop-theme',           __('Theme', 'wppoppop'),            'dashicons-art'],
+    ['wppoppop-extend',          __('Extend', 'wppoppop'),           'dashicons-plugins-checked'],
     ['wppoppop-tools',           __('Tools & Export', 'wppoppop'),   'dashicons-admin-tools'],
 ];
 /* WPPOPPOP_BAR_MENU_SYNC: Menu dropdown mirrors Settings > Pages (label, order, hidden), live from the registered submenu. */

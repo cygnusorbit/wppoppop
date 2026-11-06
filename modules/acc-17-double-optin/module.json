@@ -1,0 +1,22 @@
+{
+    "schema": 1,
+    "slug": "acc-17-double-optin",
+    "name": "Double Opt-In",
+    "version": "1.0.0",
+    "author": "WpPopPop",
+    "description": "Double opt-in confirmation for subscribers.",
+    "locked": false,
+    "default_active": true,
+    "order": 180,
+    "on_missing": "block",
+    "requires": [],
+    "data_keys": [
+        "double_optin"
+    ],
+    "in_use": [
+        "double_optin.enable"
+    ],
+    "min_version": "",
+    "deprecated": false,
+    "template": "templates/builder/settings/acc-17-double-optin.php"
+}

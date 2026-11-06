@@ -5,6 +5,9 @@ if (!defined('ABSPATH')) {
 
 class WpPopPop_Addon_Downloads {
     public function __construct() {
+        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::active('acc-06-downloads')) {
+            return; /* WPPOPPOP_MODULE_GATE */
+        }
         add_action('template_redirect', [$this, 'handle_secure_download']);
     }
 

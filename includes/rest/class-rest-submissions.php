@@ -118,7 +118,7 @@ class WpPopPop_Rest_Submissions {
         }
 
         // Autoresponder dispatch
-        $autoresponder = $config['autoresponder'] ?? [];
+        $autoresponder = (!class_exists('WpPopPop_Modules') || WpPopPop_Modules::active('acc-08-autoresponder')) ? ($config['autoresponder'] ?? []) : []; /* WPPOPPOP_MODULE_GATE */
         if (!empty($autoresponder['enable_user_email']) && !$is_double_optin && $email !== '') {
             $ar_subject = !empty($autoresponder['subject']) ? sanitize_text_field($autoresponder['subject']) : __('Welcome! Here is your reward', 'wppoppop');
             $ar_body    = !empty($autoresponder['message']) ? $autoresponder['message'] : __("Thank you for subscribing!\n\nEnjoy your offer.", 'wppoppop');
@@ -132,7 +132,7 @@ class WpPopPop_Rest_Submissions {
         }
 
         // Outgoing Webhook Dispatch
-        $marketing = $config['marketing'] ?? [];
+        $marketing = (!class_exists('WpPopPop_Modules') || WpPopPop_Modules::active('acc-09-webhooks')) ? ($config['marketing'] ?? []) : []; /* WPPOPPOP_MODULE_GATE */
         if (!empty($marketing['webhook_url'])) {
             $webhook_payload = [
                 'event'         => 'submission',

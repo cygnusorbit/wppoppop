@@ -188,6 +188,12 @@ class WpPopPop_Ajax_Builder {
                 'thank_url'     => (isset($wppoppop_do['thank_url']) && is_string($wppoppop_do['thank_url'])) ? esc_url_raw($wppoppop_do['thank_url']) : ''
             );
         }
+        /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
+        if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));
+            if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($wppoppop_obj->settings); }
+            WpPopPop_Modules::guard_save($wppoppop_obj->settings, $wppoppop_prev_json);
+        }
         if (is_object($wppoppop_obj) || is_array($wppoppop_obj)) {
             $wppoppop_enc = wp_json_encode($this->sanitize_anim_payload($wppoppop_obj));
             if (is_string($wppoppop_enc) && $wppoppop_enc !== '') { $data_raw = $wppoppop_enc; }

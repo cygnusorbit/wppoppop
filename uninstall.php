@@ -32,6 +32,7 @@ if ($clean_on_uninstall) {
     delete_option('wppoppop_cookie_epoch');
     delete_option('wppoppop_activated');
     delete_option('wppoppop_schema_is_read');
+    delete_option('wppoppop_modules_state');
 
     // 3. Purge cached transients
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wppoppop_%' OR option_name LIKE '_transient_timeout_wppoppop_%'");
@@ -48,5 +49,22 @@ if ($clean_on_uninstall) {
             @$todo($fileinfo->getRealPath());
         }
         @rmdir($wppoppop_dir);
+    }
+
+    // 5. Remove uploaded modules (symlinks are unlinked, never followed)
+    $wppoppop_mod_dir = $upload_dir['basedir'] . '/wppoppop-modules';
+    if (is_dir($wppoppop_mod_dir) && !is_link($wppoppop_mod_dir)) {
+        $mod_files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($wppoppop_mod_dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($mod_files as $mod_file) {
+            if ($mod_file->isLink() || !$mod_file->isDir()) {
+                @unlink($mod_file->getPathname());
+            } else {
+                @rmdir($mod_file->getPathname());
+            }
+        }
+        @rmdir($wppoppop_mod_dir);
     }
 }

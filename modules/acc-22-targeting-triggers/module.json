@@ -1,0 +1,20 @@
+{
+    "schema": 1,
+    "slug": "acc-22-targeting-triggers",
+    "name": "Targeting Triggers",
+    "version": "1.0.0",
+    "author": "WpPopPop",
+    "description": "Show rules by event, schedule, role, area and URL.",
+    "locked": true,
+    "default_active": true,
+    "order": 220,
+    "on_missing": "skip",
+    "requires": [],
+    "data_keys": [
+        "targeting_triggers"
+    ],
+    "in_use": [],
+    "min_version": "",
+    "deprecated": false,
+    "template": "templates/builder/settings/acc-22-targeting-triggers.php"
+}

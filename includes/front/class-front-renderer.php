@@ -6,6 +6,17 @@ if (!defined('ABSPATH')) {
 class WpPopPop_Front_Renderer {
 
     public function render_popup_markup($uid, array $config, $is_inline = false, $preload = false) {
+        /* WPPOPPOP_MODULE_RENDER_GUARD: not-installed modules are skipped; a "block" module in use hides the popup */
+        if (class_exists('WpPopPop_Modules')) {
+            $wppoppop_mg = WpPopPop_Modules::prepare_render($config);
+            if (!empty($wppoppop_mg['blocked'])) {
+                return current_user_can('manage_options')
+                    ? '<!-- wppoppop: popup hidden, module not installed: ' . esc_html(implode(', ', $wppoppop_mg['blocked'])) . ' -->'
+                    : '';
+            }
+            $config = $wppoppop_mg['config'];
+            if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::front((string) $uid, $config); }
+        }
         $box = $config['box'] ?? ($config['settings']['box'] ?? []);
         $width = intval($box['width'] ?? 300);
         $height = intval($box['height'] ?? 400);

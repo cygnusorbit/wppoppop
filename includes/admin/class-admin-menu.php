@@ -65,6 +65,7 @@ class WpPopPop_Admin_Menu {
         add_submenu_page($parent, __('Transactions', 'wppoppop'), __('Transactions', 'wppoppop'), 'manage_options', 'wppoppop-payments', [$this->pages, 'render_payments']);
         add_submenu_page($parent, __('Popups Library', 'wppoppop'), __('Popups Library', 'wppoppop'), 'manage_options', 'wppoppop-library', [$this->pages, 'render_library']);
         add_submenu_page($parent, __('Settings', 'wppoppop'), __('Settings', 'wppoppop'), 'manage_options', 'wppoppop-settings', [$this->pages, 'render_settings']);
+        add_submenu_page($parent, __('Extend', 'wppoppop'), __('Extend', 'wppoppop'), 'manage_options', 'wppoppop-extend', [$this->pages, 'render_extend']);
         add_submenu_page($parent, __('Theme', 'wppoppop'), __('Theme', 'wppoppop'), 'manage_options', 'wppoppop-theme', [$this->pages, 'render_theme']);
         add_submenu_page($parent, __('Tools & Export', 'wppoppop'), __('Tools & Export', 'wppoppop'), 'manage_options', 'wppoppop-tools', [$this->pages, 'render_tools']);
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WpPopPop Builder Parity Sentinel & GreenPop Feature Scanner
+WpPopPop Builder Parity Sentinel & Reference Feature Scanner
 Guarantees preservation of all 26 elements, typography controls, and layer mechanics.
 """
 
@@ -126,7 +126,7 @@ def audit_integrity():
     return True
 
 def run_feature_scan():
-    print("🔍 Scanning /admin.php?page=wppoppop-builder for GreenPop Feature Parity...")
+    print("🔍 Scanning /admin.php?page=wppoppop-builder for Reference Feature Parity...")
 
     header_file = os.path.join(BASE_DIR, "templates", "builder", "header.php")
     inspector_file = os.path.join(BASE_DIR, "templates", "builder", "drawer-inspector.php")
