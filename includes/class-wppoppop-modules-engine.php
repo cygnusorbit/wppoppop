@@ -29,7 +29,7 @@ class WpPopPop_Modules_Engine {
     public static function installed_ui() {
         $out = [];
         foreach (WpPopPop_Modules::installed() as $slug => $m) {
-            if (($m['declarative'] || !empty($m['html'])) && $m['compatible']) {
+            if (($m['declarative'] || !empty($m['html'])) && $m['compatible'] && WpPopPop_Modules::ui_ok($m)) {
                 $out[$slug] = $m;
             }
         }
@@ -249,6 +249,36 @@ class WpPopPop_Modules_Engine {
                 continue;
             }
             self::emit($uid, $m, self::sanitize($m, $s[$m['ext_key']]));
+        }
+        self::front_html($s);
+    }
+
+    /** Installed accordion.html modules that ship a module.js: load it once when this popup holds data for the module. */
+    protected static function front_html(array $s) {
+        foreach (WpPopPop_Modules::installed() as $slug => $m) {
+            if ($m['declarative'] || empty($m['html']) || !$m['compatible'] || empty($m['assets']['js']) || !WpPopPop_Modules::ui_ok($m)) {
+                continue;
+            }
+            if (isset(self::$front_ready[$slug . ':html'])) {
+                continue;
+            }
+            $has = false;
+            foreach ($m['data_keys'] as $k) {
+                if (!empty($s[$k])) {
+                    $has = true;
+                    break;
+                }
+            }
+            $url = WpPopPop_Modules::module_url($m);
+            if (!$has || $url === '') {
+                continue;
+            }
+            self::$front_ready[$slug . ':html'] = true;
+            $deps = ['jquery'];
+            if (wp_script_is('wppoppop-front-triggers-js', 'registered')) {
+                $deps[] = 'wppoppop-front-triggers-js';
+            }
+            wp_enqueue_script('wppoppop-ext-' . $slug . '-front', $url . 'module.js', $deps, self::ver($m), true);
         }
     }
 

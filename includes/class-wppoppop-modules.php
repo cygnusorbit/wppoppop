@@ -427,19 +427,27 @@ class WpPopPop_Modules {
         return ($m && $m['on_missing'] === 'block') ? 'block' : 'skip';
     }
 
-    /** data key => slug for settings keys owned ONLY by modules that are not installed. */
-    public static function missing_keys() {
+    /** An accordion.html module that owns settings keys must ship the admin.js that reads and writes them. */
+    public static function ui_ok($m) {
+        return !(!empty($m['html']) && !empty($m['data_keys']) && empty($m['assets']['admin_js']));
+    }
+
+    /**
+     * data key => slug for settings keys owned ONLY by modules that are not installed.
+     * $for_save also treats an installed module without its admin.js as absent, so a save can never wipe its data.
+     */
+    public static function missing_keys($for_save = false) {
         $kept = [];
         $out  = [];
         foreach (self::all() as $slug => $m) {
-            if ($m['locked'] || self::is_installed($slug)) {
+            if ($m['locked'] || (self::is_installed($slug) && (!$for_save || self::ui_ok($m)))) {
                 foreach ($m['data_keys'] as $k) {
                     $kept[$k] = true;
                 }
             }
         }
         foreach (self::all() as $slug => $m) {
-            if ($m['locked'] || self::is_installed($slug)) {
+            if ($m['locked'] || (self::is_installed($slug) && (!$for_save || self::ui_ok($m)))) {
                 continue;
             }
             foreach ($m['data_keys'] as $k) {
@@ -492,7 +500,7 @@ class WpPopPop_Modules {
      * $settings is the decoded settings object; $prev_json the popup's stored JSON (or '').
      */
     public static function guard_save($settings, $prev_json) {
-        $keys = self::missing_keys();
+        $keys = self::missing_keys(true);
         if (!$keys || !is_object($settings)) {
             return $settings;
         }

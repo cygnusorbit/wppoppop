@@ -423,6 +423,58 @@ class WpPopPop_Modules_Installer {
         return true;
     }
 
+    protected static function manifest_version($dir) {
+        $f = $dir . '/module.json';
+        if (!is_file($f) || is_link($f) || filesize($f) > WpPopPop_Modules::MAX_JSON) {
+            return '';
+        }
+        $j = json_decode((string) file_get_contents($f), true);
+        return (is_array($j) && isset($j['version']) && is_string($j['version'])) ? $j['version'] : '';
+    }
+
+    /**
+     * Refreshes an already seeded module when the plugin ships a newer version of its package.
+     * State and saved data are untouched; a module the user deleted is never recreated.
+     * Returns the version to remember, or false when nothing was done.
+     */
+    protected static function upgrade_bundled($slug, $dir, $seeded) {
+        $new = self::manifest_version($dir);
+        $was = (is_string($seeded) && $seeded !== '') ? $seeded : '1.0.0';
+        if ($new === '' || version_compare($new, $was, '<=')) {
+            return false;
+        }
+        $base = WpPopPop_Modules::uploads_dir();
+        $dest = $base . '/' . $slug;
+        if ($base === '' || is_link($dest) || !is_dir($dest)) {
+            return false;
+        }
+        $cur = self::manifest_version($dest);
+        if ($cur !== '' && version_compare($cur, $new, '>=')) {
+            return $new;
+        }
+        if (!self::prepare_root($base)) {
+            return false;
+        }
+        $tmp = $base . '/' . self::rand_name('.tmp-');
+        if (!self::copy_tree($dir, $tmp)) {
+            self::rrmdir($tmp);
+            return false;
+        }
+        $old = $base . '/' . self::rand_name('.old-');
+        if (!@rename($dest, $old)) {
+            self::rrmdir($tmp);
+            return false;
+        }
+        if (!@rename($tmp, $dest)) {
+            @rename($old, $dest);
+            self::rrmdir($tmp);
+            return false;
+        }
+        self::rrmdir($old);
+        WpPopPop_Modules::flush();
+        return $new;
+    }
+
     /**
      * One-time copy of the plugin's packages/<slug>/ folders into uploads/wppoppop-modules/, so they show up
      * on the Extend page as normal Uploaded modules. A module removed later is never copied back.
@@ -444,7 +496,15 @@ class WpPopPop_Modules_Installer {
         $dirty = false;
         foreach ($dirs as $dir) {
             $slug = basename($dir);
-            if (isset($done[$slug]) || is_link($dir) || !WpPopPop_Modules::slug_valid($slug) || !is_file($dir . '/module.json')) {
+            if (is_link($dir) || !WpPopPop_Modules::slug_valid($slug) || !is_file($dir . '/module.json')) {
+                continue;
+            }
+            if (isset($done[$slug])) {
+                $v = self::upgrade_bundled($slug, $dir, $done[$slug]);
+                if ($v !== false) {
+                    $done[$slug] = $v;
+                    $dirty       = true;
+                }
                 continue;
             }
             if (is_dir(WpPopPop_Modules::core_dir() . '/' . $slug)) {
@@ -470,7 +530,8 @@ class WpPopPop_Modules_Installer {
                 WpPopPop_Modules::set_state($slug, 'available');
             }
             WpPopPop_Modules::clear_orphan($slug);
-            $done[$slug] = 1;
+            $v           = self::manifest_version($dir);
+            $done[$slug] = ($v !== '') ? $v : 1;
             $dirty       = true;
         }
         if ($dirty) {
@@ -707,6 +768,10 @@ class WpPopPop_Modules_Installer {
         if (!empty($m['html']) && (!is_file($tmp . '/accordion.html') || is_link($tmp . '/accordion.html') || filesize($tmp . '/accordion.html') > WpPopPop_Modules::MAX_HTML)) {
             self::rrmdir($tmp);
             return self::err('bad_manifest', __('accordion.html is missing or too large.', 'wppoppop'));
+        }
+        if (!empty($m['html']) && !empty($m['data_keys']) && (!is_file($tmp . '/admin.js') || is_link($tmp . '/admin.js'))) {
+            self::rrmdir($tmp);
+            return self::err('bad_manifest', __('This module saves settings, so it needs an admin.js.', 'wppoppop'));
         }
         if (is_dir(WpPopPop_Modules::core_dir() . '/' . $slug)) {
             self::rrmdir($tmp);

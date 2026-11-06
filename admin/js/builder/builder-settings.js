@@ -284,18 +284,6 @@
                 if (core.state.settings) core.state.settings.autoclose_delay = val;
                 if (e && e.type === 'change' && typeof core.pushHistory === 'function') core.pushHistory();
             });
-            $(document).off('input.wppoppop_exit change.wppoppop_exit', '#set-exit-intent-sensitivity').on('input.wppoppop_exit change.wppoppop_exit', '#set-exit-intent-sensitivity', function() {
-                var val = parseInt($(this).val(), 10) || 20;
-                if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.settings) {
-                    window.WpPopPopBuilderCore.state.settings.exit_intent_sensitivity = val;
-                }
-            });
-            $(document).off('input.wppoppop_scroll change.wppoppop_scroll', '#set-trigger-scroll-depth').on('input.wppoppop_scroll change.wppoppop_scroll', '#set-trigger-scroll-depth', function() {
-                var val = parseInt($(this).val(), 10) || 50;
-                if (window.WpPopPopBuilderCore && window.WpPopPopBuilderCore.state && window.WpPopPopBuilderCore.state.settings) {
-                    window.WpPopPopBuilderCore.state.settings.scroll_depth = val;
-                }
-            });
             $(document).off('change.wppoppop_ovf', '#set-canvas-allow-overflow').on('change.wppoppop_ovf', '#set-canvas-allow-overflow', function() {
                 var core = window.WpPopPopBuilderCore;
                 if (!core) return;
@@ -586,15 +574,6 @@
                     width: parseInt($('#set-canvas-width').val(), 10) || 640,
                     height: parseInt($('#set-canvas-height').val(), 10) || 400
                 },
-                triggers: {
-                    load: $('#trig-load').is(':checked'),
-                    load_delay: parseInt($('#trig-load-delay').val(), 10) || 0,
-                    exit: $('#trig-exit').is(':checked'),
-                    scroll: $('#trig-scroll').is(':checked'),
-                    scroll_val: parseInt($('#trig-scroll-val').val(), 10) || 50,
-                    adblock: $('#trig-adblock').is(':checked'),
-                    backbutton: $('#trig-backbutton').is(':checked')
-                },
                 logic_math: {
                     formula: $('#set-math-formula').val() || '',
                     target: $('#set-math-target').val() || ''
@@ -672,15 +651,6 @@
                     $('#set-canvas-anim-disappearance, #set-anim-disappearance').val(settings.animation.disappearance);
                 }
             }
-if (settings.triggers) {
-                $('#trig-load').prop('checked', !!settings.triggers.load);
-                $('#trig-load-delay').val(settings.triggers.load_delay || '');
-                $('#trig-exit').prop('checked', !!settings.triggers.exit);
-                $('#trig-scroll').prop('checked', !!settings.triggers.scroll);
-                $('#trig-scroll-val').val(settings.triggers.scroll_val || 50);
-                $('#trig-adblock').prop('checked', !!settings.triggers.adblock);
-                $('#trig-backbutton').prop('checked', !!settings.triggers.backbutton);
-            }
             if (settings.quiz) {
                 $('#set-quiz-enable').prop('checked', !!settings.quiz.enable);
                 $('#set-quiz-pass').val(settings.quiz.pass_threshold || 70);
@@ -695,31 +665,7 @@ if (settings.triggers) {
 })(jQuery);
 
 
-/* WPPOPPOP_SETTINGS_EXTRA */
-(function($) {
-    'use strict';
-    var S = window.WpPopPopBuilderSettings;
-    if (!S || S._extraWrapped) return;
-    S._extraWrapped = true;
-    var origGet = S.getSettings, origSet = S.setSettings;
-    S.getSettings = function() {
-        var out = origGet.apply(this, arguments) || {};
-        var core = window.WpPopPopBuilderCore;
-        var st = (core && core.state && core.state.settings) || {};
-        out.exit_intent_sensitivity = parseInt($('#set-exit-intent-sensitivity').val(), 10) || st.exit_intent_sensitivity || 20;
-        out.scroll_depth = parseInt($('#set-trigger-scroll-depth').val(), 10) || st.scroll_depth || 50;
-        return out;
-    };
-    S.setSettings = function(settings) {
-        var r = origSet.apply(this, arguments);
-        if (settings) {
-            if (settings.exit_intent_sensitivity) $('#set-exit-intent-sensitivity').val(settings.exit_intent_sensitivity);
-            if (settings.scroll_depth) $('#set-trigger-scroll-depth').val(settings.scroll_depth);
-        }
-        return r;
-    };
-})(jQuery);
-
+/* Display Triggers (settings.triggers, exit intent, scroll depth) live in the module package: admin.js */
 
 /* WPPOPPOP_EXIT_TOGGLE */
 (function($) {
@@ -769,143 +715,6 @@ if (settings.triggers) {
     $(function() {
         setTimeout(function() { if (S.syncCurrentCanvasSettings) S.syncCurrentCanvasSettings(); }, 300);
     });
-})(jQuery);
-
-
-/* WPPOPPOP_TRIGGER_SYNC: one scroll value, clamped numbers, sub-fields follow their checkbox */
-(function($) {
-    'use strict';
-    var S = window.WpPopPopBuilderSettings;
-    if (!S || S._triggerSyncWrapped) return;
-    S._triggerSyncWrapped = true;
-
-    function clamp(v, lo, hi, def) {
-        v = parseInt(v, 10);
-        if (isNaN(v)) { v = def; }
-        return Math.max(lo, Math.min(hi, v));
-    }
-
-    function toggleSub() {
-        /* kept editable */
-        /* kept editable */
-        /* kept editable */
-    }
-
-    var origGet = S.getSettings, origSet = S.setSettings;
-
-    S.getSettings = function() {
-        var out = origGet.apply(this, arguments) || {};
-        var pct = clamp($('#set-trigger-scroll-depth').val(), 1, 100, 50);
-        out.triggers = out.triggers || {};
-        out.triggers.scroll_val = pct;      /* renderer reads this first */
-        out.scroll_depth = pct;             /* legacy fallback stays identical */
-        out.triggers.load_delay = clamp($('#trig-load-delay').val(), 0, 3600, 0);
-        out.exit_intent_sensitivity = clamp($('#set-exit-intent-sensitivity').val(), 1, 200, 20);
-        return out;
-    };
-
-    S.setSettings = function(settings) {
-        var r = origSet.apply(this, arguments);
-        if (settings) {
-            var t = settings.triggers || {};
-            var pct = clamp(t.scroll_val || settings.scroll_depth, 1, 100, 50);
-            $('#set-trigger-scroll-depth, #trig-scroll-val').val(pct);
-            $('#trig-load-delay').val(clamp(t.load_delay, 0, 3600, 0));
-            if (settings.exit_intent_sensitivity) {
-                $('#set-exit-intent-sensitivity').val(clamp(settings.exit_intent_sensitivity, 1, 200, 20));
-            }
-        }
-        toggleSub();
-        return r;
-    };
-
-    $(document)
-        .off('input.wppTrigSync change.wppTrigSync', '#set-trigger-scroll-depth')
-        .on('input.wppTrigSync change.wppTrigSync', '#set-trigger-scroll-depth', function() {
-            $('#trig-scroll-val').val(clamp($(this).val(), 1, 100, 50));
-        })
-        .off('change.wppTrigToggle', '#trig-load, #trig-exit, #trig-scroll')
-        .on('change.wppTrigToggle', '#trig-load, #trig-exit, #trig-scroll', toggleSub);
-
-    $(function() { setTimeout(toggleSub, 350); });
-})(jQuery);
-
-
-/* WPPOPPOP_TRIGGER_TOGGLES: slide-toggles, always-on-load, repeat-every-X-hours, always-editable fields */
-(function($) {
-    'use strict';
-    var S = window.WpPopPopBuilderSettings;
-    if (!S || S._trigToggleWrapped) return;
-    S._trigToggleWrapped = true;
-
-    function clamp(v, lo, hi, def) {
-        v = parseInt(v, 10);
-        if (isNaN(v)) { v = def; }
-        return Math.max(lo, Math.min(hi, v));
-    }
-
-    function dimSubs() {
-        $('.wppoppop-trig-sub[data-for]').each(function() {
-            var on = $('#' + $(this).attr('data-for')).is(':checked');
-            $(this).toggleClass('is-off', !on); /* visual hint only, never disabled */
-        });
-        $('#trig-load-delay, #set-exit-intent-sensitivity, #set-trigger-scroll-depth, #trig-repeat-hours')
-            .prop('disabled', false).prop('readOnly', false);
-    }
-
-    var origGet = S.getSettings, origSet = S.setSettings;
-
-    S.getSettings = function() {
-        var out = origGet.apply(this, arguments) || {};
-        out.triggers = out.triggers || {};
-        out.triggers.always = $('#trig-always').is(':checked');
-        out.triggers.always_embed = $('#trig-always-embed').is(':checked');
-        out.triggers.repeat = $('#trig-repeat').is(':checked');
-        out.triggers.repeat_hours = clamp($('#trig-repeat-hours').val(), 1, 720, 24);
-        var pct = clamp($('#set-trigger-scroll-depth').val(), 1, 100, 50);
-        out.triggers.scroll_val = pct;
-        out.scroll_depth = pct;
-        out.triggers.load_delay = clamp($('#trig-load-delay').val(), 0, 3600, 0);
-        out.exit_intent_sensitivity = clamp($('#set-exit-intent-sensitivity').val(), 1, 200, 20);
-        return out;
-    };
-
-    S.setSettings = function(settings) {
-        var r = origSet.apply(this, arguments);
-        if (settings) {
-            var t = settings.triggers || {};
-            $('#trig-always').prop('checked', !!t.always && t.always !== 'false');
-            $('#trig-always-embed').prop('checked', !!t.always_embed && t.always_embed !== 'false' && t.always_embed !== '0');
-            $('#trig-repeat').prop('checked', !!t.repeat && t.repeat !== 'false');
-            $('#trig-repeat-hours').val(clamp(t.repeat_hours, 1, 720, 24));
-            var pct = clamp(t.scroll_val || settings.scroll_depth, 1, 100, 50);
-            $('#set-trigger-scroll-depth, #trig-scroll-val').val(pct);
-            $('#trig-load-delay').val(clamp(t.load_delay, 0, 3600, 0));
-            if (settings.exit_intent_sensitivity) {
-                $('#set-exit-intent-sensitivity').val(clamp(settings.exit_intent_sensitivity, 1, 200, 20));
-            }
-        }
-        dimSubs();
-        return r;
-    };
-
-    function syncState() {
-        var core = window.WpPopPopBuilderCore;
-        if (core && core.state) {
-            core.state.settings = core.state.settings || {};
-            core.state.settings.exit_intent_sensitivity = clamp($('#set-exit-intent-sensitivity').val(), 1, 200, 20);
-            core.state.settings.scroll_depth = clamp($('#set-trigger-scroll-depth').val(), 1, 100, 50);
-        }
-        $('#trig-scroll-val').val(clamp($('#set-trigger-scroll-depth').val(), 1, 100, 50));
-    }
-
-    $(document)
-        .off('input.wppTrig change.wppTrig', '#set-exit-intent-sensitivity, #set-trigger-scroll-depth, #trig-load-delay, #trig-repeat-hours')
-        .on('input.wppTrig change.wppTrig', '#set-exit-intent-sensitivity, #set-trigger-scroll-depth, #trig-load-delay, #trig-repeat-hours', syncState)
-        .off('change.wppTrigDim', '#trig-load, #trig-exit, #trig-scroll, #trig-repeat')
-        .on('change.wppTrigDim', '#trig-load, #trig-exit, #trig-scroll, #trig-repeat', dimSubs);
-
-    $(function() { setTimeout(dimSubs, 350); });
 })(jQuery);
 
 
@@ -1674,17 +1483,6 @@ jQuery(function($) {
         });
 })(jQuery);
 
-
-/* WPPOPPOP_ALWAYS_EMBED_UI: "All Pages" and "Embed Code Only" are mutually exclusive */
-(function($) {
-    'use strict';
-    $(document)
-        .off('change.wppAlwaysPair', '#trig-always, #trig-always-embed')
-        .on('change.wppAlwaysPair', '#trig-always, #trig-always-embed', function() {
-            if (!this.checked) { return; }
-            $(this.id === 'trig-always' ? '#trig-always-embed' : '#trig-always').prop('checked', false);
-        });
-})(jQuery);
 
 /* === WPPOPPOP_SHAPE_INTERACTION_ENGINE_START === */
 (function() {
