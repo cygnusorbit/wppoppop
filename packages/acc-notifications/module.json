@@ -1,20 +1,19 @@
 {
     "schema": 1,
-    "slug": "acc-18-notifications",
+    "slug": "acc-notifications",
     "name": "Notifications",
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Notification messages for popup events.",
-    "locked": false,
     "default_active": true,
     "order": 190,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "notifications"
     ],
     "in_use": [],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-18-notifications.php"
+    "deprecated": false
 }
