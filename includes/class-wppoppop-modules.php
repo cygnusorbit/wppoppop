@@ -228,13 +228,19 @@ class WpPopPop_Modules {
         ];
     }
 
-    /** Optional module.json "image": an http(s) URL, shown as the 40x40 thumbnail on the Extend page. */
+    /** Optional module.json "image": any image URL or path (full URL, //host/path, /site/path or images/icon.png inside the module folder). */
     public static function image_url($raw) {
         $v = (is_array($raw) && isset($raw['image']) && is_string($raw['image'])) ? trim($raw['image']) : '';
-        if ($v === '' || strlen($v) > 500) {
+        if ($v === '' || strlen($v) > 500 || preg_match('#[\s<>"\'\\\\\x00-\x1f]#', $v) === 1) {
             return '';
         }
-        return (string) esc_url_raw($v, ['http', 'https']);
+        if (strpos($v, '//') === 0) {
+            return preg_match('#^//[A-Za-z0-9.-]+(?::\d+)?(?:/\S*)?$#', $v) === 1 ? $v : '';
+        }
+        if (strpos($v, ':') !== false) {
+            return (string) esc_url_raw($v, ['http', 'https']);
+        }
+        return preg_match('#(^|/)\.\.(/|$)#', preg_replace('#[?\#].*$#', '', $v)) === 1 ? '' : $v;
     }
 
     protected static function inside($path, $root) {

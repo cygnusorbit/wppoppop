@@ -6,6 +6,7 @@
     "author": "WpPopPop",
     "description": "Canvas size, colours, close behaviour and auto-close.",
     "category": "all-modules",
+    "image": "canvas.png",
     "locked": true,
     "default_active": true,
     "order": 10,

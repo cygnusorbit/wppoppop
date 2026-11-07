@@ -61,6 +61,8 @@ class WpPopPop_Modules_Installer {
             'required_by' => $by,
             'category'    => WpPopPop_Module_Categories::of($m),
             'image'       => WpPopPop_Module_Categories::image_of($m),
+            'image_raw'   => WpPopPop_Module_Categories::image_raw($m),
+            'image_base'  => WpPopPop_Modules::module_url($m),
         ];
     }
 
@@ -304,7 +306,7 @@ class WpPopPop_Modules_Installer {
                 'edit_title'      => __('Edit %s', 'wppoppop'),
                 'edit_note'       => __('The category and image URL are saved to this module\'s module.json.', 'wppoppop'),
                 'edit_image'      => __('Image URL', 'wppoppop'),
-                'edit_img_bad'    => __('Enter a valid http(s) image URL.', 'wppoppop'),
+                'edit_img_bad'    => __('Enter a valid image URL or path.', 'wppoppop'),
                 'edit_save'       => __('Save', 'wppoppop'),
                 'edit_saving'     => __('Saving…', 'wppoppop'),
             ],

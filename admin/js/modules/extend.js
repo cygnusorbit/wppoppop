@@ -78,6 +78,16 @@
             return cats.length ? cats[0].name : '';
         }
 
+        function isImg(u) {
+            if (!u || u.length > 500 || /[\s<>"'\\]/.test(u)) { return false; }
+            if (/^https?:\/\/\S+$/i.test(u) || /^\/\/[\w.\-]+(?::\d+)?(?:\/\S*)?$/.test(u)) { return true; }
+            return u.indexOf(':') === -1 && !/(?:^|\/)\.\.(?:\/|$)/.test(u.replace(/[?#].*$/, ''));
+        }
+
+        function imgSrc(u, m) {
+            return (u && !/^(?:https?:\/\/|\/)/i.test(u) && m.image_base) ? m.image_base + u : u;
+        }
+
         function icon(name, label, cls) {
             return $('<button type="button" class="button wpp-ext-icon-btn"></button>').addClass(cls || '')
                 .attr({ title: label, 'aria-label': label })
@@ -245,8 +255,8 @@
             $('<label></label>').attr('for', id + '-img').text(M.t('edit_image')).appendTo($field);
             var $imgRow = $('<div class="wpp-ext-edit-img"></div>').appendTo($field);
             var $pv = thumb(m.image).appendTo($imgRow);
-            var $img = $('<input type="url">').attr({ id: id + '-img', placeholder: 'https://example.com/icon.png', maxlength: 500, autocomplete: 'off', spellcheck: 'false' })
-                .val(m.image || '').appendTo($imgRow);
+            var $img = $('<input type="url">').attr({ id: id + '-img', placeholder: 'images/icon.png', maxlength: 500, autocomplete: 'off', spellcheck: 'false' })
+                .val(m.image_raw || '').appendTo($imgRow);
             var $err = $('<p class="wpp-ext-edit-err" role="alert" hidden></p>').text(M.t('edit_img_bad')).appendTo($dlg);
             var pvTimer = 0;
             $img.on('input change', function () {
@@ -254,7 +264,7 @@
                 clearTimeout(pvTimer);
                 pvTimer = setTimeout(function () {
                     var u = String($img.val() || '').replace(/^\s+|\s+$/g, '');
-                    fillThumb($pv, /^https?:\/\/\S+$/i.test(u) ? u : '');
+                    fillThumb($pv, isImg(u) ? imgSrc(u, m) : '');
                 }, 350);
             });
             $('<p class="wpp-mod-modal-msg wpp-ext-edit-note"></p>').text(M.t('edit_note')).appendTo($dlg);
@@ -273,7 +283,7 @@
             function save() {
                 if (busy) { return; }
                 var url = String($img.val() || '').replace(/^\s+|\s+$/g, '');
-                if (url !== '' && !/^https?:\/\/\S+$/i.test(url)) { $err.prop('hidden', false); $img.trigger('focus'); return; }
+                if (url !== '' && !isImg(url)) { $err.prop('hidden', false); $img.trigger('focus'); return; }
                 busy = true;
                 $ok.prop('disabled', true).text(M.t('edit_saving'));
                 M.post('set_category', { slug: m.slug, category: $sel.val(), image: url }, function (r) {

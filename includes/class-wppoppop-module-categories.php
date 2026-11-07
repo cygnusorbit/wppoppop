@@ -147,8 +147,18 @@ class WpPopPop_Module_Categories {
         return $hit === '' ? self::DEFAULT_SLUG : $hit;
     }
 
-    /** Thumbnail URL of a module: the saved override, else the manifest "image". */
+    /** Thumbnail URL ready for <img>: a module-folder path (images/icon.png) is resolved against the module's public URL. */
     public static function image_of($module) {
+        $v = self::image_raw($module);
+        if ($v !== '' && $v[0] !== '/' && preg_match('#^https?://#i', $v) !== 1) {
+            $base = WpPopPop_Modules::module_url($module);
+            return $base === '' ? '' : $base . $v;
+        }
+        return $v;
+    }
+
+    /** Image value as stored: the saved override, else the manifest "image". */
+    public static function image_raw($module) {
         if (!is_array($module) || empty($module['slug'])) {
             return '';
         }
@@ -220,7 +230,7 @@ class WpPopPop_Module_Categories {
         if ($image !== null) {
             $image = trim((string) $image);
             if ($image !== '' && WpPopPop_Modules::image_url(['image' => $image]) === '') {
-                return new WP_Error('bad_image', __('Enter a valid http(s) image URL (up to 500 characters).', 'wppoppop'));
+                return new WP_Error('bad_image', __('Enter a valid image URL or path (up to 500 characters).', 'wppoppop'));
             }
             $image = WpPopPop_Modules::image_url(['image' => $image]);
         }
