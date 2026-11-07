@@ -72,6 +72,12 @@ class WpPopPop_Front_Renderer {
             $trg_attrs .= $wppoppop_tt['attrs'];
         }
 
+        /* WPPOPPOP_SIDE_TABS_RENDER: an active Side Tabs module adds its data-sidetab-* attributes (module.js builds the tab) */
+        if (!$is_inline) {
+            if (!class_exists('WpPopPop_Side_Tabs')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-side-tabs.php'; }
+            $trg_attrs .= WpPopPop_Side_Tabs::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+        }
+
         /* WPPOPPOP_BG_CLOSE_ATTR: backdrop click closes only when enabled (default off) */
         $bgc_raw = isset($config['settings']['close_on_backdrop']) ? $config['settings']['close_on_backdrop'] : false;
         $trg_attrs .= ' data-close-backdrop="' . (in_array($bgc_raw, array(true, 1, '1', 'true'), true) ? '1' : '0') . '"';

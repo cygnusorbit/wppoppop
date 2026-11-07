@@ -503,11 +503,7 @@
                     formula: $('#set-math-formula').val() || '',
                     target: $('#set-math-target').val() || ''
                 },
-                sidetab: {
-                    enable: $('#set-sidetab-enable').is(':checked'),
-                    label: $('#set-sidetab-label').val() || '',
-                    pos: $('#set-sidetab-pos').val() || 'left'
-                },
+                /* Side Tabs (settings.sidetab) live in the module package: admin.js */
                 payments: {
                     gateway: $('#set-pay-gateway').val() || 'stripe',
                     amount: parseFloat($('#set-pay-amount').val()) || 0

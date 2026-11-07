@@ -1,21 +1,22 @@
 {
     "schema": 1,
-    "slug": "acc-04-side-tabs",
+    "slug": "acc-side-tabs",
     "name": "Side Tabs",
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Sticky side tabs attached to the screen edge.",
     "category": "all-modules",
-    "locked": false,
-    "default_active": false,
+    "default_active": true,
     "order": 50,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "sidetab"
     ],
-    "in_use": [],
+    "in_use": [
+        "sidetab.enable"
+    ],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-04-side-tabs.php"
+    "deprecated": false
 }
