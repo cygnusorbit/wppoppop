@@ -182,6 +182,17 @@ class WpPopPop_Ajax_Templates {
                 $obj->settings->mailchimp = json_decode(wp_json_encode($wppoppop_mc_tpl));
                 if (!is_array($obj->settings->mailchimp)) { $obj->settings->mailchimp = array(); }
             }
+            if (isset($obj->settings->getresponse)) { /* WPPOPPOP_GETRESPONSE_WHITELIST: templates never carry API keys */
+                if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
+                $wppoppop_gr_tpl = WpPopPop_Getresponse::sanitize($obj->settings->getresponse);
+                foreach ($wppoppop_gr_tpl as $wppoppop_gr_i => $wppoppop_gr_it) {
+                    $wppoppop_gr_tpl[$wppoppop_gr_i]['api_key'] = '';
+                    $wppoppop_gr_tpl[$wppoppop_gr_i]['campaign_id'] = '';
+                    $wppoppop_gr_tpl[$wppoppop_gr_i]['campaign_name'] = '';
+                }
+                $obj->settings->getresponse = json_decode(wp_json_encode($wppoppop_gr_tpl));
+                if (!is_array($obj->settings->getresponse)) { $obj->settings->getresponse = array(); }
+            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

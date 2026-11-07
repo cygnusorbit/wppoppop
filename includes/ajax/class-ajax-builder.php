@@ -307,6 +307,12 @@ class WpPopPop_Ajax_Builder {
             $wppoppop_obj->settings->mailchimp = json_decode(wp_json_encode(WpPopPop_Mailchimp::sanitize($wppoppop_obj->settings->mailchimp)));
             if (!is_array($wppoppop_obj->settings->mailchimp)) { $wppoppop_obj->settings->mailchimp = array(); }
         }
+        /* WPPOPPOP_GETRESPONSE_WHITELIST: allow-list the GetResponse module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->getresponse)) {
+            if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
+            $wppoppop_obj->settings->getresponse = json_decode(wp_json_encode(WpPopPop_Getresponse::sanitize($wppoppop_obj->settings->getresponse)));
+            if (!is_array($wppoppop_obj->settings->getresponse)) { $wppoppop_obj->settings->getresponse = array(); }
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));

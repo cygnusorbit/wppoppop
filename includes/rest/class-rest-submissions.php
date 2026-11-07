@@ -137,6 +137,12 @@ class WpPopPop_Rest_Submissions {
             WpPopPop_Mailchimp::dispatch('after_submission', $uid, isset($row['title']) ? $row['title'] : '', $config, $email, $fields, $submission_id, $visitor_country);
         }
 
+        // GetResponse (module acc-getresponse): "After successful form submission"
+        if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
+        if (WpPopPop_Getresponse::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            WpPopPop_Getresponse::dispatch('after_submission', $uid, isset($row['title']) ? $row['title'] : '', $config, $email, $fields, $submission_id, $visitor_country);
+        }
+
         // Twilio SMS alert (module acc-sms)
         if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
         $sms_cfg = WpPopPop_Sms::get_config($config, $uid);

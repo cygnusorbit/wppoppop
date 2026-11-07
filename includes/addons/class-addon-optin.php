@@ -90,6 +90,22 @@ class WpPopPop_Addon_Optin {
             }
         }
 
+        /* WPPOPPOP_GETRESPONSE_CONFIRM: GetResponse "After double opt-in confirmation" */
+        if (!empty($submission['popup_uid'])) {
+            if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
+            if (WpPopPop_Getresponse::module_active()) { /* WPPOPPOP_MODULE_GATE */
+                $wppoppop_gr_row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A);
+                if ($wppoppop_gr_row) {
+                    WpPopPop_Getresponse::dispatch(
+                        'after_confirmation', $submission['popup_uid'], $wppoppop_gr_row['title'],
+                        json_decode((string) $wppoppop_gr_row['data'], true), $submission['email'],
+                        (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true),
+                        (int) $submission['id'], isset($submission['country_code']) ? $submission['country_code'] : ''
+                    );
+                }
+            }
+        }
+
         wppoppop_log_event('optin_confirmed', 'Double opt-in confirmed for ' . $submission['email'], [
             'popup_uid'     => $submission['popup_uid'],
             'submission_id' => $submission['id']
