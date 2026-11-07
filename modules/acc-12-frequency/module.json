@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Show-frequency limits and cookie rules.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 130,

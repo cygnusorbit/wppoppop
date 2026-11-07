@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Quiz scoring with pass and fail canvases.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 160,

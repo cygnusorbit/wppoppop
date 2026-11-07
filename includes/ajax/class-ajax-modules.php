@@ -102,7 +102,7 @@ class WpPopPop_Ajax_Modules {
         ]);
     }
 
-    /** Extend page: put one module into a category. */
+    /** Extend page "Edit": set a module's category (written to its module.json). */
     public function set_category() {
         $this->verify();
         $slug = $this->slug();
@@ -114,7 +114,10 @@ class WpPopPop_Ajax_Modules {
         $m = WpPopPop_Modules::get($slug);
         wp_send_json_success([
             'module'  => $m ? WpPopPop_Modules_Installer::summary($m) : null,
-            'message' => __('Category updated.', 'wppoppop'),
+            'json'    => !empty($res['json']),
+            'message' => !empty($res['json'])
+                ? __('Module updated. The category was saved to module.json.', 'wppoppop')
+                : __('Category saved, but module.json is not writable on this server, so it was stored in the database only.', 'wppoppop'),
         ]);
     }
 }

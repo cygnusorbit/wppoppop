@@ -73,6 +73,11 @@
             return $('<button type="button" class="button"></button>').addClass(cls || '').text(label);
         }
 
+        function catName(slug) {
+            for (var i = 0; i < cats.length; i++) { if (cats[i].slug === slug) { return cats[i].name; } }
+            return cats.length ? cats[0].name : '';
+        }
+
         function card(m) {
             var $c = $('<article class="wpp-ext-item"></article>').attr('data-slug', m.slug);
             var $head = $('<div class="wpp-ext-item-head"></div>').appendTo($c);
@@ -98,13 +103,7 @@
                 $('<span></span>').text(M.fmt(M.t('requires'), $.map(m.requires, nameOf).join(', '))).appendTo($meta);
             }
 
-            if (cats.length > 1) {
-                var $cl = $('<label class="wpp-ext-item-cat"></label>').appendTo($c);
-                $('<span></span>').text(M.t('cat_label')).appendTo($cl);
-                var $sel = $('<select></select>').attr('aria-label', M.fmt(M.t('cat_for'), m.name)).appendTo($cl);
-                $.each(cats, function (i, c) { $('<option></option>').val(c.slug).text(c.name).appendTo($sel); });
-                $sel.val(m.category || DEF);
-            }
+            $('<span></span>').text(M.t('cat_label') + ': ' + catName(m.category)).appendTo($meta);
 
             var $act = $('<div class="wpp-ext-item-actions"></div>').appendTo($c);
             if (!m.locked) {
@@ -123,7 +122,9 @@
                     $act.append(button(M.t('delete'), 'button-link button-link-delete').attr('data-act', 'delete'));
                 }
             }
-            if (!$act.children().length) { $act.remove(); }
+            var $edit = button(M.t('edit')).attr('data-edit', '1');
+            var $del = $act.find('[data-act="delete"]');
+            if ($del.length) { $edit.insertBefore($del); } else { $act.append($edit); }
             return $c;
         }
 
@@ -201,24 +202,71 @@
             });
         });
 
-        /* category pills + per-card category */
+        /* category pills + Edit (category -> module.json) */
         $cats.on('click', '.wpp-cat-pill', function () {
             cat = String($(this).attr('data-cat'));
             render();
         });
 
-        $grid.on('change', '.wpp-ext-item-cat select', function () {
-            var $sel = $(this);
-            var $c = $sel.closest('.wpp-ext-item');
-            var i = find(String($c.data('slug')));
-            if (i === -1) { return; }
-            $c.addClass('is-busy');
-            $sel.prop('disabled', true);
-            M.post('set_category', { slug: items[i].slug, category: $sel.val() }, function (r) {
-                if (!r.ok) { M.notice($notice, 'error', r.message); }
-                else if (r.data.module) { upsert(r.data.module); M.notice($notice, 'success', r.data.message); }
-                render();
+        function editDialog(m) {
+            var $prev = $(document.activeElement);
+            var id = 'wpp-ext-edit';
+            var $back = $('<div class="wpp-mod-backdrop"></div>');
+            var $dlg = $('<div class="wpp-mod-modal wpp-ext-edit" role="dialog" aria-modal="true" tabindex="-1"></div>')
+                .attr('aria-labelledby', id + '-t').appendTo($back);
+            $('<h3 class="wpp-mod-modal-title"></h3>').attr('id', id + '-t').text(M.fmt(M.t('edit_title'), m.name)).appendTo($dlg);
+            var $row = $('<div class="wpp-ext-edit-row"></div>').appendTo($dlg);
+            $('<label></label>').attr('for', id + '-cat').text(M.t('cat_label')).appendTo($row);
+            var $sel = $('<select></select>').attr('id', id + '-cat').appendTo($row);
+            $.each(cats, function (i, c) { $('<option></option>').val(c.slug).text(c.name).appendTo($sel); });
+            $sel.val(m.category || DEF);
+            $('<p class="wpp-mod-modal-msg wpp-ext-edit-note"></p>').text(M.t('edit_note')).appendTo($dlg);
+            var $act = $('<div class="wpp-mod-modal-actions"></div>').appendTo($dlg);
+            var $cancel = $('<button type="button" class="button"></button>').text(M.t('cancel')).appendTo($act);
+            var $ok = $('<button type="button" class="button button-primary"></button>').text(M.t('edit_save')).appendTo($act);
+            var busy = false;
+
+            function close() {
+                if (busy) { return; }
+                $(document).off('keydown.wppext');
+                $back.remove();
+                if ($prev.length) { $prev.trigger('focus'); }
+            }
+
+            function save() {
+                if (busy) { return; }
+                busy = true;
+                $ok.prop('disabled', true).text(M.t('edit_saving'));
+                M.post('set_category', { slug: m.slug, category: $sel.val() }, function (r) {
+                    busy = false;
+                    close();
+                    if (!r.ok) { M.notice($notice, 'error', r.message); return; }
+                    if (r.data.module) { upsert(r.data.module); }
+                    M.notice($notice, r.data.json === false ? 'info' : 'success', r.data.message);
+                    render();
+                });
+            }
+
+            $cancel.on('click', close);
+            $ok.on('click', save);
+            $back.on('mousedown', function (e) { if (e.target === $back[0]) { close(); } });
+            $(document).off('keydown.wppext').on('keydown.wppext', function (e) {
+                if (e.which === 27) { e.preventDefault(); close(); return; }
+                if (e.which !== 9) { return; }
+                var $f = $dlg.find('select, button').filter(':visible:not(:disabled)');
+                if (!$f.length) { return; }
+                var first = $f[0];
+                var last = $f[$f.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
             });
+            $back.appendTo(document.body);
+            $sel.trigger('focus');
+        }
+
+        $grid.on('click', '[data-edit]', function () {
+            var i = find(String($(this).closest('.wpp-ext-item').data('slug')));
+            if (i !== -1) { editDialog(items[i]); }
         });
 
         /* upload */

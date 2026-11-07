@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Sticky side tabs attached to the screen edge.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 50,

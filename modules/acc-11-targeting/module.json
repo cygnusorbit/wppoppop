@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Visitor authentication, targeting and attribution rules.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 120,

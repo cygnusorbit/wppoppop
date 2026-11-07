@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Send submissions to external marketing tools through a webhook URL.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 100,

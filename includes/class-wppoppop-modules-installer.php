@@ -298,6 +298,12 @@ class WpPopPop_Modules_Installer {
                 'cat_save'        => __('Save Categories', 'wppoppop'),
                 'cat_saving'      => __('Saving…', 'wppoppop'),
                 'cat_saved'       => __('Categories saved.', 'wppoppop'),
+                'edit'            => __('Edit', 'wppoppop'),
+                /* translators: %s: module name */
+                'edit_title'      => __('Edit %s', 'wppoppop'),
+                'edit_note'       => __('The category is saved to this module\'s module.json.', 'wppoppop'),
+                'edit_save'       => __('Save', 'wppoppop'),
+                'edit_saving'     => __('Saving…', 'wppoppop'),
             ],
         ];
         return array_merge($vars, $extra);

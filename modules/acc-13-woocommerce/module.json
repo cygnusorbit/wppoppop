@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "WooCommerce coupons and conversion tools.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 140,

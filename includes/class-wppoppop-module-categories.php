@@ -146,18 +146,62 @@ class WpPopPop_Module_Categories {
         return $hit === '' ? self::DEFAULT_SLUG : $hit;
     }
 
-    /** Put one module into a category. */
+    /** Writes "category" into a module's module.json (built-in or uploaded). False when the file cannot be updated. */
+    protected static function write_manifest($m, $value) {
+        $dir  = (is_array($m) && !empty($m['dir'])) ? $m['dir'] : '';
+        $file = $dir . '/module.json';
+        if ($dir === '' || is_link($file) || !is_file($file) || !is_writable($file) || filesize($file) > WpPopPop_Modules::MAX_JSON) {
+            return false;
+        }
+        $raw = json_decode((string) file_get_contents($file));
+        if (!is_object($raw)) {
+            return false;
+        }
+        $out = new stdClass();
+        foreach (get_object_vars($raw) as $k => $v) {
+            if ($k === 'category') {
+                continue;
+            }
+            $out->$k = $v;
+            if ($k === 'description') {
+                $out->category = $value;
+            }
+        }
+        if (!isset($out->category)) {
+            $out->category = $value;
+        }
+        $json = wp_json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if (!is_string($json) || $json === '') {
+            return false;
+        }
+        return @file_put_contents($file, $json . "\n", LOCK_EX) !== false;
+    }
+
+    /**
+     * Edit a module's category. module.json gets the category (its name, or the default slug) so the choice travels with the
+     * module; the database keeps the stable slug so renaming a category never detaches its modules.
+     * Returns ['category' => slug, 'json' => bool] or WP_Error.
+     */
     public static function assign($module_slug, $cat) {
-        if (!WpPopPop_Modules::slug_valid($module_slug) || !WpPopPop_Modules::get($module_slug)) {
+        $m = WpPopPop_Modules::slug_valid($module_slug) ? WpPopPop_Modules::get($module_slug) : null;
+        if (!$m) {
             return new WP_Error('not_found', __('Module not found.', 'wppoppop'));
         }
         $cat = self::match($cat);
         if ($cat === '') {
             return new WP_Error('bad_category', __('That category no longer exists. Reload the page.', 'wppoppop'));
         }
-        $map                = self::map();
-        $map[$module_slug]  = $cat;
+        $value = self::DEFAULT_SLUG;
+        foreach (self::all() as $c) {
+            if ($c['slug'] === $cat && empty($c['locked'])) {
+                $value = $c['name'];
+            }
+        }
+        $json              = self::write_manifest($m, $value);
+        $map               = self::map();
+        $map[$module_slug] = $cat;
         update_option(self::MAP_OPT, $map, false);
-        return $cat;
+        WpPopPop_Modules::flush();
+        return ['category' => $cat, 'json' => $json];
     }
 }

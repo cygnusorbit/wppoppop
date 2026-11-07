@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Twilio SMS alerts for new submissions.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 110,

@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Automatic reply sent to subscribers after they submit.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 90,

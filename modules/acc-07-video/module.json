@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Video playback listeners for popup videos.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 80,

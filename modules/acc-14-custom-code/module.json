@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Custom CSS and JS scoped to the popup.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 150,

@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Real-time math formulas and conditional logic for form fields.",
+    "category": "all-modules",
     "locked": false,
     "default_active": false,
     "order": 40,
