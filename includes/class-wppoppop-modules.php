@@ -25,7 +25,7 @@ class WpPopPop_Modules {
     const MAX_FIELDS = 40;
     const FIELD_TYPES = ['toggle', 'text', 'textarea', 'number', 'select', 'color', 'url'];
     const MAX_HTML   = 65536;
-    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth', 'animation', 'overlay', 'popup_position', 'notifications', 'double_optin', 'targeting_triggers', 'celebration', 'autoresponder', 'sidetab', 'webhooks', 'woocommerce', 'downloads', 'logic_math', 'payments', 'video', 'sms', 'targeting', 'quiz', 'frequency', 'custom_code'];
+    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth', 'animation', 'overlay', 'popup_position', 'notifications', 'double_optin', 'targeting_triggers', 'celebration', 'autoresponder', 'sidetab', 'webhooks', 'woocommerce', 'downloads', 'logic_math', 'payments', 'video', 'sms', 'targeting', 'quiz', 'frequency', 'custom_code', 'mailchimp'];
     const ORPHAN_OPT = 'wppoppop_modules_orphans';
 
     protected static $cache = null;
@@ -565,6 +565,10 @@ class WpPopPop_Modules {
         if (!class_exists('WpPopPop_Webhooks') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; } /* WPPOPPOP_WEBHOOKS_REDACT */
         if (class_exists('WpPopPop_Webhooks')) {
             $res['config'] = WpPopPop_Webhooks::redact($res['config']);
+        }
+        if (!class_exists('WpPopPop_Mailchimp') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; } /* WPPOPPOP_MAILCHIMP_REDACT */
+        if (class_exists('WpPopPop_Mailchimp')) {
+            $res['config'] = WpPopPop_Mailchimp::redact($res['config']);
         }
         if (!class_exists('WpPopPop_Sms') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; } /* WPPOPPOP_SMS_REDACT */
         if (class_exists('WpPopPop_Sms')) {

@@ -15,6 +15,7 @@ class WpPopPop_Ajax {
             'WpPopPop_Ajax_Tools'       => 'class-ajax-tools.php',
             'WpPopPop_Ajax_Dash_Layout' => 'class-ajax-dash-layout.php',
             'WpPopPop_Ajax_Modules'     => 'class-ajax-modules.php',
+            'WpPopPop_Ajax_Mailchimp'   => 'class-ajax-mailchimp.php',
         ];
 
         foreach ($modules as $class => $file) {

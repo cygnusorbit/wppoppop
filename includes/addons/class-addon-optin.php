@@ -74,6 +74,22 @@ class WpPopPop_Addon_Optin {
             }
         }
 
+        /* WPPOPPOP_MAILCHIMP_CONFIRM: MailChimp "After double opt-in confirmation" */
+        if (!empty($submission['popup_uid'])) {
+            if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
+            if (WpPopPop_Mailchimp::module_active()) { /* WPPOPPOP_MODULE_GATE */
+                $wppoppop_mc_row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A);
+                if ($wppoppop_mc_row) {
+                    WpPopPop_Mailchimp::dispatch(
+                        'after_confirmation', $submission['popup_uid'], $wppoppop_mc_row['title'],
+                        json_decode((string) $wppoppop_mc_row['data'], true), $submission['email'],
+                        (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true),
+                        (int) $submission['id'], isset($submission['country_code']) ? $submission['country_code'] : ''
+                    );
+                }
+            }
+        }
+
         wppoppop_log_event('optin_confirmed', 'Double opt-in confirmed for ' . $submission['email'], [
             'popup_uid'     => $submission['popup_uid'],
             'submission_id' => $submission['id']

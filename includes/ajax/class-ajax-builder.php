@@ -301,6 +301,12 @@ class WpPopPop_Ajax_Builder {
                 $wppoppop_obj->settings->custom_code = json_decode(wp_json_encode($wppoppop_cc));
             }
         }
+        /* WPPOPPOP_MAILCHIMP_WHITELIST: allow-list the MailChimp module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->mailchimp)) {
+            if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
+            $wppoppop_obj->settings->mailchimp = json_decode(wp_json_encode(WpPopPop_Mailchimp::sanitize($wppoppop_obj->settings->mailchimp)));
+            if (!is_array($wppoppop_obj->settings->mailchimp)) { $wppoppop_obj->settings->mailchimp = array(); }
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));

@@ -171,6 +171,17 @@ class WpPopPop_Ajax_Templates {
                     $obj->settings->custom_code = json_decode(wp_json_encode($wppoppop_cc));
                 }
             }
+            if (isset($obj->settings->mailchimp)) { /* WPPOPPOP_MAILCHIMP_WHITELIST: templates never carry API keys */
+                if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
+                $wppoppop_mc_tpl = WpPopPop_Mailchimp::sanitize($obj->settings->mailchimp);
+                foreach ($wppoppop_mc_tpl as $wppoppop_mc_i => $wppoppop_mc_it) {
+                    $wppoppop_mc_tpl[$wppoppop_mc_i]['api_key'] = '';
+                    $wppoppop_mc_tpl[$wppoppop_mc_i]['list_id'] = '';
+                    $wppoppop_mc_tpl[$wppoppop_mc_i]['list_name'] = '';
+                }
+                $obj->settings->mailchimp = json_decode(wp_json_encode($wppoppop_mc_tpl));
+                if (!is_array($obj->settings->mailchimp)) { $obj->settings->mailchimp = array(); }
+            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }
