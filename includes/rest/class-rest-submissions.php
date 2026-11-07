@@ -125,31 +125,10 @@ class WpPopPop_Rest_Submissions {
         }
 
         // Outgoing Webhook Dispatch
-        $marketing = (!class_exists('WpPopPop_Modules') || WpPopPop_Modules::active('acc-09-webhooks')) ? ($config['marketing'] ?? []) : []; /* WPPOPPOP_MODULE_GATE */
-        if (!empty($marketing['webhook_url'])) {
-            $webhook_payload = [
-                'event'         => 'submission',
-                'popup_uid'     => $uid,
-                'submission_id' => $submission_id,
-                'email'         => $email,
-                'fields'        => $fields,
-                'country'       => $visitor_country,
-                'timestamp'     => current_time('mysql'),
-            ];
-            $body_encoded = wp_json_encode($webhook_payload);
-            $headers = ['Content-Type' => 'application/json'];
-
-            if (!empty($marketing['webhook_secret'])) {
-                $sig = hash_hmac('sha256', $body_encoded, $marketing['webhook_secret']);
-                $headers['X-WpPopPop-Signature'] = $sig;
-            }
-
-            wp_remote_post(esc_url_raw($marketing['webhook_url']), [
-                'headers'  => $headers,
-                'body'     => $body_encoded,
-                'timeout'  => 10,
-                'blocking' => false,
-            ]);
+        if (!class_exists('WpPopPop_Webhooks')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; }
+        $wh_cfg = WpPopPop_Webhooks::get_config($config);
+        if (!empty($wh_cfg['url']) && WpPopPop_Webhooks::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            WpPopPop_Webhooks::send($uid, $submission_id, $email, $fields, $visitor_country, $wh_cfg);
         }
 
         $actions = $config['actions'] ?? [];

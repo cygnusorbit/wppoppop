@@ -41,7 +41,7 @@ class WpPopPop_Hooks {
                 'wppoppop_after_delete_popup'       => 'Fires after a campaign and its submissions have been deleted.',
                 'wppoppop_before_submission_save'  => 'Fires before a new lead submission is written to the database.',
                 'wppoppop_after_submission_saved'   => 'Fires after a new lead is inserted into wp_wppoppop_submissions.',
-                'wppoppop_webhook_dispatched'      => 'Fires after an outbound webhook response is received.',
+                'wppoppop_webhook_dispatched'      => 'Fires after an outbound webhook request is sent (non-blocking: args are the response stub, payload, popup uid).',
                 'wppoppop_after_save_ab_campaign'  => 'Fires after an A/B split-testing campaign is created.',
                 'wppoppop_after_delete_ab_campaign'=> 'Fires after an A/B split-testing campaign is removed.',
             ]

@@ -202,6 +202,13 @@ class WpPopPop_Ajax_Builder {
                 WpPopPop_Side_Tabs::sanitize(isset($wppoppop_obj->settings->sidetab) ? $wppoppop_obj->settings->sidetab : array())
             ));
         }
+        /* WPPOPPOP_WEBHOOKS_WHITELIST: allow-list the Webhooks module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Webhooks')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; }
+            $wppoppop_obj->settings->webhooks = json_decode(wp_json_encode(
+                WpPopPop_Webhooks::sanitize(isset($wppoppop_obj->settings->webhooks) ? $wppoppop_obj->settings->webhooks : array())
+            ));
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));

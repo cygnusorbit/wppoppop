@@ -517,10 +517,7 @@
                     time: parseInt($('#set-vid-time').val(), 10) || 0
                 },
                 /* Autoresponder (settings.autoresponder) lives in the module package: admin.js */
-                webhooks: {
-                    url: $('#set-webhook-url').val() || '',
-                    secret: $('#set-webhook-secret').val() || ''
-                },
+                /* Webhooks (settings.webhooks) live in the module package: admin.js */
                 sms: {
                     enable: $('#set-sms-enable').is(':checked'),
                     phone: $('#set-sms-phone').val() || ''

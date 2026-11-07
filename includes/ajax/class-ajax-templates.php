@@ -103,6 +103,10 @@ class WpPopPop_Ajax_Templates {
             $obj->settings->sidetab = json_decode(wp_json_encode( /* WPPOPPOP_SIDE_TABS_WHITELIST */
                 WpPopPop_Side_Tabs::sanitize(isset($obj->settings->sidetab) ? $obj->settings->sidetab : array())
             ));
+            if (!class_exists('WpPopPop_Webhooks')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; }
+            $obj->settings->webhooks = json_decode(wp_json_encode( /* WPPOPPOP_WEBHOOKS_WHITELIST */
+                WpPopPop_Webhooks::sanitize(isset($obj->settings->webhooks) ? $obj->settings->webhooks : array())
+            ));
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

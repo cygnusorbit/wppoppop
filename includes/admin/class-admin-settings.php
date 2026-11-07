@@ -100,7 +100,7 @@ class WpPopPop_Admin_Settings {
         }
         $s = get_option('wppoppop_settings', []);
         /* WPPOPPOP_MODULE_LEGACY_KEYS: keep toggles saved under the pre-renumber keys */
-        $legacy = ['acc-17-double-optin' => ['acc-16-double-optin'], 'acc-popup-overlay' => ['acc-16-popup-overlay', 'acc-17-popup-overlay'], 'acc-notifications' => ['acc-18-notifications'], 'acc-double-optin' => ['acc-17-double-optin', 'acc-16-double-optin'], 'acc-targeting-triggers' => ['acc-22-targeting-triggers'], 'acc-success-celebration' => ['acc-19-success-celebration'], 'acc-autoresponder' => ['acc-08-autoresponder'], 'acc-side-tabs' => ['acc-04-side-tabs']];
+        $legacy = ['acc-17-double-optin' => ['acc-16-double-optin'], 'acc-popup-overlay' => ['acc-16-popup-overlay', 'acc-17-popup-overlay'], 'acc-notifications' => ['acc-18-notifications'], 'acc-double-optin' => ['acc-17-double-optin', 'acc-16-double-optin'], 'acc-targeting-triggers' => ['acc-22-targeting-triggers'], 'acc-success-celebration' => ['acc-19-success-celebration'], 'acc-autoresponder' => ['acc-08-autoresponder'], 'acc-side-tabs' => ['acc-04-side-tabs'], 'acc-webhooks' => ['acc-09-webhooks']];
         if (is_array($s) && isset($s['modules']) && is_array($s['modules']) && !array_key_exists($key, $s['modules']) && isset($legacy[$key])) {
             foreach ($legacy[$key] as $old_key) {
                 if (array_key_exists($old_key, $s['modules'])) {

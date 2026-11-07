@@ -25,7 +25,7 @@ class WpPopPop_Modules {
     const MAX_FIELDS = 40;
     const FIELD_TYPES = ['toggle', 'text', 'textarea', 'number', 'select', 'color', 'url'];
     const MAX_HTML   = 65536;
-    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth', 'animation', 'overlay', 'popup_position', 'notifications', 'double_optin', 'targeting_triggers', 'celebration', 'autoresponder', 'sidetab'];
+    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth', 'animation', 'overlay', 'popup_position', 'notifications', 'double_optin', 'targeting_triggers', 'celebration', 'autoresponder', 'sidetab', 'webhooks'];
     const ORPHAN_OPT = 'wppoppop_modules_orphans';
 
     protected static $cache = null;
@@ -561,6 +561,10 @@ class WpPopPop_Modules {
             foreach (array_keys(self::missing_keys()) as $k) {
                 unset($res['config']['settings'][$k]);
             }
+        }
+        if (!class_exists('WpPopPop_Webhooks') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; } /* WPPOPPOP_WEBHOOKS_REDACT */
+        if (class_exists('WpPopPop_Webhooks')) {
+            $res['config'] = WpPopPop_Webhooks::redact($res['config']);
         }
         return $res;
     }
