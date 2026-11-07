@@ -122,6 +122,27 @@ class WpPopPop_Ajax_Templates {
             } else {
                 $obj->settings->logic_math = json_decode(wp_json_encode($wppoppop_lm));
             }
+            if (!class_exists('WpPopPop_Logic_Payments')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-payments.php'; }
+            $wppoppop_pay = WpPopPop_Logic_Payments::sanitize(isset($obj->settings->payments) ? $obj->settings->payments : array());
+            if ($wppoppop_pay === WpPopPop_Logic_Payments::defaults()) {
+                unset($obj->settings->payments);
+            } else {
+                $obj->settings->payments = json_decode(wp_json_encode($wppoppop_pay));
+            }
+            if (!class_exists('WpPopPop_Video_Listeners')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-video-listeners.php'; }
+            $wppoppop_vid = WpPopPop_Video_Listeners::sanitize(isset($obj->settings->video) ? $obj->settings->video : array());
+            if ($wppoppop_vid === WpPopPop_Video_Listeners::defaults()) {
+                unset($obj->settings->video);
+            } else {
+                $obj->settings->video = json_decode(wp_json_encode($wppoppop_vid));
+            }
+            if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
+            $wppoppop_sms = WpPopPop_Sms::sanitize(isset($obj->settings->sms) ? $obj->settings->sms : array());
+            if ($wppoppop_sms === WpPopPop_Sms::defaults()) {
+                unset($obj->settings->sms);
+            } else {
+                $obj->settings->sms = json_decode(wp_json_encode($wppoppop_sms));
+            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

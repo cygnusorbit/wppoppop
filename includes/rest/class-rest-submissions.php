@@ -131,6 +131,13 @@ class WpPopPop_Rest_Submissions {
             WpPopPop_Webhooks::send($uid, $submission_id, $email, $fields, $visitor_country, $wh_cfg);
         }
 
+        // Twilio SMS alert (module acc-sms)
+        if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
+        $sms_cfg = WpPopPop_Sms::get_config($config, $uid);
+        if (!empty($sms_cfg['enable']) && WpPopPop_Sms::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            WpPopPop_Sms::notify($uid, isset($row['title']) ? $row['title'] : '', $email, $sms_cfg);
+        }
+
         // WooCommerce coupon (module acc-woocommerce); never before the email is confirmed
         $wc_code = '';
         if (!$is_double_optin) {

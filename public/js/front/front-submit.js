@@ -265,7 +265,7 @@
                 email: email,
                 amount: amt,
                 currency: cur,
-                gateway: 'Stripe'
+                gateway: $btn.data('gateway') || 'stripe'
             }).done(function(res) {
                 if (res.success) {
                     alert(res.data.message || wp.i18n.__('Payment completed!', 'wppoppop'));

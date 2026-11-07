@@ -233,6 +233,36 @@ class WpPopPop_Ajax_Builder {
                 $wppoppop_obj->settings->logic_math = json_decode(wp_json_encode($wppoppop_lm));
             }
         }
+        /* WPPOPPOP_LOGIC_PAYMENTS_WHITELIST: allow-list the Payments module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Logic_Payments')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-payments.php'; }
+            $wppoppop_pay = WpPopPop_Logic_Payments::sanitize(isset($wppoppop_obj->settings->payments) ? $wppoppop_obj->settings->payments : array());
+            if ($wppoppop_pay === WpPopPop_Logic_Payments::defaults()) {
+                unset($wppoppop_obj->settings->payments);
+            } else {
+                $wppoppop_obj->settings->payments = json_decode(wp_json_encode($wppoppop_pay));
+            }
+        }
+        /* WPPOPPOP_VIDEO_WHITELIST: allow-list the Video Playback Listeners module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Video_Listeners')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-video-listeners.php'; }
+            $wppoppop_vid = WpPopPop_Video_Listeners::sanitize(isset($wppoppop_obj->settings->video) ? $wppoppop_obj->settings->video : array());
+            if ($wppoppop_vid === WpPopPop_Video_Listeners::defaults()) {
+                unset($wppoppop_obj->settings->video);
+            } else {
+                $wppoppop_obj->settings->video = json_decode(wp_json_encode($wppoppop_vid));
+            }
+        }
+        /* WPPOPPOP_SMS_WHITELIST: allow-list the Twilio SMS Alerts module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
+            $wppoppop_sms = WpPopPop_Sms::sanitize(isset($wppoppop_obj->settings->sms) ? $wppoppop_obj->settings->sms : array());
+            if ($wppoppop_sms === WpPopPop_Sms::defaults()) {
+                unset($wppoppop_obj->settings->sms);
+            } else {
+                $wppoppop_obj->settings->sms = json_decode(wp_json_encode($wppoppop_sms));
+            }
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));

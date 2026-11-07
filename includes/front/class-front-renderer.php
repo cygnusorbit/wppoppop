@@ -82,6 +82,14 @@ class WpPopPop_Front_Renderer {
         if (!class_exists('WpPopPop_Logic_Math')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-math.php'; }
         $trg_attrs .= WpPopPop_Logic_Math::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
 
+        /* WPPOPPOP_LOGIC_PAYMENTS_CONTEXT: the Pay layer reads the module defaults of this popup */
+        if (!class_exists('WpPopPop_Logic_Payments')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-payments.php'; }
+        WpPopPop_Logic_Payments::context((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+
+        /* WPPOPPOP_VIDEO_RENDER: an active Video Playback Listeners module adds its data-video-* attributes (module.js listens) */
+        if (!class_exists('WpPopPop_Video_Listeners')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-video-listeners.php'; }
+        $trg_attrs .= WpPopPop_Video_Listeners::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+
         /* WPPOPPOP_BG_CLOSE_ATTR: backdrop click closes only when enabled (default off) */
         $bgc_raw = isset($config['settings']['close_on_backdrop']) ? $config['settings']['close_on_backdrop'] : false;
         $trg_attrs .= ' data-close-backdrop="' . (in_array($bgc_raw, array(true, 1, '1', 'true'), true) ? '1' : '0') . '"';
@@ -961,7 +969,7 @@ class WpPopPop_Front_Renderer {
                     . (isset($sb_hover) ? $sb_hover : $hover_style_tag) . '</div>';
             case 'pay':
                 $btn_text = !empty($content) ? esc_html($content) : esc_html__('Pay Now', 'wppoppop');
-                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-pay-trigger" data-amount="19.99" data-currency="USD" style="width:100%;height:100%;background:#059669;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
+                return '<div class="wppoppop-layer-item wppoppop-element ' . $anim_class . '" style="' . $style_attr . '"><button type="button" class="wppoppop-pay-trigger"' . WpPopPop_Logic_Payments::button_attrs($el) . ' style="width:100%;height:100%;background:#059669;color:#ffffff;border:none;border-radius:inherit;font-weight:700;font-size:13px;cursor:pointer;">' . $btn_text . '</button></div>';
 
             case 'close':
             case 'close_icon':

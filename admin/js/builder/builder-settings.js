@@ -501,21 +501,12 @@
                 },
                 /* Conditional Logic & Math (settings.logic_math) live in the module package: admin.js */
                 /* Side Tabs (settings.sidetab) live in the module package: admin.js */
-                payments: {
-                    gateway: $('#set-pay-gateway').val() || 'stripe',
-                    amount: parseFloat($('#set-pay-amount').val()) || 0
-                },
+                /* Payments (settings.payments) live in the module package: admin.js */
                 /* Downloads (settings.downloads) live in the module package: admin.js */
-                video: {
-                    enable: $('#set-vid-enable').is(':checked'),
-                    time: parseInt($('#set-vid-time').val(), 10) || 0
-                },
+                /* Video Playback Listeners (settings.video) live in the module package: admin.js */
                 /* Autoresponder (settings.autoresponder) lives in the module package: admin.js */
                 /* Webhooks (settings.webhooks) live in the module package: admin.js */
-                sms: {
-                    enable: $('#set-sms-enable').is(':checked'),
-                    phone: $('#set-sms-phone').val() || ''
-                },
+                /* Twilio SMS Alerts (settings.sms) live in the module package: admin.js */
                 targeting: {
                     auth: $('#set-target-auth').val() || 'all'
                 },
