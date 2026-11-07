@@ -60,7 +60,7 @@ class WpPopPop_Admin_Help {
         $screen->add_help_tab([
             'id'      => 'wppoppop_dash_actions',
             'title'   => __('Quick & Bulk Actions', 'wppoppop'),
-            'content' => '<p>' . __('Hover over any row to use Quick Edit (for changing title and status inline), Duplicate (to clone a campaign), or Export JSON. Use the checkbox column on the left to apply bulk actions (Move to Trash, Publish, Draft, Duplicate) across multiple campaigns at once.', 'wppoppop') . '</p>',
+            'content' => '<p>' . __('Hover over any row to use Quick Edit (for changing title and status inline), or Duplicate (to clone a campaign). Use the checkbox column on the left to apply bulk actions (Move to Trash, Publish, Draft, Duplicate) across multiple campaigns at once.', 'wppoppop') . '</p>',
         ]);
     }
 

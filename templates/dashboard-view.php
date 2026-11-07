@@ -23,9 +23,6 @@ if (!defined('ABSPATH')) {
     <!-- Campaigns List Table -->
     <?php include WPPOPPOP_PATH . 'templates/dashboard/table.php'; ?>
 
-    <!-- JSON Import Modal Dialog -->
-    <?php include WPPOPPOP_PATH . 'templates/dashboard/modal-import.php'; ?>
-
     <!-- Embed Code Snippets Modal Dialog -->
     <?php include WPPOPPOP_PATH . 'templates/dashboard/modal-embed.php'; ?>
 </div>

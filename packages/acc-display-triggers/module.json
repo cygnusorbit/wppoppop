@@ -1,8 +1,8 @@
 {
     "schema": 1,
-    "slug": "acc-02-triggers",
+    "slug": "acc-display-triggers",
     "name": "Display Triggers",
-    "version": "1.2.0",
+    "version": "1.1.0",
     "author": "WpPopPop",
     "description": "Page load, always-on, repeat, exit intent, scroll depth, AdBlock and mobile back-button triggers.",
     "category": "all-modules",

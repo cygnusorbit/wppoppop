@@ -66,7 +66,6 @@ class WpPopPop_List_Table extends WP_List_Table {
         }
         if (current_user_can('edit_wppoppop_campaigns')) {
             $actions['duplicate'] = __('Duplicate Selected', 'wppoppop');
-            $actions['export']    = __('Export Selected (JSON)', 'wppoppop');
         }
 
         return $actions;
@@ -279,11 +278,6 @@ class WpPopPop_List_Table extends WP_List_Table {
                 '<a href="javascript:void(0);" role="button" class="wppoppop-duplicate-btn wppoppop-action-duplicate" data-uid="%s">%s</a>',
                 esc_attr($uid),
                 __('Duplicate', 'wppoppop')
-            );
-            $actions['export'] = sprintf(
-                '<a href="javascript:void(0);" role="button" class="wppoppop-export-btn wppoppop-action-export" data-uid="%s">%s</a>',
-                esc_attr($uid),
-                __('Export JSON', 'wppoppop')
             );
         }
 
