@@ -18,7 +18,7 @@ class WpPopPop_Modules_Installer {
     const MAX_UNPACKED = 10485760;
     const MAX_DEPTH    = 4;
     const SEED_OPT     = 'wppoppop_modules_seeded';
-    const RENAMED      = ['acc-20-animation' => 'acc-animation', 'acc-16-popup-overlay' => 'acc-popup-overlay', 'acc-17-popup-overlay' => 'acc-popup-overlay', 'acc-21-popup-positions' => 'acc-popup-positions', 'acc-18-notifications' => 'acc-notifications', 'acc-17-double-optin' => 'acc-double-optin', 'acc-22-targeting-triggers' => 'acc-targeting-triggers', 'acc-19-success-celebration' => 'acc-success-celebration', 'acc-08-autoresponder' => 'acc-autoresponder', 'acc-04-side-tabs' => 'acc-side-tabs', 'acc-09-webhooks' => 'acc-webhooks'];
+    const RENAMED      = ['acc-20-animation' => 'acc-animation', 'acc-16-popup-overlay' => 'acc-popup-overlay', 'acc-17-popup-overlay' => 'acc-popup-overlay', 'acc-21-popup-positions' => 'acc-popup-positions', 'acc-18-notifications' => 'acc-notifications', 'acc-17-double-optin' => 'acc-double-optin', 'acc-22-targeting-triggers' => 'acc-targeting-triggers', 'acc-19-success-celebration' => 'acc-success-celebration', 'acc-08-autoresponder' => 'acc-autoresponder', 'acc-04-side-tabs' => 'acc-side-tabs', 'acc-09-webhooks' => 'acc-webhooks', 'acc-13-woocommerce' => 'acc-woocommerce'];
     const ALLOWED_EXT  = ['json', 'css', 'js', 'html', 'txt', 'md', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2'];
     const BAD_SEGMENT  = '/^(php\d*|phtml|pht|phps|phar|cgi|pl|py|rb|sh|bash|asp|aspx|jsp|exe|dll|so|htaccess|htpasswd)$/i';
 

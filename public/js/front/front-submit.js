@@ -194,14 +194,18 @@
                 $status.find('.wppoppop-status-message').text((res.data && res.data.message) || res.message || 'Thank you! Submitted successfully.');
                 $status.fadeIn(200);
 
-                // Auto-apply WooCommerce coupon if active
-                var woo = config.woocommerce || {};
-                if (woo.auto_apply && ajaxUrl) {
-                    $.post(ajaxUrl, {
-                        action: 'wppoppop_apply_wc_coupon',
-                        nonce: window.wppoppop_front_vars.nonce,
-                        coupon_code: fields['coupon'] || (woo.prefix + '_PROMO')
-                    });
+                // WooCommerce: the server issued a coupon for this subscriber (module acc-woocommerce)
+                var wcCode = res.coupon_code || (res.data && res.data.coupon_code) || '';
+                if (wcCode && typeof wcCode === 'string') {
+                    var $wcMsg = $status.find('.wppoppop-status-message');
+                    $wcMsg.text($wcMsg.text() + ' Your coupon code: ' + wcCode);
+                    if (ajaxUrl) {
+                        $.post(ajaxUrl, {
+                            action: 'wppoppop_apply_wc_coupon',
+                            nonce: (window.wppoppop_front_vars && window.wppoppop_front_vars.nonce) || '',
+                            coupon_code: wcCode
+                        });
+                    }
                 }
 
                 // Redirect or Auto-close

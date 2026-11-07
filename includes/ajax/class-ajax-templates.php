@@ -107,6 +107,10 @@ class WpPopPop_Ajax_Templates {
             $obj->settings->webhooks = json_decode(wp_json_encode( /* WPPOPPOP_WEBHOOKS_WHITELIST */
                 WpPopPop_Webhooks::sanitize(isset($obj->settings->webhooks) ? $obj->settings->webhooks : array())
             ));
+            if (!class_exists('WpPopPop_Woocommerce')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-woocommerce.php'; }
+            $obj->settings->woocommerce = json_decode(wp_json_encode( /* WPPOPPOP_WOOCOMMERCE_WHITELIST */
+                WpPopPop_Woocommerce::sanitize(isset($obj->settings->woocommerce) ? $obj->settings->woocommerce : array())
+            ));
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

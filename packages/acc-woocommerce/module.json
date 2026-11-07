@@ -1,21 +1,22 @@
 {
     "schema": 1,
-    "slug": "acc-13-woocommerce",
+    "slug": "acc-woocommerce",
     "name": "WooCommerce",
     "version": "1.0.0",
     "author": "WpPopPop",
-    "description": "WooCommerce coupons and conversion tools.",
+    "description": "Create a unique WooCommerce discount coupon for every new subscriber.",
     "category": "all-modules",
-    "locked": false,
     "default_active": false,
     "order": 140,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "woocommerce"
     ],
-    "in_use": [],
+    "in_use": [
+        "woocommerce.coupon"
+    ],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-13-woocommerce.php"
+    "deprecated": false
 }

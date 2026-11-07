@@ -528,10 +528,7 @@
                 frequency: {
                     mode: $('#set-freq-mode').val() || 'always'
                 },
-                woocommerce: {
-                    coupon: $('#set-wc-coupon').is(':checked'),
-                    amount: $('#set-wc-amount').val() || ''
-                },
+                /* WooCommerce (settings.woocommerce) lives in the module package: admin.js */
                 custom_code: {
                     css: $('#set-custom-css').val() || '',
                     js: $('#set-custom-js').val() || ''
