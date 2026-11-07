@@ -62,6 +62,19 @@ body.wppoppop-admin-themed #wpbody-content .wp-core-ui .button {
     color: var(--wpp-c-secondary-text);
     border: var(--wpp-bw) solid var(--wpp-c-secondary-border);
 }
+/* Center label (horizontal + vertical) at any "Button height" */
+body.wppoppop-admin-themed #wpbody-content .button:not(.button-link):not([hidden]),
+body.wppoppop-admin-themed #wpbody-content button.button:not(.button-link):not([hidden]),
+body.wppoppop-admin-themed #wpbody-content .wp-core-ui .button:not(.button-link):not([hidden]) {
+    display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex;
+    -webkit-box-align: center; -ms-flex-align: center; align-items: center;
+    -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center;
+    gap: 4px; box-sizing: border-box;
+    padding-top: 0; padding-bottom: 0;
+    line-height: 1; text-align: center; vertical-align: middle;
+}
+body.wppoppop-admin-themed #wpbody-content .button:not(.button-link) .dashicons { margin: 0; line-height: 1; }
+
 body.wppoppop-admin-themed #wpbody-content .button:hover,
 body.wppoppop-admin-themed #wpbody-content .button:focus { background: var(--wpp-c-secondary-hover); color: var(--wpp-c-secondary-text); }
 
