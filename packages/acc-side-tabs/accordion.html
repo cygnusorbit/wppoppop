@@ -1,7 +1,39 @@
 <div class="wppoppop-st-root">
-    <label class="wppoppop-st-check"><input type="checkbox" id="set-sidetab-enable" value="1"> Enable Sticky Side Tab</label>
+    <div class="wppoppop-st-enable">
+        <label for="set-sidetab-enable" class="wppoppop-st-enable-label">Enable Sticky Side Tab</label>
+        <span class="wppoppop-st-sw">
+            <input type="checkbox" id="set-sidetab-enable" value="1" title="Pin a tab to the screen edge">
+            <span class="wppoppop-st-track"></span>
+        </span>
+    </div>
+
     <label class="wppoppop-st-lbl" for="set-sidetab-label">Tab Label</label>
-    <input type="text" id="set-sidetab-label" class="widefat" placeholder="Feedback / Offer" maxlength="40">
+    <div class="wppoppop-st-row">
+        <span class="wppoppop-st-iconslot"></span>
+        <input type="hidden" id="set-sidetab-icon" value="">
+        <input type="text" id="set-sidetab-label" class="widefat" placeholder="Feedback / Offer" maxlength="40">
+    </div>
+
+    <label class="wppoppop-st-lbl" for="set-sidetab-bg">Tab Background</label>
+    <div class="wppoppop-st-color-row">
+        <input type="color" id="set-sidetab-bg" value="#c2185b">
+        <span id="set-sidetab-bg-val" class="wppoppop-st-val">#c2185b</span>
+    </div>
+
+    <label class="wppoppop-st-lbl" for="set-sidetab-radius">Tab Corner Radius</label>
+    <div class="wppoppop-st-range-row">
+        <input type="range" id="set-sidetab-radius" min="0" max="50" step="1" value="6">
+        <span id="set-sidetab-radius-val" class="wppoppop-st-val">6px</span>
+    </div>
+
+    <label class="wppoppop-st-lbl" for="set-sidetab-anim">Slide-in Animation</label>
+    <select id="set-sidetab-anim" class="widefat">
+        <option value="slide">Slide</option>
+        <option value="bounce">Bounce</option>
+        <option value="fade">Fade</option>
+        <option value="none">None</option>
+    </select>
+
     <label class="wppoppop-st-lbl" for="set-sidetab-pos">Screen Edge</label>
     <select id="set-sidetab-pos" class="widefat">
         <option value="left">Left Edge</option>
