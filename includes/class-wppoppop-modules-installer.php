@@ -55,15 +55,45 @@ class WpPopPop_Modules_Installer {
             'source'      => $m['source'],
             'state'       => WpPopPop_Modules::state($slug),
             'locked'      => (bool) $m['locked'],
+            'can_edit'    => !isset($m['allow_edit']) || !empty($m['allow_edit']),
+            'can_delete'  => !isset($m['allow_delete']) || !empty($m['allow_delete']),
+            'can_manage'  => !isset($m['allow_manage']) || !empty($m['allow_manage']),
+            'can_uninstall' => !isset($m['allow_uninstall']) || !empty($m['allow_uninstall']),
+            'show_source' => !isset($m['show_source_pill']) || !empty($m['show_source_pill']),
+            'show_state'  => !isset($m['show_state_pill']) || !empty($m['show_state_pill']),
+            'pills'       => isset($m['pills']) ? array_values((array) $m['pills']) : [],
             'deprecated'  => (bool) $m['deprecated'],
             'compatible'  => (bool) $m['compatible'],
             'requires'    => array_values($m['requires']),
             'required_by' => $by,
             'category'    => WpPopPop_Module_Categories::of($m),
+            'buttons'     => self::actions_out(isset($m['buttons']) ? $m['buttons'] : [], $m),
+            'links'       => self::actions_out(isset($m['links']) ? $m['links'] : [], $m),
             'image'       => WpPopPop_Module_Categories::image_of($m),
             'image_raw'   => WpPopPop_Module_Categories::image_raw($m),
             'image_base'  => WpPopPop_Modules::module_url($m),
         ];
+    }
+
+    /** Turn manifest buttons/links into final hrefs: absolute and /site paths as-is, page.php?x=1 -> admin URL, anything else -> module folder file. */
+    protected static function actions_out($list, $m) {
+        $out = [];
+        foreach ((array) $list as $b) {
+            $u = $b['url'];
+            if (preg_match('#^(?:https?:|mailto:|tel:|/)#i', $u) !== 1) {
+                if (preg_match('#^[a-z0-9_-]+\.php(?:\?|$)#i', $u) === 1) {
+                    $u = admin_url($u);
+                } else {
+                    $base = WpPopPop_Modules::module_url($m);
+                    $u    = $base === '' ? '' : $base . $u;
+                }
+            }
+            if ($u !== '') {
+                $b['url'] = $u;
+                $out[]    = $b;
+            }
+        }
+        return $out;
     }
 
     protected static function names($slugs) {
@@ -202,16 +232,14 @@ class WpPopPop_Modules_Installer {
     /* ------------------------------------------------------ install / uninstall / delete */
 
     /**
-     * Modules listed on the Extend page: every upload (any state), every built-in that is not installed
-     * (uninstalled or deleted, so it can be reinstalled) and every locked module.
+     * Modules listed on the Extend page: every valid folder with a module.json, i.e. everything in /modules
+     * (built-in or custom) and every upload, in any state.
      */
     public static function extend_items() {
         $rank = ['available' => 0, 'deleted' => 1, 'installed' => 2];
         $out  = [];
-        foreach (WpPopPop_Modules::all() as $slug => $m) {
-            if ($m['locked'] || $m['source'] === 'uploaded' || WpPopPop_Modules::state($slug) !== 'installed') {
-                $out[] = self::summary($m);
-            }
+        foreach (WpPopPop_Modules::all() as $m) {
+            $out[] = self::summary($m);
         }
         usort($out, function ($a, $b) use ($rank) {
             $ra = $a['locked'] ? 3 : (isset($rank[$a['state']]) ? $rank[$a['state']] : 2);
@@ -369,6 +397,9 @@ class WpPopPop_Modules_Installer {
         if (is_wp_error($m)) {
             return $m;
         }
+        if (isset($m['allow_uninstall']) && !$m['allow_uninstall']) {
+            return self::err('no_uninstall', __('Uninstalling is disabled for this module in its module.json.', 'wppoppop'));
+        }
         if (WpPopPop_Modules::state($slug) !== 'installed') {
             return self::err('not_installed', __('This module is not installed.', 'wppoppop'));
         }
@@ -384,6 +415,9 @@ class WpPopPop_Modules_Installer {
         $m = self::guard_removal($slug, $force);
         if (is_wp_error($m)) {
             return $m;
+        }
+        if (isset($m['allow_delete']) && !$m['allow_delete']) {
+            return self::err('no_delete', __('Deleting is disabled for this module in its module.json.', 'wppoppop'));
         }
         if ($m['source'] === 'uploaded' && !self::can_upload()) {
             return self::err('forbidden', __('You are not allowed to delete module files on this site.', 'wppoppop'));

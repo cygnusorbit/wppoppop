@@ -106,25 +106,50 @@
             return fillThumb($('<span class="wpp-ext-item-img" aria-hidden="true"></span>'), url);
         }
 
+        function customBtn(b) {
+            var $a = $('<a class="button"></a>').attr('href', b.url);
+            if (b.new_tab) { $a.attr({ target: '_blank', rel: 'noopener noreferrer' }); }
+            if (b.icon) {
+                return $a.addClass('wpp-ext-icon-btn').attr({ title: b.label, 'aria-label': b.label })
+                    .append($('<span class="dashicons" aria-hidden="true"></span>').addClass('dashicons-' + b.icon));
+            }
+            return $a.toggleClass('button-primary', !!b.primary).text(b.label);
+        }
+
         function card(m) {
             var $c = $('<article class="wpp-ext-item"></article>').attr('data-slug', m.slug);
             var $top = $('<div class="wpp-ext-item-top"></div>').appendTo($c);
             $top.append(thumb(m.image));
             var $head = $('<div class="wpp-ext-item-head"></div>').appendTo($top);
             $('<h3 class="wpp-ext-item-name"></h3>').text(m.name).appendTo($head);
-            $head.append(pill(m.source === 'core' ? M.t('builtin') : M.t('uploaded')));
-            if (m.locked) {
-                $head.append(pill(M.t('locked'), 'is-lock'));
-            } else if (m.state === 'installed') {
-                $head.append(pill(M.t('st_installed'), 'is-ok'));
-            } else if (m.state === 'deleted') {
-                $head.append(pill(M.t('st_deleted'), 'is-bad'));
-            } else {
-                $head.append(pill(M.t('st_available'), 'is-warn'));
+            if (m.show_source !== false) {
+                $head.append(pill(m.source === 'core' ? M.t('builtin') : M.t('uploaded')));
+            }
+            if (m.show_state !== false) {
+                if (m.locked) {
+                    $head.append(pill(M.t('locked'), 'is-lock'));
+                } else if (m.state === 'installed') {
+                    $head.append(pill(M.t('st_installed'), 'is-ok'));
+                } else if (m.state === 'deleted') {
+                    $head.append(pill(M.t('st_deleted'), 'is-bad'));
+                } else {
+                    $head.append(pill(M.t('st_available'), 'is-warn'));
+                }
             }
             if (m.deprecated) { $head.append(pill(M.t('deprecated'), 'is-warn')); }
+            $.each(m.pills || [], function (i, p) {
+                var o = (p && typeof p === 'object') ? p : { text: p };
+                $head.append(pill(o.text, o.style === 'primary' ? 'is-custom is-primary' : 'is-custom'));
+            });
 
             $('<p class="wpp-ext-item-desc"></p>').text(m.description || '').appendTo($c);
+            if (m.links && m.links.length) {
+                var $ln = $('<p class="wpp-ext-item-links"></p>').appendTo($c);
+                $.each(m.links, function (i, l) {
+                    var $l = $('<a></a>').attr('href', l.url).text(l.label).appendTo($ln);
+                    if (l.new_tab) { $l.attr({ target: '_blank', rel: 'noopener noreferrer' }); }
+                });
+            }
 
             var $meta = $('<p class="wpp-ext-item-meta"></p>').appendTo($c);
             if (m.version) { $('<span></span>').text(M.fmt(M.t('version'), m.version)).appendTo($meta); }
@@ -139,9 +164,13 @@
             var $end = $('<span class="wpp-ext-act-end"></span>');
             if (!m.locked) {
                 if (m.state === 'installed') {
-                    $('<a class="button wpp-ext-icon-btn"></a>').attr({ href: M.vars.modules_url, title: M.t('manage'), 'aria-label': M.t('manage') })
-                        .append('<span class="dashicons dashicons-admin-generic" aria-hidden="true"></span>').appendTo($act);
-                    $act.append(icon('remove', M.t('uninstall')).attr('data-act', 'uninstall'));
+                    if (m.can_manage !== false) {
+                        $('<a class="button wpp-ext-icon-btn"></a>').attr({ href: M.vars.modules_url, title: M.t('manage'), 'aria-label': M.t('manage') })
+                            .append('<span class="dashicons dashicons-admin-generic" aria-hidden="true"></span>').appendTo($act);
+                    }
+                    if (m.can_uninstall !== false) {
+                        $act.append(icon('remove', M.t('uninstall')).attr('data-act', 'uninstall'));
+                    }
                 } else {
                     var $inst = button(m.state === 'deleted' ? M.t('restore') : M.t('install'), 'button-primary').attr('data-act', 'install');
                     if (!m.compatible) {
@@ -151,8 +180,11 @@
                     $act.prepend($inst);
                 }
             }
-            $end.append(icon('edit', M.t('edit')).attr('data-edit', '1'));
-            if (!m.locked && m.state !== 'deleted') {
+            $.each(m.buttons || [], function (i, b) { $act.append(customBtn(b)); });
+            if (m.can_edit !== false) {
+                $end.append(icon('edit', M.t('edit')).attr('data-edit', '1'));
+            }
+            if (!m.locked && m.state !== 'deleted' && m.can_delete !== false) {
                 $end.append(icon('trash', M.t('delete'), 'wpp-ext-del').attr('data-act', 'delete'));
             }
             $act.append($end);

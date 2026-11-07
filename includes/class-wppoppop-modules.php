@@ -207,7 +207,16 @@ class WpPopPop_Modules {
             'description'    => self::text($raw, 'description', 240),
             'category'       => self::text($raw, 'category', 40),
             'image'          => self::image_url($raw),
+            'buttons'        => self::actions($raw, 'buttons'),
+            'links'          => self::actions($raw, 'links'),
             'locked'         => $core && !empty($raw['locked']),
+            'allow_edit'     => self::flag($raw, 'allow_edit'),
+            'allow_delete'   => self::flag($raw, 'allow_delete'),
+            'allow_manage'   => self::flag($raw, 'allow_manage'),
+            'allow_uninstall' => self::flag($raw, 'allow_uninstall'),
+            'show_source_pill' => self::flag($raw, 'show_source_pill'),
+            'show_state_pill' => self::flag($raw, 'show_state_pill'),
+            'pills'          => self::pills($raw),
             'default_active' => !empty($raw['default_active']),
             'order'          => $order,
             'on_missing'     => $on_miss,
@@ -241,6 +250,86 @@ class WpPopPop_Modules {
             return (string) esc_url_raw($v, ['http', 'https']);
         }
         return preg_match('#(^|/)\.\.(/|$)#', preg_replace('#[?\#].*$#', '', $v)) === 1 ? '' : $v;
+    }
+
+    /** Validate a module.json link: http(s)/mailto/tel URL, //host/path, /site/path, admin page (page.php?x=1) or a file inside the module folder. */
+    public static function link_url($v) {
+        $v = is_string($v) ? trim($v) : '';
+        if ($v === '' || strlen($v) > 500 || preg_match('#[\s<>"\'\\\\\x00-\x1f]#', $v) === 1) {
+            return '';
+        }
+        if (preg_match('#^(?:https?|mailto|tel):#i', $v) === 1) {
+            return (string) esc_url_raw($v, ['http', 'https', 'mailto', 'tel']);
+        }
+        if (strpos($v, '//') === 0) {
+            return preg_match('#^//[A-Za-z0-9.-]+(?::\d+)?(?:/\S*)?$#', $v) === 1 ? $v : '';
+        }
+        if (strpos($v, ':') !== false) {
+            return '';
+        }
+        return preg_match('#(^|/)\.\.(/|$)#', preg_replace('#[?\#].*$#', '', $v)) === 1 ? '' : $v;
+    }
+
+    /** Clean "buttons" / "links": [{label, url, icon (dashicon name), new_tab, primary}], max 6 each. */
+    protected static function actions($raw, $key) {
+        $out = [];
+        if (!isset($raw[$key]) || !is_array($raw[$key])) {
+            return $out;
+        }
+        foreach ($raw[$key] as $b) {
+            if (count($out) >= 6) {
+                break;
+            }
+            if (!is_array($b)) {
+                continue;
+            }
+            $url   = self::link_url(isset($b['url']) ? $b['url'] : '');
+            $label = self::text($b, 'label', 40);
+            if ($url === '' || $label === '') {
+                continue;
+            }
+            $icon = (isset($b['icon']) && is_string($b['icon'])) ? preg_replace('/^dashicons-/', '', $b['icon']) : '';
+            $out[] = [
+                'label'   => $label,
+                'url'     => $url,
+                'icon'    => preg_match('/^[a-z0-9-]{1,40}$/', $icon) === 1 ? $icon : '',
+                'new_tab' => !empty($b['new_tab']),
+                'primary' => !empty($b['primary']),
+            ];
+        }
+        return $out;
+    }
+
+    /** Optional boolean manifest key, true unless explicitly false / 0 / "false" / "no" / "off". */
+    protected static function flag($raw, $key) {
+        if (!is_array($raw) || !array_key_exists($key, $raw)) {
+            return true;
+        }
+        $v = $raw[$key];
+        if (is_string($v)) {
+            return !in_array(strtolower(trim($v)), ['false', '0', 'no', 'off', ''], true);
+        }
+        return !empty($v);
+    }
+
+    /** Custom pills: "pills": ["New", {"text": "Pro"}], max 4, text up to 24 chars. */
+    protected static function pills($raw) {
+        $out = [];
+        if (!is_array($raw) || !isset($raw['pills']) || !is_array($raw['pills'])) {
+            return $out;
+        }
+        foreach ($raw['pills'] as $p) {
+            if (count($out) >= 4) {
+                break;
+            }
+            $t = is_array($p) ? (isset($p['text']) ? $p['text'] : '') : $p;
+            $t = is_scalar($t) ? mb_substr(trim(wp_strip_all_tags((string) $t)), 0, 24) : '';
+            if ($t !== '') {
+                $primary = is_array($p) && isset($p['style']) && $p['style'] === 'primary';
+                $out[]   = ['text' => $t, 'style' => $primary ? 'primary' : 'secondary'];
+            }
+        }
+        return $out;
     }
 
     protected static function inside($path, $root) {

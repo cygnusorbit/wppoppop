@@ -106,6 +106,10 @@ class WpPopPop_Ajax_Modules {
     public function set_category() {
         $this->verify();
         $slug = $this->slug();
+        $mod  = WpPopPop_Modules::get($slug);
+        if ($mod && isset($mod['allow_edit']) && !$mod['allow_edit']) {
+            $this->respond(new WP_Error('no_edit', __('Editing is disabled for this module in its module.json.', 'wppoppop')));
+        }
         $cat  = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : '';
         $img  = isset($_POST['image']) ? sanitize_text_field(wp_unslash($_POST['image'])) : null;
         $res  = WpPopPop_Module_Categories::assign($slug, $cat, $img);

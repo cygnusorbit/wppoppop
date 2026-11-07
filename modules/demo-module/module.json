@@ -1,0 +1,38 @@
+{
+    "schema": 1,
+    "slug": "demo-module",
+    "name": "Demo Module",
+    "version": "1.0.0",
+    "author": "WpPopPop",
+    "description": "Sample custom module box. Copy this folder, rename it (folder name = slug) and edit module.json to make your own.",
+    "category": "module-pro",
+    "image": "demo.svg",
+    
+    "show_source_pill": false,
+	"show_state_pill": false,
+    "locked": false,
+    "allow_edit": false,
+    "allow_delete": false,
+    "allow_manage": false,
+	"allow_uninstall": false,
+    "default_active": false,
+    
+    "order": 900,
+    "on_missing": "skip",
+    "requires": [],
+    "data_keys": [],
+    "in_use": [],
+    "min_version": "",
+    "deprecated": false,
+    
+    "pills": ["New", { "text": "Pro", "style": "secondary" }],
+    
+    "buttons": [
+      
+        { "label": "Get PRO", "url": "#", "new_tab": true, "primary": true }
+    ],
+    "links": [
+        { "label": "Documentation", "url": "https://developer.wordpress.org/plugins/", "new_tab": true },
+        { "label": "Support", "url": "mailto:support@example.com" }
+    ]
+}
