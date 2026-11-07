@@ -25,7 +25,7 @@
     "min_version": "",
     "deprecated": false,
     
-    "pills": ["New", { "text": "Pro", "style": "secondary" }],
+    "pills": [{ "text": "New", "style": "primary" }, { "text": "Pro", "style": "secondary" }],
     
     "buttons": [
       

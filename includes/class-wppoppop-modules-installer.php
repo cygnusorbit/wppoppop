@@ -288,6 +288,10 @@ class WpPopPop_Modules_Installer {
                 'replace_msg'     => __('"%s" is already installed (version %s). Replace it with version %s? Its installed state and popup data are kept.', 'wppoppop'),
                 'replace'         => __('Replace', 'wppoppop'),
                 'replace_title'   => __('Replace module', 'wppoppop'),
+                'cmp_current'     => __('Current module', 'wppoppop'),
+                'cmp_new'         => __('Uploaded module', 'wppoppop'),
+                'cmp_msg'         => __('Replace the current module with the uploaded one? Its installed state and popup data are kept.', 'wppoppop'),
+                'cmp_msg_core'    => __('The uploaded module has the same slug and name as a module in /modules. Replace it? The older copy is removed from /modules, the uploaded one takes its place, and its installed state and popup data are kept.', 'wppoppop'),
                 'pick_zip'        => __('Choose a module .zip file first.', 'wppoppop'),
                 'not_zip'         => __('Only a .zip file can be uploaded.', 'wppoppop'),
                 /* translators: %s: maximum size */
@@ -688,6 +692,27 @@ class WpPopPop_Modules_Installer {
         @rmdir($dir);
     }
 
+    /** Put the /modules copy back when the upload could not be moved into place. */
+    protected static function undo_core($bak, $path) {
+        if ($bak !== '' && is_dir($bak) && !is_dir($path)) {
+            @rename($bak, $path);
+        }
+    }
+
+    /** Uploaded (not yet installed) module as shown in the replace confirmation. Only absolute image URLs can be previewed. */
+    protected static function incoming($m) {
+        $img = isset($m['image']) ? (string) $m['image'] : '';
+        return [
+            'slug'        => $m['slug'],
+            'name'        => $m['name'],
+            'version'     => $m['version'],
+            'author'      => $m['author'],
+            'description' => $m['description'],
+            'source'      => 'uploaded',
+            'image'       => preg_match('#^(?:https?:)?//|^/(?!/)#i', $img) === 1 ? $img : '',
+        ];
+    }
+
     protected static function rand_name($prefix) {
         return $prefix . bin2hex(function_exists('random_bytes') ? random_bytes(6) : md5(uniqid('', true)));
     }
@@ -905,53 +930,86 @@ class WpPopPop_Modules_Installer {
             self::rrmdir($tmp);
             return self::err('bad_manifest', __('This module saves settings, so it needs an admin.js.', 'wppoppop'));
         }
-        if (is_dir(WpPopPop_Modules::core_dir() . '/' . $slug)) {
-            self::rrmdir($tmp);
-            return self::err('core_slug', __('This slug belongs to a built-in module and cannot be uploaded.', 'wppoppop'));
+        $core_path = WpPopPop_Modules::core_dir() . '/' . $slug;
+        $old_core  = null;
+        if (is_dir($core_path)) {
+            $cm = WpPopPop_Modules::get($slug);
+            if (!$cm || $cm['source'] !== 'core' || $cm['locked'] || is_link($core_path) || strcasecmp(trim($cm['name']), trim($m['name'])) !== 0) {
+                self::rrmdir($tmp);
+                return self::err('core_slug', __('This slug belongs to a different or locked built-in module and cannot be uploaded.', 'wppoppop'));
+            }
+            if (version_compare($m['version'], $cm['version'], '<')) {
+                self::rrmdir($tmp);
+                /* translators: 1: module name, 2: version in /modules, 3: uploaded version */
+                return self::err('older_version', sprintf(__('"%1$s" in /modules is version %2$s, which is newer than the uploaded version %3$s.', 'wppoppop'), $cm['name'], $cm['version'], $m['version']));
+            }
+            $old_core = $cm;
         }
         $dest   = $base . '/' . $slug;
         $exists = is_dir($dest);
-        if ($exists && !$replace) {
+        if (($exists || $old_core) && !$replace) {
             self::rrmdir($tmp);
-            $old = WpPopPop_Modules::get($slug);
+            $old = $old_core ? $old_core : WpPopPop_Modules::get($slug);
             return self::err('exists', __('A module with this slug is already installed.', 'wppoppop'), [
                 'slug'        => $slug,
                 'name'        => $m['name'],
                 'old_version' => $old ? $old['version'] : '',
                 'new_version' => $m['version'],
+                'old'         => $old ? self::summary($old) : null,
+                'new'         => self::incoming($m),
             ]);
+        }
+        $prev_state = $old_core ? WpPopPop_Modules::state($slug) : '';
+        $core_bak   = '';
+        if ($old_core) {
+            $core_bak = WpPopPop_Modules::core_dir() . '/' . self::rand_name('.old-');
+            if (!@rename($core_path, $core_bak)) {
+                self::rrmdir($tmp);
+                return self::err('replace_failed', __('The older module could not be removed from /modules. Check that the folder is writable.', 'wppoppop'));
+            }
         }
         @file_put_contents($tmp . '/index.php', "<?php\n// Silence is golden.\n");
         if ($exists) {
             $old = $base . '/' . self::rand_name('.old-');
             if (is_link($dest) || !@rename($dest, $old)) {
+                self::undo_core($core_bak, $core_path);
                 self::rrmdir($tmp);
                 return self::err('replace_failed', __('The existing module could not be replaced.', 'wppoppop'));
             }
             if (!@rename($tmp, $dest)) {
                 @rename($old, $dest);
+                self::undo_core($core_bak, $core_path);
                 self::rrmdir($tmp);
                 return self::err('replace_failed', __('The existing module could not be replaced.', 'wppoppop'));
             }
             self::rrmdir($old);
         } elseif (!@rename($tmp, $dest)) {
+            self::undo_core($core_bak, $core_path);
             self::rrmdir($tmp);
             return self::err('write_failed', __('The module could not be moved into place.', 'wppoppop'));
         }
+        if ($core_bak !== '') {
+            self::rrmdir($core_bak);
+        }
         WpPopPop_Modules::flush();
         WpPopPop_Modules::clear_orphan($slug);
-        if (!$exists) {
+        if ($old_core) {
+            WpPopPop_Modules::set_state($slug, $prev_state);
+        } elseif (!$exists) {
             WpPopPop_Modules::set_state($slug, 'available');
         }
         if (!empty($m['category'])) {
             WpPopPop_Module_Categories::ensure($m['category']);
         }
+        $exists = $exists || $old_core !== null;
         do_action('wppoppop_module_uploaded', $slug, $exists);
         $mod = WpPopPop_Modules::get($slug);
         return [
             'module'   => $mod ? self::summary($mod) : null,
             'replaced' => $exists,
-            'message'  => $exists ? __('Module updated.', 'wppoppop') : __('Module uploaded. Click Install to activate it.', 'wppoppop'),
+            'message'  => $old_core
+                ? __('Module updated. The older version was removed from /modules.', 'wppoppop')
+                : ($exists ? __('Module updated.', 'wppoppop') : __('Module uploaded. Click Install to activate it.', 'wppoppop')),
         ];
     }
 }

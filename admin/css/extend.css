@@ -65,3 +65,15 @@ body.wp-admin #wpcontent .wppoppop-extend-wrap .wppoppop-dash-bar { box-sizing: 
 
 .wpp-ext-item-head .wpp-mod-pill.is-custom { background: var(--wpp-c-secondary-bg, #fff); color: var(--wpp-c-secondary-text, #1d2327); -webkit-box-shadow: inset 0 0 0 1px var(--wpp-c-secondary-border, #c3c4c7); box-shadow: inset 0 0 0 1px var(--wpp-c-secondary-border, #c3c4c7); }
 .wpp-ext-item-head .wpp-mod-pill.is-custom.is-primary { background: var(--wpp-c-primary, #c1272d); color: #fff; -webkit-box-shadow: none; box-shadow: none; }
+
+.wpp-mod-modal.is-wide { max-width: 680px; }
+.wpp-ext-cmp { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: stretch; -ms-flex-align: stretch; align-items: stretch; gap: 10px; margin: 0 0 18px; }
+.wpp-ext-cmp-col { -webkit-box-flex: 1; -ms-flex: 1 1 220px; flex: 1 1 220px; min-width: 0; padding: 12px; border: 1px solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 6px); background: var(--wpp-c-bg-page, #f6f7f7); }
+.wpp-ext-cmp-col.is-new { border-color: var(--wpp-c-primary, #c1272d); background: var(--wpp-c-bg-card, #fff); }
+.wpp-ext-cmp-tag { display: block; margin: 0 0 8px; font-size: var(--wpp-fs-badge, 11px); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--wpp-c-muted, #646970); }
+.wpp-ext-cmp-col.is-new .wpp-ext-cmp-tag { color: var(--wpp-c-primary, #c1272d); }
+.wpp-ext-cmp-top { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 10px; margin: 0 0 8px; }
+.wpp-ext-cmp-name { min-width: 0; word-wrap: break-word; overflow-wrap: anywhere; color: var(--wpp-c-heading, #1d2327); }
+.wpp-ext-cmp-line { margin: 0 0 4px; font-size: var(--wpp-fs-small, 12px); line-height: 1.5; color: var(--wpp-c-muted, #646970); word-wrap: break-word; overflow-wrap: anywhere; }
+.wpp-ext-cmp-arrow { -ms-flex-item-align: center; align-self: center; width: 24px; height: 24px; font-size: 24px; color: var(--wpp-c-muted, #646970); }
+@media (max-width: 600px) { .wpp-ext-cmp-arrow { -webkit-transform: rotate(90deg); transform: rotate(90deg); } }

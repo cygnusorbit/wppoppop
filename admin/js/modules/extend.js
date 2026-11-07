@@ -375,6 +375,27 @@
             if (dt && dt.files && dt.files.length) { setFile(dt.files[0]); }
         });
 
+        function compareBody(d) {
+            var $w = $('<div class="wpp-ext-cmp"></div>');
+            function col(label, m, cls) {
+                var $c = $('<div class="wpp-ext-cmp-col"></div>').addClass(cls).appendTo($w);
+                $('<span class="wpp-ext-cmp-tag"></span>').text(label).appendTo($c);
+                var $t = $('<div class="wpp-ext-cmp-top"></div>').appendTo($c);
+                $t.append(thumb(m.image));
+                $('<strong class="wpp-ext-cmp-name"></strong>').text(m.name).appendTo($t);
+                var $p = $('<p class="wpp-ext-cmp-line"></p>').appendTo($c);
+                $('<span class="wpp-mod-pill"></span>').text(M.fmt(M.t('version'), m.version)).appendTo($p);
+                $p.append(' ');
+                $('<span class="wpp-mod-pill"></span>').text(m.source === 'core' ? M.t('builtin') : M.t('uploaded')).appendTo($p);
+                if (m.author) { $('<p class="wpp-ext-cmp-line"></p>').text(M.fmt(M.t('by'), m.author)).appendTo($c); }
+                if (m.description) { $('<p class="wpp-ext-cmp-line"></p>').text(m.description).appendTo($c); }
+            }
+            col(M.t('cmp_current'), d.old, '');
+            $('<span class="wpp-ext-cmp-arrow dashicons dashicons-arrow-right-alt" aria-hidden="true"></span>').appendTo($w);
+            col(M.t('cmp_new'), d['new'], 'is-new');
+            return $w;
+        }
+
         function send(replace) {
             if (!selected) { M.notice($notice, 'error', M.t('pick_zip')); return; }
             var label = $btn.text();
@@ -383,9 +404,12 @@
                 $btn.text(label);
                 if (!r.ok && r.code === 'exists' && r.data) {
                     $btn.prop('disabled', false);
+                    var d = r.data;
+                    var both = !!(d.old && d['new']);
                     M.dialog({
                         title: M.t('replace_title'),
-                        message: M.fmt(M.t('replace_msg'), r.data.name, r.data.old_version, r.data.new_version),
+                        message: both ? M.t(d.old.source === 'core' ? 'cmp_msg_core' : 'cmp_msg') : M.fmt(M.t('replace_msg'), d.name, d.old_version, d.new_version),
+                        body: both ? compareBody(d) : null,
                         confirm: M.t('replace'),
                         onConfirm: function () { send(true); }
                     });

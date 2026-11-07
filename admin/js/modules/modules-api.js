@@ -73,6 +73,10 @@
             .attr('aria-labelledby', id + '-t').appendTo($back);
         $('<h3 class="wpp-mod-modal-title"></h3>').attr('id', id + '-t').text(o.title).appendTo($dlg);
         $('<p class="wpp-mod-modal-msg"></p>').text(o.message).appendTo($dlg);
+        if (o.body) {
+            $dlg.addClass('is-wide');
+            $(o.body).appendTo($dlg);
+        }
         var $cb = null;
         if (o.checkbox) {
             var $lab = $('<label class="wpp-mod-modal-check"></label>').appendTo($dlg);
