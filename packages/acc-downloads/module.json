@@ -1,21 +1,22 @@
 {
     "schema": 1,
-    "slug": "acc-06-downloads",
+    "slug": "acc-downloads",
     "name": "Downloads",
     "version": "1.0.0",
     "author": "WpPopPop",
-    "description": "Secure, tokenised file downloads.",
+    "description": "Give subscribers a protected, single-use download link after they submit.",
     "category": "all-modules",
-    "locked": false,
     "default_active": false,
     "order": 70,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "downloads"
     ],
-    "in_use": [],
+    "in_use": [
+        "downloads.enable"
+    ],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-06-downloads.php"
+    "deprecated": false
 }

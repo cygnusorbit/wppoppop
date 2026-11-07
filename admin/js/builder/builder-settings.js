@@ -499,19 +499,13 @@
                     width: parseInt($('#set-canvas-width').val(), 10) || 640,
                     height: parseInt($('#set-canvas-height').val(), 10) || 400
                 },
-                logic_math: {
-                    formula: $('#set-math-formula').val() || '',
-                    target: $('#set-math-target').val() || ''
-                },
+                /* Conditional Logic & Math (settings.logic_math) live in the module package: admin.js */
                 /* Side Tabs (settings.sidetab) live in the module package: admin.js */
                 payments: {
                     gateway: $('#set-pay-gateway').val() || 'stripe',
                     amount: parseFloat($('#set-pay-amount').val()) || 0
                 },
-                downloads: {
-                    enable: $('#set-dl-enable').is(':checked'),
-                    url: $('#set-dl-url').val() || ''
-                },
+                /* Downloads (settings.downloads) live in the module package: admin.js */
                 video: {
                     enable: $('#set-vid-enable').is(':checked'),
                     time: parseInt($('#set-vid-time').val(), 10) || 0

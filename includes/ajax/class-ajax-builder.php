@@ -216,6 +216,23 @@ class WpPopPop_Ajax_Builder {
                 WpPopPop_Woocommerce::sanitize(isset($wppoppop_obj->settings->woocommerce) ? $wppoppop_obj->settings->woocommerce : array())
             ));
         }
+        /* WPPOPPOP_DOWNLOADS_WHITELIST: allow-list the Downloads module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Downloads')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; }
+            $wppoppop_obj->settings->downloads = json_decode(wp_json_encode(
+                WpPopPop_Downloads::sanitize(isset($wppoppop_obj->settings->downloads) ? $wppoppop_obj->settings->downloads : array())
+            ));
+        }
+        /* WPPOPPOP_LOGIC_MATH_WHITELIST: allow-list the Conditional Logic & Math module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Logic_Math')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-math.php'; }
+            $wppoppop_lm = WpPopPop_Logic_Math::sanitize(isset($wppoppop_obj->settings->logic_math) ? $wppoppop_obj->settings->logic_math : array());
+            if ($wppoppop_lm['formula'] === '' && $wppoppop_lm['target'] === '') {
+                unset($wppoppop_obj->settings->logic_math);
+            } else {
+                $wppoppop_obj->settings->logic_math = json_decode(wp_json_encode($wppoppop_lm));
+            }
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));

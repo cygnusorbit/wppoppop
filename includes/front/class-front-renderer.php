@@ -78,6 +78,10 @@ class WpPopPop_Front_Renderer {
             $trg_attrs .= WpPopPop_Side_Tabs::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
         }
 
+        /* WPPOPPOP_LOGIC_MATH_RENDER: an active Conditional Logic & Math module adds its data-math-* attributes (module.js calculates) */
+        if (!class_exists('WpPopPop_Logic_Math')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-math.php'; }
+        $trg_attrs .= WpPopPop_Logic_Math::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+
         /* WPPOPPOP_BG_CLOSE_ATTR: backdrop click closes only when enabled (default off) */
         $bgc_raw = isset($config['settings']['close_on_backdrop']) ? $config['settings']['close_on_backdrop'] : false;
         $trg_attrs .= ' data-close-backdrop="' . (in_array($bgc_raw, array(true, 1, '1', 'true'), true) ? '1' : '0') . '"';

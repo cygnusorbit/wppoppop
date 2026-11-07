@@ -138,6 +138,13 @@ class WpPopPop_Rest_Submissions {
             $wc_code = WpPopPop_Woocommerce::issue($uid, $email, WpPopPop_Woocommerce::get_config($config)); /* WPPOPPOP_MODULE_GATE */
         }
 
+        // Downloads (module acc-downloads): one-time link; never before the email is confirmed
+        $dl_url = '';
+        if (!$is_double_optin) {
+            if (!class_exists('WpPopPop_Downloads')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; }
+            $dl_url = WpPopPop_Downloads::issue($uid, WpPopPop_Downloads::get_config($config)); /* WPPOPPOP_MODULE_GATE */
+        }
+
         $actions = $config['actions'] ?? [];
         $success_message = $is_double_optin
             ? __('Thank you! A verification link has been dispatched to your email address.', 'wppoppop')
@@ -147,6 +154,7 @@ class WpPopPop_Rest_Submissions {
             'success'      => true,
             'message'      => $success_message,
             'redirect_url' => (!empty($actions['redirect_url']) && !$is_double_optin) ? esc_url_raw($actions['redirect_url']) : '',
+            'download_url' => $dl_url,
             'coupon_code'  => $wc_code,
         ], 200);
 

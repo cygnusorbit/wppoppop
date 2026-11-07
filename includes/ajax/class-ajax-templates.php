@@ -111,6 +111,17 @@ class WpPopPop_Ajax_Templates {
             $obj->settings->woocommerce = json_decode(wp_json_encode( /* WPPOPPOP_WOOCOMMERCE_WHITELIST */
                 WpPopPop_Woocommerce::sanitize(isset($obj->settings->woocommerce) ? $obj->settings->woocommerce : array())
             ));
+            if (!class_exists('WpPopPop_Downloads')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; }
+            $obj->settings->downloads = json_decode(wp_json_encode( /* WPPOPPOP_DOWNLOADS_WHITELIST */
+                WpPopPop_Downloads::sanitize(isset($obj->settings->downloads) ? $obj->settings->downloads : array())
+            ));
+            if (!class_exists('WpPopPop_Logic_Math')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-math.php'; } /* WPPOPPOP_LOGIC_MATH_WHITELIST */
+            $wppoppop_lm = WpPopPop_Logic_Math::sanitize(isset($obj->settings->logic_math) ? $obj->settings->logic_math : array());
+            if ($wppoppop_lm['formula'] === '' && $wppoppop_lm['target'] === '') {
+                unset($obj->settings->logic_math);
+            } else {
+                $obj->settings->logic_math = json_decode(wp_json_encode($wppoppop_lm));
+            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

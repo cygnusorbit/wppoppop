@@ -3,22 +3,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+if (!class_exists('WpPopPop_Downloads')) {
+    require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php';
+}
+
 class WpPopPop_Addon_Downloads {
     public function __construct() {
-        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::active('acc-06-downloads')) {
+        if (!WpPopPop_Downloads::module_active()) {
             return; /* WPPOPPOP_MODULE_GATE */
         }
         add_action('template_redirect', [$this, 'handle_secure_download']);
     }
 
     public function generate_download_token($file_url, $popup_uid = '') {
-        $token = wp_generate_password(32, false);
-        set_transient('wppoppop_dl_' . $token, [
-            'file_url'  => esc_url_raw($file_url),
-            'popup_uid' => sanitize_key($popup_uid),
-            'created'   => time()
-        ], HOUR_IN_SECONDS * 24);
-        return $token;
+        return WpPopPop_Downloads::generate_token($file_url, $popup_uid);
     }
 
     public function handle_secure_download() {
@@ -26,7 +24,7 @@ class WpPopPop_Addon_Downloads {
             return;
         }
 
-        $token = sanitize_key($_GET['wppoppop_download']);
+        $token = sanitize_key(wp_unslash($_GET['wppoppop_download']));
         $transient_key = 'wppoppop_dl_' . $token;
         $data = get_transient($transient_key);
 
@@ -37,29 +35,33 @@ class WpPopPop_Addon_Downloads {
         // Delete transient to enforce single-use protection
         delete_transient($transient_key);
 
-        $file_url = $data['file_url'];
+        $file_url   = $data['file_url'];
         $upload_dir = wp_upload_dir();
-        
-        // Convert URL to absolute server path if local
-        if (strpos($file_url, $upload_dir['baseurl']) !== false) {
-            $file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $file_url);
-            if (file_exists($file_path)) {
-                $filename = basename($file_path);
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . $filename . '"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($file_path));
-                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
-        readfile($file_path);
-                exit;
+
+        // A file in the uploads folder is streamed; the real path is checked so the link can never leave that folder
+        if (strpos(preg_replace('#^https?:#i', '', $file_url), preg_replace('#^https?:#i', '', rtrim($upload_dir['baseurl'], '/')) . '/') === 0) {
+            $file_path = WpPopPop_Downloads::resolve_local($file_url, $upload_dir['basedir'], $upload_dir['baseurl']);
+            if ($file_path === '') {
+                wp_die(__('The file is no longer available.', 'wppoppop'), __('Invalid Download', 'wppoppop'), ['response' => 404]);
             }
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . sanitize_file_name(basename($file_path)) . '"');
+            header('X-Content-Type-Options: nosniff');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file_path));
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+            readfile($file_path);
+            exit;
         }
 
-        // External file fallback
-        wp_safe_redirect( $file_url ); exit;
+        // External file: the address was set by an administrator, so a plain redirect is intended
+        wp_redirect(esc_url_raw($file_url)); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
         exit;
     }
 }

@@ -1,21 +1,22 @@
 {
     "schema": 1,
-    "slug": "acc-03-logic-math",
+    "slug": "logic-math",
     "name": "Conditional Logic & Math",
     "version": "1.0.0",
     "author": "WpPopPop",
-    "description": "Real-time math formulas and conditional logic for form fields.",
+    "description": "Real-time math formulas for form fields: the result is shown while the visitor types.",
     "category": "all-modules",
-    "locked": false,
     "default_active": false,
     "order": 40,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "logic_math"
     ],
-    "in_use": [],
+    "in_use": [
+        "logic_math.formula"
+    ],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-03-logic-math.php"
+    "deprecated": false
 }

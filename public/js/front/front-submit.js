@@ -208,6 +208,14 @@
                     }
                 }
 
+                // Downloads: the server issued a one-time link for this subscriber (module acc-downloads)
+                var dlUrl = res.download_url || (res.data && res.data.download_url) || '';
+                if (dlUrl && typeof dlUrl === 'string' && dlUrl.indexOf('http') === 0) {
+                    var $dlMsg = $status.find('.wppoppop-status-message');
+                    $dlMsg.text($dlMsg.text() + ' Your download is starting.');
+                    window.location.assign(dlUrl);
+                }
+
                 // Redirect or Auto-close
                 setTimeout(function() {
                     var redir = (res.data && res.data.redirect_url) || res.redirect_url;
