@@ -520,11 +520,7 @@
                     enable: $('#set-vid-enable').is(':checked'),
                     time: parseInt($('#set-vid-time').val(), 10) || 0
                 },
-                autoresponder: {
-                    enable: $('#set-auto-enable').is(':checked'),
-                    subject: $('#set-auto-subject').val() || '',
-                    body: $('#set-auto-body').val() || ''
-                },
+                /* Autoresponder (settings.autoresponder) lives in the module package: admin.js */
                 webhooks: {
                     url: $('#set-webhook-url').val() || '',
                     secret: $('#set-webhook-secret').val() || ''

@@ -118,17 +118,10 @@ class WpPopPop_Rest_Submissions {
         }
 
         // Autoresponder dispatch
-        $autoresponder = (!class_exists('WpPopPop_Modules') || WpPopPop_Modules::active('acc-08-autoresponder')) ? ($config['autoresponder'] ?? []) : []; /* WPPOPPOP_MODULE_GATE */
-        if (!empty($autoresponder['enable_user_email']) && !$is_double_optin && $email !== '') {
-            $ar_subject = !empty($autoresponder['subject']) ? sanitize_text_field($autoresponder['subject']) : __('Welcome! Here is your reward', 'wppoppop');
-            $ar_body    = !empty($autoresponder['message']) ? $autoresponder['message'] : __("Thank you for subscribing!\n\nEnjoy your offer.", 'wppoppop');
-
-            $ar_body = str_replace('{email}', $email, $ar_body);
-            foreach ($fields as $k => $v) {
-                $val_str = is_array($v) ? implode(', ', $v) : $v;
-                $ar_body = str_replace('{' . $k . '}', $val_str, $ar_body);
-            }
-            wp_mail($email, $ar_subject, nl2br(esc_html($ar_body)), ['Content-Type: text/html; charset=UTF-8']);
+        if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
+        $ar_cfg = WpPopPop_Autoresponder::get_config($config);
+        if (!empty($ar_cfg['enable']) && !$is_double_optin && $email !== '' && WpPopPop_Autoresponder::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            WpPopPop_Autoresponder::send($email, $fields, $ar_cfg);
         }
 
         // Outgoing Webhook Dispatch

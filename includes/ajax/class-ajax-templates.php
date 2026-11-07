@@ -95,6 +95,10 @@ class WpPopPop_Ajax_Templates {
             ));
             $bgc = isset($obj->settings->close_on_backdrop) ? $obj->settings->close_on_backdrop : false; /* WPPOPPOP_BG_CLOSE_WHITELIST */
             $obj->settings->close_on_backdrop = in_array($bgc, array(true, 1, '1', 'true'), true);
+            if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
+            $obj->settings->autoresponder = json_decode(wp_json_encode( /* WPPOPPOP_AUTORESPONDER_WHITELIST */
+                WpPopPop_Autoresponder::sanitize(isset($obj->settings->autoresponder) ? $obj->settings->autoresponder : array())
+            ));
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

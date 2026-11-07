@@ -27,7 +27,7 @@ class WpPopPop_Hooks {
                 'wppoppop_export_campaign_payload' => 'Filters JSON export payload prior to download.',
                 'wppoppop_pre_import_campaign_data'=> 'Filters uploaded campaign data prior to import insertion.',
                 'wppoppop_pre_process_submission'  => 'Filters incoming lead form field data before database insertion.',
-                'wppoppop_autoresponder_mail'      => 'Filters autoresponder email arguments (to, subject, body, headers).',
+                'wppoppop_autoresponder_mail'      => 'Filters autoresponder email arguments (array: to, subject, body, headers).',
                 'wppoppop_webhook_payload'         => 'Filters outbound HTTP webhook payload before transmission.',
                 'wppoppop_visitor_country'         => 'Filters detected two-letter ISO country code for visitor targeting.',
                 'wppoppop_targeting_decision'      => 'Filters the final boolean display determination for a popup campaign.',

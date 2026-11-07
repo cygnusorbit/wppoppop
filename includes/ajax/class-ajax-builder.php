@@ -188,6 +188,13 @@ class WpPopPop_Ajax_Builder {
                 'thank_url'     => (isset($wppoppop_do['thank_url']) && is_string($wppoppop_do['thank_url'])) ? esc_url_raw($wppoppop_do['thank_url']) : ''
             );
         }
+        /* WPPOPPOP_AUTORESPONDER_WHITELIST: allow-list the Autoresponder module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
+            $wppoppop_obj->settings->autoresponder = json_decode(wp_json_encode(
+                WpPopPop_Autoresponder::sanitize(isset($wppoppop_obj->settings->autoresponder) ? $wppoppop_obj->settings->autoresponder : array())
+            ));
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));
