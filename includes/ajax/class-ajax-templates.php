@@ -143,6 +143,34 @@ class WpPopPop_Ajax_Templates {
             } else {
                 $obj->settings->sms = json_decode(wp_json_encode($wppoppop_sms));
             }
+            if (!class_exists('WpPopPop_Targeting')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting.php'; }
+            $wppoppop_tg = WpPopPop_Targeting::sanitize(isset($obj->settings->targeting) ? $obj->settings->targeting : array());
+            if ($wppoppop_tg === WpPopPop_Targeting::defaults()) {
+                unset($obj->settings->targeting);
+            } else {
+                $obj->settings->targeting = json_decode(wp_json_encode($wppoppop_tg));
+            }
+            if (!class_exists('WpPopPop_Quiz')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-quiz.php'; }
+            $wppoppop_qz = WpPopPop_Quiz::sanitize(isset($obj->settings->quiz) ? $obj->settings->quiz : array());
+            if ($wppoppop_qz === WpPopPop_Quiz::defaults()) {
+                unset($obj->settings->quiz);
+            } else {
+                $obj->settings->quiz = json_decode(wp_json_encode($wppoppop_qz));
+            }
+            if (isset($obj->settings->frequency)) {
+                if (!class_exists('WpPopPop_Frequency')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-frequency.php'; }
+                $wppoppop_fq = WpPopPop_Frequency::sanitize($obj->settings->frequency);
+                $obj->settings->frequency = json_decode(wp_json_encode($wppoppop_fq));
+            }
+            if (isset($obj->settings->custom_code)) {
+                if (!class_exists('WpPopPop_Custom_Code')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-custom-code.php'; }
+                $wppoppop_cc = WpPopPop_Custom_Code::sanitize($obj->settings->custom_code, array(), current_user_can('unfiltered_html'));
+                if ($wppoppop_cc === WpPopPop_Custom_Code::defaults()) {
+                    unset($obj->settings->custom_code);
+                } else {
+                    $obj->settings->custom_code = json_decode(wp_json_encode($wppoppop_cc));
+                }
+            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

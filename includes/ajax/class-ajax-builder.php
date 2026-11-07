@@ -263,6 +263,44 @@ class WpPopPop_Ajax_Builder {
                 $wppoppop_obj->settings->sms = json_decode(wp_json_encode($wppoppop_sms));
             }
         }
+        /* WPPOPPOP_TARGETING_WHITELIST: allow-list the Targeting module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Targeting')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting.php'; }
+            $wppoppop_tg = WpPopPop_Targeting::sanitize(isset($wppoppop_obj->settings->targeting) ? $wppoppop_obj->settings->targeting : array());
+            if ($wppoppop_tg === WpPopPop_Targeting::defaults()) {
+                unset($wppoppop_obj->settings->targeting);
+            } else {
+                $wppoppop_obj->settings->targeting = json_decode(wp_json_encode($wppoppop_tg));
+            }
+        }
+        /* WPPOPPOP_QUIZ_WHITELIST: allow-list the Quiz module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
+            if (!class_exists('WpPopPop_Quiz')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-quiz.php'; }
+            $wppoppop_qz = WpPopPop_Quiz::sanitize(isset($wppoppop_obj->settings->quiz) ? $wppoppop_obj->settings->quiz : array());
+            if ($wppoppop_qz === WpPopPop_Quiz::defaults()) {
+                unset($wppoppop_obj->settings->quiz);
+            } else {
+                $wppoppop_obj->settings->quiz = json_decode(wp_json_encode($wppoppop_qz));
+            }
+        }
+        /* WPPOPPOP_FREQUENCY_WHITELIST: allow-list the Frequency module */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->frequency)) {
+            if (!class_exists('WpPopPop_Frequency')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-frequency.php'; }
+            $wppoppop_fq = WpPopPop_Frequency::sanitize($wppoppop_obj->settings->frequency);
+            $wppoppop_obj->settings->frequency = json_decode(wp_json_encode($wppoppop_fq));
+        }
+        /* WPPOPPOP_CUSTOM_CODE_WHITELIST: allow-list the Custom Code module (JS needs unfiltered_html, otherwise the stored JS is kept) */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->custom_code)) {
+            if (!class_exists('WpPopPop_Custom_Code')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-custom-code.php'; }
+            $wppoppop_cc_prev = json_decode((string) $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid)), true);
+            $wppoppop_cc_prev = (is_array($wppoppop_cc_prev) && isset($wppoppop_cc_prev['settings']['custom_code']) && is_array($wppoppop_cc_prev['settings']['custom_code'])) ? $wppoppop_cc_prev['settings']['custom_code'] : array();
+            $wppoppop_cc = WpPopPop_Custom_Code::sanitize($wppoppop_obj->settings->custom_code, $wppoppop_cc_prev, current_user_can('unfiltered_html'));
+            if ($wppoppop_cc === WpPopPop_Custom_Code::defaults()) {
+                unset($wppoppop_obj->settings->custom_code);
+            } else {
+                $wppoppop_obj->settings->custom_code = json_decode(wp_json_encode($wppoppop_cc));
+            }
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));

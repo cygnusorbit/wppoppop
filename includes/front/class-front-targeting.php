@@ -24,7 +24,7 @@ class WpPopPop_Front_Targeting {
             $config = [];
         }
 
-        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::active('acc-11-targeting')) {
+        if (class_exists('WpPopPop_Modules') && !WpPopPop_Modules::active('acc-targeting')) {
             unset($config['targeting']); /* WPPOPPOP_MODULE_GATE */
         }
 
@@ -64,6 +64,15 @@ class WpPopPop_Front_Targeting {
             return false;
         }
         if ($users === 'logged_out' && is_user_logged_in()) {
+            return false;
+        }
+
+        // 3b. Targeting module (visitor authentication)
+        if (!class_exists('WpPopPop_Targeting')) {
+            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting.php';
+        }
+        $wppoppop_tg_settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
+        if (!WpPopPop_Targeting::is_eligible($wppoppop_tg_settings)) {
             return false;
         }
 

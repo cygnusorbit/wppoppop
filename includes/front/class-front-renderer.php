@@ -90,6 +90,14 @@ class WpPopPop_Front_Renderer {
         if (!class_exists('WpPopPop_Video_Listeners')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-video-listeners.php'; }
         $trg_attrs .= WpPopPop_Video_Listeners::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
 
+        /* WPPOPPOP_QUIZ_RENDER: an active Quiz module adds its data-quiz-* attributes (module.js scores the answers and routes the Next button) */
+        if (!class_exists('WpPopPop_Quiz')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-quiz.php'; }
+        $trg_attrs .= WpPopPop_Quiz::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+
+        /* WPPOPPOP_FREQUENCY_RENDER: an active Frequency module adds its data-freq-* attributes (module.js decides how long a closed popup stays hidden) */
+        if (!class_exists('WpPopPop_Frequency')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-frequency.php'; }
+        $trg_attrs .= WpPopPop_Frequency::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array());
+
         /* WPPOPPOP_BG_CLOSE_ATTR: backdrop click closes only when enabled (default off) */
         $bgc_raw = isset($config['settings']['close_on_backdrop']) ? $config['settings']['close_on_backdrop'] : false;
         $trg_attrs .= ' data-close-backdrop="' . (in_array($bgc_raw, array(true, 1, '1', 'true'), true) ? '1' : '0') . '"';
@@ -160,6 +168,10 @@ class WpPopPop_Front_Renderer {
         }
         ";
         }
+
+        /* WPPOPPOP_CUSTOM_CODE_RENDER: an active Custom Code module adds the popup's own CSS (scoped to this popup) and queues its JS */
+        if (!class_exists('WpPopPop_Custom_Code')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-custom-code.php'; }
+        $custom_inline_css .= WpPopPop_Custom_Code::frontend((isset($config['settings']) && is_array($config['settings'])) ? $config['settings'] : array(), $uid);
 
         if ($minify_css && function_exists('wppoppop_minify_css')) {
             $custom_inline_css = wppoppop_minify_css($custom_inline_css);

@@ -25,7 +25,7 @@ class WpPopPop_Modules {
     const MAX_FIELDS = 40;
     const FIELD_TYPES = ['toggle', 'text', 'textarea', 'number', 'select', 'color', 'url'];
     const MAX_HTML   = 65536;
-    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth', 'animation', 'overlay', 'popup_position', 'notifications', 'double_optin', 'targeting_triggers', 'celebration', 'autoresponder', 'sidetab', 'webhooks', 'woocommerce', 'downloads', 'logic_math', 'payments', 'video', 'sms'];
+    const ADOPTABLE  = ['triggers', 'exit_intent_sensitivity', 'scroll_depth', 'animation', 'overlay', 'popup_position', 'notifications', 'double_optin', 'targeting_triggers', 'celebration', 'autoresponder', 'sidetab', 'webhooks', 'woocommerce', 'downloads', 'logic_math', 'payments', 'video', 'sms', 'targeting', 'quiz', 'frequency', 'custom_code'];
     const ORPHAN_OPT = 'wppoppop_modules_orphans';
 
     protected static $cache = null;

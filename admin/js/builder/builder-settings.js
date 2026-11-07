@@ -507,41 +507,18 @@
                 /* Autoresponder (settings.autoresponder) lives in the module package: admin.js */
                 /* Webhooks (settings.webhooks) live in the module package: admin.js */
                 /* Twilio SMS Alerts (settings.sms) live in the module package: admin.js */
-                targeting: {
-                    auth: $('#set-target-auth').val() || 'all'
-                },
-                frequency: {
-                    mode: $('#set-freq-mode').val() || 'always'
-                },
+                /* Targeting (settings.targeting) lives in the module package: admin.js */
+                /* Frequency Capping (settings.frequency) lives in the module package: admin.js */
                 /* WooCommerce (settings.woocommerce) lives in the module package: admin.js */
-                custom_code: {
-                    css: $('#set-custom-css').val() || '',
-                    js: $('#set-custom-js').val() || ''
-                },
-                quiz: {
-                    enable: $('#set-quiz-enable').is(':checked'),
-                    pass_threshold: parseInt($('#set-quiz-pass').val(), 10) || 70,
-                    pass_canvas: parseInt($('#set-quiz-pass-canvas').val(), 10) || 2,
-                    pass_screen: parseInt($('#set-quiz-pass-canvas').val(), 10) || 2,
-                    fail_canvas: parseInt($('#set-quiz-fail-canvas').val(), 10) || 3,
-                    fail_screen: parseInt($('#set-quiz-fail-canvas').val(), 10) || 3,
-                    confetti: $('#set-quiz-confetti').is(':checked')
-                }
+                /* Custom Scoped CSS & JS (settings.custom_code) lives in the module package: admin.js */
+                /* Quiz & Lead Scoring (settings.quiz) lives in the module package: admin.js */
             };
         },
 
         setSettings: function(settings) {
             if (!settings) return;
             
-            if (settings.quiz) {
-                $('#set-quiz-enable').prop('checked', !!settings.quiz.enable);
-                $('#set-quiz-pass').val(settings.quiz.pass_threshold || 70);
-                var p = settings.quiz.pass_canvas || settings.quiz.pass_screen || 2;
-                var f = settings.quiz.fail_canvas || settings.quiz.fail_screen || 3;
-                $('#set-quiz-pass-canvas, #set-quiz-pass-screen').val(p);
-                $('#set-quiz-fail-canvas, #set-quiz-fail-screen').val(f);
-                $('#set-quiz-confetti').prop('checked', !!settings.quiz.confetti);
-            }
+            /* Quiz & Lead Scoring (settings.quiz) is restored by the module package: admin.js */
         }
     };
 })(jQuery);

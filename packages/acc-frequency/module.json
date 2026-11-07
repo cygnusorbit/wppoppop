@@ -1,21 +1,20 @@
 {
     "schema": 1,
-    "slug": "acc-12-frequency",
+    "slug": "acc-frequency",
     "name": "Frequency",
     "version": "1.0.0",
     "author": "WpPopPop",
-    "description": "Show-frequency limits and cookie rules.",
+    "description": "Show-frequency limits: always, once per session or once every X days.",
     "category": "all-modules",
-    "locked": false,
     "default_active": false,
     "order": 130,
     "on_missing": "skip",
     "requires": [],
+    "accordion": "accordion.html",
     "data_keys": [
         "frequency"
     ],
     "in_use": [],
     "min_version": "",
-    "deprecated": false,
-    "template": "templates/builder/settings/acc-12-frequency.php"
+    "deprecated": false
 }
