@@ -61,5 +61,7 @@ if (!class_exists('ZipArchive')) {
         </div>
     </div>
 
+    <div class="wpp-ext-cats" id="wpp-ext-cats" role="group" aria-label="<?php echo esc_attr__('Module categories', 'wppoppop'); ?>"></div>
+
     <div class="wpp-ext-grid" id="wpp-ext-grid"></div>
 </div>

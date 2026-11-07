@@ -5,6 +5,7 @@
     "version": "1.2.0",
     "author": "WpPopPop",
     "description": "Page load, always-on, repeat, exit intent, scroll depth, AdBlock and mobile back-button triggers.",
+    "category": "all-modules",
     "default_active": true,
     "order": 30,
     "on_missing": "skip",

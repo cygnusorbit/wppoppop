@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Show rules by event, schedule, role, area and URL.",
+    "category": "all-modules",
     "default_active": true,
     "order": 220,
     "on_missing": "skip",

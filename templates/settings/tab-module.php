@@ -30,7 +30,10 @@ $__total = count($__rows);
 <div class="wppoppop-settings-section wpp-mod-tab">
     <div class="wpp-mod-head">
         <h3><?php esc_html_e('Popup Settings Modules', 'wppoppop'); ?></h3>
-        <a class="button wpp-mod-add" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-extend')); ?>"><span class="dashicons dashicons-plus-alt2"></span><?php esc_html_e('Add Module', 'wppoppop'); ?></a>
+        <div class="wpp-mod-head-actions">
+            <button type="button" class="button wpp-mod-cats-btn" id="wpp-mod-cats-btn" aria-haspopup="dialog"><span class="dashicons dashicons-category"></span><?php esc_html_e('Module Category', 'wppoppop'); ?></button>
+            <a class="button wpp-mod-add" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-extend')); ?>"><span class="dashicons dashicons-plus-alt2"></span><?php esc_html_e('Add Module', 'wppoppop'); ?></a>
+        </div>
     </div>
     <p class="description"><?php esc_html_e('Drag a module to change its position; the number is its position. Switch a module off to hide it from Popup Settings in the builder. Saved values are kept, so switching it back on restores them. Uninstall and Delete apply immediately; the switches and order need Save Settings. Reload the builder afterwards.', 'wppoppop'); ?></p>
 
@@ -87,3 +90,4 @@ $__total = count($__rows);
     </ul>
     <p class="wpp-mod-empty" id="wpp-mod-empty" hidden><?php esc_html_e('No modules found.', 'wppoppop'); ?></p>
 </div>
+<?php include WPPOPPOP_PATH . 'templates/settings/modal-module-categories.php'; ?>

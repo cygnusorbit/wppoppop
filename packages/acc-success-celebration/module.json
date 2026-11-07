@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Celebration animation after a successful submit.",
+    "category": "all-modules",
     "default_active": true,
     "order": 200,
     "on_missing": "skip",

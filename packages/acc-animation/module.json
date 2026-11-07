@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Open and close animations for the popup.",
+    "category": "all-modules",
     "default_active": true,
     "order": 20,
     "on_missing": "skip",

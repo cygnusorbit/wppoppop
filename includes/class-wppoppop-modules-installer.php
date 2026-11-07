@@ -59,6 +59,7 @@ class WpPopPop_Modules_Installer {
             'compatible'  => (bool) $m['compatible'],
             'requires'    => array_values($m['requires']),
             'required_by' => $by,
+            'category'    => WpPopPop_Module_Categories::of($m),
         ];
     }
 
@@ -226,6 +227,9 @@ class WpPopPop_Modules_Installer {
             'modules_url' => admin_url('admin.php?page=wppoppop-settings#module'),
             'can_upload' => self::can_upload() && class_exists('ZipArchive'),
             'max_zip'    => self::MAX_ZIP,
+            'categories'   => WpPopPop_Module_Categories::all(),
+            'cat_max'      => WpPopPop_Module_Categories::MAX,
+            'cat_name_max' => WpPopPop_Module_Categories::NAME_MAX,
             'i18n'       => [
                 'cancel'          => __('Cancel', 'wppoppop'),
                 'install'         => __('Install', 'wppoppop'),
@@ -277,6 +281,23 @@ class WpPopPop_Modules_Installer {
                 /* translators: %s: module names */
                 'requires'        => __('Requires: %s', 'wppoppop'),
                 'no_match'        => __('No modules match your search.', 'wppoppop'),
+                'cat_label'       => __('Category', 'wppoppop'),
+                /* translators: %s: module name */
+                'cat_for'         => __('Category for %s', 'wppoppop'),
+                'cat_manage'      => __('Manage categories', 'wppoppop'),
+                'cat_name'        => __('Category name', 'wppoppop'),
+                'cat_default'     => __('Default', 'wppoppop'),
+                'cat_up'          => __('Move up', 'wppoppop'),
+                'cat_down'        => __('Move down', 'wppoppop'),
+                'cat_remove'      => __('Delete category', 'wppoppop'),
+                'cat_empty'       => __('Enter a category name.', 'wppoppop'),
+                /* translators: %s: category name */
+                'cat_dup'         => __('"%s" is already used by another category.', 'wppoppop'),
+                /* translators: %s: maximum number of categories */
+                'cat_max_msg'     => __('You can have up to %s categories.', 'wppoppop'),
+                'cat_save'        => __('Save Categories', 'wppoppop'),
+                'cat_saving'      => __('Saving…', 'wppoppop'),
+                'cat_saved'       => __('Categories saved.', 'wppoppop'),
             ],
         ];
         return array_merge($vars, $extra);
@@ -819,6 +840,13 @@ class WpPopPop_Modules_Installer {
             self::rrmdir($tmp);
             return self::err('bad_slug', __('module.json needs a valid "slug" (lowercase letters, numbers and dashes).', 'wppoppop'));
         }
+        if (!isset($raw['category']) || !is_string($raw['category']) || trim($raw['category']) === '') {
+            $raw['category'] = WpPopPop_Module_Categories::DEFAULT_SLUG;
+            $json = wp_json_encode($raw, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if (is_string($json) && $json !== '') {
+                @file_put_contents($mf, $json . "\n");
+            }
+        }
         $m = WpPopPop_Modules::normalize($raw, 'uploaded', $slug);
         if (!$m) {
             self::rrmdir($tmp);
@@ -869,6 +897,9 @@ class WpPopPop_Modules_Installer {
         WpPopPop_Modules::clear_orphan($slug);
         if (!$exists) {
             WpPopPop_Modules::set_state($slug, 'available');
+        }
+        if (!empty($m['category'])) {
+            WpPopPop_Module_Categories::ensure($m['category']);
         }
         do_action('wppoppop_module_uploaded', $slug, $exists);
         $mod = WpPopPop_Modules::get($slug);

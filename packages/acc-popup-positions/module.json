@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Popup position on screen: top, bottom, left or right.",
+    "category": "all-modules",
     "default_active": true,
     "order": 210,
     "on_missing": "skip",

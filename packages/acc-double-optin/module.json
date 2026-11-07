@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Double opt-in confirmation for subscribers.",
+    "category": "all-modules",
     "default_active": true,
     "order": 180,
     "on_missing": "block",

@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 class WpPopPop_Ajax_Modules {
 
     public function __construct() {
-        foreach (['install', 'uninstall', 'delete', 'upload', 'usage'] as $a) {
+        foreach (['install', 'uninstall', 'delete', 'upload', 'usage', 'cats_save', 'set_category'] as $a) {
             add_action('wp_ajax_wppoppop_module_' . $a, [$this, $a]);
         }
     }
@@ -87,5 +87,34 @@ class WpPopPop_Ajax_Modules {
             wp_send_json_error(['code' => 'bad_file', 'message' => __('Only a .zip file can be uploaded.', 'wppoppop')]);
         }
         $this->respond(WpPopPop_Modules_Installer::install_zip($tmp, $this->flag('replace')));
+    }
+
+    /** Module Category manager: replaces the user category list (name, order). */
+    public function cats_save() {
+        $this->verify();
+        $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
+        if (!is_array($raw)) {
+            wp_send_json_error(['message' => __('Malformed category list.', 'wppoppop')]);
+        }
+        wp_send_json_success([
+            'categories' => WpPopPop_Module_Categories::save($raw),
+            'message'    => __('Categories saved.', 'wppoppop'),
+        ]);
+    }
+
+    /** Extend page: put one module into a category. */
+    public function set_category() {
+        $this->verify();
+        $slug = $this->slug();
+        $cat  = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : '';
+        $res  = WpPopPop_Module_Categories::assign($slug, $cat);
+        if (is_wp_error($res)) {
+            $this->respond($res);
+        }
+        $m = WpPopPop_Modules::get($slug);
+        wp_send_json_success([
+            'module'  => $m ? WpPopPop_Modules_Installer::summary($m) : null,
+            'message' => __('Category updated.', 'wppoppop'),
+        ]);
     }
 }

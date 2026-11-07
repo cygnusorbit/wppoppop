@@ -11,6 +11,9 @@
     $(function () {
         var items = (M.vars.modules || []).slice();
         var filter = 'all';
+        var DEF = 'all-modules';
+        var cats = (M.vars.categories || []).slice();
+        var cat = DEF;
         var query = '';
         var selected = null;
         var maxZip = Number(M.vars.max_zip) || 0;
@@ -19,6 +22,7 @@
         var $notice = $('#wpp-ext-notice');
         var $search = $('#wpp-ext-search');
         var $filters = $('#wpp-ext-filters');
+        var $cats = $('#wpp-ext-cats');
         var $drop = $('#wpp-ext-drop');
         var $file = $('#wpp-ext-file');
         var $name = $('#wpp-ext-file-name');
@@ -36,11 +40,15 @@
             }
         }
 
-        function matches(m) {
-            if (!inFilter(m, filter)) { return false; }
+        function textMatch(m) {
             if (!query) { return true; }
             return (m.name + ' ' + m.description + ' ' + m.author + ' ' + m.slug).toLowerCase().indexOf(query) !== -1;
         }
+
+        /* "All Modules" (the default category) shows everything, like "All Templates" in the Library. */
+        function inCat(m, c) { return c === DEF || (m.category || DEF) === c; }
+
+        function matches(m) { return inFilter(m, filter) && inCat(m, cat) && textMatch(m); }
 
         function find(slug) {
             for (var i = 0; i < items.length; i++) { if (items[i].slug === slug) { return i; } }
@@ -90,6 +98,14 @@
                 $('<span></span>').text(M.fmt(M.t('requires'), $.map(m.requires, nameOf).join(', '))).appendTo($meta);
             }
 
+            if (cats.length > 1) {
+                var $cl = $('<label class="wpp-ext-item-cat"></label>').appendTo($c);
+                $('<span></span>').text(M.t('cat_label')).appendTo($cl);
+                var $sel = $('<select></select>').attr('aria-label', M.fmt(M.t('cat_for'), m.name)).appendTo($cl);
+                $.each(cats, function (i, c) { $('<option></option>').val(c.slug).text(c.name).appendTo($sel); });
+                $sel.val(m.category || DEF);
+            }
+
             var $act = $('<div class="wpp-ext-item-actions"></div>').appendTo($c);
             if (!m.locked) {
                 if (m.state === 'installed') {
@@ -120,6 +136,27 @@
             });
         }
 
+        function renderCats() {
+            var known = false;
+            $.each(cats, function (i, c) { if (c.slug === cat) { known = true; } });
+            if (!known) { cat = DEF; }
+            $cats.empty();
+            if (!cats.length) { return; }
+            $.each(cats, function (i, c) {
+                var n = 0;
+                for (var k = 0; k < items.length; k++) {
+                    if (inFilter(items[k], filter) && textMatch(items[k]) && inCat(items[k], c.slug)) { n++; }
+                }
+                var $p = $('<button type="button" class="wpp-cat-pill"></button>')
+                    .attr({ 'data-cat': c.slug, 'aria-pressed': c.slug === cat ? 'true' : 'false' })
+                    .toggleClass('is-active', c.slug === cat);
+                $('<span class="label"></span>').text(c.name).appendTo($p);
+                $('<span class="count"></span>').text('(' + n + ')').appendTo($p);
+                $cats.append($p);
+            });
+            $('<a class="wpp-cat-manage"></a>').attr('href', M.vars.modules_url).text(M.t('cat_manage')).appendTo($cats);
+        }
+
         function render() {
             $grid.empty();
             var shown = 0;
@@ -128,6 +165,7 @@
             }
             if (!shown) { $('<p class="wpp-ext-empty"></p>').text(M.t(items.length ? 'no_match' : 'empty')).appendTo($grid); }
             counts();
+            renderCats();
         }
 
         /* filters + search */
@@ -163,8 +201,28 @@
             });
         });
 
+        /* category pills + per-card category */
+        $cats.on('click', '.wpp-cat-pill', function () {
+            cat = String($(this).attr('data-cat'));
+            render();
+        });
+
+        $grid.on('change', '.wpp-ext-item-cat select', function () {
+            var $sel = $(this);
+            var $c = $sel.closest('.wpp-ext-item');
+            var i = find(String($c.data('slug')));
+            if (i === -1) { return; }
+            $c.addClass('is-busy');
+            $sel.prop('disabled', true);
+            M.post('set_category', { slug: items[i].slug, category: $sel.val() }, function (r) {
+                if (!r.ok) { M.notice($notice, 'error', r.message); }
+                else if (r.data.module) { upsert(r.data.module); M.notice($notice, 'success', r.data.message); }
+                render();
+            });
+        });
+
         /* upload */
-        if (!$drop.length) { return; }
+        if (!$drop.length) { render(); return; }
 
         function setFile(f) {
             selected = null;

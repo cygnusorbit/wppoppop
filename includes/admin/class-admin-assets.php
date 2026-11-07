@@ -22,6 +22,7 @@ class WpPopPop_Admin_Assets {
     protected function enqueue_modules_ui($ver, array $css_deps = [], array $extra = []) {
         wp_enqueue_style('dashicons');
         wp_enqueue_style('wppoppop-modules-css', WPPOPPOP_URL . 'admin/css/modules.css', $css_deps, $ver);
+        wp_enqueue_style('wppoppop-module-categories-css', WPPOPPOP_URL . 'admin/css/module-categories.css', ['wppoppop-modules-css'], $ver);
         wp_enqueue_script('wppoppop-modules-api-js', WPPOPPOP_URL . 'admin/js/modules/modules-api.js', ['jquery'], $ver, true);
         wp_localize_script('wppoppop-modules-api-js', 'wppoppop_modules_vars', WpPopPop_Modules_Installer::js_vars($extra));
     }
@@ -186,6 +187,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-settings-pages-js', WPPOPPOP_URL . 'admin/js/settings/settings-pages.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js'], self::ver(), true);
             $this->enqueue_modules_ui($set_ver, ['wppoppop-settings-css']);
             wp_enqueue_script('wppoppop-settings-modules-js', WPPOPPOP_URL . 'admin/js/settings/settings-modules.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js', 'wppoppop-modules-api-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-module-categories-js', WPPOPPOP_URL . 'admin/js/modules/module-categories.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-modules-api-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-search-js', WPPOPPOP_URL . 'admin/js/settings/settings-search.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-reset-js', WPPOPPOP_URL . 'admin/js/settings/settings-reset.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
 

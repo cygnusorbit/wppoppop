@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Notification messages for popup events.",
+    "category": "all-modules",
     "default_active": true,
     "order": 190,
     "on_missing": "skip",

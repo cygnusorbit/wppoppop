@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Page overlay behind the popup: colour, opacity, image or animation.",
+    "category": "all-modules",
     "default_active": true,
     "order": 170,
     "on_missing": "skip",

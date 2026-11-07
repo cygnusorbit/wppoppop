@@ -205,6 +205,7 @@ class WpPopPop_Modules {
             'version'        => $version,
             'author'         => self::text($raw, 'author', 80),
             'description'    => self::text($raw, 'description', 240),
+            'category'       => self::text($raw, 'category', 40),
             'locked'         => $core && !empty($raw['locked']),
             'default_active' => !empty($raw['default_active']),
             'order'          => $order,
