@@ -102,7 +102,21 @@ class WpPopPop_Ajax_Frontend {
 
         if (!empty($name)) { $clean_fields['_name'] = $name; }
         if (!empty($phone)) { $clean_fields['_phone'] = $phone; }
-        $clean_fields['_ip'] = WpPopPop_Tracking::anonymize_ip($ip);
+        /* WPPOPPOP_PROTECT_AJAX: Security & Protections */
+        $wppoppop_sp_mail_skip = [];
+        if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
+        if (WpPopPop_Protect::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            $wppoppop_sp_raw = ($popup_uid !== '') ? $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $popup_uid)) : '';
+            $wppoppop_sp     = WpPopPop_Protect::get_config(json_decode((string) $wppoppop_sp_raw, true));
+            $wppoppop_deny   = WpPopPop_Protect::antibot($popup_uid, $clean_fields, $wppoppop_sp);
+            if ($wppoppop_deny !== '') {
+                wp_send_json_error(['message' => $wppoppop_deny]);
+            }
+            $clean_fields = array_merge($clean_fields, WpPopPop_Protect::capture($wppoppop_sp));
+            if (empty($wppoppop_sp['email_tech'])) { $wppoppop_sp_mail_skip = ['_ip' => 1, '_ua' => 1]; }
+        } else {
+            $clean_fields['_ip'] = WpPopPop_Tracking::anonymize_ip($ip);
+        }
         $visitor_country = isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : '';
 
         $wpdb->insert($table_name,
@@ -141,14 +155,14 @@ class WpPopPop_Ajax_Frontend {
             $msg .= '<p style="color:#475569;">' . sprintf(/* translators: 1: site name or date, 2: campaign UID */
             esc_html__( 'A new submission was received on %1$s for Campaign UID: %2$s.', 'wppoppop' ), esc_html(current_time('mysql')), '<code>' . esc_html($popup_uid) . '</code>') . '</p>';$msg .= '<table style="width:100%;border-collapse:collapse;margin-top:16px;background:#ffffff;border-radius:6px;overflow:hidden;border:1px solid #e2e8f0;">';
 
-            foreach ($clean_fields as $field_label =>$field_val) {
+            foreach (array_diff_key($clean_fields, $wppoppop_sp_mail_skip) as $field_label =>$field_val) {
                 if (strpos($field_label, '_path') !== false) {
                     continue;
                 }
                 $msg .= '<tr>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:600;color:#334155;width:35%;">' . esc_html(ucwords(str_replace(['_', '-'], ' ', $field_label))) . '</td>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#64748b;">' . esc_html(is_array($field_val) ? implode(', ', $field_val) : $field_val) . '</td>';$msg .= '</tr>';
             }
 
-            $msg .= '<tr><td style="padding:10px 14px;font-weight:600;color:#334155;">' . esc_html__('IP Address', 'wppoppop') . '</td><td style="padding:10px 14px;color:#64748b;">' . esc_html($ip) . '</td></tr>';$msg .= '</table></div>';
+            if (empty($wppoppop_sp_mail_skip)) { $msg .= '<tr><td style="padding:10px 14px;font-weight:600;color:#334155;">' . esc_html__('IP Address', 'wppoppop') . '</td><td style="padding:10px 14px;color:#64748b;">' . esc_html($ip) . '</td></tr>'; }$msg .= '</table></div>';
 
             wp_mail($admin_notification_email,$subject, $msg,$headers);
         }

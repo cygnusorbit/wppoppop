@@ -144,6 +144,7 @@
             if (!$wrap.length) return;
 
             $wrap.data('wppoppopClosing', false);
+            if ($wrap.is('[data-wpp-noscroll]')) { $('html').addClass('wppoppop-no-scroll'); } /* WPPOPPOP_PROTECT_SCROLL */
             $wrap.stop(true, true).fadeIn(250).css('display', 'flex').attr('aria-hidden', 'false');
             this.playCanvasIn($wrap.find('.wppoppop-canvas-active').first(), $wrap.find('.wppoppop-box').first());
             try { this.initExtensionWidgets(); } catch (eW) {} /* WPPOPPOP_DATE_REINIT: library may load after bootstrap */
@@ -161,6 +162,7 @@
 
             if ($wrap.data('wppoppopClosing')) return;
             $wrap.data('wppoppopClosing', true);
+            if (!$('[data-wpp-noscroll]').not($wrap).filter(':visible').length) { $('html').removeClass('wppoppop-no-scroll'); } /* WPPOPPOP_PROTECT_SCROLL */
 
             var self = this;
             var $c = $wrap.find('.wppoppop-canvas-active').first();

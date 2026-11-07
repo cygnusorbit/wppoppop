@@ -189,6 +189,7 @@ class WpPopPop_Front_Renderer {
         <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo esc_attr( $preload_class ); ?>"
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
+             <?php echo WpPopPop_Protect::frontend_attrs($config); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute, no user input ?>
              data-config="<?php echo esc_attr( $encoded_config ); ?>"<?php echo (!$is_inline && $wppoppop_pp['pos'] !== '') ? ' data-wpp-pos="' . esc_attr($wppoppop_pp['pos']) . '"' : ''; ?><?php echo wp_kses_post( $trg_attrs ); ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
              style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : $wppoppop_ov['css'] . $wppoppop_pp['css']; ?>"
              aria-hidden="true"

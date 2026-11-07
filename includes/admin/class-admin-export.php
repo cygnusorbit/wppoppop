@@ -184,7 +184,7 @@ class WpPopPop_Admin_Export {
                 $raws = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->get_col( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions ORDER BY id DESC LIMIT 500" );
             }
-            $skip = ['signature', 'quiz_score', '_name', '_phone', '_ip'];
+            $skip = ['signature', 'quiz_score', '_name', '_phone', '_ip', '_ua'];
             $seen = [];
             foreach ((array) $raws as $raw) {
                 $f = json_decode($raw, true);
@@ -242,7 +242,7 @@ class WpPopPop_Admin_Export {
         list($defined, $canon) = $this->build_field_index($popup_uid);
         $decoded    = [];
         $extras     = [];
-        $skip       = ['signature', 'quiz_score', '_name', '_phone', '_ip'];
+        $skip       = ['signature', 'quiz_score', '_name', '_phone', '_ip', '_ua'];
         foreach ((array) $rows as $i => $row) {
             $f = json_decode($row->fields_data, true);
             $norm = [];

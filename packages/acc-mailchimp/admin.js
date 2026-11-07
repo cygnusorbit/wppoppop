@@ -82,10 +82,15 @@
         return h;
     }
 
+    /* WPPOPPOP_MC_SWITCH: toggle switch markup (attr is data-k for a setting, data-g for a group) */
+    function switchHtml(attr, key, on, label) {
+        return '<label class="wppoppop-mc-switch"><input type="checkbox" role="switch" ' + attr + '="' + esc(key) + '"' + (on ? ' checked' : '') + '><span class="wppoppop-mc-trk" aria-hidden="true"></span><span class="wppoppop-mc-swl">' + esc(label) + '</span></label>';
+    }
+
     function groupRows(n) {
         var h = '';
         $.each(n.group_defs || [], function(i, g) {
-            h += '<label class="wppoppop-mc-group"><input type="checkbox" data-g="' + esc(g.id) + '"' + (n.groups[g.id] ? ' checked' : '') + '> ' + esc(g.label || g.id) + '</label>';
+            h += switchHtml('data-g', g.id, !!n.groups[g.id], g.label || g.id);
         });
         return h;
     }
@@ -115,7 +120,7 @@
                 '</span>' +
             '</div>' +
             '<div class="wppoppop-mc-body" style="' + (open ? '' : 'display:none;') + '">' +
-                '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('Name')) + '</span><div class="wppoppop-mc-namerow"><input type="text" class="widefat" data-k="name" value="' + esc(n.name) + '"><label class="wppoppop-mc-check"><input type="checkbox" data-k="enable"' + (isTrue(n.enable) ? ' checked' : '') + '> ' + esc(tr('Enabled')) + '</label></div></div>' +
+                '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('Name')) + '</span><div class="wppoppop-mc-namerow"><input type="text" class="widefat" data-k="name" value="' + esc(n.name) + '">' + switchHtml('data-k', 'enable', isTrue(n.enable), tr('Enabled')) + '</div></div>' +
                 '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('Execute')) + '</span><select class="widefat" data-k="send">' +
                     '<option value="after_submission"' + (n.send !== 'after_confirmation' ? ' selected' : '') + '>' + esc(tr('After successful form submission')) + '</option>' +
                     '<option value="after_confirmation"' + (n.send === 'after_confirmation' ? ' selected' : '') + '>' + esc(tr('After double opt-in confirmation')) + '</option></select></div>' +
@@ -124,14 +129,14 @@
                 '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('List ID')) + '</span><select class="widefat wppoppop-mc-list-sel"' + (hasKey ? '' : ' disabled') + '>' + listOptions(n) + '</select>' +
                     '<p class="wppoppop-mc-status" role="status" aria-live="polite"></p></div>' +
                 '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('Fields')) + '</span><div class="wppoppop-mc-fields">' + fieldRows(n) + '</div>' +
-                    '<button type="button" class="wppoppop-mc-btn is-sm wppoppop-mc-load wppoppop-mc-load-fields">' + esc(tr('Load Fields')) + '</button>' +
+                    '<button type="button" class="wppoppop-mc-btn is-sm wppoppop-mc-load wppoppop-mc-load-fields"><span class="dashicons dashicons-download" aria-hidden="true"></span><span>' + esc(tr('Load Fields')) + '</span></button>' +
                     '<p class="wppoppop-mc-help">' + esc(tr('Map each MailChimp field to a form value, for example {{email}}.')) + '</p></div>' +
                 '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('Groups')) + '</span><div class="wppoppop-mc-groups">' + groupRows(n) + '</div>' +
-                    '<button type="button" class="wppoppop-mc-btn is-sm wppoppop-mc-load wppoppop-mc-load-groups">' + esc(tr('Load Groups')) + '</button></div>' +
+                    '<button type="button" class="wppoppop-mc-btn is-sm wppoppop-mc-load wppoppop-mc-load-groups"><span class="dashicons dashicons-download" aria-hidden="true"></span><span>' + esc(tr('Load Groups')) + '</span></button></div>' +
                 '<div class="wppoppop-mc-row"><span class="wppoppop-mc-lbl">' + esc(tr('Tags')) + '</span><input type="text" class="widefat" data-k="tags" value="' + esc(n.tags) + '">' +
                     '<p class="wppoppop-mc-help">' + esc(tr('Comma-separated list of tags added to the subscriber.')) + '</p></div>' +
-                '<div class="wppoppop-mc-checks"><label class="wppoppop-mc-check"><input type="checkbox" data-k="double"' + (isTrue(n.double) ? ' checked' : '') + '> ' + esc(tr('Double opt-in')) + '</label>' +
-                '<label class="wppoppop-mc-check"><input type="checkbox" data-k="logic_enable"' + (isTrue(n.logic_enable) ? ' checked' : '') + '> ' + esc(tr('Enable conditional logic')) + '</label></div>' +
+                '<div class="wppoppop-mc-checks">' + switchHtml('data-k', 'double', isTrue(n.double), tr('Double opt-in')) +
+                switchHtml('data-k', 'logic_enable', isTrue(n.logic_enable), tr('Enable conditional logic')) + '</div>' +
                 '<div class="wppoppop-mc-logic" style="' + (isTrue(n.logic_enable) ? '' : 'display:none;') + '">' +
                     '<div class="wppoppop-mc-match">' + esc(tr('Subscribe if')) + ' <select data-k="logic_match"><option value="all"' + (n.logic_match !== 'any' ? ' selected' : '') + '>' + esc(tr('all')) + '</option><option value="any"' + (n.logic_match === 'any' ? ' selected' : '') + '>' + esc(tr('any')) + '</option></select> ' + esc(tr('of the rules match:')) + '</div>' +
                     rules + '<button type="button" class="wppoppop-mc-btn is-sm wppoppop-mc-rule-add">' + esc(tr('+ Add rule')) + '</button>' +

@@ -193,6 +193,15 @@ class WpPopPop_Ajax_Templates {
                 $obj->settings->getresponse = json_decode(wp_json_encode($wppoppop_gr_tpl));
                 if (!is_array($obj->settings->getresponse)) { $obj->settings->getresponse = array(); }
             }
+            if (isset($obj->settings->security)) { /* WPPOPPOP_PROTECT_WHITELIST */
+                if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
+                $wppoppop_sp_tpl = WpPopPop_Protect::sanitize($obj->settings->security);
+                if ($wppoppop_sp_tpl === WpPopPop_Protect::defaults()) {
+                    unset($obj->settings->security);
+                } else {
+                    $obj->settings->security = json_decode(wp_json_encode($wppoppop_sp_tpl));
+                }
+            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }

@@ -110,11 +110,20 @@ class WpPopPop_Notifications {
         if (empty($items)) { return 0; }
         list($g_email, $g_name) = self::sender();
         $flat = self::flat($fields);
+        /* WPPOPPOP_PROTECT_MAIL: technical info (IP-address, User-Agent) joins {{form-data}} only when Security & Protections allows it */
+        $wppoppop_tech_rows = [];
+        if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
+        if (WpPopPop_Protect::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            $wppoppop_tech_rows = WpPopPop_Protect::take_tech($flat, WpPopPop_Protect::get_config($config));
+        }
         $sent = 0;
 
         $rows = '';
         foreach ($flat as $k => $v) {
             $rows .= '<tr><td style="padding:4px 10px;border:1px solid #e2e8f0;"><strong>' . esc_html($k) . '</strong></td><td style="padding:4px 10px;border:1px solid #e2e8f0;">' . esc_html($v) . '</td></tr>';
+        }
+        foreach ($wppoppop_tech_rows as $wppoppop_tk => $wppoppop_tv) {
+            $rows .= '<tr><td style="padding:4px 10px;border:1px solid #e2e8f0;"><strong>' . esc_html($wppoppop_tk) . '</strong></td><td style="padding:4px 10px;border:1px solid #e2e8f0;">' . esc_html($wppoppop_tv) . '</td></tr>';
         }
         $form_data = $rows !== '' ? '<table style="border-collapse:collapse;">' . $rows . '</table>' : '';
 

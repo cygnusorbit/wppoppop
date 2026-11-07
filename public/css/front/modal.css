@@ -161,3 +161,7 @@
     user-select: none;
     box-sizing: border-box;
 }
+
+/* WPPOPPOP_PROTECT_NOSCROLL: Security & Protections > Disable page scrollbar */
+html.wppoppop-no-scroll,
+html.wppoppop-no-scroll body { overflow: hidden !important; }

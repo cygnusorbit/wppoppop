@@ -74,6 +74,18 @@ class WpPopPop_Rest_Submissions {
         }
 
         $config = json_decode($row['data'], true) ?: [];
+
+        /* WPPOPPOP_PROTECT_REST: Security & Protections (antibot before anything is stored, technical info only when allowed) */
+        $wppoppop_tech = [];
+        if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
+        if (WpPopPop_Protect::module_active()) { /* WPPOPPOP_MODULE_GATE */
+            $wppoppop_sp   = WpPopPop_Protect::get_config($config);
+            $wppoppop_deny = WpPopPop_Protect::antibot($uid, $fields, $wppoppop_sp);
+            if ($wppoppop_deny !== '') {
+                return new WP_Error('repeated_submission', $wppoppop_deny, ['status' => 429]);
+            }
+            $wppoppop_tech = WpPopPop_Protect::capture($wppoppop_sp);
+        }
         $notif  = $config['notifications'] ?? [];
         if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
         $dopt_cfg        = WpPopPop_Double_Optin::get_config($config);
@@ -98,7 +110,7 @@ class WpPopPop_Rest_Submissions {
             [
                 'popup_uid'     => $uid,
                 'email'         => $email,
-                'fields_data'   => wp_json_encode($fields),
+                'fields_data'   => wp_json_encode(array_merge($fields, $wppoppop_tech)),
                 'status'        => $initial_status,
                 'confirm_token' => $confirm_token,
                 'country_code'  => $visitor_country,
@@ -110,7 +122,7 @@ class WpPopPop_Rest_Submissions {
 
         // Notifications: "After successful form submission"
         if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
-        WpPopPop_Notifications::dispatch('after_submission', $uid, $row['title'], $config, $email, $fields, $submission_id, $visitor_country);
+        WpPopPop_Notifications::dispatch('after_submission', $uid, $row['title'], $config, $email, array_merge($fields, $wppoppop_tech), $submission_id, $visitor_country);
 
         // Double Opt-In: send the confirmation email
         if ($is_double_optin) {

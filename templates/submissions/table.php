@@ -110,6 +110,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
         if (!is_array($fields)) {
             $fields = [];
         }
+        $fields = WpPopPop_Protect::record_fields($fields, $s->popup_uid); /* WPPOPPOP_PROTECT_RECORD */
         $is_confirmed = ($s->status === 'confirmed');
         $is_unread    = empty($s->is_read);
         $dot_col      = in_array('popup', $active_cols, true) ? 'popup' : reset($active_cols);

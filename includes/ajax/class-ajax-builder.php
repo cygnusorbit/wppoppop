@@ -313,6 +313,16 @@ class WpPopPop_Ajax_Builder {
             $wppoppop_obj->settings->getresponse = json_decode(wp_json_encode(WpPopPop_Getresponse::sanitize($wppoppop_obj->settings->getresponse)));
             if (!is_array($wppoppop_obj->settings->getresponse)) { $wppoppop_obj->settings->getresponse = array(); }
         }
+        /* WPPOPPOP_PROTECT_WHITELIST: allow-list the Security & Protections module (defaults are not stored) */
+        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->security)) {
+            if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
+            $wppoppop_sp = WpPopPop_Protect::sanitize($wppoppop_obj->settings->security);
+            if ($wppoppop_sp === WpPopPop_Protect::defaults()) {
+                unset($wppoppop_obj->settings->security);
+            } else {
+                $wppoppop_obj->settings->security = json_decode(wp_json_encode($wppoppop_sp));
+            }
+        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));
