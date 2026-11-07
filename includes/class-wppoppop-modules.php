@@ -206,6 +206,7 @@ class WpPopPop_Modules {
             'author'         => self::text($raw, 'author', 80),
             'description'    => self::text($raw, 'description', 240),
             'category'       => self::text($raw, 'category', 40),
+            'image'          => self::image_url($raw),
             'locked'         => $core && !empty($raw['locked']),
             'default_active' => !empty($raw['default_active']),
             'order'          => $order,
@@ -225,6 +226,15 @@ class WpPopPop_Modules {
             'template'       => $template,
             'source'         => $core ? 'core' : 'uploaded',
         ];
+    }
+
+    /** Optional module.json "image": an http(s) URL, shown as the 40x40 thumbnail on the Extend page. */
+    public static function image_url($raw) {
+        $v = (is_array($raw) && isset($raw['image']) && is_string($raw['image'])) ? trim($raw['image']) : '';
+        if ($v === '' || strlen($v) > 500) {
+            return '';
+        }
+        return (string) esc_url_raw($v, ['http', 'https']);
     }
 
     protected static function inside($path, $root) {

@@ -60,6 +60,7 @@ class WpPopPop_Modules_Installer {
             'requires'    => array_values($m['requires']),
             'required_by' => $by,
             'category'    => WpPopPop_Module_Categories::of($m),
+            'image'       => WpPopPop_Module_Categories::image_of($m),
         ];
     }
 
@@ -301,7 +302,9 @@ class WpPopPop_Modules_Installer {
                 'edit'            => __('Edit', 'wppoppop'),
                 /* translators: %s: module name */
                 'edit_title'      => __('Edit %s', 'wppoppop'),
-                'edit_note'       => __('The category is saved to this module\'s module.json.', 'wppoppop'),
+                'edit_note'       => __('The category and image URL are saved to this module\'s module.json.', 'wppoppop'),
+                'edit_image'      => __('Image URL', 'wppoppop'),
+                'edit_img_bad'    => __('Enter a valid http(s) image URL.', 'wppoppop'),
                 'edit_save'       => __('Save', 'wppoppop'),
                 'edit_saving'     => __('Saving…', 'wppoppop'),
             ],

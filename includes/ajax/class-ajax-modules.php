@@ -107,7 +107,8 @@ class WpPopPop_Ajax_Modules {
         $this->verify();
         $slug = $this->slug();
         $cat  = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : '';
-        $res  = WpPopPop_Module_Categories::assign($slug, $cat);
+        $img  = isset($_POST['image']) ? sanitize_text_field(wp_unslash($_POST['image'])) : null;
+        $res  = WpPopPop_Module_Categories::assign($slug, $cat, $img);
         if (is_wp_error($res)) {
             $this->respond($res);
         }
@@ -116,8 +117,8 @@ class WpPopPop_Ajax_Modules {
             'module'  => $m ? WpPopPop_Modules_Installer::summary($m) : null,
             'json'    => !empty($res['json']),
             'message' => !empty($res['json'])
-                ? __('Module updated. The category was saved to module.json.', 'wppoppop')
-                : __('Category saved, but module.json is not writable on this server, so it was stored in the database only.', 'wppoppop'),
+                ? __('Module updated. The changes were saved to module.json.', 'wppoppop')
+                : __('Changes saved, but module.json is not writable on this server, so they were stored in the database only.', 'wppoppop'),
         ]);
     }
 }

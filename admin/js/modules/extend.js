@@ -78,9 +78,29 @@
             return cats.length ? cats[0].name : '';
         }
 
+        function icon(name, label, cls) {
+            return $('<button type="button" class="button wpp-ext-icon-btn"></button>').addClass(cls || '')
+                .attr({ title: label, 'aria-label': label })
+                .append($('<span class="dashicons" aria-hidden="true"></span>').addClass('dashicons-' + name));
+        }
+
+        function fillThumb($t, url) {
+            $t.empty().removeClass('is-empty');
+            var $ph = function () { $t.empty().addClass('is-empty').append('<span class="dashicons dashicons-admin-plugins"></span>'); };
+            if (!url) { $ph(); return $t; }
+            $('<img alt="" width="40" height="40" decoding="async">').on('error', $ph).attr('src', url).appendTo($t);
+            return $t;
+        }
+
+        function thumb(url) {
+            return fillThumb($('<span class="wpp-ext-item-img" aria-hidden="true"></span>'), url);
+        }
+
         function card(m) {
             var $c = $('<article class="wpp-ext-item"></article>').attr('data-slug', m.slug);
-            var $head = $('<div class="wpp-ext-item-head"></div>').appendTo($c);
+            var $top = $('<div class="wpp-ext-item-top"></div>').appendTo($c);
+            $top.append(thumb(m.image));
+            var $head = $('<div class="wpp-ext-item-head"></div>').appendTo($top);
             $('<h3 class="wpp-ext-item-name"></h3>').text(m.name).appendTo($head);
             $head.append(pill(m.source === 'core' ? M.t('builtin') : M.t('uploaded')));
             if (m.locked) {
@@ -106,10 +126,12 @@
             $('<span></span>').text(M.t('cat_label') + ': ' + catName(m.category)).appendTo($meta);
 
             var $act = $('<div class="wpp-ext-item-actions"></div>').appendTo($c);
+            var $end = $('<span class="wpp-ext-act-end"></span>');
             if (!m.locked) {
                 if (m.state === 'installed') {
-                    $('<a class="button"></a>').attr('href', M.vars.modules_url).text(M.t('manage')).appendTo($act);
-                    $act.append(button(M.t('uninstall')).attr('data-act', 'uninstall'));
+                    $('<a class="button wpp-ext-icon-btn"></a>').attr({ href: M.vars.modules_url, title: M.t('manage'), 'aria-label': M.t('manage') })
+                        .append('<span class="dashicons dashicons-admin-generic" aria-hidden="true"></span>').appendTo($act);
+                    $act.append(icon('remove', M.t('uninstall')).attr('data-act', 'uninstall'));
                 } else {
                     var $inst = button(m.state === 'deleted' ? M.t('restore') : M.t('install'), 'button-primary').attr('data-act', 'install');
                     if (!m.compatible) {
@@ -118,13 +140,12 @@
                     }
                     $act.prepend($inst);
                 }
-                if (m.state !== 'deleted') {
-                    $act.append(button(M.t('delete'), 'button-link button-link-delete').attr('data-act', 'delete'));
-                }
             }
-            var $edit = button(M.t('edit')).attr('data-edit', '1');
-            var $del = $act.find('[data-act="delete"]');
-            if ($del.length) { $edit.insertBefore($del); } else { $act.append($edit); }
+            $end.append(icon('edit', M.t('edit')).attr('data-edit', '1'));
+            if (!m.locked && m.state !== 'deleted') {
+                $end.append(icon('trash', M.t('delete'), 'wpp-ext-del').attr('data-act', 'delete'));
+            }
+            $act.append($end);
             return $c;
         }
 
@@ -220,6 +241,22 @@
             var $sel = $('<select></select>').attr('id', id + '-cat').appendTo($row);
             $.each(cats, function (i, c) { $('<option></option>').val(c.slug).text(c.name).appendTo($sel); });
             $sel.val(m.category || DEF);
+            var $field = $('<div class="wpp-ext-edit-field"></div>').appendTo($dlg);
+            $('<label></label>').attr('for', id + '-img').text(M.t('edit_image')).appendTo($field);
+            var $imgRow = $('<div class="wpp-ext-edit-img"></div>').appendTo($field);
+            var $pv = thumb(m.image).appendTo($imgRow);
+            var $img = $('<input type="url">').attr({ id: id + '-img', placeholder: 'https://example.com/icon.png', maxlength: 500, autocomplete: 'off', spellcheck: 'false' })
+                .val(m.image || '').appendTo($imgRow);
+            var $err = $('<p class="wpp-ext-edit-err" role="alert" hidden></p>').text(M.t('edit_img_bad')).appendTo($dlg);
+            var pvTimer = 0;
+            $img.on('input change', function () {
+                $err.prop('hidden', true);
+                clearTimeout(pvTimer);
+                pvTimer = setTimeout(function () {
+                    var u = String($img.val() || '').replace(/^\s+|\s+$/g, '');
+                    fillThumb($pv, /^https?:\/\/\S+$/i.test(u) ? u : '');
+                }, 350);
+            });
             $('<p class="wpp-mod-modal-msg wpp-ext-edit-note"></p>').text(M.t('edit_note')).appendTo($dlg);
             var $act = $('<div class="wpp-mod-modal-actions"></div>').appendTo($dlg);
             var $cancel = $('<button type="button" class="button"></button>').text(M.t('cancel')).appendTo($act);
@@ -235,9 +272,11 @@
 
             function save() {
                 if (busy) { return; }
+                var url = String($img.val() || '').replace(/^\s+|\s+$/g, '');
+                if (url !== '' && !/^https?:\/\/\S+$/i.test(url)) { $err.prop('hidden', false); $img.trigger('focus'); return; }
                 busy = true;
                 $ok.prop('disabled', true).text(M.t('edit_saving'));
-                M.post('set_category', { slug: m.slug, category: $sel.val() }, function (r) {
+                M.post('set_category', { slug: m.slug, category: $sel.val(), image: url }, function (r) {
                     busy = false;
                     close();
                     if (!r.ok) { M.notice($notice, 'error', r.message); return; }
@@ -247,13 +286,14 @@
                 });
             }
 
+            $img.on('keydown', function (e) { if (e.which === 13) { e.preventDefault(); save(); } });
             $cancel.on('click', close);
             $ok.on('click', save);
             $back.on('mousedown', function (e) { if (e.target === $back[0]) { close(); } });
             $(document).off('keydown.wppext').on('keydown.wppext', function (e) {
                 if (e.which === 27) { e.preventDefault(); close(); return; }
                 if (e.which !== 9) { return; }
-                var $f = $dlg.find('select, button').filter(':visible:not(:disabled)');
+                var $f = $dlg.find('select, input, button').filter(':visible:not(:disabled)');
                 if (!$f.length) { return; }
                 var first = $f[0];
                 var last = $f[$f.length - 1];

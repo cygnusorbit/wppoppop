@@ -12,6 +12,7 @@ class WpPopPop_Module_Categories {
 
     const OPT          = 'wppoppop_module_categories';
     const MAP_OPT      = 'wppoppop_module_category_map';
+    const IMG_OPT      = 'wppoppop_module_image_map';
     const DEFAULT_SLUG = 'all-modules';
     const MAX          = 30;
     const NAME_MAX     = 40;
@@ -146,8 +147,20 @@ class WpPopPop_Module_Categories {
         return $hit === '' ? self::DEFAULT_SLUG : $hit;
     }
 
-    /** Writes "category" into a module's module.json (built-in or uploaded). False when the file cannot be updated. */
-    protected static function write_manifest($m, $value) {
+    /** Thumbnail URL of a module: the saved override, else the manifest "image". */
+    public static function image_of($module) {
+        if (!is_array($module) || empty($module['slug'])) {
+            return '';
+        }
+        $map = get_option(self::IMG_OPT, []);
+        if (is_array($map) && isset($map[$module['slug']]) && is_string($map[$module['slug']])) {
+            return $map[$module['slug']];
+        }
+        return isset($module['image']) && is_string($module['image']) ? $module['image'] : '';
+    }
+
+    /** Writes "category" (and "image" when given; '' removes it) into a module's module.json. False when the file cannot be updated. */
+    protected static function write_manifest($m, $value, $image = null) {
         $dir  = (is_array($m) && !empty($m['dir'])) ? $m['dir'] : '';
         $file = $dir . '/module.json';
         if ($dir === '' || is_link($file) || !is_file($file) || !is_writable($file) || filesize($file) > WpPopPop_Modules::MAX_JSON) {
@@ -157,18 +170,25 @@ class WpPopPop_Module_Categories {
         if (!is_object($raw)) {
             return false;
         }
+        $img = ($image !== null) ? $image : ((isset($raw->image) && is_string($raw->image)) ? $raw->image : '');
         $out = new stdClass();
         foreach (get_object_vars($raw) as $k => $v) {
-            if ($k === 'category') {
+            if ($k === 'category' || $k === 'image') {
                 continue;
             }
             $out->$k = $v;
             if ($k === 'description') {
                 $out->category = $value;
+                if ($img !== '') {
+                    $out->image = $img;
+                }
             }
         }
         if (!isset($out->category)) {
             $out->category = $value;
+        }
+        if ($img !== '' && !isset($out->image)) {
+            $out->image = $img;
         }
         $json = wp_json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (!is_string($json) || $json === '') {
@@ -182,7 +202,7 @@ class WpPopPop_Module_Categories {
      * module; the database keeps the stable slug so renaming a category never detaches its modules.
      * Returns ['category' => slug, 'json' => bool] or WP_Error.
      */
-    public static function assign($module_slug, $cat) {
+    public static function assign($module_slug, $cat, $image = null) {
         $m = WpPopPop_Modules::slug_valid($module_slug) ? WpPopPop_Modules::get($module_slug) : null;
         if (!$m) {
             return new WP_Error('not_found', __('Module not found.', 'wppoppop'));
@@ -197,10 +217,23 @@ class WpPopPop_Module_Categories {
                 $value = $c['name'];
             }
         }
-        $json              = self::write_manifest($m, $value);
+        if ($image !== null) {
+            $image = trim((string) $image);
+            if ($image !== '' && WpPopPop_Modules::image_url(['image' => $image]) === '') {
+                return new WP_Error('bad_image', __('Enter a valid http(s) image URL (up to 500 characters).', 'wppoppop'));
+            }
+            $image = WpPopPop_Modules::image_url(['image' => $image]);
+        }
+        $json              = self::write_manifest($m, $value, $image);
         $map               = self::map();
         $map[$module_slug] = $cat;
         update_option(self::MAP_OPT, $map, false);
+        if ($image !== null) {
+            $imgs = get_option(self::IMG_OPT, []);
+            $imgs = is_array($imgs) ? $imgs : [];
+            $imgs[$module_slug] = $image;
+            update_option(self::IMG_OPT, $imgs, false);
+        }
         WpPopPop_Modules::flush();
         return ['category' => $cat, 'json' => $json];
     }

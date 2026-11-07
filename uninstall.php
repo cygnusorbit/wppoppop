@@ -37,6 +37,7 @@ if ($clean_on_uninstall) {
     delete_option('wppoppop_modules_seeded');
     delete_option('wppoppop_module_categories');
     delete_option('wppoppop_module_category_map');
+    delete_option('wppoppop_module_image_map');
 
     // 3. Purge cached transients
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wppoppop_%' OR option_name LIKE '_transient_timeout_wppoppop_%'");
