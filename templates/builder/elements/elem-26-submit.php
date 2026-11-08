@@ -37,4 +37,16 @@ if (!defined('ABSPATH')) exit;
         <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('CONFIRMATION MESSAGE', 'wppoppop'); ?></label>
         <input type="text" id="prop-submit-confirm" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="confirmMessage" placeholder="<?php esc_attr_e('Thank you for your submission!', 'wppoppop'); ?>" style="font-size:12px;">
     </div>
+    <!-- WPPOPPOP_BLOCK_EMPTY_SUBMIT -->
+    <div class="wppoppop-prop-row wppoppop-gp-switch-row" style="margin-top:12px;padding-top:10px;border-top:1px solid #1e293b;">
+        <label class="wppoppop-prop-label" for="prop-submit-block-empty" style="font-size:11px;font-weight:700;color:#e2e8f0;text-transform:uppercase;"><?php esc_html_e('DO NOT ALLOW SUBMIT ON EMPTY FIELD', 'wppoppop'); ?></label>
+        <label class="wppoppop-gp-switch">
+            <input type="checkbox" id="prop-submit-block-empty" class="wppoppop-gp-bind" data-prop="blockEmptySubmit" data-wpp-default="1" checked>
+            <span class="wppoppop-gp-slider"></span>
+        </label>
+    </div>
+    <div id="prop-submit-empty-msg-wrap" style="margin-top:10px;">
+        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;"><?php esc_html_e('CUSTOM ERROR MESSAGE', 'wppoppop'); ?></label>
+        <input type="text" id="prop-submit-empty-msg" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="emptySubmitMessage" placeholder="<?php esc_attr_e('Please fill in all fields before submitting.', 'wppoppop'); ?>" style="font-size:12px;">
+    </div>
 </div>

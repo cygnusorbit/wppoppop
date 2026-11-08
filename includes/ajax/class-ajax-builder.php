@@ -939,7 +939,7 @@ class WpPopPop_Ajax_Builder {
             'aspectRatio', 'videoUrl', 'tag', 'textTransform', 'overflow',
             'closeSymbol', 'closeAction', 'closeGlyph', 'hoverBgColor', 'hoverTextColor', 'hoverBorderColor', 'hoverBg', 'hoverColor', 'hoverBorder', 'iconClass', 'progressMode',
             'buttonAction', 'url', 'loadingText', 'submitAction',
-            'confirmMessage', 'redirectUrl', 'countryCode', 'checkboxLabel',
+            'confirmMessage', 'emptySubmitMessage', 'redirectUrl', 'countryCode', 'checkboxLabel',
             'radioLayout', 'dateFormat', 'minDate', 'maxDate', 'timeFormat',
             'allowedExtensions', 'activeColor', 'ratingShape', 'ratingColor', 'requiredMessage', 'errorMessage', 'validatorEqual', 'validatorList', 'optionsList', 'firstOption', 'minValue', 'maxValue', 'stepValue', 'unitSuffix', 'uploadErrorMessage'
         );
@@ -962,7 +962,7 @@ class WpPopPop_Ajax_Builder {
         }
 
         $gp_bool_keys = array(
-            'required', 'transparentFill', 'autoplay', 'muted', 'loop',
+            'required', 'blockEmptySubmit', 'transparentFill', 'autoplay', 'muted', 'loop',
             'controls', 'showPercentLabel', 'striped', 'targetBlank',
             'nofollow', 'checkedDefault', 'multiSelect', 'multiple',
             'showEyeToggle', 'bgCustom', 'logicEnabled', 'dynamicDefault',

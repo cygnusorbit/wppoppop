@@ -116,6 +116,7 @@ class WpPopPop_Front_Decomposed_26 {
 
     public static function render_element_raw(string $type, array $el): ?string {
         $t = strtolower(trim($type));
+        if ($t === 'email' && !array_key_exists('required', $el)) { $el['required'] = true; } /* WPPOPPOP_EMAIL_REQ_DEFAULT */
         $field_name = !empty($el['fieldName']) ? sanitize_key($el['fieldName']) : (!empty($el['token']) ? sanitize_key($el['token']) : $t);
         $field_id = !empty($el['fieldId']) ? sanitize_html_class($el['fieldId']) : 'wppoppop-field-' . esc_attr($el['id'] ?? uniqid());
         $default_val = isset($el['defaultValue']) ? (string) $el['defaultValue'] : '';

@@ -410,7 +410,7 @@
                     if (p === 'placeholder') v = el.label || '';
                     if (p === 'optionsList') v = el.options || el.selectOptions || '';
                 }
-                if ($inp.is(':checkbox')) $inp.prop('checked', !!v);
+                if ($inp.is(':checkbox')) $inp.prop('checked', (v === undefined && $inp.attr('data-wpp-default') === '1') ? true : !!v); /* WPPOPPOP_GP_DEFAULT */
                 else if (v !== undefined && v !== null) $inp.val(v);
             });
         }
@@ -549,9 +549,9 @@
         $('#wppoppop-val-extra-inarray').toggle(advV.indexOf('inarray') !== -1);
         /* WPPOPPOP_REQ_MSG: hydrate */
         $('#insp-row-gp-required').toggle(isForm);
-        $('#prop-gp-required').prop('checked', !!el.required);
+        $('#prop-gp-required').prop('checked', (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
         $('#prop-gp-required-msg').val(el.requiredMessage || '');
-        $('#insp-row-gp-required-msg').toggle(isForm && !!el.required);
+        $('#insp-row-gp-required-msg').toggle(isForm && (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
 
         var filters = Array.isArray(el.filters) ? el.filters : [];
         $('.prop-filter-chk').each(function() {

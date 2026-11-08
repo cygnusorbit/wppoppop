@@ -971,6 +971,11 @@ class WpPopPop_Front_Renderer {
                 if ($sb_act === 'next_canvas') { $sb_data .= ' data-goto-canvas="' . $sb_canvas . '"'; }
                 if ($sb_act === 'redirect' && $sb_url !== '') { $sb_data .= ' data-redirect-url="' . esc_attr($sb_url) . '"'; }
                 if ($sb_act === 'default' && $sb_confirm !== '') { $sb_data .= ' data-confirm-message="' . esc_attr($sb_confirm) . '"'; }
+                /* WPPOPPOP_BLOCK_EMPTY_SUBMIT: default ON; custom message is optional */
+                if (!(isset($el['blockEmptySubmit']) && in_array($el['blockEmptySubmit'], array(false, 0, '0', 'false'), true))) {
+                    $sb_data .= ' data-block-empty="1"';
+                    if (isset($el['emptySubmitMessage']) && trim((string) $el['emptySubmitMessage']) !== '') { $sb_data .= ' data-empty-msg="' . esc_attr(trim((string) $el['emptySubmitMessage'])) . '"'; }
+                }
                 /* WPPOPPOP_SUBMIT_ICONS: left/right icons + offsets + colours, box shadow */
                 $sb_ic = array('left' => array('cls' => '', 'off' => 10), 'right' => array('cls' => '', 'off' => 10));
                 $sb_dash = false;

@@ -1069,10 +1069,18 @@
         $('#prop-submit-canvas').val(parseInt(el.goto_canvas, 10) || '');
         $('#prop-submit-redirect').val(el.redirectUrl || '');
         $('#prop-submit-confirm').val(el.confirmMessage || '');
+        /* WPPOPPOP_BLOCK_EMPTY_SUBMIT: default ON when the model has no value yet */
+        var sbBlock = !(el.blockEmptySubmit === false || el.blockEmptySubmit === 'false' || el.blockEmptySubmit === 0 || el.blockEmptySubmit === '0');
+        $('#prop-submit-block-empty').prop('checked', sbBlock);
+        $('#prop-submit-empty-msg').val(el.emptySubmitMessage || '');
+        $('#prop-submit-empty-msg-wrap').toggle(sbBlock);
         toggleRows(act);
     }
     $(document).off('change.wppSbAct input.wppSbAct', '#prop-submit-action').on('change.wppSbAct input.wppSbAct', '#prop-submit-action', function() {
         toggleRows($(this).val());
+    });
+    $(document).off('change.wppSbBlock input.wppSbBlock', '#prop-submit-block-empty').on('change.wppSbBlock input.wppSbBlock', '#prop-submit-block-empty', function() {
+        $('#prop-submit-empty-msg-wrap').toggle($(this).is(':checked'));
     });
     $(document).off('click.wppSbHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool')
         .on('click.wppSbHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool', function() {

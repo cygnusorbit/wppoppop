@@ -82,7 +82,7 @@ class WpPopPop_Ajax_Element_Registry {
             'shapePreset', 'strokeColor', 'alt', 'objectFit', 'imageAction',
             'videoProvider', 'aspectRatio', 'videoUrl', 'tag', 'headingTag', 'htmlTag', 'textTransform', 'overflow',
             'closeSymbol', 'closeAction', 'closeGlyph', 'hoverBgColor', 'hoverTextColor', 'hoverBorderColor', 'hoverBg', 'hoverColor', 'hoverBorder', 'iconClass', 'progressMode', 'progressLabel', 'fillColor', 'trackColor', 'progressColor',
-            'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'redirectUrl',
+            'buttonIcon', 'buttonAction', 'url', 'loadingText', 'submitAction', 'confirmMessage', 'emptySubmitMessage', 'redirectUrl',
             'placeholder', 'countryCode', 'checkboxLabel', 'checkboxLayout', 'radioLayout',
             'activeColor', 'dateFormat', 'minDate', 'maxDate', 'timeFormat', 'allowedExtensions',
             'ratingShape', 'ratingColor', 'requiredMessage', 'errorMessage', 'validatorEqual', 'validatorList', 'optionsList', 'layout', 'termsUrl', 'firstOption', 'minValue', 'maxValue', 'stepValue', 'unitSuffix', 'uploadErrorMessage'
@@ -124,7 +124,7 @@ class WpPopPop_Ajax_Element_Registry {
         }
 
         $bool_keys = array(
-            'required', 'transparentFill', 'targetBlank', 'linkBlank', 'nofollow',
+            'required', 'blockEmptySubmit', 'transparentFill', 'targetBlank', 'linkBlank', 'nofollow',
             'autoplay', 'muted', 'loop', 'controls', 'showPercentLabel', 'striped', 'progressStriped', 'progressAnimated',
             'checkedDefault', 'strokeNone', 'multiSelect', 'multiple', 'showEyeToggle', 'bgCustom',
             'logicEnabled', 'dynamicDefault', 'readOnly', 'saveToDb', 'sizePresetApplied', 'blockDisposable', 'borderEnabled', 'shadowEnabled'

@@ -278,7 +278,7 @@
                 if (!prop) return;
                 var val = el[prop];
                 if ($inp.is(':checkbox')) {
-                    $inp.prop('checked', !!val);
+                    $inp.prop('checked', (val === undefined && $inp.attr('data-wpp-default') === '1') ? true : !!val); /* WPPOPPOP_GP_DEFAULT */
                 } else if (val !== undefined) {
                     $inp.val(val);
                 }

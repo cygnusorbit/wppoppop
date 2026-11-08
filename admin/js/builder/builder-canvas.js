@@ -1251,7 +1251,8 @@
                 newEl.transparentFill = true;
                 newEl.textAlign = 'center';
             }
-            if (type === 'submit') { newEl.textAlign = 'center'; } /* WPPOPPOP_SUBMIT_ALIGN_DEFAULT */
+            if (type === 'submit') { newEl.textAlign = 'center'; newEl.blockEmptySubmit = true; } /* WPPOPPOP_SUBMIT_ALIGN_DEFAULT + WPPOPPOP_BLOCK_EMPTY_SUBMIT */
+            if (type === 'email') { newEl.required = true; } /* WPPOPPOP_EMAIL_REQ_DEFAULT */
             if (window.WpPopPopSpawnPlace) { window.WpPopPopSpawnPlace.place(newEl, elements); } /* WPPOPPOP_SPAWN_PLACE */
             elements.push(newEl);
             window.WpPopPopBuilderCore.state.activeId = id;

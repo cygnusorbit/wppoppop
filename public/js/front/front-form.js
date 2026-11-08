@@ -1044,3 +1044,48 @@
     }, true);
 })();
 /* === WPPOPPOP_RATING_RUNTIME_END === */
+
+
+/* === WPPOPPOP_BLOCK_EMPTY_SUBMIT_START === */
+(function($) {
+    'use strict';
+    if (window.__wppBlockEmptySubmit) return;
+    window.__wppBlockEmptySubmit = true;
+    var SKIP_TYPES = { hidden: 1, button: 1, submit: 1, reset: 1, image: 1, checkbox: 1, radio: 1, file: 1, range: 1, color: 1 };
+
+    function isBlank($f) {
+        var v = $f.val();
+        if (Array.isArray(v)) return v.length === 0;
+        return $.trim(String(v == null ? '' : v)) === '';
+    }
+
+    function bubble($f, msg) {
+        $('.wppoppop-error-bubble').remove();
+        var $b = $('<div class="wppoppop-error-bubble"></div>').text(msg);
+        $('body').append($b);
+        var off = $f.offset() || { top: 0, left: 0 };
+        $b.css({ position: 'absolute', top: Math.max(0, off.top - $b.outerHeight() - 8) + 'px', left: off.left + 'px',
+            background: '#ef4444', color: '#ffffff', padding: '6px 12px', borderRadius: '0px', fontSize: '12px',
+            fontWeight: '600', zIndex: 9999999, boxShadow: '0 4px 12px rgba(239,68,68,0.3)' });
+        try { $f.trigger('focus'); } catch (err) {}
+        setTimeout(function() { $b.fadeOut(300, function() { $b.remove(); }); }, 3500);
+    }
+
+    document.addEventListener('click', function(e) {
+        var btn = (e.target && e.target.closest) ? e.target.closest('.wppoppop-submit-trigger') : null;
+        if (!btn || btn.getAttribute('data-block-empty') !== '1') return;
+        var scope = btn.closest('.wppoppop-canvas-container') || btn.closest('.wppoppop-popup-wrap') || document.body;
+        var empty = null;
+        $(scope).find('input, textarea, select').each(function() {
+            var t = this, $f = $(t);
+            var type = String(t.type || '').toLowerCase();
+            if (SKIP_TYPES[type] || t.disabled || t.readOnly || t.name === '_wppoppop_hp_email' || !$f.is(':visible')) return;
+            if (isBlank($f)) { empty = $f; return false; }
+        });
+        if (!empty) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        bubble(empty, btn.getAttribute('data-empty-msg') || 'Please fill in all fields before submitting.');
+    }, true);
+})(jQuery);
+/* === WPPOPPOP_BLOCK_EMPTY_SUBMIT_END === */

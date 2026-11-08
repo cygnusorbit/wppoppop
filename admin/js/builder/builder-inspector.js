@@ -405,7 +405,7 @@
 
         // 5. Hydrate canonical controls from el model
         jQuery('#prop-gp-autocomplete').val(el.autocomplete || (canonical === 'email' ? 'email' : (canonical === 'tel' ? 'tel' : 'off')));
-        jQuery('#prop-gp-required').prop('checked', !!el.required);
+        jQuery('#prop-gp-required').prop('checked', (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
         jQuery('#prop-anim-in').val(el.animIn || el.anim_appearance || el.animation || 'none');
         jQuery('#prop-anim-out').val(el.animOut || el.anim_disappearance || 'none');
         jQuery('#prop-anim-duration').val(el.animDuration !== undefined ? el.animDuration : 1000);
@@ -2966,7 +2966,7 @@
             } else if (prop === 'options' && Array.isArray(val)) {
                 val = val.join(', ');
             }
-            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
+            if ($inp.is(':checkbox')) {$inp.prop('checked', (val === undefined && $inp.attr('data-wpp-default') === '1') ? true : !!val); /* WPPOPPOP_GP_DEFAULT */
             } else if (val !== undefined && val !== null) {
                 $inp.val(val);
             }
@@ -3132,7 +3132,7 @@
             var prop = $inp.data('prop');
             if (!prop) return;
             var val = el[prop];
-            if ($inp.is(':checkbox')) {$inp.prop('checked', !!val);
+            if ($inp.is(':checkbox')) {$inp.prop('checked', (val === undefined && $inp.attr('data-wpp-default') === '1') ? true : !!val); /* WPPOPPOP_GP_DEFAULT */
             } else if (val !== undefined && val !== null) {
                 $inp.val(val);
             }
@@ -3911,9 +3911,9 @@
         $('#wppoppop-val-extra-inarray').toggle(advV.indexOf('inarray') !== -1);
         /* WPPOPPOP_REQ_MSG: hydrate */
         $('#insp-row-gp-required').toggle(isForm);
-        $('#prop-gp-required').prop('checked', !!el.required);
+        $('#prop-gp-required').prop('checked', (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
         $('#prop-gp-required-msg').val(el.requiredMessage || '');
-        $('#insp-row-gp-required-msg').toggle(isForm && !!el.required);
+        $('#insp-row-gp-required-msg').toggle(isForm && (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
 
         var filters = Array.isArray(el.filters) ? el.filters : [];
         $('.prop-filter-chk').each(function() {
@@ -4464,7 +4464,7 @@
                     if (p === 'placeholder') v = el.label || '';
                     if (p === 'optionsList') v = el.options || el.selectOptions || '';
                 }
-                if ($inp.is(':checkbox')) $inp.prop('checked', !!v);
+                if ($inp.is(':checkbox')) $inp.prop('checked', (v === undefined && $inp.attr('data-wpp-default') === '1') ? true : !!v); /* WPPOPPOP_GP_DEFAULT */
                 else if (v !== undefined && v !== null) $inp.val(v);
             });
         }
@@ -4599,9 +4599,9 @@
         $('#wppoppop-val-extra-inarray').toggle(advV.indexOf('inarray') !== -1);
         /* WPPOPPOP_REQ_MSG: hydrate */
         $('#insp-row-gp-required').toggle(isForm);
-        $('#prop-gp-required').prop('checked', !!el.required);
+        $('#prop-gp-required').prop('checked', (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
         $('#prop-gp-required-msg').val(el.requiredMessage || '');
-        $('#insp-row-gp-required-msg').toggle(isForm && !!el.required);
+        $('#insp-row-gp-required-msg').toggle(isForm && (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
 
         var filters = Array.isArray(el.filters) ? el.filters : [];
         $('.prop-filter-chk').each(function() {
