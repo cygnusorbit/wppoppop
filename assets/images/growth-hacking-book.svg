@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bookCoverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5a3"/>
+      <stop offset="100%" stop-color="#00b880"/>
+    </linearGradient>
+  </defs>
+  <!-- Book Spine 3D Perspective -->
+  <path d="M 18 20 L 26 12 L 140 12 L 132 20 Z" fill="#008a60" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M 18 20 L 18 184 L 26 176 L 26 12 Z" fill="#00724f" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M 18 184 L 28 194 L 138 186 L 132 176 Z" fill="#ffffff" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Page Lines -->
+  <line x1="24" y1="187" x2="134" y2="179" stroke="#cbd5e1" stroke-width="1.2"/>
+  <line x1="27" y1="190" x2="136" y2="182" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- Front Cover -->
+  <rect x="26" y="12" width="112" height="166" rx="4" fill="url(#bookCoverGrad)" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round"/>
+  <!-- Inner Border Frame -->
+  <rect x="31" y="17" width="102" height="156" rx="2" fill="none" stroke="#009e6e" stroke-width="1.2"/>
+  <!-- Typography -->
+  <text x="82" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="900" fill="#0f172a" text-anchor="middle" letter-spacing="1">GROWTH</text>
+  <text x="82" y="64" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="900" fill="#0f172a" text-anchor="middle" letter-spacing="1">HACKING</text>
+  <text x="82" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="40" font-weight="900" fill="#ffffff" stroke="#0f172a" stroke-width="2" text-anchor="middle">101</text>
+  <!-- Bar Chart Pillars -->
+  <rect x="46" y="148" width="7" height="14" rx="1" fill="#f87171" stroke="#0f172a" stroke-width="1.4"/>
+  <rect x="58" y="136" width="7" height="26" rx="1" fill="#f87171" stroke="#0f172a" stroke-width="1.4"/>
+  <rect x="70" y="122" width="7" height="40" rx="1" fill="#f87171" stroke="#0f172a" stroke-width="1.4"/>
+  <!-- Trend Line and Arrow -->
+  <path d="M 40 156 Q 64 138 84 108 L 98 88" fill="none" stroke="#0f172a" stroke-width="2.4" stroke-linecap="round"/>
+  <polygon points="98,80 106,96 90,90" fill="#f87171" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+</svg>
