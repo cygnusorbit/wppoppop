@@ -115,7 +115,13 @@ class WpPopPop_Admin_Settings {
         return !empty($s['modules'][$key]);
     }
 
+    /** Effective defaults: the built-in ones with the site's Saved Defaults (Tools > Saved Defaults) on top. */
     public static function get_defaults() {
+        $d = self::get_factory_defaults();
+        return class_exists('WpPopPop_Saved_Defaults') ? WpPopPop_Saved_Defaults::apply_settings($d) : $d;
+    }
+
+    public static function get_factory_defaults() {
         $admin = get_option('admin_email');
         return [
             'sender_name' => 'WpPopPop', 'sender_email' => $admin, 'admin_email' => $admin,

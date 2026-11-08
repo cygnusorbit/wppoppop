@@ -91,9 +91,9 @@ class WpPopPop_Settings_Reset {
         foreach ($tabs as $t) {
             foreach ($map[$t] as $key) {
                 if ($key === 'modules') {
-                    $raw['modules'] = WpPopPop_Admin_Settings::get_module_defaults();
+                    $raw['modules'] = isset($defaults['modules']) ? $defaults['modules'] : WpPopPop_Admin_Settings::get_module_defaults();
                 } elseif ($key === 'menu_pages') {
-                    $raw['menu_pages'] = WpPopPop_Admin_Settings::get_default_menu_pages();
+                    $raw['menu_pages'] = isset($defaults['menu_pages']) ? $defaults['menu_pages'] : WpPopPop_Admin_Settings::get_default_menu_pages();
                 } else {
                     $src = isset($aliases[$key]) ? $aliases[$key] : $key;
                     if (array_key_exists($src, $defaults)) {

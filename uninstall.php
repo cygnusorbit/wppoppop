@@ -28,6 +28,7 @@ if ($clean_on_uninstall) {
 
     // 2. Remove all options
     delete_option('wppoppop_settings');
+    delete_option('wppoppop_saved_defaults');
     delete_option('wppoppop_db_version');
     delete_option('wppoppop_cookie_epoch');
     delete_option('wppoppop_activated');

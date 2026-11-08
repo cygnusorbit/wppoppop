@@ -209,7 +209,7 @@ class WpPopPop_Admin_Theme {
                 $out[$key] = $field['default'];
             }
         }
-        return $out;
+        return class_exists('WpPopPop_Saved_Defaults') ? WpPopPop_Saved_Defaults::apply_theme($out) : $out;
     }
 
     public static function field_def($key) {
@@ -359,6 +359,9 @@ class WpPopPop_Admin_Theme {
         wp_enqueue_script('wppoppop-theme-js', WPPOPPOP_URL . 'admin/js/theme.js', [], $v, true);
         wp_enqueue_media();
         wp_enqueue_script('wppoppop-theme-logo-js', WPPOPPOP_URL . 'admin/js/theme-logo.js', ['wppoppop-theme-js'], $v, true);
+        if (class_exists('WpPopPop_Saved_Defaults')) {
+            WpPopPop_Saved_Defaults::enqueue();
+        }
     }
 
     /* ---------------------------------------------------------- save */

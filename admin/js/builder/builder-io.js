@@ -203,8 +203,10 @@
                         1: { name: 'Canvas 1', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'none', anim_exit_enabled: false, logic_enabled: false },
                         2: { name: 'Confirmation', width: 300, height: 400, bg_mode: 'solid', bg_color: '#ffffff', grad_color1: '#3b82f6', grad_color2: '#1d4ed8', grad_angle: 135, anim_appearance: 'fadeIn', anim_duration: 1000, anim_delay: 0, anim_disappearance: 'none', anim_exit_enabled: false, logic_enabled: false }
                     };
+                    if (window.WpPopPopBuilderDefaults) { window.WpPopPopBuilderDefaults.applyMeta(core.state.canvasMeta); }
                     core.renderCanvasTabs();
                     core.switchCanvas(1);
+                    if (window.WpPopPopBuilderDefaults) { window.WpPopPopBuilderDefaults.applySettings(); }
                     if (window.WpPopPopBuilderSettings) {
                         window.WpPopPopBuilderSettings.renderCanvasBullets();
                     }

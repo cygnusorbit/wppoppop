@@ -17,6 +17,7 @@ class WpPopPop_Ajax {
             'WpPopPop_Ajax_Modules'     => 'class-ajax-modules.php',
             'WpPopPop_Ajax_Getresponse' => 'class-ajax-getresponse.php',
             'WpPopPop_Ajax_Mailchimp'   => 'class-ajax-mailchimp.php',
+            'WpPopPop_Ajax_Saved_Defaults' => 'class-ajax-saved-defaults.php',
         ];
 
         foreach ($modules as $class => $file) {

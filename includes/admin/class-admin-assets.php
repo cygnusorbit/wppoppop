@@ -159,13 +159,16 @@ class WpPopPop_Admin_Assets {
                     $s = get_option('wppoppop_settings', []);
                     return (is_array($s) && !empty($s['builder_click_element_settings'])) ? 1 : 0;
                 })(),
-                'custom_fonts' => WpPopPop_Libraries::get_custom_font_families()
+                'custom_fonts' => WpPopPop_Libraries::get_custom_font_families(),
+                'new_popup_defaults' => class_exists('WpPopPop_Saved_Defaults') ? WpPopPop_Saved_Defaults::get('popup') : null
             ]);
             wp_localize_script('wppoppop-builder-core-js', 'wppoppop_vars', $builder_payload);
             wp_localize_script('wppoppop-builder-inspector-js', 'wppoppop_custom_fonts', WpPopPop_Libraries::get_custom_font_families());
             wp_localize_script('wppoppop-builder-io-js', 'wppoppop_vars', $builder_payload);
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', $builder_payload);
             wp_localize_script('wppoppop-builder-preview-js', 'wppoppop_vars', $builder_payload);
+            wp_enqueue_script('wppoppop-builder-saved-defaults-js', WPPOPPOP_URL . 'admin/js/builder/builder-saved-defaults.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-settings-js', 'wppoppop-builder-io-js'], self::ver(), true);
+            WpPopPop_Saved_Defaults::enqueue();
         }
 
         // 3. Settings Assets
@@ -206,6 +209,7 @@ class WpPopPop_Admin_Assets {
 
             wp_localize_script('wppoppop-settings-js', 'wppoppop_settings_vars', $settings_payload);
             wp_localize_script('wppoppop-settings-js', 'wppoppop_vars', $shared_payload);
+            WpPopPop_Saved_Defaults::enqueue();
         }
 
         // 4. Library Assets
@@ -331,6 +335,7 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-tools-portability-js', WPPOPPOP_URL . 'admin/js/tools/tools-portability.js', ['jquery'], self::ver(), true);
             wp_enqueue_script('wppoppop-tools-js', WPPOPPOP_URL . 'admin/js/tools.js', ['jquery', 'wppoppop-tools-system-js', 'wppoppop-tools-database-js', 'wppoppop-tools-portability-js'], self::ver(), true);
             wp_localize_script('wppoppop-tools-js', 'wppoppop_vars', $shared_payload);
+            WpPopPop_Saved_Defaults::enqueue();
         }
 
         // 6. Extend (module manager) page

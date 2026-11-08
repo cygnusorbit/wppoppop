@@ -108,7 +108,7 @@ class WpPopPop_Installer {
 
     public static function init_defaults() {
         if (!get_option('wppoppop_settings')) {
-            update_option('wppoppop_settings', [
+            $wppoppop_seed = [
                 'sender_name'       => 'WpPopPop',
                 'sender_email'      => get_option('admin_email'),
                 'preload_popups'    => 1,
@@ -130,7 +130,11 @@ class WpPopPop_Installer {
                 'user_uploads'      => 'keep',
                 'custom_css'        => '',
                 'custom_js'         => ''
-            ]);
+            ];
+            if (class_exists('WpPopPop_Saved_Defaults')) {
+                $wppoppop_seed = WpPopPop_Saved_Defaults::seed_settings($wppoppop_seed);
+            }
+            update_option('wppoppop_settings', $wppoppop_seed);
         }
 
         if (!get_option('wppoppop_cookie_epoch')) {

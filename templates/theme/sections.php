@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
+<?php $wpp_defs = WpPopPop_Admin_Theme::defaults(); ?>
 <datalist id="wpp-font-presets">
     <?php foreach (WpPopPop_Admin_Theme::font_presets() as $preset) : ?>
         <option value="<?php echo esc_attr($preset); ?>"></option>
@@ -30,7 +31,7 @@ if (!defined('ABSPATH')) {
                 <div class="wpp-theme-field<?php echo $is_wide ? ' is-wide' : ''; ?><?php echo $field['type'] === 'bool' ? ' is-bool' : ''; ?>" data-label="<?php echo esc_attr(strtolower($field['label'] . ' ' . $key)); ?>">
                     <label for="<?php echo esc_attr($id); ?>"><?php echo esc_html($field['label']); ?></label>
                     <?php if ($field['type'] === 'bool') : ?>
-                        <input type="checkbox" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" value="1" data-default="<?php echo (int) $field['default']; ?>" <?php checked(!empty($val)); ?>>
+                        <input type="checkbox" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" value="1" data-default="<?php echo (int) $wpp_defs[$key]; ?>" <?php checked(!empty($val)); ?>>
                     <?php elseif ($field['type'] === 'media') :
                         $wpp_logo_url = $val ? wp_get_attachment_image_url((int) $val, 'full') : '';
                         $wpp_def_logo = WPPOPPOP_URL . 'admin/img/logo-temp.svg';
@@ -47,7 +48,7 @@ if (!defined('ABSPATH')) {
                             <p class="description" style="margin:6px 0 0;"><?php esc_html_e('Shown in the top bar of every WpPopPop page. Leave empty to use the default logo.', 'wppoppop'); ?></p>
                         </div>
                     <?php elseif ($field['type'] === 'enum') : ?>
-                        <select id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" data-wpp-var="<?php echo esc_attr($var); ?>" data-default="<?php echo esc_attr($field['default']); ?>">
+                        <select id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>" data-wpp-var="<?php echo esc_attr($var); ?>" data-default="<?php echo esc_attr($wpp_defs[$key]); ?>">
                             <?php foreach ($field['options'] as $ov => $ol) : ?>
                                 <option value="<?php echo esc_attr($ov); ?>" <?php selected($val, (string) $ov); ?>><?php echo esc_html($ol); ?></option>
                             <?php endforeach; ?>
@@ -62,7 +63,7 @@ if (!defined('ABSPATH')) {
                             <input type="text" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>"
                                    value="<?php echo esc_attr($val); ?>"
                                    data-wpp-var="<?php echo esc_attr($var); ?>"
-                                   data-default="<?php echo esc_attr($field['default']); ?>"
+                                   data-default="<?php echo esc_attr($wpp_defs[$key]); ?>"
                                    <?php echo $field['type'] === 'font' ? 'list="wpp-font-presets"' : ''; ?>>
                             <button type="button" class="wpp-theme-field-reset" title="<?php esc_attr_e('Reset to default', 'wppoppop'); ?>">&#8634;</button>
                         </div>

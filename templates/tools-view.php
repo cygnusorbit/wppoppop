@@ -34,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wppoppop_tools_nonce'
     <!-- Bulk JSON Backup Export & Import -->
     <?php include WPPOPPOP_PATH . 'templates/tools/bulk-portability.php'; ?>
 
+    <!-- Saved defaults (settings / theme / new popup) -->
+    <?php include WPPOPPOP_PATH . 'templates/tools/saved-defaults.php'; ?>
+
     <!-- Restore options + maintenance -->
     <?php include WPPOPPOP_PATH . 'templates/tools/maintenance.php'; ?>
 </div>
