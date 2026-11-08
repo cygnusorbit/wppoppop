@@ -45,6 +45,7 @@ foreach (WpPopPop_Library_Presets::all() as $wppoppop_pt) {
         'bg_preview'  => 'linear-gradient(135deg, #2563eb, #0f172a)',
         'image'       => $wppoppop_pt['image'],
         'preset'      => true,
+        'no_download' => !empty($wppoppop_pt['no_download']),
         'config'      => [
             'meta'     => ['width' => $wppoppop_pt['width'], 'height' => $wppoppop_pt['height'], 'bg_mode' => 'solid', 'bg_color' => '#ffffff'],
             'triggers' => new stdClass(),

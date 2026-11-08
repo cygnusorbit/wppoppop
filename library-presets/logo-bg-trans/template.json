@@ -4,6 +4,7 @@
         "description": "Dessss",
         "category": "custom",
         "image": "images/Screenshot-2026-11-08-at-12.22.07.png",
+        "download": false,
         "assets": [
             "images/WpPopPop-Logo-100px.png",
             "images/Screenshot-2026-11-08-at-12.22.07.png"

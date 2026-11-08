@@ -48,6 +48,9 @@ class WpPopPop_Ajax_Template_Bundle {
         if (!$t) {
             wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
+        if (!empty($t['no_download'])) {
+            wp_send_json_error(array('message' => __('Download is disabled for this template.', 'wppoppop')), 403);
+        }
         $data = json_decode((string) $t['data']);
         if (!is_object($data)) {
             wp_send_json_error(array('message' => __('Template data is damaged.', 'wppoppop')));
@@ -57,6 +60,7 @@ class WpPopPop_Ajax_Template_Bundle {
             'description' => isset($t['description']) ? (string) $t['description'] : '',
             'category'    => (isset($t['category']) && $t['category'] !== '') ? (string) $t['category'] : 'custom',
             'image'       => isset($t['image']) ? (string) $t['image'] : '',
+            'download'    => false, // exported template.json hides the Download button by default when placed in library-presets/
         );
         $b    = WpPopPop_Template_Bundle::bundle($meta, $data);
         $slug = substr(sanitize_title($meta['title']), 0, 60);

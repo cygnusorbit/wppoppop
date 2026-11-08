@@ -557,6 +557,9 @@ class WpPopPop_Ajax_Templates {
             wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $t    = $all[$id];
+        if (!empty($t['no_download'])) {
+            wp_send_json_error(array('message' => __('Download is disabled for this template.', 'wppoppop')), 403);
+        }
         $data = json_decode($t['data']);
         if (!is_object($data)) {
             wp_send_json_error(array('message' => __('Template data is damaged.', 'wppoppop')));

@@ -104,6 +104,10 @@ class WpPopPop_Library_Presets {
             $img = ($img !== '' && strpos($img, '..') === false) ? esc_url_raw($img) : '';
 
             $cat = isset($meta['category']) ? sanitize_key((string) $meta['category']) : '';
+            /* template.json "template": {"hide_download": true} (or {"download": false}) hides the Download button */
+            $no_dl = false;
+            if (isset($meta['hide_download'])) { $no_dl = filter_var($meta['hide_download'], FILTER_VALIDATE_BOOLEAN); }
+            elseif (isset($meta['download'])) { $no_dl = !filter_var($meta['download'], FILTER_VALIDATE_BOOLEAN); }
             $id  = 'preset-' . $slug;
             if (isset($cache[$id])) { continue; }
             $cache[$id] = array(
@@ -119,6 +123,7 @@ class WpPopPop_Library_Presets {
                 'elements'    => $thumb,
                 'data'        => (string) $json,
                 'preset'      => true,
+                'no_download' => $no_dl,
             );
         }
         return $cache;

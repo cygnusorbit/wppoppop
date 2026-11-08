@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
         ?>
         <div class="wppoppop-tpl-card" 
              data-id="<?php echo esc_attr($tpl['id']); ?>" 
-             data-category="<?php echo esc_attr($tpl['category']); ?>" data-preset="<?php echo !empty($tpl['preset']) ? '1' : '0'; ?>" 
+             data-category="<?php echo esc_attr($tpl['category']); ?>" data-preset="<?php echo !empty($tpl['preset']) ? '1' : '0'; ?>" data-nodl="<?php echo !empty($tpl['no_download']) ? '1' : '0'; ?>" 
              data-title="<?php echo esc_attr(strtolower($tpl['title'])); ?>" 
              data-desc="<?php echo esc_attr(strtolower($tpl['description'])); ?>"
              style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-direction:column;transition:transform 0.2s ease, box-shadow 0.2s ease;">

@@ -3,6 +3,7 @@
         "title": "The Classic Value - Demo",
         "description": "",
         "category": "custom",
+        "download": false,
         "image": "images/Screenshot-2026-11-08-at-15.44.29.png",
         "assets": [
             "images/discount-tag.svg",

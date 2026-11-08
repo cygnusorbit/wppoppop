@@ -22,6 +22,7 @@
     function decorate() {
         $('.wppoppop-usertpl-use').each(function () {
             var $use = $(this);
+            if ($use.closest('.wppoppop-tpl-card').attr('data-nodl') === '1') { return; }
             if ($use.siblings('.wppoppop-usertpl-dl').length) { return; }
             $('<button type="button" class="button button-small wppoppop-usertpl-dl"></button>')
                 .attr({ 'data-id': $use.attr('data-id'), title: 'Download', 'aria-label': 'Download' })
