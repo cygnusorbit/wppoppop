@@ -168,7 +168,8 @@
                 if (!r.ok) { say('error', r.message); return; }
                 M.vars.categories = r.data.categories || M.vars.categories;
                 close();
-                M.notice($('#wpp-mod-notice'), 'success', r.data.message || M.t('cat_saved'));
+                $(document).trigger('wppoppop:module-cats-saved', [M.vars.categories]); /* WPPOPPOP_CATS_ON_EXTEND */
+                M.notice($('#wpp-ext-notice').length ? $('#wpp-ext-notice') : $('#wpp-mod-notice'), 'success', r.data.message || M.t('cat_saved'));
             });
         }
 

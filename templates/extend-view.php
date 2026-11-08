@@ -65,3 +65,4 @@ if (!class_exists('ZipArchive')) {
 
     <div class="wpp-ext-grid" id="wpp-ext-grid"></div>
 </div>
+<?php include WPPOPPOP_PATH . 'templates/settings/modal-module-categories.php'; /* WPPOPPOP_CATS_ON_EXTEND */ ?>

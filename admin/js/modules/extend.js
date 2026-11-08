@@ -218,7 +218,7 @@
                 $('<span class="count"></span>').text('(' + n + ')').appendTo($p);
                 $cats.append($p);
             });
-            $('<a class="wpp-cat-manage"></a>').attr('href', M.vars.modules_url).text(M.t('cat_manage')).appendTo($cats);
+            $('<a class="wpp-cat-manage"></a>').attr('href', '#').text(M.t('cat_manage')).on('click', function (e) { e.preventDefault(); $('#wpp-mod-cats-btn').trigger('click'); }).appendTo($cats); /* WPPOPPOP_CATS_ON_EXTEND */
         }
 
         function render() {
@@ -263,6 +263,15 @@
                     render();
                 }
             });
+        });
+
+        /* categories edited in the Module Category dialog: refresh pills, modules of a deleted category fall back to the default */
+        $(document).on('wppoppop:module-cats-saved', function (e, list) {
+            cats = (list || M.vars.categories || []).slice();
+            var known = {};
+            $.each(cats, function (i, c) { known[c.slug] = true; });
+            $.each(items, function (i, m) { if (m.category && !known[m.category]) { m.category = DEF; } });
+            render();
         });
 
         /* category pills + Edit (category -> module.json) */
