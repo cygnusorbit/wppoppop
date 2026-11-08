@@ -36,6 +36,8 @@
             var $b = $(this), v = vars();
             if ($b.prop('disabled')) { return; }
             $b.prop('disabled', true);
+            var id = $b.attr('data-id');
+            var legacy = function () {
             $.ajax({
                 url: v.ajax_url, type: 'POST', dataType: 'json',
                 data: { action: 'wppoppop_template_download', nonce: v.nonce, id: $b.attr('data-id') },
@@ -46,6 +48,13 @@
                 error: function () { window.alert(wp.i18n.__('Server error while preparing the download.', 'wppoppop')); },
                 complete: function () { $b.prop('disabled', false); }
             });
+            };
+            if (window.WpPopPopLibraryZip && window.WpPopPopLibraryZip.canZip()) {
+                window.WpPopPopLibraryZip.download(id, function (st) {
+                    if (st === 'fallback') { legacy(); return; }
+                    $b.prop('disabled', false);
+                });
+            } else { legacy(); }
         });
     });
 })(window, jQuery);

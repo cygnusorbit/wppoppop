@@ -1,0 +1,27 @@
+/* WpPopPop Library: import card. Same look as the Extend > Upload Module card (theme-variable driven).
+   Chrome / Safari / Firefox / Edge safe. */
+.wppoppop-library-wrap .wpp-imp-card { background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); box-shadow: var(--wpp-shadow-card, 0 1px 1px rgba(0,0,0,.04)); padding: var(--wpp-p-card, 20px); margin: 16px 0 24px; box-sizing: border-box; }
+.wppoppop-library-wrap .wpp-imp-head { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 8px; margin: 0 0 12px; padding: 0 0 12px; border-bottom: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
+.wppoppop-library-wrap .wpp-imp-head h3 { margin: 0; font-family: var(--wpp-font-heading, inherit); font-size: var(--wpp-fs-h2, 15px); font-weight: var(--wpp-fw-heading, 600); color: var(--wpp-c-heading, #1d2327); }
+.wppoppop-library-wrap .wpp-imp-head .dashicons { color: var(--wpp-c-primary, #c1272d); }
+.wppoppop-library-wrap .wpp-imp-help { margin: 0 0 12px; font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); line-height: 1.5; }
+.wppoppop-library-wrap .wpp-imp-row { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 12px; -webkit-box-align: stretch; -ms-flex-align: stretch; align-items: stretch; }
+.wppoppop-library-wrap .wpp-imp-drop { position: relative; -webkit-box-flex: 1; -ms-flex: 1 1 320px; flex: 1 1 320px; display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 8px; padding: 14px 16px; border: 2px dashed var(--wpp-c-border, #c3c4c7); border-radius: var(--wpp-r-card, 3px); background: var(--wpp-c-bg-page, #f6f7f7); box-sizing: border-box; min-height: 56px; -webkit-transition: border-color .15s ease, background-color .15s ease; transition: border-color .15s ease, background-color .15s ease; }
+.wppoppop-library-wrap .wpp-imp-drop.is-dragover, .wppoppop-library-wrap .wpp-imp-drop:focus-within { border-color: var(--wpp-c-primary, #c1272d); background: var(--wpp-c-bg-card, #fff); }
+.wppoppop-library-wrap .wpp-imp-drop .dashicons { color: var(--wpp-c-muted, #787c82); }
+.wppoppop-library-wrap .wpp-imp-browse { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; font: inherit; font-weight: 600; text-transform: uppercase; color: var(--wpp-c-link, #2271b1); cursor: pointer; text-decoration: underline; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+.wppoppop-library-wrap .wpp-imp-browse:hover { color: var(--wpp-c-primary, #c1272d); }
+.wppoppop-library-wrap .wpp-imp-file { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); opacity: 0; pointer-events: none; }
+.wppoppop-library-wrap #wpp-imp-btn { height: var(--wpp-h-button, 34px); }
+.wppoppop-library-wrap .wpp-imp-card.is-busy, .wppoppop-library-wrap .wpp-imp-drop.is-busy { opacity: .85; }
+.wppoppop-library-wrap .wpp-drop-log { margin-top: 12px; }
+.wppoppop-library-wrap .wpp-drop-row { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); font-size: var(--wpp-fs-small, 12px); }
+.wppoppop-library-wrap .wpp-drop-name { font-weight: 600; color: var(--wpp-c-heading, #1d2327); word-break: break-all; }
+.wppoppop-library-wrap .wpp-drop-state { text-align: right; color: var(--wpp-c-muted, #787c82); }
+.wppoppop-library-wrap .wpp-drop-row.is-ok .wpp-drop-state { color: var(--wpp-c-success, #008a20); }
+.wppoppop-library-wrap .wpp-drop-row.is-err .wpp-drop-state { color: var(--wpp-c-danger, #b32d2e); }
+@media (max-width: 600px) {
+    .wppoppop-library-wrap .wpp-imp-row { -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; }
+    .wppoppop-library-wrap .wpp-drop-row { -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; }
+    .wppoppop-library-wrap .wpp-drop-state { text-align: left; }
+}

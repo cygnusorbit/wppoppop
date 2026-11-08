@@ -17,6 +17,7 @@ class WpPopPop_Ajax {
             'WpPopPop_Ajax_Modules'     => 'class-ajax-modules.php',
             'WpPopPop_Ajax_Getresponse' => 'class-ajax-getresponse.php',
             'WpPopPop_Ajax_Mailchimp'   => 'class-ajax-mailchimp.php',
+            'WpPopPop_Ajax_Template_Bundle' => 'class-ajax-template-bundle.php',
             'WpPopPop_Ajax_Saved_Defaults' => 'class-ajax-saved-defaults.php',
         ];
 

@@ -68,6 +68,8 @@ foreach ($templates as $wppoppop_i => $wppoppop_t) {
     <!-- Catalog Header Toolbar & Category Filters -->
     <?php include WPPOPPOP_PATH . 'templates/library/header.php'; ?>
 
+    <?php include WPPOPPOP_PATH . 'templates/library/import-zone.php'; ?>
+
     <!-- Responsive Template Cards Grid -->
     <?php include WPPOPPOP_PATH . 'templates/library/grid.php'; ?>
 

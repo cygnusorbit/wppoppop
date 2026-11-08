@@ -24,7 +24,12 @@ class WpPopPop_Library_Presets {
         $cache = array();
         $files = glob(self::dir() . '*.json');
         if (!is_array($files)) {
-            return $cache;
+            $files = array();
+        }
+        /* folder-per-template: library-presets/<name>/template.json (+ images) */
+        $dirs = glob(self::dir() . '*/template.json');
+        if (is_array($dirs)) {
+            $files = array_merge($files, $dirs);
         }
         sort($files);
         if (!class_exists('WpPopPop_Sanitizer')) {
@@ -32,6 +37,11 @@ class WpPopPop_Library_Presets {
         }
         foreach (array_slice($files, 0, self::MAX_FILES) as $f) {
             if (!is_readable($f) || filesize($f) > self::MAX_BYTES) { continue; }
+            $is_dir   = (basename($f) === 'template.json');
+            $folder   = $is_dir ? basename(dirname($f)) : '';
+            $base_dir = $is_dir ? dirname($f) . '/' : self::dir();
+            $base_url = WPPOPPOP_URL . 'library-presets/' . ($is_dir ? rawurlencode($folder) . '/' : '');
+            if ($is_dir && (!preg_match('/^[A-Za-z0-9._-]+$/', $folder) || is_link(dirname($f)))) { continue; }
             $j = json_decode((string) file_get_contents($f));
             if (!is_object($j)) { continue; }
 
@@ -42,6 +52,10 @@ class WpPopPop_Library_Presets {
                 $data = $j->data;
             }
             $data = WpPopPop_Sanitizer::anim_payload($data);
+            if ($is_dir) {
+                if (!class_exists('WpPopPop_Template_Bundle')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-template-bundle.php'; }
+                $data = WpPopPop_Template_Bundle::resolve_folder_assets($data, $base_dir, $base_url);
+            }
             $json = wp_json_encode($data);
             $d    = json_decode((string) $json, true);
             if (!is_array($d)) { continue; }
@@ -76,7 +90,7 @@ class WpPopPop_Library_Presets {
             if (isset($d['canvasMeta'][1]) && is_array($d['canvasMeta'][1])) { $cm = $d['canvasMeta'][1]; }
             elseif (isset($d['canvasMeta']['1']) && is_array($d['canvasMeta']['1'])) { $cm = $d['canvasMeta']['1']; }
 
-            $slug = sanitize_key(basename($f, '.json'));
+            $slug = sanitize_key($is_dir ? $folder : basename($f, '.json'));
             if ($slug === '') { continue; }
 
             $title = isset($meta['title']) ? sanitize_text_field((string) $meta['title']) : '';
@@ -85,12 +99,13 @@ class WpPopPop_Library_Presets {
 
             $img = isset($meta['image']) ? trim((string) $meta['image']) : '';
             if ($img !== '' && strpos($img, '..') === false && !preg_match('#^https?://#i', $img)) {
-                $img = WPPOPPOP_URL . 'library-presets/' . ltrim($img, '/');
+                $img = $base_url . ltrim($img, '/');
             }
             $img = ($img !== '' && strpos($img, '..') === false) ? esc_url_raw($img) : '';
 
             $cat = isset($meta['category']) ? sanitize_key((string) $meta['category']) : '';
             $id  = 'preset-' . $slug;
+            if (isset($cache[$id])) { continue; }
             $cache[$id] = array(
                 'id'          => $id,
                 'title'       => $title,

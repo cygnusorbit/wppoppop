@@ -36,42 +36,8 @@ class WpPopPop_Ajax_Templates {
         return is_array($t) ? $t : array();
     }
 
-    public function save() {
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
-            wp_die();
-        }
-        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
-            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
-            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
-        if ( ! $wpp_verified ) {
-            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
-            wp_die();
-        }
-
-        $this->guard();
-
-        $s = get_option('wppoppop_settings', array());
-        if (is_array($s) && array_key_exists('builder_save_template', $s) && empty($s['builder_save_template'])) {
-            wp_send_json_error(array('message' => __('Save As Template is turned off in Settings > Builder.', 'wppoppop')));
-        }
-
-        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
-        if ($name === '') {
-            wp_send_json_error(array('message' => __('Please enter a popup name.', 'wppoppop')));
-        }
-        $desc  = isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '';
-        $image = isset($_POST['image']) ? esc_url_raw(wp_unslash($_POST['image'])) : '';
-
-        $raw = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
-        $obj = json_decode($raw);
-        if (!is_object($obj)) {
-            wp_send_json_error(array('message' => __('Malformed popup definition.', 'wppoppop')));
-        }
+    /** Whitelist + sanitise a template payload (shared by Save As Template and Import). */
+    public static function sanitize_object($obj) {
         if (!class_exists('WpPopPop_Sanitizer')) {
             require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sanitizer.php';
         }
@@ -206,6 +172,46 @@ class WpPopPop_Ajax_Templates {
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }
         $obj  = WpPopPop_Sanitizer::anim_payload($obj);
+        return $obj;
+    }
+
+    public function save() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
+            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
+            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
+            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
+        if ( ! $wpp_verified ) {
+            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
+            wp_die();
+        }
+
+        $this->guard();
+
+        $s = get_option('wppoppop_settings', array());
+        if (is_array($s) && array_key_exists('builder_save_template', $s) && empty($s['builder_save_template'])) {
+            wp_send_json_error(array('message' => __('Save As Template is turned off in Settings > Builder.', 'wppoppop')));
+        }
+
+        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        if ($name === '') {
+            wp_send_json_error(array('message' => __('Please enter a popup name.', 'wppoppop')));
+        }
+        $desc  = isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '';
+        $image = isset($_POST['image']) ? esc_url_raw(wp_unslash($_POST['image'])) : '';
+
+        $raw = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
+        $obj = json_decode($raw);
+        if (!is_object($obj)) {
+            wp_send_json_error(array('message' => __('Malformed popup definition.', 'wppoppop')));
+        }
+        $obj = self::sanitize_object($obj);
         $json = wp_json_encode($obj);
         if (!is_string($json) || $json === '') {
             wp_send_json_error(array('message' => __('Could not encode template.', 'wppoppop')));

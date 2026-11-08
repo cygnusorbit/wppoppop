@@ -239,6 +239,23 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-library-uniform-css', WPPOPPOP_URL . 'admin/css/library/uniform-buttons.css', ['wppoppop-library-css', 'wppoppop-library-actions-css', 'wppoppop-library-theme-modals-css'], file_exists($wppoppop_ub_css) ? (string) filemtime($wppoppop_ub_css) : $lib_ver);
             wp_enqueue_script('wppoppop-library-download-js', WPPOPPOP_URL . 'admin/js/library/library-download.js', ['jquery', 'wppoppop-library-actions-js'], $lib_ver, true);
             wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_enqueue_style('wppoppop-library-import-css', WPPOPPOP_URL . 'admin/css/library/import.css', ['wppoppop-library-css'], $lib_ver);
+            wp_enqueue_script('wppoppop-library-bundle-js', WPPOPPOP_URL . 'admin/js/library/library-bundle.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_localize_script('wppoppop-library-bundle-js', 'wppoppop_libzip_vars', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('wppoppop_admin_nonce'),
+                'zip'      => class_exists('WpPopPop_Template_Bundle') ? WpPopPop_Template_Bundle::zip_available() : false,
+                'max_mb'   => 60,
+                'i18n'     => [
+                    'missing'       => __('Some images could not be found and were left as links.', 'wppoppop'),
+                    'export_failed' => __('Download failed.', 'wppoppop'),
+                    'bad_type'      => __('Only .zip or .json files can be imported.', 'wppoppop'),
+                    'too_big'       => __('File is too large.', 'wppoppop'),
+                    'uploading'     => __('Importing...', 'wppoppop'),
+                    'done'          => __('Imported', 'wppoppop'),
+                    'failed'        => __('Import failed.', 'wppoppop'),
+                ],
+            ]);
         }
 
         // Dashboard overview page (separate from the Popups list assets)
