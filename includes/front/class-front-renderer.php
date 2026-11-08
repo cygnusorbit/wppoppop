@@ -5,6 +5,22 @@ if (!defined('ABSPATH')) {
 
 class WpPopPop_Front_Renderer {
 
+    /* WPPOPPOP_TRANSPARENT_CANVAS: single source of truth for "canvas background is Transparent" */
+    public static function is_transparent_bg($bg) {
+        $bg = strtolower(trim((string) $bg));
+        $bg = str_replace(' ', '', $bg);
+        return $bg === 'transparent' || $bg === 'rgba(0,0,0,0)' || $bg === 'rgba(255,255,255,0)' || $bg === '#00000000' || $bg === '#fff0';
+    }
+
+    public static function config_has_transparent_canvas(array $config) {
+        $meta = $config['canvasMeta'] ?? $config['canvas_meta'] ?? [];
+        if (!is_array($meta)) { return false; }
+        foreach ($meta as $cm) {
+            if (is_array($cm) && isset($cm['bg_color']) && self::is_transparent_bg($cm['bg_color'])) { return true; }
+        }
+        return false;
+    }
+
     public function render_popup_markup($uid, array $config, $is_inline = false, $preload = false) {
         /* WPPOPPOP_MODULE_RENDER_GUARD: not-installed modules are skipped; a "block" module in use hides the popup */
         if (class_exists('WpPopPop_Modules')) {
@@ -36,6 +52,17 @@ class WpPopPop_Front_Renderer {
         }
 
         $canvas_meta = $config['canvasMeta'] ?? $config['canvas_meta'] ?? [];
+        /* WPPOPPOP_TRANSPARENT_CANVAS: when every canvas paints its own background the box must not add a white fill / halo behind it */
+        $wppoppop_self_paint = is_array($canvas_meta) && !empty($canvas_meta);
+        foreach ($canvases as $wppoppop_cn => $wppoppop_unused) {
+            if (!isset($canvas_meta[$wppoppop_cn]) || !is_array($canvas_meta[$wppoppop_cn]) || empty($canvas_meta[$wppoppop_cn]['bg_color'])) { $wppoppop_self_paint = false; break; }
+        }
+        $box_shadow_css = 'box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);';
+        $box_shadow_css_solid = $box_shadow_css;
+        if ($wppoppop_self_paint) {
+            $box_bg = 'background:transparent;';
+            $box_shadow_css = 'box-shadow:none;';
+        }
         $box_radius_css = 'border-radius:8px;';
         if (is_array($canvas_meta) && !empty($canvas_meta)) {
             $first_cm = isset($canvas_meta[1]) ? $canvas_meta[1] : reset($canvas_meta);
@@ -207,7 +234,7 @@ class WpPopPop_Front_Renderer {
             <div class="wppoppop-fit-stage" data-wpp-fit="1">
             <div class="wppoppop-box wppoppop-box-container"
                  data-uid="<?php echo esc_attr($uid); ?>"
-                 style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr($box_radius_css . 'box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);' . $box_bg); ?>">
+                 style="position:relative;width:auto;max-width:92vw;overflow:visible !important;<?php echo $is_inline ? 'background:transparent;box-shadow:none;border-radius:0;' : esc_attr($box_radius_css . $box_shadow_css . $box_bg); ?>">
 
                 <?php /* WPPOPPOP_DEFAULT_CLOSE: the default close button is now drawn inside each canvas */ ?>
 
@@ -241,13 +268,18 @@ class WpPopPop_Front_Renderer {
                     $c_bg_color = $cm['bg_color'] ?? '';
                     $c_bg_style = '';
                     if (!empty($c_bg_color)) {
-                        if ($c_bg_mode === 'gradient') {
+                        if (self::is_transparent_bg($c_bg_color)) {
+                            $c_bg_style = 'background:transparent;box-shadow:none;'; /* WPPOPPOP_TRANSPARENT_CANVAS: overrides gradient mode + stage halo */
+                        } elseif ($c_bg_mode === 'gradient') {
                             $g1 = esc_attr($cm['grad_color1'] ?? '#3b82f6');
                             $g2 = esc_attr($cm['grad_color2'] ?? '#1d4ed8');
                             $ga = intval($cm['grad_angle'] ?? 135);
                             $c_bg_style = "background:linear-gradient({$ga}deg, {$g1}, {$g2});";
                         } else {
                             $c_bg_style = "background:" . esc_attr($c_bg_color) . ";";
+                        }
+                        if ($wppoppop_self_paint && !self::is_transparent_bg($c_bg_color)) {
+                            $c_bg_style .= $box_shadow_css_solid;
                         }
                     }
                 ?>

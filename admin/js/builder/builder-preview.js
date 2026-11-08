@@ -115,7 +115,7 @@
                         '</span>' +
                     '</div>' +
                     '<div style="flex:1;display:flex;justify-content:center;align-items:stretch;padding:12px;overflow:auto;">' +
-                        '<iframe id="wppoppop-live-preview-frame" title="Live Preview" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" style="width:100%;max-width:100%;height:100%;border:0;background:#fff;border-radius:0px;"></iframe>' +
+                        '<iframe id="wppoppop-live-preview-frame" title="Live Preview" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" style="width:100%;max-width:100%;height:100%;border:0;background:transparent;border-radius:0px;"></iframe>' +
                     '</div>' +
                 '</div>';
             $('body').append(html);
@@ -270,7 +270,7 @@
                         '</span>' +
                     '</div>' +
                     '<div style="flex:1 1 auto;min-height:0;display:flex;justify-content:center;align-items:stretch;overflow:auto;">' +
-                        '<iframe id="wppoppop-live-preview-frame" title="Live Preview" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" style="width:100%;max-width:100%;height:100%;border:0;background:#fff;"></iframe>' +
+                        '<iframe id="wppoppop-live-preview-frame" title="Live Preview" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" style="width:100%;max-width:100%;height:100%;border:0;background:transparent;"></iframe>' +
                     '</div>' +
                 '</div>';
             $('body').append(html);

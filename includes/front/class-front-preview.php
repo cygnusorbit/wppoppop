@@ -126,7 +126,7 @@ class WpPopPop_Front_Preview {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title><?php esc_html_e('Popup Preview', 'wppoppop'); ?></title>
-<style>html,body{margin:0;padding:0;min-height:100%;background:#f1f5f9;}</style>
+<style>html,body{margin:0;padding:0;min-height:100%;background:<?php echo WpPopPop_Front_Renderer::config_has_transparent_canvas($this->config) ? 'transparent' : '#f1f5f9'; ?>;}</style>
 <?php wp_head(); ?>
 </head>
 <body class="wppoppop-preview-frame">
