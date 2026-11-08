@@ -15,7 +15,7 @@ $__order  = WpPopPop_Admin_Settings::normalize_module_order(isset($settings['mod
 $__rows   = [];
 foreach ($__order as $__k) {
     $__m = WpPopPop_Modules::get($__k);
-    if ($__m) {
+    if ($__m && empty($__m['hidden'])) { /* WPPOPPOP_MODULE_HIDDEN */
         $__rows[$__k] = WpPopPop_Modules_Installer::summary($__m);
     }
 }

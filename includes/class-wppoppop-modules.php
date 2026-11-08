@@ -232,6 +232,7 @@ class WpPopPop_Modules {
             'min_version'    => $min,
             'compatible'     => ($min === '' || !defined('WPPOPPOP_VERSION') || version_compare(WPPOPPOP_VERSION, $min, '>=')),
             'deprecated'     => !empty($raw['deprecated']),
+            'hidden'         => (isset($raw['hidden']) && !in_array(is_string($raw['hidden']) ? strtolower(trim($raw['hidden'])) : $raw['hidden'], [false, 0, null, '', '0', 'false', 'no', 'off'], true)), /* WPPOPPOP_MODULE_HIDDEN */
             'template'       => $template,
             'source'         => $core ? 'core' : 'uploaded',
         ];

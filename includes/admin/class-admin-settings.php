@@ -270,9 +270,18 @@ class WpPopPop_Admin_Settings {
                 $o['modules'][$__mk] = 1;
                 continue;
             }
+            $__mk_def = $module_defaults[$__mk];
+            /* WPPOPPOP_MODULE_HIDDEN: no switch is rendered for a hidden module, so keep what is stored */
+            $__mk_m = WpPopPop_Modules::get($__mk);
+            if ($__mk_m && !empty($__mk_m['hidden'])) {
+                $__mk_prev = get_option('wppoppop_settings', []);
+                if (is_array($__mk_prev) && isset($__mk_prev['modules']) && is_array($__mk_prev['modules']) && array_key_exists($__mk, $__mk_prev['modules'])) {
+                    $__mk_def = !empty($__mk_prev['modules'][$__mk]) ? 1 : 0;
+                }
+            }
             $o['modules'][$__mk] = (isset($in['modules']) && is_array($in['modules']) && array_key_exists($__mk, $in['modules']))
                 ? (!empty($in['modules'][$__mk]) ? 1 : 0)
-                : $module_defaults[$__mk];
+                : $__mk_def;
         }
 
         // 5b1. Keep stored toggles of known-but-not-installed modules so a reinstall restores them

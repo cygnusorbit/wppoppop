@@ -1,4 +1,6 @@
 {
+    "hidden": true,
+    
     "schema": 1,
     "slug": "acc-sms",
     "name": "SMS",
