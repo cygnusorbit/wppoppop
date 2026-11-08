@@ -8,7 +8,7 @@
         init: function() {
             this.bindInspector();
             this.bindDismissal();
-            this.bindPrintReceipt();
+            this.bindResend();
         },
 
         bindInspector: function() {
@@ -22,6 +22,9 @@
                 var fields = $btn.data('fields') || {};
 
                 $('#wppoppop-modal-id').text('#' + id);
+                $('#wppoppop-submission-modal').attr('data-sub-id', id);
+                $('#wppoppop-sub-resend-msg').text('').css('color', '#64748b');
+                $('#wppoppop-sub-resend-target').val('all');
                 (function() {
                     var v = window.wppoppop_vars || {};
                     var $readRow = $btn.closest('tr.wppoppop-sub-row');
@@ -78,9 +81,28 @@
             });
         },
 
-        bindPrintReceipt: function() {
-            $('#wppoppop-sub-modal-print').on('click', function() {
-                window.print();
+        bindResend: function() {
+            $('#wppoppop-sub-modal-resend').on('click', function() {
+                var v = window.wppoppop_vars || {};
+                var $btn = $(this), $msg = $('#wppoppop-sub-resend-msg');
+                var id = $('#wppoppop-submission-modal').attr('data-sub-id');
+                if (!v.ajax_url || !id || $btn.prop('disabled')) { return; }
+                $btn.prop('disabled', true);
+                $msg.css('color', '#64748b').text('Sending...');
+                $.post(v.ajax_url, {
+                    action: 'wppoppop_resend_notification',
+                    nonce: v.nonce,
+                    id: id,
+                    target: $('#wppoppop-sub-resend-target').val()
+                }).done(function(res) {
+                    var ok = !!(res && res.success);
+                    $msg.css('color', ok ? '#15803d' : '#b91c1c').text((res && res.data && res.data.message) || (ok ? 'Sent.' : 'Failed.'));
+                }).fail(function(xhr) {
+                    var m = xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                    $msg.css('color', '#b91c1c').text(m || 'Request failed.');
+                }).always(function() {
+                    $btn.prop('disabled', false);
+                });
             });
         }
     };

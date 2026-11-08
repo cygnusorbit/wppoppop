@@ -13,6 +13,7 @@ class WpPopPop_Ajax_Submissions {
         add_action('wp_ajax_wppoppop_assign_sub_labels', [$this, 'assign_sub_labels']);
         add_action('wp_ajax_wppoppop_mark_submission_read', [$this, 'mark_submission_read']);
         add_action('wp_ajax_wppoppop_mark_submission_unread', [$this, 'mark_submission_unread']);
+        add_action('wp_ajax_wppoppop_resend_notification', [$this, 'resend_notification']);
     }
 
     public function save_table_options() {
@@ -355,5 +356,67 @@ class WpPopPop_Ajax_Submissions {
         global $wpdb;
         $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['email' => 'anonymized_' . $id . '@privacy.local', 'fields_data' => wp_json_encode(['gdpr' => 'anonymized'])], ['id' => $id]);
         wp_send_json_success(['message' => __('PII anonymized.', 'wppoppop')]);
+    }
+
+    /** Resend notification emails for one stored lead: target = all | admin | user. */
+    public function resend_notification() {
+        $n = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!wp_verify_nonce($n, 'wppoppop_builder_nonce') && !wp_verify_nonce($n, 'wppoppop_admin_nonce')) {
+            wp_send_json_error(['message' => __('Security verification failed.', 'wppoppop')], 403);
+        }
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')], 403);
+        }
+        $id     = isset($_POST['id']) ? absint($_POST['id']) : 0;
+        $target = isset($_POST['target']) ? sanitize_key(wp_unslash($_POST['target'])) : 'all';
+        if (!in_array($target, ['all', 'admin', 'user'], true)) {
+            $target = 'all';
+        }
+        global $wpdb;
+        $sub = $id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id), ARRAY_A) : null;
+        if (!$sub) {
+            wp_send_json_error(['message' => __('Submission not found.', 'wppoppop')], 404);
+        }
+        $item = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $sub['popup_uid']), ARRAY_A);
+        if (!$item) {
+            wp_send_json_error(['message' => __('The popup of this submission no longer exists.', 'wppoppop')], 404);
+        }
+        $config = json_decode($item['data'], true);
+        $config = is_array($config) ? $config : [];
+        $fields = json_decode($sub['fields_data'], true);
+        $fields = is_array($fields) ? $fields : [];
+        $email  = (string) $sub['email'];
+        $country = (string) $sub['country_code'];
+        $anon   = (strpos($email, 'anonymized_') === 0);
+
+        $sent_admin = 0;
+        $sent_user  = 0;
+
+        if ($target === 'all' || $target === 'admin') {
+            if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
+            $sent_admin = (int) WpPopPop_Notifications::dispatch('*', $sub['popup_uid'], $item['title'], $config, $email, $fields, $id, $country);
+        }
+
+        if (($target === 'all' || $target === 'user') && !$anon && is_email($email)) {
+            if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
+            if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
+            $dopt = WpPopPop_Double_Optin::get_config($config);
+            $ar   = WpPopPop_Autoresponder::get_config($config);
+            if ($sub['status'] === 'pending' && !empty($dopt['enable']) && !empty($sub['confirm_token'])) {
+                if (WpPopPop_Double_Optin::send_confirmation($sub['popup_uid'], $dopt, $email, $fields, $sub['confirm_token'], $id)) { $sent_user++; }
+            } elseif (!empty($ar['enable']) && WpPopPop_Autoresponder::module_active()) {
+                if (WpPopPop_Autoresponder::send($email, $fields, $ar)) { $sent_user++; }
+            }
+        }
+
+        $total = $sent_admin + $sent_user;
+        if ($total < 1) {
+            $msg = ($target === 'user')
+                ? __('No user email is set up for this popup (enable Autoresponder or Double opt-in), or the address is unavailable.', 'wppoppop')
+                : __('Nothing was sent. Check that the popup has an enabled notification whose conditions match.', 'wppoppop');
+            wp_send_json_error(['message' => $msg]);
+        }
+        /* translators: 1: admin emails sent, 2: user emails sent */
+        wp_send_json_success(['message' => sprintf(__('Notification resent (admin: %1$d, user: %2$d).', 'wppoppop'), $sent_admin, $sent_user)]);
     }
 }

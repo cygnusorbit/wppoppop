@@ -2,7 +2,7 @@
     "schema": 1,
     "slug": "acc-notifications",
     "name": "Notifications",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "WpPopPop",
     "description": "Notification messages for popup events.",
     "category": "all-modules",

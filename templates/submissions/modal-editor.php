@@ -43,9 +43,18 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#f8fafc;border-top:1px solid #e2e8f0;">
-            <button type="button" class="button" id="wppoppop-sub-modal-print" style="display:inline-flex;align-items:center;gap:4px;">
-                <span class="dashicons dashicons-printer" style="font-size:16px;width:16px;height:16px;"></span> <?php esc_html_e('Print Receipt', 'wppoppop'); ?>
-            </button>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <label for="wppoppop-sub-resend-target" class="screen-reader-text"><?php esc_html_e('Resend to', 'wppoppop'); ?></label>
+                <select id="wppoppop-sub-resend-target" style="height:32px;min-height:32px;box-sizing:border-box;margin:0;padding:0 24px 0 8px;line-height:1;vertical-align:middle;">
+                    <option value="all"><?php esc_html_e('All', 'wppoppop'); ?></option>
+                    <option value="admin"><?php esc_html_e('Admin', 'wppoppop'); ?></option>
+                    <option value="user"><?php esc_html_e('User', 'wppoppop'); ?></option>
+                </select>
+                <button type="button" class="button" id="wppoppop-sub-modal-resend" style="display:inline-flex;align-items:center;gap:4px;height:32px;min-height:32px;box-sizing:border-box;margin:0;padding:0 12px;line-height:1;vertical-align:middle;">
+                    <span class="dashicons dashicons-email-alt" style="font-size:16px;width:16px;height:16px;"></span> <?php esc_html_e('Resend Notification', 'wppoppop'); ?>
+                </button>
+                <span id="wppoppop-sub-resend-msg" role="status" aria-live="polite" style="font-size:12px;color:#64748b;"></span>
+            </div>
             <button type="button" class="button button-primary" id="wppoppop-sub-modal-done"><?php esc_html_e('Close', 'wppoppop'); ?></button>
         </div>
     </div>

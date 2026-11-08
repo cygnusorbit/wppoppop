@@ -142,7 +142,7 @@ class WpPopPop_Notifications {
 
         foreach ($items as $n) {
             if (empty($n['enable']) || $n['enable'] === 'false') { continue; }
-            if (!in_array($n['send'], array('after_submission', 'after_confirmation'), true) || $n['send'] !== $event) { continue; }
+            if (!in_array($n['send'], array('after_submission', 'after_confirmation'), true) || ($event !== '*' && $n['send'] !== $event)) { continue; } // '*' = manual resend, every event
             if (!self::passes($n, $flat)) { continue; }
 
             $to = array();

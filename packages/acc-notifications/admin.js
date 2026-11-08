@@ -88,11 +88,13 @@
         return '<div class="wppoppop-ntf-card" data-id="' + esc(n.id) + '" style="border:1px solid #cbd5e1;border-radius:0px;margin-bottom:10px;background:#f8fafc;">' +
             '<div class="wppoppop-ntf-head" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;cursor:pointer;">' +
                 '<strong class="wppoppop-ntf-title" style="font-style:italic;">' + esc(n.name || 'Notification') + '</strong>' +
-                '<button type="button" class="button-link wppoppop-ntf-del" title="Delete" aria-label="Delete notification" style="color:#b91c1c;"><span class="dashicons dashicons-trash"></span></button>' +
+                '<span class="wppoppop-ntf-actions" style="display:inline-flex;align-items:center;gap:10px;">' +
+                    '<label class="wppoppop-toggle-switch wppoppop-ntf-toggle" title="Enabled" style="margin:0;"><input type="checkbox" data-k="enable" aria-label="Enabled"' + (isTrue(n.enable) ? ' checked' : '') + '><span class="wppoppop-toggle-slider"></span></label>' +
+                    '<button type="button" class="button-link wppoppop-ntf-del" title="Delete" aria-label="Delete notification" style="color:#b91c1c;"><span class="dashicons dashicons-trash"></span></button>' +
+                '</span>' +
             '</div>' +
             '<div class="wppoppop-ntf-body" style="padding:6px 10px 10px;' + (idx === 0 && list.length === 1 ? '' : 'display:none;') + '">' +
                 '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">Name</label><input type="text" class="widefat" data-k="name" value="' + esc(n.name) + '"></div>' +
-                '<label style="display:flex;align-items:center;gap:8px;margin:0 0 10px;font-weight:600;"><input type="checkbox" data-k="enable"' + (isTrue(n.enable) ? ' checked' : '') + '> Enabled</label>' +
                 '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">Send</label><select class="widefat" data-k="send">' +
                     '<option value="after_submission"' + (n.send === 'after_submission' ? ' selected' : '') + '>After successful form submission</option>' +
                     '<option value="after_confirmation"' + (n.send === 'after_confirmation' ? ' selected' : '') + '>After double opt-in confirmation</option></select></div>' +
@@ -164,7 +166,7 @@
             $('#wppoppop-ntf-list .wppoppop-ntf-card[data-id="' + n.id + '"] .wppoppop-ntf-body').show();
         })
         .on('click.wppNtf', '.wppoppop-ntf-head', function(e) {
-            if ($(e.target).closest('.wppoppop-ntf-del').length) return;
+            if ($(e.target).closest('.wppoppop-ntf-del, .wppoppop-ntf-toggle').length) return;
             $(this).next('.wppoppop-ntf-body').slideToggle(120);
         })
         .on('click.wppNtf', '.wppoppop-ntf-del', function(e) {
