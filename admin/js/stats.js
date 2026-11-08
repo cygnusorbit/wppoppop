@@ -57,6 +57,69 @@
         post('wppoppop_stats_prefs_save', { columns: cols });
     });
 
+    /* ---- column order: drag a header cell (or a row in the Columns panel) ---- */
+    var DRAG_SEL = '#wpp-stats-table thead th[data-col], #wpp-cols-pick .wpp-pick-row[data-col]';
+    var dragKey = null;
+
+    function currentOrder() {
+        var o = [];
+        $('#wpp-stats-table thead th[data-col]').each(function () { o.push($(this).attr('data-col')); });
+        return o;
+    }
+    function applyOrder(order) {
+        var i, $panel = $('#wpp-cols-pick .wpp-pick-panel');
+        $('#wpp-stats-table tr').each(function () {
+            var $tr = $(this);
+            for (i = 0; i < order.length; i++) {
+                var $c = $tr.children('.wpp-col-' + order[i]);
+                if ($c.length) { $tr.append($c); }
+            }
+        });
+        for (i = 0; i < order.length; i++) {
+            var $r = $panel.children('.wpp-pick-row[data-col="' + order[i] + '"]');
+            if ($r.length) { $panel.append($r); }
+        }
+    }
+    function clearMarks() {
+        $('.wpp-drop-before, .wpp-drop-after, .wpp-dragging').removeClass('wpp-drop-before wpp-drop-after wpp-dragging');
+    }
+    function dropBefore(el, e) {
+        var r = el.getBoundingClientRect(), oe = e.originalEvent || e;
+        return $(el).is('th') ? (oe.clientX < r.left + r.width / 2) : (oe.clientY < r.top + r.height / 2);
+    }
+
+    $(document).on('dragstart', DRAG_SEL, function (e) {
+        var dt = e.originalEvent && e.originalEvent.dataTransfer;
+        dragKey = $(this).attr('data-col');
+        $(this).addClass('wpp-dragging');
+        if (dt) {
+            dt.effectAllowed = 'move';
+            try { dt.setData('text/plain', dragKey); } catch (err) { /* old Edge */ }
+        }
+    });
+    $(document).on('dragover', DRAG_SEL, function (e) {
+        if (!dragKey) { return; }
+        var dt = e.originalEvent && e.originalEvent.dataTransfer;
+        e.preventDefault();
+        if (dt) { dt.dropEffect = 'move'; }
+        $('.wpp-drop-before, .wpp-drop-after').removeClass('wpp-drop-before wpp-drop-after');
+        if ($(this).attr('data-col') !== dragKey) { $(this).addClass(dropBefore(this, e) ? 'wpp-drop-before' : 'wpp-drop-after'); }
+    });
+    $(document).on('drop', DRAG_SEL, function (e) {
+        if (!dragKey) { return; }
+        e.preventDefault();
+        var target = $(this).attr('data-col'), before = dropBefore(this, e), moved = dragKey;
+        var order = $.grep(currentOrder(), function (k) { return k !== moved; });
+        var idx = $.inArray(target, order);
+        clearMarks();
+        dragKey = null;
+        if (idx < 0) { return; }
+        order.splice(before ? idx : idx + 1, 0, moved);
+        applyOrder(order);
+        post('wppoppop_stats_prefs_save', { order: order });
+    });
+    $(document).on('dragend', DRAG_SEL, function () { clearMarks(); dragKey = null; });
+
     /* ---- per page ---- */
     $(document).on('change', '.wpp-per', function () { this.form.submit(); });
 

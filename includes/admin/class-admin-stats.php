@@ -89,7 +89,6 @@ class WpPopPop_Admin_Stats {
             'leads'       => __('Captured Leads', 'wppoppop'),
             'conversion'  => __('Conversion Rate', 'wppoppop'),
             'status'      => __('Status', 'wppoppop'),
-            'action'      => __('Action', 'wppoppop'),
         ];
     }
 
@@ -112,7 +111,10 @@ class WpPopPop_Admin_Stats {
             array_unshift($cols, 'popup');
         }
         $chart = (isset($raw['chart_uids']) && is_array($raw['chart_uids'])) ? array_values($raw['chart_uids']) : null;
-        return ['columns' => $cols, 'chart_uids' => $chart];
+        // Column order (position) is stored separately from visibility; unknown keys dropped, new columns appended.
+        $order = (isset($raw['order']) && is_array($raw['order'])) ? array_values(array_unique(array_intersect($raw['order'], $all))) : [];
+        $order = array_merge($order, array_values(array_diff($all, $order)));
+        return ['columns' => $cols, 'chart_uids' => $chart, 'order' => $order];
     }
 
     /* ------------------------------------------------------------ AJAX */
@@ -216,6 +218,12 @@ class WpPopPop_Admin_Stats {
                 array_unshift($cols, 'popup');
             }
             $prefs['columns'] = $cols;
+        }
+        if (isset($_POST['order'])) {
+            $all_keys = array_keys(self::columns());
+            $ord = is_array($_POST['order']) ? array_map('sanitize_key', wp_unslash($_POST['order'])) : [];
+            $ord = array_values(array_unique(array_intersect($ord, $all_keys)));
+            $prefs['order'] = array_merge($ord, array_values(array_diff($all_keys, $ord)));
         }
         if (!empty($_POST['chart_set'])) {
             $uids = (isset($_POST['chart_uids']) && is_array($_POST['chart_uids'])) ? array_map('sanitize_text_field', wp_unslash($_POST['chart_uids'])) : [];

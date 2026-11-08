@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 
 $all_cols  = WpPopPop_Admin_Stats::columns();
 $on_cols   = $stats_prefs['columns'];
+$order     = isset($stats_prefs['order']) ? $stats_prefs['order'] : array_keys($all_cols);
 $cc = function ($k) use ($on_cols) {
     return 'wpp-col wpp-col-' . $k . (in_array($k, $on_cols, true) ? '' : ' wpp-col-off');
 };
@@ -36,8 +37,9 @@ $page_links = paginate_links([
             <details class="wpp-pick" id="wpp-cols-pick">
                 <summary class="button button-small"><span class="dashicons dashicons-columns" style="font-size:14px;width:14px;height:14px;line-height:18px;"></span> <?php esc_html_e('Columns', 'wppoppop'); ?></summary>
                 <div class="wpp-pick-panel">
-                    <?php foreach ($all_cols as $k => $label) : ?>
-                        <label class="wpp-pick-row">
+                    <?php foreach ($order as $k) : $label = $all_cols[$k]; ?>
+                        <label class="wpp-pick-row" data-col="<?php echo esc_attr($k); ?>" draggable="true" title="<?php echo esc_attr__('Drag to reposition', 'wppoppop'); ?>">
+                            <span class="dashicons dashicons-menu wpp-grip" aria-hidden="true"></span>
                             <input type="checkbox" class="wpp-col-cb" value="<?php echo esc_attr($k); ?>" <?php checked(in_array($k, $on_cols, true)); ?> <?php disabled($k === 'popup'); ?>>
                             <?php echo esc_html($label); ?>
                         </label>
@@ -51,9 +53,10 @@ $page_links = paginate_links([
     <table class="wp-list-table widefat striped table-view-list" style="border:none;" id="wpp-stats-table">
         <thead>
             <tr>
-                <?php foreach ($all_cols as $k => $label) :
-                    $al = in_array($k, ['impressions', 'leads', 'conversion', 'action'], true) ? 'right' : (in_array($k, ['rank', 'status'], true) ? 'center' : 'left'); ?>
-                    <th class="<?php echo esc_attr($cc($k)); ?>" style="text-align:<?php echo esc_html( $al ); ?>;font-weight:600;"><?php echo esc_html($label); ?></th>
+                <?php foreach ($order as $k) :
+                    $label = $all_cols[$k];
+                    $al = in_array($k, ['impressions', 'leads', 'conversion'], true) ? 'right' : (in_array($k, ['rank', 'status'], true) ? 'center' : 'left'); ?>
+                    <th class="<?php echo esc_attr($cc($k)); ?>" data-col="<?php echo esc_attr($k); ?>" draggable="true" title="<?php echo esc_attr__('Drag to reposition', 'wppoppop'); ?>" style="text-align:<?php echo esc_html( $al ); ?>;font-weight:600;"><?php echo esc_html($label); ?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
@@ -69,43 +72,44 @@ $page_links = paginate_links([
                     $is_trashed = (isset($p->status) && $p->status === 'trash');
                     $lbl = isset($stat_labels[$p->uid]) ? $stat_labels[$p->uid] : '';
                     $rank = (($pg - 1) * $per) + $i + 1;
+                    $wpp_cells = [];
                     $st_style = $is_trashed ? 'background:#fee2e2;color:#991b1b;' : (in_array($p->status, ['publish', 'published'], true) ? 'background:#dcfce7;color:#166534;' : 'background:#e2e8f0;color:#475569;');
                     ?>
                     <tr class="<?php echo $is_trashed ? 'is-trashed' : ''; ?>" data-uid="<?php echo esc_attr($p->uid); ?>">
-                        <td class="<?php echo esc_attr($cc('rank')); ?>" style="text-align:center;font-weight:700;color:#64748b;">#<?php echo (int) $rank; ?></td>
-                        <td class="<?php echo esc_attr($cc('popup')); ?>">
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('rank')); ?>" style="text-align:center;font-weight:700;color:#64748b;">#<?php echo (int) $rank; ?></td><?php $wpp_cells['rank'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('popup')); ?>">
                             <span class="wpp-dot wpp-name-dot" data-uid="<?php echo esc_attr($p->uid); ?>" style="background:<?php echo esc_attr($lbl ? $lbl : 'transparent'); ?>;<?php echo $lbl ? '' : 'display:none;'; ?>"></span>
                             <strong><a href="<?php echo esc_url($edit_url); ?>" style="color:#1e293b;text-decoration:none;font-size:14px;"><?php echo esc_html($p->title); ?></a></strong><?php if ($is_trashed) : ?><span class="wppoppop-badge-trash"><?php esc_html_e('Trash', 'wppoppop'); ?></span><?php endif; ?>
                             <div style="font-size:11px;color:#94a3b8;margin-top:2px;"><code><?php echo esc_html($p->uid); ?></code></div>
-                        </td>
-                        <td class="<?php echo esc_attr($cc('label')); ?>">
+                        </td><?php $wpp_cells['popup'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('label')); ?>">
                             <span class="wpp-lbl <?php echo $lbl ? 'has-label' : 'is-empty'; ?>" data-uid="<?php echo esc_attr($p->uid); ?>">
                                 <input type="color" class="wpp-lbl-input" value="<?php echo esc_attr($lbl ? $lbl : '#94a3b8'); ?>" aria-label="<?php echo esc_attr__('Label color', 'wppoppop'); ?>" title="<?php echo esc_attr__('Pick a label color', 'wppoppop'); ?>">
                                 <button type="button" class="wpp-lbl-del" title="<?php echo esc_attr__('Delete label', 'wppoppop'); ?>" <?php echo $lbl ? '' : 'hidden'; ?>>&times;</button>
                             </span>
-                        </td>
-                        <td class="<?php echo esc_attr($cc('country')); ?>">
+                        </td><?php $wpp_cells['label'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('country')); ?>">
                             <?php if (!empty($pop_geo[$p->uid])) : foreach ($pop_geo[$p->uid] as $g) : ?>
                                 <span class="wpp-chip"><?php echo esc_html($g['k']); ?> <small><?php echo (int) $g['c']; ?></small></span>
                             <?php endforeach; else : ?><span style="color:#94a3b8;">&mdash;</span><?php endif; ?>
-                        </td>
-                        <td class="<?php echo esc_attr($cc('device')); ?>">
+                        </td><?php $wpp_cells['country'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('device')); ?>">
                             <?php if (!empty($pop_dev[$p->uid])) : foreach ($pop_dev[$p->uid] as $d) : ?>
                                 <span class="wpp-chip"><?php echo esc_html(isset($dev_names[$d['k']]) ? $dev_names[$d['k']] : ucfirst($d['k'])); ?> <small><?php echo (int) $d['c']; ?></small></span>
                             <?php endforeach; else : ?><span style="color:#94a3b8;">&mdash;</span><?php endif; ?>
-                        </td>
-                        <td class="<?php echo esc_attr($cc('impressions')); ?>" style="text-align:right;font-weight:600;color:#1e293b;"><?php echo number_format($p_impr); ?></td>
-                        <td class="<?php echo esc_attr($cc('leads')); ?>" style="text-align:right;font-weight:600;color:#10b981;"><?php echo number_format($p_subs); ?></td>
-                        <td class="<?php echo esc_attr($cc('conversion')); ?>" style="text-align:right;">
+                        </td><?php $wpp_cells['device'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('impressions')); ?>" style="text-align:right;font-weight:600;color:#1e293b;"><?php echo number_format($p_impr); ?></td><?php $wpp_cells['impressions'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('leads')); ?>" style="text-align:right;font-weight:600;color:#10b981;"><?php echo number_format($p_subs); ?></td><?php $wpp_cells['leads'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('conversion')); ?>" style="text-align:right;">
                             <div style="display:inline-flex;align-items:center;gap:6px;">
                                 <strong style="color:#f59e0b;"><?php echo esc_html($p_cr); ?>%</strong>
                                 <div style="width:50px;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="width:<?php echo esc_attr( (string) min( 100, $p_cr * 2 ) ); ?>%;height:100%;background:#f59e0b;"></div></div>
                             </div>
-                        </td>
-                        <td class="<?php echo esc_attr($cc('status')); ?>" style="text-align:center;">
+                        </td><?php $wpp_cells['conversion'] = ob_get_clean(); ?>
+                        <?php ob_start(); ?><td class="<?php echo esc_attr($cc('status')); ?>" style="text-align:center;">
                             <span class="badge" style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;<?php echo esc_attr( $st_style ); ?>"><?php echo esc_html(ucfirst($p->status)); ?></span>
-                        </td>
-                        <td class="<?php echo esc_attr($cc('action')); ?>" style="text-align:right;"><a href="<?php echo esc_url($edit_url); ?>" class="button button-small"><?php esc_html_e('Edit Builder', 'wppoppop'); ?></a></td>
+                        </td><?php $wpp_cells['status'] = ob_get_clean(); ?>
+                        <?php foreach ($order as $wpp_k) { echo isset($wpp_cells[$wpp_k]) ? $wpp_cells[$wpp_k] : ''; } // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- cells are escaped where built ?>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
