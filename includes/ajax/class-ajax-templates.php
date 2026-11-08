@@ -305,6 +305,11 @@ class WpPopPop_Ajax_Templates {
             wp_send_json_error(array('message' => __('Template not found.', 'wppoppop')));
         }
         $t    = $all[$id];
+        if (!class_exists('WpPopPop_Template_Media')) {
+            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-template-media.php';
+        }
+        $wppoppop_media = WpPopPop_Template_Media::localize($t['data'], $id);
+        $t['data']      = $wppoppop_media['json'];
         $base = sanitize_title($t['title']);
         $base = rtrim(substr($base === '' ? 'popup' : $base, 0, 29), '-');
         if ($base === '') { $base = 'popup'; }
@@ -330,6 +335,7 @@ class WpPopPop_Ajax_Templates {
         }
         wp_send_json_success(array(
             'uid'      => $uid,
+            'media'    => (int) $wppoppop_media['count'],
             'redirect' => admin_url('admin.php?page=wppoppop-builder&uid=' . rawurlencode($uid)),
         ));
     }

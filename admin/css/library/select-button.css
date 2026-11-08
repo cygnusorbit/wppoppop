@@ -1,0 +1,47 @@
+/* WpPopPop Library: "Select" text button + hover bubble. Loaded after uniform-buttons.css.
+   Chrome / Safari / Firefox / Edge safe. */
+body #wpbody-content .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn,
+body #wpbody-content .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use {
+    width: auto !important;
+    min-width: 64px !important;
+    height: 32px !important;
+    padding: 0 14px !important;
+    -webkit-box-flex: 0 !important; -ms-flex: 0 0 auto !important; flex: 0 0 auto !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    letter-spacing: .2px;
+    white-space: nowrap;
+}
+body #wpbody-content .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-tpl-import-btn::before,
+body #wpbody-content .wppoppop-library-wrap .wppoppop-tpl-card .wppoppop-usertpl-use::before {
+    content: none !important;
+    display: none !important;
+}
+
+#wppoppop-lib-tip {
+    position: fixed;
+    z-index: 2147483000;
+    display: none;
+    max-width: 220px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--wpp-c-tip-bg, #1e293b);
+    color: var(--wpp-c-tip-text, #ffffff);
+    font: 600 11px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    -webkit-box-shadow: 0 4px 12px rgba(15, 23, 42, .25); box-shadow: 0 4px 12px rgba(15, 23, 42, .25);
+}
+#wppoppop-lib-tip::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: var(--wpp-tip-arrow, 50%);
+    margin-left: -5px;
+    border-style: solid;
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent var(--wpp-c-tip-bg, #1e293b) transparent;
+}

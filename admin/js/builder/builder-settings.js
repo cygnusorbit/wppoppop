@@ -179,7 +179,10 @@
             // WPPOPPOP_CANVAS_OVERFLOW: per-canvas overflow, auto-close & logic hydration
             var ovOn = (meta.allow_overflow === true || meta.allow_overflow === 1 || meta.allow_overflow === '1' || meta.allow_overflow === 'true');
             $('#set-canvas-allow-overflow').prop('checked', ovOn);
-            this.applyCanvasOverflow(ovOn);
+            var ovEdit = (meta.allow_overflow_edit === true || meta.allow_overflow_edit === 1 || meta.allow_overflow_edit === '1' || meta.allow_overflow_edit === 'true');
+            if (ovOn) { ovEdit = false; } /* WPPOPPOP_OVERFLOW_EXCLUSIVE: only one overflow mode may be on */
+            $('#set-canvas-allow-overflow-edit').prop('checked', ovEdit);
+            this.applyCanvasOverflow(ovOn || ovEdit);
             /* WPPOPPOP_DEFAULT_CLOSE hydrate: missing = enabled */
             var dcOn = !(meta.close_btn_enabled === false || meta.close_btn_enabled === 0 || meta.close_btn_enabled === '0' || meta.close_btn_enabled === 'false');
             $('#set-canvas-close-btn').prop('checked', dcOn);
@@ -280,7 +283,20 @@
                 if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
                 var on = $(this).is(':checked');
                 core.state.canvasMeta[cur].allow_overflow = on;
-                self.applyCanvasOverflow(on);
+                if (on) { $('#set-canvas-allow-overflow-edit').prop('checked', false); core.state.canvasMeta[cur].allow_overflow_edit = false; } /* WPPOPPOP_OVERFLOW_EXCLUSIVE */
+                self.applyCanvasOverflow(on || $('#set-canvas-allow-overflow-edit').is(':checked'));
+                core.pushHistory();
+            });
+            /* WPPOPPOP_OVERFLOW_EDIT_ONLY: editor-only overflow, never rendered on the frontend / live preview */
+            $(document).off('change.wppoppop_ovfe', '#set-canvas-allow-overflow-edit').on('change.wppoppop_ovfe', '#set-canvas-allow-overflow-edit', function() {
+                var core = window.WpPopPopBuilderCore;
+                if (!core) return;
+                var cur = core.state.currentCanvas || 1;
+                if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
+                var on = $(this).is(':checked');
+                core.state.canvasMeta[cur].allow_overflow_edit = on;
+                if (on) { $('#set-canvas-allow-overflow').prop('checked', false); core.state.canvasMeta[cur].allow_overflow = false; } /* WPPOPPOP_OVERFLOW_EXCLUSIVE */
+                self.applyCanvasOverflow(on || $('#set-canvas-allow-overflow').is(':checked'));
                 core.pushHistory();
             });
             /* WPPOPPOP_DEFAULT_CLOSE: per-canvas default close button */
@@ -484,7 +500,6 @@
             on = !!on;
             $('#wppoppop-canvas-elements-root').toggleClass('wppoppop-canvas-clip', !on);
             $('#wppoppop-canvas-box').toggleClass('wppoppop-canvas-overflow-on', on);
-            $('#set-canvas-overflow-state').text(on ? 'ON' : 'OFF');
             // WPPOPPOP_OVERFLOW_REFRESH: unlock / lock drag + resize containment on live layers
             if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.refreshInteractionContainment === 'function') {
                 window.WpPopPopBuilderCanvas.refreshInteractionContainment();

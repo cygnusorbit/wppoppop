@@ -236,8 +236,11 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-library-theme-modals-css', WPPOPPOP_URL . 'admin/css/library/theme-sync-modals.css', ['wppoppop-library-css'], file_exists($wppoppop_ts_lib) ? (string) filemtime($wppoppop_ts_lib) : $lib_ver);
             $wppoppop_ub_css = WPPOPPOP_PATH . 'admin/css/library/uniform-buttons.css';
             wp_enqueue_style('wppoppop-library-uniform-css', WPPOPPOP_URL . 'admin/css/library/uniform-buttons.css', ['wppoppop-library-css', 'wppoppop-library-actions-css', 'wppoppop-library-theme-modals-css'], file_exists($wppoppop_ub_css) ? (string) filemtime($wppoppop_ub_css) : $lib_ver);
+            $wppoppop_sb_css = WPPOPPOP_PATH . 'admin/css/library/select-button.css';
+            wp_enqueue_style('wppoppop-library-select-css', WPPOPPOP_URL . 'admin/css/library/select-button.css', ['wppoppop-library-uniform-css'], file_exists($wppoppop_sb_css) ? (string) filemtime($wppoppop_sb_css) : $lib_ver);
             wp_enqueue_script('wppoppop-library-download-js', WPPOPPOP_URL . 'admin/js/library/library-download.js', ['jquery', 'wppoppop-library-actions-js'], $lib_ver, true);
             wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_enqueue_script('wppoppop-library-tooltip-js', WPPOPPOP_URL . 'admin/js/library/library-tooltip.js', ['jquery', 'wppoppop-library-actions-js', 'wppoppop-library-download-js', 'wppoppop-library-user-js'], $lib_ver, true);
             wp_enqueue_style('wppoppop-library-pager-css', WPPOPPOP_URL . 'admin/css/library/pager.css', ['wppoppop-library-css'], $lib_ver);
             wp_enqueue_script('wppoppop-library-pager-js', WPPOPPOP_URL . 'admin/js/library/library-pager.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
             wp_localize_script('wppoppop-library-pager-js', 'wppoppop_libpg_vars', ['i18n' => [

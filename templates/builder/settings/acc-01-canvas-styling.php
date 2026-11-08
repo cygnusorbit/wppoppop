@@ -56,9 +56,20 @@ if (!defined('ABSPATH')) {
                         </style>
                         <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
                             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                                <label for="set-canvas-allow-overflow" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;"><?php esc_html_e('ELEMENT OVERFLOW', 'wppoppop'); ?> <span id="set-canvas-overflow-state" style="color:#2563eb;"><?php esc_html_e('OFF', 'wppoppop'); ?></span></label>
+                                <label for="set-canvas-allow-overflow" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;"><?php esc_html_e('Element Overflow (Edit & Pre)', 'wppoppop'); ?></label>
                                 <span class="wppoppop-ovf-switch">
-                                    <input type="checkbox" id="set-canvas-allow-overflow" value="1" role="switch" aria-label="<?php esc_attr_e('Allow canvas element overflow', 'wppoppop'); ?>">
+                                    <input type="checkbox" id="set-canvas-allow-overflow" value="1" role="switch" aria-label="<?php esc_attr_e('Allow canvas element overflow in the editor and the live preview', 'wppoppop'); ?>">
+                                    <span class="wppoppop-ovf-track"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- WPPOPPOP_OVERFLOW_EDIT_ONLY: elements may leave the canvas while editing; live preview / frontend stay clipped -->
+                        <div class="wppoppop-field-group" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #334155;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                                <label for="set-canvas-allow-overflow-edit" style="font-size:11px;font-weight:700;color:#475569;margin:0;text-transform:uppercase;cursor:pointer;"><?php esc_html_e('Element Overflow (Edit Only)', 'wppoppop'); ?></label>
+                                <span class="wppoppop-ovf-switch">
+                                    <input type="checkbox" id="set-canvas-allow-overflow-edit" value="1" role="switch" aria-label="<?php esc_attr_e('Allow canvas element overflow in the editor only', 'wppoppop'); ?>">
                                     <span class="wppoppop-ovf-track"></span>
                                 </span>
                             </div>

@@ -890,7 +890,8 @@
             if (!core || !core.state) return false;
             var cur = core.state.currentCanvas || 1;
             var m = (core.state.canvasMeta && core.state.canvasMeta[cur]) || {};
-            return (m.allow_overflow === true || m.allow_overflow === 1 || m.allow_overflow === '1' || m.allow_overflow === 'true');
+            var yes = function(v) { return v === true || v === 1 || v === '1' || v === 'true'; };
+            return yes(m.allow_overflow) || yes(m.allow_overflow_edit); // WPPOPPOP_OVERFLOW_EDIT_ONLY
         },
 
         getContainment: function() {

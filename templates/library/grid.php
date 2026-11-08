@@ -50,7 +50,7 @@ if (!defined('ABSPATH')) {
                                 data-id="<?php echo esc_attr($tpl['id']); ?>" 
                                 data-title="<?php echo esc_attr($tpl['title']); ?>" 
                                 data-config='<?php echo esc_attr($json_str); ?>'>
-                            <?php esc_html_e('Import & Edit', 'wppoppop'); ?>
+                            <?php esc_html_e('Select', 'wppoppop'); ?>
                         </button>
                     </div>
                 </div>
