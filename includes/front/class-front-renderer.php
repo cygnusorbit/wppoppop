@@ -549,6 +549,7 @@ class WpPopPop_Front_Renderer {
 
         if (!empty($el['fontFamily']) && $el['fontFamily'] !== 'inherit') $style[] = 'font-family:' . esc_attr($el['fontFamily']);
         if (!empty($el['fontSize'])) $style[] = 'font-size:' . intval($el['fontSize']) . 'px';
+        if (!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) $style[] = 'font-weight:' . $el['fontWeight']; /* WPPOPPOP_FRONT_FONT_WEIGHT: form inputs inherit this */
         if (!empty($el['color'])) $style[] = 'color:' . esc_attr($el['color']);
         if (!empty($el['bgColor']) && $type !== 'shape' && (empty($el['transparentFill']) || $el['transparentFill'] === 'false')) $style[] = 'background-color:' . esc_attr($el['bgColor']);
 

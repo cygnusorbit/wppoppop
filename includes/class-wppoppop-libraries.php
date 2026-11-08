@@ -336,12 +336,12 @@ class WpPopPop_Libraries {
      */
     public static function get_google_font_url($font_family = '') {
         $font_map = [
-            'Inter, sans-serif'      => 'Inter:wght@300;400;500;600;700',
-            'Roboto, sans-serif'     => 'Roboto:wght@300;400;500;700',
-            'Montserrat, sans-serif' => 'Montserrat:wght@400;500;600;700',
-            'Poppins, sans-serif'    => 'Poppins:wght@300;400;500;600;700',
-            'Open Sans, sans-serif'  => 'Open+Sans:wght@400;600;700',
-            'Lato, sans-serif'       => 'Lato:wght@300;400;700',
+            'Inter, sans-serif'      => 'Inter:wght@300;400;500;600;700;800;900',
+            'Roboto, sans-serif'     => 'Roboto:wght@300;400;500;700;900',
+            'Montserrat, sans-serif' => 'Montserrat:wght@300;400;500;600;700;800;900',
+            'Poppins, sans-serif'    => 'Poppins:wght@300;400;500;600;700;800;900',
+            'Open Sans, sans-serif'  => 'Open+Sans:wght@300;400;500;600;700;800',
+            'Lato, sans-serif'       => 'Lato:wght@300;400;700;900',
         ];
 
         if (isset($font_map[$font_family])) {

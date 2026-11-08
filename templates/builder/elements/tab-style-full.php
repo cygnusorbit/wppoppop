@@ -172,11 +172,13 @@ if (!defined('ABSPATH')) exit;
         <div>
             <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;"><?php esc_html_e('FONT WEIGHT', 'wppoppop'); ?></label>
             <select id="prop-font-weight" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="fontWeight" style="font-size:12px;">
+                <option value="300"><?php esc_html_e('Light (300)', 'wppoppop'); ?></option>
                 <option value="400"><?php esc_html_e('Regular (400)', 'wppoppop'); ?></option>
                 <option value="500"><?php esc_html_e('Medium (500)', 'wppoppop'); ?></option>
                 <option value="600"><?php esc_html_e('Semi-Bold (600)', 'wppoppop'); ?></option>
                 <option value="700"><?php esc_html_e('Bold (700)', 'wppoppop'); ?></option>
                 <option value="800"><?php esc_html_e('Extra-Bold (800)', 'wppoppop'); ?></option>
+                <option value="900"><?php esc_html_e('Black (900)', 'wppoppop'); ?></option>
             </select>
         </div>
     </div>
