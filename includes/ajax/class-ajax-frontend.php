@@ -119,22 +119,45 @@ class WpPopPop_Ajax_Frontend {
         }
         $visitor_country = isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : '';
 
+        /* WPPOPPOP_DOI_AJAX: with Double Opt-In enabled the lead stays "pending" until the email link is opened */
+        $wppoppop_doi_on  = false;
+        $wppoppop_doi_cfg = array();
+        if ($popup_uid !== '') {
+            if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
+            $wppoppop_doi_raw  = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $popup_uid));
+            $wppoppop_doi_data = json_decode((string) $wppoppop_doi_raw, true);
+            if (!is_array($wppoppop_doi_data)) { $wppoppop_doi_data = array(); }
+            $wppoppop_doi_cfg  = WpPopPop_Double_Optin::get_config($wppoppop_doi_data);
+            $wppoppop_doi_nf   = (isset($wppoppop_doi_data['notifications']) && is_array($wppoppop_doi_data['notifications'])) ? $wppoppop_doi_data['notifications'] : array();
+            $wppoppop_doi_on   = (!empty($wppoppop_doi_cfg['enable']) || !empty($wppoppop_doi_nf['enable_double_optin']))
+                && (($email !== '' && is_email($email)) || trim((string) $wppoppop_doi_cfg['recipient']) !== '');
+        }
+        $wppoppop_doi_token = $wppoppop_doi_on ? wp_generate_password(32, false) : '';
+
         $wpdb->insert($table_name,
             [
-                'popup_uid'    => $popup_uid,
-                'email'        => (string) $email,
-                'fields_data'  => wp_json_encode($clean_fields),
-                'status'       => 'confirmed',
-                'country_code' => $visitor_country,
-                'created_at'   => current_time('mysql')
+                'popup_uid'     => $popup_uid,
+                'email'         => (string) $email,
+                'fields_data'   => wp_json_encode($clean_fields),
+                'status'        => $wppoppop_doi_on ? 'pending' : 'confirmed',
+                'confirm_token' => $wppoppop_doi_token,
+                'country_code'  => $visitor_country,
+                'created_at'    => current_time('mysql')
             ],
-            ['%s', '%s', '%s', '%s', '%s', '%s']
+            ['%s', '%s', '%s', '%s', '%s', '%s', '%s']
         );
         if ($popup_uid !== '') {
-            $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}wppoppop_items SET submissions = submissions + 1, confirmations = confirmations + 1 WHERE uid = %s", $popup_uid));
+            if ($wppoppop_doi_on) {
+                $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}wppoppop_items SET submissions = submissions + 1 WHERE uid = %s", $popup_uid));
+            } else {
+                $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}wppoppop_items SET submissions = submissions + 1, confirmations = confirmations + 1 WHERE uid = %s", $popup_uid));
+            }
         }
 
         $submission_id =$wpdb->insert_id;
+        if ($wppoppop_doi_on) {
+            WpPopPop_Double_Optin::send_confirmation($popup_uid, $wppoppop_doi_cfg, (string) $email, $clean_fields, $wppoppop_doi_token, $submission_id);
+        }
         if (class_exists('WpPopPop_Admin_Stats')) { WpPopPop_Admin_Stats::record_device($submission_id); }
 
         // 7. Automated Email Notification
@@ -174,9 +197,12 @@ class WpPopPop_Ajax_Frontend {
         }
 
         wp_send_json_success([
-            'message'       => __('Thank you! Your submission has been received.', 'wppoppop'),
+            'message'       => $wppoppop_doi_on
+                ? __('Thank you! A verification link has been dispatched to your email address.', 'wppoppop')
+                : __('Thank you! Your submission has been received.', 'wppoppop'),
             'submission_id' => $submission_id,
-            'redirect_url'  => $redirect_url
+            'redirect_url'  => $redirect_url,
+            'double_optin'  => $wppoppop_doi_on
         ]);
     }
 

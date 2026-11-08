@@ -20,3 +20,8 @@
 .wppoppop-submissions-wrap .wpp-bar-btn::-moz-focus-inner { border: 0; padding: 0; }
 .wppoppop-submissions-wrap .wppoppop-dash-bar .cell.subs-filter { display: -webkit-box; display: -ms-flexbox; display: flex; align-items: center; padding: 0 12px; border-right: 0; }
 .wppoppop-submissions-wrap .wppoppop-dash-bar .cell.subs-filter select { height: 30px; min-height: 30px; max-width: 240px; margin: 0; padding: 0 24px 0 8px; font-size: var(--wpp-fs-input, 12px); line-height: 28px; box-sizing: border-box; }
+
+/* WPPOPPOP_SUB_STATUS_BADGE: Status column (Pending = warning, Confirmed = success) */
+.wppoppop-sub-status { display: inline-block; padding: 2px 8px; border-radius: var(--wpp-r-badge, 12px); font-size: var(--wpp-fs-badge, 11px); font-weight: 700; line-height: 1.5; letter-spacing: .3px; text-transform: uppercase; white-space: nowrap; color: #fff; background: var(--wpp-c-warning, #d97706); }
+.wppoppop-sub-status.is-pending { background: var(--wpp-c-warning, #d97706); }
+.wppoppop-sub-status.is-confirmed { background: var(--wpp-c-success, #16a34a); }

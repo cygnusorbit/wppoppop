@@ -213,7 +213,8 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                         </div>
                     </td>
                 <?php else : ?>
-                    <td class="<?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>"><?php echo ($c === $dot_col) ? $unread_dot : ''; echo esc_html($val); ?></td>
+                    <td class="<?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>"><?php echo ($c === $dot_col) ? $unread_dot : ''; /* WPPOPPOP_SUB_STATUS_BADGE */
+                        if ($c === 'status') : ?><span class="wppoppop-sub-status <?php echo $is_confirmed ? 'is-confirmed' : 'is-pending'; ?>"><?php echo $is_confirmed ? esc_html__('Confirmed', 'wppoppop') : esc_html__('Pending', 'wppoppop'); ?></span><?php else : echo esc_html($val); endif; ?></td>
                 <?php endif;
             endforeach; ?>
         </tr>

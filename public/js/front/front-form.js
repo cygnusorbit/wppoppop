@@ -127,7 +127,7 @@
                         if (res.data && res.data.redirect_url) {
                             window.location.href = res.data.redirect_url;
                         } else {
-                            var successMsg = $btn.attr('data-confirm-message') || ((res.data && res.data.message) ? res.data.message : 'Thank you for your submission!'); /* WPPOPPOP_SUBMIT_CONFIRM */
+                            var successMsg = (res.data && res.data.double_optin && res.data.message) ? res.data.message : ($btn.attr('data-confirm-message') || ((res.data && res.data.message) ? res.data.message : 'Thank you for your submission!')); /* WPPOPPOP_SUBMIT_CONFIRM + WPPOPPOP_DOI_AJAX */
                             self.showSuccess($canvas, successMsg, $popup);
                             setTimeout(function() {
                                 if (window.WpPopPopFrontDisplay) {
