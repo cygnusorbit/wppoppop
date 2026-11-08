@@ -62,6 +62,29 @@ body.wp-admin #wpcontent .wppoppop-settings-wrap .wppoppop-dash-bar { box-sizing
 .wppoppop-settings-wrap .wppoppop-settings-submit-bar { margin: 8px 0 0; display: flex; align-items: center; gap: 12px; }
 .wppoppop-settings-wrap .wppoppop-settings-submit-bar .button-primary { min-height: var(--wpp-h-button, 34px); padding: 0 20px; }
 
+/* WPPOPPOP_SETTINGS_FIELDS */
+/* Settings fields: one height for every input + select, with a themed dropdown arrow.
+   The global themed `background` shorthand wipes WordPress' native arrow, so it is redrawn here. */
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section .form-table td > input[type="text"],
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section .form-table td > input[type="email"],
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section .form-table td > input[type="number"],
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section .form-table td > input[type="url"],
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section .form-table td > input[type="password"],
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section input.wpp-pg-label,
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section select {
+    box-sizing: border-box; height: var(--wpp-h-input, 32px); min-height: var(--wpp-h-input, 32px);
+    margin: 0; padding: 0 10px; line-height: normal; vertical-align: middle;
+}
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section select {
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    padding-right: 30px; max-width: 100%; cursor: pointer; text-overflow: ellipsis;
+    background-color: var(--wpp-c-input-bg, #fff);
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2712%27%20height%3D%2712%27%20viewBox%3D%270%200%2012%2012%27%3E%3Cpath%20d%3D%27M2%204l4%204%204-4%27%20fill%3D%27none%27%20stroke%3D%27%2350575e%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 12px 12px;
+}
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section select::-ms-expand { display: none; }
+#wpbody-content .wppoppop-settings-wrap .wppoppop-settings-section select:disabled { opacity: .6; cursor: not-allowed; }
+
 @media (max-width: 782px) {
     body.wp-admin #wpcontent .wppoppop-dash.wppoppop-settings-wrap { padding-right: 10px; }
     .wppoppop-settings-wrap .wppoppop-dash-bar { top: 46px; height: auto; flex-wrap: wrap; }

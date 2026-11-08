@@ -109,7 +109,7 @@ body.wppoppop-admin-themed #wpbody-content select,
 body.wppoppop-admin-themed #wpbody-content textarea {
     font-family: var(--wpp-font-base);
     font-size: var(--wpp-fs-input);
-    background: var(--wpp-c-input-bg);
+    background-color: var(--wpp-c-input-bg);
     color: var(--wpp-c-input-text);
     border: var(--wpp-bw) solid var(--wpp-c-input-border);
     border-radius: var(--wpp-r-input);
@@ -325,3 +325,13 @@ body.wppoppop-admin-themed .wppoppop-tool-tiles .tile:focus { border-color: var(
 body.wppoppop-admin-themed .wppoppop-tool-tiles .ico { color: var(--wpp-c-muted); }
 body.wppoppop-admin-themed .wppoppop-tool-tiles .lbl { background: var(--wpp-c-primary); color: var(--wpp-c-primary-text); font-family: var(--wpp-font-base); }
 body.wppoppop-admin-themed .wppoppop-tool-tiles .tile:hover .lbl { background: var(--wpp-c-primary-hover); }
+
+/* WPPOPPOP_GLOBAL_SELECT_ARROW */
+/* Single-value dropdowns keep a visible arrow on every themed page (the old `background` shorthand removed it) */
+body.wppoppop-admin-themed #wpbody-content select:not([multiple]):not([size]) {
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    padding-right: 28px; text-overflow: ellipsis; cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2712%27%20height%3D%2712%27%20viewBox%3D%270%200%2012%2012%27%3E%3Cpath%20d%3D%27M2%204l4%204%204-4%27%20fill%3D%27none%27%20stroke%3D%27%23787c82%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat; background-position: right 9px center; background-size: 12px 12px;
+}
+body.wppoppop-admin-themed #wpbody-content select::-ms-expand { display: none; }

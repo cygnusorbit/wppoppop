@@ -47,22 +47,23 @@ if (!class_exists('ZipArchive')) {
         <?php endif; ?>
     </div>
 
-    <div class="wpp-mod-toolbar">
-        <ul class="wpp-mod-filters" id="wpp-ext-filters">
-            <li><button type="button" class="is-active" data-filter="all"><?php esc_html_e('All', 'wppoppop'); ?> <span class="count">(0)</span></button></li>
-            <li><button type="button" data-filter="available"><?php esc_html_e('Available', 'wppoppop'); ?> <span class="count">(0)</span></button></li>
-            <li><button type="button" data-filter="installed"><?php esc_html_e('Installed', 'wppoppop'); ?> <span class="count">(0)</span></button></li>
-            <li><button type="button" data-filter="builtin"><?php esc_html_e('Built-in', 'wppoppop'); ?> <span class="count">(0)</span></button></li>
-            <li><button type="button" data-filter="uploaded"><?php esc_html_e('Uploaded', 'wppoppop'); ?> <span class="count">(0)</span></button></li>
-        </ul>
+    <div class="wpp-ext-catbar"> <!-- WPPOPPOP_EXT_PAGER -->
+        <div class="wpp-ext-cats" id="wpp-ext-cats" role="group" aria-label="<?php echo esc_attr__('Module categories', 'wppoppop'); ?>"></div>
         <div class="wpp-mod-search">
             <label class="screen-reader-text" for="wpp-ext-search"><?php esc_html_e('Search modules', 'wppoppop'); ?></label>
             <input type="search" id="wpp-ext-search" placeholder="<?php echo esc_attr__('Search modules…', 'wppoppop'); ?>" autocomplete="off">
         </div>
     </div>
 
-    <div class="wpp-ext-cats" id="wpp-ext-cats" role="group" aria-label="<?php echo esc_attr__('Module categories', 'wppoppop'); ?>"></div>
-
     <div class="wpp-ext-grid" id="wpp-ext-grid"></div>
+    <div class="wpp-ext-pager" id="wpp-ext-pager" hidden
+        data-l-items="<?php echo esc_attr__('%s items', 'wppoppop'); ?>"
+        data-l-item="<?php echo esc_attr__('1 item', 'wppoppop'); ?>"
+        data-l-per="<?php echo esc_attr__('Per page', 'wppoppop'); ?>"
+        data-l-page="<?php echo esc_attr__('Page %1$s of %2$s', 'wppoppop'); ?>"
+        data-l-first="<?php echo esc_attr__('First page', 'wppoppop'); ?>"
+        data-l-prev="<?php echo esc_attr__('Previous page', 'wppoppop'); ?>"
+        data-l-next="<?php echo esc_attr__('Next page', 'wppoppop'); ?>"
+        data-l-last="<?php echo esc_attr__('Last page', 'wppoppop'); ?>"></div>
 </div>
 <?php include WPPOPPOP_PATH . 'templates/settings/modal-module-categories.php'; /* WPPOPPOP_CATS_ON_EXTEND */ ?>

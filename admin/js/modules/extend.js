@@ -11,6 +11,9 @@
     $(function () {
         var items = (M.vars.modules || []).slice();
         var filter = 'all';
+        var PER_OPTS = [6, 12, 24, 48]; /* WPPOPPOP_EXT_PAGER */
+        var perPage = 6;
+        var page = 1;
         var DEF = 'all-modules';
         var cats = (M.vars.categories || []).slice();
         var cat = DEF;
@@ -21,7 +24,7 @@
         var $grid = $('#wpp-ext-grid');
         var $notice = $('#wpp-ext-notice');
         var $search = $('#wpp-ext-search');
-        var $filters = $('#wpp-ext-filters');
+        var $pager = $('#wpp-ext-pager');
         var $cats = $('#wpp-ext-cats');
         var $drop = $('#wpp-ext-drop');
         var $file = $('#wpp-ext-file');
@@ -191,13 +194,27 @@
             return $c;
         }
 
-        function counts() {
-            $filters.find('button').each(function () {
-                var f = $(this).data('filter');
-                var n = 0;
-                for (var i = 0; i < items.length; i++) { if (inFilter(items[i], f)) { n++; } }
-                $(this).find('.count').text('(' + n + ')');
-            });
+        function fmt(tpl, a, b) { return String(tpl || '').replace('%1$s', a).replace('%2$s', b).replace('%s', a); }
+
+        function renderPager(total, pages) {
+            $pager.empty();
+            if (!total) { $pager.prop('hidden', true); return; }
+            $pager.prop('hidden', false);
+            var d = function (k) { return $pager.attr('data-l-' + k) || ''; };
+            $('<span class="wpp-ext-pg-count"></span>').text(total === 1 ? d('item') : fmt(d('items'), total)).appendTo($pager);
+            var $per = $('<label class="wpp-ext-pg-per"></label>').text(d('per') + ' ').appendTo($pager);
+            var $sel = $('<select class="wpp-ext-pg-size"></select>').appendTo($per);
+            $.each(PER_OPTS, function (i, n) { $('<option></option>').val(n).text(n).appendTo($sel); });
+            $sel.val(String(perPage));
+            var $nav = $('<span class="wpp-ext-pg-nav"></span>').appendTo($pager);
+            function nb(act, label, glyph, off) {
+                return $('<button type="button" class="button wpp-ext-pg-btn"></button>').attr({ 'data-pg': act, 'aria-label': label, title: label }).prop('disabled', off).text(glyph).appendTo($nav);
+            }
+            nb('first', d('first'), '\u00AB', page <= 1);
+            nb('prev', d('prev'), '\u2039', page <= 1);
+            $('<span class="wpp-ext-pg-info"></span>').text(fmt(d('page'), page, pages)).appendTo($nav);
+            nb('next', d('next'), '\u203A', page >= pages);
+            nb('last', d('last'), '\u00BB', page >= pages);
         }
 
         function renderCats() {
@@ -218,28 +235,36 @@
                 $('<span class="count"></span>').text('(' + n + ')').appendTo($p);
                 $cats.append($p);
             });
-            $('<a class="wpp-cat-manage"></a>').attr('href', '#').text(M.t('cat_manage')).on('click', function (e) { e.preventDefault(); $('#wpp-mod-cats-btn').trigger('click'); }).appendTo($cats); /* WPPOPPOP_CATS_ON_EXTEND */
         }
 
         function render() {
             $grid.empty();
-            var shown = 0;
+            var list = [];
             for (var i = 0; i < items.length; i++) {
-                if (matches(items[i])) { $grid.append(card(items[i])); shown++; }
+                if (matches(items[i])) { list.push(items[i]); }
             }
-            if (!shown) { $('<p class="wpp-ext-empty"></p>').text(M.t(items.length ? 'no_match' : 'empty')).appendTo($grid); }
-            counts();
+            var pages = Math.max(1, Math.ceil(list.length / perPage));
+            if (page > pages) { page = pages; }
+            if (page < 1) { page = 1; }
+            var from = (page - 1) * perPage;
+            for (var k = from; k < Math.min(list.length, from + perPage); k++) { $grid.append(card(list[k])); }
+            if (!list.length) { $('<p class="wpp-ext-empty"></p>').text(M.t(items.length ? 'no_match' : 'empty')).appendTo($grid); }
+            renderPager(list.length, pages);
             renderCats();
         }
 
-        /* filters + search */
-        $filters.on('click', 'button', function () {
-            filter = String($(this).data('filter'));
-            $filters.find('button').removeClass('is-active');
-            $(this).addClass('is-active');
+        /* search + pagination */
+        $search.on('input', function () { query = String($search.val() || '').replace(/^\s+|\s+$/g, '').toLowerCase(); page = 1; render(); });
+        $pager.on('click', '.wpp-ext-pg-btn', function () {
+            var a = String($(this).attr('data-pg'));
+            if (a === 'first') { page = 1; } else if (a === 'prev') { page--; } else if (a === 'next') { page++; } else { page = 999999; }
             render();
         });
-        $search.on('input', function () { query = String($search.val() || '').replace(/^\s+|\s+$/g, '').toLowerCase(); render(); });
+        $pager.on('change', '.wpp-ext-pg-size', function () {
+            perPage = Number($(this).val()) || 6;
+            page = 1;
+            render();
+        });
         $search.on('keydown', function (e) { if (e.which === 13) { e.preventDefault(); } });
 
         /* card actions */
@@ -277,6 +302,7 @@
         /* category pills + Edit (category -> module.json) */
         $cats.on('click', '.wpp-cat-pill', function () {
             cat = String($(this).attr('data-cat'));
+            page = 1;
             render();
         });
 

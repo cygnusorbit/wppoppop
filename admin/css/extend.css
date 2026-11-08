@@ -77,3 +77,17 @@ body.wp-admin #wpcontent .wppoppop-extend-wrap .wppoppop-dash-bar { box-sizing: 
 .wpp-ext-cmp-line { margin: 0 0 4px; font-size: var(--wpp-fs-small, 12px); line-height: 1.5; color: var(--wpp-c-muted, #646970); word-wrap: break-word; overflow-wrap: anywhere; }
 .wpp-ext-cmp-arrow { -ms-flex-item-align: center; align-self: center; width: 24px; height: 24px; font-size: 24px; color: var(--wpp-c-muted, #646970); }
 @media (max-width: 600px) { .wpp-ext-cmp-arrow { -webkit-transform: rotate(90deg); transform: rotate(90deg); } }
+
+/* WPPOPPOP_EXT_PAGER: category row with search at the right end, and the pager under the grid */
+.wpp-ext-catbar { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 10px 16px; margin: 0 0 16px; }
+.wpp-ext-catbar .wpp-ext-cats { -webkit-box-flex: 1; -ms-flex: 1 1 auto; flex: 1 1 auto; margin: 0; min-width: 0; }
+.wpp-ext-catbar .wpp-mod-search { margin-left: auto; }
+.rtl .wpp-ext-catbar .wpp-mod-search { margin-left: 0; margin-right: auto; }
+.wpp-ext-pager { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 8px 16px; margin: 16px 0 0; padding: 10px 12px; background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); box-sizing: border-box; font-size: var(--wpp-fs-body, 13px); color: var(--wpp-c-muted, #646970); }
+.wpp-ext-pager[hidden] { display: none; }
+.wpp-ext-pg-count { margin-right: auto; }
+.rtl .wpp-ext-pg-count { margin-right: 0; margin-left: auto; }
+.wpp-ext-pg-per select { height: 30px; min-height: 30px; margin: 0 0 0 4px; }
+.wpp-ext-pg-nav { display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 4px; }
+.wpp-ext-pg-btn.button { min-width: 30px; height: 30px; padding: 0 8px; line-height: 28px; }
+.wpp-ext-pg-info { padding: 0 8px; color: var(--wpp-c-heading, #1d2327); white-space: nowrap; }
