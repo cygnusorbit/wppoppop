@@ -222,6 +222,9 @@ class WpPopPop_Front_Renderer {
              aria-hidden="true"
              role="dialog">
 
+            <?php /* WPPOPPOP_LAYER_FONTS_FRONT */ $wppoppop_lf = WpPopPop_Libraries::get_layer_fonts_url($config); if ($wppoppop_lf) : ?>
+            <link rel="stylesheet" href="<?php echo esc_url($wppoppop_lf); ?>">
+            <?php endif; ?>
             <style><?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo wp_strip_all_tags( $custom_inline_css ); ?></style>
 

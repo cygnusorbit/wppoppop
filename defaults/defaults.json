@@ -1,0 +1,189 @@
+{
+    "settings": {
+        "data": {
+            "sender_name": "WpPopPop",
+            "csv_separator": ",",
+            "user_uploads": "delete",
+            "powered_by_badge": 0,
+            "test_mode": 0,
+            "preload_popups": 0,
+            "preload_events": 0,
+            "minify_css": 0,
+            "cache_busting": 1,
+            "render_delay": 0,
+            "ga_tracking": 0,
+            "adblock_detector": 0,
+            "default_embed_type": "inline",
+            "default_font": "inherit",
+            "default_font_weight": "inherit",
+            "default_font_size": 0,
+            "default_text_align": "inherit",
+            "default_font_italic": 0,
+            "default_font_underline": 0,
+            "default_font_color": "",
+            "google_fonts": 1,
+            "disable_google_fonts": 0,
+            "font_awesome": 1,
+            "custom_fonts": "",
+            "load_canvas_confetti": 0,
+            "load_canvas_fireworks": 0,
+            "air_datepicker": 0,
+            "jquery_mask": 1,
+            "signature_pad": 0,
+            "range_slider": 0,
+            "js_parser": 0,
+            "email_validation": "basic",
+            "enable_recaptcha": 0,
+            "recaptcha_threshold": 0.4,
+            "max_submissions_per_ip": 10,
+            "ip_geotargeting": 0,
+            "geoip_service": "none",
+            "modules": {
+                "acc-01-canvas-styling": 1,
+                "acc-animation": 1,
+                "acc-side-tabs": 1,
+                "acc-autoresponder": 1,
+                "acc-security": 1,
+                "acc-popup-overlay": 1,
+                "acc-double-optin": 1,
+                "acc-notifications": 1,
+                "acc-success-celebration": 1,
+                "acc-popup-positions": 1,
+                "acc-targeting-triggers": 1,
+                "acc-mailchimp": 1,
+                "acc-getresponse": 1,
+                "acc-sms": 0,
+                "demo-module": 0,
+                "acc-math": 1,
+                "acc-payments": 1,
+                "acc-downloads": 1,
+                "acc-video": 1,
+                "acc-webhooks": 1,
+                "acc-targeting": 1,
+                "acc-frequency": 1,
+                "acc-woocommerce": 1,
+                "acc-custom-code": 1,
+                "acc-quiz": 1
+            },
+            "module_order": [
+                "acc-01-canvas-styling",
+                "acc-targeting-triggers",
+                "acc-success-celebration",
+                "acc-animation",
+                "acc-side-tabs",
+                "acc-autoresponder",
+                "acc-popup-overlay",
+                "acc-double-optin",
+                "acc-notifications",
+                "acc-popup-positions",
+                "acc-security",
+                "acc-mailchimp",
+                "acc-getresponse",
+                "acc-sms",
+                "demo-module"
+            ],
+            "builder_alignment_tool": 1,
+            "builder_viewport_toggle": 0,
+            "builder_zoom_select": 0,
+            "builder_save_template": 1,
+            "builder_extra_elements": 0,
+            "builder_click_canvas_settings": 0,
+            "builder_click_element_settings": 0,
+            "menu_pages": {
+                "wppoppop-dashboard": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 1
+                },
+                "wppoppop": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 2
+                },
+                "wppoppop-builder": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 3
+                },
+                "wppoppop-submissions": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 4
+                },
+                "wppoppop-ab": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 5
+                },
+                "wppoppop-stats": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 6
+                },
+                "wppoppop-log": {
+                    "label": "",
+                    "hidden": 1,
+                    "order": 7
+                },
+                "wppoppop-field-analytics": {
+                    "label": "",
+                    "hidden": 1,
+                    "order": 8
+                },
+                "wppoppop-payments": {
+                    "label": "",
+                    "hidden": 1,
+                    "order": 9
+                },
+                "wppoppop-library": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 10
+                },
+                "wppoppop-settings": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 11
+                },
+                "wppoppop-theme": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 12
+                },
+                "wppoppop-tools": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 13
+                },
+                "wppoppop-extend": {
+                    "label": "",
+                    "hidden": 0,
+                    "order": 14
+                }
+            },
+            "clean_on_uninstall": 0,
+            "track_impressions": 1,
+            "track_once_session": 1,
+            "track_exclude_admins": 0,
+            "track_exclude_bots": 0,
+            "track_retention_days": 90,
+            "ab_default_mode": "inline",
+            "ab_cookie_days": 30,
+            "ab_sticky_user": 0,
+            "ab_auto_promote": 0,
+            "ab_promote_min_impr": 90,
+            "ab_promote_confidence": 95,
+            "cache_nocache_ab": 0,
+            "privacy_anonymize_ip": 0,
+            "privacy_respect_dnt": 0,
+            "privacy_consent_cookie": "",
+            "freq_max_per_page": 0,
+            "freq_min_gap": 0,
+            "rate_limit_impr": 600,
+            "rate_limit_submit": 10,
+            "debug_ab": 1,
+            "report_enabled": 0
+        },
+        "saved": 1794127326
+    }
+}

@@ -292,6 +292,12 @@ class WpPopPop_Libraries {
                 wp_enqueue_style('wppoppop-google-fonts', $font_url, [], null);
             }
         }
+
+        /* WPPOPPOP_LAYER_FONTS_BUILDER: editor stage must load the same fonts/weights as the front */
+        $wppoppop_lf = self::get_layer_fonts_url(null);
+        if ($wppoppop_lf) {
+            wp_enqueue_style('wppoppop-layer-fonts', $wppoppop_lf, [], null);
+        }
     }
 
     /**
@@ -351,6 +357,39 @@ class WpPopPop_Libraries {
         }
 
         return 'https://fonts.googleapis.com/css2?family=' . $family_query . '&display=swap';
+    }
+
+    /* WPPOPPOP_LAYER_FONTS: Google Fonts URL for per-layer font families (all weights) */
+    public static function get_layer_fonts_url($config = null) {
+        $map = [
+            'inter'      => 'Inter:wght@300;400;500;600;700;800;900',
+            'roboto'     => 'Roboto:wght@300;400;500;700;900',
+            'montserrat' => 'Montserrat:wght@300;400;500;600;700;800;900',
+            'poppins'    => 'Poppins:wght@300;400;500;600;700;800;900',
+            'open sans'  => 'Open+Sans:wght@300;400;500;600;700;800',
+            'lato'       => 'Lato:wght@300;400;700;900',
+        ];
+        $settings = get_option('wppoppop_settings', []);
+        if (is_array($settings) && !empty($settings['disable_google_fonts'])) {
+            return '';
+        }
+        $found = [];
+        if ($config === null) {
+            $found = array_keys($map);
+        } elseif (is_array($config)) {
+            array_walk_recursive($config, function ($v, $k) use (&$found, $map) {
+                if ($k !== 'fontFamily' || !is_string($v) || $v === '') return;
+                $parts = explode(',', $v);
+                $name  = strtolower(trim($parts[0], " \t\n\r\"'"));
+                if (isset($map[$name])) $found[$name] = $name;
+            });
+        }
+        if (empty($found)) {
+            return '';
+        }
+        $q = [];
+        foreach ($found as $name) { $q[] = $map[$name]; }
+        return 'https://fonts.googleapis.com/css2?family=' . implode('&family=', $q) . '&display=swap';
     }
 
     /**
