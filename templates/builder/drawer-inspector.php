@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) exit;
     <div id="wppoppop-inspector-body" class="wppoppop-inspector-body" style="flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:16px;box-sizing:border-box;width:100%;">
         <!-- TAB 1: CONTENT (BASIC) -->
         <div id="insp-tab-basic" class="wppoppop-tab-pane wppoppop-insp-content active" style="display:block;">
-            <div class="wppoppop-inspector-section" style="margin-bottom:12px;">
+            <div class="wppoppop-inspector-section" id="insp-section-layer-name" style="margin-bottom:12px;">
                 <label style="display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:4px;"><?php esc_html_e('LAYER NAME', 'wppoppop'); ?></label>
                 <input type="text" id="prop-layer-name" class="wppoppop-input" style="width:100%;height:30px;padding:4px 8px;font-size:12px;border:1px solid #334155;border-radius:4px;background:#1e293b;color:#f1f5f9;">
             </div>
@@ -46,7 +46,7 @@ if (!defined('ABSPATH')) exit;
                     </select>
                 </div>
 
-                <div class="wppoppop-prop-row">
+                <div class="wppoppop-prop-row" id="insp-row-gp-animation">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><label class="wppoppop-prop-label" style="margin:0;"><?php esc_html_e( 'ANIMATION', 'wppoppop' ); ?></label><button type="button" id="wppoppop-btn-play-elem-anim" class="button button-small" style="background:#1e293b;border:1px solid #334155;color:#38bdf8;font-size:10px;height:22px;padding:0 8px;cursor:pointer;">&#9654; Play</button></div>
                     <div class="wppoppop-gp-2col-grid">
                         <div class="wppoppop-gp-col">
@@ -488,8 +488,8 @@ if (!defined('ABSPATH')) exit;
                 </div>
 
                 <!-- Position & Dimensions -->
-                <div style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;"><?php esc_html_e('COORDINATES & BOUNDS', 'wppoppop'); ?></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div id="insp-section-coords" style="font-size:11px;font-weight:800;color:#38bdf8;text-transform:uppercase;margin-top:6px;border-bottom:1px solid #334155;padding-bottom:4px;"><?php esc_html_e('COORDINATES & BOUNDS', 'wppoppop'); ?></div>
+                <div id="insp-section-coords-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                     <div>
                         <label for="prop-left" style="font-size:10px;font-weight:700;color:#94a3b8;"><?php esc_html_e('X POS (PX)', 'wppoppop'); ?></label>
                         <input type="number" id="prop-left" class="wppoppop-input" style="width:100%;background:#0f172a;border:1px solid #334155;color:#f8fafc;padding:5px 8px;border-radius:4px;font-size:11px;box-sizing:border-box;">

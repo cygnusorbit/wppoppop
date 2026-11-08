@@ -24,8 +24,12 @@ $__ce_on = !empty($__bld['builder_click_element_settings']);
 .wppoppop-switch-bld input:checked + .trk:before{transform:translateX(20px)}
 .wppoppop-switch-bld input:focus + .trk{box-shadow:0 0 0 2px #2271b1}
 </style>
+<nav class="wppoppop-bld-subtabs wpp-theme-tabs" aria-label="<?php esc_attr_e('Builder sections', 'wppoppop'); ?>">
+    <button type="button" class="wpp-theme-tab wppoppop-bld-subtab is-active" data-bld-pane="tools" aria-selected="true"><?php esc_html_e('Builder Tools', 'wppoppop'); ?></button>
+    <button type="button" class="wpp-theme-tab wppoppop-bld-subtab" data-bld-pane="layers" aria-selected="false"><?php esc_html_e('Element / Layer Settings', 'wppoppop'); ?></button>
+</nav>
+<div class="wppoppop-bld-pane" data-bld-pane="tools">
 <div class="wppoppop-settings-section">
-    <h3><?php esc_html_e('Builder Tools', 'wppoppop'); ?></h3>
     <p class="description"><?php esc_html_e('Turn visual builder tools on or off. Save settings, then reload the builder.', 'wppoppop'); ?></p>
     <ul class="wppoppop-bld-list">
         <li>
@@ -99,4 +103,10 @@ $__ce_on = !empty($__bld['builder_click_element_settings']);
             </label>
         </li>
     </ul>
+</div>
+</div>
+<div class="wppoppop-bld-pane" data-bld-pane="layers" hidden>
+<div class="wppoppop-settings-section">
+    <?php include WPPOPPOP_PATH . 'templates/settings/builder-layer-settings.php'; ?>
+</div>
 </div>

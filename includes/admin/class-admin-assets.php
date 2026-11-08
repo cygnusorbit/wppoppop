@@ -160,9 +160,11 @@ class WpPopPop_Admin_Assets {
                     return (is_array($s) && !empty($s['builder_click_element_settings'])) ? 1 : 0;
                 })(),
                 'custom_fonts' => WpPopPop_Libraries::get_custom_font_families(),
+                'layer_settings' => WpPopPop_Layer_Settings::builder_payload(),
                 'new_popup_defaults' => class_exists('WpPopPop_Saved_Defaults') ? WpPopPop_Saved_Defaults::get('popup') : null
             ]);
             wp_localize_script('wppoppop-builder-core-js', 'wppoppop_vars', $builder_payload);
+            wp_enqueue_script('wppoppop-builder-layer-settings-js', WPPOPPOP_URL . 'admin/js/builder/builder-layer-settings.js', ['jquery', 'wppoppop-builder-core-js', 'wppoppop-builder-elements-registry', 'wppoppop-style-stable-js'], self::ver(), true);
             wp_localize_script('wppoppop-builder-inspector-js', 'wppoppop_custom_fonts', WpPopPop_Libraries::get_custom_font_families());
             wp_localize_script('wppoppop-builder-io-js', 'wppoppop_vars', $builder_payload);
             wp_localize_script('wppoppop-builder-js', 'wppoppop_vars', $builder_payload);
@@ -193,6 +195,8 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-settings-search-js', WPPOPPOP_URL . 'admin/js/settings/settings-search.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-reset-js', WPPOPPOP_URL . 'admin/js/settings/settings-reset.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
 
+            wp_enqueue_style('wppoppop-settings-layer-settings-css', WPPOPPOP_URL . 'admin/css/settings/builder-layer-settings.css', ['wppoppop-settings-css'], $set_ver);
+            wp_enqueue_script('wppoppop-settings-layer-settings-js', WPPOPPOP_URL . 'admin/js/settings/settings-layer-settings.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-js', WPPOPPOP_URL . 'admin/js/settings.js', [
                 'jquery',
                 'wppoppop-settings-tabs-js',

@@ -147,6 +147,7 @@ class WpPopPop_Admin_Settings {
             'builder_extra_elements' => 0,
             'builder_click_canvas_settings' => 0,
             'builder_click_element_settings' => 0,
+            'builder_layer_settings' => [],
             'menu_pages' => self::get_default_menu_pages(),
             'clean_on_uninstall' => 0,
         ] + self::tracking_defaults();
@@ -308,6 +309,13 @@ class WpPopPop_Admin_Settings {
         foreach ($builder_defaults as $__bk => $__bv) {
             $o[$__bk] = (array_key_exists($__bk, $in) && !empty($in[$__bk])) ? 1 : $__bv;
         }
+
+        // 5c2. Layer Settings: per-element enable / disable of Inspector settings (JSON or array). Missing key = keep what is stored.
+        $__ls_prev = get_option('wppoppop_settings', []);
+        $__ls_src  = array_key_exists('builder_layer_settings', $in)
+            ? $in['builder_layer_settings']
+            : ((is_array($__ls_prev) && isset($__ls_prev['builder_layer_settings'])) ? $__ls_prev['builder_layer_settings'] : []);
+        $o['builder_layer_settings'] = WpPopPop_Layer_Settings::sanitize($__ls_src);
 
         // 5d. Admin menu pages (rename / reorder / hide). Whitelist: wppoppop* slugs only.
         // Missing key = keep what is stored, so unrelated saves never reset it.

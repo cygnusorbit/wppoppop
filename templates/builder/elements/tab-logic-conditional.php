@@ -37,7 +37,7 @@ if (!defined('ABSPATH')) exit;
 
 <div class="wppoppop-insp-section" id="insp-section-action-routing" style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px;">
     <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:10px;"><?php esc_html_e('ACTION & CLICK ROUTING', 'wppoppop'); ?></div>
-    <div style="margin-bottom:8px;">
+    <div id="insp-row-logic-click-action" style="margin-bottom:8px;">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;"><?php esc_html_e('Click Action', 'wppoppop'); ?></label>
         <select id="prop-logic-click-action" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="buttonAction" style="font-size:12px;">
             <option value="link"><?php esc_html_e('Open URL Link', 'wppoppop'); ?></option>
@@ -53,7 +53,7 @@ if (!defined('ABSPATH')) exit;
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;"><?php esc_html_e('Target Canvas #', 'wppoppop'); ?></label>
         <input type="number" id="prop-logic-goto-canvas" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="goto_canvas" min="1" max="10" value="2" style="font-size:12px;" />
     </div>
-    <div>
+    <div id="insp-row-logic-custom-js">
         <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;"><?php esc_html_e('Custom JS Callback (OnClick)', 'wppoppop'); ?></label>
         <input type="text" id="prop-logic-custom-js" class="widefat wppoppop-input wppoppop-gp-bind" data-prop="customJs" placeholder="<?php esc_attr_e('e.g. console.log(\'Clicked\')', 'wppoppop'); ?>" style="font-size:12px;" />
     </div>
