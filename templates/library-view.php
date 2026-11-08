@@ -68,10 +68,10 @@ foreach ($templates as $wppoppop_i => $wppoppop_t) {
     <!-- Catalog Header Toolbar & Category Filters -->
     <?php include WPPOPPOP_PATH . 'templates/library/header.php'; ?>
 
-    <?php include WPPOPPOP_PATH . 'templates/library/import-zone.php'; ?>
-
     <!-- Responsive Template Cards Grid -->
+    <?php $wpp_pg_pos = 'top'; include WPPOPPOP_PATH . 'templates/library/pager.php'; ?>
     <?php include WPPOPPOP_PATH . 'templates/library/grid.php'; ?>
+    <?php $wpp_pg_pos = 'bottom'; include WPPOPPOP_PATH . 'templates/library/pager.php'; ?>
 
     <!-- Template Inspection & Preview Modal -->
     <?php include WPPOPPOP_PATH . 'templates/library/modal-preview.php'; ?>

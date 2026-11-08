@@ -1,0 +1,25 @@
+/* WpPopPop Library: pagination + 3x3 / 4x4 / 5x5 view. Theme-variable driven. Chrome / Safari / Firefox / Edge safe. */
+.wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+.wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+.wppoppop-library-wrap .wppoppop-tpl-card.wpp-pg-off { display: none !important; }
+.wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-foot { -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 8px; }
+.wppoppop-library-wrap .wppoppop-tpl-card .wpp-tpl-foot > div { -ms-flex-wrap: wrap; flex-wrap: wrap; }
+
+.wppoppop-library-wrap .wpp-pg-bar { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; gap: 12px; margin: 16px 0 0; }
+.wppoppop-library-wrap .wpp-pg-info { font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #787c82); }
+.wppoppop-library-wrap .wpp-pg-views { display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 6px; }
+.wppoppop-library-wrap .wpp-pg-label { font-size: var(--wpp-fs-small, 12px); font-weight: 600; color: var(--wpp-c-muted, #787c82); margin-right: 2px; }
+.wppoppop-library-wrap .wpp-pg-view,
+.wppoppop-library-wrap .wpp-pg-btn { min-width: 34px; height: var(--wpp-h-button, 34px); padding: 0 12px; box-sizing: border-box; display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-button, 3px); background: var(--wpp-c-bg-card, #fff); color: var(--wpp-c-text, #1d2327); font-size: var(--wpp-fs-button, 13px); font-weight: var(--wpp-fw-button, 600); line-height: 1; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+.wppoppop-library-wrap .wpp-pg-view:hover,
+.wppoppop-library-wrap .wpp-pg-btn:hover:not(:disabled) { border-color: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-primary, #c1272d); }
+.wppoppop-library-wrap .wpp-pg-view.is-active,
+.wppoppop-library-wrap .wpp-pg-btn.is-current { background: var(--wpp-c-primary, #c1272d); border-color: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-primary-text, #fff); }
+.wppoppop-library-wrap .wpp-pg-btn:disabled { opacity: .45; cursor: default; }
+.wppoppop-library-wrap .wpp-pg-nav { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 6px; margin: 24px 0 8px; }
+.wppoppop-library-wrap .wpp-pg-gap { color: var(--wpp-c-muted, #787c82); padding: 0 2px; }
+@media (max-width: 1280px) { .wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols="5"] { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
+@media (max-width: 1024px) { .wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols="4"], .wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols="5"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+@media (max-width: 860px) { .wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+@media (max-width: 560px) { .wppoppop-library-wrap .wppoppop-library-grid.wppoppop-library-grid[data-cols] { grid-template-columns: minmax(0, 1fr) !important; } .wppoppop-library-wrap .wpp-pg-bar { -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-align: start; -ms-flex-align: start; align-items: flex-start; } }

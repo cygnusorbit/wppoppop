@@ -239,6 +239,13 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_style('wppoppop-library-uniform-css', WPPOPPOP_URL . 'admin/css/library/uniform-buttons.css', ['wppoppop-library-css', 'wppoppop-library-actions-css', 'wppoppop-library-theme-modals-css'], file_exists($wppoppop_ub_css) ? (string) filemtime($wppoppop_ub_css) : $lib_ver);
             wp_enqueue_script('wppoppop-library-download-js', WPPOPPOP_URL . 'admin/js/library/library-download.js', ['jquery', 'wppoppop-library-actions-js'], $lib_ver, true);
             wp_enqueue_script('wppoppop-library-user-js', WPPOPPOP_URL . 'admin/js/library/library-user.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_enqueue_style('wppoppop-library-pager-css', WPPOPPOP_URL . 'admin/css/library/pager.css', ['wppoppop-library-css'], $lib_ver);
+            wp_enqueue_script('wppoppop-library-pager-js', WPPOPPOP_URL . 'admin/js/library/library-pager.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_localize_script('wppoppop-library-pager-js', 'wppoppop_libpg_vars', ['i18n' => [
+                'showing' => __('Showing %1$s-%2$s of %3$s', 'wppoppop'),
+                'prev'    => __('Previous page', 'wppoppop'),
+                'next'    => __('Next page', 'wppoppop'),
+            ]]);
             wp_enqueue_style('wppoppop-library-import-css', WPPOPPOP_URL . 'admin/css/library/import.css', ['wppoppop-library-css'], $lib_ver);
             wp_enqueue_script('wppoppop-library-bundle-js', WPPOPPOP_URL . 'admin/js/library/library-bundle.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
             wp_localize_script('wppoppop-library-bundle-js', 'wppoppop_libzip_vars', [

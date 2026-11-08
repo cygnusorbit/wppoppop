@@ -81,6 +81,7 @@
         var cat = $('.wppoppop-cat-btn.active').attr('data-cat') || 'all';
         var q = $.trim(String($('#wppoppop-lib-search').val() || '')).toLowerCase();
         var shown = 0;
+        if (window.WpPopPopLibPager) { window.WpPopPopLibPager.reset(); }
         $('.wppoppop-tpl-card').each(function () {
             var $c = $(this);
             var okCat = cat === 'all' || String($c.attr('data-category')) === cat;
@@ -88,6 +89,7 @@
             $c.toggle(okCat && okQ);
             if (okCat && okQ) { shown++; }
         });
+        if (window.WpPopPopLibPager) { window.WpPopPopLibPager.refresh(true); }
         $('#wppoppop-lib-empty-notice').remove();
         if (!shown) { $('.wppoppop-library-grid').append('<div id="wppoppop-lib-empty-notice" class="wppoppop-library-empty" style="grid-column:1/-1;padding:24px;text-align:center;color:#64748b;">No templates found.</div>'); }
     }

@@ -9,6 +9,7 @@ if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'in
 ?>
 <h1 class="screen-reader-text"><?php esc_html_e('Popups & Templates Library', 'wppoppop'); ?></h1>
 <?php include WPPOPPOP_PATH . 'templates/partials/dash-bar.php'; ?>
+<?php include WPPOPPOP_PATH . 'templates/library/import-zone.php'; ?>
 
 <div class="wppoppop-library-header">
     <div class="wppoppop-library-toolbar">
