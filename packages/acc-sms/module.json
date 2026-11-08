@@ -2,7 +2,7 @@
     "schema": 1,
     "slug": "acc-sms",
     "name": "SMS",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "WpPopPop",
     "description": "Twilio SMS alerts for new submissions.",
     "category": "all-modules",

@@ -290,8 +290,8 @@ class WpPopPop_Modules_Installer {
                 'replace_title'   => __('Replace module', 'wppoppop'),
                 'cmp_current'     => __('Current module', 'wppoppop'),
                 'cmp_new'         => __('Uploaded module', 'wppoppop'),
-                'cmp_msg'         => __('Replace the current module with the uploaded one? Its installed state and popup data are kept.', 'wppoppop'),
-                'cmp_msg_core'    => __('The uploaded module has the same slug and name as a module in /modules. Replace it? The older copy is removed from /modules, the uploaded one takes its place, and its installed state and popup data are kept.', 'wppoppop'),
+                'cmp_msg'         => __('The uploaded module has the same slug and name as the module in the uploads folder. Replace it with the uploaded version? Its installed state and popup data are kept.', 'wppoppop'),
+                'cmp_msg_core'    => __('The uploaded module has the same slug and name as a module in /modules. Replace it? The older copies in /modules and in the uploads folder are removed, the uploaded one takes its place, and its installed state and popup data are kept.', 'wppoppop'),
                 'pick_zip'        => __('Choose a module .zip file first.', 'wppoppop'),
                 'not_zip'         => __('Only a .zip file can be uploaded.', 'wppoppop'),
                 /* translators: %s: maximum size */
@@ -692,6 +692,20 @@ class WpPopPop_Modules_Installer {
         @rmdir($dir);
     }
 
+    /** Manifest (name, version) of an installed upload, or null when it is missing or unreadable. */
+    protected static function read_uploaded($dir) {
+        $f = $dir . '/module.json';
+        if (is_link($dir) || !is_file($f) || is_link($f) || filesize($f) > WpPopPop_Modules::MAX_JSON) {
+            return null;
+        }
+        $raw = json_decode((string) file_get_contents($f), true);
+        if (!is_array($raw)) {
+            return null;
+        }
+        $m = WpPopPop_Modules::normalize($raw, 'uploaded', basename($dir));
+        return $m ? $m : null;
+    }
+
     /** Put the /modules copy back when the upload could not be moved into place. */
     protected static function undo_core($bak, $path) {
         if ($bak !== '' && is_dir($bak) && !is_dir($path)) {
@@ -947,6 +961,19 @@ class WpPopPop_Modules_Installer {
         }
         $dest   = $base . '/' . $slug;
         $exists = is_dir($dest);
+        $old_up = $exists ? self::read_uploaded($dest) : null;
+        if ($old_up) {
+            if (strcasecmp(trim($old_up['name']), trim($m['name'])) !== 0) {
+                self::rrmdir($tmp);
+                /* translators: 1: module name in the uploads folder, 2: uploaded module name */
+                return self::err('name_mismatch', sprintf(__('The module with this slug in the uploads folder is named "%1$s", not "%2$s", so it cannot be replaced.', 'wppoppop'), $old_up['name'], $m['name']));
+            }
+            if (version_compare($m['version'], $old_up['version'], '<')) {
+                self::rrmdir($tmp);
+                /* translators: 1: module name, 2: version in the uploads folder, 3: uploaded version */
+                return self::err('older_version', sprintf(__('"%1$s" in the uploads folder is version %2$s, which is newer than the uploaded version %3$s.', 'wppoppop'), $old_up['name'], $old_up['version'], $m['version']));
+            }
+        }
         if (($exists || $old_core) && !$replace) {
             self::rrmdir($tmp);
             $old = $old_core ? $old_core : WpPopPop_Modules::get($slug);
