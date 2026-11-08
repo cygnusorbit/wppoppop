@@ -1,0 +1,26 @@
+/* WpPopPop Library: import preview modal. Same look as the Extend modals (theme-variable driven). Chrome / Safari / Firefox / Edge safe. */
+.wpp-ip-backdrop { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 100100; background: rgba(15,23,42,.55); display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+.wpp-ip-modal { width: 100%; max-width: 640px; max-height: calc(100vh - 32px); overflow-y: auto; background: var(--wpp-c-bg-card, #fff); color: var(--wpp-c-text, #1d2327); border-radius: var(--wpp-r-card, 6px); box-shadow: 0 12px 40px rgba(0,0,0,.3); padding: 22px 24px; box-sizing: border-box; outline: 0; }
+.wpp-ip-heading { margin: 0 0 6px; font-family: var(--wpp-font-heading, inherit); font-size: var(--wpp-fs-h2, 16px); font-weight: var(--wpp-fw-heading, 600); color: var(--wpp-c-heading, #1d2327); }
+.wpp-ip-note { margin: 0 0 14px; font-size: var(--wpp-fs-small, 12px); line-height: 1.5; color: var(--wpp-c-muted, #646970); }
+.wpp-ip-list { margin: 0 0 16px; padding: 0; list-style: none; }
+.wpp-ip-item { position: relative; display: -webkit-box; display: -ms-flexbox; display: flex; gap: 14px; -webkit-box-align: start; -ms-flex-align: start; align-items: flex-start; margin: 0 0 10px; padding: 12px 36px 12px 12px; border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 6px); background: var(--wpp-c-bg-page, #f6f7f7); }
+.wpp-ip-item.is-err { border-color: var(--wpp-c-danger, #b32d2e); }
+.wpp-ip-thumb { -webkit-box-flex: 0; -ms-flex: 0 0 150px; flex: 0 0 150px; width: 150px; height: 100px; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; overflow: hidden; border-radius: var(--wpp-r-card, 4px); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); background: var(--wpp-c-bg-card, #fff); box-sizing: border-box; }
+.wpp-ip-thumb img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; -o-object-fit: contain; object-fit: contain; }
+.wpp-ip-thumb .dashicons { width: 32px; height: 32px; font-size: 32px; color: var(--wpp-c-border, #c3c4c7); }
+.wpp-ip-body { -webkit-box-flex: 1; -ms-flex: 1 1 auto; flex: 1 1 auto; min-width: 0; }
+.wpp-ip-title { display: block; margin: 0 0 4px; font-size: var(--wpp-fs-h2, 15px); color: var(--wpp-c-heading, #1d2327); word-wrap: break-word; overflow-wrap: anywhere; }
+.wpp-ip-desc { margin: 0 0 8px; font-size: var(--wpp-fs-small, 12px); line-height: 1.5; color: var(--wpp-c-muted, #646970); word-wrap: break-word; overflow-wrap: anywhere; }
+.wpp-ip-desc:empty { display: none; }
+.wpp-ip-meta { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 6px; }
+.wpp-ip-pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: var(--wpp-fs-badge, 11px); line-height: 1.6; color: var(--wpp-c-text, #1d2327); background: var(--wpp-c-bg-card, #fff); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); word-break: break-all; }
+.wpp-ip-state { display: block; font-size: var(--wpp-fs-small, 12px); color: var(--wpp-c-muted, #646970); }
+.wpp-ip-item.is-err .wpp-ip-state { color: var(--wpp-c-danger, #b32d2e); }
+.wpp-ip-remove { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--wpp-c-muted, #646970); font-size: 18px; line-height: 24px; text-align: center; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+.wpp-ip-remove:hover, .wpp-ip-remove:focus { color: var(--wpp-c-danger, #b32d2e); outline: 0; box-shadow: 0 0 0 1px var(--wpp-c-danger, #b32d2e); }
+.wpp-ip-actions { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: end; -ms-flex-pack: end; justify-content: flex-end; gap: 8px; }
+@media (max-width: 520px) {
+    .wpp-ip-item { -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; }
+    .wpp-ip-thumb { -ms-flex-preferred-size: auto; flex-basis: auto; width: 100%; }
+}

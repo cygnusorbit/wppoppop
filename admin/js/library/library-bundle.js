@@ -74,7 +74,7 @@
     function validName(n) { return /\.(zip|json)$/i.test(n || ''); }
 
     function enqueue(files) {
-        var i, f;
+        var i, f, ok = [];
         for (i = 0; i < files.length; i++) {
             f = files[i];
             if (!validName(f.name)) {
@@ -85,8 +85,15 @@
                 setState(addRow(f.name), (t.too_big || 'Larger than %d MB').replace('%d', cfg.max_mb), 'is-err');
                 continue;
             }
-            queue.push({ file: f, row: addRow(f.name) });
+            ok.push(f);
         }
+        if (!ok.length) { return; }
+        if (window.WpPopPopLibImportPreview) { window.WpPopPopLibImportPreview.open(ok, queueFiles); } else { queueFiles(ok); }
+    }
+
+    function queueFiles(list) {
+        var i;
+        for (i = 0; i < list.length; i++) { queue.push({ file: list[i], row: addRow(list[i].name) }); }
         next();
     }
 

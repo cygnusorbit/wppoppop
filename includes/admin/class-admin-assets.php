@@ -247,6 +247,25 @@ class WpPopPop_Admin_Assets {
                 'next'    => __('Next page', 'wppoppop'),
             ]]);
             wp_enqueue_style('wppoppop-library-import-css', WPPOPPOP_URL . 'admin/css/library/import.css', ['wppoppop-library-css'], $lib_ver);
+            wp_enqueue_style('wppoppop-library-import-preview-css', WPPOPPOP_URL . 'admin/css/library/import-preview.css', ['wppoppop-library-css'], $lib_ver);
+            wp_enqueue_script('wppoppop-library-import-preview-js', WPPOPPOP_URL . 'admin/js/library/library-import-preview.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
+            wp_localize_script('wppoppop-library-import-preview-js', 'wppoppop_libprev_vars', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('wppoppop_admin_nonce'),
+                'i18n'     => [
+                    'title'    => __('Preview template', 'wppoppop'),
+                    'note'     => __('Check the template below, then click Import to add it to My Templates.', 'wppoppop'),
+                    'loading'  => __('Reading template...', 'wppoppop'),
+                    'failed'   => __('This file could not be read.', 'wppoppop'),
+                    'elements' => __('elements', 'wppoppop'),
+                    'images'   => __('images', 'wppoppop'),
+                    'remove'   => __('Remove', 'wppoppop'),
+                    'cancel'   => __('Cancel', 'wppoppop'),
+                    'import'   => __('Import', 'wppoppop'),
+                    /* translators: %d: number of templates */
+                    'import_n' => __('Import %d templates', 'wppoppop'),
+                ],
+            ]);
             wp_enqueue_script('wppoppop-library-bundle-js', WPPOPPOP_URL . 'admin/js/library/library-bundle.js', ['jquery', 'wppoppop-library-js'], $lib_ver, true);
             wp_localize_script('wppoppop-library-bundle-js', 'wppoppop_libzip_vars', [
                 'ajax_url' => admin_url('admin-ajax.php'),

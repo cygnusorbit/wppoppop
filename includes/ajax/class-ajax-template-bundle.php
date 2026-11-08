@@ -8,6 +8,7 @@ class WpPopPop_Ajax_Template_Bundle {
     public function __construct() {
         add_action('wp_ajax_wppoppop_template_export_zip', array($this, 'export_zip'));
         add_action('wp_ajax_wppoppop_template_import_file', array($this, 'import_file'));
+        add_action('wp_ajax_wppoppop_template_preview_file', array($this, 'preview_file'));
     }
 
     private function guard() {
@@ -79,6 +80,25 @@ class WpPopPop_Ajax_Template_Bundle {
         readfile($tmp);
         @unlink($tmp);
         exit;
+    }
+
+    public function preview_file() {
+        $this->guard();
+        if (empty($_FILES['file']) || !is_array($_FILES['file'])) {
+            wp_send_json_error(array('message' => __('No file received.', 'wppoppop')));
+        }
+        $f = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+        if (!isset($f['error'], $f['tmp_name'], $f['name']) || (int) $f['error'] !== 0) {
+            wp_send_json_error(array('message' => __('The upload failed or the file is larger than the server allows.', 'wppoppop')));
+        }
+        if (!is_uploaded_file($f['tmp_name']) || filesize($f['tmp_name']) > WpPopPop_Template_Bundle::MAX_ZIP) {
+            wp_send_json_error(array('message' => __('The file is invalid or too large (max 60 MB).', 'wppoppop')));
+        }
+        $res = WpPopPop_Template_Preview::build($f['tmp_name'], sanitize_file_name(wp_unslash($f['name'])));
+        if (is_wp_error($res)) {
+            wp_send_json_error(array('message' => $res->get_error_message()));
+        }
+        wp_send_json_success($res);
     }
 
     public function import_file() {
