@@ -265,10 +265,10 @@
         status: function(msg, ok) {
             var $s = $('#wto-autosave-status');
             if (!$s.length) {
-                $s = $('<span id="wto-autosave-status" style="margin-left:12px;font-size:11px;font-weight:400;"></span>');
+                $s = $('<span id="wto-autosave-status" class="wto-status"></span>');
                 $('#wppoppop-table-options-modal h2').append($s);
             }
-            $s.css('color', ok === false ? '#b32d2e' : '#2e7d32').text(msg);
+            $s.toggleClass('is-err', ok === false).text(msg);
         },
 
         queueSave: function() {

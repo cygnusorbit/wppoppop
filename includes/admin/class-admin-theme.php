@@ -121,6 +121,8 @@ class WpPopPop_Admin_Theme {
                 'c_secondary_border' => $f(__('Secondary border', 'wppoppop'), 'color', '#c3c4c7'),
                 'c_danger'         => $f(__('Danger background', 'wppoppop'), 'color', '#b32d2e'),
                 'c_danger_text'    => $f(__('Danger text', 'wppoppop'), 'color', '#ffffff'),
+                'c_active'         => $f(__('Active background', 'wppoppop'), 'color', '#c1272d'),
+                'c_active_text'    => $f(__('Active text', 'wppoppop'), 'color', '#ffffff'),
                 'r_button'         => $f(__('Button radius', 'wppoppop'), 'size', '3px'),
                 'h_button'         => $f(__('Button height', 'wppoppop'), 'size', '34px'),
             ]],
@@ -287,6 +289,12 @@ class WpPopPop_Admin_Theme {
             if ($field) {
                 $values[$key] = self::sanitize_value($field, $val);
             }
+        }
+        if (!array_key_exists('c_active', $saved) && isset($values['c_primary'])) {
+            $values['c_active'] = $values['c_primary'];
+        }
+        if (!array_key_exists('c_active_text', $saved) && isset($values['c_primary_text'])) {
+            $values['c_active_text'] = $values['c_primary_text'];
         }
         return $values;
     }

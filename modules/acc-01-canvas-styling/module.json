@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "author": "WpPopPop",
     "description": "Canvas size, colours, close behaviour and auto-close.",
-    "category": "all-modules",
+    "category": "Locked",
     "image": "canvas.png",
     "locked": true,
     "default_active": true,

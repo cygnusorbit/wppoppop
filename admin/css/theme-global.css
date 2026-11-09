@@ -335,3 +335,23 @@ body.wppoppop-admin-themed #wpbody-content select:not([multiple]):not([size]) {
     background-repeat: no-repeat; background-position: right 9px center; background-size: 12px 12px;
 }
 body.wppoppop-admin-themed #wpbody-content select::-ms-expand { display: none; }
+
+/* WPP_THEME_ACTIVE: active / selected / current button state (Theme > Buttons > Active background + Active text) */
+body.wppoppop-admin-themed .button.is-active,
+body.wppoppop-admin-themed .button.active,
+body.wppoppop-admin-themed .button.current,
+body.wppoppop-admin-themed .button.is-on,
+body.wppoppop-admin-themed .button[aria-pressed="true"],
+body.wppoppop-admin-themed .wpp-bar-btn.is-active,
+body.wppoppop-admin-themed a.wppoppop-view-btn.current,
+body.wppoppop-admin-themed .wpp-cat-pill.is-active,
+body.wppoppop-admin-themed .wpp-theme-tab.is-active,
+body.wppoppop-admin-themed .wppoppop-subs-tabs button.active,
+body.wppoppop-admin-themed .wpp-pg .page-numbers.current,
+body.wppoppop-admin-themed #wppoppop-lib-preview-modal .lp-bar .button.is-on {
+    background: var(--wpp-c-active) !important;
+    border-color: var(--wpp-c-active) !important;
+    color: var(--wpp-c-active-text) !important;
+}
+body.wppoppop-admin-themed a.wppoppop-view-btn.current .count,
+body.wppoppop-admin-themed .wppoppop-subs-tabs button.active small { color: var(--wpp-c-active-text) !important; }

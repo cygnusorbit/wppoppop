@@ -17,6 +17,7 @@ if (!defined('ABSPATH')) {
         <button type="button" class="button button-primary"><?php esc_html_e('Primary', 'wppoppop'); ?></button>
         <button type="button" class="button"><?php esc_html_e('Secondary', 'wppoppop'); ?></button>
         <button type="button" class="button wpp-btn-danger"><?php esc_html_e('Danger', 'wppoppop'); ?></button>
+        <button type="button" class="button is-active"><?php esc_html_e('Active', 'wppoppop'); ?></button>
     </p>
     <p><input type="text" placeholder="<?php esc_attr_e('Text input', 'wppoppop'); ?>"> <select><option><?php esc_html_e('Select', 'wppoppop'); ?></option></select></p>
     <table class="wp-list-table widefat striped">

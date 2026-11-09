@@ -34,9 +34,9 @@
 /* Tabs: same look as dashboard buttons, active state follows primary color */
 .wppoppop-theme-wrap .wpp-theme-tabs { margin-bottom: 14px; }
 .wppoppop-theme-wrap .wpp-theme-tab.is-active {
-    background: var(--wpp-c-primary, #2563eb) !important;
-    border-color: var(--wpp-c-primary, #2563eb) !important;
-    color: var(--wpp-c-primary-text, #fff) !important;
+    background: var(--wpp-c-active, #2563eb) !important;
+    border-color: var(--wpp-c-active, #2563eb) !important;
+    color: var(--wpp-c-active-text, #fff) !important;
 }
 
 /* Cards use dashboard card look */
