@@ -290,5 +290,127 @@
             "custom_css": ""
         },
         "saved": 1794214376
+    },
+    "popup": {
+        "data": {
+            "canvasMeta": {
+                "1": {
+                    "width": 300,
+                    "height": 400,
+                    "bg_mode": "solid",
+                    "bg_color": "transparent",
+                    "grad_color1": "#3b82f6",
+                    "grad_color2": "#1d4ed8",
+                    "grad_angle": 135,
+                    "anim_appearance": "bounceIn",
+                    "anim_duration": 1000,
+                    "anim_delay": 0,
+                    "anim_disappearance": "none",
+                    "anim_exit_enabled": false,
+                    "logic_enabled": false,
+                    "_prev_bg_color": "#ffffff",
+                    "_prev_bg_mode": "solid",
+                    "canvas_radius": 0,
+                    "close_btn_enabled": true,
+                    "autoclose": 0,
+                    "autoclose_delay": 0,
+                    "allow_overflow_edit": false
+                },
+                "2": {
+                    "width": 300,
+                    "height": 400,
+                    "bg_mode": "solid",
+                    "bg_color": "#ffffff",
+                    "grad_color1": "#3b82f6",
+                    "grad_color2": "#1d4ed8",
+                    "grad_angle": 135,
+                    "anim_appearance": "fadeIn",
+                    "anim_duration": 1000,
+                    "anim_delay": 0,
+                    "anim_disappearance": "none",
+                    "anim_exit_enabled": false,
+                    "logic_enabled": false
+                }
+            },
+            "settings": {
+                "box": {
+                    "width": 300,
+                    "height": 400
+                },
+                "close_on_backdrop": false,
+                "animation": {
+                    "appearance": "bounceIn",
+                    "duration": 1000,
+                    "delay": 0,
+                    "disappearance": "none"
+                },
+                "triggers": {
+                    "load": true,
+                    "load_delay": 0,
+                    "exit": false,
+                    "scroll": false,
+                    "scroll_val": 50,
+                    "adblock": false,
+                    "backbutton": false,
+                    "always": true,
+                    "always_embed": false,
+                    "repeat": false,
+                    "repeat_hours": 24
+                },
+                "scroll_depth": 50,
+                "exit_intent_sensitivity": 20,
+                "overlay": {
+                    "opacity": 65,
+                    "color": "#0f172a",
+                    "enabled": true,
+                    "selected": "",
+                    "backgrounds": []
+                },
+                "double_optin": {
+                    "enable": true,
+                    "recipient": "",
+                    "subject": "Please confirm your email address",
+                    "message": "Dear visitor!\n\nPlease confirm your email address by clicking the following link:\n<a href=\"{{confirmation-url}}\">{{confirmation-url}}<\/a>\n\nThanks.",
+                    "from_email": "{{global-from-email}}",
+                    "from_name": "{{global-from-name}}",
+                    "thank_message": "<h4 style=\"text-align: center\">Thank you!<\/h4><p style=\"text-align: center\">Your email address successfully confirmed.<\/p>",
+                    "thank_url": ""
+                },
+                "notifications": [],
+                "celebration": {
+                    "effect": "default"
+                },
+                "targeting_triggers": {
+                    "enabled": true,
+                    "event": "onload",
+                    "mode": "every-time",
+                    "period_hours": 24,
+                    "start_delay": 0,
+                    "close_delay": 0,
+                    "scroll_offset": 600,
+                    "scroll_unit": "px",
+                    "idle_delay": 15,
+                    "activity": "always",
+                    "from": "",
+                    "to": "",
+                    "roles": [
+                        "all"
+                    ],
+                    "area": "sitewide",
+                    "cats_all": true,
+                    "cats": [],
+                    "cats_archive": false,
+                    "tags_all": true,
+                    "tags": [],
+                    "tags_archive": false,
+                    "posts_all": true,
+                    "posts": [],
+                    "pages_all": true,
+                    "pages": [],
+                    "url_keywords": ""
+                }
+            }
+        },
+        "saved": 1794218583
     }
 }

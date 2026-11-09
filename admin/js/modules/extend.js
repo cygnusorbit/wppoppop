@@ -167,12 +167,8 @@
             var $end = $('<span class="wpp-ext-act-end"></span>');
             if (!m.locked) {
                 if (m.state === 'installed') {
-                    if (m.can_manage !== false) {
-                        $('<a class="button wpp-ext-icon-btn"></a>').attr({ href: M.vars.modules_url, title: M.t('manage'), 'aria-label': M.t('manage') })
-                            .append('<span class="dashicons dashicons-admin-generic" aria-hidden="true"></span>').appendTo($act);
-                    }
                     if (m.can_uninstall !== false) {
-                        $act.append(icon('remove', M.t('uninstall')).attr('data-act', 'uninstall'));
+                        $act.append(button(M.t('uninstall'), 'wpp-ext-uninstall').attr('data-act', 'uninstall'));
                     }
                 } else {
                     var $inst = button(m.state === 'deleted' ? M.t('restore') : M.t('install'), 'button-primary').attr('data-act', 'install');
@@ -243,6 +239,11 @@
             for (var i = 0; i < items.length; i++) {
                 if (matches(items[i])) { list.push(items[i]); }
             }
+            list.sort(function (a, b) { /* WPPOPPOP_EXT_ALPHA */
+                var x = String(a.name || a.slug).toLowerCase();
+                var y = String(b.name || b.slug).toLowerCase();
+                return x < y ? -1 : (x > y ? 1 : 0);
+            });
             var pages = Math.max(1, Math.ceil(list.length / perPage));
             if (page > pages) { page = pages; }
             if (page < 1) { page = 1; }

@@ -91,3 +91,14 @@ body.wp-admin #wpcontent .wppoppop-extend-wrap .wppoppop-dash-bar { box-sizing: 
 .wpp-ext-pg-nav { display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 4px; }
 .wpp-ext-pg-btn.button { min-width: 30px; height: 30px; padding: 0 8px; line-height: 28px; }
 .wpp-ext-pg-info { padding: 0 8px; color: var(--wpp-c-heading, #1d2327); white-space: nowrap; }
+
+/* WPPOPPOP_EXT_UNINSTALL: installed card shows a secondary "Uninstall" button; "+" Module Category button (primary) ends the category tabs */
+#wpbody-content .wppoppop-extend-wrap .wpp-ext-item-actions .wpp-ext-uninstall { background: var(--wpp-c-secondary-bg, #fff); border-color: var(--wpp-c-secondary-border, #c3c4c7); color: var(--wpp-c-secondary-text, #1d2327); }
+#wpbody-content .wppoppop-extend-wrap .wpp-ext-item-actions .wpp-ext-uninstall:hover,
+#wpbody-content .wppoppop-extend-wrap .wpp-ext-item-actions .wpp-ext-uninstall:focus { background: var(--wpp-c-secondary-hover, #f6f7f7); border-color: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-secondary-text, #1d2327); }
+.wpp-ext-catbar .wpp-ext-cats-wrap { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-flex: 1; -ms-flex: 1 1 auto; flex: 1 1 auto; gap: 6px; min-width: 0; }
+.wpp-ext-catbar .wpp-ext-cats-wrap .wpp-ext-cats { -webkit-box-flex: 0; -ms-flex: 0 1 auto; flex: 0 1 auto; }
+.wpp-ext-cat-add { -webkit-appearance: none; appearance: none; display: -webkit-inline-box; display: -ms-inline-flexbox; display: inline-flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; width: 30px; height: 30px; margin: 0; padding: 0; -webkit-box-sizing: border-box; box-sizing: border-box; cursor: pointer; border: var(--wpp-bw, 1px) solid var(--wpp-c-primary, #c1272d); border-radius: var(--wpp-r-button, 3px); background: var(--wpp-c-primary, #c1272d); color: var(--wpp-c-primary-text, #fff); line-height: 1; }
+.wpp-ext-cat-add:hover, .wpp-ext-cat-add:focus { background: var(--wpp-c-primary-hover, #a81f25); border-color: var(--wpp-c-primary-hover, #a81f25); color: var(--wpp-c-primary-text, #fff); outline: 0; }
+.wpp-ext-cat-add:focus-visible { -webkit-box-shadow: 0 0 0 2px var(--wpp-c-bg-card, #fff), 0 0 0 4px var(--wpp-c-primary, #c1272d); box-shadow: 0 0 0 2px var(--wpp-c-bg-card, #fff), 0 0 0 4px var(--wpp-c-primary, #c1272d); }
+.wpp-ext-cat-add .dashicons { width: 16px; height: 16px; margin: 0; font-size: 16px; line-height: 16px; }

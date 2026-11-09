@@ -48,7 +48,10 @@ if (!class_exists('ZipArchive')) {
     </div>
 
     <div class="wpp-ext-catbar"> <!-- WPPOPPOP_EXT_PAGER -->
-        <div class="wpp-ext-cats" id="wpp-ext-cats" role="group" aria-label="<?php echo esc_attr__('Module categories', 'wppoppop'); ?>"></div>
+        <div class="wpp-ext-cats-wrap">
+            <div class="wpp-ext-cats" id="wpp-ext-cats" role="group" aria-label="<?php echo esc_attr__('Module categories', 'wppoppop'); ?>"></div>
+            <button type="button" class="wpp-ext-cat-add" id="wpp-mod-cats-btn" aria-haspopup="dialog" title="<?php echo esc_attr__('Module Category', 'wppoppop'); ?>" aria-label="<?php echo esc_attr__('Module Category', 'wppoppop'); ?>"><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span></button> <!-- WPPOPPOP_CATS_ON_EXTEND -->
+        </div>
         <div class="wpp-mod-search">
             <label class="screen-reader-text" for="wpp-ext-search"><?php esc_html_e('Search modules', 'wppoppop'); ?></label>
             <input type="search" id="wpp-ext-search" placeholder="<?php echo esc_attr__('Search modules…', 'wppoppop'); ?>" autocomplete="off">
