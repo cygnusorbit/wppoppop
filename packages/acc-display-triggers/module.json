@@ -2,7 +2,7 @@
     "schema": 1,
     "slug": "acc-display-triggers",
     "name": "Display Triggers",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "author": "WpPopPop",
     "description": "Page load, always-on, repeat, exit intent, scroll depth, AdBlock and mobile back-button triggers.",
     "category": "all-modules",
@@ -11,6 +11,8 @@
     "on_missing": "skip",
     "requires": [],
     "accordion": "accordion.html",
+    "allow_edit": true,
+	"allow_delete": false,
     "data_keys": [
         "triggers",
         "exit_intent_sensitivity",
@@ -18,5 +20,5 @@
     ],
     "in_use": [],
     "min_version": "",
-    "deprecated": true
+    "deprecated": false
 }
