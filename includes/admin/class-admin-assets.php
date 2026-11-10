@@ -43,6 +43,7 @@ class WpPopPop_Admin_Assets {
                 WpPopPop_Admin_Theme::enqueue_page();
             }
         }
+        WpPopPop_Promo::enqueue();
 
         // Shared general configuration
         $shared_payload = [

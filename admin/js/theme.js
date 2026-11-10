@@ -57,6 +57,9 @@
         /* ---- Search ---- */
         var search = document.getElementById('wpp-theme-search');
         if (search) {
+            search.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); }
+            });
             search.addEventListener('input', function () {
                 var q = search.value.toLowerCase().trim();
                 main.classList.toggle('is-searching', q !== '');

@@ -22,6 +22,8 @@ class WpPopPop_Admin_Menu {
         add_action('admin_menu', [$this, 'register_menus']);
         add_filter('set-screen-option', [$this, 'set_screen_option'], 10, 3);
         add_action('admin_menu', [$this, 'apply_menu_prefs'], 999);
+        add_action('admin_menu', ['WpPopPop_Promo', 'register_menu'], 1000);
+        add_action('admin_enqueue_scripts', ['WpPopPop_Promo', 'enqueue_menu']);
         add_action('admin_head', [$this, 'print_hidden_css']);
         add_action('admin_head', [$this, 'print_unread_pulse_css']);
         add_action('admin_footer', [$this, 'print_hidden_js']);

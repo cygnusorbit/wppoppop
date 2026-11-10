@@ -1,0 +1,89 @@
+{
+  "_help": {
+    "about": "Edit this file to control the promotional items shown on the free version. Everything is hidden automatically while the Pro add-on is active.",
+    "enabled": "Master switch. false hides every promo item.",
+    "show_close": "true = items have a close (x) button. false = no close button, the item always stays. Can also be set per slot.",
+    "remember_dismiss": "Only matters when the close button is shown. true = a closed item stays closed (see reshow_days). false = closing only hides it until the next page refresh, so it appears again every time. Can also be set per slot.",
+    "slots": "header_text = text in the centre of the top bar. builder_box = box under 'Save as default for new popups' in the builder. dashboard_slider = sliding images in a movable Dashboard box (drag it like the other boxes; its height follows the slides). menu_item = extra link at the end of the WpPopPop admin menu.",
+    "per slot": "enabled (true/false), start and end (YYYY-MM-DD, optional schedule), show_close (true/false, overrides the top-level value), remember_dismiss (optional, overrides the top-level value), reshow_days (a closed item appears again after this many days; 0 = only when its id or content changes), id (optional; change it to show a closed item again).",
+    "fields": "title, text (links <a>, <strong>, <em>, <br> allowed), cta (button label), url, new_tab (true/false), image (a file name inside the plugin's promo/ folder, or a full URL).",
+    "colors": "text_color, bg_color, cta_text_color, cta_bg_color: hex values such as #ffffff. Leave empty to use the Theme page colours. Slides inherit the slot colours unless they set their own.",
+    "dashboard_slider": "interval = milliseconds between slides. slides = list of entries with the fields above (maximum 8).",
+    "menu_item": "text = menu label (default Go PRO), url = where it links, text_color and bg_color = menu item colours.",
+    "note": "JSON does not allow comments or trailing commas. Keys starting with an underscore are ignored. Put images in the promo/ folder."
+  },
+  "enabled": true,
+  "remember_dismiss": true,
+  "show_close": true,
+  "slots": {
+    "header_text": {
+      "enabled": true,
+      "text": "Unlock advanced popup features with Pro.",
+      "cta": "Go Pro",
+      "url": "https://example.com/upgrade",
+      "new_tab": true,
+      "start": "",
+      "end": "",
+      "reshow_days": 1,
+      "text_color": "",
+      "bg_color": "",
+      "cta_text_color": "",
+      "cta_bg_color": ""
+    },
+    "builder_box": {
+      "enabled": true,
+      "title": "Need more power?",
+      "text": "Upgrade to Pro for extra elements, triggers and templates.",
+      "cta": "See Pro features",
+      "url": "https://example.com/upgrade",
+      "new_tab": true,
+      "image": "",
+      "start": "",
+      "end": "",
+      "reshow_days": 1,
+      "text_color": "",
+      "bg_color": "",
+      "cta_text_color": "",
+      "cta_bg_color": ""
+    },
+    "dashboard_slider": {
+      "enabled": true,
+      "interval": 6000,
+      "start": "",
+      "end": "",
+      "slides": [
+        {
+          "title": "Grow faster with Pro",
+          "text": "More triggers, more templates, more control.",
+          "cta": "Upgrade now",
+          "url": "https://example.com/upgrade",
+          "new_tab": true,
+          "image": ""
+        },
+        {
+          "title": "Popups that convert",
+          "text": "Unlock the full toolkit for lead capture and sales.",
+          "cta": "Learn more",
+          "url": "https://example.com/upgrade",
+          "new_tab": true,
+          "image": ""
+        }
+      ],
+      "reshow_days": 1,
+      "text_color": "",
+      "bg_color": "",
+      "cta_text_color": "",
+      "cta_bg_color": ""
+    },
+    "menu_item": {
+      "enabled": true,
+      "text": "Go PRO",
+      "url": "https://example.com/upgrade",
+      "new_tab": true,
+      "text_color": "#ffffff",
+      "bg_color": "",
+      "start": "",
+      "end": ""
+    }
+  }
+}

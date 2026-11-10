@@ -109,8 +109,14 @@ $builder_url = admin_url('admin.php?page=wppoppop-builder');
             </div>
         </div>
         <?php $wppoppop_boxes['tools'] = ob_get_clean();
-        foreach (WpPopPop_Ajax_Dash_Layout::get_order() as $wppoppop_bk) {
+        ob_start(); WpPopPop_Promo::render('dashboard_slider'); $wppoppop_promo_html = ob_get_clean(); // empty when hidden
+        $wppoppop_present = array_keys($wppoppop_boxes);
+        if ($wppoppop_promo_html !== '') { $wppoppop_present[] = 'promo'; }
+        foreach (WpPopPop_Ajax_Dash_Layout::get_columns($wppoppop_present) as $wppoppop_ci => $wppoppop_col) : ?>
+        <div class="wppoppop-dash-col" data-col="<?php echo (int) $wppoppop_ci; ?>"><?php foreach ($wppoppop_col as $wppoppop_bk) {
+            if ($wppoppop_bk === 'promo') { echo $wppoppop_promo_html; continue; } // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside WpPopPop_Promo::render()
             if (isset($wppoppop_boxes[$wppoppop_bk])) { echo wp_kses_post( $wppoppop_boxes[$wppoppop_bk] ); }
-        } ?>
+        } ?></div>
+        <?php endforeach; ?>
     </div>
 </div>

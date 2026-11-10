@@ -104,6 +104,8 @@ $bar_logo        = ($bar_logo_custom !== '') ? $bar_logo_custom : WPPOPPOP_URL .
         <span><?php echo esc_html($bar_title); ?></span>
     </div>
 
+    <?php WpPopPop_Promo::render('header_text'); ?>
+
     <?php if ($bar_after_title !== '' && file_exists($bar_after_title)) { include $bar_after_title; } ?>
 
     <?php if ($bar_actions !== '' && file_exists($bar_actions)) { include $bar_actions; } ?>

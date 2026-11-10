@@ -50,6 +50,26 @@ body.wppoppop-admin-themed .wppoppop-overview-wrap .wppoppop-tool-tiles .tile:ho
 .wppoppop-overview-wrap .wppoppop-box-grip .dashicons { width: 16px; height: 16px; font-size: 16px; line-height: 1; pointer-events: none; }
 .wppoppop-overview-wrap .wppoppop-box.is-dragging { opacity: .75; outline: 2px solid #3b82f6; box-shadow: 0 8px 22px rgba(15, 23, 42, .22); }
 .wppoppop-overview-wrap .wppoppop-box.is-dragging .wppoppop-box-grip { cursor: -webkit-grabbing; cursor: grabbing; }
+/* Columns: boxes stack inside each column and every box keeps its own (auto) height */
+.wppoppop-overview-wrap .wppoppop-dash-col {
+    display: -webkit-box; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; flex-direction: column;
+    align-items: stretch; gap: var(--wpp-gap, 24px); min-width: 0;
+}
+.wppoppop-overview-wrap .wppoppop-dash-col > * { -webkit-box-flex: 0; flex: 0 0 auto; min-width: 0; }
+body.wppoppop-dash-dragging .wppoppop-overview-wrap .wppoppop-dash-col { min-height: 90px; }
+body.wppoppop-dash-dragging .wppoppop-overview-wrap .wppoppop-dash-col.is-empty {
+    border: 2px dashed var(--wpp-c-border, #c3c4c7); border-radius: var(--wpp-r-card, 6px);
+}
+@media (max-width: 1100px) {
+    .wppoppop-overview-wrap .wppoppop-dash-col:empty { display: none; }
+    body.wppoppop-dash-dragging .wppoppop-overview-wrap .wppoppop-dash-col:empty { display: flex; }
+}
+
+/* Dotted drop area shown where the dragged box will land */
+.wppoppop-overview-wrap .wppoppop-box-placeholder {
+    box-sizing: border-box; min-height: 60px; border: 2px dashed var(--wpp-c-primary, #3b82f6);
+    border-radius: var(--wpp-r-card, 6px); background: rgba(59, 130, 246, .06);
+}
 body.wppoppop-dash-dragging { -webkit-user-select: none; -moz-user-select: none; user-select: none; cursor: -webkit-grabbing; cursor: grabbing; }
 .wppoppop-dash-toast {
     position: fixed; right: 24px; bottom: 24px; z-index: 100000; padding: 8px 14px; border-radius: 4px;

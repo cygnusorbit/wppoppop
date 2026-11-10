@@ -11,5 +11,8 @@ if (!defined('ABSPATH')) {
         <button type="submit" class="button" id="wpp-theme-import" data-action="import"><?php esc_html_e('Import JSON', 'wppoppop'); ?></button>
     </p>
     <hr>
-    <button type="submit" class="button wpp-btn-danger" id="wpp-theme-reset-all" data-action="reset"><?php esc_html_e('Reset all to defaults', 'wppoppop'); ?></button>
+    <p class="wpp-theme-tools-foot">
+        <button type="button" class="button" data-wpp-defaults-save="theme" title="<?php echo esc_attr__('Use the last saved theme as the default', 'wppoppop'); ?>"><?php esc_html_e('Save as Default', 'wppoppop'); ?></button>
+        <button type="submit" class="button wpp-btn-danger" id="wpp-theme-reset-all" data-action="reset"><?php esc_html_e('Reset all to defaults', 'wppoppop'); ?></button>
+    </p>
 </div>

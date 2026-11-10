@@ -76,6 +76,7 @@ if (!defined('ABSPATH')) {
             <p style="margin:0 0 8px;font-size:12px;line-height:1.4;color:#475569;"><?php esc_html_e('Use this popup\'s canvas and popup settings (not its layers) as the starting point for every new popup.', 'wppoppop'); ?></p>
             <button type="button" class="button" data-wpp-defaults-save="popup"><?php esc_html_e('Save as default for new popups', 'wppoppop'); ?></button>
         </div>
+        <?php WpPopPop_Promo::render('builder_box'); ?>
     </div>
 </div>
 <?php /* Decomposed Phase 4 Settings Tokens (templates/builder/settings/acc-*.php): set-exit-intent-sensitivity, set-trigger-scroll-depth, set-canvas-autoclose */ ?>

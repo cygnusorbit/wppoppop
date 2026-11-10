@@ -12,13 +12,5 @@ if (!defined('ABSPATH')) {
         <button type="button" id="wppoppop-settings-search-clear" class="wpp-s-clear" aria-label="<?php echo esc_attr__('Clear search', 'wppoppop'); ?>" hidden>&times;</button>
     </div>
     <span id="wppoppop-bar-save-msg" class="wpp-bar-msg" aria-live="polite"></span>
-    <button type="button" class="wpp-bar-btn" data-wpp-defaults-save="settings" title="<?php echo esc_attr__('Use the last saved settings as the defaults', 'wppoppop'); ?>"><span class="dashicons dashicons-star-filled"></span><?php esc_html_e('Save as Default', 'wppoppop'); ?></button>
-    <div class="wppoppop-reset-wrap">
-        <button type="button" class="wpp-bar-btn" id="wppoppop-reset-btn" aria-haspopup="true" aria-expanded="false"><span class="dashicons dashicons-undo"></span><?php esc_html_e('Reset Defaults', 'wppoppop'); ?></button>
-        <div class="wppoppop-reset-menu" id="wppoppop-reset-menu" role="menu" hidden>
-            <button type="button" role="menuitem" data-scope="tab"><?php esc_html_e('Reset this tab', 'wppoppop'); ?></button>
-            <button type="button" role="menuitem" data-scope="all"><?php esc_html_e('Reset all settings', 'wppoppop'); ?></button>
-        </div>
-    </div>
     <button type="submit" class="wpp-bar-btn is-primary" form="wppoppop-settings-form" id="wppoppop-bar-save-btn"><span class="dashicons dashicons-yes"></span><?php esc_html_e('Save Settings', 'wppoppop'); ?></button>
 </div>

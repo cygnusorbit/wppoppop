@@ -1,0 +1,53 @@
+/* WPP_PROMO: promotional placements (rendered only while Pro is inactive). Colours follow the Theme page variables;
+   --wpp-promo-fg / -bg / -cta-fg / -cta-bg are set inline from defaults/promo.json. */
+.wppoppop-dash-bar{position:relative}
+.wppoppop-dash-bar .cell.promo{position:absolute;left:50%;top:0;bottom:0;-webkit-transform:translateX(-50%);transform:translateX(-50%);max-width:calc(100% - 760px);min-width:0;padding:0 10px;gap:8px;border-right:0;font-size:12px;background:var(--wpp-promo-bg,transparent);color:var(--wpp-promo-fg,var(--wpp-c-text,#1d2327));white-space:nowrap;z-index:1}
+.wpp-promo-text{min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.wpp-promo-text a{color:inherit;text-decoration:underline}
+.wppoppop-dash-bar .wpp-promo-cta{display:-webkit-inline-box;display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:var(--wpp-r-button,3px);background:var(--wpp-promo-cta-bg,var(--wpp-c-primary,#c1272d));color:var(--wpp-promo-cta-fg,var(--wpp-c-primary-text,#fff));font-size:11px;font-weight:700;line-height:1;text-decoration:none;white-space:nowrap}
+.wppoppop-dash-bar .wpp-promo-cta:hover,.wppoppop-dash-bar .wpp-promo-cta:focus{color:var(--wpp-promo-cta-fg,var(--wpp-c-primary-text,#fff));-webkit-filter:brightness(1.12);filter:brightness(1.12);outline:0}
+
+.wpp-promo-x{display:-webkit-inline-box;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--wpp-promo-fg,var(--wpp-c-muted,#787c82));cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:.8}
+.wpp-promo-x:hover,.wpp-promo-x:focus{opacity:1;outline:0;background:rgba(0,0,0,.08)}
+.wpp-promo-x .dashicons{font-size:16px;width:16px;height:16px}
+
+.wppoppop-promo--box{position:relative;margin-top:16px;padding:12px 30px 12px 12px;border:1px solid var(--wpp-c-border,#dcdcde);border-left:3px solid var(--wpp-c-primary,#c1272d);border-radius:var(--wpp-r-card,6px);background:var(--wpp-promo-bg,var(--wpp-c-bg-card,#fff));color:var(--wpp-promo-fg,var(--wpp-c-text,#1d2327))}
+.wppoppop-promo--box .wpp-promo-x{position:absolute;top:6px;right:6px}
+.wppoppop-promo--box .wpp-promo-img{display:block;max-width:100%;height:auto;margin:0 0 10px;border-radius:var(--wpp-r-button,3px)}
+.wppoppop-promo--box .wpp-promo-title{display:block;margin:0 0 4px;font-size:13px;color:inherit}
+.wppoppop-promo--box .wpp-promo-body{margin:0 0 10px;font-size:12px;line-height:1.45;color:var(--wpp-promo-fg,var(--wpp-c-muted,#475569))}
+.wppoppop-promo--box .wpp-promo-btn.button{background:var(--wpp-promo-cta-bg,var(--wpp-c-primary,#c1272d));border-color:var(--wpp-promo-cta-bg,var(--wpp-c-primary,#c1272d));color:var(--wpp-promo-cta-fg,var(--wpp-c-primary-text,#fff));box-shadow:none}
+.wppoppop-promo--box .wpp-promo-btn.button:hover,.wppoppop-promo--box .wpp-promo-btn.button:focus{color:var(--wpp-promo-cta-fg,var(--wpp-c-primary-text,#fff));-webkit-filter:brightness(1.12);filter:brightness(1.12)}
+
+/* Dashboard slider: one grid cell, the same width as a dashboard box (1/3). */
+.wpp-promo-slider{position:relative;display:grid;grid-template-columns:minmax(0,1fr);margin:0;overflow:hidden;box-sizing:border-box;border:1px solid var(--wpp-c-border,#dcdcde);border-radius:var(--wpp-r-card,3px);background:var(--wpp-promo-bg,var(--wpp-c-primary,#c1272d));color:var(--wpp-promo-fg,#fff);box-shadow:var(--wpp-shadow-card,0 1px 1px rgba(0,0,0,.04))}
+.wpp-promo-slide{position:relative;grid-area:1/1;display:-webkit-box;display:flex;min-height:190px;background:var(--wpp-promo-bg,var(--wpp-c-primary,#c1272d));opacity:0;visibility:hidden;-webkit-transition:opacity .4s ease,visibility .4s;transition:opacity .4s ease,visibility .4s}
+.wpp-promo-slide.is-active{opacity:1;visibility:visible}
+.wpp-promo-slide .wpp-promo-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.wpp-promo-slide.has-img::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;background:-webkit-linear-gradient(left,rgba(0,0,0,.7),rgba(0,0,0,.15));background:linear-gradient(90deg,rgba(0,0,0,.7),rgba(0,0,0,.15))}
+.wpp-promo-slide-body{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;-webkit-box-flex:1;flex:1 1 auto;min-width:0;padding:16px 46px 34px;box-sizing:border-box}
+.wpp-promo-slider .wpp-promo-title{display:block;margin:0 0 6px;font-size:16px;line-height:1.25;color:var(--wpp-promo-fg,#fff)}
+.wpp-promo-slider .wpp-promo-body{margin:0 0 12px;font-size:12px;line-height:1.45;color:var(--wpp-promo-fg,#fff)}
+.wpp-promo-slider .wpp-promo-body a{color:inherit;text-decoration:underline}
+.wpp-promo-slider .wpp-promo-btn.button{background:var(--wpp-promo-cta-bg,#fff);border-color:var(--wpp-promo-cta-bg,#fff);color:var(--wpp-promo-cta-fg,var(--wpp-c-primary,#c1272d));font-weight:700;box-shadow:none}
+.wpp-promo-slider .wpp-promo-btn.button:hover,.wpp-promo-slider .wpp-promo-btn.button:focus{color:var(--wpp-promo-cta-fg,var(--wpp-c-primary,#c1272d));-webkit-filter:brightness(.94);filter:brightness(.94)}
+.wpp-promo-slider .wpp-promo-x{position:absolute;top:6px;right:6px;z-index:4;color:var(--wpp-promo-fg,#fff)}
+.wpp-promo-slider .wpp-promo-x:hover,.wpp-promo-slider .wpp-promo-x:focus{background:rgba(0,0,0,.25)}
+.wpp-promo-nav{position:absolute;top:50%;z-index:4;display:-webkit-inline-box;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin:-14px 0 0;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.3);color:#fff;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none}
+.wpp-promo-nav:hover,.wpp-promo-nav:focus{background:rgba(0,0,0,.55);outline:0}
+.wpp-promo-prev{left:8px}
+.wpp-promo-next{right:8px}
+.wpp-promo-dots{position:absolute;left:0;right:0;bottom:8px;z-index:4;display:flex;justify-content:center;gap:6px}
+.wpp-promo-dot{width:8px;height:8px;margin:0;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none}
+.wpp-promo-dot.is-active{background:#fff}
+.wpp-promo-dot:focus{outline:2px solid #fff;outline-offset:1px}
+
+@media (max-width:1200px){.wppoppop-dash-bar .cell.promo{display:none}}
+@media (max-width:1100px){.wpp-promo-slide{min-height:170px}}
+@media (prefers-reduced-motion:reduce){.wpp-promo-slide{-webkit-transition:none;transition:none}}
+
+/* Dashboard slider as a movable box: no box padding, the drag handle sits top right, the close button top left. */
+.wppoppop-overview-wrap .wppoppop-box.wpp-promo-slider{padding:0;margin:0;overflow:hidden;border:1px solid var(--wpp-c-border,#dcdcde);background:var(--wpp-promo-bg,var(--wpp-c-primary,#c1272d));color:var(--wpp-promo-fg,#fff)}
+.wppoppop-overview-wrap .wppoppop-box.wpp-promo-slider .wpp-promo-x{left:6px;right:auto}
+.wppoppop-overview-wrap .wppoppop-box.wpp-promo-slider .wppoppop-box-grip{top:6px;right:6px;color:#fff;background:rgba(0,0,0,.3);border-color:transparent;opacity:.85}
+.wppoppop-overview-wrap .wppoppop-box.wpp-promo-slider:hover .wppoppop-box-grip,.wppoppop-overview-wrap .wppoppop-box.wpp-promo-slider .wppoppop-box-grip:focus{background:rgba(0,0,0,.55);border-color:transparent;opacity:1}

@@ -99,6 +99,16 @@ if (!isset($settings) || !is_array($settings)) {
             </button>
             <span id="wppoppop-save-settings-spinner" class="spinner" style="float:none;margin:0;"></span>
             <span id="wppoppop-save-settings-msg" style="font-weight:600;font-size:13px;"></span>
+            <div class="wppoppop-settings-bottom-tools">
+                <button type="button" class="button" data-wpp-defaults-save="settings" title="<?php echo esc_attr__('Use the last saved settings as the defaults', 'wppoppop'); ?>"><?php esc_html_e('Save as Default', 'wppoppop'); ?></button>
+                <div class="wppoppop-reset-wrap">
+                    <button type="button" class="button wpp-btn-danger" id="wppoppop-reset-btn" aria-haspopup="true" aria-expanded="false"><?php esc_html_e('Reset Defaults', 'wppoppop'); ?></button>
+                    <div class="wppoppop-reset-menu" id="wppoppop-reset-menu" role="menu" hidden>
+                        <button type="button" role="menuitem" data-scope="tab"><?php esc_html_e('Reset this tab', 'wppoppop'); ?></button>
+                        <button type="button" role="menuitem" data-scope="all"><?php esc_html_e('Reset all settings', 'wppoppop'); ?></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 </div>

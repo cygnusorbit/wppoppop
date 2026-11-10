@@ -228,3 +228,8 @@ body.wppoppop-admin-themed #wpbody-content .wppoppop-theme-wrap .wpp-theme-previ
 body.rtl.wppoppop-admin-themed #wpbody-content .wppoppop-theme-wrap .wpp-theme-field select,
 body.rtl.wppoppop-admin-themed #wpbody-content .wppoppop-theme-wrap .wpp-theme-preview p select { background-position: left 10px center; padding-left: 32px; padding-right: 10px; }
 body.wppoppop-admin-themed #wpbody-content .wppoppop-theme-wrap .wpp-theme-field .wpp-theme-picker { width: 40px; padding-left: 0; padding-right: 0; }
+
+/* WPP_THEME_SIDE_TOOLS: search above Live Preview, footer buttons in Export / Import */
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-search { margin: 0 0 16px; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-search input[type="search"] { display: block; width: 100%; max-width: 100%; height: 34px; margin: 0; padding: 0 10px; box-sizing: border-box; }
+#wpbody-content .wppoppop-theme-wrap .wpp-theme-tools-foot { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
