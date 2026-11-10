@@ -70,6 +70,19 @@
         FORM_FAMILY: FORM_FAMILY,
         _initialized: false,
 
+        /* Public API for companion plugins: register(type, {family: 'media'|'form', panel: '#panel-elem-x'}) */
+        register: function(type, cfg) {
+            var t = String(type || '').toLowerCase().trim();
+            if (!/^[a-z0-9_-]{2,40}$/.test(t)) return false;
+            cfg = cfg || {};
+            if (FORM_FAMILY.indexOf(t) === -1 && MEDIA_FAMILY.indexOf(t) === -1) {
+                (cfg.family === 'form' ? FORM_FAMILY : MEDIA_FAMILY).push(t);
+            }
+            if (cfg.panel) PANEL_MAP[t] = String(cfg.panel);
+            $(document).trigger('wppoppop:element-registered', [t, cfg]);
+            return true;
+        },
+
         getFamily: function(rawType) {
             var t = String(rawType || '').toLowerCase().trim();
             return FORM_FAMILY.indexOf(t) !== -1 ? 'form' : 'media';
@@ -199,8 +212,7 @@
             $('#prop-submit-msg-wrap').toggle(sAction === 'message');
             $('#prop-submit-redir-wrap').toggle(sAction === 'redirect');
 
-            var pMode = $('#prop-progress-mode').val() || el.progressMode || 'manual';
-            $('#prop-progress-val-wrap').toggle(pMode === 'manual');
+            if (window.WpPopPopElementExt) { window.WpPopPopElementExt.all('syncRows', [el]); } /* WPPOPPOP_EXT_SYNC_ROWS */
         },
 
                 renderFormInputWithIcons: function(el, innerText) {
@@ -476,28 +488,9 @@
                             var msHtml = msOpts.map(function(o) { return '<option>' + $.trim(o) + '</option>'; }).join('');
                             return '<select multiple disabled style="width:100%;height:100%;padding:4px;border:1px solid #cbd5e1;border-radius:inherit;box-sizing:border-box;pointer-events:none;">' + msHtml + '</select>';
                         }
-                        if (t === 'imageselect') {
-                            var isOpts = String(el.options || 'Starter Plan, Pro Plan, Enterprise').split(/[\n,]+/);
-                            var cols = parseInt(el.columns, 10) || 3;
-                            var cards = isOpts.slice(0, 4).map(function(o, idx) {
-                                var parts = String(o).split('|');
-                                var lbl = $.trim(parts[0] || 'Choice');
-                                var imgUrl = parts[1] ? $.trim(parts[1]) : '';
-                                var borderCol = idx === 0 ? '#0284c7' : '#cbd5e1';
-                                var thumb = imgUrl ? '<img src="' + imgUrl + '" style="width:100%;height:32px;object-fit:cover;border-radius:0px;margin-bottom:2px;" />' : '<span class="dashicons dashicons-format-image" style="display:block;margin:0 auto 2px;color:#64748b;"></span>';
-                                return '<div style="border:2px solid ' + borderCol + ';border-radius:0px;padding:4px;text-align:center;font-size:11px;font-weight:600;background:#f8fafc;">' + thumb + lbl + '</div>';
-                            }).join('');
-                            return '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:6px;width:100%;height:100%;align-items:center;">' + cards + '</div>';
-                        }
-                        if (t === 'tile') {
-                            var tlOpts = String(el.options || '$10 / mo, $25 / mo, $50 / mo').split(/[\n,]+/);
-                            var tlCols = parseInt(el.columns, 10) || 3;
-                            var actBg = el.activeColor || '#0284c7';
-                            var tiles = tlOpts.slice(0, 4).map(function(o, i) {
-                                var styleStr = i === 0 ? ('background:' + actBg + ';color:#ffffff;border:1px solid ' + actBg + ';') : 'background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;';
-                                return '<div style="padding:6px;border-radius:0px;text-align:center;font-weight:700;font-size:12px;' + styleStr + '">' + $.trim(o) + '</div>';
-                            }).join('');
-                            return '<div style="display:grid;grid-template-columns:repeat(' + tlCols + ',1fr);gap:6px;width:100%;height:100%;align-items:center;">' + tiles + '</div>';
+                        if (window.WpPopPopElementExt && window.WpPopPopElementExt.has(t, 'fallbackInner')) { /* WPPOPPOP_EXT_FALLBACK_INNER */
+                            var extInner = window.WpPopPopElementExt.call(t, 'fallbackInner', [el]);
+                            if (typeof extInner === 'string') { return extInner; }
                         }
                         if (t === 'date') {
                             var dtFmt = el.dateFormat || 'YYYY-MM-DD';
@@ -515,18 +508,6 @@
                         if (t === 'upload' || t === 'file') {
                             var upLbl = el.placeholder || 'Choose file or drag here...';
                             return '<div style="width:100%;height:100%;border:1px dashed #94a3b8;border-radius:inherit;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#475569;background:#f8fafc;box-sizing:border-box;pointer-events:none;"><span class="dashicons dashicons-upload"></span><span>' + upLbl + '</span></div>';
-                        }
-                        if (t === 'rating') {
-                            var rMax = parseInt(el.ratingMax, 10) || 5;
-                            var rCol = el.ratingColor || '#f59e0b';
-                            var rShape = el.ratingShape || 'star';
-                            var glyph = rShape === 'heart' ? '♥' : (rShape === 'thumb' ? '👍' : '★');
-                            var stars = '';
-                            for (var si = 0; si < rMax; si++) {
-                                var c = si < Math.ceil(rMax * 0.8) ? rCol : '#cbd5e1';
-                                stars += '<span style="color:' + c + ';font-size:20px;line-height:1;">' + glyph + '</span>';
-                            }
-                            return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:4px;pointer-events:none;">' + stars + '</div>';
                         }
                         if (t === 'checkbox') {
                             var cbOpts = String(el.options || 'I agree to the terms').split(',');

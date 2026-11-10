@@ -41,9 +41,9 @@ class WpPopPop_Ajax_Settings {
         // Support both nested 'settings' array and flattened POST payload
         $raw = [];
         if (isset($_POST['settings']) && is_array($_POST['settings'])) {
-            $raw = wp_unslash($_POST['settings']);
+            /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised key by key by sanitize_settings() */ $raw = wp_unslash($_POST['settings']);
         } elseif (isset($_POST['data'])) {
-            parse_str(wp_unslash($_POST['data']), $parsed);
+            /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised key by key by sanitize_settings() */ parse_str(wp_unslash($_POST['data']), $parsed);
             $raw = isset($parsed['settings']) && is_array($parsed['settings']) ? $parsed['settings'] : $parsed;
         } else {
             $raw = wp_unslash($_POST);

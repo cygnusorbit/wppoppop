@@ -4,20 +4,11 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * WpPopPop Tracking, A/B, Privacy, Rate-limit and Reporting controls.
- * Single owner of the "Tracking & A/B" settings group.
+ * WpPopPop Tracking, Privacy and Rate-limit controls.
+ * Single owner of the "Tracking" settings group. Statistics and A/B testing are provided by the Pro add-on
+ * through the wppoppop_impression_recorded action and the wppoppop_tracking_tab_sections action.
  */
 class WpPopPop_Tracking {
-    const DB_VER = '1';
-
-    public static function boot() {
-        add_filter('cron_schedules', [__CLASS__, 'cron_schedules']);
-        add_action('init', [__CLASS__, 'maybe_install']);
-        add_action('init', [__CLASS__, 'sync_schedules']);
-        add_action('wppoppop_tracking_daily', [__CLASS__, 'run_daily']);
-        add_action('wppoppop_weekly_report', [__CLASS__, 'send_weekly_report']);
-    }
-
     /* ------------------------------------------------------------ settings */
     public static function defaults() {
         return [
@@ -84,28 +75,6 @@ class WpPopPop_Tracking {
         return $o;
     }
 
-    /* ------------------------------------------------------------ database */
-    public static function table() {
-        global $wpdb;
-        return $wpdb->prefix . 'wppoppop_stats_daily';
-    }
-
-    public static function maybe_install() {
-        if (get_option('wppoppop_tracking_db') === self::DB_VER) {
-            return;
-        }
-        global $wpdb;
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        $cc = $wpdb->get_charset_collate();
-        dbDelta("CREATE TABLE " . self::table() . " (
-            stat_date date NOT NULL,
-            popup_uid varchar(64) NOT NULL,
-            impressions bigint(20) unsigned NOT NULL DEFAULT 0,
-            PRIMARY KEY  (stat_date,popup_uid)
-        ) {$cc};");
-        update_option('wppoppop_tracking_db', self::DB_VER);
-    }
-
     /* --------------------------------------------------------- request utils */
     public static function client_ip() {
         if (class_exists('WpPopPop_Security') && is_callable(['WpPopPop_Security', 'get_client_ip'])) {
@@ -119,7 +88,7 @@ class WpPopPop_Tracking {
         if (!self::get('privacy_anonymize_ip') || $ip === '') {
             return $ip;
         }
-        $bin = @inet_pton($ip);
+        $bin = /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- invalid addresses must not raise a warning */ @inet_pton($ip);
         if ($bin === false) { return $ip; }
         if (strlen($bin) === 4) {
             $bin[3] = "\0";
@@ -186,37 +155,8 @@ class WpPopPop_Tracking {
             "UPDATE {$wpdb->prefix}wppoppop_items SET impressions = impressions + 1 WHERE uid = %s", $uid
         ));
         if (!$n) { return false; }
-        $wpdb->query($wpdb->prepare(
-            "INSERT INTO " . self::table() . " (stat_date, popup_uid, impressions) VALUES (%s, %s, 1)
-             ON DUPLICATE KEY UPDATE impressions = impressions + 1",
-            current_time('Y-m-d'), $uid
-        ));
+        do_action('wppoppop_impression_recorded', $uid);
         return true;
-    }
-
-    /* ------------------------------------------------------------------ A/B */
-    public static function ab_default_mode() { return self::get('ab_default_mode') === 'onload' ? 'onload' : 'inline'; }
-    public static function ab_cookie_days()  { return max(1, (int) self::get('ab_cookie_days')); }
-
-    public static function ab_no_cache() {
-        if (!self::get('cache_nocache_ab')) { return; }
-        if (!defined('DONOTCACHEPAGE')) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
-        define('DONOTCACHEPAGE', true); }
-        if (!headers_sent()) { nocache_headers(); }
-    }
-
-    public static function ab_sticky_get($uid, $chosen, $variants) {
-        if (self::get('ab_sticky_user') && is_user_logged_in()) {
-            $m = sanitize_key((string) get_user_meta(get_current_user_id(), 'wppoppop_ab_' . $uid, true));
-            if ($m !== '' && in_array($m, (array) $variants, true)) { return $m; }
-        }
-        return $chosen;
-    }
-
-    public static function ab_sticky_set($uid, $chosen) {
-        if (self::get('ab_sticky_user') && is_user_logged_in()) {
-            update_user_meta(get_current_user_id(), 'wppoppop_ab_' . $uid, $chosen);
-        }
     }
 
     /* ---------------------------------------------------------------- front */
@@ -237,103 +177,4 @@ class WpPopPop_Tracking {
         ];
     }
 
-    /* ------------------------------------------------------------ scheduling */
-    public static function cron_schedules($s) {
-        if (!isset($s['weekly'])) {
-            $s['weekly'] = ['interval' => WEEK_IN_SECONDS, 'display' => __('Once Weekly', 'wppoppop')];
-        }
-        return $s;
-    }
-
-    public static function sync_schedules() {
-        if (!wp_next_scheduled('wppoppop_tracking_daily')) {
-            wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', 'wppoppop_tracking_daily');
-        }
-        $on   = (bool) self::get('report_enabled');
-        $next = wp_next_scheduled('wppoppop_weekly_report');
-        if ($on && !$next) {
-            wp_schedule_event(time() + DAY_IN_SECONDS, 'weekly', 'wppoppop_weekly_report');
-        } elseif (!$on && $next) {
-            wp_unschedule_event($next, 'wppoppop_weekly_report');
-        }
-    }
-
-    public static function run_daily() {
-        global $wpdb;
-        $days = (int) self::get('track_retention_days');
-        if ($days > 0) {
-            $cut = gmdate('Y-m-d', current_time('timestamp') - $days * DAY_IN_SECONDS);
-            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->query($wpdb->prepare("DELETE FROM " . self::table() . " WHERE stat_date < %s", $cut));
-        // phpcs:enable
-        }
-        if (self::get('ab_auto_promote')) {
-            self::auto_promote();
-        }
-    }
-
-    protected static function z_score($s1, $n1, $s2, $n2) {
-        if ($n1 < 1 || $n2 < 1) { return 0; }
-        $p = ($s1 + $s2) / ($n1 + $n2);
-        $se = sqrt($p * (1 - $p) * (1 / $n1 + 1 / $n2));
-        return $se > 0 ? (($s1 / $n1) - ($s2 / $n2)) / $se : 0;
-    }
-
-    /** Keeps only the winner once every variant has the minimum impressions and the lead is significant. */
-    protected static function auto_promote() {
-        global $wpdb;
-        $min  = (int) self::get('ab_promote_min_impr');
-        $zmap = [90 => 1.645, 95 => 1.96, 99 => 2.576];
-        $thr  = $zmap[(int) self::get('ab_promote_confidence')];
-        $camps = $wpdb->get_results("SELECT id, uid, popup_uids FROM {$wpdb->prefix}wppoppop_campaigns WHERE LOWER(status) = 'active'");
-        foreach ((array) $camps as $c) {
-            $uids = array_values(array_filter(array_map('sanitize_key', (array) json_decode($c->popup_uids, true))));
-            if (count($uids) < 2) { continue; }
-            $ph   = implode(',', array_fill(0, count($uids), '%s'));
-            $rows = // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results($wpdb->prepare(
-                "SELECT uid, impressions, submissions FROM {$wpdb->prefix}wppoppop_items WHERE uid IN ($ph)", $uids
-            ));
-        // phpcs:enable
-            if (count($rows) < 2) { continue; }
-            $ok = true; $stats = [];
-            foreach ($rows as $r) {
-                if ((int) $r->impressions < $min) { $ok = false; break; }
-                $stats[] = ['uid' => $r->uid, 'n' => (int) $r->impressions, 's' => (int) $r->submissions];
-            }
-            if (!$ok) { continue; }
-            usort($stats, function ($a, $b) { return ($b['s'] / $b['n']) <=> ($a['s'] / $a['n']); });
-            if (self::z_score($stats[0]['s'], $stats[0]['n'], $stats[1]['s'], $stats[1]['n']) >= $thr) {
-                $wpdb->update("{$wpdb->prefix}wppoppop_campaigns", ['popup_uids' => wp_json_encode([$stats[0]['uid']])], ['id' => (int) $c->id], ['%s'], ['%d']);
-                if (function_exists('wppoppop_log_event')) {
-                    wppoppop_log_event('ab_auto_promote', 'A/B winner promoted: ' . $stats[0]['uid'], ['campaign' => $c->uid, 'stats' => $stats]);
-                }
-            }
-        }
-    }
-
-    public static function send_weekly_report() {
-        if (!self::get('report_enabled')) { return; }
-        global $wpdb;
-        $to = sanitize_email((string) self::get('report_email'));
-        if (!is_email($to)) { $to = get_option('admin_email'); }
-        $since_d = gmdate('Y-m-d', current_time('timestamp') - 7 * DAY_IN_SECONDS);
-        $since_t = $since_d . ' 00:00:00';
-        $impr  = $wpdb->get_results($wpdb->prepare("SELECT popup_uid, SUM(impressions) AS n FROM " . self::table() . " WHERE stat_date >= %s GROUP BY popup_uid", $since_d), OBJECT_K);
-        $leads = $wpdb->get_results($wpdb->prepare("SELECT popup_uid, COUNT(id) AS n FROM {$wpdb->prefix}wppoppop_submissions WHERE created_at >= %s GROUP BY popup_uid", $since_t), OBJECT_K);
-        $items = $wpdb->get_results("SELECT uid, title FROM {$wpdb->prefix}wppoppop_items WHERE status != 'trash'");
-        $lines = []; $ti = 0; $tl = 0;
-        foreach ((array) $items as $it) {
-            $i = isset($impr[$it->uid]) ? (int) $impr[$it->uid]->n : 0;
-            $l = isset($leads[$it->uid]) ? (int) $leads[$it->uid]->n : 0;
-            if ($i === 0 && $l === 0) { continue; }
-            $ti += $i; $tl += $l;
-            $lines[] = sprintf('%s: %d impressions, %d leads, %s%% CR', $it->title, $i, $l, $i > 0 ? round($l / $i * 100, 1) : 0);
-        }
-        $body = sprintf("WpPopPop weekly report (since %s)\n\nTotal impressions: %d\nTotal leads: %d\nConversion rate: %s%%\n\n%s\n",
-            $since_d, $ti, $tl, $ti > 0 ? round($tl / $ti * 100, 1) : 0, $lines ? implode("\n", $lines) : __('No activity recorded.', 'wppoppop'));
-        wp_mail($to, sprintf('[%s] WpPopPop weekly report', get_bloginfo('name')), $body);
-    }
 }
-
-WpPopPop_Tracking::boot();

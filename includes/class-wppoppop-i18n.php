@@ -6,7 +6,8 @@ if (!defined('ABSPATH')) {
 /**
  * WpPopPop internationalization bootstrap.
  *
- * - Loads the "wppoppop" text domain from /languages.
+ * - Translations come from translate.wordpress.org (WordPress 4.6+ loads them on demand),
+ *   or from wp-content/languages/plugins/, so the plugin does not load a text domain itself.
  * - Gives every WpPopPop script the wp-i18n dependency and JSON translations,
  *   so strings wrapped with wp.i18n.__() in admin/public JS are translatable.
  */
@@ -14,7 +15,6 @@ class WpPopPop_I18n {
     const DOMAIN = 'wppoppop';
 
     public function __construct() {
-        add_action('init', [$this, 'load_textdomain'], 0);
         add_action('admin_enqueue_scripts', [$this, 'attach_script_translations'], 999);
         add_action('wp_enqueue_scripts', [$this, 'attach_script_translations'], 999);
         add_action('wp_print_scripts', [$this, 'attach_script_translations'], 0);
@@ -24,10 +24,6 @@ class WpPopPop_I18n {
 
     public static function languages_dir() {
         return WPPOPPOP_PATH . 'languages';
-    }
-
-    public function load_textdomain() {
-        load_plugin_textdomain(self::DOMAIN, false, dirname(WPPOPPOP_BASENAME) . '/languages');
     }
 
     public function attach_script_translations() {

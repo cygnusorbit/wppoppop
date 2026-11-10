@@ -52,19 +52,8 @@ class WpPopPop_Installer {
         ) {$charset_collate};";
         dbDelta($sql_submissions);
 
-        // 3. A/B Campaigns Table
-        $table_campaigns = $wpdb->prefix . 'wppoppop_campaigns';
-        $sql_campaigns = "CREATE TABLE {$table_campaigns} (
-            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-            uid varchar(64) NOT NULL,
-            title varchar(255) NOT NULL,
-            popup_uids longtext NOT NULL,
-            status varchar(20) NOT NULL DEFAULT 'active',
-            created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id),
-            UNIQUE KEY uid (uid)
-        ) {$charset_collate};";
-        dbDelta($sql_campaigns);
+        // 3. Tables owned by companion plugins
+        do_action('wppoppop_create_tables');
 
         // 4. Activity Logs Table
         $table_logs = $wpdb->prefix . 'wppoppop_logs';

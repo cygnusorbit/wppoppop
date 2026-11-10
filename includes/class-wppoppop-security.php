@@ -41,6 +41,7 @@ class WpPopPop_Security {
     public function enqueue_admin_security_nonce() {
         $nonce = wp_create_nonce( 'wppoppop_nonce' );
 
+        // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- handle without a file, it only carries an inline script
         wp_register_script( 'wppoppop-security-bridge', false, [ 'jquery' ], null, false );
         wp_enqueue_script( 'wppoppop-security-bridge' );
 

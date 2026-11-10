@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -101,7 +102,7 @@ $list_table->prepare_items();
 <div class="wppoppop-table-wrap" style="width:100%;margin-top:16px;">
     <?php if (!empty($_GET['trashed'])) : 
         $trashed_count = intval($_GET['trashed']);
-        $trashed_uid   = !empty($_GET['trashed_uid']) ? sanitize_text_field($_GET['trashed_uid']) : '';
+        $trashed_uid   = !empty($_GET['trashed_uid']) ? sanitize_text_field(wp_unslash($_GET['trashed_uid'])) : '';
         $undo_url      = '';
         if ($trashed_count === 1 && $trashed_uid) {
             $undo_url = wp_nonce_url(
@@ -113,10 +114,10 @@ $list_table->prepare_items();
         <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
             <p>
                 <?php 
-                printf(
+                echo esc_html(sprintf(
                     /* translators: number of campaigns. */ _n('%d campaign moved to the Trash.', '%d campaigns moved to the Trash.', $trashed_count, 'wppoppop'),
                     number_format_i18n($trashed_count)
-                ); 
+                )); 
                 if ($undo_url) : ?>
                     <a href="<?php echo esc_url($undo_url); ?>"><?php esc_html_e('Undo', 'wppoppop'); ?></a>
                 <?php endif; ?>
@@ -128,10 +129,10 @@ $list_table->prepare_items();
         <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
             <p>
                 <?php 
-                printf(
+                echo esc_html(sprintf(
                     /* translators: number of campaigns. */ _n('%d campaign restored from the Trash.', '%d campaigns restored from the Trash.', $untrashed_count, 'wppoppop'),
                     number_format_i18n($untrashed_count)
-                ); 
+                )); 
                 ?>
             </p>
         </div>
@@ -141,10 +142,10 @@ $list_table->prepare_items();
         <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
             <p>
                 <?php 
-                printf(
+                echo esc_html(sprintf(
                     /* translators: number of campaigns. */ _n('%d campaign permanently deleted.', '%d campaigns permanently deleted.', $deleted_count, 'wppoppop'),
                     number_format_i18n($deleted_count)
-                ); 
+                )); 
                 ?>
             </p>
         </div>
@@ -152,7 +153,7 @@ $list_table->prepare_items();
         $duplicated_count = intval($_GET['duplicated']);
     ?>
         <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
-            <p><?php printf(/* translators: number of campaigns. */ _n('%d campaign duplicated (saved as Draft).', '%d campaigns duplicated (saved as Draft).', $duplicated_count, 'wppoppop'), number_format_i18n($duplicated_count)); ?></p>
+            <p><?php echo esc_html(sprintf(/* translators: number of campaigns. */ _n('%d campaign duplicated (saved as Draft).', '%d campaigns duplicated (saved as Draft).', $duplicated_count, 'wppoppop'), number_format_i18n($duplicated_count))); ?></p>
         </div>
     <?php elseif (!empty($_GET['updated'])) : 
         $updated_count = intval($_GET['updated']);
@@ -160,10 +161,10 @@ $list_table->prepare_items();
         <div class="notice notice-success is-dismissible" style="margin: 12px 0 16px 0;">
             <p>
                 <?php 
-                printf(
+                echo esc_html(sprintf(
                     /* translators: number of campaigns. */ _n('%d campaign status updated.', '%d campaigns status updated.', $updated_count, 'wppoppop'),
                     number_format_i18n($updated_count)
-                ); 
+                )); 
                 ?>
             </p>
         </div>
@@ -190,7 +191,7 @@ $list_table->prepare_items();
         ob_start();
         $list_table->search_box(__('Search Popups', 'wppoppop'), 'wppoppop');
         $wppoppop_search_html = ob_get_clean();
-        echo '<div class="wppoppop-list-toolbar">' . $wppoppop_views_html . $wppoppop_search_html . '</div>';
+        /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP_List_Table views and search box markup, escaped by core */ echo '<div class="wppoppop-list-toolbar">' . $wppoppop_views_html . $wppoppop_search_html . '</div>';
         $list_table->display();
         ?>
     </form>

@@ -25,7 +25,7 @@ class WpPopPop_Layer_Settings {
     }
 
     public static function elements() {
-        return array(
+        return (array) apply_filters('wppoppop_layer_elements', array(
             'shape'       => __('Rectangle / Shape', 'wppoppop'),
             'image'       => __('Image', 'wppoppop'),
             'video'       => __('Video Embed', 'wppoppop'),
@@ -33,7 +33,6 @@ class WpPopPop_Layer_Settings {
             'html'        => __('HTML Content', 'wppoppop'),
             'close'       => __('Close Icon', 'wppoppop'),
             'icon'        => __('Font Awesome Icon', 'wppoppop'),
-            'progress'    => __('Progress Bar', 'wppoppop'),
             'button'      => __('Button / Link', 'wppoppop'),
             'text'        => __('Text Input', 'wppoppop'),
             'email'       => __('Email Address', 'wppoppop'),
@@ -45,26 +44,23 @@ class WpPopPop_Layer_Settings {
             'checkboxgroup' => __('Checkbox', 'wppoppop'),
             'radio'       => __('Radio Button', 'wppoppop'),
             'multiselect' => __('Multiselect', 'wppoppop'),
-            'imageselect' => __('Image Select', 'wppoppop'),
-            'tile'        => __('Tile Select', 'wppoppop'),
             'date'        => __('Date Picker', 'wppoppop'),
             'time'        => __('Time Picker', 'wppoppop'),
             'upload'      => __('File Upload', 'wppoppop'),
             'password'    => __('Password', 'wppoppop'),
-            'rating'      => __('Star Rating', 'wppoppop'),
             'submit'      => __('Submit Button', 'wppoppop'),
-        );
+        ));
     }
 
     public static function form_types() {
-        return array('text', 'email', 'number', 'phone', 'textarea', 'select', 'checkbox', 'checkboxgroup', 'radio', 'multiselect', 'imageselect', 'tile', 'date', 'time', 'upload', 'password', 'rating');
+        return (array) apply_filters('wppoppop_layer_form_types', array('text', 'email', 'number', 'phone', 'textarea', 'select', 'checkbox', 'checkboxgroup', 'radio', 'multiselect', 'date', 'time', 'upload', 'password'));
     }
 
     /** Element types that keep the stock Style layout of the Inspector (mirrors the builder's settled layout). */
     private static function style_layout() {
         $form_base   = 'formModule alignCard iconsCard';
         $form_choice = 'formModule alignCard';
-        return array(
+        return (array) apply_filters('wppoppop_layer_style_layout', array(
             'shape'         => 'padding shadow',
             'image'         => 'opacity padding border shadow',
             'video'         => 'padding border shadow',
@@ -72,7 +68,6 @@ class WpPopPop_Layer_Settings {
             'html'          => 'textAlign bg padding border shadow',
             'close'         => 'bg border hover',
             'icon'          => 'opacity bg border',
-            'progress'      => 'opacity bg typo padding border shadow css',
             'button'        => 'bg typo padding border shadow hover',
             'submit'        => 'formModule iconsCard submitAlign bg typo shadow hover css',
             'text'          => $form_base,
@@ -89,10 +84,7 @@ class WpPopPop_Layer_Settings {
             'radio'         => $form_choice . ' typo',
             'checkboxgroup' => $form_choice . ' typo',
             'multiselect'   => $form_choice . ' typo',
-            'imageselect'   => $form_choice . ' typo',
-            'tile'          => $form_choice . ' bg typo hover',
-            'rating'        => $form_choice,
-        );
+        ));
     }
 
     private static function style_native($key) {
@@ -167,7 +159,6 @@ class WpPopPop_Layer_Settings {
         );
 
         $cat['data'] = array(
-            self::entry('rating_data', __('Rating Data', 'wppoppop'), '#insp-rating-data', array('rating')),
             self::entry('data_binding', __('Data & Value Binding', 'wppoppop'), '#insp-section-form-data', $form_no_rating, 'block', array(
                 self::entry('default_value', __('Default Value', 'wppoppop'), '#insp-row-data-default', $form_no_rating),
                 self::entry('dynamic_default', __('Dynamic Default (URL / Cookie)', 'wppoppop'), '#insp-row-data-dynamic', $form_no_rating, 'flex'),
@@ -190,6 +181,9 @@ class WpPopPop_Layer_Settings {
                 self::entry('validator_error', __('Custom Validation Error Message', 'wppoppop'), '#insp-row-val-error', $form),
             )),
         );
+
+        /* WPPOPPOP_3C_CATALOGUE */
+        $cat = (array) apply_filters('wppoppop_layer_catalogue', $cat);
 
         return $cat;
     }

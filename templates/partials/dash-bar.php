@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -9,21 +10,21 @@ $bar_actions = isset($bar_actions) ? $bar_actions : '';
 $bar_after_title = isset($bar_after_title) ? $bar_after_title : '';
 $bar_items  = $wpdb->prefix . 'wppoppop_items';
 $bar_subs   = $wpdb->prefix . 'wppoppop_submissions';
+// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table names are built from $wpdb->prefix and the query takes no user input
 $bar_popups = $wpdb->get_results("SELECT i.uid, i.title,
         SUM(CASE WHEN s.id IS NOT NULL AND COALESCE(s.is_read, 0) = 0 THEN 1 ELSE 0 END) AS unread_count,
         SUM(CASE WHEN s.id IS NOT NULL AND COALESCE(s.is_read, 0) <> 0 THEN 1 ELSE 0 END) AS read_count
     FROM {$bar_items} i LEFT JOIN {$bar_subs} s ON s.popup_uid = i.uid
     WHERE i.status <> 'trash'
     GROUP BY i.id, i.uid, i.title ORDER BY i.id DESC LIMIT 30");
+// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 $bar_links = [
     ['wppoppop-dashboard',       __('Dashboard', 'wppoppop'),        'dashicons-screenoptions'],
     ['wppoppop',                 __('Popups', 'wppoppop'),           'dashicons-megaphone'],
     ['wppoppop-builder',         __('Create Popup', 'wppoppop'),     'dashicons-plus-alt'],
-    ['wppoppop-ab',              __('A/B Campaigns', 'wppoppop'),    'dashicons-randomize'],
     ['wppoppop-submissions',     __('Submissions', 'wppoppop'),      'dashicons-email-alt'],
     ['wppoppop-log',             __('Activity Log', 'wppoppop'),     'dashicons-list-view'],
-    ['wppoppop-stats',           __('Statistics', 'wppoppop'),       'dashicons-chart-bar'],
     ['wppoppop-field-analytics', __('Field Analytics', 'wppoppop'),  'dashicons-chart-pie'],
     ['wppoppop-payments',        __('Transactions', 'wppoppop'),     'dashicons-money-alt'],
     ['wppoppop-library',         __('Popups Library', 'wppoppop'),   'dashicons-category'],
@@ -32,6 +33,7 @@ $bar_links = [
     ['wppoppop-extend',          __('Extend', 'wppoppop'),           'dashicons-plugins-checked'],
     ['wppoppop-tools',           __('Tools & Export', 'wppoppop'),   'dashicons-admin-tools'],
 ];
+$bar_links = apply_filters('wppoppop_bar_links', $bar_links);
 /* WPPOPPOP_BAR_MENU_SYNC: Menu dropdown mirrors Settings > Pages (label, order, hidden), live from the registered submenu. */
 $bar_icons = [];
 foreach ($bar_links as $bl) { $bar_icons[$bl[0]] = $bl[2]; }

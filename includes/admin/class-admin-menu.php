@@ -31,9 +31,9 @@ class WpPopPop_Admin_Menu {
     protected function menu_icon() {
         $file = WPPOPPOP_PATH . 'admin/img/wppoppop-menu-icon.svg';
         if (is_readable($file)) {
-            $svg = file_get_contents($file);
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $svg = file_get_contents($file);
             if ($svg !== false && $svg !== '') {
-                return 'data:image/svg+xml;base64,' . base64_encode($svg);
+                return 'data:image/svg+xml;base64,' . /* phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- inline SVG data URI, not obfuscation */ base64_encode($svg);
             }
         }
         return 'dashicons-external';
@@ -57,10 +57,8 @@ class WpPopPop_Admin_Menu {
         add_submenu_page($parent, __('Dashboard', 'wppoppop'), __('Dashboard', 'wppoppop'), 'manage_options', $parent, $overview_cb);
         $this->dashboard_hook = add_submenu_page($parent, __('Popups', 'wppoppop'), __('Popups', 'wppoppop'), 'manage_options', 'wppoppop', [$this->pages, 'render_dashboard']);
         add_submenu_page($parent, __('Create Popup', 'wppoppop'), __('Create Popup', 'wppoppop'), 'manage_options', 'wppoppop-builder', [$this->pages, 'render_builder']);
-        add_submenu_page($parent, __('A/B Campaigns', 'wppoppop'), __('A/B Campaigns', 'wppoppop'), 'manage_options', 'wppoppop-ab', [$this->pages, 'render_ab']);
         add_submenu_page($parent, __('Submissions', 'wppoppop'), __('Submissions', 'wppoppop'), 'manage_options', 'wppoppop-submissions', [$this->pages, 'render_submissions']);
         add_submenu_page($parent, __('Activity Log', 'wppoppop'), __('Activity Log', 'wppoppop'), 'manage_options', 'wppoppop-log', [$this->pages, 'render_log']);
-        add_submenu_page($parent, __('Statistics', 'wppoppop'), __('Statistics', 'wppoppop'), 'manage_options', 'wppoppop-stats', [$this->pages, 'render_stats']);
         add_submenu_page($parent, __('Field Analytics', 'wppoppop'), __('Field Analytics', 'wppoppop'), 'manage_options', 'wppoppop-field-analytics', [$this->pages, 'render_field_analytics']);
         add_submenu_page($parent, __('Transactions', 'wppoppop'), __('Transactions', 'wppoppop'), 'manage_options', 'wppoppop-payments', [$this->pages, 'render_payments']);
         add_submenu_page($parent, __('Popups Library', 'wppoppop'), __('Popups Library', 'wppoppop'), 'manage_options', 'wppoppop-library', [$this->pages, 'render_library']);
@@ -68,6 +66,8 @@ class WpPopPop_Admin_Menu {
         add_submenu_page($parent, __('Extend', 'wppoppop'), __('Extend', 'wppoppop'), 'manage_options', 'wppoppop-extend', [$this->pages, 'render_extend']);
         add_submenu_page($parent, __('Theme', 'wppoppop'), __('Theme', 'wppoppop'), 'manage_options', 'wppoppop-theme', [$this->pages, 'render_theme']);
         add_submenu_page($parent, __('Tools & Export', 'wppoppop'), __('Tools & Export', 'wppoppop'), 'manage_options', 'wppoppop-tools', [$this->pages, 'render_tools']);
+
+        do_action('wppoppop_admin_menu', $parent);
 
         if (!empty($this->dashboard_hook)) {
             add_action("load-{$this->dashboard_hook}", [$this, 'load_dashboard_screen_options']);
@@ -171,7 +171,7 @@ class WpPopPop_Admin_Menu {
         if (!current_user_can('manage_options')) { return false; }
         $table = $wpdb->prefix . 'wppoppop_submissions';
         $prev = $wpdb->suppress_errors(true);
-        $found = $wpdb->get_var("SELECT 1 FROM {$table} WHERE is_read = 0 LIMIT 1");
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $found = $wpdb->get_var("SELECT 1 FROM {$table} WHERE is_read = 0 LIMIT 1");
         $wpdb->suppress_errors($prev);
         return !empty($found);
     }

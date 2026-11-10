@@ -42,7 +42,7 @@ class WpPopPop_Saved_Defaults {
 
     public static function file_writable() {
         $dir = dirname(self::file_path());
-        return is_dir($dir) ? is_writable($dir) : is_writable(WPPOPPOP_PATH);
+        return is_dir($dir) ? wp_is_writable($dir) : wp_is_writable(WPPOPPOP_PATH);
     }
 
     /* ------------------------------------------------------------ storage */
@@ -68,7 +68,7 @@ class WpPopPop_Saved_Defaults {
         $all  = [];
         $file = self::file_path();
         if (is_readable($file)) {
-            $raw = file_get_contents($file);
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw = file_get_contents($file);
             if ($raw !== false && strlen($raw) <= self::MAX_BYTES * 4) {
                 self::merge_store($all, json_decode($raw, true), 'file');
             }
@@ -89,24 +89,24 @@ class WpPopPop_Saved_Defaults {
     protected static function write_file(array $store) {
         $file = self::file_path();
         $dir  = dirname($file);
-        if (!is_dir($dir) && !@mkdir($dir, 0755, true)) {
+        if (!is_dir($dir) && !wp_mkdir_p($dir)) {
             return false;
         }
-        if (!is_writable($dir)) {
+        if (!wp_is_writable($dir)) {
             return false;
         }
         if (!file_exists($dir . '/index.php')) {
-            @file_put_contents($dir . '/index.php', "<?php\n// Silence is golden.\n");
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort index.php guard; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($dir . '/index.php', "<?php\n// Silence is golden.\n");
         }
         if (!file_exists($dir . '/.htaccess')) {
-            @file_put_contents($dir . '/.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n");
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort access rules; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($dir . '/.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n");
         }
         $tmp = $file . '.tmp';
-        if (@file_put_contents($tmp, wp_json_encode($store, JSON_PRETTY_PRINT), LOCK_EX) === false) {
+        if (/* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- the result is checked and reported; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($tmp, wp_json_encode($store, JSON_PRETTY_PRINT), LOCK_EX) === false) {
             return false;
         }
-        if (!@rename($tmp, $file)) {
-            @unlink($tmp);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (!@rename($tmp, $file)) {
+            wp_delete_file($tmp);
             return false;
         }
         return true;
@@ -118,7 +118,7 @@ class WpPopPop_Saved_Defaults {
             delete_option(self::OPTION);
             $f = self::file_path();
             if (file_exists($f)) {
-                $file = @unlink($f);
+                /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ $file = @unlink($f);
             }
         } else {
             update_option(self::OPTION, $store, false);

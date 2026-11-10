@@ -173,10 +173,10 @@ class WpPopPop_Module_Categories {
     protected static function write_manifest($m, $value, $image = null) {
         $dir  = (is_array($m) && !empty($m['dir'])) ? $m['dir'] : '';
         $file = $dir . '/module.json';
-        if ($dir === '' || is_link($file) || !is_file($file) || !is_writable($file) || filesize($file) > WpPopPop_Modules::MAX_JSON) {
+        if ($dir === '' || is_link($file) || !is_file($file) || !wp_is_writable($file) || filesize($file) > WpPopPop_Modules::MAX_JSON) {
             return false;
         }
-        $raw = json_decode((string) file_get_contents($file));
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw = json_decode((string) file_get_contents($file));
         if (!is_object($raw)) {
             return false;
         }
@@ -204,7 +204,7 @@ class WpPopPop_Module_Categories {
         if (!is_string($json) || $json === '') {
             return false;
         }
-        return @file_put_contents($file, $json . "\n", LOCK_EX) !== false;
+        return /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort write, the result is checked; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($file, $json . "\n", LOCK_EX) !== false;
     }
 
     /**

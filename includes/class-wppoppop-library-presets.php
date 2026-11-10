@@ -22,16 +22,27 @@ class WpPopPop_Library_Presets {
             return $cache;
         }
         $cache = array();
-        $files = glob(self::dir() . '*.json');
-        if (!is_array($files)) {
-            $files = array();
+        $files     = array();
+        $roots_map = array();
+        $roots     = array(array('path' => self::dir(), 'url' => WPPOPPOP_URL . 'library-presets/', 'source' => 'core'));
+        foreach (WpPopPop_Pro_API::roots('preset') as $r) {
+            $roots[] = array('path' => rtrim($r['path'], '/\\') . '/', 'url' => $r['url'], 'source' => 'pro');
         }
-        /* folder-per-template: library-presets/<name>/template.json (+ images) */
-        $dirs = glob(self::dir() . '*/template.json');
-        if (is_array($dirs)) {
-            $files = array_merge($files, $dirs);
+        /* core folder first: on a duplicate slug the core template wins */
+        foreach ($roots as $r) {
+            $part = glob($r['path'] . '*.json');
+            $part = is_array($part) ? $part : array();
+            /* folder-per-template: library-presets/<name>/template.json (+ images) */
+            $sub = glob($r['path'] . '*/template.json');
+            if (is_array($sub)) {
+                $part = array_merge($part, $sub);
+            }
+            sort($part);
+            foreach ($part as $pf) {
+                $files[]        = $pf;
+                $roots_map[$pf] = $r;
+            }
         }
-        sort($files);
         if (!class_exists('WpPopPop_Sanitizer')) {
             require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sanitizer.php';
         }
@@ -39,10 +50,11 @@ class WpPopPop_Library_Presets {
             if (!is_readable($f) || filesize($f) > self::MAX_BYTES) { continue; }
             $is_dir   = (basename($f) === 'template.json');
             $folder   = $is_dir ? basename(dirname($f)) : '';
-            $base_dir = $is_dir ? dirname($f) . '/' : self::dir();
-            $base_url = WPPOPPOP_URL . 'library-presets/' . ($is_dir ? rawurlencode($folder) . '/' : '');
+            $root     = $roots_map[$f];
+            $base_dir = $is_dir ? dirname($f) . '/' : $root['path'];
+            $base_url = $root['url'] . ($is_dir ? rawurlencode($folder) . '/' : '');
             if ($is_dir && (!preg_match('/^[A-Za-z0-9._-]+$/', $folder) || is_link(dirname($f)))) { continue; }
-            $j = json_decode((string) file_get_contents($f));
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $j = json_decode((string) file_get_contents($f));
             if (!is_object($j)) { continue; }
 
             $meta = array();
@@ -124,6 +136,8 @@ class WpPopPop_Library_Presets {
                 'data'        => (string) $json,
                 'preset'      => true,
                 'no_download' => $no_dl,
+                'tier'        => ($root['source'] === 'pro' || (isset($meta['tier']) && $meta['tier'] === 'pro')) ? 'pro' : 'free',
+                'source'      => $root['source'],
             );
         }
         return $cache;

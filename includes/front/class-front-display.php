@@ -24,7 +24,6 @@ class WpPopPop_Front_Display {
         add_action('wp_footer', [$this, 'print_custom_footer_assets'], 99);
         add_action('wp_footer', [$this, 'render_popups'], 50);
         new WpPopPop_Front_Shortcode($renderer);
-        new WpPopPop_Front_Ab();
     }
 
     protected function is_execution_allowed() {
@@ -56,7 +55,6 @@ class WpPopPop_Front_Display {
         wp_enqueue_script('wppoppop-front-scale-js', WPPOPPOP_URL . 'public/js/front/front-scale.js', ['wppoppop-front-js'], $asset_version, true);
         wp_enqueue_script('wppoppop-front-pickers-js', WPPOPPOP_URL . 'public/js/front/front-pickers.js', ['wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_FRONT_PICKERS_V1 */
         wp_enqueue_script('wppoppop-front-tracking-js', WPPOPPOP_URL . 'public/js/front/front-tracking.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
-        wp_enqueue_script('wppoppop-front-targeting-triggers-js', WPPOPPOP_URL . 'public/js/front/front-targeting-triggers.js', ['jquery', 'wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_TARGETING_TRIGGERS_JS */
 
         // Enqueue Google reCAPTCHA if enabled
         $recaptcha_enabled  = (bool) wppoppop_get_setting('enable_recaptcha', false);
@@ -66,6 +64,7 @@ class WpPopPop_Front_Display {
                 'wppoppop-recaptcha-api',
                 'https://www.google.com/recaptcha/api.js?render=' . esc_attr($recaptcha_site_key),
                 [],
+                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- external Google API script; a ver query string is not wanted on that URL
                 null,
                 true
             );
@@ -75,6 +74,7 @@ class WpPopPop_Front_Display {
 
         $runtime_payload = [
             'ajax_url'           => admin_url('admin-ajax.php'),
+            'fa_url'             => WpPopPop_Libraries::fa_url(),
             'nonce'              => wp_create_nonce('wppoppop_front_nonce'),
             'cookie_epoch'       => $cookie_epoch,
             'render_delay'       => max(0, (int) wppoppop_get_setting('render_delay', 0)),
@@ -105,7 +105,7 @@ class WpPopPop_Front_Display {
         // Site-wide tracking markup is independent of popup Test Mode.
         $header_html = wppoppop_get_setting('custom_header_html', '');
         if (!empty($header_html)) {
-            echo "\n<!-- WpPopPop Head Markup -->\n" . $header_html . "\n";
+            /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- administrator-defined head snippet, intentionally raw */ echo "\n<!-- WpPopPop Head Markup -->\n" . $header_html . "\n";
         }
 
         if (!$this->is_execution_allowed()) {
@@ -119,14 +119,14 @@ class WpPopPop_Front_Display {
             if ((bool) wppoppop_get_setting('minify_css', false)) {
                 $custom_css = wppoppop_minify_css($custom_css);
             }
-            echo "\n<style id=\"wppoppop-global-custom-css\">\n" . $custom_css . "\n</style>\n";
+            /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS text, tags stripped */ echo "\n<style id=\"wppoppop-global-custom-css\">\n" . wp_strip_all_tags($custom_css) . "\n</style>\n";
         }
     }
 
     public function print_custom_footer_assets() {
         $footer_html = wppoppop_get_setting('custom_footer_html', '');
         if (!empty($footer_html)) {
-            echo "\n<!-- WpPopPop Footer Tracking -->\n" . $footer_html . "\n";
+            /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- administrator-defined footer snippet, intentionally raw */ echo "\n<!-- WpPopPop Footer Tracking -->\n" . $footer_html . "\n";
         }
 
         if (!$this->is_execution_allowed()) {
@@ -150,7 +150,7 @@ class WpPopPop_Front_Display {
 
         $custom_js = wppoppop_get_setting('custom_js', '');
         if (!empty($custom_js)) {
-            echo "\n<script id=\"wppoppop-global-custom-js\">\n" . $custom_js . "\n</script>\n";
+            /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- administrator-defined script, intentionally raw */ echo "\n<script id=\"wppoppop-global-custom-js\">\n" . $custom_js . "\n</script>\n";
         }
     }
 
@@ -197,8 +197,7 @@ class WpPopPop_Front_Display {
             return;
         }
 
-        $popups = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE status = 'publish' ORDER BY id DESC" );
+        $popups = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE status = 'publish' ORDER BY id DESC" );
         if (empty($popups)) {
             return;
         }

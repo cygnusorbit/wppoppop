@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -7,7 +8,6 @@ $__align_on = !empty($__bld['builder_alignment_tool']);
 $__vp_on = !empty($__bld['builder_viewport_toggle']);
 $__zm_on = !empty($__bld['builder_zoom_select']);
 $__st_on = !empty($__bld['builder_save_template']);
-$__ex_on = !empty($__bld['builder_extra_elements']);
 $__cc_on = !empty($__bld['builder_click_canvas_settings']);
 $__ce_on = !empty($__bld['builder_click_element_settings']);
 ?>
@@ -69,16 +69,6 @@ $__ce_on = !empty($__bld['builder_click_element_settings']);
             <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Save As Template', 'wppoppop'); ?>">
                 <input type="hidden" name="settings[builder_save_template]" value="0">
                 <input type="checkbox" name="settings[builder_save_template]" value="1" <?php checked($__st_on); ?>>
-                <span class="trk"></span>
-            </label>
-        </li>
-        <li>
-            <span class="bld-name"><?php esc_html_e('Additional Ribbon Bar Elements', 'wppoppop'); ?>
-                <span class="bld-desc"><?php esc_html_e('Show the extra elements (Image Select, Tile, Rating) in the builder ribbon bar. Off by default.', 'wppoppop'); ?></span>
-            </span>
-            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Additional Ribbon Bar Elements', 'wppoppop'); ?>">
-                <input type="hidden" name="settings[builder_extra_elements]" value="0">
-                <input type="checkbox" name="settings[builder_extra_elements]" value="1" <?php checked($__ex_on); ?>>
                 <span class="trk"></span>
             </label>
         </li>

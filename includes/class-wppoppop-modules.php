@@ -234,7 +234,7 @@ class WpPopPop_Modules {
             'deprecated'     => !empty($raw['deprecated']),
             'hidden'         => (isset($raw['hidden']) && !in_array(is_string($raw['hidden']) ? strtolower(trim($raw['hidden'])) : $raw['hidden'], [false, 0, null, '', '0', 'false', 'no', 'off'], true)), /* WPPOPPOP_MODULE_HIDDEN */
             'template'       => $template,
-            'source'         => $core ? 'core' : 'uploaded',
+            'source'         => $core ? 'core' : ($source === 'pro' ? 'pro' : 'uploaded'),
         ];
     }
 
@@ -347,7 +347,7 @@ class WpPopPop_Modules {
         if (is_link($file) || !is_file($file) || !is_readable($file) || filesize($file) > self::MAX_JSON) {
             return null;
         }
-        $raw = json_decode((string) file_get_contents($file), true);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw = json_decode((string) file_get_contents($file), true);
         $m   = self::normalize($raw, $source, basename($dir));
         if ($m) {
             $m['dir'] = $dir;
@@ -373,6 +373,9 @@ class WpPopPop_Modules {
         if (!is_array($m) || empty($m['slug'])) {
             return '';
         }
+        if ($m['source'] === 'pro') {
+            return empty($m['base_url']) ? '' : $m['base_url'] . $m['slug'] . '/';
+        }
         $base = ($m['source'] === 'core') ? WPPOPPOP_URL . 'modules' : self::uploads_url();
         return $base === '' ? '' : $base . '/' . $m['slug'] . '/';
     }
@@ -382,7 +385,7 @@ class WpPopPop_Modules {
         return !self::get($slug) || self::is_installed($slug);
     }
 
-    protected static function scan($root, $source) {
+    protected static function scan($root, $source, $url = '') {
         $out = [];
         if ($root === '' || !is_dir($root)) {
             return $out;
@@ -397,6 +400,7 @@ class WpPopPop_Modules {
             }
             $m = self::read_manifest($dir, $source);
             if ($m) {
+                $m['base_url'] = $url;
                 $out[] = $m;
             }
         }
@@ -411,6 +415,13 @@ class WpPopPop_Modules {
         $out = [];
         foreach (self::scan(self::core_dir(), 'core') as $m) {
             $out[$m['slug']] = $m;
+        }
+        foreach (WpPopPop_Pro_API::roots('module') as $r) {
+            foreach (self::scan($r['path'], 'pro', $r['url']) as $m) {
+                if (!isset($out[$m['slug']])) {
+                    $out[$m['slug']] = $m;
+                }
+            }
         }
         foreach (self::scan(self::uploads_dir(), 'uploaded') as $m) {
             if (!isset($out[$m['slug']])) {
@@ -443,7 +454,7 @@ class WpPopPop_Modules {
         if ($m['locked']) {
             return 'installed';
         }
-        if ($m['source'] === 'uploaded' && !$m['compatible']) {
+        if (in_array($m['source'], ['uploaded', 'pro'], true) && !$m['compatible']) {
             return 'available';
         }
         $s = self::states();
@@ -504,7 +515,7 @@ class WpPopPop_Modules {
     public static function labels() {
         $out = [];
         foreach (self::installed() as $slug => $m) {
-            $out[$slug] = ($m['source'] === 'core') ? translate($m['name'], 'wppoppop') : $m['name'];
+            $out[$slug] = ($m['source'] === 'core') ? /* phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction, WordPress.WP.I18n.NonSingularStringLiteralText -- module manifest strings are translated by the module text domain */ translate($m['name'], 'wppoppop') : $m['name'];
         }
         return $out;
     }
@@ -668,26 +679,7 @@ class WpPopPop_Modules {
                 unset($res['config']['settings'][$k]);
             }
         }
-        if (!class_exists('WpPopPop_Webhooks') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; } /* WPPOPPOP_WEBHOOKS_REDACT */
-        if (class_exists('WpPopPop_Webhooks')) {
-            $res['config'] = WpPopPop_Webhooks::redact($res['config']);
-        }
-        if (!class_exists('WpPopPop_Mailchimp') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; } /* WPPOPPOP_MAILCHIMP_REDACT */
-        if (class_exists('WpPopPop_Mailchimp')) {
-            $res['config'] = WpPopPop_Mailchimp::redact($res['config']);
-        }
-        if (!class_exists('WpPopPop_Getresponse') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; } /* WPPOPPOP_GETRESPONSE_REDACT */
-        if (class_exists('WpPopPop_Getresponse')) {
-            $res['config'] = WpPopPop_Getresponse::redact($res['config']);
-        }
-        if (!class_exists('WpPopPop_Sms') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; } /* WPPOPPOP_SMS_REDACT */
-        if (class_exists('WpPopPop_Sms')) {
-            $res['config'] = WpPopPop_Sms::redact($res['config']);
-        }
-        if (!class_exists('WpPopPop_Downloads') && defined('WPPOPPOP_PATH')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; } /* WPPOPPOP_DOWNLOADS_REDACT */
-        if (class_exists('WpPopPop_Downloads')) {
-            $res['config'] = WpPopPop_Downloads::redact($res['config']);
-        }
+        $res['config'] = WpPopPop_Module_Bridge::redact($res['config']); /* WPPOPPOP_REDACT */
         return $res;
     }
 

@@ -56,7 +56,7 @@ function wppoppop_minify_css($css) {
 function wppoppop_log_event($event_type, $message, $payload = []) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'wppoppop_logs';
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") !== $table_name) {
+    if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table_name))) !== $table_name) {
         return false;
     }
     return $wpdb->insert(
@@ -79,9 +79,4 @@ if (!class_exists('WpPopPop_Tracking') && file_exists(WPPOPPOP_PATH . 'includes/
 /* WPPOPPOP_SETTINGS_RESET_LOADER */
 if (!class_exists('WpPopPop_Settings_Reset') && file_exists(WPPOPPOP_PATH . 'includes/class-wppoppop-settings-reset.php')) {
     require_once WPPOPPOP_PATH . 'includes/class-wppoppop-settings-reset.php';
-}
-
-/* WPPOPPOP_STATS_LOADER */
-if (class_exists('WpPopPop_Admin_Stats')) {
-    WpPopPop_Admin_Stats::boot();
 }

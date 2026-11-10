@@ -74,8 +74,7 @@ class WpPopPop_List_Table extends WP_List_Table {
     protected function get_views() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $rows = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT status FROM {$wpdb->prefix}wppoppop_items" );
+        $rows = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT status FROM {$wpdb->prefix}wppoppop_items" );
 
         $all = 0; $active = 0; $inactive = 0; $trash = 0;
         foreach ((array) $rows as $row) {
@@ -120,8 +119,7 @@ class WpPopPop_List_Table extends WP_List_Table {
     protected function get_views_legacy() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $all_rows   = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT id, status, impressions, submissions FROM {$wpdb->prefix}wppoppop_items" );
+        $all_rows   = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT id, status, impressions, submissions FROM {$wpdb->prefix}wppoppop_items" );
 
         $all_count     = 0;
         $pub_count     = 0;
@@ -349,8 +347,9 @@ class WpPopPop_List_Table extends WP_List_Table {
         global $wpdb;
         WpPopPop_Installer::ensure_schema();
         $subs = $wpdb->prefix . 'wppoppop_submissions';
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input
         $rows = $wpdb->get_results(
-            "SELECT popup_uid, COUNT(*) AS total, SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread FROM {$subs} GROUP BY popup_uid",
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ "SELECT popup_uid, COUNT(*) AS total, SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread FROM {$subs} GROUP BY popup_uid",
             ARRAY_A
         );
         $this->entry_counts = [];
@@ -460,7 +459,7 @@ class WpPopPop_List_Table extends WP_List_Table {
             check_admin_referer('wppoppop_trash_' . $uid);
 
             if (!current_user_can('delete_wppoppop_campaign', $uid)) {
-                wp_die(__('You do not have permission to trash this campaign.', 'wppoppop'));
+                wp_die(esc_html__('You do not have permission to trash this campaign.', 'wppoppop'));
             }
 
             $wpdb->update($items_table, ['status' => 'trash'], ['uid' => $uid]);
@@ -476,7 +475,7 @@ class WpPopPop_List_Table extends WP_List_Table {
             check_admin_referer('wppoppop_untrash_' . $uid);
 
             if (!current_user_can('edit_wppoppop_campaign', $uid)) {
-                wp_die(__('You do not have permission to restore this campaign.', 'wppoppop'));
+                wp_die(esc_html__('You do not have permission to restore this campaign.', 'wppoppop'));
             }
 
             $wpdb->update($items_table, ['status' => 'draft'], ['uid' => $uid]);
@@ -492,7 +491,7 @@ class WpPopPop_List_Table extends WP_List_Table {
             check_admin_referer('wppoppop_delete_' . $uid);
 
             if (!current_user_can('purge_wppoppop_campaign', $uid)) {
-                wp_die(__('You do not have permission to permanently delete this campaign.', 'wppoppop'));
+                wp_die(esc_html__('You do not have permission to permanently delete this campaign.', 'wppoppop'));
             }
 
             $wpdb->delete($items_table, ['uid' => $uid]);
@@ -511,18 +510,17 @@ class WpPopPop_List_Table extends WP_List_Table {
             check_admin_referer('wppoppop_empty_trash');
 
             if (!current_user_can('purge_wppoppop_campaigns')) {
-                wp_die(__('You do not have permission to empty the trash.', 'wppoppop'));
+                wp_die(esc_html__('You do not have permission to empty the trash.', 'wppoppop'));
             }
 
-            $trashed_uids = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_col( "SELECT uid FROM {$wpdb->prefix}wppoppop_items WHERE status = 'trash'" );
+            $trashed_uids = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_col( "SELECT uid FROM {$wpdb->prefix}wppoppop_items WHERE status = 'trash'" );
             if (!empty($trashed_uids)) {
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->query( "DELETE FROM {$wpdb->prefix}wppoppop_items WHERE status = 'trash'" );
                 if (// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_submissions' ) ) ) === $subs_table) {
                     $placeholders = implode(',', array_fill(0, count($trashed_uids), '%s'));
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared
         $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $trashed_uids));
                 }
             }
@@ -541,7 +539,7 @@ class WpPopPop_List_Table extends WP_List_Table {
                      wp_verify_nonce($nonce, 'wppoppop_admin_nonce');
 
             if (!$valid) {
-                wp_die(__('Security verification failed. Please try again.', 'wppoppop'));
+                wp_die(esc_html__('Security verification failed. Please try again.', 'wppoppop'));
             }
 
             $uids = [];
@@ -555,35 +553,35 @@ class WpPopPop_List_Table extends WP_List_Table {
 
                 if ($action === 'trash') {
                     if (!current_user_can('delete_wppoppop_campaigns')) {
-                        wp_die(__('You do not have permission to move campaigns to the trash.', 'wppoppop'));
+                        wp_die(esc_html__('You do not have permission to move campaigns to the trash.', 'wppoppop'));
                     }
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared
         $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = 'trash' WHERE uid IN ($placeholders)", $uids));
                     $arg = ['trashed' => $count];
                 } elseif ($action === 'untrash') {
                     if (!current_user_can('edit_wppoppop_campaigns')) {
-                        wp_die(__('You do not have permission to restore campaigns.', 'wppoppop'));
+                        wp_die(esc_html__('You do not have permission to restore campaigns.', 'wppoppop'));
                     }
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared
         $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = 'draft' WHERE uid IN ($placeholders)", $uids));
                     $arg = ['untrashed' => $count];
                 } elseif ($action === 'delete') {
                     if (!current_user_can('purge_wppoppop_campaigns')) {
-                        wp_die(__('You do not have permission to permanently delete campaigns.', 'wppoppop'));
+                        wp_die(esc_html__('You do not have permission to permanently delete campaigns.', 'wppoppop'));
                     }
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared
         $wpdb->query($wpdb->prepare("DELETE FROM {$items_table} WHERE uid IN ($placeholders)", $uids));
                     if (// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_submissions' ) ) ) === $subs_table) {
-                        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared
         $wpdb->query($wpdb->prepare("DELETE FROM {$subs_table} WHERE popup_uid IN ($placeholders)", $uids));
                     }
                     $arg = ['deleted' => $count];
                 } elseif ($action === 'duplicate') {
                     if (!current_user_can('edit_wppoppop_campaigns')) {
-                        wp_die(__('You do not have permission to duplicate campaigns.', 'wppoppop'));
+                        wp_die(esc_html__('You do not have permission to duplicate campaigns.', 'wppoppop'));
                     }
-                    $src = $wpdb->get_results($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid IN ($placeholders) AND status != 'trash'", $uids), ARRAY_A);
+                    /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared */ $src = $wpdb->get_results($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid IN ($placeholders) AND status != 'trash'", $uids), ARRAY_A);
                     $made = 0;
                     foreach ((array) $src as $r) {
                         $ok = $wpdb->insert($items_table, [
@@ -600,9 +598,9 @@ class WpPopPop_List_Table extends WP_List_Table {
                     $arg = ['duplicated' => $made];
                 } elseif ($action === 'publish' || $action === 'draft') {
                     if (!current_user_can('publish_wppoppop_campaigns')) {
-                        wp_die(__('You do not have permission to modify campaign statuses.', 'wppoppop'));
+                        wp_die(esc_html__('You do not have permission to modify campaign statuses.', 'wppoppop'));
                     }
-                    $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = %s WHERE uid IN ($placeholders)", array_merge([$action], $uids)));
+                    /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared */ $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET status = %s WHERE uid IN ($placeholders)", array_merge([$action], $uids)));
                     $arg = ['updated' => $count];
                 }
 
@@ -648,7 +646,7 @@ class WpPopPop_List_Table extends WP_List_Table {
         }
 
         $orderby = isset($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'updated_at';
-        $order   = isset($_GET['order']) && strtolower($_GET['order']) === 'asc' ? 'ASC' : 'DESC';
+        $order   = isset($_GET['order']) && strtolower(sanitize_text_field(wp_unslash($_GET['order']))) === 'asc' ? 'ASC' : 'DESC';
 
         $allowed_orderby = ['title', 'uid', 'status', 'impressions', 'submissions', 'created_at', 'updated_at'];
         if (!in_array($orderby, $allowed_orderby, true)) {
@@ -658,9 +656,9 @@ class WpPopPop_List_Table extends WP_List_Table {
         $query .= " ORDER BY {$orderby} {$order}";
 
         if (!empty($params)) {
-            $results = $wpdb->get_results($wpdb->prepare($query, $params), ARRAY_A);
+            /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- only a whitelisted column and direction are appended to the query and the values are prepared */ $results = $wpdb->get_results($wpdb->prepare($query, $params), ARRAY_A);
         } else {
-            $results = $wpdb->get_results($query, ARRAY_A);
+            /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- only a whitelisted column and direction are appended to the query, there is no other input */ $results = $wpdb->get_results($query, ARRAY_A);
         }
 
         $data = $results ?: [];

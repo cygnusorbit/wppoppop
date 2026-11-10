@@ -30,8 +30,7 @@ class WpPopPop_Backup {
     private static function get_target_tables() {
         global $wpdb;
         $prefix = $wpdb->prefix . 'wppoppop_';
-        $results = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_' ) . '%' ) );
+        $results = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix . 'wppoppop_' ) . '%' ) );
         return !empty($results) ? $results : [$wpdb->prefix . 'wppoppop_items'];
     }
 
@@ -56,8 +55,7 @@ class WpPopPop_Backup {
 
         foreach ($tables as $table) {
             $short_name = str_replace($wpdb->prefix, '', $table);
-            $rows = // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-            $wpdb->get_results("SELECT * FROM `{$table}`", ARRAY_A);
+            $rows = /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results("SELECT * FROM `{$table}`", ARRAY_A);
             $backup['tables'][$short_name] = $rows ?: [];
         }
 
@@ -79,12 +77,14 @@ class WpPopPop_Backup {
 
         $redirect_url = admin_url('admin.php?page=wppoppop-db-backup');
 
-        if (empty(sanitize_text_field( wp_unslash( $_FILES['backup_file']['tmp_name'] ) ))) {
+        $tmp_file = isset($_FILES['backup_file']['tmp_name']) ? sanitize_text_field(wp_unslash($_FILES['backup_file']['tmp_name'])) : '';
+        $up_error = isset($_FILES['backup_file']['error']) ? (int) $_FILES['backup_file']['error'] : UPLOAD_ERR_NO_FILE;
+
+        if ($tmp_file === '' || $up_error !== UPLOAD_ERR_OK || !is_uploaded_file($tmp_file)) {
             wp_safe_redirect( add_query_arg('error', 'no_file', $redirect_url) ); exit;
-            exit;
         }
 
-        $content = file_get_contents(sanitize_text_field( wp_unslash( $_FILES['backup_file']['tmp_name'] ) ));
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $content = file_get_contents($tmp_file);
         $data = json_decode($content, true);
 
         if (!$data || !isset($data['tables']) || !is_array($data['tables'])) {
@@ -132,8 +132,8 @@ class WpPopPop_Backup {
         }
         global $wpdb;
         $tables = self::get_target_tables();
-        $status = sanitize_text_field($_GET['status'] ?? '');
-        $error  = sanitize_text_field($_GET['error'] ?? '');
+        $status = sanitize_text_field(wp_unslash($_GET['status'] ?? ''));
+        $error  = sanitize_text_field(wp_unslash($_GET['error'] ?? ''));
         ?>
         <div class="wrap" style="max-width: 900px;">
             <h1><?php esc_html_e('WpPopPop Database Backup & Restore', 'wppoppop'); ?></h1>

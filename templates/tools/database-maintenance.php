@@ -1,17 +1,12 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
 
 global $wpdb;
 
-$custom_tables = [
-    'items'        => ['label' => __('Popups & Designs', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_items'],
-    'submissions'  => ['label' => __('Captured Leads', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_submissions'],
-    'campaigns'    => ['label' => 'A/B Experiments', 'name' => $wpdb->prefix . 'wppoppop_campaigns'],
-    'logs'         => ['label' => __('Audit & System Logs', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_logs'],
-    'transactions' => ['label' => __('Payment Records', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_transactions'],
-];
+$custom_tables = class_exists('WpPopPop_Ajax_Tools') ? WpPopPop_Ajax_Tools::table_defs() : [];
 ?>
 <?php
 $tbl_status = class_exists('WpPopPop_Ajax_Tools') ? WpPopPop_Ajax_Tools::table_status() : [];

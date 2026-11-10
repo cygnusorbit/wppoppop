@@ -17,7 +17,10 @@
     function fmt(str) {
         var args = Array.prototype.slice.call(arguments, 1);
         var i = 0;
-        return String(str).replace(/%s/g, function () { return i < args.length ? String(args[i++]) : ''; });
+        return String(str).replace(/%(?:(\d+)\$)?s/g, function (m, n) {
+            var idx = n ? parseInt(n, 10) - 1 : i++;
+            return idx < args.length ? String(args[idx]) : '';
+        });
     }
 
     function parse(res) {

@@ -434,27 +434,7 @@
             $('#prop-bg-color').val('#ffffff');
             $('#prop-bg-transparent').prop('checked', true);
         }
-        if (type === 'imageselect') { /* WPPOPPOP_IMAGESELECT_HYDRATE */
-            var isOpts = el.optionsList || el.options || '';
-            if (Array.isArray(isOpts)) { isOpts = isOpts.join('\n'); }
-            $('#prop-imageselect-options').val(isOpts);
-            if (window.__wppImgSelRebuild) { window.__wppImgSelRebuild(true); } /* WPPOPPOP_IMGSEL_REBUILD */
-            $('#prop-imageselect-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
-            $('#prop-imageselect-accent').val(el.activeColor || '#38bdf8');
-            $('#prop-imageselect-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
-        }
-        if (type === 'tile' && !el.bgColor) { /* WPPOPPOP_TILE_BG_DEFAULT */
-            $('#prop-bg-color').val('#f1f5f9');
-            $('#prop-bg-transparent').prop('checked', false);
-        }
-        if (type === 'tile') { /* WPPOPPOP_TILE_HYDRATE */
-            var tlOpts = el.optionsList || el.options || '';
-            if (Array.isArray(tlOpts)) { tlOpts = tlOpts.join('\n'); }
-            $('#prop-tile-options').val(tlOpts);
-            $('#prop-tile-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
-            $('#prop-tile-accent').val(el.activeColor || '#38bdf8');
-            $('#prop-tile-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
-        }
+        if (window.WpPopPopElementExt) { window.WpPopPopElementExt.call(type, 'hydrate', [el, type]); } /* WPPOPPOP_EXT_HYDRATE */
         if (type === 'shape') {
             $('#prop-shape-fill').val(el.shapeFill || '#3b82f6');
             $('#prop-shape-transparent').prop('checked', !!el.shapeNoFill);

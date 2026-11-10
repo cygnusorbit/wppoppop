@@ -1,11 +1,12 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
 
 global $wpdb;
 $items_table = $wpdb->prefix . 'wppoppop_items';
-$all_popups = $wpdb->get_results("SELECT uid, title FROM {$items_table}");
+/* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $all_popups = $wpdb->get_results("SELECT uid, title FROM {$items_table}");
 $popups_by_uid = [];
 foreach ($all_popups as $p) {
     $popups_by_uid[$p->uid] = $p->title;

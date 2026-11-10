@@ -85,7 +85,7 @@ check_file('admin/js/builder/builder-canvas.js', ['alignSelectedElements', 'smar
 check_file('templates/builder/drawer-settings.php', ['set-exit-intent-sensitivity', 'set-trigger-scroll-depth', 'set-canvas-autoclose'], 'Phase 4 Settings Triggers Markup')
 check_file('admin/js/builder/builder-settings.js', ['set-canvas-autoclose'], 'Phase 4 Settings Hydration')
 # Display Triggers hydration (exit intent / scroll depth) lives in its module package, not in core
-check_file('packages/acc-02-triggers/admin.js', ['set-exit-intent-sensitivity', 'set-trigger-scroll-depth'], 'Phase 4 Display Triggers Module Hydration')
+check_file('packages/acc-display-triggers/admin.js', ['set-exit-intent-sensitivity', 'set-trigger-scroll-depth'], 'Phase 4 Display Triggers Module Hydration')
 
 # Phase 5: Floating Layers Panel Enhancements
 check_file('templates/builder/layers-panel.php', ['wppoppop-floating-layers-panel', 'wppoppop-layers-list'], 'Phase 5 Layers Panel Markup')

@@ -222,12 +222,13 @@ if (!defined('ABSPATH')) exit;
             </div>
 <div id="wppoppop-element-specific-settings">
                 <?php
-                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-08-progress.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-16b-checkboxgroup.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-19-imageselect.php', 'elem-20-tile.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-25-rating.php', 'elem-26-submit.php') as $wppoppop_mod) {
+                foreach (array('elem-01-shape.php', 'elem-02-image.php', 'elem-03-video.php', 'elem-04-label.php', 'elem-05-html.php', 'elem-06-close.php', 'elem-07-icon.php', 'elem-09-button.php', 'elem-10-text.php', 'elem-11-email.php', 'elem-12-number.php', 'elem-13-phone.php', 'elem-14-textarea.php', 'elem-15-select.php', 'elem-16-checkbox.php', 'elem-16b-checkboxgroup.php', 'elem-17-radio.php', 'elem-18-multiselect.php', 'elem-21-date.php', 'elem-22-time.php', 'elem-23-upload.php', 'elem-24-password.php', 'elem-26-submit.php') as $wppoppop_mod) {
                     $wppoppop_mod_file = __DIR__ . '/elements/' . $wppoppop_mod;
                     if (file_exists($wppoppop_mod_file)) {
                         include $wppoppop_mod_file;
                     }
                 }
+                do_action('wppoppop_builder_element_panels');
                 ?>
 
 <!-- IMAGE -->
@@ -288,13 +289,6 @@ if (!defined('ABSPATH')) exit;
 
                 <!-- DATE PICKER -->
 
-                <!-- PROGRESS BAR -->
-                <div class="element-panel" id="panel-elem-progress-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('PROGRESS VALUE:', 'wppoppop'); ?> <span id="prop-progress-val-num">50</span>%</label>
-                    <input type="range" id="prop-progress-val" min="0" max="100" value="50" style="width:100%;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('BAR FILL COLOR', 'wppoppop'); ?></label>
-                    <input type="color" id="prop-progress-bar-color" value="#3b82f6" class="widefat" style="height:32px;">
-                </div>
 
                 <!-- FILE UPLOAD -->
                 <div class="element-panel" id="panel-elem-file-legacy" style="display:none;">
@@ -422,15 +416,6 @@ if (!defined('ABSPATH')) exit;
                         <option value="close"><?php esc_html_e('Close Popup', 'wppoppop'); ?></option>
                         <option value="redirect"><?php esc_html_e('Redirect URL', 'wppoppop'); ?></option>
                     </select>
-                </div>
-                <!-- RATING -->
-                <div class="element-panel" id="panel-elem-rating-legacy" style="display:none;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('DEFAULT STAR RATING (1-5)', 'wppoppop'); ?></label>
-                    <input type="number" id="prop-rating-val" min="1" max="5" value="5" class="widefat" style="font-size:12px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('STAR COLOR', 'wppoppop'); ?></label>
-                    <input type="color" id="prop-rating-color" value="#f59e0b" class="widefat" style="height:32px;margin-bottom:8px;">
-                    <label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:4px;"><?php esc_html_e('FIELD NAME / TOKEN', 'wppoppop'); ?></label>
-                    <input type="text" id="prop-rating-fieldname" value="rating" class="widefat" style="font-size:12px;">
                 </div>
                 <!-- SIGNATURE -->
                 <div class="element-panel" id="panel-elem-signature" style="display:none;">

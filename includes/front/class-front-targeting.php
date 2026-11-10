@@ -10,7 +10,7 @@ if (!class_exists('WpPopPop_Security')) {
 class WpPopPop_Front_Targeting {
 
     public function detect_visitor_country() {
-        return WpPopPop_Security::detect_visitor_country();
+        return WpPopPop_Module_Bridge::visitor_country();
     }
 
     public function is_eligible($popup) {
@@ -67,24 +67,7 @@ class WpPopPop_Front_Targeting {
             return false;
         }
 
-        // 3b. Targeting module (visitor authentication)
-        if (!class_exists('WpPopPop_Targeting')) {
-            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting.php';
-        }
-        $wppoppop_tg_settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
-        if (!WpPopPop_Targeting::is_eligible($wppoppop_tg_settings)) {
-            return false;
-        }
-
-        // 4. Targeting Triggers module (activity period, user roles, site area)
-        if (!class_exists('WpPopPop_Targeting_Triggers')) {
-            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php';
-        }
-        $wppoppop_tt_settings = isset($config['settings']) && is_array($config['settings']) ? $config['settings'] : [];
-        if (!WpPopPop_Targeting_Triggers::is_eligible($wppoppop_tt_settings)) {
-            return false;
-        }
-
-        return true;
+        /* Extension modules (Pro) add their own targeting rules, e.g. visitor authentication, activity period, roles, site area. */
+        return (bool) apply_filters('wppoppop_popup_eligible', true, $popup, $config);
     }
 }

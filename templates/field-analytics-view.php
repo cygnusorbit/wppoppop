@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -8,14 +9,14 @@ $selected_uid = isset($_GET['popup_uid']) ? sanitize_key($_GET['popup_uid']) : '
 
 // 1. Fetch Campaigns for dropdown selector
 $items_table = $wpdb->prefix . 'wppoppop_items';
-$all_popups  = $wpdb->get_results("SELECT uid, title FROM {$items_table} ORDER BY id DESC");
+/* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $all_popups  = $wpdb->get_results("SELECT uid, title FROM {$items_table} ORDER BY id DESC");
 
 // 2. Query Submissions Data
 $subs_table = $wpdb->prefix . 'wppoppop_submissions';
 if (!empty($selected_uid)) {
-    $rows = $wpdb->get_results($wpdb->prepare("SELECT fields_data FROM {$subs_table} WHERE popup_uid = %s", $selected_uid), ARRAY_A);
+    /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $rows = $wpdb->get_results($wpdb->prepare("SELECT fields_data FROM {$subs_table} WHERE popup_uid = %s", $selected_uid), ARRAY_A);
 } else {
-    $rows = $wpdb->get_results("SELECT fields_data FROM {$subs_table}", ARRAY_A);
+    /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $rows = $wpdb->get_results("SELECT fields_data FROM {$subs_table}", ARRAY_A);
 }
 
 $total_submissions_count = count($rows);

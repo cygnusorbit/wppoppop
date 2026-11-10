@@ -3,10 +3,13 @@
  * Plugin Name: WpPopPop
  * Plugin URI: https://github.com/cygnusorbit/wppoppop
  * Description: The ultimate, high-converting WordPress visual popup builder and lead capture platform.
- * Version: 3.0.914
+ * Version: 3.0.915
  * Author: cygnusorbit
  * Author URI: https://github.com/cygnusorbit
- * License: GPL-2.0+
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wppoppop
  * Domain Path: /languages
  */
@@ -16,10 +19,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define Core Plugin Constants
-define('WPPOPPOP_VERSION', '3.0.914');
+define('WPPOPPOP_VERSION', '3.0.915');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 define('WPPOPPOP_BASENAME', plugin_basename(__FILE__));
+define('WPPOPPOP_API_VERSION', 1);
 
 // Load Dynamic Autoloader
 require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoloader.php';
@@ -63,8 +67,6 @@ final class WpPopPop {
         if (class_exists('WpPopPop_Addons')) {
             new WpPopPop_Addons();
         }
-        add_filter('wp_privacy_personal_data_exporters', ['WpPopPop_Protect', 'register_exporter']); /* WPPOPPOP_PROTECT_PRIVACY */
-        add_filter('wp_privacy_personal_data_erasers', ['WpPopPop_Protect', 'register_eraser']);
         if (class_exists('WpPopPop_Widget_Block')) {
             new WpPopPop_Widget_Block();
         }
@@ -73,6 +75,7 @@ final class WpPopPop {
                 register_widget('WpPopPop_Widget');
             });
         }
+        do_action('wppoppop_loaded', $this);
     }
 }
 

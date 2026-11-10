@@ -37,6 +37,7 @@ class WpPopPop_Front_Assets {
 
         wp_localize_script('wppoppop-front-js', 'wppoppop_front_vars', [
             'ajax_url'     => admin_url('admin-ajax.php'),
+            'fa_url'       => WpPopPop_Libraries::fa_url(),
             'rest_url'     => esc_url_raw(rest_url('wppoppop/v1/')),
             'nonce'        => wp_create_nonce('wppoppop_front_nonce'),
             'cookie_epoch' => get_option('wppoppop_cookie_epoch', 1),

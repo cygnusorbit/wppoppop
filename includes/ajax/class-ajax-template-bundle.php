@@ -73,7 +73,7 @@ class WpPopPop_Ajax_Template_Bundle {
         }
 
         while (ob_get_level() > 0) {
-            @ob_end_clean();
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- no output buffer may be active */ @ob_end_clean();
         }
         nocache_headers();
         header('Content-Type: application/zip');
@@ -81,8 +81,8 @@ class WpPopPop_Ajax_Template_Bundle {
         header('Content-Length: ' . filesize($tmp));
         header('X-Wppoppop-Missing: ' . (int) $b['missing']);
         header('X-Wppoppop-Images: ' . count($b['files']));
-        readfile($tmp);
-        @unlink($tmp);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ readfile($tmp);
+        wp_delete_file($tmp);
         exit;
     }
 
@@ -128,7 +128,7 @@ class WpPopPop_Ajax_Template_Bundle {
             (int) $res['images']
         );
         if (!empty($res['skipped'])) {
-            $msg .= ' ' . sprintf(_n('%d image was skipped (invalid or too large).', '%d images were skipped (invalid or too large).', (int) $res['skipped'], 'wppoppop'), (int) $res['skipped']);
+            $msg .= ' ' . sprintf(/* translators: %d: number of skipped images. */ _n('%d image was skipped (invalid or too large).', '%d images were skipped (invalid or too large).', (int) $res['skipped'], 'wppoppop'), (int) $res['skipped']);
         }
         $res['message'] = $msg;
         wp_send_json_success($res);

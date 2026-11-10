@@ -110,7 +110,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
         if (!is_array($fields)) {
             $fields = [];
         }
-        $fields = WpPopPop_Protect::record_fields($fields, $s->popup_uid); /* WPPOPPOP_PROTECT_RECORD */
+        $fields = WpPopPop_Module_Bridge::record_fields($fields, $s->popup_uid); /* WPPOPPOP_PROTECT_RECORD */
         $is_confirmed = ($s->status === 'confirmed');
         $is_unread    = empty($s->is_read);
         $dot_col      = in_array('popup', $active_cols, true) ? 'popup' : reset($active_cols);
@@ -203,7 +203,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                             <svg class="m-closed" viewBox="0 0 24 24" width="16" height="16" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
                             <svg class="m-open" viewBox="0 0 24 24" width="16" height="16" focusable="false"><path d="M3 10l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 10l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
                         </span>
-                        <?php echo ($c === $dot_col) ? $unread_dot : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>><?php echo esc_html($val); ?></a>
+                        <?php echo ($c === $dot_col) ? wp_kses_post($unread_dot) : ''; ?><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>><?php echo esc_html($val); ?></a>
                         <div class="row-actions">
                             <span class="view"><a href="#" class="wppoppop-view-sub-btn" <?php echo wp_kses_post( $view_attrs ); ?>><?php esc_html_e('View', 'wppoppop'); ?></a> | </span>
                             <span class="mark-unread-wrap"><a href="#" class="wppoppop-mark-unread-btn" data-id="<?php echo esc_attr($s->id); ?>"><?php esc_html_e('Mark as unread', 'wppoppop'); ?></a> | </span>
@@ -213,7 +213,7 @@ if (!function_exists('wppoppop_subs_bulk_bar')) {
                         </div>
                     </td>
                 <?php else : ?>
-                    <td class="<?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>"><?php echo ($c === $dot_col) ? $unread_dot : ''; /* WPPOPPOP_SUB_STATUS_BADGE */
+                    <td class="<?php echo esc_attr($cls); ?>" data-sortval="<?php echo esc_attr(strtolower($val)); ?>"><?php echo ($c === $dot_col) ? wp_kses_post($unread_dot) : ''; /* WPPOPPOP_SUB_STATUS_BADGE */
                         if ($c === 'status') : ?><span class="wppoppop-sub-status <?php echo $is_confirmed ? 'is-confirmed' : 'is-pending'; ?>"><?php echo $is_confirmed ? esc_html__('Confirmed', 'wppoppop') : esc_html__('Pending', 'wppoppop'); ?></span><?php else : echo esc_html($val); endif; ?></td>
                 <?php endif;
             endforeach; ?>

@@ -43,7 +43,7 @@ class WpPopPop_Rest_Diagnostics {
             $headers['X-WpPopPop-Signature'] = hash_hmac('sha256', $body, $secret);
         }
 
-        $response = wp_remote_post($url, [
+        $response = wp_safe_remote_post($url, [
             'headers' => $headers,
             'body'    => $body,
             'timeout' => 8,
@@ -71,12 +71,7 @@ class WpPopPop_Rest_Diagnostics {
             'from_number' => sanitize_text_field($params['from_number'] ?? ''),
         ];
 
-        if (!class_exists('WpPopPop_Addons')) {
-            return new WP_Error('addons_missing', __('Addons module not loaded.', 'wppoppop'), ['status' => 500]);
-        }
-
-        $addons = new WpPopPop_Addons();
-        $result = $addons->dispatch_twilio_sms($to, 'WpPopPop diagnostic test SMS ping.', $creds);
+        $result = apply_filters('wppoppop_diagnostic_sms', new WP_Error('pro_required', __('SMS alerts are part of WpPopPop Pro.', 'wppoppop')), $to, $creds);
 
         if (is_wp_error($result)) {
             return new WP_Error('sms_error', $result->get_error_message(), ['status' => 502]);

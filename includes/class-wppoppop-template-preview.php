@@ -15,14 +15,14 @@ class WpPopPop_Template_Preview {
         if ($size === false || $size < 2) {
             return new WP_Error('size', __('The template file is empty.', 'wppoppop'));
         }
-        $head = (string) file_get_contents($tmp, false, null, 0, 4);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $head = (string) file_get_contents($tmp, false, null, 0, 4);
         if ($head === "PK\x03\x04") {
             return self::from_zip($tmp, $orig, (int) $size);
         }
         if ($size > WpPopPop_Template_Bundle::MAX_JSON) {
             return new WP_Error('size', __('The template file is empty or too large.', 'wppoppop'));
         }
-        $p = self::parse((string) file_get_contents($tmp));
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $p = self::parse((string) file_get_contents($tmp));
         if (is_wp_error($p)) {
             return $p;
         }
@@ -96,13 +96,13 @@ class WpPopPop_Template_Preview {
         }
         $ext = WpPopPop_Template_Bundle::ext_of($name);
         if ($ext === 'svg') {
-            return stripos($b, '<svg') !== false ? 'data:image/svg+xml;base64,' . base64_encode($b) : '';
+            return stripos($b, '<svg') !== false ? /* phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- inline image data URI, not obfuscation */ 'data:image/svg+xml;base64,' . base64_encode($b) : '';
         }
-        $info = function_exists('getimagesizefromstring') ? @getimagesizefromstring($b) : false;
+        $info = function_exists('getimagesizefromstring') ? /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- invalid image data must not raise a warning */ @getimagesizefromstring($b) : false;
         if (!is_array($info) || empty($info['mime']) || !in_array($info['mime'], array('image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'), true)) {
             return '';
         }
-        return 'data:' . $info['mime'] . ';base64,' . base64_encode($b);
+        return /* phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- inline image data URI, not obfuscation */ 'data:' . $info['mime'] . ';base64,' . base64_encode($b);
     }
 
     protected static function from_zip($tmp, $orig, $size) {

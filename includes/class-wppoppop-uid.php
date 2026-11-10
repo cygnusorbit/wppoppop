@@ -26,7 +26,7 @@ class WpPopPop_Uid {
                 $suffix .= $chars[wp_rand(0, strlen($chars) - 1)];
             }
             $candidate = $base . '-' . $suffix;
-            if (!$wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$table} WHERE uid = %s", $candidate))) {
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ if (!$wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$table} WHERE uid = %s", $candidate))) {
                 return $candidate;
             }
         }
@@ -45,22 +45,13 @@ class WpPopPop_Uid {
         }
         $items = $wpdb->prefix . 'wppoppop_items';
         $new   = $base . '-' . $m[2];
-        if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$items} WHERE uid = %s", $new))) {
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$items} WHERE uid = %s", $new))) {
             $new = self::generate($title);
         }
         $wpdb->update($items, ['uid' => $new], ['uid' => $uid], ['%s'], ['%s']);
         $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['popup_uid' => $new], ['popup_uid' => $uid], ['%s'], ['%s']);
         $wpdb->update($wpdb->prefix . 'wppoppop_transactions', ['popup_uid' => $new], ['popup_uid' => $uid], ['%s'], ['%s']);
-        $camps = $wpdb->prefix . 'wppoppop_campaigns';
-        foreach ((array) $wpdb->get_results("SELECT id, popup_uids FROM {$camps}", ARRAY_A) as $r) {
-            $list = json_decode($r['popup_uids'], true);
-            if (is_array($list) && in_array($uid, $list, true)) {
-                foreach ($list as $k => $v) {
-                    if ($v === $uid) { $list[$k] = $new; }
-                }
-                $wpdb->update($camps, ['popup_uids' => wp_json_encode(array_values($list))], ['id' => (int) $r['id']], ['%s'], ['%d']);
-            }
-        }
+        do_action('wppoppop_popup_uid_renamed', $uid, $new);
         return $new;
     }
 }

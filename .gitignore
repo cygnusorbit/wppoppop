@@ -17,3 +17,5 @@ ref_*/
 *.backup-*
 *.guardian.bak
 *.bak-*
+*.bak_*
+packages/*.zip

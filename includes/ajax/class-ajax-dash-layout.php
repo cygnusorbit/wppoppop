@@ -44,7 +44,7 @@ class WpPopPop_Ajax_Dash_Layout {
         if (!wp_verify_nonce($nonce, 'wppoppop_admin_nonce')) {
             wp_send_json_error(['message' => __('Security check failed. Please refresh the page.', 'wppoppop')], 403);
         }
-        $raw   = isset($_POST['order']) ? (array) wp_unslash($_POST['order']) : [];
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each key is sanitize_key()d and checked against an allow-list */ $raw   = isset($_POST['order']) ? (array) wp_unslash($_POST['order']) : [];
         $clean = [];
         foreach (array_slice($raw, 0, 20) as $k) {
             if (!is_scalar($k)) { continue; }

@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -8,7 +9,7 @@ global $wpdb;
 // Gather Server & Environment Diagnostics
 $php_version        = phpversion();
 $wp_version         = get_bloginfo('version');
-$server_software    = isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field($_SERVER['SERVER_SOFTWARE']) : 'Unknown';
+$server_software    = isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : 'Unknown';
 $mysql_version      = $wpdb->db_version();
 $php_memory_limit   = ini_get('memory_limit') ?: 'N/A';
 $wp_memory_limit    = defined('WP_MEMORY_LIMIT') ? WP_MEMORY_LIMIT : '40M';
@@ -26,7 +27,6 @@ $plugin_version     = defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION : '1.0.0';
 // Database Entity Counts
 $popups_count       = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}wppoppop_items");
 $leads_count        = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}wppoppop_submissions");
-$campaigns_count    = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}wppoppop_campaigns");
 
 // Health Validations
 $php_is_optimal     = version_compare($php_version, '7.4', '>=');
@@ -56,7 +56,7 @@ $report_buffer .= "- GD Library: " . $gd_status . "\n";
 $report_buffer .= "- JSON Extension: " . $json_status . "\n";
 $report_buffer .= "- Total Popups: " . $popups_count . "\n";
 $report_buffer .= "- Captured Submissions: " . $leads_count . "\n";
-$report_buffer .= "- A/B Split Campaigns: " . $campaigns_count . "\n";
+$report_buffer .= (string) apply_filters('wppoppop_system_report_lines', '');
 ?>
 <?php
 $sys_groups = [

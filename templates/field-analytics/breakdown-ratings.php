@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -28,7 +29,7 @@ if (!defined('ABSPATH')) {
                     $star_pct   = $total_rating_count > 0 ? round(($star_votes / $total_rating_count) * 100, 1) : 0;
                     ?>
                     <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
-                        <span style="width:50px;font-weight:600;color:#334155;"><?php echo $star; ?> Stars</span>
+                        <span style="width:50px;font-weight:600;color:#334155;"><?php echo esc_html($star); ?> Stars</span>
                         <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden;">
                             <div style="width:<?php echo esc_attr($star_pct); ?>%;height:100%;background:#f59e0b;border-radius:5px;transition:width 0.4s ease;"></div>
                         </div>

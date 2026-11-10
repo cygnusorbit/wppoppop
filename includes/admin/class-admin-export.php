@@ -101,8 +101,7 @@ class WpPopPop_Admin_Export {
         global $wpdb;
         $items = $wpdb->prefix . 'wppoppop_items';
         $maps = [];
-        foreach ((array) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT uid, data FROM {$wpdb->prefix}wppoppop_items" ) as $ir) {
+        foreach ((array) /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT uid, data FROM {$wpdb->prefix}wppoppop_items" ) as $ir) {
             if ($popup_uid !== '' && $ir->uid !== $popup_uid) {
                 continue;
             }
@@ -178,11 +177,9 @@ class WpPopPop_Admin_Export {
         if (empty($defined)) {
             /* no popup-defined fields: fall back to keys found in stored submissions */
             if ($uid !== '') {
-                $raws = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_col( $wpdb->prepare( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions WHERE popup_uid = %s ORDER BY id DESC LIMIT 500", $uid ) );
+                $raws = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_col( $wpdb->prepare( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions WHERE popup_uid = %s ORDER BY id DESC LIMIT 500", $uid ) );
             } else {
-                $raws = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_col( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions ORDER BY id DESC LIMIT 500" );
+                $raws = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_col( "SELECT fields_data FROM {$wpdb->prefix}wppoppop_submissions ORDER BY id DESC LIMIT 500" );
             }
             $skip = ['signature', 'quiz_score', '_name', '_phone', '_ip', '_ua'];
             $seen = [];
@@ -288,7 +285,7 @@ class WpPopPop_Admin_Export {
         header('Expires: 0');
 
         $out = fopen('php://output', 'w');
-        fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel / Numbers
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel / Numbers
 
         $head = ['ID', 'Popup', 'Popup UID', 'Email', 'Status', 'Country', 'Date', 'Name', 'Phone', 'IP Address'];
         foreach ($keys as $hk) {
@@ -301,7 +298,7 @@ class WpPopPop_Admin_Export {
         }
         $pick = null;
         if (isset($_REQUEST['columns'])) {
-            $want = json_decode(wp_unslash($_REQUEST['columns']), true);
+            /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- column ids are matched against a fixed allow-list */ $want = json_decode(wp_unslash($_REQUEST['columns']), true);
             if (is_array($want)) {
                 $pick = [];
                 foreach (array_slice($want, 0, 120) as $w) {
@@ -353,7 +350,7 @@ class WpPopPop_Admin_Export {
             }
         }
 
-        fclose($out);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($out);
         exit;
     }
 }

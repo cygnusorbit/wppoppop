@@ -13,8 +13,6 @@ class WpPopPop_Ajax_Builder {
         add_action('wp_ajax_wppoppop_bulk_delete', [$this, 'bulk_delete']);
         add_action('wp_ajax_wppoppop_export_popup', [$this, 'export_popup']);
         add_action('wp_ajax_wppoppop_import_popup', [$this, 'import_popup']);
-        add_action('wp_ajax_wppoppop_save_campaign', [$this, 'save_campaign']);
-        add_action('wp_ajax_wppoppop_delete_campaign', [$this, 'delete_campaign']);
         if (!class_exists('WpPopPop_Ajax_Templates')) { require_once WPPOPPOP_PATH . 'includes/ajax/class-ajax-templates.php'; }
         new WpPopPop_Ajax_Templates();
     }
@@ -51,15 +49,15 @@ class WpPopPop_Ajax_Builder {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
 
-        $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : __('Untitled Popup', 'wppoppop');
+        $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : __('Untitled Popup', 'wppoppop');
         $uid   = isset($_POST['uid']) && !empty($_POST['uid']) ? sanitize_key($_POST['uid']) : $this->generate_unique_uid($title);
 
         // Support both 'data' and 'config' payload parameters
         $data_raw = '{}';
         if (isset($_POST['data'])) {
-            $data_raw = wp_unslash($_POST['data']);
+            /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitised by the save pipeline */ $data_raw = wp_unslash($_POST['data']);
         } elseif (isset($_POST['config'])) {
-            $data_raw = wp_unslash($_POST['config']);
+            /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitised by the save pipeline */ $data_raw = wp_unslash($_POST['config']);
         }
 
         if (json_decode($data_raw) === null) {
@@ -67,40 +65,14 @@ class WpPopPop_Ajax_Builder {
         }
 
         $wppoppop_obj = json_decode($data_raw);
-        /* WPPOPPOP_OVERLAY_WHITELIST: validate popup overlay settings before persisting */
+        /* WPPOPPOP_EXT_SETTINGS: extension modules (Pro) allow-list their own keys; unhandled keys keep their stored value */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Overlay')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-overlay.php'; }
-            $wppoppop_obj->settings->overlay = json_decode(wp_json_encode(
-                WpPopPop_Overlay::sanitize(isset($wppoppop_obj->settings->overlay) ? $wppoppop_obj->settings->overlay : array())
-            ));
-        }
-        /* WPPOPPOP_CELEBRATION_WHITELIST: allow-list the success celebration effect */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            $wppoppop_cel_ok = array('default', 'none', 'burst', 'cannon', 'fireworks', 'rain', 'stars', 'both');
-            $wppoppop_cel    = (isset($wppoppop_obj->settings->celebration) && is_object($wppoppop_obj->settings->celebration) && isset($wppoppop_obj->settings->celebration->effect))
-                ? (string) $wppoppop_obj->settings->celebration->effect : 'default';
-            $wppoppop_obj->settings->celebration = (object) array(
-                'effect' => in_array($wppoppop_cel, $wppoppop_cel_ok, true) ? $wppoppop_cel : 'default'
-            );
+            $wppoppop_obj->settings = WpPopPop_Module_Bridge::sanitize_settings($wppoppop_obj->settings, 'save', $uid);
         }
         /* WPPOPPOP_BG_CLOSE_WHITELIST: normalize Click Background to Close to a strict boolean */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
             $wppoppop_bgc = isset($wppoppop_obj->settings->close_on_backdrop) ? $wppoppop_obj->settings->close_on_backdrop : false;
             $wppoppop_obj->settings->close_on_backdrop = in_array($wppoppop_bgc, array(true, 1, '1', 'true'), true);
-        }
-        /* WPPOPPOP_POPUP_POSITION_WHITELIST: allow-list the Popup Positions module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Popup_Position')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-popup-position.php'; }
-            $wppoppop_obj->settings->popup_position = json_decode(wp_json_encode(
-                WpPopPop_Popup_Position::sanitize(isset($wppoppop_obj->settings->popup_position) ? $wppoppop_obj->settings->popup_position : array())
-            ));
-        }
-        /* WPPOPPOP_TARGETING_TRIGGERS_WHITELIST: allow-list the Targeting Triggers module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Targeting_Triggers')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php'; }
-            $wppoppop_obj->settings->targeting_triggers = json_decode(wp_json_encode(
-                WpPopPop_Targeting_Triggers::sanitize(isset($wppoppop_obj->settings->targeting_triggers) ? $wppoppop_obj->settings->targeting_triggers : array())
-            ));
         }
         /* Popup Settings module order is global (Settings > Module); never stored per popup */
         if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
@@ -168,164 +140,9 @@ class WpPopPop_Ajax_Builder {
             $wppoppop_obj->settings->notifications = json_decode(wp_json_encode($wppoppop_nout));
             if (!is_array($wppoppop_obj->settings->notifications)) { $wppoppop_obj->settings->notifications = array(); }
         }
-        /* WPPOPPOP_DOUBLEOPTIN_WHITELIST: allow-list the Double Opt-In module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            $wppoppop_do = (isset($wppoppop_obj->settings->double_optin) && is_object($wppoppop_obj->settings->double_optin))
-                ? get_object_vars($wppoppop_obj->settings->double_optin) : array();
-            $wppoppop_do_txt = function ($k, $def = '') use ($wppoppop_do) {
-                return (isset($wppoppop_do[$k]) && !is_array($wppoppop_do[$k]) && !is_object($wppoppop_do[$k]))
-                    ? sanitize_text_field((string) $wppoppop_do[$k]) : $def;
-            };
-            $wppoppop_do_en = isset($wppoppop_do['enable']) && in_array($wppoppop_do['enable'], array(true, 1, '1', 'true'), true);
-            $wppoppop_obj->settings->double_optin = (object) array(
-                'enable'        => $wppoppop_do_en,
-                'recipient'     => $wppoppop_do_txt('recipient'),
-                'subject'       => $wppoppop_do_txt('subject'),
-                'message'       => (isset($wppoppop_do['message']) && is_string($wppoppop_do['message'])) ? wp_kses_post($wppoppop_do['message']) : '',
-                'from_email'    => $wppoppop_do_txt('from_email'),
-                'from_name'     => $wppoppop_do_txt('from_name'),
-                'thank_message' => (isset($wppoppop_do['thank_message']) && is_string($wppoppop_do['thank_message'])) ? wp_kses_post($wppoppop_do['thank_message']) : '',
-                'thank_url'     => (isset($wppoppop_do['thank_url']) && is_string($wppoppop_do['thank_url'])) ? esc_url_raw($wppoppop_do['thank_url']) : ''
-            );
-        }
-        /* WPPOPPOP_AUTORESPONDER_WHITELIST: allow-list the Autoresponder module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
-            $wppoppop_obj->settings->autoresponder = json_decode(wp_json_encode(
-                WpPopPop_Autoresponder::sanitize(isset($wppoppop_obj->settings->autoresponder) ? $wppoppop_obj->settings->autoresponder : array())
-            ));
-        }
-        /* WPPOPPOP_SIDE_TABS_WHITELIST: allow-list the Side Tabs module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Side_Tabs')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-side-tabs.php'; }
-            $wppoppop_obj->settings->sidetab = json_decode(wp_json_encode(
-                WpPopPop_Side_Tabs::sanitize(isset($wppoppop_obj->settings->sidetab) ? $wppoppop_obj->settings->sidetab : array())
-            ));
-        }
-        /* WPPOPPOP_WEBHOOKS_WHITELIST: allow-list the Webhooks module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Webhooks')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; }
-            $wppoppop_obj->settings->webhooks = json_decode(wp_json_encode(
-                WpPopPop_Webhooks::sanitize(isset($wppoppop_obj->settings->webhooks) ? $wppoppop_obj->settings->webhooks : array())
-            ));
-        }
-        /* WPPOPPOP_WOOCOMMERCE_WHITELIST: allow-list the WooCommerce module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Woocommerce')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-woocommerce.php'; }
-            $wppoppop_obj->settings->woocommerce = json_decode(wp_json_encode(
-                WpPopPop_Woocommerce::sanitize(isset($wppoppop_obj->settings->woocommerce) ? $wppoppop_obj->settings->woocommerce : array())
-            ));
-        }
-        /* WPPOPPOP_DOWNLOADS_WHITELIST: allow-list the Downloads module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Downloads')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; }
-            $wppoppop_obj->settings->downloads = json_decode(wp_json_encode(
-                WpPopPop_Downloads::sanitize(isset($wppoppop_obj->settings->downloads) ? $wppoppop_obj->settings->downloads : array())
-            ));
-        }
-        /* WPPOPPOP_LOGIC_MATH_WHITELIST: allow-list the Conditional Logic & Math module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Logic_Math')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-math.php'; }
-            $wppoppop_lm = WpPopPop_Logic_Math::sanitize(isset($wppoppop_obj->settings->logic_math) ? $wppoppop_obj->settings->logic_math : array());
-            if ($wppoppop_lm['formula'] === '' && $wppoppop_lm['target'] === '') {
-                unset($wppoppop_obj->settings->logic_math);
-            } else {
-                $wppoppop_obj->settings->logic_math = json_decode(wp_json_encode($wppoppop_lm));
-            }
-        }
-        /* WPPOPPOP_LOGIC_PAYMENTS_WHITELIST: allow-list the Payments module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Logic_Payments')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-payments.php'; }
-            $wppoppop_pay = WpPopPop_Logic_Payments::sanitize(isset($wppoppop_obj->settings->payments) ? $wppoppop_obj->settings->payments : array());
-            if ($wppoppop_pay === WpPopPop_Logic_Payments::defaults()) {
-                unset($wppoppop_obj->settings->payments);
-            } else {
-                $wppoppop_obj->settings->payments = json_decode(wp_json_encode($wppoppop_pay));
-            }
-        }
-        /* WPPOPPOP_VIDEO_WHITELIST: allow-list the Video Playback Listeners module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Video_Listeners')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-video-listeners.php'; }
-            $wppoppop_vid = WpPopPop_Video_Listeners::sanitize(isset($wppoppop_obj->settings->video) ? $wppoppop_obj->settings->video : array());
-            if ($wppoppop_vid === WpPopPop_Video_Listeners::defaults()) {
-                unset($wppoppop_obj->settings->video);
-            } else {
-                $wppoppop_obj->settings->video = json_decode(wp_json_encode($wppoppop_vid));
-            }
-        }
-        /* WPPOPPOP_SMS_WHITELIST: allow-list the Twilio SMS Alerts module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
-            $wppoppop_sms = WpPopPop_Sms::sanitize(isset($wppoppop_obj->settings->sms) ? $wppoppop_obj->settings->sms : array());
-            if ($wppoppop_sms === WpPopPop_Sms::defaults()) {
-                unset($wppoppop_obj->settings->sms);
-            } else {
-                $wppoppop_obj->settings->sms = json_decode(wp_json_encode($wppoppop_sms));
-            }
-        }
-        /* WPPOPPOP_TARGETING_WHITELIST: allow-list the Targeting module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Targeting')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting.php'; }
-            $wppoppop_tg = WpPopPop_Targeting::sanitize(isset($wppoppop_obj->settings->targeting) ? $wppoppop_obj->settings->targeting : array());
-            if ($wppoppop_tg === WpPopPop_Targeting::defaults()) {
-                unset($wppoppop_obj->settings->targeting);
-            } else {
-                $wppoppop_obj->settings->targeting = json_decode(wp_json_encode($wppoppop_tg));
-            }
-        }
-        /* WPPOPPOP_QUIZ_WHITELIST: allow-list the Quiz module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            if (!class_exists('WpPopPop_Quiz')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-quiz.php'; }
-            $wppoppop_qz = WpPopPop_Quiz::sanitize(isset($wppoppop_obj->settings->quiz) ? $wppoppop_obj->settings->quiz : array());
-            if ($wppoppop_qz === WpPopPop_Quiz::defaults()) {
-                unset($wppoppop_obj->settings->quiz);
-            } else {
-                $wppoppop_obj->settings->quiz = json_decode(wp_json_encode($wppoppop_qz));
-            }
-        }
-        /* WPPOPPOP_FREQUENCY_WHITELIST: allow-list the Frequency module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->frequency)) {
-            if (!class_exists('WpPopPop_Frequency')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-frequency.php'; }
-            $wppoppop_fq = WpPopPop_Frequency::sanitize($wppoppop_obj->settings->frequency);
-            $wppoppop_obj->settings->frequency = json_decode(wp_json_encode($wppoppop_fq));
-        }
-        /* WPPOPPOP_CUSTOM_CODE_WHITELIST: allow-list the Custom Code module (JS needs unfiltered_html, otherwise the stored JS is kept) */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->custom_code)) {
-            if (!class_exists('WpPopPop_Custom_Code')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-custom-code.php'; }
-            $wppoppop_cc_prev = json_decode((string) $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid)), true);
-            $wppoppop_cc_prev = (is_array($wppoppop_cc_prev) && isset($wppoppop_cc_prev['settings']['custom_code']) && is_array($wppoppop_cc_prev['settings']['custom_code'])) ? $wppoppop_cc_prev['settings']['custom_code'] : array();
-            $wppoppop_cc = WpPopPop_Custom_Code::sanitize($wppoppop_obj->settings->custom_code, $wppoppop_cc_prev, current_user_can('unfiltered_html'));
-            if ($wppoppop_cc === WpPopPop_Custom_Code::defaults()) {
-                unset($wppoppop_obj->settings->custom_code);
-            } else {
-                $wppoppop_obj->settings->custom_code = json_decode(wp_json_encode($wppoppop_cc));
-            }
-        }
-        /* WPPOPPOP_MAILCHIMP_WHITELIST: allow-list the MailChimp module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->mailchimp)) {
-            if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
-            $wppoppop_obj->settings->mailchimp = json_decode(wp_json_encode(WpPopPop_Mailchimp::sanitize($wppoppop_obj->settings->mailchimp)));
-            if (!is_array($wppoppop_obj->settings->mailchimp)) { $wppoppop_obj->settings->mailchimp = array(); }
-        }
-        /* WPPOPPOP_GETRESPONSE_WHITELIST: allow-list the GetResponse module */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->getresponse)) {
-            if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
-            $wppoppop_obj->settings->getresponse = json_decode(wp_json_encode(WpPopPop_Getresponse::sanitize($wppoppop_obj->settings->getresponse)));
-            if (!is_array($wppoppop_obj->settings->getresponse)) { $wppoppop_obj->settings->getresponse = array(); }
-        }
-        /* WPPOPPOP_PROTECT_WHITELIST: allow-list the Security & Protections module (defaults are not stored) */
-        if (is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings) && isset($wppoppop_obj->settings->security)) {
-            if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
-            $wppoppop_sp = WpPopPop_Protect::sanitize($wppoppop_obj->settings->security);
-            if ($wppoppop_sp === WpPopPop_Protect::defaults()) {
-                unset($wppoppop_obj->settings->security);
-            } else {
-                $wppoppop_obj->settings->security = json_decode(wp_json_encode($wppoppop_sp));
-            }
-        }
         /* WPPOPPOP_MODULE_SAVE_GUARD: settings of not-installed modules are kept as stored, never overwritten */
         if (class_exists('WpPopPop_Modules') && is_object($wppoppop_obj) && isset($wppoppop_obj->settings) && is_object($wppoppop_obj->settings)) {
-            $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $wppoppop_prev_json = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$table_name} WHERE uid = %s", $uid));
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($wppoppop_obj->settings); }
             WpPopPop_Modules::guard_save($wppoppop_obj->settings, $wppoppop_prev_json);
         }
@@ -334,7 +151,7 @@ class WpPopPop_Ajax_Builder {
             if (is_string($wppoppop_enc) && $wppoppop_enc !== '') { $data_raw = $wppoppop_enc; }
         }
 
-        $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE uid = %s", $uid));
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE uid = %s", $uid));
 
         if ($existing) {
             $wpdb->update($table_name, ['title' => $title, 'data' => $data_raw], ['uid' => $uid], ['%s', '%s'], ['%s']);
@@ -343,7 +160,7 @@ class WpPopPop_Ajax_Builder {
             $wpdb->insert($table_name, ['uid' => $uid, 'title' => $title, 'data' => $data_raw, 'status' => 'publish'], ['%s', '%s', '%s', '%s']);
         }
 
-        $wppoppop_saved_status = $wpdb->get_var($wpdb->prepare("SELECT status FROM {$table_name} WHERE uid = %s", $uid));
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $wppoppop_saved_status = $wpdb->get_var($wpdb->prepare("SELECT status FROM {$table_name} WHERE uid = %s", $uid));
 
         wp_send_json_success([
             'uid'     => $uid,
@@ -374,7 +191,7 @@ class WpPopPop_Ajax_Builder {
                 $suffix .= $chars[wp_rand(0, strlen($chars) - 1)];
             }
             $candidate = $base . '-' . $suffix;
-            $taken = $wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$table} WHERE uid = %s", $candidate));
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $taken = $wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$table} WHERE uid = %s", $candidate));
             if (!$taken) {
                 return $candidate;
             }
@@ -403,21 +220,13 @@ class WpPopPop_Ajax_Builder {
         }
         $items = $wpdb->prefix . 'wppoppop_items';
         $new   = $base . '-' . $m[2];
-        if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$items} WHERE uid = %s", $new))) {
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$items} WHERE uid = %s", $new))) {
             $new = $this->generate_unique_uid($title);
         }
         $wpdb->update($items, ['uid' => $new], ['uid' => $uid], ['%s'], ['%s']);
         $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['popup_uid' => $new], ['popup_uid' => $uid], ['%s'], ['%s']);
         $wpdb->update($wpdb->prefix . 'wppoppop_transactions', ['popup_uid' => $new], ['popup_uid' => $uid], ['%s'], ['%s']);
-        $camps = $wpdb->prefix . 'wppoppop_campaigns';
-        $rows  = $wpdb->get_results("SELECT id, popup_uids FROM {$camps}", ARRAY_A);
-        foreach ((array) $rows as $r) {
-            $list = json_decode($r['popup_uids'], true);
-            if (is_array($list) && in_array($uid, $list, true)) {
-                foreach ($list as $k => $v) { if ($v === $uid) { $list[$k] = $new; } }
-                $wpdb->update($camps, ['popup_uids' => wp_json_encode(array_values($list))], ['id' => (int) $r['id']], ['%s'], ['%d']);
-            }
-        }
+        do_action('wppoppop_popup_uid_renamed', $uid, $new);
         /* RULE: a renamed uid keeps working. Record old -> new so existing shortcodes still resolve. */
         $aliases = get_option('wppoppop_uid_aliases', []);
         if (!is_array($aliases)) { $aliases = []; }
@@ -578,7 +387,7 @@ class WpPopPop_Ajax_Builder {
         }
 
         $this->verify_security();
-        $uids = isset($_POST['uids']) ? (array)$_POST['uids'] : [];
+        $uids = isset($_POST['uids']) ? array_filter((array) wp_unslash($_POST['uids']), 'is_scalar') : []; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each uid is sanitize_key()d below
         if (empty($uids)) {
             wp_send_json_error(['message' => __('No popups were selected for deletion.', 'wppoppop')]);
         }
@@ -588,7 +397,7 @@ class WpPopPop_Ajax_Builder {
         $sanitized_uids = array_map('sanitize_key', $uids);
         $placeholders = implode(',', array_fill(0, count($sanitized_uids), '%s'));
 
-        $deleted = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE uid IN ($placeholders)", $sanitized_uids));
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared */ $deleted = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE uid IN ($placeholders)", $sanitized_uids));
 
         wp_send_json_success([
             'message'       => sprintf(
@@ -656,7 +465,7 @@ class WpPopPop_Ajax_Builder {
         }
 
         $this->verify_security();
-        $json_raw = isset($_POST['import_data']) ? wp_unslash($_POST['import_data']) : '';
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitised by the import pipeline */ $json_raw = isset($_POST['import_data']) ? wp_unslash($_POST['import_data']) : '';
         $data = json_decode($json_raw, true);
         
         if (isset($data['canvasMeta']) && is_array($data['canvasMeta'])) {
@@ -694,7 +503,7 @@ class WpPopPop_Ajax_Builder {
         } elseif (isset($data['settings']) && is_array($data['settings']) && !empty($data['settings']['title']) && is_scalar($data['settings']['title'])) {
             $wppoppop_title = (string) $data['settings']['title'];
         } elseif (isset($_POST['title'])) {
-            $wppoppop_title = (string) wp_unslash($_POST['title']);
+            $wppoppop_title = sanitize_text_field((string) wp_unslash($_POST['title']));
         }
         $wppoppop_title = sanitize_text_field($wppoppop_title);
         if ($wppoppop_title === '') {
@@ -724,85 +533,6 @@ class WpPopPop_Ajax_Builder {
         }
         wp_send_json_success(['message' => __('Popup imported successfully!', 'wppoppop'), 'uid' => $wppoppop_new_uid]);
     }
-
-    public function save_campaign() {
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
-            wp_die();
-        }
-        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
-            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
-            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
-        if ( ! $wpp_verified ) {
-            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
-            wp_die();
-        }
-
-        $this->verify_security(); /* WPPOPPOP_AB_VALIDATED */
-        global $wpdb;
-
-        $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
-        $raw   = isset($_POST['popup_uids']) ? (array) wp_unslash($_POST['popup_uids']) : [];
-        $uids  = array_values(array_unique(array_filter(array_map('sanitize_key', $raw))));
-
-        if ($title === '') {
-            wp_send_json_error(['message' => __('Please enter a campaign title.', 'wppoppop')]);
-        }
-        if (count($uids) < 2) {
-            wp_send_json_error(['message' => 'Select at least 2 popups for split-testing.']);
-        }
-
-        $ok = $wpdb->insert($wpdb->prefix . 'wppoppop_campaigns', [
-            'uid'        => wp_generate_uuid4(),
-            'title'      => $title,
-            'popup_uids' => wp_json_encode($uids),
-            'status'     => 'active'
-        ]);
-        if ($ok === false) {
-            wp_send_json_error(['message' => __('Database error: could not save the campaign. Try Tools > Repair Tables.', 'wppoppop')]);
-        }
-        wp_send_json_success(['message' => __('A/B Campaign saved!', 'wppoppop')]);
-    }
-
-    public function delete_campaign() {
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user capability.', 'wppoppop' ) ), 403 );
-            wp_die();
-        }
-        $wpp_verified = check_ajax_referer( 'wppoppop_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', '_ajax_nonce', false )
-            || check_ajax_referer( 'wppoppop_admin', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_nonce', 'security', false )
-            || check_ajax_referer( 'wppoppop_builder_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_admin_nonce', 'nonce', false )
-            || check_ajax_referer( 'wppoppop_settings_nonce', 'nonce', false );
-        if ( ! $wpp_verified ) {
-            wp_send_json_error( array( 'message' => esc_html__( 'Invalid security token.', 'wppoppop' ) ), 403 );
-            wp_die();
-        }
-
-        $this->verify_security();
-        global $wpdb;
-
-        $uid = isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : '';
-        if ($uid === '') {
-            wp_send_json_error(['message' => __('Missing campaign UID.', 'wppoppop')]);
-        }
-        $deleted = $wpdb->delete($wpdb->prefix . 'wppoppop_campaigns', ['uid' => $uid], ['%s']);
-        if (!$deleted) {
-            wp_send_json_error(['message' => __('Campaign not found or already deleted.', 'wppoppop')]);
-        }
-        wp_send_json_success(['message' => __('Campaign deleted.', 'wppoppop')]);
-    }
-
-
-
-
-
 
     /**
      * Phase 2 Backend Whitelist Parity: opacity, hoverBgColor, customClass

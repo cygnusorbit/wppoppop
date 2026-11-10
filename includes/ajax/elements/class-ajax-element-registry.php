@@ -41,6 +41,7 @@ class WpPopPop_Ajax_Element_Registry {
         WpPopPop_Ajax_Element_Media::register();
 
         self::$initialized = true;
+        do_action('wppoppop_register_element_sanitizers');
     }
 
     /**

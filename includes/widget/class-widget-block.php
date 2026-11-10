@@ -48,10 +48,10 @@ class WpPopPop_Widget_Block {
     protected function get_popups() {
         global $wpdb;
         $table = $wpdb->prefix . 'wppoppop_items';
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") !== $table) {
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table))) !== $table) {
             return [];
         }
-        $rows = $wpdb->get_results("SELECT uid, title FROM {$table} WHERE status = 'publish' ORDER BY title ASC", ARRAY_A);
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $rows = $wpdb->get_results("SELECT uid, title FROM {$table} WHERE status = 'publish' ORDER BY title ASC", ARRAY_A);
         $out  = [];
         foreach ((array) $rows as $r) {
             $out[] = ['uid' => $r['uid'], 'title' => $r['title']];

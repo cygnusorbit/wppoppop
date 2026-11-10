@@ -144,7 +144,8 @@ class WpPopPop_Ajax_Dashboard {
         global $wpdb;
 
         $uid    = isset($_POST['uid']) ? sanitize_key(wp_unslash($_POST['uid'])) : '';
-        $active = isset($_POST['active']) && (string) wp_unslash($_POST['active']) !== '0' && $_POST['active'] !== 'false' && $_POST['active'] !== '';
+        $active_raw = isset($_POST['active']) ? sanitize_text_field(wp_unslash($_POST['active'])) : '';
+        $active     = !in_array($active_raw, ['', '0', 'false'], true);
 
         if ($uid === '' || !$this->can('publish_wppoppop_campaigns', $uid)) {
             wp_send_json_error(['message' => __('You do not have permission to change campaign status.', 'wppoppop')], 403);
@@ -185,13 +186,13 @@ class WpPopPop_Ajax_Dashboard {
             wp_send_json_error(['message' => __('You do not have permission to export campaigns.', 'wppoppop')], 403);
         }
         global $wpdb;
-        $raw  = isset($_POST['uids']) ? (array) wp_unslash($_POST['uids']) : [];
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each uid is sanitize_key()d below */ $raw  = isset($_POST['uids']) ? (array) wp_unslash($_POST['uids']) : [];
         $uids = array_values(array_unique(array_filter(array_map('sanitize_key', $raw))));
         if (empty($uids)) {
             wp_send_json_error(['message' => __('No campaigns selected.', 'wppoppop')]);
         }
         $ph    = implode(',', array_fill(0, count($uids), '%s'));
-        $items = $wpdb->get_results($wpdb->prepare("SELECT uid, title, data, status FROM {$wpdb->prefix}wppoppop_items WHERE uid IN ($ph) AND status != 'trash'", $uids), ARRAY_A);
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix, the IN() placeholders are generated and the values are prepared */ $items = $wpdb->get_results($wpdb->prepare("SELECT uid, title, data, status FROM {$wpdb->prefix}wppoppop_items WHERE uid IN ($ph) AND status != 'trash'", $uids), ARRAY_A);
         if (empty($items)) {
             wp_send_json_error(['message' => __('Selected campaigns were not found.', 'wppoppop')]);
         }

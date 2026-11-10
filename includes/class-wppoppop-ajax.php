@@ -10,13 +10,10 @@ class WpPopPop_Ajax {
             'WpPopPop_Ajax_Settings'    => 'class-ajax-settings.php',
             'WpPopPop_Ajax_Frontend'    => 'class-ajax-frontend.php',
             'WpPopPop_Ajax_Submissions' => 'class-ajax-submissions.php',
-            'WpPopPop_Ajax_Campaigns'   => 'class-ajax-campaigns.php',
             'WpPopPop_Ajax_Dashboard'   => 'class-ajax-dashboard.php',
             'WpPopPop_Ajax_Tools'       => 'class-ajax-tools.php',
             'WpPopPop_Ajax_Dash_Layout' => 'class-ajax-dash-layout.php',
             'WpPopPop_Ajax_Modules'     => 'class-ajax-modules.php',
-            'WpPopPop_Ajax_Getresponse' => 'class-ajax-getresponse.php',
-            'WpPopPop_Ajax_Mailchimp'   => 'class-ajax-mailchimp.php',
             'WpPopPop_Ajax_Template_Bundle' => 'class-ajax-template-bundle.php',
             'WpPopPop_Ajax_Saved_Defaults' => 'class-ajax-saved-defaults.php',
         ];

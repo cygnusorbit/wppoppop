@@ -111,11 +111,14 @@ class WpPopPop_Notifications {
         list($g_email, $g_name) = self::sender();
         $flat = self::flat($fields);
         /* WPPOPPOP_PROTECT_MAIL: technical info (IP-address, User-Agent) joins {{form-data}} only when Security & Protections allows it */
-        $wppoppop_tech_rows = [];
-        if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
-        if (WpPopPop_Protect::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            $wppoppop_tech_rows = WpPopPop_Protect::take_tech($flat, WpPopPop_Protect::get_config($config));
+        $wppoppop_tech = array();
+        foreach (array('_ip', '_ua') as $wppoppop_tk) {
+            if (isset($flat[$wppoppop_tk])) {
+                $wppoppop_tech[$wppoppop_tk] = $flat[$wppoppop_tk];
+                unset($flat[$wppoppop_tk]);
+            }
         }
+        $wppoppop_tech_rows = WpPopPop_Module_Bridge::notification_tech_rows($wppoppop_tech, is_array($config) ? $config : array());
         $sent = 0;
 
         $rows = '';

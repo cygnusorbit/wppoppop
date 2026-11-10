@@ -48,10 +48,10 @@ class WpPopPop_Modules_Installer {
         $by   = array_keys(WpPopPop_Modules::required_by($slug));
         return [
             'slug'        => $slug,
-            'name'        => ($m['source'] === 'core') ? translate($m['name'], 'wppoppop') : $m['name'],
+            'name'        => ($m['source'] === 'core') ? /* phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction, WordPress.WP.I18n.NonSingularStringLiteralText -- module manifest strings are translated by the module text domain */ translate($m['name'], 'wppoppop') : $m['name'],
             'version'     => $m['version'],
             'author'      => $m['author'],
-            'description' => ($m['source'] === 'core') ? translate($m['description'], 'wppoppop') : $m['description'],
+            'description' => ($m['source'] === 'core') ? /* phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction, WordPress.WP.I18n.NonSingularStringLiteralText -- module manifest strings are translated by the module text domain */ translate($m['description'], 'wppoppop') : $m['description'],
             'source'      => $m['source'],
             'state'       => WpPopPop_Modules::state($slug),
             'locked'      => (bool) $m['locked'],
@@ -112,7 +112,7 @@ class WpPopPop_Modules_Installer {
         $table = $wpdb->prefix . 'wppoppop_items';
         $last  = 0;
         while (true) {
-            $rows = $wpdb->get_results($wpdb->prepare("SELECT id, uid, title, data FROM {$table} WHERE id > %d ORDER BY id ASC LIMIT 200", $last), ARRAY_A);
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $rows = $wpdb->get_results($wpdb->prepare("SELECT id, uid, title, data FROM {$table} WHERE id > %d ORDER BY id ASC LIMIT 200", $last), ARRAY_A);
             if (!$rows) {
                 break;
             }
@@ -285,7 +285,7 @@ class WpPopPop_Modules_Installer {
                 'in_use_msg'      => __('Popups that use it will lose this feature until it is installed again. Continue?', 'wppoppop'),
                 'continue_anyway' => __('Continue', 'wppoppop'),
                 /* translators: 1: module name, 2: installed version, 3: new version */
-                'replace_msg'     => __('"%s" is already installed (version %s). Replace it with version %s? Its installed state and popup data are kept.', 'wppoppop'),
+                'replace_msg'     => /* translators: 1: module name, 2: installed version, 3: new version. */ __('"%1$s" is already installed (version %2$s). Replace it with version %3$s? Its installed state and popup data are kept.', 'wppoppop'),
                 'replace'         => __('Replace', 'wppoppop'),
                 'replace_title'   => __('Replace module', 'wppoppop'),
                 'cmp_current'     => __('Current module', 'wppoppop'),
@@ -354,6 +354,9 @@ class WpPopPop_Modules_Installer {
         if (!$m['compatible']) {
             /* translators: %s: minimum plugin version */
             return self::err('incompatible', sprintf(__('This module needs WpPopPop %s or newer.', 'wppoppop'), $m['min_version']));
+        }
+        if ($m['source'] === 'pro' && !WpPopPop_Pro_API::is_licensed()) {
+            return self::err('pro_locked', __('Activate your WpPopPop Pro licence to install this module.', 'wppoppop'));
         }
         $missing = [];
         foreach ($m['requires'] as $r) {
@@ -459,7 +462,7 @@ class WpPopPop_Modules_Installer {
     /* ------------------------------------------------------ bundled packages */
 
     protected static function copy_tree($src, $dst, $depth = 0) {
-        if ($depth > self::MAX_DEPTH || (!@mkdir($dst, 0755, true) && !is_dir($dst))) {
+        if ($depth > self::MAX_DEPTH || (!wp_mkdir_p($dst) && !is_dir($dst))) {
             return false;
         }
         $items = scandir($src);
@@ -484,12 +487,12 @@ class WpPopPop_Modules_Installer {
             if (!in_array(strtolower(pathinfo($i, PATHINFO_EXTENSION)), self::ALLOWED_EXT, true)) {
                 continue;
             }
-            if (!@copy($s, $d)) {
+            if (/* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- the result is checked and reported */ !@copy($s, $d)) {
                 return false;
             }
         }
         if ($depth === 0) {
-            @file_put_contents($dst . '/index.php', "<?php\n// Silence is golden.\n");
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort index.php guard; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($dst . '/index.php', "<?php\n// Silence is golden.\n");
         }
         return true;
     }
@@ -499,7 +502,7 @@ class WpPopPop_Modules_Installer {
         if (!is_file($f) || is_link($f) || filesize($f) > WpPopPop_Modules::MAX_JSON) {
             return '';
         }
-        $j = json_decode((string) file_get_contents($f), true);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $j = json_decode((string) file_get_contents($f), true);
         return (is_array($j) && isset($j['version']) && is_string($j['version'])) ? $j['version'] : '';
     }
 
@@ -532,12 +535,12 @@ class WpPopPop_Modules_Installer {
             return false;
         }
         $old = $base . '/' . self::rand_name('.old-');
-        if (!@rename($dest, $old)) {
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (!@rename($dest, $old)) {
             self::rrmdir($tmp);
             return false;
         }
-        if (!@rename($tmp, $dest)) {
-            @rename($old, $dest);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (!@rename($tmp, $dest)) {
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @rename($old, $dest);
             self::rrmdir($tmp);
             return false;
         }
@@ -686,10 +689,10 @@ class WpPopPop_Modules_Installer {
             if (is_dir($p) && !is_link($p)) {
                 self::rrmdir($p);
             } else {
-                @unlink($p);
+                wp_delete_file($p);
             }
         }
-        @rmdir($dir);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @rmdir($dir);
     }
 
     /** Manifest (name, version) of an installed upload, or null when it is missing or unreadable. */
@@ -698,7 +701,7 @@ class WpPopPop_Modules_Installer {
         if (is_link($dir) || !is_file($f) || is_link($f) || filesize($f) > WpPopPop_Modules::MAX_JSON) {
             return null;
         }
-        $raw = json_decode((string) file_get_contents($f), true);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw = json_decode((string) file_get_contents($f), true);
         if (!is_array($raw)) {
             return null;
         }
@@ -709,7 +712,7 @@ class WpPopPop_Modules_Installer {
     /** Put the /modules copy back when the upload could not be moved into place. */
     protected static function undo_core($bak, $path) {
         if ($bak !== '' && is_dir($bak) && !is_dir($path)) {
-            @rename($bak, $path);
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @rename($bak, $path);
         }
     }
 
@@ -733,19 +736,19 @@ class WpPopPop_Modules_Installer {
 
     /** Create the uploads/wppoppop-modules root with a silence file and a no-PHP rule. */
     protected static function prepare_root($base) {
-        if (!is_dir($base) && !@mkdir($base, 0755, true) && !is_dir($base)) {
+        if (!is_dir($base) && !wp_mkdir_p($base) && !is_dir($base)) {
             return false;
         }
         if (!file_exists($base . '/index.php')) {
-            @file_put_contents($base . '/index.php', "<?php\n// Silence is golden.\n");
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort index.php guard; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($base . '/index.php', "<?php\n// Silence is golden.\n");
         }
         if (!file_exists($base . '/.htaccess')) {
             $rule  = "# WpPopPop modules: static assets only.\n";
             $rule .= "<IfModule mod_authz_core.c>\n<FilesMatch \"\\.(php[0-9]*|phtml|pht|phar)$\">\nRequire all denied\n</FilesMatch>\n</IfModule>\n";
             $rule .= "<IfModule !mod_authz_core.c>\n<FilesMatch \"\\.(php[0-9]*|phtml|pht|phar)$\">\nOrder allow,deny\nDeny from all\n</FilesMatch>\n</IfModule>\n";
-            @file_put_contents($base . '/.htaccess', $rule);
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort access rules; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($base . '/.htaccess', $rule);
         }
-        return is_dir($base) && is_writable($base);
+        return is_dir($base) && wp_is_writable($base);
     }
 
     protected static function junk($name) {
@@ -819,7 +822,7 @@ class WpPopPop_Modules_Installer {
             }
             $target = $dest . '/' . rtrim($rel, '/');
             if ($e['dir']) {
-                if (!is_dir($target) && !@mkdir($target, 0755, true)) {
+                if (!is_dir($target) && !wp_mkdir_p($target)) {
                     return self::err('write_failed', __('Could not create a folder for the module.', 'wppoppop'));
                 }
                 continue;
@@ -837,36 +840,36 @@ class WpPopPop_Modules_Installer {
                 return self::err('bad_type', sprintf(__('File type not allowed in a module: %s', 'wppoppop'), $file));
             }
             $parent = dirname($target);
-            if (!is_dir($parent) && !@mkdir($parent, 0755, true)) {
+            if (!is_dir($parent) && !wp_mkdir_p($parent)) {
                 return self::err('write_failed', __('Could not create a folder for the module.', 'wppoppop'));
             }
             $in = $zip->getStream($e['orig']);
             if (!$in) {
                 return self::err('bad_zip', __('The zip could not be read.', 'wppoppop'));
             }
-            $out = @fopen($target, 'wb');
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ $out = @fopen($target, 'wb');
             if (!$out) {
-                fclose($in);
+                /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($in);
                 return self::err('write_failed', __('Could not write a module file.', 'wppoppop'));
             }
             $size = 0;
             while (!feof($in)) {
-                $buf = fread($in, 8192);
+                /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ $buf = fread($in, 8192);
                 if ($buf === false || $buf === '') {
                     break;
                 }
                 $size  += strlen($buf);
                 $total += strlen($buf);
                 if ($size > self::MAX_FILE || $total > self::MAX_UNPACKED) {
-                    fclose($in);
-                    fclose($out);
+                    /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($in);
+                    /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($out);
                     return self::err('too_big', __('The module is too large once unpacked.', 'wppoppop'));
                 }
-                fwrite($out, $buf);
+                /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fwrite($out, $buf);
             }
-            fclose($in);
-            fclose($out);
-            @chmod($target, 0644);
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($in);
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($out);
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort permission normalisation; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @chmod($target, 0644);
             $files++;
         }
         if ($files < 1 || !is_file($dest . '/module.json')) {
@@ -899,7 +902,7 @@ class WpPopPop_Modules_Installer {
             return self::err('no_dir', __('The modules folder could not be created in uploads.', 'wppoppop'));
         }
         $tmp = $base . '/' . self::rand_name('.tmp-');
-        if (!@mkdir($tmp, 0755)) {
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (!@mkdir($tmp, 0755)) {
             return self::err('no_dir', __('The modules folder is not writable.', 'wppoppop'));
         }
         $zip = new ZipArchive();
@@ -918,7 +921,7 @@ class WpPopPop_Modules_Installer {
             self::rrmdir($tmp);
             return self::err('bad_manifest', __('module.json is missing or too large.', 'wppoppop'));
         }
-        $raw  = json_decode((string) file_get_contents($mf), true);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw  = json_decode((string) file_get_contents($mf), true);
         $slug = (is_array($raw) && isset($raw['slug']) && is_string($raw['slug'])) ? $raw['slug'] : '';
         if (!WpPopPop_Modules::slug_valid($slug)) {
             self::rrmdir($tmp);
@@ -928,7 +931,7 @@ class WpPopPop_Modules_Installer {
             $raw['category'] = WpPopPop_Module_Categories::DEFAULT_SLUG;
             $json = wp_json_encode($raw, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             if (is_string($json) && $json !== '') {
-                @file_put_contents($mf, $json . "\n");
+                /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort manifest write; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($mf, $json . "\n");
             }
         }
         $m = WpPopPop_Modules::normalize($raw, 'uploaded', $slug);
@@ -990,27 +993,27 @@ class WpPopPop_Modules_Installer {
         $core_bak   = '';
         if ($old_core) {
             $core_bak = WpPopPop_Modules::core_dir() . '/' . self::rand_name('.old-');
-            if (!@rename($core_path, $core_bak)) {
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (!@rename($core_path, $core_bak)) {
                 self::rrmdir($tmp);
                 return self::err('replace_failed', __('The older module could not be removed from /modules. Check that the folder is writable.', 'wppoppop'));
             }
         }
-        @file_put_contents($tmp . '/index.php', "<?php\n// Silence is golden.\n");
+        /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort index.php guard; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($tmp . '/index.php', "<?php\n// Silence is golden.\n");
         if ($exists) {
             $old = $base . '/' . self::rand_name('.old-');
-            if (is_link($dest) || !@rename($dest, $old)) {
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (is_link($dest) || !@rename($dest, $old)) {
                 self::undo_core($core_bak, $core_path);
                 self::rrmdir($tmp);
                 return self::err('replace_failed', __('The existing module could not be replaced.', 'wppoppop'));
             }
-            if (!@rename($tmp, $dest)) {
-                @rename($old, $dest);
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ if (!@rename($tmp, $dest)) {
+                /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @rename($old, $dest);
                 self::undo_core($core_bak, $core_path);
                 self::rrmdir($tmp);
                 return self::err('replace_failed', __('The existing module could not be replaced.', 'wppoppop'));
             }
             self::rrmdir($old);
-        } elseif (!@rename($tmp, $dest)) {
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ } elseif (!@rename($tmp, $dest)) {
             self::undo_core($core_bak, $core_path);
             self::rrmdir($tmp);
             return self::err('write_failed', __('The module could not be moved into place.', 'wppoppop'));

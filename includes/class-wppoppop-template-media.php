@@ -67,7 +67,7 @@ class WpPopPop_Template_Media {
         if (self::mime($ext) === '' || $size === false || $size > WpPopPop_Template_Bundle::MAX_FILE) {
             return '';
         }
-        $bytes = (string) file_get_contents($path);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $bytes = (string) file_get_contents($path);
         if (!WpPopPop_Template_Bundle::valid_image_bytes($bytes, $ext)) {
             return '';
         }
@@ -97,11 +97,11 @@ class WpPopPop_Template_Media {
             return '';
         }
         if (!file_exists($dir . 'index.php')) {
-            @file_put_contents($dir . 'index.php', "<?php\n// Silence is golden.\n");
+            /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort index.php guard; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($dir . 'index.php', "<?php\n// Silence is golden.\n");
         }
         $name = wp_unique_filename($dir, sanitize_file_name(basename($path)));
         $dest = $dir . $name;
-        if (@file_put_contents($dest, $bytes) === false) {
+        if (/* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- the result is checked and reported; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($dest, $bytes) === false) {
             return '';
         }
         $id = self::attach($dest, $tplid, $key);
@@ -115,6 +115,7 @@ class WpPopPop_Template_Media {
     protected static function lookup($key) {
         $ids = get_posts(array(
             'post_type' => 'attachment', 'post_status' => 'inherit', 'numberposts' => 1, 'fields' => 'ids',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- one attachment is looked up by its own import key (numberposts 1)
             'meta_key' => '_wppoppop_src', 'meta_value' => $key, 'no_found_rows' => true,
         ));
         if (empty($ids)) {

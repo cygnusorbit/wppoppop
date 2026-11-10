@@ -61,7 +61,7 @@ class WpPopPop_Modules_Engine {
     /** Accordion shell (header + body) around a module's accordion.html. */
     public static function render_html($m) {
         $file = $m['dir'] . '/accordion.html';
-        $raw  = (is_file($file) && !is_link($file) && is_readable($file) && filesize($file) <= WpPopPop_Modules::MAX_HTML) ? (string) file_get_contents($file) : '';
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw  = (is_file($file) && !is_link($file) && is_readable($file) && filesize($file) <= WpPopPop_Modules::MAX_HTML) ? (string) file_get_contents($file) : '';
         $h    = '<div class="wppoppop-acc-item" data-html-module="' . esc_attr($m['slug']) . '">';
         $h   .= '<button type="button" class="wppoppop-acc-header">' . esc_html($m['name']) . '</button>';
         $h   .= '<div class="wppoppop-acc-body" style="display:none;">' . wp_kses($raw, self::html_allowed()) . '</div>';
@@ -173,7 +173,7 @@ class WpPopPop_Modules_Engine {
         if (!empty($m['html'])) {
             return self::render_html($m);
         }
-        $name = ($m['source'] === 'core') ? translate($m['name'], 'wppoppop') : $m['name'];
+        $name = ($m['source'] === 'core') ? /* phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction, WordPress.WP.I18n.NonSingularStringLiteralText -- module manifest strings are translated by the module text domain */ translate($m['name'], 'wppoppop') : $m['name'];
         $id   = $m['ext_key'];
         $h    = '<div class="wppoppop-acc-item" data-ext-module="' . esc_attr($id) . '">';
         $h   .= '<button type="button" class="wppoppop-acc-header">' . esc_html($name) . '</button>';

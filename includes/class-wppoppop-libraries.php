@@ -20,7 +20,7 @@ class WpPopPop_Libraries {
                 'name'    => 'Font Awesome 6',
                 'type'    => 'style',
                 'handle'  => 'wppoppop-font-awesome',
-                'src'     => plugins_url( 'public/vendor/all.min.css', dirname( __FILE__ ) ),
+                'src'     => self::fa_url(),
                 'deps'    => [],
                 'ver'     => '6.5.1',
                 'setting' => 'font_awesome',
@@ -171,7 +171,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['font_awesome'])) {
             wp_enqueue_style(
                 'wppoppop-font-awesome',
-                plugins_url( 'public/vendor/all.min.css', dirname( __FILE__ ) ),
+                self::fa_url(),
                 [],
                 '6.5.1'
             );
@@ -279,7 +279,7 @@ class WpPopPop_Libraries {
         if (!empty($settings['font_awesome'])) {
             wp_enqueue_style(
                 'wppoppop-font-awesome',
-                plugins_url( 'public/vendor/all.min.css', dirname( __FILE__ ) ),
+                self::fa_url(),
                 [],
                 '6.5.1'
             );
@@ -289,6 +289,7 @@ class WpPopPop_Libraries {
             $default_font = !empty($settings['default_font']) ? $settings['default_font'] : '';
             $font_url = self::get_google_font_url($default_font);
             if ($font_url) {
+                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- the font URL already identifies the requested families
                 wp_enqueue_style('wppoppop-google-fonts', $font_url, [], null);
             }
         }
@@ -296,12 +297,13 @@ class WpPopPop_Libraries {
         /* WPPOPPOP_LAYER_FONTS_BUILDER: editor stage must load the same fonts/weights as the front */
         $wppoppop_lf = self::get_layer_fonts_url(null);
         if ($wppoppop_lf) {
+            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- the font URL already identifies the requested families
             wp_enqueue_style('wppoppop-layer-fonts', $wppoppop_lf, [], null);
         }
     }
 
     /**
-     * Output Google Fonts preconnect, stylesheet, and custom @font-face rules in <head>.
+     * Output the bundled font stylesheet and custom @font-face rules in <head>.
      */
     public static function print_font_head_tags() {
         $settings = get_option('wppoppop_settings', []);
@@ -316,50 +318,90 @@ class WpPopPop_Libraries {
         if (!$disable_google_fonts && ($google_fonts_enabled || ($default_font !== 'inherit' && !empty($default_font)))) {
             $font_url = self::get_google_font_url($default_font);
             if ($font_url) {
-                echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "
-";
-                echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "
-";
-                echo '<link rel="stylesheet" href="' . esc_url($font_url) . '">' . "
-";
+                self::print_style('wppoppop-google-fonts');
             }
         }
 
         $custom_fonts_css = self::generate_custom_fonts_css();
         if (!empty($custom_fonts_css)) {
-            echo '<style id="wppoppop-custom-fonts">' . "
-" . $custom_fonts_css . "
-" . '</style>' . "
-";
+            echo '<style id="wppoppop-custom-fonts">' . "\n" . wp_strip_all_tags($custom_fonts_css) . "\n" . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS text, tags stripped
         }
     }
 
     /**
-     * Resolve Google Fonts v2 API stylesheet URL.
+     * URL of the Font Awesome stylesheet bundled with the plugin.
+     *
+     * @return string
+     */
+    public static function fa_url() {
+        return WPPOPPOP_URL . 'assets/vendor/fontawesome/css/all.min.css';
+    }
+
+    /**
+     * Make sure a plugin stylesheet handle is registered with the WordPress style API.
+     *
+     * @param string $handle
+     * @return bool
+     */
+    private static function register_known_style($handle) {
+        $known = [
+            'wppoppop-font-awesome' => [self::fa_url(), '6.5.1'],
+            'wppoppop-layer-fonts'  => [self::fonts_url(), WPPOPPOP_VERSION],
+            'wppoppop-google-fonts' => [self::fonts_url(), WPPOPPOP_VERSION],
+        ];
+        if (isset($known[$handle]) && !wp_style_is($handle, 'registered')) {
+            wp_register_style($handle, $known[$handle][0], [], $known[$handle][1]);
+        }
+        return wp_style_is($handle, 'registered');
+    }
+
+    /**
+     * Print a stylesheet link right here. Footer markup is rendered after wp_head,
+     * so wp_enqueue_style() would be too late; a handle that was already printed is skipped.
+     *
+     * @param string $handle
+     */
+    public static function print_style($handle) {
+        if (self::register_known_style($handle)) {
+            wp_print_styles($handle);
+        }
+    }
+
+    /**
+     * Same as print_style() but returns the link markup.
+     *
+     * @param string $handle
+     * @return string
+     */
+    public static function style_tag($handle) {
+        if (!self::register_known_style($handle)) {
+            return '';
+        }
+        ob_start();
+        wp_print_styles($handle);
+        return (string) ob_get_clean();
+    }
+
+    /**
+     * URL of the stylesheet that declares the bundled font families.
+     *
+     * @return string
+     */
+    public static function fonts_url() {
+        return WPPOPPOP_URL . 'assets/vendor/fonts/fonts.css';
+    }
+
+    /**
+     * Resolve the bundled font stylesheet for the selected family.
      *
      * @param string $font_family
      * @return string
      */
     public static function get_google_font_url($font_family = '') {
-        $font_map = [
-            'Inter, sans-serif'      => 'Inter:wght@300;400;500;600;700;800;900',
-            'Roboto, sans-serif'     => 'Roboto:wght@300;400;500;700;900',
-            'Montserrat, sans-serif' => 'Montserrat:wght@300;400;500;600;700;800;900',
-            'Poppins, sans-serif'    => 'Poppins:wght@300;400;500;600;700;800;900',
-            'Open Sans, sans-serif'  => 'Open+Sans:wght@300;400;500;600;700;800',
-            'Lato, sans-serif'       => 'Lato:wght@300;400;700;900',
-        ];
-
-        if (isset($font_map[$font_family])) {
-            $family_query = $font_map[$font_family];
-        } else {
-            $family_query = 'Inter:wght@400;600;700&family=Roboto:wght@400;500;700&family=Poppins:wght@400;600;700';
-        }
-
-        return 'https://fonts.googleapis.com/css2?family=' . $family_query . '&display=swap';
+        return self::fonts_url();
     }
 
-    /* WPPOPPOP_LAYER_FONTS: Google Fonts URL for per-layer font families (all weights) */
+    /* WPPOPPOP_LAYER_FONTS: bundled font stylesheet when a layer uses one of the packaged families */
     public static function get_layer_fonts_url($config = null) {
         $map = [
             'inter'      => 'Inter:wght@300;400;500;600;700;800;900',
@@ -387,9 +429,8 @@ class WpPopPop_Libraries {
         if (empty($found)) {
             return '';
         }
-        $q = [];
-        foreach ($found as $name) { $q[] = $map[$name]; }
-        return 'https://fonts.googleapis.com/css2?family=' . implode('&family=', $q) . '&display=swap';
+        // All packaged families share one local stylesheet; browsers fetch only the faces a page uses.
+        return self::fonts_url();
     }
 
     /**

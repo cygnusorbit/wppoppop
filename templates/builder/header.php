@@ -1,8 +1,11 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
+?>
+<?php WpPopPop_Libraries::print_style('wppoppop-font-awesome'); ?>
+<?php
 $__wpp_set   = get_option('wppoppop_settings', []);
 $__wpp_set   = is_array($__wpp_set) ? $__wpp_set : [];
 $__wpp_vp_on = !empty($__wpp_set['builder_viewport_toggle']);

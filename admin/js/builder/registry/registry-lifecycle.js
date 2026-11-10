@@ -132,14 +132,9 @@
 
         // 6. Flush Form Data & Advanced Tabs
         if (isForm) {
-            /* WPPOPPOP_RATING_DATA_FLUSH: correct ids; Rating uses its own Data controls */
-            if (canonical === 'rating' && $('#prop-rt-data-default').length) {
-                el.ratingMax      = parseInt($('#prop-rt-data-stars').val(), 10) === 10 ? 10 : 5;
-                el.defaultValue   = $('#prop-rt-data-default').val() || '';
-                el.dynamicDefault = $('#prop-rt-data-dynamic').is(':checked');
-                el.paramName      = $.trim($('#prop-rt-data-param').val() || '');
-                el.saveToDb       = $('#prop-rt-data-savedb').is(':checked');
-            } else {
+            /* WPPOPPOP_EXT_FLUSH_DATA: an element extension may flush its own Data controls */
+            var extFlushed = !!(window.WpPopPopElementExt && window.WpPopPopElementExt.call(canonical, 'flushData', [el]) === true);
+            if (!extFlushed) {
                 if ($('#prop-data-default').length) { el.defaultValue = $('#prop-data-default').val() || ''; }
                 var $dd = $('#prop-data-dynamic-default, #prop-data-dynamic').first();
                 if ($dd.length) { el.dynamicDefault = $dd.is(':checked'); }

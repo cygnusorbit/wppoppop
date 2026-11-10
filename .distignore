@@ -1,0 +1,17 @@
+# Files that stay in GitHub and must NOT be copied to the WordPress.org SVN.
+# Deploy with:  rsync -rc --delete --exclude-from=.distignore ./ /path/to/svn/trunk/
+.git
+.gitignore
+.gitattributes
+.github
+.distignore
+.dev
+.DS_Store
+.wp-env
+.wp-env.json
+.patch-backups
+scripts
+node_modules
+Thumbs.db
+*.bak
+*.log

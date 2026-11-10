@@ -1480,20 +1480,7 @@
                 }
             });
 
-            // Progress Bar Percentage Slider Synchronization
-            $('#prop-progress-val').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
-                var el = resolveEl();
-                if (el) {
-                    var p = parseInt($(this).val(), 10) || 0;
-                    el.progressVal = p;
-                    $('#prop-progress-val-num').text(p);
-                    var $node = $('#el-' + el.id);
-                    if ($node.length) {
-                        $node.find('.wppoppop-progress-bar').css('width', p + '%');
-                        $node.find('span').text(p + '%');
-                    }
-                }
-            });
+            if (window.WpPopPopElementExt) { window.WpPopPopElementExt.all('bindInspector', [resolveEl]); } /* WPPOPPOP_EXT_BIND_INSPECTOR */
 
             // Slider Bounds Synchronization
             $('#prop-slider-min, #prop-slider-max, #prop-slider-step, #prop-slider-default').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
@@ -1503,16 +1490,6 @@
                     el.sliderMax = parseFloat($('#prop-slider-max').val()) || 100;
                     el.sliderStep = parseFloat($('#prop-slider-step').val()) || 1;
                     el.sliderDefault = parseFloat($('#prop-slider-default').val()) || 0;
-                    if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
-                }
-            });
-
-            // Rating Stars & Color Synchronization
-            $('#prop-rating-color, #prop-rating-max').off('input.wppoppop_stage change.wppoppop_stage').on('input.wppoppop_stage change.wppoppop_stage', function() {
-                var el = resolveEl();
-                if (el) {
-                    el.ratingColor = $('#prop-rating-color').val();
-                    el.ratingMax = parseInt($('#prop-rating-max').val(), 10) || 5;
                     if (window.WpPopPopBuilderCanvas) window.WpPopPopBuilderCanvas.renderCanvas();
                 }
             });
@@ -4488,27 +4465,7 @@
             $('#prop-bg-color').val('#ffffff');
             $('#prop-bg-transparent').prop('checked', true);
         }
-        if (type === 'imageselect') { /* WPPOPPOP_IMAGESELECT_HYDRATE */
-            var isOpts = el.optionsList || el.options || '';
-            if (Array.isArray(isOpts)) { isOpts = isOpts.join('\n'); }
-            $('#prop-imageselect-options').val(isOpts);
-            if (window.__wppImgSelRebuild) { window.__wppImgSelRebuild(true); } /* WPPOPPOP_IMGSEL_REBUILD */
-            $('#prop-imageselect-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
-            $('#prop-imageselect-accent').val(el.activeColor || '#38bdf8');
-            $('#prop-imageselect-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
-        }
-        if (type === 'tile' && !el.bgColor) { /* WPPOPPOP_TILE_BG_DEFAULT */
-            $('#prop-bg-color').val('#f1f5f9');
-            $('#prop-bg-transparent').prop('checked', false);
-        }
-        if (type === 'tile') { /* WPPOPPOP_TILE_HYDRATE */
-            var tlOpts = el.optionsList || el.options || '';
-            if (Array.isArray(tlOpts)) { tlOpts = tlOpts.join('\n'); }
-            $('#prop-tile-options').val(tlOpts);
-            $('#prop-tile-cols').val(String(parseInt(el.gridCols || el.columns, 10) || 3));
-            $('#prop-tile-accent').val(el.activeColor || '#38bdf8');
-            $('#prop-tile-multi').prop('checked', el.multiSelect === true || el.multiSelect === 1 || el.multiSelect === '1' || el.multiSelect === 'true');
-        }
+        if (window.WpPopPopElementExt) { window.WpPopPopElementExt.call(type, 'hydrate', [el, type]); } /* WPPOPPOP_EXT_HYDRATE */
         if (type === 'shape') {
             $('#prop-shape-fill').val(el.shapeFill || '#3b82f6');
             $('#prop-shape-transparent').prop('checked', !!el.shapeNoFill);
@@ -5255,7 +5212,7 @@
     'use strict';
 
     var TYPES = ['icon', 'fontawesome'];
-    var FA_HREF = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
+    var FA_HREF = (window.wppoppop_vars && window.wppoppop_vars.fa_url) || '';
     var FA_LINK_ID = 'wppoppop-fa-css';
     var DEFAULT_CLASS = 'fas fa-star';
 
@@ -5270,7 +5227,7 @@
 
     function ensureFontAwesome(onReady) {
         if (hasFontAwesomeCss()) { if (onReady) onReady(); return; }
-        if (document.getElementById(FA_LINK_ID)) return;
+        if (!FA_HREF || document.getElementById(FA_LINK_ID)) return;
         var link = document.createElement('link');
         link.id = FA_LINK_ID;
         link.rel = 'stylesheet';
@@ -5352,128 +5309,6 @@
     });
 })(window, jQuery);
 /* === WPPOPPOP_FA_PREVIEW_RENDER_END === */
-
-/* === WPPOPPOP_IMAGESELECT_SIZE_PRESET_START === */
-/* Image Select layers (type: imageselect): default COORDINATES & BOUNDS preset WIDTH 200px x HEIGHT 50px.
-   Applied on creation, plus an "Apply preset" button in COORDINATES & BOUNDS for existing layers. */
-(function(window, $) {
-    'use strict';
-
-    var TYPE = 'imageselect';
-    var PRESET_W = 200;
-    var PRESET_H = 50;
-
-    function cleanId(raw) {
-        return String(raw || '').replace(/^wppoppop-el-/, '').replace(/^el-/, '').trim();
-    }
-    function getList() {
-        var core = window.WpPopPopBuilderCore;
-        if (!core || !core.state || !core.state.canvases) return null;
-        return core.state.canvases[core.state.currentCanvas || 1] || null;
-    }
-    function getActiveEl() {
-        var core = window.WpPopPopBuilderCore;
-        var list = getList();
-        if (!core || !list || !core.state.activeId) return null;
-        var id = cleanId(core.state.activeId);
-        for (var i = 0; i < list.length; i++) {
-            if (list[i] && cleanId(list[i].id) === id) return list[i];
-        }
-        return null;
-    }
-    function isImageSelect(el) {
-        return !!el && String(el.type || '').toLowerCase().trim() === TYPE;
-    }
-    function applySize(el) {
-        el.width = PRESET_W;
-        el.height = PRESET_H;
-        $('#prop-width, #prop-size-width').val(PRESET_W);
-        $('#prop-height, #prop-size-height').val(PRESET_H);
-        var id = cleanId(el.id);
-        var $node = $('#canvas-elem-' + id + ', #wppoppop-el-' + id + ', #el-' + id + ', .wppoppop-canvas-item[data-id="' + id + '"]').first();
-        if ($node.length) $node.css({ width: PRESET_W + 'px', height: PRESET_H + 'px' });
-    }
-    function render(label) {
-        if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.renderCanvas === 'function') {
-            window.WpPopPopBuilderCanvas.renderCanvas();
-        }
-        if (window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
-            window.WpPopPopBuilderCore.pushHistory(label);
-        }
-    }
-
-    function wrapAddElement() {
-        var canvas = window.WpPopPopBuilderCanvas;
-        if (!canvas || typeof canvas.addElement !== 'function' || canvas.__wppoppopImageSelectWrapped) return;
-        canvas.__wppoppopImageSelectWrapped = true;
-        var orig = canvas.addElement;
-        canvas.addElement = function(type) {
-            var before = getList() ? getList().length : 0;
-            var res = orig.apply(this, arguments);
-            if (String(type || '').toLowerCase().trim() === TYPE) {
-                var list = getList() || [];
-                var created = (res && typeof res === 'object' && res.type) ? res : (list.length > before ? list[list.length - 1] : null);
-                if (isImageSelect(created)) {
-                    applySize(created);
-                    render('New Image Select Preset');
-                }
-            }
-            return res;
-        };
-    }
-
-    function ensureButton() {
-        var $coords = $('#insp-section-coords');
-        if (!$coords.length || $('#wppoppop-imgsel-size-wrap').length) return;
-        $coords.append(
-            '<div id="wppoppop-imgsel-size-wrap" style="display:none; margin-top:8px;">' +
-                '<button type="button" id="wppoppop-imgsel-size-btn" class="button button-small" ' +
-                'style="width:100%; font-size:11px; font-weight:700;">Apply Image Select Preset (200 x 50)</button>' +
-            '</div>'
-        );
-    }
-
-    function refreshButton() {
-        ensureButton();
-        $('#wppoppop-imgsel-size-wrap').toggle(isImageSelect(getActiveEl()));
-    }
-
-    function bindButton() {
-        $(document).off('click.wppoppopImgSelSize').on('click.wppoppopImgSelSize', '#wppoppop-imgsel-size-btn', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var el = getActiveEl();
-            if (!isImageSelect(el)) return;
-            applySize(el);
-            render('Apply Image Select Size Preset');
-        });
-    }
-
-    function hookInspector() {
-        var insp = window.WpPopPopBuilderInspector;
-        if (!insp || insp.__wppoppopImageSelectHooked) return;
-        insp.__wppoppopImageSelectHooked = true;
-        if (typeof insp.open === 'function') {
-            var orig = insp.open;
-            insp.open = function() {
-                var res = orig.apply(this, arguments);
-                setTimeout(refreshButton, 20);
-                return res;
-            };
-        }
-    }
-
-    $(function() {
-        bindButton();
-        wrapAddElement();
-        hookInspector();
-        refreshButton();
-        setTimeout(wrapAddElement, 150);
-        setTimeout(hookInspector, 150);
-        setInterval(refreshButton, 500);
-    });
-})(window, jQuery);
-/* === WPPOPPOP_IMAGESELECT_SIZE_PRESET_END === */
 
 /* === WPPOPPOP_MEDIA_STYLE_TRIM_START === */
 /* WPPOPPOP_MEDIA_STYLE_TRIM_V2: per-type Style-tab section trim.
@@ -6091,142 +5926,6 @@
     $(function(){sched();});
 })(window,jQuery);
 /* === WPPOPPOP_CLOSE_GLYPH_COLOR_END === */
-
-
-/* === WPPOPPOP_PROGRESS_START === */
-(function(window,$){
-    'use strict';
-    function cid(r){return String(r||'').replace(/^wppoppop-el-/,'').replace(/^el-/,'').trim();}
-    function list(){var c=window.WpPopPopBuilderCore;return (c&&c.state&&c.state.canvases&&c.state.canvases[c.state.currentCanvas||1])||[];}
-    function activeEl(){
-        var c=window.WpPopPopBuilderCore; if(!c||!c.state)return null;
-        var id=cid(c.state.activeId); if(!id)return null;
-        var l=list(); for(var i=0;i<l.length;i++){ if(l[i]&&cid(l[i].id)===id) return l[i]; }
-        return null;
-    }
-    function isProg(el){return !!el&&String(el.type||'').toLowerCase()==='progress';}
-    function T(v){return v===true||v==='true'||v===1||v==='1'||v==='on';}
-    function hex(v,d){return /^#[0-9a-f]{3,8}$/i.test(v||'')?v:d;}
-    function num(el){
-        var ks=['progressValue','progressPercent','progressVal'];
-        for(var i=0;i<ks.length;i++){var n=parseFloat(el[ks[i]]); if(!isNaN(n)) return Math.max(0,Math.min(100,Math.round(n)));}
-        return 65;
-    }
-    function flag(el,keys,def){for(var i=0;i<keys.length;i++){if(el[keys[i]]!==undefined) return T(el[keys[i]]);} return def;}
-
-    if(!document.getElementById('wpp-prog-css')){
-        $('head').append('<style id="wpp-prog-css">@-webkit-keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}@keyframes wppProgStripe{from{background-position:20px 0}to{background-position:0 0}}.wppoppop-prog-anim{-webkit-animation:wppProgStripe 1s linear infinite;animation:wppProgStripe 1s linear infinite}</style>');
-    }
-
-    function html(el){
-        var pct=num(el);
-        var fill=hex(el.fillColor||el.progressColor,'#10b981');
-        var track=hex(el.trackColor,'#334155');
-        var striped=flag(el,['progressStriped','striped'],false);
-        var anim=striped&&flag(el,['progressAnimated'],false);
-        var showPct=flag(el,['showPercentLabel'],true);
-        var lbl=$.trim(el.progressLabel||'');
-        var badge=lbl?(lbl+(showPct?' ('+pct+'%)':'')):(showPct?(pct+'%'):'');
-        var stripe=striped?'background-image:linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.2) 75%,transparent 75%,transparent);background-size:20px 20px;':'';
-        return '<div style="width:100%;height:100%;background:'+track+';border-radius:inherit;overflow:hidden;position:relative;display:flex;align-items:center;pointer-events:none;">'+
-            '<div class="wppoppop-progress-fill'+(anim?' wppoppop-prog-anim':'')+'" style="width:'+pct+'%;height:100%;background-color:'+fill+';'+stripe+'transition:width .2s ease;"></div>'+
-            (badge?'<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);">'+$('<div>').text(badge).html()+'</span>':'')+
-            '</div>';
-    }
-    function node(el){
-        var id=cid(el.id);
-        return $('#canvas-elem-'+id+', #wppoppop-el-'+id+', #el-'+id+', .wppoppop-canvas-item[data-id="'+el.id+'"]').first();
-    }
-    function paint(el){
-        var $n=node(el); if(!$n.length) return;
-        var $h=$n.children('.ui-resizable-handle, .wppoppop-resize-handle').detach();
-        $n.html(html(el)).append($h);
-    }
-    function paintAll(){list().forEach(function(e){ if(isProg(e)) paint(e); });}
-
-    function wrap(){
-        var cv=window.WpPopPopBuilderCanvas;
-        if(cv&&!cv.__progWrapped&&typeof cv.renderCanvas==='function'){
-            cv.__progWrapped=true; var o=cv.renderCanvas;
-            cv.renderCanvas=function(){var r=o.apply(this,arguments); try{paintAll();}catch(e){} return r;};
-        }
-        var R=window.WpPopPopElementsRegistry;
-        if(R&&!R.__progWrapped&&typeof R.renderMediaElementStage==='function'){
-            R.__progWrapped=true; var o2=R.renderMediaElementStage;
-            R.renderMediaElementStage=function(el){var r=o2.apply(this,arguments); try{ if(isProg(el)) paint(el);}catch(e){} return r;};
-        }
-    }
-
-    function hydrate(){
-        var el=activeEl(); if(!isProg(el)) return;
-        $('#prop-progress-percent').val(num(el));
-        $('#prop-progress-color').val(hex(el.fillColor||el.progressColor,'#10b981'));
-        $('#prop-progress-track').val(hex(el.trackColor,'#334155'));
-        $('#prop-progress-label').val(el.progressLabel||'');
-        $('#prop-progress-striped').prop('checked',flag(el,['progressStriped','striped'],false));
-        $('#prop-progress-animated').prop('checked',flag(el,['progressAnimated'],false));
-        $('#prop-progress-showpct').prop('checked',flag(el,['showPercentLabel'],true));
-    }
-    function sched(){[0,60,200,350,700,1200].forEach(function(ms){setTimeout(function(){wrap();hydrate();paintAll();},ms);});}
-
-    $(document).off('input.wppProg change.wppProg')
-      .on('input.wppProg change.wppProg','#prop-progress-percent,#prop-progress-color,#prop-progress-track,#prop-progress-label,#prop-progress-striped,#prop-progress-animated,#prop-progress-showpct',function(e){
-        var el=activeEl(); if(!isProg(el)) return;
-        var p=parseInt($('#prop-progress-percent').val(),10); if(isNaN(p)) p=0; p=Math.max(0,Math.min(100,p));
-        el.progressValue=p; el.progressPercent=p; el.progressVal=p;
-        var c=$('#prop-progress-color').val(); el.progressColor=c; el.fillColor=c;
-        el.trackColor=$('#prop-progress-track').val();
-        el.progressLabel=$('#prop-progress-label').val();
-        var st=$('#prop-progress-striped').is(':checked'); el.progressStriped=st; el.striped=st;
-        el.progressAnimated=$('#prop-progress-animated').is(':checked');
-        el.showPercentLabel=$('#prop-progress-showpct').is(':checked');
-        paint(el);
-        if(e.type==='change'&&window.WpPopPopBuilderCore&&window.WpPopPopBuilderCore.pushHistory) window.WpPopPopBuilderCore.pushHistory('Change Progress Bar');
-    });
-
-    window.addEventListener('click',function(e){
-        var t=e.target;
-        if(t&&t.closest&&t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) sched();
-    },true);
-    $(function(){wrap();setTimeout(wrap,150);setTimeout(wrap,450);sched();});
-})(window,jQuery);
-/* === WPPOPPOP_PROGRESS_END === */
-
-
-/* === WPPOPPOP_PROGRESS_MODE_START === */
-(function(window,$){
-    'use strict';
-    function cid(r){return String(r||'').replace(/^wppoppop-el-/,'').replace(/^el-/,'').trim();}
-    function activeEl(){
-        var c=window.WpPopPopBuilderCore; if(!c||!c.state)return null;
-        var id=cid(c.state.activeId); if(!id)return null;
-        var l=(c.state.canvases&&c.state.canvases[c.state.currentCanvas||1])||[];
-        for(var i=0;i<l.length;i++){ if(l[i]&&cid(l[i].id)===id) return l[i]; }
-        return null;
-    }
-    function isProg(el){return !!el&&String(el.type||'').toLowerCase()==='progress';}
-    function mode(el){var m=el&&el.progressMode; return (m==='form'||m==='steps')?m:'manual';}
-    function apply(el){
-        var m=mode(el);
-        $('#prop-progress-mode').val(m);
-        $('#prop-progress-val-wrap').css('display', m==='manual'?'':'none');
-    }
-    function run(){var el=activeEl(); if(isProg(el)) apply(el);}
-    function sched(){[0,60,200,350,700,1200].forEach(function(ms){setTimeout(run,ms);});}
-    $(document).off('change.wppProgMode','#prop-progress-mode').on('change.wppProgMode','#prop-progress-mode',function(){
-        var el=activeEl(); if(!isProg(el)) return;
-        var v=$(this).val(); el.progressMode=(v==='form'||v==='steps')?v:'manual';
-        apply(el);
-        if(window.WpPopPopBuilderCore&&window.WpPopPopBuilderCore.pushHistory) window.WpPopPopBuilderCore.pushHistory('Change Progress Mode');
-    });
-    window.addEventListener('click',function(e){
-        var t=e.target;
-        if(t&&t.closest&&t.closest('.wppoppop-canvas-item, .wppoppop-layer-item, .wppoppop-insp-tab, #wppoppop-inspector-drawer')) sched();
-    },true);
-    $(function(){sched();});
-})(window,jQuery);
-/* === WPPOPPOP_PROGRESS_MODE_END === */
-
 
 /* === WPPOPPOP_BUTTON_START === */
 (function(window,$){

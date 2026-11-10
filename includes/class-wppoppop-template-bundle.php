@@ -79,7 +79,7 @@ class WpPopPop_Template_Bundle {
         if ($ext === 'avif') {
             return preg_match('/^ftyp(avif|avis)/', substr($bytes, 4, 8)) === 1;
         }
-        $info = @getimagesizefromstring($bytes);
+        $info = /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- invalid image data must not raise a warning */ @getimagesizefromstring($bytes);
         if (!$info) {
             return false;
         }
@@ -99,6 +99,9 @@ class WpPopPop_Template_Bundle {
             $out[] = array(self::strip_scheme($up['baseurl']), $up['basedir']);
         }
         $out[] = array(self::strip_scheme(WPPOPPOP_URL), WPPOPPOP_PATH);
+        foreach (WpPopPop_Pro_API::roots('preset') as $r) {
+            $out[] = array(self::strip_scheme($r['url']), $r['path']);
+        }
         return $out;
     }
 
@@ -178,7 +181,7 @@ class WpPopPop_Template_Bundle {
                 $ext  = WpPopPop_Template_Bundle::ext_of($real);
                 if ($size < 1 || $size > WpPopPop_Template_Bundle::MAX_FILE || $st->total + $size > WpPopPop_Template_Bundle::MAX_TOTAL
                     || count($st->files) >= WpPopPop_Template_Bundle::MAX_FILES
-                    || !WpPopPop_Template_Bundle::valid_image_bytes((string) file_get_contents($real), $ext)) {
+                    /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ || !WpPopPop_Template_Bundle::valid_image_bytes((string) file_get_contents($real), $ext)) {
                     $st->missing++;
                     return $url;
                 }
@@ -218,7 +221,7 @@ class WpPopPop_Template_Bundle {
         }
         $zip = new ZipArchive();
         if ($zip->open($tmp, ZipArchive::OVERWRITE) !== true) {
-            @unlink($tmp);
+            wp_delete_file($tmp);
             return new WP_Error('zip', __('Could not create the zip file.', 'wppoppop'));
         }
         $zip->addFromString($slug . '/template.json', $json);
@@ -226,7 +229,7 @@ class WpPopPop_Template_Bundle {
             $zip->addFile($abs, $slug . '/' . $rel);
         }
         if (!$zip->close()) {
-            @unlink($tmp);
+            wp_delete_file($tmp);
             return new WP_Error('zip', __('Could not write the zip file.', 'wppoppop'));
         }
         return $tmp;
@@ -304,7 +307,7 @@ class WpPopPop_Template_Bundle {
 
     /** @return array|WP_Error id, title, images, skipped */
     public static function import($tmp, $orig) {
-        $head = (string) file_get_contents($tmp, false, null, 0, 4);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $head = (string) file_get_contents($tmp, false, null, 0, 4);
         if ($head === "PK\x03\x04") {
             return self::import_zip($tmp, $orig);
         }
@@ -312,7 +315,7 @@ class WpPopPop_Template_Bundle {
         if ($size === false || $size < 2 || $size > self::MAX_JSON) {
             return new WP_Error('size', __('The template file is empty or too large.', 'wppoppop'));
         }
-        return self::finish((string) file_get_contents($tmp), $orig, array());
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ return self::finish((string) file_get_contents($tmp), $orig, array());
     }
 
     protected static function import_zip($tmp, $orig) {
@@ -414,7 +417,7 @@ class WpPopPop_Template_Bundle {
         }
         foreach (array($root, $dir) as $d) {
             if (!file_exists($d . 'index.php')) {
-                @file_put_contents($d . 'index.php', "<?php\n// Silence is golden.\n");
+                /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- best-effort index.php guard; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($d . 'index.php', "<?php\n// Silence is golden.\n");
             }
         }
         return array('dir' => $dir, 'url' => trailingslashit($up['baseurl']) . self::SUBDIR . '/' . $tplid . '/');
@@ -534,7 +537,7 @@ class WpPopPop_Template_Bundle {
                 }
                 $name = self::unique_name(basename($rel), $used);
                 $path = $dest['dir'] . $name;
-                if (@file_put_contents($path, $bytes) === false) {
+                if (/* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions -- the result is checked and reported; local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ @file_put_contents($path, $bytes) === false) {
                     $skipped++;
                     continue;
                 }

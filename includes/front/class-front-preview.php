@@ -36,7 +36,7 @@ class WpPopPop_Front_Preview {
         if ($uid === '') {
             $uid = 'draft';
         }
-        $raw     = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitised field by field by the renderer */ $raw     = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
         $decoded = json_decode($raw, true);
         if (!is_array($decoded)) {
             wp_send_json_error(['message' => __('Malformed preview payload.', 'wppoppop')]);
@@ -77,7 +77,7 @@ class WpPopPop_Front_Preview {
         if (!is_array($config)) {
             global $wpdb;
             $table = $wpdb->prefix . 'wppoppop_items';
-            $row   = $wpdb->get_row($wpdb->prepare("SELECT data FROM {$table} WHERE uid = %s", $uid), ARRAY_A);
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $row   = $wpdb->get_row($wpdb->prepare("SELECT data FROM {$table} WHERE uid = %s", $uid), ARRAY_A);
             if ($row && !empty($row['data'])) {
                 $config = json_decode($row['data'], true);
             }
@@ -105,7 +105,7 @@ class WpPopPop_Front_Preview {
         /* WPPOPPOP_PREVIEW_ICON_CSS: admin bar is off in frame mode, so load icon fonts explicitly */
         add_action('wp_enqueue_scripts', function () {
             wp_enqueue_style('dashicons');
-            wp_enqueue_style('wppoppop-font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', array(), '6.5.1');
+            wp_enqueue_style('wppoppop-font-awesome', WpPopPop_Libraries::fa_url(), array(), '6.5.1');
         }, 20);
     }
 
@@ -145,9 +145,8 @@ class WpPopPop_Front_Preview {
 
         try {
             ob_start();
-            echo $this->renderer->render_popup_markup($uid, $this->config, false, false);
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        echo ob_get_clean();
+            echo $this->renderer->render_popup_markup($uid, $this->config, false, false); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup is escaped by the renderer
+            echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered renderer output
         } catch (\Throwable $e) {
             if (ob_get_level() > 0) { ob_end_clean(); }
             echo '<div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1000002;background:#7f1d1d;color:#fff;padding:8px 14px;border-radius:8px;font:600 12px sans-serif;">Preview render error: ' . esc_html($e->getMessage()) . '</div>';

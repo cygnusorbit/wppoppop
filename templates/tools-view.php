@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -12,7 +13,7 @@ $notice_msg  = '';
 $notice_type = 'success';
 
 // Handle Tools Actions (single shared service)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wppoppop_tools_nonce'])) {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wppoppop_tools_nonce'])) {
     list($notice_msg, $notice_type) = WpPopPop_Ajax_Tools::handle_post();
 }
 ?>

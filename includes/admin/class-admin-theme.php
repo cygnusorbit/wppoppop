@@ -320,7 +320,7 @@ class WpPopPop_Admin_Theme {
             return $classes;
         }
         $v = self::get_values();
-        $page = sanitize_key(wp_unslash($_GET['page']));
+        $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
         if (empty($v['enabled'])) {
             return $classes;
         }
@@ -392,7 +392,7 @@ class WpPopPop_Admin_Theme {
             delete_option(self::OPTION);
             $status = 'reset';
         } elseif ($action === 'import') {
-            $json = isset($_POST['wpp_theme_import']) ? wp_unslash($_POST['wpp_theme_import']) : '';
+            $json = isset($_POST['wpp_theme_import']) ? /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitised key by key by the theme importer */ wp_unslash($_POST['wpp_theme_import']) : '';
             $data = json_decode($json, true);
             if (!is_array($data)) {
                 $status = 'import_error';
@@ -402,7 +402,7 @@ class WpPopPop_Admin_Theme {
                 $status = 'imported';
             }
         } else {
-            $raw = isset($_POST['wpp_theme']) && is_array($_POST['wpp_theme']) ? wp_unslash($_POST['wpp_theme']) : [];
+            $raw = isset($_POST['wpp_theme']) && is_array($_POST['wpp_theme']) ? /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised key by key by the theme sanitiser */ wp_unslash($_POST['wpp_theme']) : [];
             update_option(self::OPTION, self::sanitize_all($raw));
         }
 

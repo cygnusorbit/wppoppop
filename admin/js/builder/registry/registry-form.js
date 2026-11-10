@@ -185,59 +185,8 @@
             innerHtml = '<div style="width:100%;height:100%;background:#ffffff;border:1px solid #cbd5e1;border-radius:0px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;box-sizing:border-box;pointer-events:none;">' +
                 pills + (maxS > 0 ? '<span style="margin-left:auto;font-size:9px;color:#94a3b8;">Max: ' + maxS + '</span>' : '') +
                 '</div>';
-        } else if (canonical === 'imageselect') {
-            /* WPPOPPOP_IMAGESELECT_STAGE_V2 */
-            var imgRaw = el.optionsList || el.options || '';
-            if (Array.isArray(imgRaw)) { imgRaw = imgRaw.join('\n'); }
-            var imgLines = $.trim(String(imgRaw)).split(/\r?\n/).map(function(x) { return $.trim(x); }).filter(Boolean);
-            if (imgLines.length === 1 && imgLines[0].indexOf(',') !== -1 && !/https?:|\/\/|\||::/.test(imgLines[0])) {
-                imgLines = imgLines[0].split(',').map(function(x) { return $.trim(x); }).filter(Boolean);
-            }
-            if (!imgLines.length) { imgLines = ['Style A', 'Style B', 'Style C']; }
-            var iCols = Math.min(4, Math.max(1, parseInt(el.gridCols || el.columns, 10) || 3));
-            var iAcc  = el.activeColor || '#38bdf8';
-            var iTxt  = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;font-weight:' + (el.fontWeight || '600') + ';color:' + (el.color || '#1e293b') + ';';
-            var parseImg = function(line) {
-                var m, p, lbl = line, img = '';
-                if (line.indexOf('::') !== -1) { p = line.split('::'); lbl = $.trim(p.shift()); img = $.trim(p.join('::')); }
-                else if (line.indexOf('|') !== -1) { p = line.split('|'); lbl = $.trim(p.shift()); img = $.trim(p.join('|')); }
-                else if ((m = line.match(/^(.*?),\s*((?:https?:)?\/\/\S+|\/\S+)$/i))) { lbl = $.trim(m[1]); img = m[2]; }
-                return { l: lbl, i: img };
-            };
-            var cards = imgLines.slice(0, 8).map(function(line, idx) {
-                var it = parseImg(line);
-                var active = (idx === 0);
-                var thumb = (it.i && /^((https?:)?\/\/|\/)/i.test(it.i))
-                    ? '<img src="' + String(it.i).replace(/"/g, '%22').replace(/</g, '%3C') + '" alt="" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;border-radius:0px;display:block;" />'
-                    : '<span class="dashicons dashicons-format-image" style="font-size:18px;width:18px;height:18px;color:' + (active ? iAcc : '#94a3b8') + ';"></span>';
-                return '<div style="min-width:0;min-height:0;box-sizing:border-box;border:2px solid ' + (active ? iAcc : '#cbd5e1') + ';border-radius:0px;background:#ffffff;padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;">' + thumb +
-                    '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' + iTxt + '">' + $('<div>').text(it.l || 'Choice').html() + (idx === 0 ? reqStar : '') + '</span></div>';
-            }).join('');
-            innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + iCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + cards + '</div>';
-        } else if (canonical === 'tile') {
-            /* WPPOPPOP_TILE_STAGE_V2 */
-            var tRaw = el.optionsList || el.options || '';
-            if (Array.isArray(tRaw)) { tRaw = tRaw.join('\n'); }
-            var tLines = $.trim(String(tRaw)).split(/\r?\n/).map(function(x) { return $.trim(x); }).filter(Boolean);
-            if (tLines.length === 1 && tLines[0].indexOf(',') !== -1) { tLines = tLines[0].split(',').map(function(x) { return $.trim(x); }).filter(Boolean); }
-            if (!tLines.length) { tLines = ['$10 / mo', '$25 / mo', '$50 / mo']; }
-            var tCols = Math.min(4, Math.max(1, parseInt(el.gridCols || el.columns, 10) || 3));
-            var tAcc  = (el.activeColor && /^#[0-9a-fA-F]{3,8}$/.test(el.activeColor)) ? el.activeColor : '#38bdf8';
-            var tBw   = (parseInt(el.borderWidth, 10) > 0) ? parseInt(el.borderWidth, 10) : 1;
-            var tBs   = (['solid', 'dashed', 'dotted', 'double', 'none'].indexOf(el.borderStyle) !== -1) ? el.borderStyle : 'solid';
-            var tBc   = (el.borderColor && /^#[0-9a-fA-F]{3,8}$/.test(el.borderColor)) ? el.borderColor : '#cbd5e1';
-            var tRad  = (el.borderRadius !== undefined && el.borderRadius !== '' && !isNaN(parseInt(el.borderRadius, 10))) ? parseInt(el.borderRadius, 10) : 6;
-            var tJ    = align === 'right' ? 'flex-end' : (align === 'left' ? 'flex-start' : 'center');
-            var tFg   = (el.color && /^#[0-9a-fA-F]{3,8}$/.test(el.color)) ? el.color : '#334155';
-            var tBg   = (el.transparentFill || el.bgColor === 'transparent') ? 'transparent' : ((el.bgColor && /^#[0-9a-fA-F]{3,8}$/.test(el.bgColor)) ? el.bgColor : '#f1f5f9'); /* WPPOPPOP_TILE_BG_STAGE */
-            var tTxt  = 'font-size:' + (parseInt(el.fontSize, 10) || 12) + 'px;font-weight:' + (el.fontWeight || '700') + ';line-height:' + (parseFloat(el.lineHeight) || 1.3) + ';letter-spacing:' + (parseFloat(el.letterSpacing) || 0) + 'px;';
-            var tTiles = tLines.slice(0, 8).map(function(lbl, idx) {
-                var on = (idx === 0);
-                var bd = (tBs === 'none') ? 'none' : (tBw + 'px ' + tBs + ' ' + (on ? tAcc : tBc));
-                return '<div style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' + tJ + ';padding:6px;border-radius:' + tRad + 'px;border:' + bd + ';background:' + (on ? tAcc : tBg) + ';color:' + (on ? '#ffffff' : tFg) + ';' + tTxt + '">' +
-                    '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + $('<div>').text(lbl).html() + (idx === 0 ? reqStar : '') + '</span></div>';
-            }).join('');
-            innerHtml = '<div style="width:100%;height:100%;display:grid;grid-template-columns:repeat(' + tCols + ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;box-sizing:border-box;pointer-events:none;">' + tTiles + '</div>';
+        } else if (window.WpPopPopElementExt && window.WpPopPopElementExt.has(canonical, 'stage')) { /* WPPOPPOP_EXT_STAGE */
+            innerHtml = window.WpPopPopElementExt.call(canonical, 'stage', [el, { align: align, reqStar: reqStar, defVal: defVal }]) || '';
         } else if (canonical === 'date') {
             var dFmt = el.dateFormat || 'YYYY-MM-DD';
             var dPh  = defVal || el.placeholder || dFmt;
@@ -283,21 +232,6 @@
                 pwRightIcon +
                 (showEye ? '<span class="wppoppop-pw-prev-eye dashicons dashicons-visibility" aria-label="Show password" style="position:absolute;right:0;top:0;width:40px;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:20px;color:#2271b1;cursor:pointer;pointer-events:auto;"></span>' : '') +
                 '</div>';
-        } else if (canonical === 'rating') {
-            /* WPPOPPOP_RATING_STAGE_V2: ratingMax/ratingShape/ratingColor/ratingInactiveColor, default from Data tab */
-            var rMax   = parseInt(el.ratingMax, 10) === 10 ? 10 : 5;
-            var rShape = el.ratingShape || 'star';
-            var rCol   = (/^#[0-9a-fA-F]{3,8}$/.test(el.ratingColor || '')) ? el.ratingColor : '#f59e0b';
-            var rOff   = (/^#[0-9a-fA-F]{3,8}$/.test(el.ratingInactiveColor || '')) ? el.ratingInactiveColor : '#cbd5e1';
-            var rScore = Math.min(rMax, Math.max(0, parseInt(defVal, 10) || 0));
-            var glyph  = rShape === 'heart' ? '&#9829;' : (rShape === 'thumb' ? '&#128077;' : '&#9733;');
-            var justify = align === 'center' ? 'center' : (align === 'right' ? 'flex-end' : 'flex-start');
-            var starsHtml = '';
-            for (var s = 1; s <= rMax; s++) {
-                var c = (s <= rScore) ? rCol : rOff;
-                starsHtml += '<span style="color:' + c + ';font-size:' + (rMax === 10 ? '15px' : '20px') + ';line-height:1;">' + glyph + '</span>';
-            }
-            innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:' + justify + ';gap:4px;padding:0 6px;box-sizing:border-box;pointer-events:none;">' + starsHtml + '</div>';
         }
 
         if (innerHtml) {
@@ -306,9 +240,9 @@
         if (typeof Reg.applyStyleToStageNode === 'function') {
             Reg.applyStyleToStageNode(el);
         }
-        if (canonical === 'tile' && $node[0]) { $node[0].style.setProperty('background-color', 'transparent', 'important'); } /* WPPOPPOP_TILE_BG_BOX */
+        if (window.WpPopPopElementExt) { window.WpPopPopElementExt.call(canonical, 'stageDone', [$node, el]); } /* WPPOPPOP_EXT_STAGE_DONE */
         /* WPPOPPOP_TF_NOPAD */
-        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'checkboxgroup' || canonical === 'multiselect' || canonical === 'tile') && $node[0]) {
+        if ((canonical === 'text' || canonical === 'email' || canonical === 'number' || canonical === 'tel' || canonical === 'textarea' || canonical === 'select' || canonical === 'checkbox' || canonical === 'radio' || canonical === 'radios' || canonical === 'checkboxgroup' || canonical === 'multiselect') && $node[0]) {
             $node[0].style.setProperty('padding', '0', 'important');
         }
     };
@@ -357,43 +291,6 @@
     bindPhase3FormVerification();
 })(window, jQuery);
 /* === WPPOPPOP_PHASE3_FORM_FIELD_VERIFICATION_END === */
-
-
-/* === WPPOPPOP_TILE_HOVER_BIND_START === */
-(function(window, $) {
-    'use strict';
-    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
-    var MAP = { 'prop-elem-hover-bg': 'hoverBgColor', 'prop-elem-hover-color': 'hoverTextColor', 'prop-elem-hover-border': 'hoverBorderColor' };
-    $(document).off('input.tlHover change.tlHover', '#prop-elem-hover-bg, #prop-elem-hover-color, #prop-elem-hover-border')
-        .on('input.tlHover change.tlHover', '#prop-elem-hover-bg, #prop-elem-hover-color, #prop-elem-hover-border', function(e) {
-            var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
-            if (!el || String(el.type || '').toLowerCase() !== 'tile') { return; }
-            var k = MAP[this.id];
-            if (k) { el[k] = $(this).val(); }
-            if (e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
-                window.WpPopPopBuilderCore.pushHistory();
-            }
-        });
-})(window, jQuery);
-/* === WPPOPPOP_TILE_HOVER_BIND_END === */
-
-
-/* === WPPOPPOP_TILE_BG_BIND_START === */
-(function(window, $) {
-    'use strict';
-    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
-    $(document).off('input.tlBg change.tlBg', '#prop-bg-color, #prop-bg-transparent')
-        .on('input.tlBg change.tlBg', '#prop-bg-color, #prop-bg-transparent', function() {
-            setTimeout(function() {
-                var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
-                if (el && String(el.type || '').toLowerCase() === 'tile' && typeof Reg.renderFormElementStage === 'function') {
-                    Reg.renderFormElementStage(el);
-                }
-            }, 0);
-        });
-})(window, jQuery);
-/* === WPPOPPOP_TILE_BG_BIND_END === */
-
 
 /* === WPPOPPOP_DATE_PREVIEW_PICKER_START === */
 (function(window, $) {
@@ -846,190 +743,6 @@
         });
 })(window, jQuery);
 /* === WPPOPPOP_ICON_COLOR_BIND_END === */
-
-/* === WPPOPPOP_RATING_HYDRATE_START === */
-(function(window, $) {
-    'use strict';
-    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
-    /* WPPOPPOP_RATING_STYLE: Rating hides every generic Style card */
-    if (!document.getElementById('wppoppop-rating-style-css')) {
-        var st = document.createElement('style');
-        st.id = 'wppoppop-rating-style-css';
-        st.appendChild(document.createTextNode(
-            '#insp-tab-style.wppoppop-rt-style #insp-section-opacity,' +
-            '#insp-tab-style.wppoppop-rt-style #insp-section-bg-color,' +
-            '#insp-tab-style.wppoppop-rt-style #insp-section-padding,' +
-            '#insp-tab-style.wppoppop-rt-style #insp-section-shadow,' +
-            '#insp-tab-style.wppoppop-rt-style #insp-section-custom-css,' +
-            '#insp-tab-style.wppoppop-rt-style #wppoppop-form-icons-card,' +
-            '#insp-tab-style.wppoppop-rt-style #insp-section-typography,' +
-            '#insp-tab-style.wppoppop-rt-style #insp-section-border { display: none !important; }'
-        ));
-        (document.head || document.documentElement).appendChild(st);
-    }
-    function rtEl() {
-        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
-        if (!el) return null;
-        return String(el.type || '').toLowerCase() === 'rating' ? el : false;
-    }
-    function hydrateRt() {
-        var el = rtEl();
-        $('#insp-tab-style').toggleClass('wppoppop-rt-style', !!el);
-        if (!el) return;
-        var ok = function(c) { return /^#[0-9a-fA-F]{3,8}$/.test(c || ''); };
-        $('#prop-rating-scale').val(parseInt(el.ratingMax, 10) === 10 ? '10' : '5');
-        $('#prop-rating-glyph').val(el.ratingShape || 'star');
-        $('#prop-rating-active-color').val(ok(el.ratingColor) ? el.ratingColor : '#f59e0b');
-        $('#prop-rating-inactive-color').val(ok(el.ratingInactiveColor) ? el.ratingInactiveColor : '#cbd5e1');
-    }
-    $(document).off('click.wppRtHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool')
-        .on('click.wppRtHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool', function() {
-            [30, 150, 400, 800].forEach(function(ms) { setTimeout(hydrateRt, ms); });
-        });
-    if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._rtStyleHooked) {
-        Reg._rtStyleHooked = true;
-        var origHy = Reg.hydrateCoreAndStyleFields;
-        Reg.hydrateCoreAndStyleFields = function(el) {
-            var r = origHy.apply(this, arguments);
-            var isRt = String((el && el.type) || '').toLowerCase() === 'rating';
-            $('#insp-tab-style').toggleClass('wppoppop-rt-style', isRt);
-            if (isRt) { setTimeout(hydrateRt, 0); }
-            return r;
-        };
-    }
-})(window, jQuery);
-/* === WPPOPPOP_RATING_HYDRATE_END === */
-
-/* === WPPOPPOP_RATING_DATA_TAB_START === */
-(function(window, $) {
-    'use strict';
-    var Reg = window.WpPopPopElementsRegistry = window.WpPopPopElementsRegistry || {};
-    var ACC = '#a3195b';
-    if (!document.getElementById('wppoppop-rating-data-css')) {
-        var st = document.createElement('style');
-        st.id = 'wppoppop-rating-data-css';
-        st.appendChild(document.createTextNode(
-            '#insp-tab-data.wppoppop-rt-data > *:not(#insp-rating-data){display:none !important;}' +
-            '#insp-rating-data{display:none;padding:14px;}' +
-            '#insp-tab-data.wppoppop-rt-data > #insp-rating-data{display:block !important;}' +
-            '#insp-rating-data .rt-lbl{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#e2e8f0;text-transform:uppercase;margin:0 0 6px;}' +
-            '#insp-rating-data .rt-help{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:0%;background:#e2e8f0;color:#0f172a;font-size:10px;font-weight:800;line-height:1;cursor:help;flex-shrink:0;}' +
-            '#insp-rating-data .rt-field{width:100%;height:36px;background:#090d16;border:1px solid #1e293b;color:#f8fafc;border-radius:0px;padding:0 10px;font-size:12px;box-sizing:border-box;}' +
-            '#insp-rating-data .rt-row{margin-bottom:16px;}' +
-            '#insp-rating-data .rt-sw{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;}' +
-            '#insp-rating-data .rt-sw input{position:absolute;opacity:0;width:0;height:0;}' +
-            '#insp-rating-data .rt-sl{position:absolute;inset:0;background:#475569;border-radius:0px;cursor:pointer;transition:background .15s ease;}' +
-            '#insp-rating-data .rt-sl::before{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;background:#fff;border-radius:0%;transition:transform .15s ease;}' +
-            '#insp-rating-data .rt-sw input:checked + .rt-sl{background:' + ACC + ';}' +
-            '#insp-rating-data .rt-sw input:checked + .rt-sl::before{transform:translateX(20px);}' +
-            '#insp-rating-data .rt-sw input:focus + .rt-sl{box-shadow:0 0 0 2px rgba(163,25,91,.45);}'
-        ));
-        (document.head || document.documentElement).appendChild(st);
-    }
-    function help(t) { return '<span class="rt-help" title="' + t + '" aria-label="' + t + '">?</span>'; }
-    function card() {
-        return '<div id="insp-rating-data">' +
-            '<div class="rt-row"><label class="rt-lbl" for="prop-rt-data-stars">Number of Stars ' + help('How many stars or icons the rating scale shows.') + '</label>' +
-                '<select id="prop-rt-data-stars" class="rt-field"><option value="5">5 Stars</option><option value="10">10 Stars</option></select></div>' +
-            '<div class="rt-row"><label class="rt-lbl" for="prop-rt-data-default">Default Rating ' + help('Pre-selected rating when the form loads. Choose No rating to leave it empty.') + '</label>' +
-                '<select id="prop-rt-data-default" class="rt-field"></select></div>' +
-            '<div class="rt-row"><label class="rt-lbl" for="prop-rt-data-dynamic" style="justify-content:space-between;"><span style="display:inline-flex;align-items:center;gap:6px;">Dynamic Default Value ' + help('Fill the rating from a URL query parameter, e.g. ?rating=4.') + '</span>' +
-                '<span class="rt-sw"><input type="checkbox" id="prop-rt-data-dynamic"><span class="rt-sl"></span></span></label></div>' +
-            '<div class="rt-row" id="prop-rt-data-param-row" style="display:none;"><label class="rt-lbl" for="prop-rt-data-param">Parameter Name ' + help('The URL parameter to read, e.g. rating for ?rating=4.') + '</label>' +
-                '<input type="text" id="prop-rt-data-param" class="rt-field" placeholder="e.g. rating"></div>' +
-            '<div class="rt-row"><label class="rt-lbl" for="prop-rt-data-savedb" style="justify-content:space-between;"><span style="display:inline-flex;align-items:center;gap:6px;">Save to Database ' + help('Store the submitted rating with the lead record.') + '</span>' +
-                '<span class="rt-sw"><input type="checkbox" id="prop-rt-data-savedb" checked><span class="rt-sl"></span></span></label></div>' +
-            '</div>';
-    }
-    function ensureCard() {
-        var $tab = $('#insp-tab-data');
-        if (!$tab.length) return false;
-        if (!$('#insp-rating-data').length) { $tab.append(card()); }
-        return true;
-    }
-    function rtEl() {
-        var el = (typeof Reg.resolveElement === 'function') ? Reg.resolveElement() : null;
-        if (!el) return null;
-        return String(el.type || '').toLowerCase() === 'rating' ? el : false;
-    }
-    function fillDefaults(max, cur) {
-        var h = '<option value="">No rating</option>';
-        for (var i = 1; i <= max; i++) { h += '<option value="' + i + '">' + i + (i === 1 ? ' Star' : ' Stars') + '</option>'; }
-        var $d = $('#prop-rt-data-default').html(h);
-        var n = parseInt(cur, 10);
-        $d.val((n >= 1 && n <= max) ? String(n) : '');
-    }
-    function hydrate() {
-        var el = rtEl();
-        var ready = ensureCard();
-        $('#insp-tab-data').toggleClass('wppoppop-rt-data', !!el);
-        if (!el || !ready) return;
-        var max = parseInt(el.ratingMax, 10) === 10 ? 10 : 5;
-        $('#prop-rt-data-stars').val(String(max));
-        fillDefaults(max, el.defaultValue);
-        var dyn = (el.dynamicDefault === true || el.dynamicDefault === 1 || el.dynamicDefault === '1' || el.dynamicDefault === 'true');
-        $('#prop-rt-data-dynamic').prop('checked', dyn);
-        $('#prop-rt-data-param').val(el.paramName || '');
-        $('#prop-rt-data-param-row').toggle(dyn);
-        $('#prop-rt-data-savedb').prop('checked', !(el.saveToDb === false || el.saveToDb === 'false' || el.saveToDb === 0 || el.saveToDb === '0'));
-    }
-    function commit(e) {
-        if (e && e.type === 'change' && window.WpPopPopBuilderCore && typeof window.WpPopPopBuilderCore.pushHistory === 'function') {
-            window.WpPopPopBuilderCore.pushHistory();
-        }
-    }
-    function render(el) { if (typeof Reg.renderFormElementStage === 'function') { Reg.renderFormElementStage(el); } }
-
-    $(document).off('input.wppRtData change.wppRtData', '#prop-rt-data-stars').on('input.wppRtData change.wppRtData', '#prop-rt-data-stars', function(e) {
-        var el = rtEl(); if (!el) return;
-        var max = parseInt($(this).val(), 10) === 10 ? 10 : 5;
-        el.ratingMax = max;
-        var cur = parseInt(el.defaultValue, 10);
-        if (cur > max) { el.defaultValue = String(max); }
-        fillDefaults(max, el.defaultValue);
-        $('#prop-rating-scale').val(String(max));
-        render(el); commit(e);
-    });
-    $(document).off('input.wppRtData change.wppRtData', '#prop-rt-data-default').on('input.wppRtData change.wppRtData', '#prop-rt-data-default', function(e) {
-        var el = rtEl(); if (!el) return;
-        el.defaultValue = $(this).val() || '';
-        render(el); commit(e);
-    });
-    $(document).off('change.wppRtData', '#prop-rt-data-dynamic').on('change.wppRtData', '#prop-rt-data-dynamic', function(e) {
-        var el = rtEl(); if (!el) return;
-        el.dynamicDefault = $(this).is(':checked');
-        $('#prop-rt-data-param-row').toggle(el.dynamicDefault);
-        commit(e);
-    });
-    $(document).off('input.wppRtData change.wppRtData', '#prop-rt-data-param').on('input.wppRtData change.wppRtData', '#prop-rt-data-param', function(e) {
-        var el = rtEl(); if (!el) return;
-        el.paramName = $.trim($(this).val() || '');
-        commit(e);
-    });
-    $(document).off('change.wppRtData', '#prop-rt-data-savedb').on('change.wppRtData', '#prop-rt-data-savedb', function(e) {
-        var el = rtEl(); if (!el) return;
-        el.saveToDb = $(this).is(':checked');
-        commit(e);
-    });
-    /* keep Content-tab "Scale Max" and this tab in sync */
-    $(document).off('change.wppRtDataSync', '#prop-rating-scale').on('change.wppRtDataSync', '#prop-rating-scale', function() { setTimeout(hydrate, 0); });
-
-    $(document).off('click.wppRtDataHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool')
-        .on('click.wppRtDataHydrate', '.wppoppop-canvas-item, .wppoppop-layer-item, #wppoppop-inspector-drawer [data-tab], .wppoppop-ribbon-btn, .wppoppop-ribbon-tool', function() {
-            [30, 150, 400, 800].forEach(function(ms) { setTimeout(hydrate, ms); });
-        });
-    if (typeof Reg.hydrateCoreAndStyleFields === 'function' && !Reg._rtDataHooked) {
-        Reg._rtDataHooked = true;
-        var orig = Reg.hydrateCoreAndStyleFields;
-        Reg.hydrateCoreAndStyleFields = function(el) {
-            var r = orig.apply(this, arguments);
-            setTimeout(hydrate, 0);
-            return r;
-        };
-    }
-    $(function() { ensureCard(); });
-})(window, jQuery);
-/* === WPPOPPOP_RATING_DATA_TAB_END === */
 
 /* === WPPOPPOP_SUBMIT_HYDRATE_START === */
 (function(window, $) {

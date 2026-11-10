@@ -74,7 +74,7 @@ class WpPopPop_Ajax_Modules {
 
     public function upload() {
         $this->verify();
-        $f = isset($_FILES['module_zip']) && is_array($_FILES['module_zip']) ? $_FILES['module_zip'] : null;
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- upload is validated by error code, extension and is_uploaded_file() */ $f = isset($_FILES['module_zip']) && is_array($_FILES['module_zip']) ? $_FILES['module_zip'] : null;
         if (!$f || !isset($f['error']) || is_array($f['error'])) {
             wp_send_json_error(['code' => 'no_file', 'message' => __('Choose a module .zip file first.', 'wppoppop')]);
         }
@@ -92,7 +92,7 @@ class WpPopPop_Ajax_Modules {
     /** Module Category manager: replaces the user category list (name, order). */
     public function cats_save() {
         $this->verify();
-        $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded categories are sanitised by the category store */ $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
         if (!is_array($raw)) {
             wp_send_json_error(['message' => __('Malformed category list.', 'wppoppop')]);
         }

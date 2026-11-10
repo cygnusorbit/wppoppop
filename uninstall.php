@@ -11,19 +11,22 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-$settings = get_option('wppoppop_settings', []);
-$clean_on_uninstall = !empty($settings['clean_on_uninstall']);
+$wppoppop_uninstall_settings = get_option('wppoppop_settings', []);
+$wppoppop_clean_on_uninstall = !empty($wppoppop_uninstall_settings['clean_on_uninstall']);
 
-if ($clean_on_uninstall) {
+if ($wppoppop_clean_on_uninstall) {
     global $wpdb;
 
-    // 1. Drop all 5 custom database tables
-    $tables = [$wpdb->prefix . 'wppoppop_items',
-        $wpdb->prefix . 'wppoppop_submissions',$wpdb->prefix . 'wppoppop_campaigns',
-        $wpdb->prefix . 'wppoppop_logs',$wpdb->prefix . 'wppoppop_transactions'
+    // 1. Drop the plugin's custom database tables (tables added by WpPopPop Pro are removed by Pro).
+    $wppoppop_tables = [
+        $wpdb->prefix . 'wppoppop_items',
+        $wpdb->prefix . 'wppoppop_submissions',
+        $wpdb->prefix . 'wppoppop_logs',
+        $wpdb->prefix . 'wppoppop_transactions',
     ];
 
-    foreach ($tables as $table) {$wpdb->query("DROP TABLE IF EXISTS `{$table}`");
+    foreach ($wppoppop_tables as $wppoppop_table) {
+        $wpdb->query('DROP TABLE IF EXISTS `' . esc_sql($wppoppop_table) . '`'); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     // 2. Remove all options
@@ -41,36 +44,32 @@ if ($clean_on_uninstall) {
     delete_option('wppoppop_module_image_map');
 
     // 3. Purge cached transients
-    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wppoppop_%' OR option_name LIKE '_transient_timeout_wppoppop_%'");
+    $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->prepare(
+            "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $wpdb->esc_like('_transient_wppoppop_') . '%',
+            $wpdb->esc_like('_transient_timeout_wppoppop_') . '%'
+        )
+    );
 
-    // 4. Remove uploaded files directory if present
-    $upload_dir = wp_upload_dir();
-    $wppoppop_dir =$upload_dir['basedir'] . '/wppoppop';
-    if (is_dir($wppoppop_dir)) {$files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($wppoppop_dir, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
-        foreach ($files as$fileinfo) {
-            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-            @$todo($fileinfo->getRealPath());
+    // 4. Remove the uploaded data and module folders (symlinks are unlinked, never followed).
+    $wppoppop_upload_dir = wp_upload_dir();
+    foreach (['wppoppop', 'wppoppop-modules'] as $wppoppop_sub) {
+        $wppoppop_root = $wppoppop_upload_dir['basedir'] . '/' . $wppoppop_sub;
+        if (!is_dir($wppoppop_root) || is_link($wppoppop_root)) {
+            continue;
         }
-        @rmdir($wppoppop_dir);
-    }
-
-    // 5. Remove uploaded modules (symlinks are unlinked, never followed)
-    $wppoppop_mod_dir = $upload_dir['basedir'] . '/wppoppop-modules';
-    if (is_dir($wppoppop_mod_dir) && !is_link($wppoppop_mod_dir)) {
-        $mod_files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($wppoppop_mod_dir, RecursiveDirectoryIterator::SKIP_DOTS),
+        $wppoppop_items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($wppoppop_root, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::CHILD_FIRST
         );
-        foreach ($mod_files as $mod_file) {
-            if ($mod_file->isLink() || !$mod_file->isDir()) {
-                @unlink($mod_file->getPathname());
+        foreach ($wppoppop_items as $wppoppop_item) {
+            if ($wppoppop_item->isLink() || !$wppoppop_item->isDir()) {
+                wp_delete_file($wppoppop_item->getPathname());
             } else {
-                @rmdir($mod_file->getPathname());
+                rmdir($wppoppop_item->getPathname()); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
             }
         }
-        @rmdir($wppoppop_mod_dir);
+        rmdir($wppoppop_root); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
     }
 }

@@ -13,7 +13,7 @@ class WpPopPop_Widget_Form {
 
         global $wpdb;
         $items_table = $wpdb->prefix . 'wppoppop_items';
-        $popups = $wpdb->get_results("SELECT uid, title FROM {$items_table} WHERE status = 'publish' ORDER BY title ASC");
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $popups = $wpdb->get_results("SELECT uid, title FROM {$items_table} WHERE status = 'publish' ORDER BY title ASC");
         ?>
         <p>
             <label for="<?php echo esc_attr($widget->get_field_id('title')); ?>">

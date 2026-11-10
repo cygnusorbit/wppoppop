@@ -68,36 +68,30 @@ class WpPopPop_Rest_Submissions {
         $items_table = $wpdb->prefix . 'wppoppop_items';
         $subs_table  = $wpdb->prefix . 'wppoppop_submissions';
 
-        $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $uid), ARRAY_A);
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $uid), ARRAY_A);
         if (!$row) {
             return new WP_Error('popup_not_found', __('Associated popup configuration was not found.', 'wppoppop'), ['status' => 404]);
         }
 
         $config = json_decode($row['data'], true) ?: [];
 
-        /* WPPOPPOP_PROTECT_REST: Security & Protections (antibot before anything is stored, technical info only when allowed) */
-        $wppoppop_tech = [];
-        if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
-        if (WpPopPop_Protect::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            $wppoppop_sp   = WpPopPop_Protect::get_config($config);
-            $wppoppop_deny = WpPopPop_Protect::antibot($uid, $fields, $wppoppop_sp);
-            if ($wppoppop_deny !== '') {
-                return new WP_Error('repeated_submission', $wppoppop_deny, ['status' => 429]);
-            }
-            $wppoppop_tech = WpPopPop_Protect::capture($wppoppop_sp);
+        /* WPPOPPOP_PROTECT_REST: extension modules (Pro) check the lead before anything is stored */
+        $wppoppop_pre = WpPopPop_Module_Bridge::precheck($uid, $fields, $config);
+        if ($wppoppop_pre['deny'] !== '') {
+            return new WP_Error('repeated_submission', $wppoppop_pre['deny'], ['status' => 429]);
         }
-        $notif  = $config['notifications'] ?? [];
-        if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
-        $dopt_cfg        = WpPopPop_Double_Optin::get_config($config);
-        $is_double_optin = !empty($dopt_cfg['enable']) || !empty($notif['enable_double_optin']);
+        $wppoppop_tech   = is_array($wppoppop_pre['tech']) ? $wppoppop_pre['tech'] : [];
+        $wppoppop_doi    = WpPopPop_Module_Bridge::double_optin($config);
+        $dopt_cfg        = $wppoppop_doi['cfg'];
+        $is_double_optin = $wppoppop_doi['active'];
 
         $initial_status = $is_double_optin ? 'pending' : 'confirmed';
         $confirm_token  = $is_double_optin ? wp_generate_password(32, false) : '';
 
         // Increment submissions counter
-        $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET submissions = submissions + 1 WHERE uid = %s", $uid));
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET submissions = submissions + 1 WHERE uid = %s", $uid));
         if (!$is_double_optin) {
-            $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET confirmations = confirmations + 1 WHERE uid = %s", $uid));
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $wpdb->query($wpdb->prepare("UPDATE {$items_table} SET confirmations = confirmations + 1 WHERE uid = %s", $uid));
         }
 
         if ($quiz_score !== null && $quiz_score > 0) {
@@ -118,63 +112,27 @@ class WpPopPop_Rest_Submissions {
             ['%s', '%s', '%s', '%s', '%s', '%s']
         );
         $submission_id = $wpdb->insert_id;
-        if (class_exists('WpPopPop_Admin_Stats')) { WpPopPop_Admin_Stats::record_device($submission_id); }
+        do_action('wppoppop_submission_saved', $submission_id);
 
         // Notifications: "After successful form submission"
         if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
         WpPopPop_Notifications::dispatch('after_submission', $uid, $row['title'], $config, $email, array_merge($fields, $wppoppop_tech), $submission_id, $visitor_country);
 
-        // Double Opt-In: send the confirmation email
-        if ($is_double_optin) {
-            WpPopPop_Double_Optin::send_confirmation($uid, $dopt_cfg, $email, $fields, $confirm_token, $submission_id);
-        }
-
-        // Autoresponder dispatch
-        if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
-        $ar_cfg = WpPopPop_Autoresponder::get_config($config);
-        if (!empty($ar_cfg['enable']) && !$is_double_optin && $email !== '' && WpPopPop_Autoresponder::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            WpPopPop_Autoresponder::send($email, $fields, $ar_cfg);
-        }
-
-        // Outgoing Webhook Dispatch
-        if (!class_exists('WpPopPop_Webhooks')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; }
-        $wh_cfg = WpPopPop_Webhooks::get_config($config);
-        if (!empty($wh_cfg['url']) && WpPopPop_Webhooks::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            WpPopPop_Webhooks::send($uid, $submission_id, $email, $fields, $visitor_country, $wh_cfg);
-        }
-
-        // MailChimp (module acc-mailchimp): "After successful form submission"
-        if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
-        if (WpPopPop_Mailchimp::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            WpPopPop_Mailchimp::dispatch('after_submission', $uid, isset($row['title']) ? $row['title'] : '', $config, $email, $fields, $submission_id, $visitor_country);
-        }
-
-        // GetResponse (module acc-getresponse): "After successful form submission"
-        if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
-        if (WpPopPop_Getresponse::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            WpPopPop_Getresponse::dispatch('after_submission', $uid, isset($row['title']) ? $row['title'] : '', $config, $email, $fields, $submission_id, $visitor_country);
-        }
-
-        // Twilio SMS alert (module acc-sms)
-        if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
-        $sms_cfg = WpPopPop_Sms::get_config($config, $uid);
-        if (!empty($sms_cfg['enable']) && WpPopPop_Sms::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            WpPopPop_Sms::notify($uid, isset($row['title']) ? $row['title'] : '', $email, $sms_cfg);
-        }
-
-        // WooCommerce coupon (module acc-woocommerce); never before the email is confirmed
-        $wc_code = '';
-        if (!$is_double_optin) {
-            if (!class_exists('WpPopPop_Woocommerce')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-woocommerce.php'; }
-            $wc_code = WpPopPop_Woocommerce::issue($uid, $email, WpPopPop_Woocommerce::get_config($config)); /* WPPOPPOP_MODULE_GATE */
-        }
-
-        // Downloads (module acc-downloads): one-time link; never before the email is confirmed
-        $dl_url = '';
-        if (!$is_double_optin) {
-            if (!class_exists('WpPopPop_Downloads')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; }
-            $dl_url = WpPopPop_Downloads::issue($uid, WpPopPop_Downloads::get_config($config)); /* WPPOPPOP_MODULE_GATE */
-        }
+        // Extension modules (Pro): confirmation email, autoresponder, webhook, MailChimp, GetResponse, SMS, coupon, download link
+        $wppoppop_out = WpPopPop_Module_Bridge::dispatch([
+            'uid'              => $uid,
+            'title'            => isset($row['title']) ? $row['title'] : '',
+            'config'           => $config,
+            'email'            => $email,
+            'fields'           => $fields,
+            'submission_id'    => $submission_id,
+            'country'          => $visitor_country,
+            'double_optin'     => $is_double_optin,
+            'double_optin_cfg' => $dopt_cfg,
+            'confirm_token'    => $confirm_token,
+        ]);
+        $dl_url  = $wppoppop_out['download_url'];
+        $wc_code = $wppoppop_out['coupon_code'];
 
         $actions = $config['actions'] ?? [];
         $success_message = $is_double_optin

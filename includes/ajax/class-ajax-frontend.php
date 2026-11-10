@@ -43,7 +43,7 @@ class WpPopPop_Ajax_Frontend {
         }
 
         // 3. Extract & Sanitize Form Fields
-        $raw_fields = isset($_POST['fields']) && is_array($_POST['fields']) ? wp_unslash($_POST['fields']) : [];
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- every field is sanitised by type below */ $raw_fields = isset($_POST['fields']) && is_array($_POST['fields']) ? wp_unslash($_POST['fields']) : [];
         if (empty($raw_fields)) {
             foreach ($_POST as $k =>$v) {
                 if (!in_array($k, ['action', 'nonce', 'popup_uid', 'uid', 'country', 'quiz_score', 'g-recaptcha-response', 'recaptcha_token'], true)) {$raw_fields[$k] = wp_unslash($v);
@@ -102,36 +102,30 @@ class WpPopPop_Ajax_Frontend {
 
         if (!empty($name)) { $clean_fields['_name'] = $name; }
         if (!empty($phone)) { $clean_fields['_phone'] = $phone; }
-        /* WPPOPPOP_PROTECT_AJAX: Security & Protections */
-        $wppoppop_sp_mail_skip = [];
-        if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
-        if (WpPopPop_Protect::module_active()) { /* WPPOPPOP_MODULE_GATE */
-            $wppoppop_sp_raw = ($popup_uid !== '') ? $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $popup_uid)) : '';
-            $wppoppop_sp     = WpPopPop_Protect::get_config(json_decode((string) $wppoppop_sp_raw, true));
-            $wppoppop_deny   = WpPopPop_Protect::antibot($popup_uid, $clean_fields, $wppoppop_sp);
-            if ($wppoppop_deny !== '') {
-                wp_send_json_error(['message' => $wppoppop_deny]);
-            }
-            $clean_fields = array_merge($clean_fields, WpPopPop_Protect::capture($wppoppop_sp));
-            if (empty($wppoppop_sp['email_tech'])) { $wppoppop_sp_mail_skip = ['_ip' => 1, '_ua' => 1]; }
+        /* WPPOPPOP_PROTECT_AJAX: extension modules (Pro) check and capture; core falls back to an anonymised IP */
+        $wppoppop_cfg = array();
+        if ($popup_uid !== '') {
+            $wppoppop_raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $popup_uid));
+            $wppoppop_cfg = json_decode((string) $wppoppop_raw, true);
+            if (!is_array($wppoppop_cfg)) { $wppoppop_cfg = array(); }
+        }
+        $wppoppop_pre = WpPopPop_Module_Bridge::precheck($popup_uid, $clean_fields, $wppoppop_cfg);
+        if ($wppoppop_pre['deny'] !== '') {
+            wp_send_json_error(['message' => $wppoppop_pre['deny']]);
+        }
+        $wppoppop_sp_mail_skip = $wppoppop_pre['mail_skip'];
+        if (is_array($wppoppop_pre['tech'])) {
+            $clean_fields = array_merge($clean_fields, $wppoppop_pre['tech']);
         } else {
             $clean_fields['_ip'] = WpPopPop_Tracking::anonymize_ip($ip);
         }
         $visitor_country = isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : '';
 
-        /* WPPOPPOP_DOI_AJAX: with Double Opt-In enabled the lead stays "pending" until the email link is opened */
-        $wppoppop_doi_on  = false;
-        $wppoppop_doi_cfg = array();
-        if ($popup_uid !== '') {
-            if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
-            $wppoppop_doi_raw  = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $popup_uid));
-            $wppoppop_doi_data = json_decode((string) $wppoppop_doi_raw, true);
-            if (!is_array($wppoppop_doi_data)) { $wppoppop_doi_data = array(); }
-            $wppoppop_doi_cfg  = WpPopPop_Double_Optin::get_config($wppoppop_doi_data);
-            $wppoppop_doi_nf   = (isset($wppoppop_doi_data['notifications']) && is_array($wppoppop_doi_data['notifications'])) ? $wppoppop_doi_data['notifications'] : array();
-            $wppoppop_doi_on   = (!empty($wppoppop_doi_cfg['enable']) || !empty($wppoppop_doi_nf['enable_double_optin']))
-                && (($email !== '' && is_email($email)) || trim((string) $wppoppop_doi_cfg['recipient']) !== '');
-        }
+        /* WPPOPPOP_DOI_AJAX: with Double Opt-In enabled (extension) the lead stays "pending" until the email link is opened */
+        $wppoppop_doi     = WpPopPop_Module_Bridge::double_optin($wppoppop_cfg);
+        $wppoppop_doi_cfg = $wppoppop_doi['cfg'];
+        $wppoppop_doi_on  = $wppoppop_doi['active']
+            && (($email !== '' && is_email($email)) || trim((string) (isset($wppoppop_doi_cfg['recipient']) ? $wppoppop_doi_cfg['recipient'] : '')) !== '');
         $wppoppop_doi_token = $wppoppop_doi_on ? wp_generate_password(32, false) : '';
 
         $wpdb->insert($table_name,
@@ -156,9 +150,9 @@ class WpPopPop_Ajax_Frontend {
 
         $submission_id =$wpdb->insert_id;
         if ($wppoppop_doi_on) {
-            WpPopPop_Double_Optin::send_confirmation($popup_uid, $wppoppop_doi_cfg, (string) $email, $clean_fields, $wppoppop_doi_token, $submission_id);
+            WpPopPop_Module_Bridge::send_double_optin($popup_uid, $wppoppop_doi_cfg, (string) $email, $clean_fields, $wppoppop_doi_token, $submission_id);
         }
-        if (class_exists('WpPopPop_Admin_Stats')) { WpPopPop_Admin_Stats::record_device($submission_id); }
+        do_action('wppoppop_submission_saved', $submission_id);
 
         // 7. Automated Email Notification
         $admin_notification_email = wppoppop_get_setting('admin_email', get_option('admin_email'));
@@ -249,8 +243,7 @@ class WpPopPop_Ajax_Frontend {
 
         // Purge files if user_uploads is set to 'delete'
         $user_uploads = wppoppop_get_setting('user_uploads', 'keep');
-        if ($user_uploads === 'delete') {$row = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_row( $wpdb->prepare( "SELECT fields_data AS payload FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id ) );
+        if ($user_uploads === 'delete') {$row = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_row( $wpdb->prepare( "SELECT fields_data AS payload FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id ) );
             if ($row && !empty($row->payload)) {
                 $payload = json_decode($row->payload, true);
                 if (is_array($payload)) {$upload_dir = wp_upload_dir();
@@ -259,7 +252,7 @@ class WpPopPop_Ajax_Frontend {
                         if (is_string($val) && (strpos($key, '_path') !== false || file_exists($val))) {
                             $real_path = realpath($val);
                             if ($real_path && strpos($real_path,$base_dir) === 0) {
-                                @wp_delete_file( $real_path );
+                                wp_delete_file( $real_path );
                             }
                         }
                     }
@@ -296,8 +289,7 @@ class WpPopPop_Ajax_Frontend {
         $base_dir = realpath($upload_dir['basedir']);
 
         foreach ($ids as$id) {
-            if ($user_uploads === 'delete') {$row = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_row( $wpdb->prepare( "SELECT fields_data AS payload FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id ) );
+            if ($user_uploads === 'delete') {$row = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_row( $wpdb->prepare( "SELECT fields_data AS payload FROM {$wpdb->prefix}wppoppop_submissions WHERE id = %d", $id ) );
                 if ($row && !empty($row->payload)) {
                     $payload = json_decode($row->payload, true);
                     if (is_array($payload)) {
@@ -305,7 +297,7 @@ class WpPopPop_Ajax_Frontend {
                             if (is_string($val) && (strpos($key, '_path') !== false || file_exists($val))) {
                                 $real_path = realpath($val);
                                 if ($real_path && strpos($real_path,$base_dir) === 0) {
-                                    @wp_delete_file( $real_path );
+                                    wp_delete_file( $real_path );
                                 }
                             }
                         }

@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -60,10 +61,10 @@ if (!class_exists('ZipArchive')) {
 
     <div class="wpp-ext-grid" id="wpp-ext-grid"></div>
     <div class="wpp-ext-pager" id="wpp-ext-pager" hidden
-        data-l-items="<?php echo esc_attr__('%s items', 'wppoppop'); ?>"
+        data-l-items="<?php /* translators: %s: number of items. */ echo esc_attr__('%s items', 'wppoppop'); ?>"
         data-l-item="<?php echo esc_attr__('1 item', 'wppoppop'); ?>"
         data-l-per="<?php echo esc_attr__('Per page', 'wppoppop'); ?>"
-        data-l-page="<?php echo esc_attr__('Page %1$s of %2$s', 'wppoppop'); ?>"
+        data-l-page="<?php /* translators: 1: current page number, 2: total number of pages. */ echo esc_attr__('Page %1$s of %2$s', 'wppoppop'); ?>"
         data-l-first="<?php echo esc_attr__('First page', 'wppoppop'); ?>"
         data-l-prev="<?php echo esc_attr__('Previous page', 'wppoppop'); ?>"
         data-l-next="<?php echo esc_attr__('Next page', 'wppoppop'); ?>"

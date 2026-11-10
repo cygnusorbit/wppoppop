@@ -151,8 +151,8 @@ class WpPopPop_Capabilities {
         global $wpdb;
         $table = $wpdb->prefix . 'wppoppop_items';
         if (is_numeric($uid_or_id)) {
-            return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", (int) $uid_or_id));
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", (int) $uid_or_id));
         }
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE uid = %s", sanitize_text_field($uid_or_id)));
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE uid = %s", sanitize_text_field($uid_or_id)));
     }
 }

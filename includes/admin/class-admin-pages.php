@@ -7,18 +7,15 @@ class WpPopPop_Admin_Pages {
     public function render_dashboard() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wppoppop_items';
-        $popups = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC" );
+        $popups = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC" );
         include WPPOPPOP_PATH . 'templates/dashboard-view.php';
     }
 
     public function render_overview() {
         global $wpdb;
         $items = $wpdb->prefix . 'wppoppop_items';
-        $dash_menu_popups   = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT uid, title FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 30" );
-        $dash_recent_popups = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results( "SELECT uid, title, submissions FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 5" );
+        $dash_menu_popups   = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT uid, title FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 30" );
+        $dash_recent_popups = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results( "SELECT uid, title, submissions FROM {$wpdb->prefix}wppoppop_items ORDER BY id DESC LIMIT 5" );
         $subs = $wpdb->prefix . 'wppoppop_submissions';
         $dash_recent_subs = $wpdb->get_results("SELECT s.id, s.popup_uid, s.email, s.status, s.is_read, s.fields_data, s.created_at, i.title AS popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC LIMIT 6");
         $dash_export_url  = add_query_arg([
@@ -34,35 +31,21 @@ class WpPopPop_Admin_Pages {
         $popup = null;
         if (!empty($uid)) {
             $table_name = $wpdb->prefix . 'wppoppop_items';
-            $popup = // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $uid ) );
+            $popup = /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $uid ) );
         }
         include WPPOPPOP_PATH . 'templates/builder-view.php';
-    }
-
-    public function render_ab() {
-        global $wpdb;
-        require_once WPPOPPOP_PATH . 'includes/admin/class-admin-ab-query.php'; // WPPOPPOP_AB_FILTERS
-        $ab_state  = WpPopPop_Admin_AB_Query::run();
-        $campaigns = $ab_state['items'];
-        include WPPOPPOP_PATH . 'templates/ab-view.php';
     }
 
     public function render_submissions() {
         global $wpdb;
         $filter_uid = isset($_GET['popup_uid']) ? sanitize_text_field(wp_unslash($_GET['popup_uid'])) : '';
         $where = $filter_uid !== '' ? $wpdb->prepare(' WHERE s.popup_uid = %s', $filter_uid) : '';
-        $submissions = // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_results("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid{$where} ORDER BY s.id DESC LIMIT 200");
+        $submissions = /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_results("SELECT s.*, i.title as popup_title FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid{$where} ORDER BY s.id DESC LIMIT 200");
         include WPPOPPOP_PATH . 'templates/submissions-view.php';
     }
 
     public function render_log() {
         include WPPOPPOP_PATH . 'templates/log-view.php';
-    }
-
-    public function render_stats() {
-        include WPPOPPOP_PATH . 'templates/stats-view.php';
     }
 
     public function render_field_analytics() {
@@ -85,9 +68,9 @@ class WpPopPop_Admin_Pages {
         }
 
         $notice = '';
-        if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['wppoppop_settings_nonce'])) {
+        if (isset($_SERVER['REQUEST_METHOD']) && 'POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['wppoppop_settings_nonce'])) {
             if (check_admin_referer('wppoppop_save_settings_action', 'wppoppop_settings_nonce')) {
-                $raw = isset($_POST['settings']) && is_array($_POST['settings']) ? wp_unslash($_POST['settings']) : wp_unslash($_POST);
+                /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised key by key by sanitize_settings() */ $raw = isset($_POST['settings']) && is_array($_POST['settings']) ? wp_unslash($_POST['settings']) : wp_unslash($_POST);
                 $existing = get_option('wppoppop_settings', []);
                 if (!is_array($existing)) {
                     $existing = [];

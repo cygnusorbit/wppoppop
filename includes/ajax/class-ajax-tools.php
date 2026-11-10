@@ -32,15 +32,25 @@ class WpPopPop_Ajax_Tools {
     }
 
     /* ------------------------------------------------------ service */
-    public static function tables() {
+    /** Table key => [label, name]. Companion plugins add their own tables with the wppoppop_tools_tables filter. */
+    public static function table_defs() {
         global $wpdb;
-        return [
-            'items'        => $wpdb->prefix . 'wppoppop_items',
-            'submissions'  => $wpdb->prefix . 'wppoppop_submissions',
-            'campaigns'    => $wpdb->prefix . 'wppoppop_campaigns',
-            'logs'         => $wpdb->prefix . 'wppoppop_logs',
-            'transactions' => $wpdb->prefix . 'wppoppop_transactions',
+        $defs = [
+            'items'        => ['label' => __('Popups & Designs', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_items'],
+            'submissions'  => ['label' => __('Captured Leads', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_submissions'],
+            'logs'         => ['label' => __('Audit & System Logs', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_logs'],
+            'transactions' => ['label' => __('Payment Records', 'wppoppop'), 'name' => $wpdb->prefix . 'wppoppop_transactions'],
         ];
+        $filtered = apply_filters('wppoppop_tools_tables', $defs);
+        return is_array($filtered) ? $filtered : $defs;
+    }
+
+    public static function tables() {
+        $out = [];
+        foreach (self::table_defs() as $key => $def) {
+            $out[$key] = $def['name'];
+        }
+        return $out;
     }
 
     public static function table_status() {
@@ -51,8 +61,7 @@ class WpPopPop_Ajax_Tools {
             $rows = 0;
             $size = '0 KB';
             if ($exists) {
-                $rows = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-            $wpdb->get_var("SELECT COUNT(*) FROM `{$name}`");
+                $rows = (int) /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching */ $wpdb->get_var("SELECT COUNT(*) FROM `{$name}`");
                 $st = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS LIKE %s', $wpdb->esc_like($name)), ARRAY_A);
                 if ($st && isset($st['Data_length'])) {
                     $size = size_format((int) $st['Data_length'] + (int) $st['Index_length'], 2);
@@ -72,18 +81,18 @@ class WpPopPop_Ajax_Tools {
     public static function build_export() {
         global $wpdb;
         $items     = $wpdb->get_results("SELECT uid, title, data, status FROM {$wpdb->prefix}wppoppop_items ORDER BY id ASC", ARRAY_A);
-        $campaigns = $wpdb->get_results("SELECT uid, title, popup_uids, status FROM {$wpdb->prefix}wppoppop_campaigns ORDER BY id ASC", ARRAY_A);
         $settings  = get_option('wppoppop_settings', []);
         $theme     = get_option(class_exists('WpPopPop_Admin_Theme') ? WpPopPop_Admin_Theme::OPTION : 'wppoppop_theme', []);
-        return [
+        $out = [
             'generator' => 'WpPopPop ' . (defined('WPPOPPOP_VERSION') ? WPPOPPOP_VERSION : '1.0.0'),
             'format'    => 2,
             'exported'  => current_time('mysql'),
             'items'     => $items ? $items : [],
-            'campaigns' => $campaigns ? $campaigns : [],
             'settings'  => is_array($settings) ? $settings : [],
             'theme'     => is_array($theme) ? $theme : [],
         ];
+        $filtered = apply_filters('wppoppop_export_data', $out);
+        return is_array($filtered) ? $filtered : $out;
     }
 
     /** Keep the original uid (so existing embeds keep working) unless it is taken. */
@@ -91,7 +100,7 @@ class WpPopPop_Ajax_Tools {
         global $wpdb;
         $t = $wpdb->prefix . 'wppoppop_items';
         $wanted = sanitize_key($wanted);
-        if ($wanted !== '' && !$wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$t} WHERE uid = %s", $wanted))) {
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ if ($wanted !== '' && !$wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$t} WHERE uid = %s", $wanted))) {
             return $wanted;
         }
         $base = trim(preg_replace('/[^a-z0-9-]+/', '-', strtolower(sanitize_title((string) $title))), '-');
@@ -106,7 +115,7 @@ class WpPopPop_Ajax_Tools {
                 $s .= $chars[wp_rand(0, strlen($chars) - 1)];
             }
             $cand = $base . '-' . $s;
-            if (!$wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$t} WHERE uid = %s", $cand))) {
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ if (!$wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$t} WHERE uid = %s", $cand))) {
                 return $cand;
             }
         }
@@ -122,14 +131,15 @@ class WpPopPop_Ajax_Tools {
             return new WP_Error('size', __('Backup file is too large (10 MB maximum).', 'wppoppop'));
         }
         $decoded = json_decode($raw, true);
-        if (!is_array($decoded) || (empty($decoded['items']) && empty($decoded['campaigns']))) {
+        $has_data = is_array($decoded) && !empty($decoded['items']);
+        $has_data = (bool) apply_filters('wppoppop_import_has_data', $has_data, $decoded);
+        if (!is_array($decoded) || !$has_data) {
             return new WP_Error('format', __('Invalid or unrecognized backup format.', 'wppoppop'));
         }
 
         $res = ['items' => 0, 'campaigns' => 0, 'skipped' => 0, 'renamed' => 0, 'settings' => false, 'dry_run' => (bool) $dry_run];
         $uid_map = [];
         $items_table = $wpdb->prefix . 'wppoppop_items';
-        $camps_table = $wpdb->prefix . 'wppoppop_campaigns';
         if (!$dry_run) { $wpdb->query('START TRANSACTION'); }
 
         if (!empty($decoded['items']) && is_array($decoded['items'])) {
@@ -162,33 +172,15 @@ class WpPopPop_Ajax_Tools {
             }
         }
 
-        if (!empty($decoded['campaigns']) && is_array($decoded['campaigns'])) {
-            foreach ($decoded['campaigns'] as $camp) {
-                if (!is_array($camp)) { $res['skipped']++; continue; }
-                $title = isset($camp['title']) ? sanitize_text_field($camp['title']) : '';
-                if ($title === '') { $title = __('Restored A/B Test', 'wppoppop'); }
-                $uids = isset($camp['popup_uids']) ? $camp['popup_uids'] : [];
-                if (is_string($uids)) { $uids = json_decode($uids, true); }
-                $remap = [];
-                if (is_array($uids)) {
-                    foreach ($uids as $u) {
-                        $u = sanitize_key($u);
-                        $remap[] = isset($uid_map[$u]) ? $uid_map[$u] : $u;
-                    }
-                }
-                $cuid = isset($camp['uid']) ? sanitize_key($camp['uid']) : '';
-                if ($cuid === '' || $wpdb->get_var($wpdb->prepare("SELECT COUNT(1) FROM {$camps_table} WHERE uid = %s", $cuid))) {
-                    $cuid = wp_generate_uuid4();
-                }
-                $cstatus = isset($camp['status']) ? sanitize_key($camp['status']) : 'active';
-                if (!$dry_run) {
-                    $ok = $wpdb->insert($camps_table, [
-                        'uid' => $cuid, 'title' => $title, 'popup_uids' => wp_json_encode(array_values($remap)), 'status' => $cstatus ? $cstatus : 'active',
-                    ], ['%s', '%s', '%s', '%s']);
-                    if ($ok === false) { $wpdb->query('ROLLBACK'); return new WP_Error('db', __('Database error during restore. No changes were kept.', 'wppoppop')); }
-                }
-                $res['campaigns']++;
-            }
+        /* Companion plugins restore their own data here. A WP_Error rolls the whole import back. */
+        $extra = apply_filters('wppoppop_import_extra', ['campaigns' => 0, 'skipped' => 0], $decoded, $uid_map, (bool) $dry_run);
+        if (is_wp_error($extra)) {
+            if (!$dry_run) { $wpdb->query('ROLLBACK'); }
+            return $extra;
+        }
+        if (is_array($extra)) {
+            $res['campaigns'] = (int) (isset($extra['campaigns']) ? $extra['campaigns'] : 0);
+            $res['skipped']  += (int) (isset($extra['skipped']) ? $extra['skipped'] : 0);
         }
 
         if (!$dry_run) { $wpdb->query('COMMIT'); }
@@ -211,8 +203,12 @@ class WpPopPop_Ajax_Tools {
     }
 
     private static function summary($r) {
-        /* translators: 1: action label (e.g. Successfully restored), 2: number of popups, 3: number of A/B campaigns. */
-        $msg = sprintf(__('%1$s %2$d popups and %3$d A/B campaigns', 'wppoppop'), !empty($r['dry_run']) ? __('Preview: would restore', 'wppoppop') : __('Successfully restored', 'wppoppop'), $r['items'], $r['campaigns']);
+        /* translators: 1: action label (e.g. Successfully restored), 2: number of popups. */
+        $msg = sprintf(__('%1$s %2$d popups', 'wppoppop'), !empty($r['dry_run']) ? __('Preview: would restore', 'wppoppop') : __('Successfully restored', 'wppoppop'), $r['items']);
+        if (!empty($r['campaigns'])) {
+            /* translators: %d: number of A/B campaigns. */
+            $msg .= sprintf(__(' and %d A/B campaigns', 'wppoppop'), (int) $r['campaigns']);
+        }
         if (!empty($r['renamed'])) { $msg .= sprintf(' (%d uid(s) changed because they already exist)', $r['renamed']); }
         if (!empty($r['skipped'])) { $msg .= sprintf('; %d entr%s skipped as invalid', $r['skipped'], $r['skipped'] === 1 ? 'y' : 'ies'); }
         if (!empty($r['settings'])) { $msg .= '; settings/theme applied'; }
@@ -226,7 +222,7 @@ class WpPopPop_Ajax_Tools {
         $missing = array_filter($status, function ($t) { return empty($t['exists']); });
         $msg = count($missing)
             ? __('Some tables are still missing after repair. Check that the database user has CREATE/ALTER privileges.', 'wppoppop')
-            : __('All 5 database tables successfully verified and schema confirmed healthy!', 'wppoppop');
+            : __('All database tables successfully verified and schema confirmed healthy!', 'wppoppop');
         return [$msg, $status, count($missing) === 0];
     }
 
@@ -252,11 +248,12 @@ class WpPopPop_Ajax_Tools {
         }
         if (isset($_POST['wppoppop_bulk_import'])) {
             $raw = '';
-            if (!empty($_FILES['wppoppop_bulk_import_file']['tmp_name']) && is_uploaded_file($_FILES['wppoppop_bulk_import_file']['tmp_name'])) {
-                if (filesize($_FILES['wppoppop_bulk_import_file']['tmp_name']) > self::MAX_IMPORT_BYTES) {
+            $wppoppop_tmp = isset($_FILES['wppoppop_bulk_import_file']['tmp_name']) ? $_FILES['wppoppop_bulk_import_file']['tmp_name'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP-generated temp path, validated with is_uploaded_file()
+            if (is_string($wppoppop_tmp) && $wppoppop_tmp !== '' && is_uploaded_file($wppoppop_tmp)) {
+                if (filesize($wppoppop_tmp) > self::MAX_IMPORT_BYTES) {
                     return [__('Backup file is too large (10 MB maximum).', 'wppoppop'), 'error'];
                 }
-                $raw = file_get_contents($_FILES['wppoppop_bulk_import_file']['tmp_name']);
+                /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw = (string) file_get_contents($wppoppop_tmp);
             }
             $r = self::import_payload($raw, false, !empty($_POST['import_settings']));
             return is_wp_error($r) ? [$r->get_error_message(), 'error'] : [self::summary($r), 'success'];
@@ -307,10 +304,17 @@ class WpPopPop_Ajax_Tools {
 
         $this->verify_security();
         $raw = '';
-        if (!empty($_FILES['wppoppop_bulk_import_file']['tmp_name'])) {
-            $raw = file_get_contents($_FILES['wppoppop_bulk_import_file']['tmp_name']);
+        $wppoppop_tmp = isset($_FILES['wppoppop_bulk_import_file']['tmp_name']) ? $_FILES['wppoppop_bulk_import_file']['tmp_name'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP-generated temp path, validated with is_uploaded_file()
+        if (is_string($wppoppop_tmp) && $wppoppop_tmp !== '') {
+            if (!is_uploaded_file($wppoppop_tmp)) {
+                wp_send_json_error(['message' => __('The uploaded file could not be read.', 'wppoppop')]);
+            }
+            if (filesize($wppoppop_tmp) > self::MAX_IMPORT_BYTES) {
+                wp_send_json_error(['message' => __('Backup file is too large (10 MB maximum).', 'wppoppop')]);
+            }
+            /* phpcs:ignore WordPress.WP.AlternativeFunctions -- reads a local plugin or upload temp file, not a remote URL */ $raw = (string) file_get_contents($wppoppop_tmp);
         } elseif (!empty($_POST['import_data'])) {
-            $raw = wp_unslash($_POST['import_data']);
+            $raw = wp_unslash($_POST['import_data']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitised by the import pipeline
         }
         $r = self::import_payload($raw, !empty($_POST['dry_run']), !empty($_POST['import_settings']));
         if (is_wp_error($r)) {
@@ -457,10 +461,8 @@ class WpPopPop_Ajax_Tools {
         $this->verify_security();
         global $wpdb;
         $p = $wpdb->prefix;
-        $subs  = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_submissions s LEFT JOIN {$p}wppoppop_items i ON s.popup_uid = i.uid WHERE i.uid IS NULL");
-        $trans = (int) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_transactions t LEFT JOIN {$p}wppoppop_items i ON t.popup_uid = i.uid WHERE i.uid IS NULL");
+        $subs  = (int) /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_submissions s LEFT JOIN {$p}wppoppop_items i ON s.popup_uid = i.uid WHERE i.uid IS NULL");
+        $trans = (int) /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ $wpdb->get_var("SELECT COUNT(*) FROM {$p}wppoppop_transactions t LEFT JOIN {$p}wppoppop_items i ON t.popup_uid = i.uid WHERE i.uid IS NULL");
         wp_send_json_success(['message' => sprintf(
             /* translators: 1: number of orphaned submissions, 2: number of orphaned transactions. */
             __('Orphaned records (popup no longer exists): %1$d submissions, %2$d transactions. Nothing was deleted.', 'wppoppop'),

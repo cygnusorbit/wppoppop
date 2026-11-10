@@ -22,17 +22,18 @@ class WpPopPop_Addon_Optin {
         $subs_table  = $wpdb->prefix . 'wppoppop_submissions';
         $items_table = $wpdb->prefix . 'wppoppop_items';
 
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared
         $submission = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$subs_table} WHERE confirm_token = %s LIMIT 1",
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ "SELECT * FROM {$subs_table} WHERE confirm_token = %s LIMIT 1",
             $token
         ), ARRAY_A);
 
         if (!$submission) {
-            wp_die(__('The confirmation link is invalid or has already been used.', 'wppoppop'), __('Verification Error', 'wppoppop'), ['response' => 400]);
+            wp_die(esc_html__('The confirmation link is invalid or has already been used.', 'wppoppop'), esc_html__('Verification Error', 'wppoppop'), ['response' => 400]);
         }
 
         if ($submission['status'] === 'confirmed') {
-            wp_die(__('Your subscription has already been confirmed. Thank you!', 'wppoppop'), __('Already Confirmed', 'wppoppop'), ['response' => 200]);
+            wp_die(esc_html__('Your subscription has already been confirmed. Thank you!', 'wppoppop'), esc_html__('Already Confirmed', 'wppoppop'), ['response' => 200]);
         }
 
         // Transition status to confirmed and invalidate token
@@ -46,64 +47,31 @@ class WpPopPop_Addon_Optin {
 
         // Increment confirmation counter on popup record
         if (!empty($submission['popup_uid'])) {
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared
             $wpdb->query($wpdb->prepare(
-                "UPDATE {$items_table} SET confirmations = confirmations + 1 WHERE uid = %s",
+                /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ "UPDATE {$items_table} SET confirmations = confirmations + 1 WHERE uid = %s",
                 $submission['popup_uid']
             ));
         }
 
-        if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
-        $wppoppop_dopt = WpPopPop_Double_Optin::defaults();
-        if (!empty($submission['popup_uid'])) {
-            $wppoppop_data = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']));
-            $wppoppop_dopt = WpPopPop_Double_Optin::get_config(json_decode((string) $wppoppop_data, true));
-        }
-        $wppoppop_dopt_msg = trim((string) WpPopPop_Double_Optin::merge($wppoppop_dopt['thank_message'], array('email' => esc_html($submission['email']))));
+        $wppoppop_row = !empty($submission['popup_uid'])
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ ? $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A) : null;
+        $wppoppop_cfg = $wppoppop_row ? json_decode((string) $wppoppop_row['data'], true) : array();
+        if (!is_array($wppoppop_cfg)) { $wppoppop_cfg = array(); }
+        $wppoppop_thank    = WpPopPop_Module_Bridge::confirmation_thank($wppoppop_cfg, $submission['email']);
+        $wppoppop_dopt_msg = $wppoppop_thank['message'];
 
-        // Notifications: "After double opt-in confirmation"
-        if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
-        if (!empty($submission['popup_uid'])) {
-            $wppoppop_n_row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A);
-            if ($wppoppop_n_row) {
-                WpPopPop_Notifications::dispatch(
-                    'after_confirmation', $submission['popup_uid'], $wppoppop_n_row['title'],
-                    json_decode((string) $wppoppop_n_row['data'], true), $submission['email'],
-                    (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true),
-                    (int) $submission['id'], isset($submission['country_code']) ? $submission['country_code'] : ''
-                );
-            }
-        }
-
-        /* WPPOPPOP_MAILCHIMP_CONFIRM: MailChimp "After double opt-in confirmation" */
-        if (!empty($submission['popup_uid'])) {
-            if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
-            if (WpPopPop_Mailchimp::module_active()) { /* WPPOPPOP_MODULE_GATE */
-                $wppoppop_mc_row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A);
-                if ($wppoppop_mc_row) {
-                    WpPopPop_Mailchimp::dispatch(
-                        'after_confirmation', $submission['popup_uid'], $wppoppop_mc_row['title'],
-                        json_decode((string) $wppoppop_mc_row['data'], true), $submission['email'],
-                        (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true),
-                        (int) $submission['id'], isset($submission['country_code']) ? $submission['country_code'] : ''
-                    );
-                }
-            }
-        }
-
-        /* WPPOPPOP_GETRESPONSE_CONFIRM: GetResponse "After double opt-in confirmation" */
-        if (!empty($submission['popup_uid'])) {
-            if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
-            if (WpPopPop_Getresponse::module_active()) { /* WPPOPPOP_MODULE_GATE */
-                $wppoppop_gr_row = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$items_table} WHERE uid = %s", $submission['popup_uid']), ARRAY_A);
-                if ($wppoppop_gr_row) {
-                    WpPopPop_Getresponse::dispatch(
-                        'after_confirmation', $submission['popup_uid'], $wppoppop_gr_row['title'],
-                        json_decode((string) $wppoppop_gr_row['data'], true), $submission['email'],
-                        (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true),
-                        (int) $submission['id'], isset($submission['country_code']) ? $submission['country_code'] : ''
-                    );
-                }
-            }
+        if ($wppoppop_row) {
+            $wppoppop_fields  = (array) json_decode(isset($submission['fields_data']) ? (string) $submission['fields_data'] : '[]', true);
+            $wppoppop_country = isset($submission['country_code']) ? $submission['country_code'] : '';
+            // Notifications: "After double opt-in confirmation"
+            if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
+            WpPopPop_Notifications::dispatch('after_confirmation', $submission['popup_uid'], $wppoppop_row['title'], $wppoppop_cfg, $submission['email'], $wppoppop_fields, (int) $submission['id'], $wppoppop_country);
+            // Extension modules (Pro): MailChimp / GetResponse "After double opt-in confirmation"
+            WpPopPop_Module_Bridge::after_confirmation(array(
+                'uid' => $submission['popup_uid'], 'title' => $wppoppop_row['title'], 'config' => $wppoppop_cfg, 'email' => $submission['email'],
+                'fields' => $wppoppop_fields, 'submission_id' => (int) $submission['id'], 'country' => $wppoppop_country,
+            ));
         }
 
         wppoppop_log_event('optin_confirmed', 'Double opt-in confirmed for ' . $submission['email'], [
@@ -111,8 +79,8 @@ class WpPopPop_Addon_Optin {
             'submission_id' => $submission['id']
         ]);
 
-        if (!empty($wppoppop_dopt['thank_url'])) {
-            wp_redirect(esc_url_raw($wppoppop_dopt['thank_url']));
+        if ($wppoppop_thank['url'] !== '') {
+            /* phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- the thank-you page is chosen by the administrator and may be on another domain */ wp_redirect(esc_url_raw($wppoppop_thank['url']));
             exit;
         }
 

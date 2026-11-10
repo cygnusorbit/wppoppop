@@ -174,7 +174,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $tf_css = '';
                 if (!$tf_fa_css && ($tf_icons['left']['cls'] !== '' || $tf_icons['right']['cls'] !== '')) {
                     $tf_fa_css = true;
-                    $tf_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    $tf_css = WpPopPop_Libraries::style_tag('wppoppop-font-awesome');
                 }
                 $tf_pl = ($tf_icons['left']['cls'] !== '') ? ($tf_icons['left']['off'] + 22) : 12;
                 $tf_pr = ($tf_icons['right']['cls'] !== '') ? ($tf_icons['right']['off'] + 22) : 12;
@@ -208,7 +208,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $nm_css = '';
                 if (!$nm_fa_css && ($nm_icons['left']['cls'] !== '' || $nm_icons['right']['cls'] !== '')) {
                     $nm_fa_css = true;
-                    $nm_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    $nm_css = WpPopPop_Libraries::style_tag('wppoppop-font-awesome');
                 }
                 $nm_unit = isset($el['unitSuffix']) ? trim((string) $el['unitSuffix']) : '';
                 $nm_pl = ($nm_icons['left']['cls'] !== '') ? ($nm_icons['left']['off'] + 22) : 12;
@@ -256,7 +256,7 @@ class WpPopPop_Front_Decomposed_26 {
                 $ph_css = '';
                 if (!$ph_fa_css && ($ph_icons['left']['cls'] !== '' || $ph_icons['right']['cls'] !== '')) {
                     $ph_fa_css = true;
-                    $ph_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+                    $ph_css = WpPopPop_Libraries::style_tag('wppoppop-font-awesome');
                 }
                 $ph_pl = (($ph_icons['left']['cls'] !== '') ? ($ph_icons['left']['off'] + 22) : 12);
                 $ph_pr = ($ph_icons['right']['cls'] !== '') ? ($ph_icons['right']['off'] + 22) : 12;
@@ -433,97 +433,6 @@ class WpPopPop_Front_Decomposed_26 {
                     . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;">' . $ms_opts . '</select>'
                     . '</div>';
 
-            case 'imageselect':
-                /* WPPOPPOP_IMAGESELECT_FRONT: panel keys, Label|URL parsing, active border, clickable cards, required-safe value */
-                $is_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['options']) ? (is_array($el['options']) ? implode("\n", $el['options']) : (string) $el['options']) : '');
-                $is_lines = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $is_raw)), 'strlen'));
-                if (count($is_lines) === 1 && strpos($is_lines[0], ',') !== false && !preg_match('#https?:|//|\||::#i', $is_lines[0])) {
-                    $is_lines = array_values(array_filter(array_map('trim', explode(',', $is_lines[0])), 'strlen'));
-                }
-                if (empty($is_lines)) { $is_lines = array('Style A', 'Style B', 'Style C'); }
-                $is_items = array();
-                foreach ($is_lines as $is_ln) {
-                    $is_lbl = $is_ln; $is_img = '';
-                    if (strpos($is_ln, '::') !== false) { $is_p = explode('::', $is_ln, 2); $is_lbl = trim($is_p[0]); $is_img = trim($is_p[1]); }
-                    elseif (strpos($is_ln, '|') !== false) { $is_p = explode('|', $is_ln, 2); $is_lbl = trim($is_p[0]); $is_img = trim($is_p[1]); }
-                    elseif (preg_match('#^(.*?),\s*((?:https?:)?//\S+|/\S+)$#i', $is_ln, $is_m)) { $is_lbl = trim($is_m[1]); $is_img = trim($is_m[2]); }
-                    $is_items[] = array($is_lbl, $is_img);
-                }
-                $is_cols = !empty($el['gridCols']) ? intval($el['gridCols']) : (!empty($el['columns']) ? intval($el['columns']) : 3);
-                $is_cols = max(1, min(4, $is_cols));
-                $is_acc = (!empty($el['activeColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['activeColor'])) ? $el['activeColor'] : '#38bdf8';
-                $is_multi = !empty($el['multiSelect']) && $el['multiSelect'] !== 'false' && $el['multiSelect'] !== '0';
-                $is_defs = array_values(array_filter(array_map('trim', explode(',', $default_val)), 'strlen'));
-                if (!$is_multi && count($is_defs) > 1) { $is_defs = array($is_defs[0]); }
-                $is_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
-                $is_ty .= 'font-weight:' . ((!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) ? $el['fontWeight'] : '600') . ';';
-                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $is_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
-                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $is_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
-                $is_ty .= 'color:' . ((!empty($el['color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['color'])) ? $el['color'] : '#1e293b') . ';';
-                $is_cards = '';
-                $is_vals = array();
-                foreach ($is_items as $is_it) {
-                    $is_on = in_array($is_it[0], $is_defs, true);
-                    if ($is_on) { $is_vals[] = $is_it[0]; }
-                    $is_url = ($is_it[1] !== '') ? esc_url($is_it[1]) : '';
-                    $is_thumb = ($is_url !== '') ? '<img src="' . $is_url . '" alt="' . esc_attr($is_it[0]) . '" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;border-radius:3px;display:block;" />' : '';
-                    $is_cards .= '<div class="wppoppop-imgsel-card" role="button" tabindex="0" data-value="' . esc_attr($is_it[0]) . '" aria-pressed="' . ($is_on ? 'true' : 'false') . '" style="min-width:0;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px;border:2px solid ' . ($is_on ? $is_acc : '#cbd5e1') . ';border-radius:6px;background:#ffffff;text-align:center;cursor:pointer;">'
-                        . $is_thumb . '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' . $is_ty . '">' . esc_html($is_it[0]) . '</span></div>';
-                }
-                $is_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
-                return '<div class="wppoppop-imgsel-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
-                    . '<div class="wppoppop-imgsel-grid" data-multi="' . ($is_multi ? '1' : '0') . '" data-active-color="' . esc_attr($is_acc) . '" style="display:grid;grid-template-columns:repeat(' . $is_cols . ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;width:100%;height:100%;box-sizing:border-box;">' . $is_cards . '</div>'
-                    . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr(implode(', ', $is_vals)) . '" readonly tabindex="-1" aria-hidden="true"' . $is_data . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;padding:0;" />'
-                    . '</div>';
-
-            case 'tile':
-                /* WPPOPPOP_TILE_FRONT: panel keys, own click class, per-tile border/typography/hover, required-safe value */
-                $tl_hex = function ($v, $d) { return (is_string($v) && preg_match('/^#[0-9a-fA-F]{3,8}$/', $v)) ? $v : $d; };
-                $tl_raw = isset($el['optionsList']) ? (string) $el['optionsList'] : (isset($el['options']) ? (is_array($el['options']) ? implode("\n", $el['options']) : (string) $el['options']) : '');
-                $tl_items = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $tl_raw)), 'strlen'));
-                if (count($tl_items) === 1 && strpos($tl_items[0], ',') !== false) { $tl_items = array_values(array_filter(array_map('trim', explode(',', $tl_items[0])), 'strlen')); }
-                if (empty($tl_items)) { $tl_items = array('$10 / mo', '$25 / mo', '$50 / mo'); }
-                $tl_cols = !empty($el['gridCols']) ? intval($el['gridCols']) : (!empty($el['columns']) ? intval($el['columns']) : 3);
-                $tl_cols = max(1, min(4, $tl_cols));
-                $tl_acc = $tl_hex(isset($el['activeColor']) ? $el['activeColor'] : '', '#38bdf8');
-                $tl_multi = !empty($el['multiSelect']) && $el['multiSelect'] !== 'false' && $el['multiSelect'] !== '0';
-                $tl_defs = array_values(array_filter(array_map('trim', explode(',', $default_val)), 'strlen'));
-                if (!$tl_multi && count($tl_defs) > 1) { $tl_defs = array($tl_defs[0]); }
-                $tl_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
-                $tl_j = ($tl_al === 'left') ? 'flex-start' : (($tl_al === 'right') ? 'flex-end' : 'center');
-                $tl_fg = $tl_hex(isset($el['color']) ? $el['color'] : '', '#334155');
-                $tl_bg = (!empty($el['transparentFill']) || (isset($el['bgColor']) && $el['bgColor'] === 'transparent')) ? 'transparent' : $tl_hex(isset($el['bgColor']) ? $el['bgColor'] : '', '#f1f5f9'); /* WPPOPPOP_TILE_BG */
-                $tl_ty = 'font-size:' . ((!empty($el['fontSize']) && is_numeric($el['fontSize'])) ? intval($el['fontSize']) : 12) . 'px;';
-                $tl_ty .= 'font-weight:' . ((!empty($el['fontWeight']) && preg_match('/^[0-9a-z]{3,10}$/i', (string) $el['fontWeight'])) ? $el['fontWeight'] : '700') . ';';
-                if (!empty($el['lineHeight']) && is_numeric($el['lineHeight'])) { $tl_ty .= 'line-height:' . floatval($el['lineHeight']) . ';'; }
-                if (isset($el['letterSpacing']) && is_numeric($el['letterSpacing']) && floatval($el['letterSpacing']) != 0) { $tl_ty .= 'letter-spacing:' . floatval($el['letterSpacing']) . 'px;'; }
-                $tl_bw = (isset($el['borderWidth']) && is_numeric($el['borderWidth']) && intval($el['borderWidth']) > 0) ? intval($el['borderWidth']) : 1;
-                $tl_bs = (!empty($el['borderStyle']) && in_array($el['borderStyle'], array('solid', 'dashed', 'dotted', 'double', 'none'), true)) ? $el['borderStyle'] : 'solid';
-                $tl_bc = $tl_hex(isset($el['borderColor']) ? $el['borderColor'] : '', '#cbd5e1');
-                $tl_rad = (isset($el['borderRadius']) && is_numeric($el['borderRadius'])) ? max(0, intval($el['borderRadius'])) : 6;
-                $tl_h = array(
-                    'background-color' => $tl_hex(isset($el['hoverBgColor']) ? $el['hoverBgColor'] : (isset($el['hoverBg']) ? $el['hoverBg'] : ''), ''),
-                    'color' => $tl_hex(isset($el['hoverTextColor']) ? $el['hoverTextColor'] : (isset($el['hoverColor']) ? $el['hoverColor'] : ''), ''),
-                    'border-color' => $tl_hex(isset($el['hoverBorderColor']) ? $el['hoverBorderColor'] : (isset($el['hoverBorder']) ? $el['hoverBorder'] : ''), ''),
-                );
-                $tl_rules = '';
-                foreach ($tl_h as $tl_prop => $tl_val) { if ($tl_val !== '') { $tl_rules .= $tl_prop . ':' . $tl_val . ' !important;'; } }
-                $tl_style = ($tl_rules !== '') ? '<style>#' . $field_id . '-grid .wppoppop-tl-card[aria-pressed="false"]:hover{' . $tl_rules . '}</style>' : '';
-                $tl_cards = '';
-                $tl_vals = array();
-                foreach ($tl_items as $tl_lbl) {
-                    $tl_on = in_array($tl_lbl, $tl_defs, true);
-                    if ($tl_on) { $tl_vals[] = $tl_lbl; }
-                    $tl_border = ($tl_bs === 'none') ? 'none' : ($tl_bw . 'px ' . $tl_bs . ' ' . ($tl_on ? $tl_acc : $tl_bc));
-                    $tl_cards .= '<div class="wppoppop-tl-card" role="button" tabindex="0" data-value="' . esc_attr($tl_lbl) . '" data-bg="' . esc_attr($tl_bg) . '" data-fg="' . esc_attr($tl_fg) . '" data-bc="' . esc_attr($tl_bc) . '" aria-pressed="' . ($tl_on ? 'true' : 'false') . '" style="min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:' . $tl_j . ';padding:6px;border-radius:' . $tl_rad . 'px;border:' . $tl_border . ';background:' . ($tl_on ? $tl_acc : $tl_bg) . ';color:' . ($tl_on ? '#ffffff' : $tl_fg) . ';cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;-webkit-user-select:none;user-select:none;' . $tl_ty . '">'
-                        . '<span style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' . esc_html($tl_lbl) . '</span></div>';
-                }
-                $tl_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
-                return $tl_style . '<div class="wppoppop-tl-wrap" style="position:relative;width:100%;height:100%;pointer-events:auto;">'
-                    . '<div id="' . $field_id . '-grid" class="wppoppop-tl-grid" data-multi="' . ($tl_multi ? '1' : '0') . '" data-active-color="' . esc_attr($tl_acc) . '" style="display:grid;grid-template-columns:repeat(' . $tl_cols . ',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px;width:100%;height:100%;box-sizing:border-box;">' . $tl_cards . '</div>'
-                    . '<input type="text" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . esc_attr(implode(', ', $tl_vals)) . '" readonly tabindex="-1" aria-hidden="true"' . $tl_data . ' style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;margin:0;padding:0;" />'
-                    . '</div>';
-
             case 'date':
                 /* WPPOPPOP_DATE_FRONT: placeholder, format, min/max, icons, alignment, default, required */
                 $dt_fmt = (!empty($el['dateFormat']) && in_array($el['dateFormat'], array('YYYY-MM-DD', 'MM/DD/YYYY', 'DD/MM/YYYY'), true)) ? $el['dateFormat'] : 'YYYY-MM-DD';
@@ -550,8 +459,8 @@ class WpPopPop_Front_Decomposed_26 {
                 $dt_css = '';
                 if (!$dt_css_done) {
                     $dt_css_done = true;
-                    $dt_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
-                    if ($dt_needs_dash) { $dt_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                    $dt_css = WpPopPop_Libraries::style_tag('wppoppop-font-awesome');
+                    if ($dt_needs_dash) { $dt_css .= WpPopPop_Libraries::style_tag('dashicons'); }
                 }
                 $dt_pl = ($dt_icons['left']['cls'] !== '') ? ($dt_icons['left']['off'] + 22) : 12;
                 $dt_pr = ($dt_icons['right']['cls'] !== '') ? ($dt_icons['right']['off'] + 22) : 12;
@@ -594,8 +503,8 @@ class WpPopPop_Front_Decomposed_26 {
                 $tm_css = '';
                 if (!$tm_css_done) {
                     $tm_css_done = true;
-                    $tm_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
-                    if ($tm_needs_dash) { $tm_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                    $tm_css = WpPopPop_Libraries::style_tag('wppoppop-font-awesome');
+                    if ($tm_needs_dash) { $tm_css .= WpPopPop_Libraries::style_tag('dashicons'); }
                 }
                 $tm_pl = ($tm_icons['left']['cls'] !== '') ? ($tm_icons['left']['off'] + 22) : 12;
                 $tm_pr = ($tm_icons['right']['cls'] !== '') ? ($tm_icons['right']['off'] + 22) : 12;
@@ -651,8 +560,8 @@ class WpPopPop_Front_Decomposed_26 {
                 $up_css = '';
                 if (!$up_css_done) {
                     $up_css_done = true;
-                    $up_css = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
-                    if ($up_needs_dash) { $up_css .= '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'; }
+                    $up_css = WpPopPop_Libraries::style_tag('wppoppop-font-awesome');
+                    if ($up_needs_dash) { $up_css .= WpPopPop_Libraries::style_tag('dashicons'); }
                 }
                 $up_pl = ($up_icons['left']['cls'] !== '') ? ($up_icons['left']['off'] + 22) : 10;
                 $up_pr = ($up_icons['right']['cls'] !== '') ? ($up_icons['right']['off'] + 22) : 10;
@@ -694,8 +603,8 @@ class WpPopPop_Front_Decomposed_26 {
                 $pw_css = '';
                 if (!$pw_css_done) {
                     $pw_css_done = true;
-                    $pw_css = '<link rel="stylesheet" href="' . esc_url(includes_url('css/dashicons.min.css')) . '" />'
-                        . '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />'
+                    $pw_css = WpPopPop_Libraries::style_tag('dashicons')
+                        . WpPopPop_Libraries::style_tag('wppoppop-font-awesome')
                         . '<style>.wppoppop-pw-toggle{position:absolute;right:0;top:0;width:40px;height:100%;min-width:40px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;color:#2271b1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:auto;-webkit-appearance:none;appearance:none;}.wppoppop-pw-toggle:hover,.wppoppop-pw-toggle:focus{color:#135e96;outline:none;}.wppoppop-pw-toggle .dashicons{font-size:20px;width:20px;height:20px;line-height:20px;}</style>';
                 }
                 $pw_rpos = $pw_icons['right']['off'] + ($pw_eye_on ? 40 : 0);
@@ -714,26 +623,6 @@ class WpPopPop_Front_Decomposed_26 {
                      . $pw_ico('right', $pw_rpos)
                      . $eye_btn . '</div>';
 
-            case 'rating':
-                /* WPPOPPOP_RATING_FRONT_V2: inactive colour, default from Data tab, a11y, matches builder stage */
-                $rmax = ((!empty($el['ratingMax']) && intval($el['ratingMax']) === 10) || (empty($el['ratingMax']) && !empty($el['maxStars']) && intval($el['maxStars']) === 10)) ? 10 : 5; /* WPPOPPOP_RATING_MAXSTARS */
-                $rcol = (!empty($el['ratingColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['ratingColor'])) ? $el['ratingColor'] : '#f59e0b';
-                $roff = (!empty($el['ratingInactiveColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['ratingInactiveColor'])) ? $el['ratingInactiveColor'] : '#cbd5e1';
-                $rshape = !empty($el['ratingShape']) ? $el['ratingShape'] : 'star';
-                $glyph = ($rshape === 'heart') ? '♥' : (($rshape === 'thumb') ? '👍' : '★');
-                $init_score = ($default_val !== '' && is_numeric($default_val)) ? max(0, min($rmax, intval($default_val))) : 0;
-                $rfs = ($rmax === 10) ? 15 : 20;
-                $rt_al = (isset($el['textAlign']) && in_array($el['textAlign'], array('left', 'center', 'right'), true)) ? $el['textAlign'] : 'center';
-                $rt_j = ($rt_al === 'left') ? 'flex-start' : (($rt_al === 'right') ? 'flex-end' : 'center');
-                $stars_html = '';
-                for ($i = 1; $i <= $rmax; $i++) {
-                    $col = ($i <= $init_score) ? $rcol : $roff;
-                    $stars_html .= '<span class="wppoppop-rating-glyph" role="radio" tabindex="0" aria-label="' . $i . ' of ' . $rmax . '" data-score="' . $i . '" data-active-color="' . esc_attr($rcol) . '" style="color:' . esc_attr($col) . ';font-size:' . $rfs . 'px;cursor:pointer;line-height:1;user-select:none;-webkit-user-select:none;">' . $glyph . '</span>';
-                }
-                $rt_data = preg_replace('/\s(data-input-mask|data-filters|maxlength|minlength|autocomplete|readonly="readonly")(="[^"]*")?/', '', $data_attrs);
-                return '<div class="wppoppop-interactive-rating" role="radiogroup" data-active-color="' . esc_attr($rcol) . '" data-inactive-color="' . esc_attr($roff) . '" style="width:100%;height:100%;display:flex;align-items:center;justify-content:' . $rt_j . ';gap:4px;pointer-events:auto;">'
-                     . '<input type="hidden" id="' . $field_id . '" name="fields[' . esc_attr($field_name) . ']" data-field-name="' . esc_attr($field_name) . '" value="' . ($init_score > 0 ? $init_score : '') . '"' . $rt_data . ' />'
-                     . $stars_html . '</div>';
         }
 
         return null;

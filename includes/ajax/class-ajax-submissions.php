@@ -36,7 +36,7 @@ class WpPopPop_Ajax_Submissions {
 
         $uid = isset($_POST['popup_uid']) ? sanitize_text_field(wp_unslash($_POST['popup_uid'])) : '';
         $key = ($uid !== '') ? $uid : '_default';
-        $raw = isset($_POST['config']) ? json_decode(wp_unslash($_POST['config']), true) : null;
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded config is validated field by field */ $raw = isset($_POST['config']) ? json_decode(wp_unslash($_POST['config']), true) : null;
         if (!is_array($raw)) {
             wp_send_json_error(['message' => __('Invalid payload.', 'wppoppop')]);
         }
@@ -108,11 +108,11 @@ class WpPopPop_Ajax_Submissions {
         $t = $wpdb->prefix . 'wppoppop_items';
         $out = [];
         if ($uid !== '') {
-            $raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$t} WHERE uid = %s", $uid));
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $raw = $wpdb->get_var($wpdb->prepare("SELECT data FROM {$t} WHERE uid = %s", $uid));
             $out = $this->extract_form_fields($raw ? json_decode($raw, true) : null);
         } else {
             $seen = [];
-            foreach ((array) $wpdb->get_results("SELECT data FROM {$t}") as $r) {
+            /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and the query takes no user input */ foreach ((array) $wpdb->get_results("SELECT data FROM {$t}") as $r) {
                 foreach ($this->extract_form_fields($r->data ? json_decode($r->data, true) : null) as $id => $lbl) {
                     $lc = strtolower($lbl);
                     if (isset($seen[$lc])) {
@@ -212,7 +212,7 @@ class WpPopPop_Ajax_Submissions {
         }
 
         $ids   = isset($_POST['ids']) && is_array($_POST['ids']) ? array_map('intval', wp_unslash($_POST['ids'])) : [];
-        $label = isset($_POST['label_id']) ? preg_replace('/[^A-Za-z0-9_\-]/', '', (string) wp_unslash($_POST['label_id'])) : '';
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- reduced to [A-Za-z0-9_-] by preg_replace */ $label = isset($_POST['label_id']) ? preg_replace('/[^A-Za-z0-9_\-]/', '', (string) wp_unslash($_POST['label_id'])) : '';
         $mode  = isset($_POST['mode']) ? sanitize_key(wp_unslash($_POST['mode'])) : 'add';
         if (!in_array($mode, ['add', 'remove', 'clear'], true)) {
             $mode = 'add';
@@ -267,13 +267,13 @@ class WpPopPop_Ajax_Submissions {
             FROM {$wpdb->prefix}wppoppop_submissions s LEFT JOIN {$wpdb->prefix}wppoppop_items i ON s.popup_uid = i.uid ORDER BY s.id DESC", ARRAY_A);
 
         header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=wppoppop-submissions-' . date('Y-m-d') . '.csv');
+        header('Content-Disposition: attachment; filename=wppoppop-submissions-' . gmdate('Y-m-d') . '.csv');
         $output = fopen('php://output', 'w');
         fputcsv($output, ['ID', 'Popup', 'Email', 'Country', 'Status', __('Form Fields', 'wppoppop'), 'Date']);
         foreach ($rows as $row) {
             fputcsv($output, [$row['id'], $row['popup_title'], $row['email'], $row['country_code'], ucfirst($row['status']), $row['fields_data'], $row['created_at']]);
         }
-        fclose($output);
+        /* phpcs:ignore WordPress.WP.AlternativeFunctions -- local file or stream handle owned by this plugin; WP_Filesystem would need FTP credentials */ fclose($output);
         exit;
     }
 
@@ -331,7 +331,7 @@ class WpPopPop_Ajax_Submissions {
             wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')]);
         }
         global $wpdb;
-        $wpdb->delete($wpdb->prefix . 'wppoppop_submissions', ['id' => intval($_POST['id'])]);
+        $wpdb->delete($wpdb->prefix . 'wppoppop_submissions', ['id' => isset($_POST['id']) ? intval($_POST['id']) : 0]);
         wp_send_json_success(['message' => __('Record permanently deleted.', 'wppoppop')]);
     }
 
@@ -352,7 +352,7 @@ class WpPopPop_Ajax_Submissions {
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => __('Unauthorized action.', 'wppoppop')]);
         }
-        $id = intval($_POST['id']);
+        $id = isset($_POST['id']) ? absint(wp_unslash($_POST['id'])) : 0;
         global $wpdb;
         $wpdb->update($wpdb->prefix . 'wppoppop_submissions', ['email' => 'anonymized_' . $id . '@privacy.local', 'fields_data' => wp_json_encode(['gdpr' => 'anonymized'])], ['id' => $id]);
         wp_send_json_success(['message' => __('PII anonymized.', 'wppoppop')]);
@@ -398,15 +398,7 @@ class WpPopPop_Ajax_Submissions {
         }
 
         if (($target === 'all' || $target === 'user') && !$anon && is_email($email)) {
-            if (!class_exists('WpPopPop_Double_Optin')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-double-optin.php'; }
-            if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
-            $dopt = WpPopPop_Double_Optin::get_config($config);
-            $ar   = WpPopPop_Autoresponder::get_config($config);
-            if ($sub['status'] === 'pending' && !empty($dopt['enable']) && !empty($sub['confirm_token'])) {
-                if (WpPopPop_Double_Optin::send_confirmation($sub['popup_uid'], $dopt, $email, $fields, $sub['confirm_token'], $id)) { $sent_user++; }
-            } elseif (!empty($ar['enable']) && WpPopPop_Autoresponder::module_active()) {
-                if (WpPopPop_Autoresponder::send($email, $fields, $ar)) { $sent_user++; }
-            }
+            if (WpPopPop_Module_Bridge::resend_user_email($sub, $config, $email, $fields, $id)) { $sent_user++; }
         }
 
         $total = $sent_admin + $sent_user;

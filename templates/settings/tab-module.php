@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template variables are local to the method that includes this file
 /* WPP_MODULES_UI: Module tab, WordPress-Plugins style list (version, description, search, filters, Add Module). */
 if (!defined('ABSPATH')) {
     exit;
@@ -70,9 +71,9 @@ $__total = count($__rows);
                     </div>
                     <?php if ($__r['description'] !== '') : ?><p class="wpp-mod-desc"><?php echo esc_html($__r['description']); ?></p><?php endif; ?>
                     <p class="wpp-mod-meta">
-                        <?php if ($__r['version'] !== '') : ?><span><?php echo esc_html(sprintf(__('Version %s', 'wppoppop'), $__r['version'])); ?></span><?php endif; ?>
-                        <?php if ($__r['author'] !== '') : ?><span><?php echo esc_html(sprintf(__('By %s', 'wppoppop'), $__r['author'])); ?></span><?php endif; ?>
-                        <span><?php echo $__r['source'] === 'core' ? esc_html__('Built-in', 'wppoppop') : esc_html__('Uploaded', 'wppoppop'); ?></span>
+                        <?php if ($__r['version'] !== '') : ?><span><?php echo esc_html(sprintf(/* translators: %s: module version. */ __('Version %s', 'wppoppop'), $__r['version'])); ?></span><?php endif; ?>
+                        <?php if ($__r['author'] !== '') : ?><span><?php echo esc_html(sprintf(/* translators: %s: module author. */ __('By %s', 'wppoppop'), $__r['author'])); ?></span><?php endif; ?>
+                        <span><?php echo $__r['source'] === 'core' ? esc_html__('Built-in', 'wppoppop') : ($__r['source'] === 'pro' ? esc_html__('Pro', 'wppoppop') : esc_html__('Uploaded', 'wppoppop')); ?></span>
                     </p>
                     <?php if (!$__lk) : ?>
                         <p class="wpp-mod-links">

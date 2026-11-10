@@ -26,7 +26,7 @@ class WpPopPop_Rest_Delivery {
 
         global $wpdb;
         $table = $wpdb->prefix . 'wppoppop_items';
-        $row   = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$table} WHERE uid = %s AND status = 'publish'", $uid), ARRAY_A);
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $row   = $wpdb->get_row($wpdb->prepare("SELECT title, data FROM {$table} WHERE uid = %s AND status = 'publish'", $uid), ARRAY_A);
 
         if (!$row) {
             return new WP_Error('not_found', __('Popup not found or inactive.', 'wppoppop'), ['status' => 404]);

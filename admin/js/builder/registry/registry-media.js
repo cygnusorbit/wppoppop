@@ -33,8 +33,7 @@
         var cAct = $('#prop-close-action').val() || el.closeAction || 'close';
         $('#prop-close-cookie-wrap').toggle(cAct === 'close_forever');
 
-        var pMode = $('#prop-progress-mode').val() || el.progressMode || 'manual';
-        $('#prop-progress-val-wrap').toggle(pMode === 'manual');
+        if (window.WpPopPopElementExt) { window.WpPopPopElementExt.all('syncRows', [el]); } /* WPPOPPOP_EXT_SYNC_ROWS */
 
         var bAct = $('#prop-button-action').val() || el.buttonAction || 'url';
         $('#prop-button-url-wrap').toggle(bAct === 'url' || bAct === 'link');
@@ -166,18 +165,8 @@
             innerHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform:rotate(' + iRot + 'deg);pointer-events:none;">' +
                 '<i class="' + fullCls + '" style="font-size:' + iSize + 'px;width:' + iSize + 'px;height:' + iSize + 'px;line-height:1;display:inline-flex;align-items:center;justify-content:center;"></i>' +
                 '</div>';
-        } else if (canonical === 'progress') {
-            var pct = Math.min(100, Math.max(0, parseInt(el.progressValue !== undefined ? el.progressValue : 65, 10)));
-            var fCol = el.fillColor || '#c2185b';
-            var tCol = el.trackColor || '#334155';
-            var showPct = (el.showPercentLabel !== false);
-            var lblText = $.trim(el.progressLabel || '');
-            var stripeCss = el.striped ? 'background-image:linear-gradient(45deg,rgba(255,255,255,.18) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.18) 75%,transparent 75%,transparent);background-size:20px 20px;' : '';
-            var badgeText = lblText ? (lblText + (showPct ? ' (' + pct + '%)' : '')) : (showPct ? (pct + '%') : '');
-            innerHtml = '<div style="width:100%;height:100%;background:' + tCol + ';border-radius:inherit;overflow:hidden;position:relative;display:flex;align-items:center;pointer-events:none;">' +
-                '<div style="width:' + pct + '%;height:100%;background-color:' + fCol + ';' + stripeCss + 'transition:width 0.2s ease;"></div>' +
-                (badgeText ? '<span style="position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,0.45);">' + $('<div>').text(badgeText).html() + '</span>' : '') +
-                '</div>';
+        } else if (window.WpPopPopElementExt && window.WpPopPopElementExt.has(canonical, 'mediaStage')) { /* WPPOPPOP_EXT_MEDIA_STAGE */
+            innerHtml = window.WpPopPopElementExt.call(canonical, 'mediaStage', [el]) || '';
         } else if (canonical === 'button' || canonical === 'submit') {
             /* WPPOPPOP_SUBMIT_STAGE_ICONS */
             var sbIconHtml = '', sbPadStyle = ''; var sbJust = 'center'; /* WPPOPPOP_SUBMIT_ALIGN_STAGE */ if (canonical === 'submit') { sbJust = (el.textAlign === 'left') ? 'flex-start' : ((el.textAlign === 'right') ? 'flex-end' : 'center'); }

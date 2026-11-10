@@ -43,131 +43,9 @@ class WpPopPop_Ajax_Templates {
         }
         /* WPPOPPOP_TPL_WHITELIST: parity with the popup save whitelists */
         if (isset($obj->settings) && is_object($obj->settings)) {
-            if (!class_exists('WpPopPop_Overlay')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-overlay.php'; }
-            $obj->settings->overlay = json_decode(wp_json_encode(
-                WpPopPop_Overlay::sanitize(isset($obj->settings->overlay) ? $obj->settings->overlay : array())
-            ));
-            $cel_ok = array('default', 'none', 'burst', 'cannon', 'fireworks', 'rain', 'stars', 'both');
-            $cel    = (isset($obj->settings->celebration) && is_object($obj->settings->celebration) && isset($obj->settings->celebration->effect))
-                ? (string) $obj->settings->celebration->effect : 'default';
-            $obj->settings->celebration = (object) array('effect' => in_array($cel, $cel_ok, true) ? $cel : 'default');
-            if (!class_exists('WpPopPop_Popup_Position')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-popup-position.php'; }
-            $obj->settings->popup_position = json_decode(wp_json_encode( /* WPPOPPOP_POPUP_POSITION_WHITELIST */
-                WpPopPop_Popup_Position::sanitize(isset($obj->settings->popup_position) ? $obj->settings->popup_position : array())
-            ));
-            if (!class_exists('WpPopPop_Targeting_Triggers')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting-triggers.php'; }
-            $obj->settings->targeting_triggers = json_decode(wp_json_encode( /* WPPOPPOP_TARGETING_TRIGGERS_WHITELIST */
-                WpPopPop_Targeting_Triggers::sanitize(isset($obj->settings->targeting_triggers) ? $obj->settings->targeting_triggers : array())
-            ));
+            $obj->settings = WpPopPop_Module_Bridge::sanitize_settings($obj->settings, 'template'); /* WPPOPPOP_EXT_SETTINGS */
             $bgc = isset($obj->settings->close_on_backdrop) ? $obj->settings->close_on_backdrop : false; /* WPPOPPOP_BG_CLOSE_WHITELIST */
             $obj->settings->close_on_backdrop = in_array($bgc, array(true, 1, '1', 'true'), true);
-            if (!class_exists('WpPopPop_Autoresponder')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-autoresponder.php'; }
-            $obj->settings->autoresponder = json_decode(wp_json_encode( /* WPPOPPOP_AUTORESPONDER_WHITELIST */
-                WpPopPop_Autoresponder::sanitize(isset($obj->settings->autoresponder) ? $obj->settings->autoresponder : array())
-            ));
-            if (!class_exists('WpPopPop_Side_Tabs')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-side-tabs.php'; }
-            $obj->settings->sidetab = json_decode(wp_json_encode( /* WPPOPPOP_SIDE_TABS_WHITELIST */
-                WpPopPop_Side_Tabs::sanitize(isset($obj->settings->sidetab) ? $obj->settings->sidetab : array())
-            ));
-            if (!class_exists('WpPopPop_Webhooks')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-webhooks.php'; }
-            $obj->settings->webhooks = json_decode(wp_json_encode( /* WPPOPPOP_WEBHOOKS_WHITELIST */
-                WpPopPop_Webhooks::sanitize(isset($obj->settings->webhooks) ? $obj->settings->webhooks : array())
-            ));
-            if (!class_exists('WpPopPop_Woocommerce')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-woocommerce.php'; }
-            $obj->settings->woocommerce = json_decode(wp_json_encode( /* WPPOPPOP_WOOCOMMERCE_WHITELIST */
-                WpPopPop_Woocommerce::sanitize(isset($obj->settings->woocommerce) ? $obj->settings->woocommerce : array())
-            ));
-            if (!class_exists('WpPopPop_Downloads')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-downloads.php'; }
-            $obj->settings->downloads = json_decode(wp_json_encode( /* WPPOPPOP_DOWNLOADS_WHITELIST */
-                WpPopPop_Downloads::sanitize(isset($obj->settings->downloads) ? $obj->settings->downloads : array())
-            ));
-            if (!class_exists('WpPopPop_Logic_Math')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-math.php'; } /* WPPOPPOP_LOGIC_MATH_WHITELIST */
-            $wppoppop_lm = WpPopPop_Logic_Math::sanitize(isset($obj->settings->logic_math) ? $obj->settings->logic_math : array());
-            if ($wppoppop_lm['formula'] === '' && $wppoppop_lm['target'] === '') {
-                unset($obj->settings->logic_math);
-            } else {
-                $obj->settings->logic_math = json_decode(wp_json_encode($wppoppop_lm));
-            }
-            if (!class_exists('WpPopPop_Logic_Payments')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-logic-payments.php'; }
-            $wppoppop_pay = WpPopPop_Logic_Payments::sanitize(isset($obj->settings->payments) ? $obj->settings->payments : array());
-            if ($wppoppop_pay === WpPopPop_Logic_Payments::defaults()) {
-                unset($obj->settings->payments);
-            } else {
-                $obj->settings->payments = json_decode(wp_json_encode($wppoppop_pay));
-            }
-            if (!class_exists('WpPopPop_Video_Listeners')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-video-listeners.php'; }
-            $wppoppop_vid = WpPopPop_Video_Listeners::sanitize(isset($obj->settings->video) ? $obj->settings->video : array());
-            if ($wppoppop_vid === WpPopPop_Video_Listeners::defaults()) {
-                unset($obj->settings->video);
-            } else {
-                $obj->settings->video = json_decode(wp_json_encode($wppoppop_vid));
-            }
-            if (!class_exists('WpPopPop_Sms')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-sms.php'; }
-            $wppoppop_sms = WpPopPop_Sms::sanitize(isset($obj->settings->sms) ? $obj->settings->sms : array());
-            if ($wppoppop_sms === WpPopPop_Sms::defaults()) {
-                unset($obj->settings->sms);
-            } else {
-                $obj->settings->sms = json_decode(wp_json_encode($wppoppop_sms));
-            }
-            if (!class_exists('WpPopPop_Targeting')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-targeting.php'; }
-            $wppoppop_tg = WpPopPop_Targeting::sanitize(isset($obj->settings->targeting) ? $obj->settings->targeting : array());
-            if ($wppoppop_tg === WpPopPop_Targeting::defaults()) {
-                unset($obj->settings->targeting);
-            } else {
-                $obj->settings->targeting = json_decode(wp_json_encode($wppoppop_tg));
-            }
-            if (!class_exists('WpPopPop_Quiz')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-quiz.php'; }
-            $wppoppop_qz = WpPopPop_Quiz::sanitize(isset($obj->settings->quiz) ? $obj->settings->quiz : array());
-            if ($wppoppop_qz === WpPopPop_Quiz::defaults()) {
-                unset($obj->settings->quiz);
-            } else {
-                $obj->settings->quiz = json_decode(wp_json_encode($wppoppop_qz));
-            }
-            if (isset($obj->settings->frequency)) {
-                if (!class_exists('WpPopPop_Frequency')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-frequency.php'; }
-                $wppoppop_fq = WpPopPop_Frequency::sanitize($obj->settings->frequency);
-                $obj->settings->frequency = json_decode(wp_json_encode($wppoppop_fq));
-            }
-            if (isset($obj->settings->custom_code)) {
-                if (!class_exists('WpPopPop_Custom_Code')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-custom-code.php'; }
-                $wppoppop_cc = WpPopPop_Custom_Code::sanitize($obj->settings->custom_code, array(), current_user_can('unfiltered_html'));
-                if ($wppoppop_cc === WpPopPop_Custom_Code::defaults()) {
-                    unset($obj->settings->custom_code);
-                } else {
-                    $obj->settings->custom_code = json_decode(wp_json_encode($wppoppop_cc));
-                }
-            }
-            if (isset($obj->settings->mailchimp)) { /* WPPOPPOP_MAILCHIMP_WHITELIST: templates never carry API keys */
-                if (!class_exists('WpPopPop_Mailchimp')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-mailchimp.php'; }
-                $wppoppop_mc_tpl = WpPopPop_Mailchimp::sanitize($obj->settings->mailchimp);
-                foreach ($wppoppop_mc_tpl as $wppoppop_mc_i => $wppoppop_mc_it) {
-                    $wppoppop_mc_tpl[$wppoppop_mc_i]['api_key'] = '';
-                    $wppoppop_mc_tpl[$wppoppop_mc_i]['list_id'] = '';
-                    $wppoppop_mc_tpl[$wppoppop_mc_i]['list_name'] = '';
-                }
-                $obj->settings->mailchimp = json_decode(wp_json_encode($wppoppop_mc_tpl));
-                if (!is_array($obj->settings->mailchimp)) { $obj->settings->mailchimp = array(); }
-            }
-            if (isset($obj->settings->getresponse)) { /* WPPOPPOP_GETRESPONSE_WHITELIST: templates never carry API keys */
-                if (!class_exists('WpPopPop_Getresponse')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-getresponse.php'; }
-                $wppoppop_gr_tpl = WpPopPop_Getresponse::sanitize($obj->settings->getresponse);
-                foreach ($wppoppop_gr_tpl as $wppoppop_gr_i => $wppoppop_gr_it) {
-                    $wppoppop_gr_tpl[$wppoppop_gr_i]['api_key'] = '';
-                    $wppoppop_gr_tpl[$wppoppop_gr_i]['campaign_id'] = '';
-                    $wppoppop_gr_tpl[$wppoppop_gr_i]['campaign_name'] = '';
-                }
-                $obj->settings->getresponse = json_decode(wp_json_encode($wppoppop_gr_tpl));
-                if (!is_array($obj->settings->getresponse)) { $obj->settings->getresponse = array(); }
-            }
-            if (isset($obj->settings->security)) { /* WPPOPPOP_PROTECT_WHITELIST */
-                if (!class_exists('WpPopPop_Protect')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-protect.php'; }
-                $wppoppop_sp_tpl = WpPopPop_Protect::sanitize($obj->settings->security);
-                if ($wppoppop_sp_tpl === WpPopPop_Protect::defaults()) {
-                    unset($obj->settings->security);
-                } else {
-                    $obj->settings->security = json_decode(wp_json_encode($wppoppop_sp_tpl));
-                }
-            }
             unset($obj->settings->module_order); /* order is global (Settings > Module) */
             if (class_exists('WpPopPop_Modules_Engine')) { WpPopPop_Modules_Engine::sanitize_save($obj->settings); }
         }
@@ -206,7 +84,7 @@ class WpPopPop_Ajax_Templates {
         $desc  = isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '';
         $image = isset($_POST['image']) ? esc_url_raw(wp_unslash($_POST['image'])) : '';
 
-        $raw = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded template payload is sanitised by the template pipeline */ $raw = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
         $obj = json_decode($raw);
         if (!is_object($obj)) {
             wp_send_json_error(array('message' => __('Malformed popup definition.', 'wppoppop')));
@@ -444,7 +322,7 @@ class WpPopPop_Ajax_Templates {
 
     public function save_categories() {
         $this->guard();
-        $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
+        /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded categories are sanitised by the category store */ $raw = isset($_POST['cats']) ? json_decode(wp_unslash($_POST['cats']), true) : null;
         if (!is_array($raw)) {
             wp_send_json_error(array('message' => __('Malformed category list.', 'wppoppop')));
         }
