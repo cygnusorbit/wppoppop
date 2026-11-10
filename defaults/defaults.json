@@ -40,51 +40,19 @@
             "geoip_service": "none",
             "modules": {
                 "acc-01-canvas-styling": 1,
-                "acc-animation": 1,
-                "acc-side-tabs": 1,
-                "acc-autoresponder": 1,
-                "acc-security": 1,
-                "acc-popup-overlay": 1,
-                "acc-double-optin": 1,
-                "acc-notifications": 1,
-                "acc-success-celebration": 1,
-                "acc-popup-positions": 1,
-                "acc-targeting-triggers": 1,
-                "acc-mailchimp": 1,
-                "acc-getresponse": 1,
-                "acc-sms": 0,
-                "acc-math": 1,
-                "acc-payments": 1,
-                "acc-downloads": 1,
-                "acc-video": 1,
-                "acc-webhooks": 1,
-                "acc-targeting": 1,
-                "acc-frequency": 1,
-                "acc-woocommerce": 1,
-                "acc-custom-code": 1,
-                "acc-quiz": 1
+                "acc-02-triggers": 1,
+                "acc-notifications": 1
             },
             "module_order": [
                 "acc-01-canvas-styling",
-                "acc-targeting-triggers",
-                "acc-success-celebration",
-                "acc-animation",
-                "acc-side-tabs",
-                "acc-autoresponder",
-                "acc-popup-overlay",
-                "acc-double-optin",
-                "acc-notifications",
-                "acc-popup-positions",
-                "acc-security",
-                "acc-mailchimp",
-                "acc-getresponse",
-                "acc-sms"
+                "acc-02-triggers",
+                "acc-notifications"
             ],
             "builder_alignment_tool": 1,
             "builder_viewport_toggle": 0,
             "builder_zoom_select": 0,
             "builder_save_template": 1,
-            "builder_extra_elements": 0,
+            "builder_extra_elements": 1,
             "builder_click_canvas_settings": 0,
             "builder_click_element_settings": 0,
             "builder_layer_settings": {
@@ -194,7 +162,7 @@
             "debug_ab": 1,
             "report_enabled": 0
         },
-        "saved": 1794214380
+        "saved": 1794306417
     },
     "theme": {
         "data": {
