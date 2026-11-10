@@ -20,7 +20,7 @@
       "enabled": true,
       "text": "Unlock advanced popup features with Pro.",
       "cta": "Go Pro",
-      "url": "https://example.com/upgrade",
+      "url": "https://wppoppop.com/",
       "new_tab": true,
       "start": "",
       "end": "",
@@ -36,7 +36,7 @@
       "title": "Need more power?",
       "text": "Upgrade to Pro for extra elements, triggers and templates.",
       "cta": "See Pro features",
-      "url": "https://example.com/upgrade",
+      "url": "https://wppoppop.com/",
       "new_tab": true,
       "image": "",
       "start": "",
@@ -58,7 +58,7 @@
           "title": "Grow faster with Pro",
           "text": "More triggers, more templates, more control.",
           "cta": "Upgrade now",
-          "url": "https://example.com/upgrade",
+          "url": "https://wppoppop.com/",
           "new_tab": true,
           "image": ""
         },
@@ -66,7 +66,7 @@
           "title": "Popups that convert",
           "text": "Unlock the full toolkit for lead capture and sales.",
           "cta": "Learn more",
-          "url": "https://example.com/upgrade",
+          "url": "https://wppoppop.com/",
           "new_tab": true,
           "image": ""
         }
@@ -80,7 +80,7 @@
     "menu_item": {
       "enabled": true,
       "text": "Go PRO",
-      "url": "https://example.com/upgrade",
+      "url": "https://wppoppop.com/",
       "new_tab": true,
       "text_color": "#ffffff",
       "bg_color": "",

@@ -186,6 +186,7 @@
             /* WPPOPPOP_DEFAULT_CLOSE hydrate: missing = enabled */
             var dcOn = !(meta.close_btn_enabled === false || meta.close_btn_enabled === 0 || meta.close_btn_enabled === '0' || meta.close_btn_enabled === 'false');
             $('#set-canvas-close-btn').prop('checked', dcOn);
+            this.applyDefaultCloseEdit(dcOn); /* WPPOPPOP_DEFAULT_CLOSE_EDIT */
 
             var acVal = parseInt(meta.autoclose_delay !== undefined ? meta.autoclose_delay : meta.autoclose, 10);
             $('#set-canvas-autoclose').val(isNaN(acVal) ? 0 : acVal);
@@ -306,6 +307,7 @@
                 var cur = core.state.currentCanvas || 1;
                 if (!core.state.canvasMeta[cur]) core.state.canvasMeta[cur] = {};
                 core.state.canvasMeta[cur].close_btn_enabled = $(this).is(':checked');
+                self.applyDefaultCloseEdit(core.state.canvasMeta[cur].close_btn_enabled); /* WPPOPPOP_DEFAULT_CLOSE_EDIT */
                 if (typeof core.pushHistory === 'function') core.pushHistory();
             });
             var self = this;
@@ -504,6 +506,10 @@
             if (window.WpPopPopBuilderCanvas && typeof window.WpPopPopBuilderCanvas.refreshInteractionContainment === 'function') {
                 window.WpPopPopBuilderCanvas.refreshInteractionContainment();
             }
+        },
+
+        applyDefaultCloseEdit: function(on) {
+            $('#wppoppop-canvas-default-close').css('display', on ? 'block' : 'none');
         },
 
         bindLiveStyle: function() {},

@@ -60,6 +60,8 @@ if (!defined('ABSPATH')) {
         <div id="wppoppop-guide-v" class="wppoppop-smart-guide wppoppop-guide-v" style="display:none;"></div>
         <div id="wppoppop-guide-h" class="wppoppop-smart-guide wppoppop-guide-h" style="display:none;"></div>
         <div id="wppoppop-canvas-elements-root"></div>
+        <!-- WPPOPPOP_DEFAULT_CLOSE_EDIT: edit-mode preview of the default close button (visual only) -->
+        <span id="wppoppop-canvas-default-close" class="wppoppop-canvas-default-close" aria-hidden="true" style="display:none;">&times;</span>
         
         <!-- On-Canvas Submission Feedback Overlay (Active during Preview Simulation) -->
         <div id="wppoppop-stage-status-overlay" class="wppoppop-stage-status-overlay">

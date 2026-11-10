@@ -391,6 +391,23 @@ body.folded .wppoppop-builder-wrap {
     overflow: hidden;
 }
 
+/* WPPOPPOP_DEFAULT_CLOSE_EDIT: visual only, never selectable or draggable */
+#wppoppop-canvas-box .wppoppop-canvas-default-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0 4px;
+    color: #64748b;
+    font-size: 22px;
+    line-height: 1;
+    cursor: default;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    z-index: 50;
+}
+
 /* Live Resize Dimension Tooltip Badge */
 #wppoppop-canvas-size-badge {
     display: none;
