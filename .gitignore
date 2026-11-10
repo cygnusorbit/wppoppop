@@ -1,6 +1,6 @@
 .DS_Store
 Thumbs.db
-C
+scripts/
 node_modules/
 vendor/
 .wp-env.json
