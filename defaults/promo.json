@@ -32,6 +32,7 @@
     },
     "builder_box": {
       "enabled": true,
+      "show_close": false,
       "title": "Need more power?",
       "text": "Upgrade to Pro for extra elements, triggers and templates.",
       "cta": "See Pro features",
@@ -48,6 +49,7 @@
     },
     "dashboard_slider": {
       "enabled": true,
+      "show_close": false,
       "interval": 6000,
       "start": "",
       "end": "",
@@ -71,7 +73,7 @@
       ],
       "reshow_days": 1,
       "text_color": "",
-      "bg_color": "",
+      "bg_color": "#b42d7b",
       "cta_text_color": "",
       "cta_bg_color": ""
     },
