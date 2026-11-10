@@ -31,6 +31,9 @@ class WpPopPop_Admin {
         $this->pages  = new WpPopPop_Admin_Pages();
         $this->menu   = new WpPopPop_Admin_Menu($this->pages);
         $this->theme  = new WpPopPop_Admin_Theme();
+        if (is_multisite()) {
+            new WpPopPop_Admin_Network();
+        }
         $this->assets = new WpPopPop_Admin_Assets();
         if (class_exists('WpPopPop_Admin_Export')) {
             $this->export = new WpPopPop_Admin_Export();

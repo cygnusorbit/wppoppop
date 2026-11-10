@@ -3,7 +3,7 @@
  * Plugin Name: WpPopPop
  * Plugin URI: https://github.com/cygnusorbit/wppoppop
  * Description: The ultimate, high-converting WordPress visual popup builder and lead capture platform.
- * Version: 3.0.917
+ * Version: 3.0.918
  * Author: cygnusorbit
  * Author URI: https://github.com/cygnusorbit
  * Requires at least: 5.8
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define Core Plugin Constants
-define('WPPOPPOP_VERSION', '3.0.917');
+define('WPPOPPOP_VERSION', '3.0.918');
 define('WPPOPPOP_PATH', plugin_dir_path(__FILE__));
 define('WPPOPPOP_URL', plugin_dir_url(__FILE__));
 define('WPPOPPOP_BASENAME', plugin_basename(__FILE__));
@@ -33,7 +33,7 @@ WpPopPop_Autoloader::register();
 require_once WPPOPPOP_PATH . 'includes/helpers.php';
 
 // Register Database Installer & Activation Routine
-register_activation_hook(__FILE__, ['WpPopPop_Installer', 'activate']);
+register_activation_hook(__FILE__, ['WpPopPop_Multisite', 'activate']);
 
 /**
  * Main WpPopPop Application Singleton
@@ -55,6 +55,7 @@ final class WpPopPop {
     private function init_components() {
         new WpPopPop_I18n();
         new WpPopPop_Hooks();
+        WpPopPop_Multisite::hooks();
         new WpPopPop_Capabilities();
         new WpPopPop_Ajax();
         new WpPopPop_Rest();

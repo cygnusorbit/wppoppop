@@ -1,0 +1,11 @@
+/* Network settings page: reuses the Theme page layout (theme.css); only the extras live here. */
+.wppoppop-network-wrap .wpp-theme-panel { margin-bottom: 16px; }
+.wppoppop-network-wrap .wppoppop-network-sites { margin-top: 8px; border-radius: var(--wpp-r-card, 8px); overflow: hidden; }
+.wppoppop-network-wrap .wpp-theme-field input[type="checkbox"] { height: 18px; width: 18px; min-height: 0; margin: 0; }
+.wppoppop-network-wrap p.description.wpp-theme-field { margin: -8px 0 0; }
+.wppoppop-network-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; background: #f1f5f9; color: var(--wpp-c-muted, #64748b); font-size: 12px; font-weight: 600; }
+.wppoppop-network-chip.is-on { background: #fee2e2; color: #b91c1c; }
+.wppoppop-network-status { margin: 0 0 12px; padding: 0; list-style: none; }
+.wppoppop-network-status li { display: -webkit-box; display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+.wppoppop-network-status .dashicons-yes-alt { color: #16a34a; }
+.wppoppop-network-status .dashicons-minus { color: var(--wpp-c-muted, #64748b); }

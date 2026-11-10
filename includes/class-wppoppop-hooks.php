@@ -67,6 +67,7 @@ class WpPopPop_Hooks {
                 'wppoppop_submission_record_fields'=> 'Filters the fields shown on a submission detail (fields, popup uid).',
                 'wppoppop_redact_config'           => 'Removes private account data from a popup config before it is printed or exported (config).',
                 'wppoppop_diagnostic_sms'          => 'Sends the diagnostic test SMS (result, to number, credentials).',
+                'wppoppop_site_tables'             => 'Multisite: table suffixes dropped when a site is deleted (list; companion plugins add theirs).',
             ],
             'actions' => [
                 'wppoppop_init'                    => 'Fires when the WpPopPop core system completes initialization.',
@@ -85,6 +86,7 @@ class WpPopPop_Hooks {
                 'wppoppop_after_submission_saved'   => 'Fires after a new lead is inserted into wp_wppoppop_submissions.',
                 'wppoppop_webhook_dispatched'      => 'Fires after an outbound webhook request is sent (non-blocking: args are the response stub, payload, popup uid).',
                 'wppoppop_create_tables'           => 'Fires while core creates its tables; companion plugins create theirs here.',
+                'wppoppop_site_setup'              => 'Fires once for each site that gets set up: on activation, network activation and new-site creation (blog id).',
                 'wppoppop_impression_recorded'     => 'Fires after a popup impression is counted (popup uid).',
                 'wppoppop_submission_saved'        => 'Fires right after a lead row is inserted (submission id).',
                 'wppoppop_popup_uid_renamed'       => 'Fires after a popup uid is renamed (old uid, new uid).',

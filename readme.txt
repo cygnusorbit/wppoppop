@@ -28,6 +28,9 @@ WpPopPop is a decomposed, modular popup builder designed to create responsive, h
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Navigate to **WpPopPop** in your admin sidebar to create your first popup.
 
+= Does WpPopPop work on multisite? =
+Yes. Network activate it and every site gets its own tables and settings; new sites are set up automatically and deleting a site removes its WpPopPop tables. Super admins can set defaults for new sites under Network Admin > WpPopPop.
+
 == External services ==
 
 WpPopPop only contacts a third-party service when the site owner turns the matching feature on. No visitor data is sent otherwise.
@@ -76,6 +79,8 @@ The "test webhook" tool in the admin sends one sample JSON ping to the URL you t
 
 = 3.0.914 =
 * Directory-submission compliance pass: readme, headers and external services disclosure.
+* Multisite: network activation, automatic setup of new sites, clean-up when a site is deleted or the plugin is uninstalled.
+* Network admin page with defaults for new sites.
 
 = 3.0.912 =
 * Directory-submission compliance pass: readme, headers and external services disclosure.
