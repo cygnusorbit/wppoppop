@@ -38,13 +38,14 @@
             exit: $('#trig-exit').is(':checked'),
             scroll: $('#trig-scroll').is(':checked'),
             scroll_val: pct, /* renderer reads this first */
-            adblock: $('#trig-adblock').is(':checked'),
-            backbutton: $('#trig-backbutton').is(':checked'),
             always: $('#trig-always').is(':checked'),
             always_embed: $('#trig-always-embed').is(':checked'),
             repeat: $('#trig-repeat').is(':checked'),
             repeat_hours: clamp($('#trig-repeat-hours').val(), 1, 720, 24)
         });
+        delete out.triggers.adblock; /* retired triggers: strip old saved values */
+        delete out.triggers.backbutton;
+        delete out.triggers.back;
         out.scroll_depth = pct; /* legacy fallback stays identical */
         out.exit_intent_sensitivity = clamp($('#set-exit-intent-sensitivity').val(), 1, 200, 20);
         return out;
@@ -58,8 +59,6 @@
                 $('#trig-load').prop('checked', !!t.load);
                 $('#trig-exit').prop('checked', !!t.exit);
                 $('#trig-scroll').prop('checked', !!t.scroll);
-                $('#trig-adblock').prop('checked', !!t.adblock);
-                $('#trig-backbutton').prop('checked', !!t.backbutton);
             }
             $('#trig-always').prop('checked', !!t.always && t.always !== 'false');
             $('#trig-always-embed').prop('checked', flag(t.always_embed));

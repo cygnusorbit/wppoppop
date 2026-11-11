@@ -78,8 +78,6 @@ class WpPopPop_Front_Renderer {
         if ($trg_on('load'))   { $trg_attrs .= ' data-trigger-load="1" data-trigger-load-delay="' . max(0, intval($trg['load_delay'] ?? 0)) . '"'; }
         if ($trg_on('exit'))   { $trg_attrs .= ' data-trigger-exit="1" data-exit-sens="' . max(1, intval($config['settings']['exit_intent_sensitivity'] ?? 20)) . '"'; }
         if ($trg_on('scroll')) { $trg_attrs .= ' data-trigger-scroll="' . max(1, min(100, intval($trg['scroll_val'] ?? ($config['settings']['scroll_depth'] ?? 50)))) . '"'; }
-        if ($trg_on('adblock')) { $trg_attrs .= ' data-trigger-adblock="1"'; }
-        if ($trg_on('backbutton') || $trg_on('back')) { $trg_attrs .= ' data-trigger-back="1"'; }
         if ($trg_on('idle'))   { $trg_attrs .= ' data-trigger-idle="' . max(1, intval($trg['idle_seconds'] ?? ($trg['idle_time'] ?? 15))) . '"'; }
 
         /* WPPOPPOP_TRIGGER_ALWAYS_REPEAT */

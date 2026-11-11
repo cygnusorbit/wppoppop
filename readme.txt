@@ -1,11 +1,11 @@
 === WpPopPop ===
-Contributors: cygnusorbit
-Donate link: https://github.com/cygnusorbit/wppoppop
+Contributors: WpPopPop
+Donate link: https://wppoppop.com/
 Tags: popup, modal, popup builder, optin, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.0.924
+Stable tag: 3.0.925
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,7 +72,7 @@ The "test webhook" tool in the admin sends one sample JSON ping to the URL you t
 
 == Changelog ==
 
-= 3.0.924 =
+= 3.0.925 =
 * Directory-submission compliance pass: readme, headers and external services disclosure.
 * Multisite: network activation, automatic setup of new sites, clean-up when a site is deleted or the plugin is uninstalled.
 * Network admin page with defaults for new sites.

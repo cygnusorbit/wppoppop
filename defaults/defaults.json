@@ -28,13 +28,11 @@
             "range_slider": 0,
             "modules": {
                 "acc-01-canvas-styling": 1,
-                "acc-display-triggers": 1,
                 "acc-notifications": 1
             },
             "module_order": [
                 "acc-01-canvas-styling",
-                "acc-notifications",
-                "acc-display-triggers"
+                "acc-notifications"
             ],
             "builder_alignment_tool": 1,
             "builder_viewport_toggle": 0,
@@ -129,7 +127,7 @@
             "debug_ab": 1,
             "report_enabled": 0
         },
-        "saved": 1794371797
+        "saved": 1794378513
     },
     "theme": {
         "data": {
@@ -228,21 +226,19 @@
         "data": {
             "canvasMeta": {
                 "1": {
-                    "width": 300,
+                    "width": 350,
                     "height": 400,
-                    "bg_mode": "solid",
+                    "bg_mode": "gradient",
                     "bg_color": "#ffffff",
-                    "grad_color1": "#3b82f6",
-                    "grad_color2": "#1d4ed8",
+                    "grad_color1": "#b5f73b",
+                    "grad_color2": "#1f2a47",
                     "grad_angle": 135,
                     "anim_appearance": "bounceIn",
                     "anim_duration": 1000,
                     "anim_delay": 0,
-                    "anim_disappearance": "none",
-                    "anim_exit_enabled": false,
+                    "anim_disappearance": "bounceOut",
                     "logic_enabled": false,
-                    "_prev_bg_color": "#ffffff",
-                    "_prev_bg_mode": "solid",
+                    "anim_exit_enabled": true,
                     "canvas_radius": 0,
                     "close_btn_enabled": true,
                     "autoclose": 0,
@@ -250,7 +246,7 @@
                     "allow_overflow_edit": false
                 },
                 "2": {
-                    "width": 300,
+                    "width": 350,
                     "height": 400,
                     "bg_mode": "solid",
                     "bg_color": "#ffffff",
@@ -260,14 +256,14 @@
                     "anim_appearance": "fadeIn",
                     "anim_duration": 1000,
                     "anim_delay": 0,
-                    "anim_disappearance": "none",
-                    "anim_exit_enabled": false,
-                    "logic_enabled": false
+                    "anim_disappearance": "flipOutX",
+                    "logic_enabled": false,
+                    "anim_exit_enabled": false
                 }
             },
             "settings": {
                 "box": {
-                    "width": 300,
+                    "width": 350,
                     "height": 400
                 },
                 "close_on_backdrop": false,
@@ -277,18 +273,33 @@
                     "exit": false,
                     "scroll": false,
                     "scroll_val": 50,
-                    "adblock": false,
-                    "backbutton": false,
-                    "always": true,
+                    "always": false,
                     "always_embed": false,
-                    "repeat": false,
+                    "repeat": true,
                     "repeat_hours": 24
                 },
                 "scroll_depth": 50,
                 "exit_intent_sensitivity": 20,
-                "notifications": []
+                "notifications": [
+                    {
+                        "id": "n_lzd5y5",
+                        "name": "Notification",
+                        "enable": false,
+                        "send": "after_submission",
+                        "recipient": "",
+                        "subject": "New submission from {{form-name}}",
+                        "message": "{{form-data}}",
+                        "attachments": [],
+                        "reply_to": "",
+                        "from_email": "{{global-from-email}}",
+                        "from_name": "{{global-from-name}}",
+                        "logic_enable": false,
+                        "logic_match": "all",
+                        "rules": []
+                    }
+                ]
             }
         },
-        "saved": 1794335166
+        "saved": 1794378660
     }
 }

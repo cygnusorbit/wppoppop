@@ -1,7 +1,7 @@
 /**
  * Display Triggers - frontend runtime.
  * Reads the data-trigger-* attributes the popup renderer prints and opens the popup:
- * exit intent, mobile back button, scroll depth, inactivity, video end and AdBlock.
+ * exit intent, scroll depth, inactivity and video end.
  * Page load / always / repeat stay with the core display runtime.
  */
 (function (window, $) {
@@ -34,20 +34,6 @@
         document.addEventListener('mouseout', function (e) {
             if (!e.relatedTarget && !e.toElement) { fire(e); }
         }, false);
-    }
-
-    function bindMobileBack() {
-        if (window.history && window.history.pushState && $('.wppoppop-popup-wrap[data-trigger-back="1"]').length) {
-            window.history.pushState({ wppoppop: true }, '');
-            $(window).on('popstate', function () {
-                $('.wppoppop-popup-wrap[data-trigger-back="1"]').each(function () {
-                    var uid = $(this).data('uid');
-                    if (F.Modal && !F.Modal.isSuppressed(uid)) {
-                        F.Modal.open(uid);
-                    }
-                });
-            });
-        }
     }
 
     function bindScrollDepth() {
@@ -95,29 +81,10 @@
         });
     }
 
-    function checkAdBlock() {
-        var bait = document.createElement('div');
-        bait.className = 'pub_300x250 pub_300x250m pub_728x90 text-ad ad-text';
-        bait.style.cssText = 'width: 1px !important; height: 1px !important; position: absolute !important; left: -10000px !important;';
-        document.body.appendChild(bait);
-
-        setTimeout(function () {
-            var isBlocked = (bait.offsetParent === null || bait.offsetHeight === 0 || bait.offsetLeft === 0);
-            bait.remove();
-            if (isBlocked) {
-                $('.wppoppop-popup-wrap[data-trigger-adblock="1"]').each(function () {
-                    open($(this).data('uid'));
-                });
-            }
-        }, 200);
-    }
-
     T.register(function () {
         bindExitIntent();
-        bindMobileBack();
         bindScrollDepth();
         bindInactivity();
         bindVideoListeners();
-        checkAdBlock();
     });
 })(window, jQuery);
