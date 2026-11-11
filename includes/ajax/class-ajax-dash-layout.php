@@ -17,7 +17,7 @@ class WpPopPop_Ajax_Dash_Layout {
     }
 
     public static function keys() {
-        return ['promo', 'popups', 'recent', 'tools'];
+        return ['promo', 'popups', 'recent'];
     }
 
     private static function clean_key($k) {

@@ -89,26 +89,8 @@ $builder_url = admin_url('admin.php?page=wppoppop-builder');
             <a class="wppoppop-btn-red" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-submissions')); ?>"><?php echo esc_html__('View all submissions', 'wppoppop'); ?></a>
         </div>
 
-        <?php $wppoppop_boxes['recent'] = ob_get_clean(); ob_start(); ?>
-        <!-- Tools -->
-        <div class="wppoppop-box" id="wppoppop-box-tools">
-            <h2><span class="dashicons dashicons-admin-tools"></span><?php echo esc_html__('Tools', 'wppoppop'); ?></h2>
-            <div class="wppoppop-tool-tiles">
-                <a class="tile" href="<?php echo esc_url($dash_export_url); ?>">
-                    <span class="ico"><span class="dashicons dashicons-media-spreadsheet"></span></span>
-                    <span class="lbl"><?php echo esc_html__('Export Submissions', 'wppoppop'); ?></span>
-                </a>
-                <a class="tile" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-tools')); ?>">
-                    <span class="ico"><span class="dashicons dashicons-media-code"></span></span>
-                    <span class="lbl"><?php echo esc_html__('Export Popup', 'wppoppop'); ?></span>
-                </a>
-                <a class="tile" href="<?php echo esc_url(admin_url('admin.php?page=wppoppop-tools')); ?>">
-                    <span class="ico"><span class="dashicons dashicons-database-import"></span></span>
-                    <span class="lbl"><?php echo esc_html__('Import Popup', 'wppoppop'); ?></span>
-                </a>
-            </div>
-        </div>
-        <?php $wppoppop_boxes['tools'] = ob_get_clean();
+        <?php $wppoppop_boxes['recent'] = ob_get_clean(); ?>
+        <?php
         ob_start(); WpPopPop_Promo::render('dashboard_slider'); $wppoppop_promo_html = ob_get_clean(); // empty when hidden
         $wppoppop_present = array_keys($wppoppop_boxes);
         if ($wppoppop_promo_html !== '') { $wppoppop_present[] = 'promo'; }
