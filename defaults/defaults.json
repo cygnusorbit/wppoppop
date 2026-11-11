@@ -333,7 +333,7 @@
                 "1": {
                     "width": 350,
                     "height": 400,
-                    "bg_mode": "gradient",
+                    "bg_mode": "solid",
                     "bg_color": "#ffffff",
                     "grad_color1": "#b5f73b",
                     "grad_color2": "#1f2a47",
@@ -342,8 +342,8 @@
                     "anim_duration": 1000,
                     "anim_delay": 0,
                     "anim_disappearance": "bounceOut",
-                    "logic_enabled": false,
                     "anim_exit_enabled": true,
+                    "logic_enabled": false,
                     "canvas_radius": 0,
                     "close_btn_enabled": true,
                     "autoclose": 0,
@@ -362,8 +362,8 @@
                     "anim_duration": 1000,
                     "anim_delay": 0,
                     "anim_disappearance": "flipOutX",
-                    "logic_enabled": false,
-                    "anim_exit_enabled": false
+                    "anim_exit_enabled": false,
+                    "logic_enabled": false
                 }
             },
             "settings": {
@@ -405,6 +405,6 @@
                 ]
             }
         },
-        "saved": 1794378660
+        "saved": 1794390441
     }
 }
