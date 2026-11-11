@@ -17,7 +17,7 @@ class WpPopPop_Ajax_Dash_Layout {
     }
 
     public static function keys() {
-        return ['promo', 'popups', 'recent'];
+        return ['popups', 'recent', 'promo']; // default order = default columns: Popups | Recent Submissions | Promo
     }
 
     private static function clean_key($k) {
