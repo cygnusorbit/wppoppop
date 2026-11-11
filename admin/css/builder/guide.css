@@ -1,0 +1,162 @@
+/* WpPopPop builder guide (tour). Uses the Theme page tokens; fallbacks equal the Theme defaults. */
+.wppoppop-tour {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100100;
+    display: none;
+    pointer-events: none;
+    font-family: var(--wpp-font-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+}
+.wppoppop-tour.is-open { display: block; }
+.wppoppop-tour,
+.wppoppop-tour * { -webkit-box-sizing: border-box; box-sizing: border-box; }
+
+.wppoppop-tour-dim {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(15, 23, 42, .6);
+    opacity: 0;
+    -webkit-transition: opacity .2s ease;
+    transition: opacity .2s ease;
+}
+.wppoppop-tour.is-center .wppoppop-tour-dim { opacity: 1; }
+
+.wppoppop-tour-spot {
+    position: absolute;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 0 9999px rgba(15, 23, 42, .6), 0 0 0 2px var(--wpp-c-primary, #c1272d);
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, .6), 0 0 0 2px var(--wpp-c-primary, #c1272d);
+    -webkit-transition: top .2s ease, left .2s ease, width .2s ease, height .2s ease, opacity .2s ease;
+    transition: top .2s ease, left .2s ease, width .2s ease, height .2s ease, opacity .2s ease;
+}
+.wppoppop-tour.is-center .wppoppop-tour-spot { opacity: 0; }
+
+.wppoppop-tour-card {
+    position: absolute;
+    width: 340px;
+    max-width: calc(100vw - 24px);
+    padding: 18px 18px 14px;
+    background: var(--wpp-c-bg-card, #fff);
+    color: var(--wpp-c-text, #1d2327);
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde);
+    border-radius: 8px;
+    -webkit-box-shadow: 0 12px 32px rgba(15, 23, 42, .28);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .28);
+    font-size: var(--wpp-fs-base, 13px);
+    line-height: var(--wpp-lh-base, 1.5);
+    pointer-events: auto;
+    outline: none;
+}
+.wppoppop-tour-count {
+    margin: 0 24px 6px 0;
+    color: var(--wpp-c-muted, #787c82);
+    font-size: var(--wpp-fs-label, 11px);
+    font-weight: var(--wpp-fw-label, 700);
+    letter-spacing: var(--wpp-ls-label, .5px);
+    text-transform: var(--wpp-tt-label, uppercase);
+}
+.wppoppop-tour-title {
+    margin: 0 0 6px;
+    padding: 0;
+    color: var(--wpp-c-heading, #1d2327);
+    font-family: var(--wpp-font-heading, inherit);
+    font-size: var(--wpp-fs-modal-title, 14px);
+    font-weight: var(--wpp-fw-heading, 600);
+    line-height: 1.3;
+}
+.wppoppop-tour-text { margin: 0 0 14px; color: var(--wpp-c-text, #1d2327); }
+.wppoppop-tour-text strong { font-weight: 700; }
+
+.wppoppop-tour-foot {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    gap: 8px 12px;
+}
+.wppoppop-tour-links,
+.wppoppop-tour-nav { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; gap: 8px; }
+.wppoppop-tour-links { gap: 12px; }
+
+.wppoppop-tour-link {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--wpp-c-link, #2237c9);
+    font: inherit;
+    font-size: var(--wpp-fs-small, 12px);
+    text-decoration: underline;
+    cursor: pointer;
+}
+.wppoppop-tour-link:hover { color: var(--wpp-c-link-hover, #c1272d); }
+
+.wppoppop-tour-btn {
+    margin: 0;
+    padding: 6px 14px;
+    background: var(--wpp-c-secondary-bg, #fff);
+    color: var(--wpp-c-text, #1d2327);
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-border-strong, #c3c4c7);
+    border-radius: 4px;
+    font: inherit;
+    font-size: var(--wpp-fs-button, 13px);
+    font-weight: var(--wpp-fw-button, 600);
+    line-height: 1.4;
+    cursor: pointer;
+}
+.wppoppop-tour-btn:hover { background: var(--wpp-c-secondary-hover, #f1f5f9); }
+.wppoppop-tour-btn.is-primary {
+    background: var(--wpp-c-primary, #c1272d);
+    border-color: var(--wpp-c-primary, #c1272d);
+    color: var(--wpp-c-primary-text, #fff);
+}
+.wppoppop-tour-btn.is-primary:hover { background: var(--wpp-c-primary-hover, #a51f25); border-color: var(--wpp-c-primary-hover, #a51f25); }
+.wppoppop-tour-btn[disabled] { opacity: .5; cursor: default; }
+
+.wppoppop-tour-x {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--wpp-c-muted, #787c82);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+.wppoppop-tour-x:hover { color: var(--wpp-c-text, #1d2327); }
+
+.wppoppop-tour-btn:focus,
+.wppoppop-tour-link:focus,
+.wppoppop-tour-x:focus { outline: 2px solid var(--wpp-c-primary, #c1272d); outline-offset: 2px; }
+
+html[dir="rtl"] .wppoppop-tour-x { right: auto; left: 10px; }
+html[dir="rtl"] .wppoppop-tour-count,
+html[dir="rtl"] .wppoppop-tour-title { margin-right: 0; margin-left: 24px; }
+
+@media (forced-colors: active) {
+    .wppoppop-tour-spot { outline: 3px solid Highlight; }
+    .wppoppop-tour-card { border: 2px solid CanvasText; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wppoppop-tour-dim,
+    .wppoppop-tour-spot { -webkit-transition: none; transition: none; }
+}

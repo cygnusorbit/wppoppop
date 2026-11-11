@@ -35,6 +35,7 @@ class WpPopPop_Admin {
             new WpPopPop_Admin_Network();
         }
         $this->assets = new WpPopPop_Admin_Assets();
+        new WpPopPop_Admin_Guide();
         if (class_exists('WpPopPop_Admin_Export')) {
             $this->export = new WpPopPop_Admin_Export();
         }

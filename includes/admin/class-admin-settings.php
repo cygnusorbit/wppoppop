@@ -143,6 +143,8 @@ class WpPopPop_Admin_Settings {
             'builder_extra_elements' => 0,
             'builder_click_canvas_settings' => 0,
             'builder_click_element_settings' => 0,
+            'builder_guide' => 1,
+            'builder_guide_steps' => [],
             'builder_layer_settings' => [],
             'menu_pages' => self::get_default_menu_pages(),
             'clean_on_uninstall' => 0,
@@ -295,6 +297,23 @@ class WpPopPop_Admin_Settings {
         foreach ($builder_defaults as $__bk => $__bv) {
             $o[$__bk] = (array_key_exists($__bk, $in) && !empty($in[$__bk])) ? 1 : $__bv;
         }
+
+        // 5c1. Builder guide: on by default; a missing key keeps the stored value.
+        $__bg_prev = get_option('wppoppop_settings', []);
+        if (array_key_exists('builder_guide', $in)) {
+            $o['builder_guide'] = !empty($in['builder_guide']) ? 1 : 0;
+        } elseif (is_array($__bg_prev) && array_key_exists('builder_guide', $__bg_prev)) {
+            $o['builder_guide'] = !empty($__bg_prev['builder_guide']) ? 1 : 0;
+        } else {
+            $o['builder_guide'] = 1;
+        }
+
+        // 5c1b. Guide step editor rows. Missing key = keep the stored rows; [] = built-in steps.
+        $__gs_prev = get_option('wppoppop_settings', []);
+        $__gs_src  = array_key_exists('builder_guide_steps', $in)
+            ? $in['builder_guide_steps']
+            : ((is_array($__gs_prev) && isset($__gs_prev['builder_guide_steps'])) ? $__gs_prev['builder_guide_steps'] : []);
+        $o['builder_guide_steps'] = WpPopPop_Admin_Guide::sanitize_custom_steps($__gs_src);
 
         // 5c2. Layer Settings: per-element enable / disable of Inspector settings (JSON or array). Missing key = keep what is stored.
         $__ls_prev = get_option('wppoppop_settings', []);

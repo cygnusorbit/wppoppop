@@ -5,7 +5,7 @@ Tags: popup, modal, popup builder, optin, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.0.925
+Stable tag: 3.0.926
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,9 @@ No. WpPopPop runs locally on your WordPress installation and does not track pers
 = Can I use custom CSS? =
 Yes, custom CSS and styling rules can be applied directly to individual layers and popup containers.
 
+= How do I change, hide or restart the builder guide? =
+Go to WpPopPop > Settings > Builder. "Show guide" turns the guided tour on or off for everyone, and "Restart tour" replays it for you the next time you open the builder. The "Guide Steps" tab lets you edit, reorder, hide or add steps. Each admin sees the tour once; the ? button in the builder toolbar relaunches it at any time.
+
 = How do I translate WpPopPop? =
 
 The plugin is fully internationalized (text domain `wppoppop`, domain path `/languages`). Use `languages/wppoppop.pot` as the template, save your `.po`/`.mo` as `wp-content/languages/plugins/wppoppop-{locale}.po/.mo`, then run `wp i18n make-json wp-content/languages/plugins --no-purge` to create the JSON files used by the JavaScript strings.
@@ -72,7 +75,7 @@ The "test webhook" tool in the admin sends one sample JSON ping to the URL you t
 
 == Changelog ==
 
-= 3.0.925 =
+= 3.0.926 =
 * Directory-submission compliance pass: readme, headers and external services disclosure.
 * Multisite: network activation, automatic setup of new sites, clean-up when a site is deleted or the plugin is uninstalled.
 * Network admin page with defaults for new sites.

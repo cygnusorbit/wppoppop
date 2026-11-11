@@ -198,6 +198,24 @@ class WpPopPop_Admin_Assets {
             wp_enqueue_script('wppoppop-settings-modules-js', WPPOPPOP_URL . 'admin/js/settings/settings-modules.js', ['jquery', 'jquery-ui-sortable', 'wppoppop-settings-tabs-js', 'wppoppop-modules-api-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-search-js', WPPOPPOP_URL . 'admin/js/settings/settings-search.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
             wp_enqueue_script('wppoppop-settings-reset-js', WPPOPPOP_URL . 'admin/js/settings/settings-reset.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);
+            wp_enqueue_script('wppoppop-settings-guide-js', WPPOPPOP_URL . 'admin/js/settings/settings-guide.js', [], self::ver(), true);
+            wp_localize_script('wppoppop-settings-guide-js', 'wppoppop_guide_settings', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => WpPopPop_Admin_Guide::nonce(),
+                'i18n'     => [
+                    'done' => __('Tour reset. It will start the next time you open the builder.', 'wppoppop'),
+                    'fail' => __('Could not reset the tour. Please reload the page and try again.', 'wppoppop'),
+                ],
+            ]);
+
+            wp_enqueue_style('wppoppop-settings-guide-editor-css', WPPOPPOP_URL . 'admin/css/settings/guide-editor.css', ['wppoppop-settings-css'], $set_ver);
+            wp_enqueue_script('wppoppop-settings-guide-steps-js', WPPOPPOP_URL . 'admin/js/settings/settings-guide-steps.js', [], self::ver(), true);
+            wp_localize_script('wppoppop-settings-guide-steps-js', 'wppoppop_guide_steps_i18n', [
+                'count'          => __('{n} of {max} steps', 'wppoppop'),
+                'builtin'        => __('Built-in', 'wppoppop'),
+                'confirm_delete' => __('Delete this step?', 'wppoppop'),
+                'confirm_reset'  => __('Reset all guide steps to the built-in defaults? Save settings to apply.', 'wppoppop'),
+            ]);
 
             wp_enqueue_style('wppoppop-settings-layer-settings-css', WPPOPPOP_URL . 'admin/css/settings/builder-layer-settings.css', ['wppoppop-settings-css'], $set_ver);
             wp_enqueue_script('wppoppop-settings-layer-settings-js', WPPOPPOP_URL . 'admin/js/settings/settings-layer-settings.js', ['jquery', 'wppoppop-settings-tabs-js'], self::ver(), true);

@@ -10,6 +10,7 @@ $__zm_on = !empty($__bld['builder_zoom_select']);
 $__st_on = !empty($__bld['builder_save_template']);
 $__cc_on = !empty($__bld['builder_click_canvas_settings']);
 $__ce_on = !empty($__bld['builder_click_element_settings']);
+$__bg_on = !array_key_exists('builder_guide', (array) $settings) || !empty($settings['builder_guide']);
 ?>
 <style>
 .wppoppop-bld-list{max-width:720px;margin:0;padding:0;list-style:none}
@@ -27,6 +28,7 @@ $__ce_on = !empty($__bld['builder_click_element_settings']);
 <nav class="wppoppop-bld-subtabs wpp-theme-tabs" aria-label="<?php esc_attr_e('Builder sections', 'wppoppop'); ?>">
     <button type="button" class="wpp-theme-tab wppoppop-bld-subtab is-active" data-bld-pane="tools" aria-selected="true"><?php esc_html_e('Builder Tools', 'wppoppop'); ?></button>
     <button type="button" class="wpp-theme-tab wppoppop-bld-subtab" data-bld-pane="layers" aria-selected="false"><?php esc_html_e('Element / Layer Settings', 'wppoppop'); ?></button>
+    <button type="button" class="wpp-theme-tab wppoppop-bld-subtab" data-bld-pane="guide" aria-selected="false"><?php esc_html_e('Guide Steps', 'wppoppop'); ?></button>
 </nav>
 <div class="wppoppop-bld-pane" data-bld-pane="tools">
 <div class="wppoppop-settings-section">
@@ -92,11 +94,33 @@ $__ce_on = !empty($__bld['builder_click_element_settings']);
                 <span class="trk"></span>
             </label>
         </li>
+        <li>
+            <span class="bld-name"><?php esc_html_e('Show guide', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Show the guided tour the first time each admin opens the builder. A Help (?) button in the builder toolbar can always relaunch it.', 'wppoppop'); ?></span>
+            </span>
+            <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Show guide', 'wppoppop'); ?>">
+                <input type="hidden" name="settings[builder_guide]" value="0">
+                <input type="checkbox" name="settings[builder_guide]" value="1" <?php checked($__bg_on); ?>>
+                <span class="trk"></span>
+            </label>
+        </li>
+        <li>
+            <span class="bld-name"><?php esc_html_e('Restart tour', 'wppoppop'); ?>
+                <span class="bld-desc"><?php esc_html_e('Reset your own tour progress so it starts again the next time you open the builder.', 'wppoppop'); ?></span>
+                <span class="bld-desc" id="wppoppop-guide-restart-status" role="status" aria-live="polite"></span>
+            </span>
+            <button type="button" class="button" id="wppoppop-guide-restart" data-nonce="<?php echo esc_attr(WpPopPop_Admin_Guide::nonce()); ?>"><?php esc_html_e('Restart tour', 'wppoppop'); ?></button>
+        </li>
     </ul>
 </div>
 </div>
 <div class="wppoppop-bld-pane" data-bld-pane="layers" hidden>
 <div class="wppoppop-settings-section">
     <?php include WPPOPPOP_PATH . 'templates/settings/builder-layer-settings.php'; ?>
+</div>
+</div>
+<div class="wppoppop-bld-pane" data-bld-pane="guide" hidden>
+<div class="wppoppop-settings-section">
+    <?php include WPPOPPOP_PATH . 'templates/settings/guide-editor.php'; ?>
 </div>
 </div>

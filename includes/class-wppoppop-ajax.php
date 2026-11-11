@@ -16,6 +16,7 @@ class WpPopPop_Ajax {
             'WpPopPop_Ajax_Modules'     => 'class-ajax-modules.php',
             'WpPopPop_Ajax_Template_Bundle' => 'class-ajax-template-bundle.php',
             'WpPopPop_Ajax_Saved_Defaults' => 'class-ajax-saved-defaults.php',
+            'WpPopPop_Ajax_Guide' => 'class-ajax-guide.php',
         ];
 
         foreach ($modules as $class => $file) {

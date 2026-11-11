@@ -52,6 +52,9 @@ if (!function_exists('wppoppop_uninstall_site')) {
         delete_option('wppoppop_module_category_map');
         delete_option('wppoppop_module_image_map');
 
+        // 2b. Remove the per-user builder guide progress.
+        delete_metadata('user', 0, 'wppoppop_guide_state', '', true);
+
         // 3. Purge cached transients
         $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->prepare(
