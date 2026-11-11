@@ -195,7 +195,13 @@ class WpPopPop_Promo {
         if (preg_match('#^(https?:)?//#i', $v)) {
             return esc_url_raw($v, array('http', 'https'));
         }
-        return WPPOPPOP_URL . 'promo/' . ltrim($v, '/\\');
+        $v = ltrim(str_replace('\\', '/', $v), '/');
+        $v = preg_replace('#^(defaults|promo)/#i', '', $v); // old values that include the folder name
+        if ($v === '' || !preg_match('/\.(png|jpe?g|gif|webp|svg|avif)$/i', $v)) {
+            return '';
+        }
+        $dir = (!is_readable(WPPOPPOP_PATH . 'defaults/' . $v) && is_readable(WPPOPPOP_PATH . 'promo/' . $v)) ? 'promo/' : 'defaults/'; // promo/ = older location
+        return WPPOPPOP_URL . $dir . implode('/', array_map('rawurlencode', explode('/', $v)));
     }
 
     private static function in_window($raw) {
@@ -219,7 +225,11 @@ class WpPopPop_Promo {
             'url'     => esc_url_raw(self::str($raw, 'url'), array('http', 'https')),
             'new_tab' => self::flag($raw, 'new_tab', true),
             'image'   => self::image(self::str($raw, 'image')),
+            'image_url' => esc_url_raw(self::str($raw, 'image_url'), array('http', 'https')),
         );
+        $e['image_new_tab'] = self::flag($raw, 'image_new_tab', $e['new_tab']);
+        $fit = strtolower(self::str($raw, 'image_fit'));
+        $e['image_fit'] = in_array($fit, array('auto', 'cover'), true) ? $fit : ''; // '' = inherit from the slot, then "auto"
         foreach (self::color_keys() as $k) {
             $e[$k] = self::color($raw, $k);
         }
@@ -270,6 +280,9 @@ class WpPopPop_Promo {
                         if ($e[$k] === '') {
                             $e[$k] = $item[$k];
                         }
+                    }
+                    if ($e['image_fit'] === '') {
+                        $e['image_fit'] = $item['image_fit'];
                     }
                     $slides[] = $e;
                 }
@@ -325,6 +338,16 @@ class WpPopPop_Promo {
         return '<a class="' . esc_attr($class) . '" href="' . esc_url($e['url']) . '"' . $attr . '>' . esc_html($e['cta']) . '</a>';
     }
 
+    /** Wraps the image markup in a link when the entry has an image_url. */
+    private static function image_link($e, $inner, $class) {
+        if ($e['image_url'] === '' || $e['image'] === '') {
+            return $inner;
+        }
+        $attr  = !empty($e['image_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '';
+        $label = $e['title'] !== '' ? $e['title'] : ($e['cta'] !== '' ? $e['cta'] : __('Learn more', 'wppoppop'));
+        return '<a class="' . esc_attr($class) . '" href="' . esc_url($e['image_url']) . '" aria-label="' . esc_attr($label) . '"' . $attr . '>' . $inner . '</a>';
+    }
+
     private static function dismiss_button($item) {
         if (empty($item['dismissible'])) {
             return;
@@ -359,7 +382,7 @@ class WpPopPop_Promo {
             echo '<div class="wppoppop-promo wppoppop-promo--box"' . self::root_attrs($item) . '>';
             self::dismiss_button($item);
             if ($item['image'] !== '') {
-                echo '<img class="wpp-promo-img" src="' . esc_url($item['image']) . '" alt="" loading="lazy">';
+                echo self::image_link($item, '<img class="wpp-promo-img" src="' . esc_url($item['image']) . '" alt="" loading="lazy">', 'wpp-promo-img-link'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in image_link()
             }
             if ($item['title'] !== '') {
                 echo '<strong class="wpp-promo-title">' . esc_html($item['title']) . '</strong>';
@@ -379,9 +402,12 @@ class WpPopPop_Promo {
             self::dismiss_button($item);
             foreach ($item['slides'] as $n => $s) {
                 $has = ($s['image'] !== '');
-                echo '<div class="wpp-promo-slide' . ($n === 0 ? ' is-active' : '') . ($has ? ' has-img' : '') . '"' . self::vars($s) . ' role="group" aria-roledescription="slide" aria-label="' . esc_attr(($n + 1) . ' / ' . $total) . '"' . ($n === 0 ? '' : ' aria-hidden="true"') . '>';
+                $linked = ($has && $s['image_url'] !== '');
+                $fit    = ($s['image_fit'] === 'cover') ? ' fit-cover' : ' fit-auto';
+                $nocopy = ($s['title'] === '' && $s['text'] === '' && ($s['cta'] === '' || $s['url'] === '')) ? ' no-copy' : '';
+                echo '<div class="wpp-promo-slide' . ($n === 0 ? ' is-active' : '') . ($has ? ' has-img' . $fit . $nocopy : '') . ($linked ? ' has-link' : '') . '"' . self::vars($s) . ' role="group" aria-roledescription="slide" aria-label="' . esc_attr(($n + 1) . ' / ' . $total) . '"' . ($n === 0 ? '' : ' aria-hidden="true"') . '>';
                 if ($has) {
-                    echo '<img class="wpp-promo-bg" src="' . esc_url($s['image']) . '" alt="" loading="lazy">';
+                    echo self::image_link($s, '<img class="wpp-promo-bg" src="' . esc_url($s['image']) . '" alt="" loading="lazy">', 'wpp-promo-bg-link'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in image_link()
                 }
                 echo '<div class="wpp-promo-slide-body">';
                 if ($s['title'] !== '') {

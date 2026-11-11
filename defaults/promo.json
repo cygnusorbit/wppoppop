@@ -6,12 +6,13 @@
     "remember_dismiss": "Only matters when the close button is shown. true = a closed item stays closed (see reshow_days). false = closing only hides it until the next page refresh, so it appears again every time. Can also be set per slot.",
     "slots": "header_text = text in the centre of the top bar. builder_box = box under 'Save as default for new popups' in the builder. dashboard_slider = sliding images in a movable Dashboard box (drag it like the other boxes; its height follows the slides). menu_item = extra link at the end of the WpPopPop admin menu.",
     "per slot": "enabled (true/false), start and end (YYYY-MM-DD, optional schedule), show_close (true/false, overrides the top-level value), remember_dismiss (optional, overrides the top-level value), reshow_days (a closed item appears again after this many days; 0 = only when its id or content changes), id (optional; change it to show a closed item again).",
-    "fields": "title, text (links <a>, <strong>, <em>, <br> allowed), cta (button label), url, new_tab (true/false), image (a file name inside the plugin's promo/ folder, or a full URL).",
+    "fields": "title, text (links <a>, <strong>, <em>, <br> allowed), cta (button label), url, new_tab (true/false), image (file name of an image placed in this defaults/ folder, e.g. slide1.jpg, or a full URL), image_url (optional: clicking the image opens this URL), image_new_tab (optional true/false; default follows new_tab).",
     "colors": "text_color, bg_color, cta_text_color, cta_bg_color: hex values such as #ffffff. Leave empty to use the Theme page colours. Slides inherit the slot colours unless they set their own.",
     "dashboard_slider": "interval = milliseconds between slides. slides = list of entries with the fields above (maximum 8).",
     "menu_item": "text = menu label (default Go PRO), url = where it links, text_color and bg_color = menu item colours.",
-    "note": "JSON does not allow comments or trailing commas. Keys starting with an underscore are ignored. Put images in the promo/ folder.",
-    "plugin_link": "Link on the Plugins screen, right after 'Deactivate'. text = label (default Go PRO), url = where it links, new_tab (true/false), text_color = hex colour of the text (empty = Theme primary colour). enabled=false removes it."
+    "note": "JSON does not allow comments or trailing commas. Keys starting with an underscore are ignored. Put images (png, jpg, gif, webp, svg, avif) in this defaults/ folder.",
+    "plugin_link": "Link on the Plugins screen, right after 'Deactivate'. text = label (default Go PRO), url = where it links, new_tab (true/false), text_color = hex colour of the text (empty = Theme primary colour). enabled=false removes it.",
+    "image_fit": "Dashboard slider images: auto (default) = the image fills the full width and its height follows the image size, so the box grows or shrinks to fit; text and button are drawn on top of the image. cover = fixed box height, the image is cropped to fill it. Set image_fit on the slot or on a single slide."
   },
   "enabled": true,
   "remember_dismiss": true,
@@ -46,7 +47,8 @@
       "text_color": "",
       "bg_color": "",
       "cta_text_color": "",
-      "cta_bg_color": ""
+      "cta_bg_color": "",
+      "image_url": ""
     },
     "dashboard_slider": {
       "enabled": true,
@@ -56,12 +58,13 @@
       "end": "",
       "slides": [
         {
-          "title": "Grow faster with Pro",
-          "text": "More triggers, more templates, more control.",
-          "cta": "Upgrade now",
+          "title": "",
+          "text": "",
+          "cta": "",
           "url": "https://wppoppop.com/",
           "new_tab": true,
-          "image": ""
+          "image": "images/buy1get1.jpeg",
+          "image_url": "https://wppoppop.com"
         },
         {
           "title": "Popups that convert",
@@ -69,7 +72,8 @@
           "cta": "Learn more",
           "url": "https://wppoppop.com/",
           "new_tab": true,
-          "image": ""
+          "image": "",
+          "image_url": ""
         }
       ],
       "reshow_days": 1,

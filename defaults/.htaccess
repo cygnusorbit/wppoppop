@@ -1,6 +1,13 @@
+# WPP_PROMO_IMAGES: JSON stays private, image files stay public (promo images)
 <IfModule mod_authz_core.c>
 Require all denied
+<FilesMatch "\.(png|jpe?g|gif|webp|svg|avif)$">
+Require all granted
+</FilesMatch>
 </IfModule>
 <IfModule !mod_authz_core.c>
 Deny from all
+<FilesMatch "\.(png|jpe?g|gif|webp|svg|avif)$">
+Allow from all
+</FilesMatch>
 </IfModule>
