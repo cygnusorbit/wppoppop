@@ -184,7 +184,7 @@ class WpPopPop_Front_Renderer {
         <div class="wppoppop-overlay wppoppop-popup-wrap <?php echo esc_attr( $preload_class ); ?>"
              id="wppoppop-popup-<?php echo esc_attr($uid); ?>"
              data-uid="<?php echo esc_attr($uid); ?>"
-             data-config="<?php echo esc_attr( $encoded_config ); ?>"<?php echo (!$is_inline && $wppoppop_pp['pos'] !== '') ? ' data-wpp-pos="' . esc_attr($wppoppop_pp['pos']) . '"' : ''; ?><?php echo wp_kses_post( $trg_attrs ); ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?>
+             data-config="<?php echo esc_attr( $encoded_config ); ?>"<?php echo (!$is_inline && $wppoppop_pp['pos'] !== '') ? ' data-wpp-pos="' . esc_attr($wppoppop_pp['pos']) . '"' : ''; ?><?php echo wp_kses_post( $trg_attrs ); ?><?php echo $is_inline ? ' data-inline="1"' : ''; ?><?php echo ($is_inline && $show_watermark) ? ' data-wpp-wm="1"' : ''; ?>
              style="<?php echo esc_attr($overlay_style); ?><?php echo $is_inline ? 'background:transparent;' : esc_attr($wppoppop_ov['css'] . $wppoppop_pp['css']); ?>"
              aria-hidden="true"
              role="dialog">
@@ -287,16 +287,17 @@ class WpPopPop_Front_Renderer {
                             ?>
                         </div>
 
-                        <!-- Settings: Watermark Badge -->
-                        <?php if ($show_watermark): ?>
-                            <div class="wppoppop-watermark-badge" style="position:absolute;bottom:8px;right:12px;z-index:9999;user-select:none;">
-                                <a href="https://github.com/cygnusorbit/wppoppop" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.85);border:1px solid #e2e8f0;border-radius:12px;padding:2px 8px;font-size:10px;color:#64748b;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-                                    <span><?php esc_html_e('Powered by', 'wppoppop'); ?></span> <strong style="color:#1e293b;">WpPopPop</strong>
-                                </a>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
+
+                <?php /* WPPOPPOP_WATERMARK_OUTSIDE: one badge below the canvas, bottom center, 10px away; scales with the fit stage */ ?>
+                <?php if ($show_watermark): ?>
+                    <div class="wppoppop-watermark-badge">
+                        <a href="https://wppoppop.com" target="_blank" rel="noopener noreferrer">
+                            <span><?php esc_html_e('Powered by', 'wppoppop'); ?></span> <strong>WpPopPop</strong>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
             </div><!-- /.wppoppop-fit-stage -->
         </div>

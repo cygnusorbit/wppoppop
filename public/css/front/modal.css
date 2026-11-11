@@ -69,11 +69,23 @@
 
 /* Watermark Badge */
 .wppoppop-watermark-badge {
+    /* WPPOPPOP_WATERMARK_OUTSIDE: outside the canvas, bottom center, 10px below it */
     position: absolute;
-    bottom: 8px;
-    right: 12px;
+    top: 100%;
+    left: 50%;
+    margin-top: 10px;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    white-space: nowrap;
     z-index: 5;
+    -webkit-user-select: none;
+    -moz-user-select: none;
     user-select: none;
+}
+
+/* Inline embeds reserve room so the badge never overlaps the content below */
+.wppoppop-popup-wrap[data-inline="1"][data-wpp-wm="1"] {
+    margin-bottom: 34px;
 }
 
 .wppoppop-watermark-badge a {

@@ -4,7 +4,7 @@
             "sender_name": "WpPopPop",
             "csv_separator": ",",
             "user_uploads": "delete",
-            "powered_by_badge": 0,
+            "powered_by_badge": 1,
             "test_mode": 0,
             "preload_popups": 0,
             "preload_events": 0,
@@ -40,33 +40,22 @@
             "geoip_service": "none",
             "modules": {
                 "acc-01-canvas-styling": 1,
-                "acc-02-triggers": 1,
+                "acc-display-triggers": 1,
                 "acc-notifications": 1
             },
             "module_order": [
                 "acc-01-canvas-styling",
-                "acc-02-triggers",
-                "acc-notifications"
+                "acc-notifications",
+                "acc-display-triggers"
             ],
             "builder_alignment_tool": 1,
             "builder_viewport_toggle": 0,
             "builder_zoom_select": 0,
             "builder_save_template": 1,
-            "builder_extra_elements": 1,
+            "builder_extra_elements": 0,
             "builder_click_canvas_settings": 0,
             "builder_click_element_settings": 0,
-            "builder_layer_settings": {
-                "progress": {
-                    "style": {
-                        "opacity": 0,
-                        "bg": 0,
-                        "typo": 0,
-                        "border": 0,
-                        "shadow": 0,
-                        "css": 0
-                    }
-                }
-            },
+            "builder_layer_settings": [],
             "menu_pages": {
                 "wppoppop-dashboard": {
                     "label": "",
@@ -88,55 +77,45 @@
                     "hidden": 0,
                     "order": 4
                 },
-                "wppoppop-ab": {
-                    "label": "",
-                    "hidden": 0,
-                    "order": 5
-                },
-                "wppoppop-stats": {
-                    "label": "",
-                    "hidden": 0,
-                    "order": 6
-                },
                 "wppoppop-log": {
                     "label": "",
                     "hidden": 1,
-                    "order": 7
+                    "order": 5
                 },
                 "wppoppop-field-analytics": {
                     "label": "",
                     "hidden": 1,
-                    "order": 8
+                    "order": 6
                 },
                 "wppoppop-payments": {
                     "label": "",
                     "hidden": 1,
-                    "order": 9
+                    "order": 7
                 },
                 "wppoppop-library": {
                     "label": "",
                     "hidden": 0,
-                    "order": 10
+                    "order": 8
                 },
                 "wppoppop-extend": {
                     "label": "",
                     "hidden": 0,
-                    "order": 11
+                    "order": 9
                 },
                 "wppoppop-settings": {
                     "label": "",
                     "hidden": 0,
-                    "order": 12
+                    "order": 10
                 },
                 "wppoppop-theme": {
                     "label": "",
                     "hidden": 0,
-                    "order": 13
+                    "order": 11
                 },
                 "wppoppop-tools": {
                     "label": "",
                     "hidden": 0,
-                    "order": 14
+                    "order": 12
                 }
             },
             "clean_on_uninstall": 0,
@@ -162,7 +141,7 @@
             "debug_ab": 1,
             "report_enabled": 0
         },
-        "saved": 1794335132
+        "saved": 1794371797
     },
     "theme": {
         "data": {
