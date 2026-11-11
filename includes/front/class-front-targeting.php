@@ -28,25 +28,7 @@ class WpPopPop_Front_Targeting {
             unset($config['targeting']); /* WPPOPPOP_MODULE_GATE */
         }
 
-        // 1. Geolocation Targeting Gate
-        if ((bool) wppoppop_get_setting('ip_geotargeting', false)) {
-            $visitor_country = $this->detect_visitor_country();
-            $target_settings = isset($config['targeting']) && is_array($config['targeting']) ? $config['targeting'] : [];
-            $geo_mode        = isset($target_settings['geo_mode']) ? $target_settings['geo_mode'] : 'all';
-            $geo_countries   = isset($target_settings['geo_countries']) && is_array($target_settings['geo_countries']) ? array_map('strtoupper', $target_settings['geo_countries']) : [];
-
-            $geo_known = !empty($visitor_country) && !in_array(strtoupper($visitor_country), ['XX', 'T1'], true);
-            if ($geo_known && !empty($geo_countries)) {
-                if ($geo_mode === 'whitelist' && !in_array($visitor_country, $geo_countries, true)) {
-                    return false;
-                }
-                if ($geo_mode === 'blacklist' && in_array($visitor_country, $geo_countries, true)) {
-                    return false;
-                }
-            }
-        }
-
-        // 2. Device Viewport Targeting
+        // 1. Device Viewport Targeting
         $target_settings = isset($config['targeting']) && is_array($config['targeting']) ? $config['targeting'] : [];
         $devices = isset($target_settings['devices']) ? $target_settings['devices'] : 'all';
         $is_mobile = wp_is_mobile();
@@ -58,7 +40,7 @@ class WpPopPop_Front_Targeting {
             return false;
         }
 
-        // 3. User Authentication Targeting
+        // 2. User Authentication Targeting
         $users = isset($target_settings['users']) ? $target_settings['users'] : 'all';
         if ($users === 'logged_in' && !is_user_logged_in()) {
             return false;
@@ -67,7 +49,7 @@ class WpPopPop_Front_Targeting {
             return false;
         }
 
-        /* Extension modules (Pro) add their own targeting rules, e.g. visitor authentication, activity period, roles, site area. */
+        /* Extension modules (Pro) add their own targeting rules, e.g. geo country, visitor authentication, activity period, roles, site area. */
         return (bool) apply_filters('wppoppop_popup_eligible', true, $popup, $config);
     }
 }

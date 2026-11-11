@@ -24,7 +24,7 @@
                 }
 
                 function showSuccess() {
-                    $btn.html('<span class="dashicons dashicons-yes" style="font-size:15px;width:15px;height:15px;color:#10b981;"></span> Report Copied!');
+                    $btn.html('Report Copied!');
                     setTimeout(function() {
                         $btn.html(origHtml);
                     }, 2500);

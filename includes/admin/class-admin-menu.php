@@ -24,6 +24,7 @@ class WpPopPop_Admin_Menu {
         add_action('admin_menu', [$this, 'apply_menu_prefs'], 999);
         add_action('admin_menu', ['WpPopPop_Promo', 'register_menu'], 1000);
         add_action('admin_enqueue_scripts', ['WpPopPop_Promo', 'enqueue_menu']);
+        WpPopPop_Promo::init_plugin_link();
         add_action('admin_head', [$this, 'print_hidden_css']);
         add_action('admin_head', [$this, 'print_unread_pulse_css']);
         add_action('admin_footer', [$this, 'print_hidden_js']);

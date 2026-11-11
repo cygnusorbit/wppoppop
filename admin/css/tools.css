@@ -44,6 +44,7 @@ body.wp-admin #wpcontent .wppoppop-tools-wrap .wppoppop-dash-bar { box-sizing: b
 /* Phase 2: maintenance partial (class-based, theme variables) */
 .wpp-tools-card-head { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 0 0 12px; border-bottom: var(--wpp-bw, 1px) solid var(--wpp-c-row-border, #eee); }
 .wpp-tools-card-head h3 { margin: 0; }
+.wpp-tools-card-head { flex-wrap: wrap; }
 .wpp-tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--wpp-gap, 16px); }
 .wpp-tools-panel { background: var(--wpp-c-bg-page, #f0f0f1); border: var(--wpp-bw, 1px) solid var(--wpp-c-border, #dcdcde); border-radius: var(--wpp-r-card, 3px); padding: 16px; box-sizing: border-box; }
 .wpp-tools-panel h4 { margin: 0 0 6px; font-size: var(--wpp-fs-base, 13px); }

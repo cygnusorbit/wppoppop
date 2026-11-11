@@ -15,6 +15,10 @@ $tbl_status = class_exists('WpPopPop_Ajax_Tools') ? WpPopPop_Ajax_Tools::table_s
     <div class="wpp-tools-card-head">
         <span class="dashicons dashicons-database"></span>
         <h3><?php esc_html_e('Database Schema Table Health & Maintenance', 'wppoppop'); ?></h3>
+        <div class="wpp-tools-head-actions">
+            <button type="button" class="button wpp-tools-btn" data-wpp-trigger="#wppoppop-copy-system-info-btn"><?php esc_html_e('Copy Report', 'wppoppop'); ?></button>
+            <button type="button" class="button wpp-tools-btn" data-wpp-trigger="#wppoppop-repair-tables-btn"><?php esc_html_e('Verify Schema', 'wppoppop'); ?></button>
+        </div>
     </div>
 
     <div id="wppoppop-db-status-notice" class="wpp-tools-notice" hidden></div>
@@ -50,7 +54,7 @@ $tbl_status = class_exists('WpPopPop_Ajax_Tools') ? WpPopPop_Ajax_Tools::table_s
             <p class="wpp-tools-help"><?php esc_html_e('Runs dbDelta routines to verify table structures, apply missing columns, and guarantee index alignment across all 5 custom tables without modifying existing data.', 'wppoppop'); ?></p>
             <form method="post" id="wppoppop-repair-tables-form">
                 <input type="hidden" name="wppoppop_tools_nonce" value="<?php echo esc_attr(wp_create_nonce('wppoppop_tools_action')); ?>"><?php wp_referer_field(); ?>
-                <button type="submit" name="wppoppop_repair_tables" id="wppoppop-repair-tables-btn" class="button wpp-tools-btn"><span class="dashicons dashicons-admin-tools"></span><?php esc_html_e('Verify & Repair Schema', 'wppoppop'); ?></button>
+                <button type="submit" name="wppoppop_repair_tables" id="wppoppop-repair-tables-btn" class="button wpp-tools-btn"><?php esc_html_e('Verify & Repair Schema', 'wppoppop'); ?></button>
             </form>
         </div>
 
@@ -59,7 +63,7 @@ $tbl_status = class_exists('WpPopPop_Ajax_Tools') ? WpPopPop_Ajax_Tools::table_s
             <p class="wpp-tools-help"><?php esc_html_e('Wipes all recorded popup impressions, captured lead counters, and double opt-in confirmations back to 0. This does not delete any designs or lead submissions.', 'wppoppop'); ?></p>
             <form method="post" id="wppoppop-reset-counters-form">
                 <input type="hidden" name="wppoppop_tools_nonce" value="<?php echo esc_attr(wp_create_nonce('wppoppop_tools_action')); ?>"><?php wp_referer_field(); ?>
-                <button type="submit" name="wppoppop_reset_counters" id="wppoppop-reset-counters-btn" class="button wpp-tools-btn wpp-btn-danger"><span class="dashicons dashicons-update"></span><?php esc_html_e('Reset All Counters', 'wppoppop'); ?></button>
+                <button type="submit" name="wppoppop_reset_counters" id="wppoppop-reset-counters-btn" class="button wpp-tools-btn wpp-btn-danger"><?php esc_html_e('Reset All Counters', 'wppoppop'); ?></button>
             </form>
         </div>
     </div>

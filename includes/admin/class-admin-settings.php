@@ -123,20 +123,16 @@ class WpPopPop_Admin_Settings {
 
     public static function get_factory_defaults() {
         $admin = get_option('admin_email');
-        return [
+        $defaults = [
             'sender_name' => 'WpPopPop', 'sender_email' => $admin, 'admin_email' => $admin,
             'csv_separator' => ',', 'user_uploads' => 'keep', 'powered_by_badge' => 0, 'test_mode' => 0,
             'preload_popups' => 0, 'preload_events' => 0, 'minify_css' => 0, 'cache_busting' => 0,
-            'render_delay' => 0, 'ga_tracking' => 0, 'adblock_detector' => 0,
+            'render_delay' => 0,
             'default_embed_type' => 'inline',
             'default_font' => 'inherit', 'default_font_weight' => 'inherit', 'default_font_size' => 0, 'default_text_align' => 'inherit', 'default_font_italic' => 0, 'default_font_underline' => 0, 'default_font_color' => '', /* WPPOPPOP_DEFAULT_TYPO */ 'google_fonts' => 0, 'disable_google_fonts' => 0,
             'font_awesome' => 0, 'custom_fonts' => '',
-            'load_canvas_confetti' => 0, 'load_canvas_fireworks' => 0,
-            'air_datepicker' => 0, 'jquery_mask' => 0, 'signature_pad' => 0,
-            'range_slider' => 0, 'js_parser' => 0,
-            'email_validation' => 'basic', 'enable_recaptcha' => 0,
-            'recaptcha_site_key' => '', 'recaptcha_secret_key' => '',
-            'recaptcha_threshold' => 0.4, 'max_submissions_per_ip' => 10, 'ip_geotargeting' => 0, 'geoip_service' => 'none',
+            'air_datepicker' => 0, 'jquery_mask' => 0,
+            'range_slider' => 0,
             'custom_css' => '', 'custom_js' => '', 'custom_header_html' => '', 'custom_footer_html' => '',
             'modules' => self::get_module_defaults(),
             'module_order' => self::get_default_module_order(),
@@ -151,6 +147,15 @@ class WpPopPop_Admin_Settings {
             'menu_pages' => self::get_default_menu_pages(),
             'clean_on_uninstall' => 0,
         ] + self::tracking_defaults();
+        return (array) apply_filters('wppoppop_factory_defaults', $defaults);
+    }
+
+    /** Option keys now owned by the Pro add-on. Kept in storage while Pro is off so nothing is lost. */
+    public static function extension_keys() {
+        return ['ga_tracking', 'adblock_detector', 'load_canvas_confetti', 'load_canvas_fireworks',
+                'signature_pad', 'load_signature_pad', 'js_parser', 'load_math_parser',
+                'email_validation', 'enable_recaptcha', 'recaptcha_site_key', 'recaptcha_secret_key', 'recaptcha_threshold',
+                'max_submissions_per_ip', 'ip_geotargeting', 'geoip_service', 'geoip_api_service'];
     }
 
     protected static function tracking_defaults() {
@@ -206,8 +211,6 @@ class WpPopPop_Admin_Settings {
         $o['minify_css']       = $b('minify_css');
         $o['cache_busting']    = $b('cache_busting');
         $o['render_delay']     = isset($in['render_delay']) ? min(10000, max(0, (int) $in['render_delay'])) : 0;
-        $o['ga_tracking']      = $b('ga_tracking');
-        $o['adblock_detector'] = $b('adblock_detector');
         $o['default_embed_type'] = $enum('default_embed_type', ['inline', 'onload'], 'inline');
 
         // 3. Typography & Libraries
@@ -223,26 +226,9 @@ class WpPopPop_Admin_Settings {
         $o['disable_google_fonts']  = $b('disable_google_fonts');
         $o['font_awesome']          = $b('font_awesome');
         $o['custom_fonts']          = isset($in['custom_fonts']) ? sanitize_textarea_field($in['custom_fonts']) : '';
-        $o['load_canvas_confetti']  = $b('load_canvas_confetti');
-        $o['load_canvas_fireworks'] = $b('load_canvas_fireworks');
         $o['air_datepicker']  = $any('air_datepicker', 'load_air_datepicker');  $o['load_air_datepicker'] = $o['air_datepicker'];
         $o['jquery_mask']     = $any('jquery_mask', 'load_jquery_mask');        $o['load_jquery_mask']    = $o['jquery_mask'];
-        $o['signature_pad']   = $any('signature_pad', 'load_signature_pad');    $o['load_signature_pad']  = $o['signature_pad'];
         $o['range_slider']    = $any('range_slider', 'load_range_slider');      $o['load_range_slider']   = $o['range_slider'];
-        $o['js_parser']       = $any('js_parser', 'load_math_parser');          $o['load_math_parser']    = $o['js_parser'];
-
-        // 4. Security & Geolocation
-        $o['email_validation']       = $enum('email_validation', ['basic', 'disposable_filter'], 'basic');
-        $o['enable_recaptcha']       = $b('enable_recaptcha');
-        $o['recaptcha_site_key']     = !empty($in['recaptcha_site_key']) ? sanitize_text_field($in['recaptcha_site_key']) : '';
-        $o['recaptcha_secret_key']   = !empty($in['recaptcha_secret_key']) ? sanitize_text_field($in['recaptcha_secret_key']) : '';
-        $thr = (isset($in['recaptcha_threshold']) && is_numeric($in['recaptcha_threshold'])) ? (float) $in['recaptcha_threshold'] : 0.4;
-        $o['recaptcha_threshold']    = round(min(0.9, max(0.1, $thr)), 2);
-        $o['max_submissions_per_ip'] = isset($in['max_submissions_per_ip']) ? min(100, max(1, (int) $in['max_submissions_per_ip'])) : 10;
-        $o['ip_geotargeting']        = $b('ip_geotargeting');
-        $geo = !empty($in['geoip_service']) ? $in['geoip_service'] : (!empty($in['geoip_api_service']) ? $in['geoip_api_service'] : 'none');
-        $o['geoip_service']     = in_array($geo, ['none', 'ipapi', 'ip-api'], true) ? $geo : 'none';
-        $o['geoip_api_service'] = $o['geoip_service'];
 
         // 5. Custom code (capability-aware, no double unslash)
         $css = isset($in['custom_css']) ? (string) $in['custom_css'] : '';
@@ -352,6 +338,15 @@ class WpPopPop_Admin_Settings {
         $o['clean_on_uninstall'] = $b('clean_on_uninstall');
         $o['cookie_epoch'] = isset($in['cookie_epoch']) ? (int) $in['cookie_epoch'] : (int) get_option('wppoppop_cookie_epoch', 1);
 
-        return $o;
+        // 7. Add-on owned keys: keep the stored value, then let the add-on validate what it owns
+        $kept = get_option('wppoppop_settings', []);
+        if (is_array($kept)) {
+            foreach (self::extension_keys() as $ek) {
+                if (!array_key_exists($ek, $o) && array_key_exists($ek, $kept)) {
+                    $o[$ek] = $kept[$ek];
+                }
+            }
+        }
+        return (array) apply_filters('wppoppop_sanitize_global_settings', $o, $in);
     }
 }

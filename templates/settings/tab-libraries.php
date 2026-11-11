@@ -15,13 +15,9 @@ $df_weights            = ['inherit' => 'inherit - Inherit', '300' => '300 - Ligh
 $google_fonts          = !empty($settings['google_fonts']);
 $font_awesome          = !empty($settings['font_awesome']);
 $custom_fonts          = isset($settings['custom_fonts']) ? $settings['custom_fonts'] : '';
-$load_canvas_confetti  = !empty($settings['load_canvas_confetti']);
-$load_canvas_fireworks = !empty($settings['load_canvas_fireworks']);
 $air_datepicker        = (!empty($settings['air_datepicker']) || !empty($settings['load_air_datepicker']));
 $jquery_mask           = (!empty($settings['jquery_mask']) || !empty($settings['load_jquery_mask']));
-$signature_pad         = (!empty($settings['signature_pad']) || !empty($settings['load_signature_pad']));
 $range_slider          = (!empty($settings['range_slider']) || !empty($settings['load_range_slider']));
-$js_parser             = (!empty($settings['js_parser']) || !empty($settings['load_math_parser']));
 ?>
 <div class="wppoppop-settings-section">
     <h3><?php esc_html_e('Typography & Component Extensions', 'wppoppop'); ?></h3>
@@ -113,14 +109,6 @@ $js_parser             = (!empty($settings['js_parser']) || !empty($settings['lo
                 <fieldset>
                     <legend class="screen-reader-text"><?php esc_html_e('Library Extensions', 'wppoppop'); ?></legend>
                     <label style="display:block;margin-bottom:8px;">
-                        <input type="checkbox" name="settings[load_canvas_confetti]" value="1" <?php checked($load_canvas_confetti); ?>>
-                        <strong><?php esc_html_e('Canvas Confetti', 'wppoppop'); ?></strong> — <?php esc_html_e('Celebratory confetti particle bursts on lead capture and prize unlocks.', 'wppoppop'); ?>
-                    </label>
-                    <label style="display:block;margin-bottom:8px;">
-                        <input type="checkbox" name="settings[load_canvas_fireworks]" value="1" <?php checked($load_canvas_fireworks); ?>>
-                        <strong><?php esc_html_e('Canvas Fireworks', 'wppoppop'); ?></strong> — <?php esc_html_e('Particle fireworks display for discount unlock screens.', 'wppoppop'); ?>
-                    </label>
-                    <label style="display:block;margin-bottom:8px;">
                         <input type="checkbox" name="settings[air_datepicker]" value="1" <?php checked($air_datepicker); ?>>
                         <strong><?php esc_html_e('Air Datepicker', 'wppoppop'); ?></strong> — <?php esc_html_e('Interactive calendar date and appointment picking controls.', 'wppoppop'); ?>
                     </label>
@@ -129,17 +117,10 @@ $js_parser             = (!empty($settings['js_parser']) || !empty($settings['lo
                         <strong><?php esc_html_e('jQuery Mask', 'wppoppop'); ?></strong> — <?php esc_html_e('Input format masks for phone numbers, postal codes, and currency.', 'wppoppop'); ?>
                     </label>
                     <label style="display:block;margin-bottom:8px;">
-                        <input type="checkbox" name="settings[signature_pad]" value="1" <?php checked($signature_pad); ?>>
-                        <strong><?php esc_html_e('Signature Pad', 'wppoppop'); ?></strong> — <?php esc_html_e('HTML5 canvas digital signature capture input fields.', 'wppoppop'); ?>
-                    </label>
-                    <label style="display:block;margin-bottom:8px;">
                         <input type="checkbox" name="settings[range_slider]" value="1" <?php checked($range_slider); ?>>
                         <strong><?php esc_html_e('Range Slider UI', 'wppoppop'); ?></strong> — <?php esc_html_e('Visual range value sliders for interactive surveys and cost estimators.', 'wppoppop'); ?>
                     </label>
-                    <label style="display:block;">
-                        <input type="checkbox" name="settings[js_parser]" value="1" <?php checked($js_parser); ?>>
-                        <strong><?php esc_html_e('Math Formula Parser', 'wppoppop'); ?></strong> — <?php esc_html_e('Dynamic client-side math evaluation for quote calculators.', 'wppoppop'); ?>
-                    </label>
+                    <?php do_action('wppoppop_settings_library_extensions', $settings); ?>
                 </fieldset>
             </td>
         </tr>

@@ -25,26 +25,6 @@ class WpPopPop_Libraries {
                 'ver'     => '6.5.1',
                 'setting' => 'font_awesome',
             ],
-            'canvas_confetti' => [
-                'name'      => 'Canvas Confetti',
-                'type'      => 'script',
-                'handle'    => 'wppoppop-canvas-confetti',
-                'src'       => plugins_url( 'public/vendor/confetti.browser.min.js', dirname( __FILE__ ) ),
-                'deps'      => [],
-                'ver'       => '1.9.2',
-                'in_footer' => true,
-                'setting'   => 'load_canvas_confetti',
-            ],
-            'canvas_fireworks' => [
-                'name'      => 'Canvas Fireworks',
-                'type'      => 'script',
-                'handle'    => 'wppoppop-canvas-fireworks',
-                'src'       => plugins_url( 'public/vendor/index.umd.js', dirname( __FILE__ ) ),
-                'deps'      => [],
-                'ver'       => '2.10.7',
-                'in_footer' => true,
-                'setting'   => 'load_canvas_fireworks',
-            ],
             'air_datepicker_css' => [
                 'name'    => 'Air Datepicker CSS',
                 'type'    => 'style',
@@ -74,16 +54,6 @@ class WpPopPop_Libraries {
                 'in_footer' => true,
                 'setting'   => 'load_jquery_mask',
             ],
-            'signature_pad' => [
-                'name'      => 'Signature Pad',
-                'type'      => 'script',
-                'handle'    => 'wppoppop-signature-pad',
-                'src'       => plugins_url( 'public/vendor/signature_pad.umd.min.js', dirname( __FILE__ ) ),
-                'deps'      => [],
-                'ver'       => '4.1.7',
-                'in_footer' => true,
-                'setting'   => 'load_signature_pad',
-            ],
             'range_slider_css' => [
                 'name'    => 'Ion Range Slider CSS',
                 'type'    => 'style',
@@ -102,16 +72,6 @@ class WpPopPop_Libraries {
                 'ver'       => '2.3.1',
                 'in_footer' => true,
                 'setting'   => 'load_range_slider',
-            ],
-            'math_parser' => [
-                'name'      => 'Math Formula Parser',
-                'type'      => 'script',
-                'handle'    => 'wppoppop-math-parser',
-                'src'       => plugins_url( 'public/vendor/bundle.min.js', dirname( __FILE__ ) ),
-                'deps'      => [],
-                'ver'       => '2.0.2',
-                'in_footer' => true,
-                'setting'   => 'load_math_parser',
             ],
         ];
     }
@@ -133,26 +93,15 @@ class WpPopPop_Libraries {
                 return !empty($settings['font_awesome']);
             case 'google_fonts':
                 return empty($settings['disable_google_fonts']) && !empty($settings['google_fonts']);
-            case 'canvas_confetti':
-                return !empty($settings['load_canvas_confetti']);
-            case 'canvas_fireworks':
-                return !empty($settings['load_canvas_fireworks']);
             case 'air_datepicker':
             case 'load_air_datepicker':
                 return !empty($settings['load_air_datepicker']) || !empty($settings['air_datepicker']);
             case 'jquery_mask':
             case 'load_jquery_mask':
                 return !empty($settings['load_jquery_mask']) || !empty($settings['jquery_mask']);
-            case 'signature_pad':
-            case 'load_signature_pad':
-                return !empty($settings['load_signature_pad']) || !empty($settings['signature_pad']);
             case 'range_slider':
             case 'load_range_slider':
                 return !empty($settings['load_range_slider']) || !empty($settings['range_slider']);
-            case 'math_parser':
-            case 'load_math_parser':
-            case 'js_parser':
-                return !empty($settings['load_math_parser']) || !empty($settings['js_parser']);
             default:
                 return !empty($settings[$key]);
         }
@@ -177,29 +126,7 @@ class WpPopPop_Libraries {
             );
         }
 
-        // 2. Canvas Confetti
-        if (!empty($settings['load_canvas_confetti'])) {
-            wp_enqueue_script(
-                'wppoppop-canvas-confetti',
-                plugins_url( 'public/vendor/confetti.browser.min.js', dirname( __FILE__ ) ),
-                [],
-                '1.9.2',
-                true
-            );
-        }
-
-        // 3. Canvas Fireworks
-        if (!empty($settings['load_canvas_fireworks'])) {
-            wp_enqueue_script(
-                'wppoppop-canvas-fireworks',
-                plugins_url( 'public/vendor/index.umd.js', dirname( __FILE__ ) ),
-                [],
-                '2.10.7',
-                true
-            );
-        }
-
-        // 4. Air Datepicker (CSS & JS)
+        // Air Datepicker (CSS & JS)
         if (!empty($settings['load_air_datepicker']) || !empty($settings['air_datepicker'])) {
             wp_enqueue_style(
                 'wppoppop-air-datepicker-css',
@@ -216,7 +143,7 @@ class WpPopPop_Libraries {
             );
         }
 
-        // 5. jQuery Mask Plugin
+        // jQuery Mask Plugin
         if (!empty($settings['load_jquery_mask']) || !empty($settings['jquery_mask'])) {
             wp_enqueue_script(
                 'wppoppop-jquery-mask',
@@ -227,18 +154,7 @@ class WpPopPop_Libraries {
             );
         }
 
-        // 6. Digital Signature Pad
-        if (!empty($settings['load_signature_pad']) || !empty($settings['signature_pad'])) {
-            wp_enqueue_script(
-                'wppoppop-signature-pad',
-                plugins_url( 'public/vendor/signature_pad.umd.min.js', dirname( __FILE__ ) ),
-                [],
-                '4.1.7',
-                true
-            );
-        }
-
-        // 7. Ion Range Slider (CSS & JS)
+        // Ion Range Slider (CSS & JS)
         if (!empty($settings['load_range_slider']) || !empty($settings['range_slider'])) {
             wp_enqueue_style(
                 'wppoppop-range-slider-css',
@@ -251,17 +167,6 @@ class WpPopPop_Libraries {
                 plugins_url( 'public/vendor/ion.rangeSlider.min.js', dirname( __FILE__ ) ),
                 ['jquery'],
                 '2.3.1',
-                true
-            );
-        }
-
-        // 8. Math Formula Parser (Expr-Eval)
-        if (!empty($settings['load_math_parser']) || !empty($settings['js_parser'])) {
-            wp_enqueue_script(
-                'wppoppop-math-parser',
-                plugins_url( 'public/vendor/bundle.min.js', dirname( __FILE__ ) ),
-                [],
-                '2.0.2',
                 true
             );
         }

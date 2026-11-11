@@ -11,8 +11,6 @@
         cookie_epoch: 1,
         render_delay: 0,
         preload_events: false,
-        ga_tracking: false,
-        adblock_detector: false,
         libraries: {}
     };
 
@@ -78,11 +76,6 @@
                     self.playCanvasIn($next);
                 }
             });
-
-            // AdBlock Event Check
-            if (vars.adblock_detector && window.wppoppop_adblock_detected) {
-                $(document).trigger('wppoppop:adblock_active');
-            }
 
             // Lead capture celebration trigger
             $(document).on('wppoppop:form_submitted', function(e, data) {
@@ -151,9 +144,7 @@
 
             this.trackImpression(uid);
 
-            if (vars.ga_tracking) {
-                this.dispatchGA('wppoppop_impression', { popup_uid: uid });
-            }
+            $(document).trigger('wppoppop:popup_shown', [uid]);
         },
 
         close: function(uid) {
@@ -186,9 +177,7 @@
                 localStorage.setItem('wppoppop_dismissed_' + uid, Date.now());
             } catch(e) {}
 
-            if (vars.ga_tracking) {
-                this.dispatchGA('wppoppop_close', { popup_uid: uid });
-            }
+            $(document).trigger('wppoppop:popup_closed', [uid]);
         },
 
         fxName: function(effect, dir) {
@@ -259,17 +248,6 @@
                 this.style.animationDelay = d + 'ms';
                 self.restartFx(this);
             });
-        },
-
-        dispatchGA: function(eventName, params) {
-            try {
-                if (typeof window.gtag === 'function') {
-                    window.gtag('event', eventName, params);
-                }
-                if (Array.isArray(window.dataLayer)) {
-                    window.dataLayer.push($.extend({ event: eventName }, params));
-                }
-            } catch (err) {}
         },
 
         triggerCelebration: function() {

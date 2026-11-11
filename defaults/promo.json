@@ -10,7 +10,8 @@
     "colors": "text_color, bg_color, cta_text_color, cta_bg_color: hex values such as #ffffff. Leave empty to use the Theme page colours. Slides inherit the slot colours unless they set their own.",
     "dashboard_slider": "interval = milliseconds between slides. slides = list of entries with the fields above (maximum 8).",
     "menu_item": "text = menu label (default Go PRO), url = where it links, text_color and bg_color = menu item colours.",
-    "note": "JSON does not allow comments or trailing commas. Keys starting with an underscore are ignored. Put images in the promo/ folder."
+    "note": "JSON does not allow comments or trailing commas. Keys starting with an underscore are ignored. Put images in the promo/ folder.",
+    "plugin_link": "Link on the Plugins screen, right after 'Deactivate'. text = label (default Go PRO), url = where it links, new_tab (true/false), text_color = hex colour of the text (empty = Theme primary colour). enabled=false removes it."
   },
   "enabled": true,
   "remember_dismiss": true,
@@ -84,6 +85,15 @@
       "new_tab": true,
       "text_color": "#ffffff",
       "bg_color": "",
+      "start": "",
+      "end": ""
+    },
+    "plugin_link": {
+      "enabled": true,
+      "text": "Go PRO",
+      "url": "https://wppoppop.com",
+      "new_tab": true,
+      "text_color": "",
       "start": "",
       "end": ""
     }

@@ -10,8 +10,6 @@ $disable_google_fonts = !empty($settings['disable_google_fonts']);
 $minify_css           = !empty($settings['minify_css']);
 $cache_busting        = !empty($settings['cache_busting']);
 $render_delay         = isset($settings['render_delay']) ? (int) $settings['render_delay'] : 0;
-$ga_tracking          = !empty($settings['ga_tracking']);
-$adblock_detector     = !empty($settings['adblock_detector']);
 $default_embed_type   = (isset($settings['default_embed_type']) && $settings['default_embed_type'] === 'onload') ? 'onload' : 'inline';
 ?>
 <div class="wppoppop-settings-section">
@@ -80,23 +78,6 @@ $default_embed_type   = (isset($settings['default_embed_type']) && $settings['de
                 <p class="description"><?php esc_html_e('Delay before initializing the frontend runtime in milliseconds (0 = immediate DOMReady execution).', 'wppoppop'); ?></p>
             </td>
         </tr>
-        <tr>
-            <th scope="row"><?php esc_html_e('Google Analytics Integration', 'wppoppop'); ?></th>
-            <td>
-                <label>
-                    <input type="checkbox" name="settings[ga_tracking]" value="1" <?php checked($ga_tracking); ?>>
-                    <?php esc_html_e('Automatically dispatch popup impressions, conversions, and close events to gtag() and dataLayer', 'wppoppop'); ?>
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row"><?php esc_html_e('AdBlock Detection Engine', 'wppoppop'); ?></th>
-            <td>
-                <label>
-                    <input type="checkbox" name="settings[adblock_detector]" value="1" <?php checked($adblock_detector); ?>>
-                    <?php esc_html_e('Enable global AdBlock extension monitoring script to trigger anti-adblock campaigns', 'wppoppop'); ?>
-                </label>
-            </td>
-        </tr>
+        <?php do_action('wppoppop_settings_performance_rows', $settings); ?>
     </table>
 </div>

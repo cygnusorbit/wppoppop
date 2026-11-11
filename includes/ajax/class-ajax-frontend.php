@@ -22,24 +22,10 @@ class WpPopPop_Ajax_Frontend {
 
         $ip = WpPopPop_Security::get_client_ip();
 
-        // 1. IP Rate Limiting Verification
-        $max_per_hour = (int) wppoppop_get_setting('max_submissions_per_ip', 10);
-        if (WpPopPop_Security::is_rate_limited($ip,$max_per_hour)) {
-            wppoppop_log_event('security_rate_limit', "Rate limit exceeded for IP: {$ip}", ['ip' => $ip]);
-            wp_send_json_error([
-                'message' => __('Submission rate limit exceeded. Please wait a while before submitting again.', 'wppoppop')
-            ]);
-        }
-
-        // 2. Google reCAPTCHA Verification
-        if ((bool) wppoppop_get_setting('enable_recaptcha', false)) {
-            $token = isset($_POST['recaptcha_token']) ? sanitize_text_field(wp_unslash($_POST['recaptcha_token'])) : (isset($_POST['g-recaptcha-response']) ? sanitize_text_field(wp_unslash($_POST['g-recaptcha-response'])) : '');
-            if (!WpPopPop_Security::verify_recaptcha($token,$ip)) {
-                wppoppop_log_event('security_recaptcha_fail', "reCAPTCHA verification failed for IP: {$ip}", ['ip' => $ip]);
-                wp_send_json_error([
-                    'message' => __('Bot verification failed. Please refresh the page and try again.', 'wppoppop')
-                ]);
-            }
+        // 1. Request-level gates (add-ons: rate limits, bot verification)
+        $gate = (string) apply_filters('wppoppop_submission_gate', '', 'request', ['ip' => $ip]);
+        if ($gate !== '') {
+            wp_send_json_error(['message' => $gate]);
         }
 
         // 3. Extract & Sanitize Form Fields
@@ -85,15 +71,10 @@ class WpPopPop_Ajax_Frontend {
             }
         }
 
-        // 5. Disposable Email Address Filtering
-        $email_mode = wppoppop_get_setting('email_validation', 'basic');
-        if (!empty($email) &&$email_mode === 'disposable_filter') {
-            if (WpPopPop_Security::is_disposable_email($email)) {
-                wppoppop_log_event('security_disposable_email', "Rejected disposable email: {$email}", ['ip' => $ip, 'email' =>$email]);
-                wp_send_json_error([
-                    'message' => __('Disposable or temporary email addresses are not permitted. Please use a valid personal or business email.', 'wppoppop')
-                ]);
-            }
+        // 5. Field-level gates (add-ons: email policy)
+        $gate = (string) apply_filters('wppoppop_submission_gate', '', 'fields', ['ip' => $ip, 'email' => $email]);
+        if ($gate !== '') {
+            wp_send_json_error(['message' => $gate]);
         }
 
         // 6. Database Persistence

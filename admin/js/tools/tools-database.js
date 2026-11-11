@@ -20,7 +20,7 @@
                 var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                $btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation:rotation 2s infinite linear;font-size:16px;width:16px;height:16px;"></span> Verifying Schema...');
+                $btn.prop('disabled', true).html('Verifying Schema...');
 
                 $.ajax({
                     url: ajaxUrl,
@@ -49,7 +49,7 @@
                             }
 
                             self.showNotice('success', data.message || wp.i18n.__('Database schema tables verified successfully!', 'wppoppop'));
-                            $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Schema Optimal!');
+                            $btn.prop('disabled', false).html('Schema Optimal!');
                             setTimeout(function() {
                                 $btn.html(origHtml);
                             }, 2500);
@@ -94,7 +94,7 @@
                 var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                $btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation:rotation 2s infinite linear;font-size:16px;width:16px;height:16px;"></span> Resetting Counters...');
+                $btn.prop('disabled', true).html('Resetting Counters...');
 
                 $.ajax({
                     url: ajaxUrl,
@@ -107,7 +107,7 @@
                     success: function(response) {
                         if (response && response.success) {
                             self.showNotice('success', response.data.message || wp.i18n.__('All campaign counters have been reset to zero.', 'wppoppop'));
-                            $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Counters Reset!');
+                            $btn.prop('disabled', false).html('Counters Reset!');
                             setTimeout(function() {
                                 $btn.html(origHtml);
                             }, 2500);

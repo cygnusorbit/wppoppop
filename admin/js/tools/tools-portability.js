@@ -19,7 +19,7 @@
                 var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
                 var nonce = (window.wppoppop_vars && window.wppoppop_vars.nonce) ? window.wppoppop_vars.nonce : '';
 
-                $btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation:rotation 2s infinite linear;font-size:16px;width:16px;height:16px;"></span> Generating Backup...');
+                $btn.prop('disabled', true).html('Generating Backup...');
 
                 $.ajax({
                     url: ajaxUrl,
@@ -49,7 +49,7 @@
                                 URL.revokeObjectURL(downloadUrl);
                             }, 100);
 
-                            $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Download Started!');
+                            $btn.prop('disabled', false).html('Download Started!');
                             setTimeout(function() {
                                 $btn.html(origText);
                             }, 2500);
@@ -98,7 +98,7 @@
                     var origText = $btn.html();
                     var $status = $('#wppoppop-import-status-text');
 
-                    $btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation:rotation 2s infinite linear;font-size:16px;width:16px;height:16px;"></span> Validating...');
+                    $btn.prop('disabled', true).html('Validating...');
                     $status.show().text('Reading backup archive...');
 
                     var reader = new FileReader();
@@ -112,7 +112,7 @@
                                 return;
                             }
 
-                            $btn.html('<span class="dashicons dashicons-update" style="animation:rotation 2s infinite linear;font-size:16px;width:16px;height:16px;"></span> Restoring...');
+                            $btn.html('Restoring...');
                             $status.text('Importing popups and A/B tests...');
 
                             var ajaxUrl = (window.wppoppop_vars && window.wppoppop_vars.ajax_url) ? window.wppoppop_vars.ajax_url : ajaxurl;
@@ -134,7 +134,7 @@
                                 dataType: 'json',
                                 success: function(response) {
                                     if (response && response.success) {
-                                        $btn.html('<span class="dashicons dashicons-yes" style="font-size:16px;width:16px;height:16px;color:#10b981;"></span> Restored!');
+                                        $btn.html('Restored!');
                                         $status.css('color', '#10b981').text(response.data.message || 'Restoration complete!');
                                         if (response.data && response.data.dry_run) { $btn.prop('disabled', false).html(origText); } else { setTimeout(function() { window.location.reload(); }, 1400); }
                                     } else {

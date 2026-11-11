@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="wppoppop-bulk-export-form">
                 <input type="hidden" name="action" value="wppoppop_bulk_export">
                 <input type="hidden" name="wppoppop_tools_nonce" value="<?php echo esc_attr(wp_create_nonce('wppoppop_tools_action')); ?>"><?php wp_referer_field(); ?>
-                <button type="submit" name="wppoppop_bulk_export" id="wppoppop-bulk-export-btn" class="button button-primary wpp-tools-btn"><span class="dashicons dashicons-download"></span><?php esc_html_e('Export Complete Backup', 'wppoppop'); ?></button>
+                <button type="submit" name="wppoppop_bulk_export" id="wppoppop-bulk-export-btn" class="button button-primary wpp-tools-btn"><?php esc_html_e('Export Complete Backup', 'wppoppop'); ?></button>
             </form>
         </div>
 
@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) {
                 <input type="file" name="wppoppop_bulk_import_file" id="wppoppop-bulk-import-file" class="wpp-tools-file" accept=".json,application/json" required>
                 <label class="wpp-tools-check"><input type="checkbox" name="import_settings" value="1"> <?php esc_html_e('Also restore plugin settings and theme', 'wppoppop'); ?></label>
                 <div class="wpp-tools-row">
-                    <button type="submit" name="wppoppop_bulk_import" id="wppoppop-bulk-import-btn" class="button wpp-tools-btn"><span class="dashicons dashicons-upload"></span><?php esc_html_e('Restore Bulk Backup', 'wppoppop'); ?></button>
+                    <button type="submit" name="wppoppop_bulk_import" id="wppoppop-bulk-import-btn" class="button wpp-tools-btn"><?php esc_html_e('Restore Bulk Backup', 'wppoppop'); ?></button>
                     <span id="wppoppop-import-status-text" class="wpp-tools-status" hidden></span>
                 </div>
             </form>

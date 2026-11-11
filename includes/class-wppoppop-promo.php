@@ -135,6 +135,29 @@ class WpPopPop_Promo {
         }
     }
 
+    /* ------------------------------------------------------------ plugins screen link */
+
+    public static function init_plugin_link() {
+        if (!defined('WPPOPPOP_BASENAME')) {
+            return;
+        }
+        add_filter('plugin_action_links_' . WPPOPPOP_BASENAME, array(__CLASS__, 'plugin_action_links'));
+        add_filter('network_admin_plugin_action_links_' . WPPOPPOP_BASENAME, array(__CLASS__, 'plugin_action_links'));
+    }
+
+    /** Appends the link after "Deactivate". Hidden while Pro is active or when the slot is off. */
+    public static function plugin_action_links($links) {
+        $item = self::item('plugin_link');
+        if (!$item) {
+            return $links;
+        }
+        $color = $item['text_color'] !== '' ? $item['text_color'] : self::menu_primary();
+        $attr  = !empty($item['new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '';
+        $links = is_array($links) ? $links : array();
+        $links['wpp_go_pro'] = '<a href="' . esc_url($item['url']) . '" class="wpp-go-pro-link" style="color:' . esc_attr($color) . ';font-weight:600"' . $attr . '>' . esc_html(wp_strip_all_tags($item['text'])) . '</a>';
+        return $links;
+    }
+
     /* ------------------------------------------------------------ sanitising */
 
     private static function allowed_html() {
@@ -218,7 +241,7 @@ class WpPopPop_Promo {
         }
 
         $item = self::entry($raw);
-        if ($slot === 'menu_item') {
+        if ($slot === 'menu_item' || $slot === 'plugin_link') {
             $item['dismissible'] = false;
         } else {
             // show_close: slot value, else the older "dismissible" key, else the top-level value
@@ -230,7 +253,7 @@ class WpPopPop_Promo {
         }
         $item['reshow_days'] = max(0, min(365, (int) (isset($raw['reshow_days']) && is_scalar($raw['reshow_days']) ? $raw['reshow_days'] : 0)));
         // false = closing only hides the item until the next refresh
-        $item['remember']    = ($slot === 'menu_item') ? true : self::flag($raw, 'remember_dismiss', !isset($cfg['remember_dismiss']) || !empty($cfg['remember_dismiss']));
+        $item['remember']    = ($slot === 'menu_item' || $slot === 'plugin_link') ? true : self::flag($raw, 'remember_dismiss', !isset($cfg['remember_dismiss']) || !empty($cfg['remember_dismiss']));
 
         if ($slot === 'dashboard_slider') {
             $slides = array();
@@ -256,7 +279,7 @@ class WpPopPop_Promo {
             }
             $item['slides']   = $slides;
             $item['interval'] = max(2000, min(30000, (int) (isset($raw['interval']) ? $raw['interval'] : 6000)));
-        } elseif ($slot === 'menu_item') {
+        } elseif ($slot === 'menu_item' || $slot === 'plugin_link') {
             if ($item['text'] === '' || $item['url'] === '') {
                 return null;
             }
@@ -314,7 +337,7 @@ class WpPopPop_Promo {
     }
 
     public static function render($slot) {
-        if ($slot === 'menu_item') {
+        if ($slot === 'menu_item' || $slot === 'plugin_link') {
             return;
         }
         $item = self::item($slot);

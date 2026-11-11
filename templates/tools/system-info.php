@@ -86,8 +86,8 @@ $sys_groups = [
         <span class="dashicons dashicons-dashboard"></span>
         <h3><?php esc_html_e('System Environment & Health Diagnostics', 'wppoppop'); ?></h3>
         <div class="wpp-tools-head-actions">
-            <button type="button" id="wppoppop-copy-system-info-btn" class="button wpp-tools-btn"><span class="dashicons dashicons-clipboard"></span><?php esc_html_e('Copy Diagnostic Report', 'wppoppop'); ?></button>
-            <button type="button" id="wppoppop-download-system-info-btn" class="button wpp-tools-btn" title="<?php esc_attr_e('Download diagnostic report as a .txt file', 'wppoppop'); ?>"><span class="dashicons dashicons-download"></span><?php esc_html_e('Download .txt', 'wppoppop'); ?></button>
+            <button type="button" id="wppoppop-copy-system-info-btn" class="button wpp-tools-btn"><?php esc_html_e('Copy Diagnostic Report', 'wppoppop'); ?></button>
+            <button type="button" id="wppoppop-download-system-info-btn" class="button wpp-tools-btn" title="<?php esc_attr_e('Download diagnostic report as a .txt file', 'wppoppop'); ?>"><?php esc_html_e('Download .txt', 'wppoppop'); ?></button>
         </div>
     </div>
 

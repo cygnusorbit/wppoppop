@@ -5,7 +5,7 @@ Tags: popup, modal, popup builder, optin, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.0.923
+Stable tag: 3.0.924
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,8 +35,6 @@ Yes. Network activate it and every site gets its own tables and settings; new si
 
 WpPopPop only contacts a third-party service when the site owner turns the matching feature on. No visitor data is sent otherwise.
 
-* **Geolocation (ipapi.co / ip-api.com)** - used only when country targeting is enabled with a remote provider. Sends the visitor IP address to resolve a country code. ipapi.co: https://ipapi.co/privacy/ and https://ipapi.co/terms/. ip-api.com: https://ip-api.com/docs/legal
-* **Google reCAPTCHA** - used only when reCAPTCHA is enabled on a form. Sends the reCAPTCHA token and visitor IP to https://www.google.com/recaptcha/api/siteverify. Terms: https://policies.google.com/terms - Privacy: https://policies.google.com/privacy
 * **Mailchimp** - used only when the Mailchimp module is enabled. Sends the submitted form fields to the Mailchimp API. Terms: https://mailchimp.com/legal/terms/ - Privacy: https://mailchimp.com/legal/privacy/
 * **GetResponse** - used only when the GetResponse module is enabled. Sends the submitted form fields to https://api.getresponse.com. Terms: https://www.getresponse.com/legal/terms-of-service - Privacy: https://www.getresponse.com/legal/privacy
 * **Twilio** - used only when SMS alerts are enabled. Sends the alert text and the configured phone numbers to https://api.twilio.com. Terms: https://www.twilio.com/legal/tos - Privacy: https://www.twilio.com/legal/privacy
@@ -61,9 +59,6 @@ WpPopPop does not contact any third-party service on its own. All fonts (Inter, 
 
 The services below are used only when you switch the related feature on:
 
-= Google reCAPTCHA =
-When you enter reCAPTCHA keys under Settings > Security, the visitor's browser loads `https://www.google.com/recaptcha/api.js` and the plugin sends the reCAPTCHA response token and the visitor's IP address to `https://www.google.com/recaptcha/api/siteverify` to verify it. Service by Google: [Terms of Service](https://policies.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
-
 = YouTube and Vimeo embeds =
 When a popup contains a Video element, the visitor's browser loads the embedded player from `https://www.youtube.com` or `https://player.vimeo.com`, which receives the visitor's IP address and browser data. YouTube: [Terms](https://www.youtube.com/t/terms), [Privacy](https://policies.google.com/privacy). Vimeo: [Terms](https://vimeo.com/terms), [Privacy](https://vimeo.com/privacy).
 
@@ -77,7 +72,7 @@ The "test webhook" tool in the admin sends one sample JSON ping to the URL you t
 
 == Changelog ==
 
-= 3.0.923 =
+= 3.0.924 =
 * Directory-submission compliance pass: readme, headers and external services disclosure.
 * Multisite: network activation, automatic setup of new sites, clean-up when a site is deleted or the plugin is uninstalled.
 * Network admin page with defaults for new sites.

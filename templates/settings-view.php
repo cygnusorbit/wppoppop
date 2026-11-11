@@ -28,7 +28,7 @@ if (!isset($settings) || !is_array($settings)) {
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab active" data-tab="general"><?php esc_html_e('General & Mailing', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="performance"><?php esc_html_e('Performance & Preload', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="libraries"><?php esc_html_e('Typography & Libraries', 'wppoppop'); ?></button>
-        <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="security"><?php esc_html_e('Security & Geolocation', 'wppoppop'); ?></button>
+        <?php do_action('wppoppop_settings_tab_buttons'); ?>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="custom-code"><?php esc_html_e('Custom CSS & JS', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="tools"><?php esc_html_e('Cookie Cache & DB', 'wppoppop'); ?></button>
         <button type="button" class="wppoppop-tab-btn wpp-theme-tab" data-tab="module"><?php esc_html_e('Module', 'wppoppop'); ?></button>
@@ -57,10 +57,7 @@ if (!isset($settings) || !is_array($settings)) {
             <?php include WPPOPPOP_PATH . 'templates/settings/tab-libraries.php'; ?>
         </div>
 
-        <!-- Tab 4 Container: Security & Geolocation -->
-        <div id="tab-security" class="wppoppop-tab-content" data-tab-content="security" style="display:none;">
-            <?php include WPPOPPOP_PATH . 'templates/settings/tab-security.php'; ?>
-        </div>
+        <?php do_action('wppoppop_settings_tab_panels', $settings); ?>
 
         <!-- Tab 5 Container: Custom Code & Scripts -->
         <div id="tab-custom-code" class="wppoppop-tab-content" data-tab-content="custom-code" style="display:none;">

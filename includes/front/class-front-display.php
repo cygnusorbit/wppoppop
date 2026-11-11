@@ -56,21 +56,8 @@ class WpPopPop_Front_Display {
         wp_enqueue_script('wppoppop-front-pickers-js', WPPOPPOP_URL . 'public/js/front/front-pickers.js', ['wppoppop-front-js'], $asset_version, true); /* WPPOPPOP_FRONT_PICKERS_V1 */
         wp_enqueue_script('wppoppop-front-tracking-js', WPPOPPOP_URL . 'public/js/front/front-tracking.js', ['jquery', 'wppoppop-front-js'], $asset_version, true);
 
-        // Enqueue Google reCAPTCHA if enabled
-        $recaptcha_enabled  = (bool) wppoppop_get_setting('enable_recaptcha', false);
-        $recaptcha_site_key = wppoppop_get_setting('recaptcha_site_key', '');
-        if ($recaptcha_enabled && !empty($recaptcha_site_key)) {
-            wp_enqueue_script(
-                'wppoppop-recaptcha-api',
-                'https://www.google.com/recaptcha/api.js?render=' . esc_attr($recaptcha_site_key),
-                [],
-                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- external Google API script; a ver query string is not wanted on that URL
-                null,
-                true
-            );
-        }
-
         WpPopPop_Libraries::enqueue_frontend_libraries();
+        do_action('wppoppop_front_enqueue');
 
         $runtime_payload = [
             'ajax_url'           => admin_url('admin-ajax.php'),
@@ -79,24 +66,17 @@ class WpPopPop_Front_Display {
             'cookie_epoch'       => $cookie_epoch,
             'render_delay'       => max(0, (int) wppoppop_get_setting('render_delay', 0)),
             'preload_events'     => (bool) wppoppop_get_setting('preload_events', false),
-            'ga_tracking'        => (bool) wppoppop_get_setting('ga_tracking', false),
-            'adblock_detector'   => (bool) wppoppop_get_setting('adblock_detector', false),
             'test_mode'          => (bool) wppoppop_get_setting('test_mode', false),
             'default_font'       => esc_attr(wppoppop_get_setting('default_font', 'inherit')),
-            'enable_recaptcha'   => $recaptcha_enabled,
-            'recaptcha_site_key' => esc_attr($recaptcha_site_key),
             'libraries'          => [
-                'confetti'   => (bool) wppoppop_get_setting('load_canvas_confetti', false),
-                'fireworks'  => (bool) wppoppop_get_setting('load_canvas_fireworks', false),
                 'datepicker' => (bool) (wppoppop_get_setting('load_air_datepicker', false) || wppoppop_get_setting('air_datepicker', false)),
                 'mask'       => (bool) (wppoppop_get_setting('load_jquery_mask', false) || wppoppop_get_setting('jquery_mask', false)),
-                'signature'  => (bool) (wppoppop_get_setting('load_signature_pad', false) || wppoppop_get_setting('signature_pad', false)),
-                'slider'     => (bool) (wppoppop_get_setting('load_range_slider', false) || wppoppop_get_setting('range_slider', false)),
-                'math'       => (bool) (wppoppop_get_setting('load_math_parser', false) || wppoppop_get_setting('js_parser', false))
+                'slider'     => (bool) (wppoppop_get_setting('load_range_slider', false) || wppoppop_get_setting('range_slider', false))
             ]
         ];
 
         $runtime_payload = array_merge($runtime_payload, WpPopPop_Tracking::front_vars());
+        $runtime_payload = (array) apply_filters('wppoppop_front_vars', $runtime_payload);
         wp_localize_script('wppoppop-front-js', 'wppoppop_front_vars', $runtime_payload);
         wp_localize_script('wppoppop-front-form-js', 'wppoppop_front_vars', $runtime_payload);
     }
@@ -133,20 +113,7 @@ class WpPopPop_Front_Display {
             return;
         }
 
-        if ((bool) wppoppop_get_setting('adblock_detector', false)) {
-            ?>
-            <div id="wppoppop-ad-bait" class="pub_300x250 pub_728x90 text-ad textAd text_ad text_ads text-ads ad-server" style="position:absolute!important;left:-9999px!important;top:-9999px!important;width:1px!important;height:1px!important;pointer-events:none!important;" aria-hidden="true">&nbsp;</div>
-            <script>
-            (function() {
-                var probe = document.getElementById('wppoppop-ad-bait');
-                window.wppoppop_adblock_detected = false;
-                if (!probe || probe.offsetHeight === 0 || probe.clientHeight === 0 || window.getComputedStyle(probe).display === 'none') {
-                    window.wppoppop_adblock_detected = true;
-                }
-            })();
-            </script>
-            <?php
-        }
+        do_action('wppoppop_front_footer');
 
         $custom_js = wppoppop_get_setting('custom_js', '');
         if (!empty($custom_js)) {
