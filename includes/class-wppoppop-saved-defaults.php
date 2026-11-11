@@ -236,6 +236,8 @@ class WpPopPop_Saved_Defaults {
                     }
                 }
                 $base[$key] = $cur;
+            } elseif ($key === 'builder_guide_steps' && is_array($val)) {
+                $base[$key] = WpPopPop_Admin_Guide::sanitize_custom_steps($val);
             } elseif ($key === 'module_order' && is_array($cur) && is_array($val)) {
                 self::load_admin_settings();
                 $base[$key] = WpPopPop_Admin_Settings::normalize_module_order($val);

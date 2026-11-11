@@ -28,11 +28,13 @@
             "range_slider": 0,
             "modules": {
                 "acc-01-canvas-styling": 1,
+                "acc-display-triggers": 1,
                 "acc-notifications": 1
             },
             "module_order": [
                 "acc-01-canvas-styling",
-                "acc-notifications"
+                "acc-notifications",
+                "acc-display-triggers"
             ],
             "builder_alignment_tool": 1,
             "builder_viewport_toggle": 0,
@@ -41,6 +43,109 @@
             "builder_extra_elements": 0,
             "builder_click_canvas_settings": 0,
             "builder_click_element_settings": 0,
+            "builder_guide": 1,
+            "builder_guide_steps": [
+                {
+                    "id": "welcome",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "A quick tour of the essentials. Start enter your first Popup name!",
+                    "target": "custom",
+                    "selector": "#wppoppop-builder-title",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "ribbon",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "Click an element in the ribbon to ADD it to the canvas.",
+                    "target": "ribbon",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "canvas",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "Drag a Element to move it and use its corner bottom handles to resize it. Elements will snap to the guides, and the arrow keys nudge the selected layer.",
+                    "target": "canvas",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "layers",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "layers",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "inspector",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "inspector",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "inspector-tabs",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "inspector_tabs",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "inspector-style",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "inspector_body",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "triggers",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "triggers",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "preview",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "preview",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                },
+                {
+                    "id": "publish",
+                    "enabled": 1,
+                    "title": "",
+                    "text": "",
+                    "target": "save",
+                    "selector": "",
+                    "before": "",
+                    "placement": "auto"
+                }
+            ],
             "builder_layer_settings": [],
             "menu_pages": {
                 "wppoppop-dashboard": {
@@ -127,7 +232,7 @@
             "debug_ab": 1,
             "report_enabled": 0
         },
-        "saved": 1794378513
+        "saved": 1794387146
     },
     "theme": {
         "data": {

@@ -304,7 +304,7 @@
         ui.count.textContent = fmt(i18n.step_of, { n: idx + 1, total: steps.length });
         ui.title.textContent = s.title;
         applyText(found);
-        ui.back.disabled = idx === 0;
+        ui.back.hidden = idx === 0;
         ui.next.textContent = (idx >= steps.length - 1) ? (i18n.finish || 'Finish') : (i18n.next || 'Next');
         settleUntil = Date.now() + 700;
         settle();

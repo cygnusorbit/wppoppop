@@ -108,8 +108,8 @@
     margin: 0;
     padding: 6px 14px;
     background: var(--wpp-c-secondary-bg, #fff);
-    color: var(--wpp-c-text, #1d2327);
-    border: var(--wpp-bw, 1px) solid var(--wpp-c-border-strong, #c3c4c7);
+    color: var(--wpp-c-secondary-text, #1d2327);
+    border: var(--wpp-bw, 1px) solid var(--wpp-c-secondary-border, #c3c4c7);
     border-radius: 4px;
     font: inherit;
     font-size: var(--wpp-fs-button, 13px);
@@ -117,7 +117,8 @@
     line-height: 1.4;
     cursor: pointer;
 }
-.wppoppop-tour-btn:hover { background: var(--wpp-c-secondary-hover, #f1f5f9); }
+.wppoppop-tour-btn:hover { background: var(--wpp-c-secondary-hover, #f1f5f9); color: var(--wpp-c-secondary-text, #1d2327); }
+.wppoppop-tour-btn[hidden] { display: none; }
 .wppoppop-tour-btn.is-primary {
     background: var(--wpp-c-primary, #c1272d);
     border-color: var(--wpp-c-primary, #c1272d);
