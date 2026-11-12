@@ -16,12 +16,24 @@
     var running = false;
     var openedSettings = false;
     var openedInspector = false;
+    var busy = false;
     var textFound = true;
     var root, spot, card, ui = {};
     var lastFocus = null;
     var showTimer = 0;
     var settleUntil = 0;
     var rafId = 0;
+
+    /* Browser-side copy of "already seen": the tour never auto-starts twice here, even if the server save is lost. */
+    var SEEN_KEY = 'wppoppop_guide_seen_' + (cfg.uid || 0);
+
+    function seenLocal() {
+        try { return window.localStorage.getItem(SEEN_KEY) === '1'; } catch (e) { return false; }
+    }
+
+    function markSeen() {
+        try { window.localStorage.setItem(SEEN_KEY, '1'); } catch (e) { /* storage may be blocked */ }
+    }
 
     function q(sel, ctx) { return (ctx || document).querySelector(sel); }
 
@@ -61,15 +73,42 @@
         }
     }
 
-    function save(op, step) {
-        var xhr;
+    /* Saves run one at a time, in order, so a late "progress" call can never overwrite a "dismiss". */
+    var queue = [];
+    var sending = false;
+
+    function pump() {
+        var job, xhr, finished = false;
+        if (sending || !queue.length) { return; }
+        sending = true;
+        job = queue.shift();
+        function done(ok) {
+            if (finished) { return; }
+            finished = true;
+            sending = false;
+            if (job.cb) { job.cb(ok); }
+            pump();
+        }
         try {
             xhr = new XMLHttpRequest();
             xhr.open('POST', cfg.ajax_url, true);
+            xhr.timeout = 10000;
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-            xhr.send('action=wppoppop_guide_save&op=' + encodeURIComponent(op) +
-                '&step=' + encodeURIComponent(step) + '&nonce=' + encodeURIComponent(cfg.nonce));
-        } catch (e) { /* progress is best effort */ }
+            xhr.onreadystatechange = function () {
+                var res = null;
+                if (xhr.readyState !== 4) { return; }
+                try { res = JSON.parse(xhr.responseText); } catch (e) { res = null; }
+                done(xhr.status === 200 && !!res && res.success === true);
+            };
+            xhr.ontimeout = function () { done(false); };
+            xhr.send('action=wppoppop_guide_save&op=' + encodeURIComponent(job.op) +
+                '&step=' + encodeURIComponent(job.step) + '&nonce=' + encodeURIComponent(cfg.nonce));
+        } catch (e) { done(false); }
+    }
+
+    function save(op, step, cb) {
+        queue.push({ op: op, step: step, cb: cb });
+        pump();
     }
 
     function viewport() {
@@ -349,6 +388,7 @@
         if (!root) { build(); }
         lastFocus = document.activeElement;
         running = true;
+        markSeen();
         root.classList.add('is-open');
         document.addEventListener('keydown', onKey, true);
         window.addEventListener('resize', onViewportChange);
@@ -372,10 +412,31 @@
         }
     }
 
+    function setBusy(on) {
+        busy = on;
+        ui.dont.disabled = on;
+        ui.dont.textContent = on ? (i18n.saving || 'Saving…') : (i18n.dont_show || "Don't show again");
+    }
+
     function close(how) {
-        if (how === 'complete') { save('complete', idx + 1); }
-        else if (how === 'dismiss') { save('dismiss', idx + 1); }
-        else { save('progress', idx + 1); }
+        if (how === 'dismiss') {
+            if (busy) { return; }
+            setBusy(true);
+            /* Close when the server answers, or after 1.5 s at most; the browser-side flag already covers a lost save. */
+            var closed = false;
+            var finish = function (ok) {
+                if (closed) { return; }
+                closed = true;
+                setBusy(false);
+                if (!ok && window.console && window.console.warn) { window.console.warn('WpPopPop guide: the server did not confirm "Don\'t show again".'); }
+                stop();
+            };
+            markSeen();
+            save('dismiss', idx + 1, finish);
+            window.setTimeout(function () { finish(true); }, 1500);
+            return;
+        }
+        save(how === 'complete' ? 'complete' : 'progress', idx + 1);
         stop();
     }
 
@@ -401,7 +462,7 @@
             e.preventDefault();
             if (running) { stop(); } else { start(0); }
         });
-        if (cfg.autostart) { whenReady(function () { start(0); }); }
+        if (cfg.autostart && !seenLocal()) { whenReady(function () { start(0); }); }
     }
 
     if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', boot); } else { boot(); }

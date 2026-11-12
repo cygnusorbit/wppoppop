@@ -2200,3 +2200,35 @@ body.wppoppop-preview-locked #wppoppop-canvas-size-guide { display: none; }
     outline-offset: -1px !important;
 }
 /* === WPPOPPOP_GUIDE_INSIDE_END === */
+
+/* === WPPOPPOP_GUIDE_THEME === */
+/* Selected element guide line: colour + size come from Theme > Builder (light blue default) */
+#wppoppop-canvas-box .wppoppop-canvas-item.wppoppop-selected {
+    outline: var(--wpp-guide-width, 1px) solid var(--wpp-guide-color, #7dd3fc) !important;
+    outline-offset: calc(-1 * var(--wpp-guide-width, 1px)) !important;
+}
+#wppoppop-canvas-box .wppoppop-canvas-item.wppoppop-selected::after {
+    border-width: var(--wpp-guide-width, 1px);
+    border-color: var(--wpp-guide-color, #7dd3fc);
+}
+.is-preview-mode #wppoppop-canvas-box .wppoppop-canvas-item.wppoppop-selected {
+    outline: none !important;
+}
+/* === /WPPOPPOP_GUIDE_THEME === */
+
+/* === WPPOPPOP_FORM_BORDER_FIX === */
+/* The layer wrapper owns border + radius; the inner box follows it so no sharp square edge shows through. */
+[style*="--wppoppop-ibr"] .wppoppop-form-input:not(.wppoppop-input-checkbox):not(.wppoppop-input-radio),
+[style*="--wppoppop-ibr"] .wppoppop-ms-wrap,
+[style*="--wppoppop-ibr"] .wppoppop-upload-dropzone,
+[style*="--wppoppop-ibr"] > [data-wpp-ibox] {
+    border-radius: var(--wppoppop-ibr, 0px) !important;
+}
+[style*="--wppoppop-wb"] .wppoppop-form-input:not(.wppoppop-input-checkbox):not(.wppoppop-input-radio),
+[style*="--wppoppop-wb"] .wppoppop-ms-wrap,
+[style*="--wppoppop-wb"] .wppoppop-upload-dropzone,
+[style*="--wppoppop-wb"] > [data-wpp-ibox] {
+    border-width: 0 !important;
+    border-style: none !important;
+}
+/* === /WPPOPPOP_FORM_BORDER_FIX === */

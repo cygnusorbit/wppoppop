@@ -89,10 +89,21 @@ $__gs_row = function ($r, $i) use ($__gs_targets, $__gs_before, $__gs_places) {
     <?php
 };
 
+$__gs_on = WpPopPop_Admin_Guide::option_on('builder_guide_steps_on');
 $__gs_blank = ['id' => '', 'enabled' => 1, 'title' => '', 'text' => '', 'target' => 'center', 'selector' => '', 'before' => '', 'placement' => 'auto', 'custom' => 1];
 ?>
+<div class="wppoppop-gs-master">
+    <span class="wppoppop-gs-master-name"><?php esc_html_e('Enable Guide Steps', 'wppoppop'); ?>
+        <span class="wppoppop-gs-master-desc"><?php esc_html_e('Master switch. When off, the builder tour is disabled for every admin: it does not start and the Help (?) button is hidden. Your steps below are kept.', 'wppoppop'); ?></span>
+    </span>
+    <label class="wppoppop-switch-bld" title="<?php esc_attr_e('Enable Guide Steps', 'wppoppop'); ?>">
+        <input type="hidden" name="settings[builder_guide_steps_on]" value="0">
+        <input type="checkbox" id="wppoppop-gs-master" name="settings[builder_guide_steps_on]" value="1" <?php checked($__gs_on); ?> aria-label="<?php esc_attr_e('Enable Guide Steps', 'wppoppop'); ?>">
+        <span class="trk"></span>
+    </label>
+</div>
 <p class="description"><?php esc_html_e('Edit the builder tour shown to every admin. Turn steps on or off, reorder them, rewrite their text, point them at another part of the builder, or add your own. Save settings, then reload the builder. Pro and extensions can still add steps on top of these.', 'wppoppop'); ?></p>
-<div id="wppoppop-gs-root" class="wppoppop-gs" data-max="<?php echo (int) WpPopPop_Admin_Guide::MAX_STEPS; ?>" data-defaults="<?php echo esc_attr(wp_json_encode(WpPopPop_Admin_Guide::editor_defaults())); ?>">
+<div id="wppoppop-gs-root" class="wppoppop-gs<?php echo $__gs_on ? '' : ' is-master-off'; ?>" data-max="<?php echo (int) WpPopPop_Admin_Guide::MAX_STEPS; ?>" data-defaults="<?php echo esc_attr(wp_json_encode(WpPopPop_Admin_Guide::editor_defaults())); ?>">
     <div class="wppoppop-gs-toolbar">
         <span class="wppoppop-gs-count" id="wppoppop-gs-count" aria-live="polite"></span>
         <span class="wppoppop-gs-toolbar-btns">

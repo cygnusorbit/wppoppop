@@ -190,3 +190,20 @@
     border-radius: 6px;
     text-align: left;
 }
+
+/* === WPPOPPOP_FORM_BORDER_FIX === */
+/* The layer wrapper owns border + radius; the inner box follows it so no sharp square edge shows through. */
+[style*="--wppoppop-ibr"] .wppoppop-form-input:not(.wppoppop-input-checkbox):not(.wppoppop-input-radio),
+[style*="--wppoppop-ibr"] .wppoppop-ms-wrap,
+[style*="--wppoppop-ibr"] .wppoppop-upload-dropzone,
+[style*="--wppoppop-ibr"] > [data-wpp-ibox] {
+    border-radius: var(--wppoppop-ibr, 0px) !important;
+}
+[style*="--wppoppop-wb"] .wppoppop-form-input:not(.wppoppop-input-checkbox):not(.wppoppop-input-radio),
+[style*="--wppoppop-wb"] .wppoppop-ms-wrap,
+[style*="--wppoppop-wb"] .wppoppop-upload-dropzone,
+[style*="--wppoppop-wb"] > [data-wpp-ibox] {
+    border-width: 0 !important;
+    border-style: none !important;
+}
+/* === /WPPOPPOP_FORM_BORDER_FIX === */

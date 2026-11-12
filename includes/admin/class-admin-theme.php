@@ -178,6 +178,11 @@ class WpPopPop_Admin_Theme {
                 'c_scroll_thumb' => $f(__('Scrollbar thumb', 'wppoppop'), 'color', '#cbd5e1'),
                 'c_scroll_track' => $f(__('Scrollbar track', 'wppoppop'), 'color', '#f8fafc'),
             ]],
+            /* WPPOPPOP_THEME_BUILDER_TAB */
+            'builder' => ['label' => __('Builder', 'wppoppop'), 'fields' => [
+                'c_guide_color' => $f(__('Selected element guide line color', 'wppoppop'), 'color', '#7dd3fc'),
+                'bw_guide'      => $f(__('Selected element guide line size', 'wppoppop'), 'size', '1px'),
+            ]],
             'custom' => ['label' => __('Custom CSS', 'wppoppop'), 'fields' => [
                 'custom_css' => $f(__('Extra CSS (applied after theme, admin pages only)', 'wppoppop'), 'textarea', ''),
             ]],
@@ -342,6 +347,12 @@ class WpPopPop_Admin_Theme {
             }
         }
         $css .= '}';
+        /* WPPOPPOP_THEME_BUILDER_TAB: guide vars must reach the builder page even when the admin theme is not applied there */
+        $g_w = isset($v['bw_guide']) ? trim((string) $v['bw_guide']) : '1px';
+        if (preg_match('/^\d{1,2}(\.\d{1,2})?$/', $g_w)) { $g_w .= 'px'; }
+        if (!preg_match('/^\d{1,2}(\.\d{1,2})?px$/', $g_w)) { $g_w = '1px'; }
+        $g_c = isset($v['c_guide_color']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $v['c_guide_color']) ? $v['c_guide_color'] : '#7dd3fc';
+        $css .= ':root{--wpp-guide-color:' . $g_c . ';--wpp-guide-width:' . $g_w . ';}';
         if (!empty($v['custom_css'])) {
             $css .= "\n" . $v['custom_css'];
         }

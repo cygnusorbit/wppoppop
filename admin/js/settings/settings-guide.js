@@ -25,6 +25,9 @@
             var ok = false;
             try { ok = JSON.parse(xhr.responseText).success === true; } catch (e) { ok = false; }
             btn.disabled = false;
+            if (ok) {
+                try { window.localStorage.removeItem('wppoppop_guide_seen_' + (btn.getAttribute('data-uid') || 0)); } catch (err) { /* storage may be blocked */ }
+            }
             setStatus(ok ? (cfg.i18n && cfg.i18n.done) : (cfg.i18n && cfg.i18n.fail), !ok);
         };
         xhr.send(body);

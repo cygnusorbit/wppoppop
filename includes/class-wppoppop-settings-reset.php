@@ -26,7 +26,7 @@ class WpPopPop_Settings_Reset {
                               'range_slider', 'load_range_slider'],
             'custom-code' => ['custom_css', 'custom_js', 'custom_header_html', 'custom_footer_html'],
             'module'      => ['modules', 'module_order'],
-            'builder'     => ['builder_alignment_tool', 'builder_viewport_toggle', 'builder_zoom_select', 'builder_save_template', 'builder_extra_elements', 'builder_click_canvas_settings', 'builder_click_element_settings', 'builder_guide', 'builder_guide_steps'],
+            'builder'     => ['builder_alignment_tool', 'builder_viewport_toggle', 'builder_zoom_select', 'builder_save_template', 'builder_extra_elements', 'builder_click_canvas_settings', 'builder_click_element_settings', 'builder_guide', 'builder_guide_steps_on', 'builder_guide_steps'],
             'pages'       => ['menu_pages'],
             'tracking'    => array_keys(WpPopPop_Tracking::defaults()),
         ]);

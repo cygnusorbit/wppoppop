@@ -498,6 +498,13 @@ class WpPopPop_Front_Renderer {
         $left   = intval($el['left'] ?? $el['x'] ?? 20);
         $width  = intval($el['width'] ?? $el['w'] ?? 200);
         $height = intval($el['height'] ?? $el['h'] ?? 40);
+        /* WPPOPPOP_BTN_GEOM_GUARD: empty/zero size falls back to the alias, then the builder default */
+        if ($type === 'submit') {
+            if ($width < 24)  { $width  = intval($el['w'] ?? 0); }
+            if ($height < 16) { $height = intval($el['h'] ?? 0); }
+            if ($width < 24)  { $width  = 200; }
+            if ($height < 16) { $height = 46; }
+        }
         $zIndex = intval($el['zIndex'] ?? 10);
         $bRad   = intval($el['borderRadius'] ?? 0);
         $opac   = floatval($el['opacity'] ?? 1); if ($opac > 1) { $opac = $opac / 100; } /* WPPOPPOP_OPACITY_PCT */
@@ -546,6 +553,20 @@ class WpPopPop_Front_Renderer {
         }
         if ($shape_rot !== 0) {
             $style[] = "transform:rotate({$shape_rot}deg)";
+        }
+
+        /* WPPOPPOP_FORM_BORDER_FIX: wrapper owns border + radius; inner box radius = outer radius - border width */
+        if (in_array($type, array('text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown', 'date', 'time', 'password', 'upload', 'file', 'multiselect'), true)) {
+            $fb_bw = isset($el['borderWidth']) ? max(0, intval($el['borderWidth'])) : 0;
+            if ($fb_bw > 0) {
+                if ($type !== 'text') {
+                    $fb_bs = (!empty($el['borderStyle']) && in_array($el['borderStyle'], array('solid', 'dashed', 'dotted', 'double'), true)) ? $el['borderStyle'] : 'solid';
+                    $fb_bc = (!empty($el['borderColor']) && preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $el['borderColor'])) ? $el['borderColor'] : '#334155';
+                    $style[] = 'border:' . $fb_bw . 'px ' . $fb_bs . ' ' . $fb_bc;
+                }
+                $style[] = '--wppoppop-wb:' . $fb_bw . 'px';
+            }
+            $style[] = '--wppoppop-ibr:' . max(0, $bRad - $fb_bw) . 'px';
         }
 
         $style_attr = esc_attr(implode(';', $style));

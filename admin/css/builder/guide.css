@@ -127,6 +127,8 @@
 .wppoppop-tour-btn.is-primary:hover { background: var(--wpp-c-primary-hover, #a51f25); border-color: var(--wpp-c-primary-hover, #a51f25); }
 .wppoppop-tour-btn[disabled] { opacity: .5; cursor: default; }
 
+.wppoppop-tour-link[disabled] { opacity: .6; cursor: default; }
+
 .wppoppop-tour-x {
     position: absolute;
     top: 8px;

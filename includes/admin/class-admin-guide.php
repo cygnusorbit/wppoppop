@@ -18,11 +18,16 @@ class WpPopPop_Admin_Guide {
 
     /** Global "Show guide" switch (Settings > Builder). On unless explicitly saved as off. */
     public static function enabled() {
+        return self::option_on('builder_guide') && self::option_on('builder_guide_steps_on');
+    }
+
+    /** A stored on/off setting that defaults to on while it has never been saved. */
+    public static function option_on($key) {
         $s = get_option('wppoppop_settings', []);
-        if (!is_array($s) || !array_key_exists('builder_guide', $s)) {
+        if (!is_array($s) || !array_key_exists($key, $s)) {
             return true;
         }
-        return !empty($s['builder_guide']);
+        return !empty($s[$key]);
     }
 
     public static function default_state() {
@@ -433,6 +438,7 @@ class WpPopPop_Admin_Guide {
             'autostart' => self::should_autostart() ? 1 : 0,
             'state'     => self::get_state(),
             'nonce'     => self::nonce(),
+            'uid'       => get_current_user_id(),
             'ajax_url'  => admin_url('admin-ajax.php'),
             'steps'     => self::steps(),
             'i18n'      => [
@@ -444,6 +450,7 @@ class WpPopPop_Admin_Guide {
                 'skip'      => __('Skip', 'wppoppop'),
                 'dont_show' => __("Don't show again", 'wppoppop'),
                 'close'     => __('Close guide', 'wppoppop'),
+                'saving'    => __('Saving…', 'wppoppop'),
             ],
         ];
     }

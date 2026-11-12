@@ -175,5 +175,16 @@
         if ((e.key === 'Enter' || e.keyCode === 13) && t && t.tagName === 'INPUT' && t.type === 'text') { e.preventDefault(); }
     });
 
+    /* Master switch: dim and lock the editor while the guide is off; the rows are still saved. */
+    var master = document.getElementById('wppoppop-gs-master');
+    function applyMaster() {
+        var on = !master || master.checked;
+        if (on) { root.classList.remove('is-master-off'); } else { root.classList.add('is-master-off'); }
+        root.setAttribute('aria-disabled', on ? 'false' : 'true');
+        if ('inert' in root) { root.inert = !on; }
+    }
+    if (master) { master.addEventListener('change', applyMaster); }
+    applyMaster();
+
     reindex();
 })(window, document);

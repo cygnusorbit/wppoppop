@@ -144,6 +144,7 @@ class WpPopPop_Admin_Settings {
             'builder_click_canvas_settings' => 0,
             'builder_click_element_settings' => 0,
             'builder_guide' => 1,
+            'builder_guide_steps_on' => 1,
             'builder_guide_steps' => [],
             'builder_layer_settings' => [],
             'menu_pages' => self::get_default_menu_pages(),
@@ -306,6 +307,16 @@ class WpPopPop_Admin_Settings {
             $o['builder_guide'] = !empty($__bg_prev['builder_guide']) ? 1 : 0;
         } else {
             $o['builder_guide'] = 1;
+        }
+
+        // 5c1a. Guide Steps master switch: on by default; a missing key keeps the stored value.
+        $__gm_prev = get_option('wppoppop_settings', []);
+        if (array_key_exists('builder_guide_steps_on', $in)) {
+            $o['builder_guide_steps_on'] = !empty($in['builder_guide_steps_on']) ? 1 : 0;
+        } elseif (is_array($__gm_prev) && array_key_exists('builder_guide_steps_on', $__gm_prev)) {
+            $o['builder_guide_steps_on'] = !empty($__gm_prev['builder_guide_steps_on']) ? 1 : 0;
+        } else {
+            $o['builder_guide_steps_on'] = 1;
         }
 
         // 5c1b. Guide step editor rows. Missing key = keep the stored rows; [] = built-in steps.

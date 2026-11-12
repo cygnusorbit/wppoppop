@@ -72,6 +72,15 @@
             'border-color': bc,
             'border-radius': (bOff ? 0 : (parseInt(el.borderRadius, 10) || 0)) + 'px'
         });
+        /* WPPOPPOP_FORM_BORDER_FIX: inner box follows wrapper radius; drop its own border when wrapper has one */
+        var fbTypes = ['text', 'textfield', 'email', 'number', 'phone', 'tel', 'textarea', 'select', 'dropdown', 'date', 'time', 'password', 'upload', 'file', 'multiselect'];
+        if (fbTypes.indexOf(String(el.type || '').toLowerCase()) !== -1 && $node[0]) {
+            var fbRad = bOff ? 0 : (parseInt(el.borderRadius, 10) || 0);
+            $node[0].style.setProperty('--wppoppop-ibr', Math.max(0, fbRad - bw) + 'px');
+            if (bw > 0 && bs !== 'none') { $node[0].style.setProperty('--wppoppop-wb', bw + 'px'); }
+            else { $node[0].style.removeProperty('--wppoppop-wb'); }
+            $node.children('div').first().attr('data-wpp-ibox', '1');
+        }
 
         // 5. 5-Parameter Box Shadow
         var sx = parseInt(el.shadowX, 10) || 0;

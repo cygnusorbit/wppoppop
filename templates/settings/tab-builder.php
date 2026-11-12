@@ -109,7 +109,7 @@ $__bg_on = !array_key_exists('builder_guide', (array) $settings) || !empty($sett
                 <span class="bld-desc"><?php esc_html_e('Reset your own tour progress so it starts again the next time you open the builder.', 'wppoppop'); ?></span>
                 <span class="bld-desc" id="wppoppop-guide-restart-status" role="status" aria-live="polite"></span>
             </span>
-            <button type="button" class="button" id="wppoppop-guide-restart" data-nonce="<?php echo esc_attr(WpPopPop_Admin_Guide::nonce()); ?>"><?php esc_html_e('Restart tour', 'wppoppop'); ?></button>
+            <button type="button" class="button" id="wppoppop-guide-restart" data-uid="<?php echo (int) get_current_user_id(); ?>" data-nonce="<?php echo esc_attr(WpPopPop_Admin_Guide::nonce()); ?>"><?php esc_html_e('Restart tour', 'wppoppop'); ?></button>
         </li>
     </ul>
 </div>

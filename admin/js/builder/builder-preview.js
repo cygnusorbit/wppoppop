@@ -54,6 +54,26 @@
                 var $radP = $('#set-canvas-radius');
                 if ($radP.length) m.canvas_radius = Math.max(0, Math.min(500, parseInt($radP.val(), 10) || 0));
 
+                /* WPPOPPOP_BTN_GEOM_SYNC: button-family size, radius and font follow the visible stage node */
+                var btnTypes = { submit: 1, button: 1, step_btn: 1, link_btn: 1, pay: 1 };
+                var btnList = (core.state.canvases && core.state.canvases[cur]) || [];
+                for (var bi = 0; bi < btnList.length; bi++) {
+                    var bEl = btnList[bi];
+                    if (!bEl || bEl.id === undefined || !btnTypes[bEl.type]) continue;
+                    var bNode = document.getElementById('el-' + bEl.id) || document.getElementById('wppoppop-el-' + bEl.id);
+                    if (!bNode || !bNode.offsetWidth || !bNode.offsetHeight) continue;
+                    bEl.width = bNode.offsetWidth; bEl.w = bEl.width;
+                    bEl.height = bNode.offsetHeight; bEl.h = bEl.height;
+                    var bCs = window.getComputedStyle ? window.getComputedStyle(bNode) : null;
+                    if (!bCs) continue;
+                    var bRadTxt = bCs.borderTopLeftRadius || '';
+                    if (bRadTxt && bRadTxt.indexOf('%') === -1 && !isNaN(parseFloat(bRadTxt))) { bEl.borderRadius = Math.round(parseFloat(bRadTxt)); }
+                    var bFs = parseFloat(bCs.fontSize);
+                    if (!isNaN(bFs) && bFs > 0) { bEl.fontSize = Math.round(bFs); }
+                    var bFw = parseInt(bCs.fontWeight, 10);
+                    if (!isNaN(bFw) && bFw > 0) { bEl.fontWeight = String(bFw); }
+                }
+
                 /* WPPOPPOP_PREVIEW_GEOM_SYNC: the stage DOM is the visual truth for the current canvas */
                 var geoList = (core.state.canvases && core.state.canvases[cur]) || [];
                 for (var gi = 0; gi < geoList.length; gi++) {
