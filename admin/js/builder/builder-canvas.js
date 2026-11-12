@@ -602,6 +602,10 @@
             }
         },
 
+        playAllElementsEntranceAnimation: function() {
+            if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.playAllElements(); }
+        },
+
         playElementAnimation: function(id, anim) {
             if (window.WpPopPopBuilderAnimation) { return window.WpPopPopBuilderAnimation.playElement(id, anim); }
             if (!anim || anim === 'none') return;
@@ -625,6 +629,7 @@
                 if (core) {
                     core.switchCanvas(target);
                     self.playCanvasEntranceAnimation();
+                    self.playAllElementsEntranceAnimation();
                 }
             });
         },

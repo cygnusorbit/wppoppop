@@ -662,7 +662,7 @@ class WpPopPop_Ajax_Builder {
         
         // === PHASE 4: v3.0.637 SANITIZED 5-TAB & 3-TAB LAYER SETTINGS WHITELIST ===
         $gp_text_keys = array(
-            'autocomplete', 'animIn', 'animOut', 'iconLeft', 'iconRight',
+            'autocomplete', 'animIn', 'animOut', 'animStart', 'iconLeft', 'iconRight',
             'customClass', 'cssClass', 'customId', 'logicAction', 'logicMatch',
             'defaultValue', 'paramName', 'fieldId', 'fieldName', 'token',
             'shapePreset', 'alt', 'objectFit', 'videoProvider',

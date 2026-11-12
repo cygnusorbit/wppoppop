@@ -102,11 +102,11 @@
     },
     "menu_item": {
       "enabled": true,
-      "text": "Go PRO",
+      "text": "Upgrade to PRO",
       "url": "https://wppoppop.com/",
       "new_tab": true,
-      "text_color": "#ffffff",
-      "bg_color": "",
+      "text_color": "#ef5f33",
+      "bg_color": "#000",
       "start": "",
       "end": ""
     },

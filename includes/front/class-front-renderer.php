@@ -276,6 +276,7 @@ class WpPopPop_Front_Renderer {
                         <div class="wppoppop-canvas-content">
                             <?php 
                             if (is_array($elements)) {
+                                $elements = $this->wppoppop_sequence_layer_anims($elements);
                                 foreach ($elements as $el) {
                                     if (is_array($el) && empty($el['hidden'])) {
                                         /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- element markup is escaped inside the element renderers */ echo $this->wppoppop_apply_logic($this->wppoppop_apply_fg($this->render_canvas_element($this->wppoppop_fit_shape_to_edges($el, $c_width, $c_height, !$c_allow_ovf)), $el), $el); /* WPPOPPOP_LOGIC_ATTRS */
@@ -300,6 +301,39 @@ class WpPopPop_Front_Renderer {
             </div><!-- /.wppoppop-fit-stage -->
         </div>
         <?php
+    }
+
+    /* WPPOPPOP_ANIM_SEQUENCE: layer entrance order follows layer arrangement (lowest z-index first). animStart "with" starts at load; default "after" chains onto the layer below. */
+    private function wppoppop_sequence_layer_anims($elements) {
+        if (!is_array($elements)) { return $elements; }
+        $order = array();
+        foreach ($elements as $i => $el) {
+            if (is_array($el) && empty($el['hidden'])) { $order[] = array(intval($el['zIndex'] ?? 10), $i); }
+        }
+        usort($order, function ($a, $b) { return ($a[0] === $b[0]) ? ($a[1] <=> $b[1]) : ($a[0] <=> $b[0]); });
+        $cursor = 0;
+        foreach ($order as $pair) {
+            $i  = $pair[1];
+            $el = $elements[$i];
+            $has_fx = false;
+            foreach (array('animIn', 'anim_appearance', 'animation', 'animEffect', 'anim_effect') as $k) {
+                if (!empty($el[$k]) && $el[$k] !== 'none') { $has_fx = true; break; }
+            }
+            if (!$has_fx) { continue; }
+            $dur = 1000;
+            foreach (array('animDuration', 'anim_duration', 'duration') as $k) {
+                if (isset($el[$k]) && $el[$k] !== '' && is_numeric($el[$k])) { $dur = max(1, intval($el[$k])); break; }
+            }
+            $del = 0;
+            foreach (array('animDelay', 'anim_delay', 'delay') as $k) {
+                if (isset($el[$k]) && $el[$k] !== '' && is_numeric($el[$k])) { $del = max(0, intval($el[$k])); break; }
+            }
+            $start = ((isset($el['animStart']) && $el['animStart'] === 'with') ? 0 : $cursor) + $del;
+            $cursor = $start + $dur;
+            $elements[$i]['animDelay'] = $start;
+            $elements[$i]['anim_delay'] = $start;
+        }
+        return $elements;
     }
 
     /* WPPOPPOP_LOGIC_ATTRS: expose layer id + conditional-logic config on the layer wrapper for the frontend runtime */

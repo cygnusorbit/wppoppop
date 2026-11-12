@@ -206,21 +206,42 @@
             $box.data('wppoppop_anim_timer', timer);
         },
 
+        /* Layer arrangement order: lowest zIndex (bottom layer) first. "after" chains onto the layer below, "with" starts at load. */
+        computeSequence: function(elements) {
+            var self = this;
+            var seq = {};
+            var list = [];
+            (elements || []).forEach(function(el, i) {
+                if (el && !el.hidden) { list.push({ el: el, i: i, z: parseInt(el.zIndex, 10) || 10 }); }
+            });
+            list.sort(function(a, b) { return (a.z - b.z) || (a.i - b.i); });
+            var cursor = 0;
+            list.forEach(function(o) {
+                var norm = self.normalizeAliases(o.el);
+                if (!norm.effect || norm.effect === 'none') return;
+                var start = (o.el.animStart === 'with' ? 0 : cursor) + norm.delay;
+                seq[o.el.id] = start;
+                cursor = start + norm.duration;
+            });
+            return seq;
+        },
+
         playAllElements: function() {
             var self = this;
             if (!window.WpPopPopBuilderCore || !window.WpPopPopBuilderCore.state) return;
-            var c = window.WpPopPopBuilderCore.state.currentCanvas || 1;
-            var elements = (window.WpPopPopBuilderCore.state.canvases && window.WpPopPopBuilderCore.state.canvases[c]) || [];
+            var st = window.WpPopPopBuilderCore.state;
+            var c = st.currentCanvas || 1;
+            var elements = (st.canvases && st.canvases[c]) || [];
+            var cm = (st.canvasMeta && st.canvasMeta[c]) || {};
+            var off = 0;
+            if (cm.anim_appearance && cm.anim_appearance !== 'none') {
+                off = (parseInt(cm.anim_delay, 10) || 0) + (parseInt(cm.anim_duration, 10) || 1000);
+            }
+            var seq = self.computeSequence(elements);
             elements.forEach(function(el) {
+                if (!el || seq[el.id] === undefined) return;
                 var norm = self.normalizeAliases(el);
-                if (norm.effect && norm.effect !== 'none') {
-                    var cm = (window.WpPopPopBuilderCore.state.canvasMeta && window.WpPopPopBuilderCore.state.canvasMeta[c]) || {};
-                    var off = 0;
-                    if (cm.anim_appearance && cm.anim_appearance !== 'none') {
-                        off = (parseInt(cm.anim_delay, 10) || 0) + (parseInt(cm.anim_duration, 10) || 1000);
-                    }
-                    self.playElement(el.id, norm.effect, norm.duration, norm.delay + off);
-                }
+                self.playElement(el.id, norm.effect, norm.duration, seq[el.id] + off);
             });
         },
 
@@ -329,7 +350,7 @@
         'Sliding': ['slideOutDown','slideOutLeft','slideOutRight','slideOutUp']
     };
     var SEL_IN  = '#set-canvas-anim-appearance, #set-anim-appearance, #prop-anim-in';
-    var SEL_OUT = '#set-canvas-anim-disappearance, #set-anim-disappearance, #prop-anim-out';
+    var SEL_OUT = '#set-canvas-anim-disappearance, #set-anim-disappearance';
 
     function fillSelect($sel, groups) {
         $sel.each(function() {

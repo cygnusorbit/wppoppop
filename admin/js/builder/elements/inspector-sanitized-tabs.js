@@ -689,29 +689,6 @@
 
             html += '</div>';
 
-            // Entrance & Timing Animation Section (Consolidated in Content Tab)
-            var curAnim = el.animEffect || 'none';
-            html += '' +
-                '<div class="gp-card-section">' +
-                    '<div class="gp-card-header"><span>APPEARANCE ANIMATION (wppoppop)</span></div>' +
-                    '<div style="margin-bottom:8px;">' +
-                        '<label>ENTRANCE EFFECT</label>' +
-                        '<select id="gp-cnt-anim-effect">' +
-                            '<option value="none" ' + (curAnim === 'none' ? 'selected' : '') + '>None</option>' +
-                            '<option value="fade" ' + (curAnim === 'fade' ? 'selected' : '') + '>Fade In</option>' +
-                            '<option value="slideDown" ' + (curAnim === 'slideDown' ? 'selected' : '') + '>Slide Down</option>' +
-                            '<option value="slideUp" ' + (curAnim === 'slideUp' ? 'selected' : '') + '>Slide Up</option>' +
-                            '<option value="bounceIn" ' + (curAnim === 'bounceIn' ? 'selected' : '') + '>Bounce In</option>' +
-                            '<option value="zoomIn" ' + (curAnim === 'zoomIn' ? 'selected' : '') + '>Zoom In</option>' +
-                            '<option value="pulse" ' + (curAnim === 'pulse' ? 'selected' : '') + '>Pulse</option>' +
-                        '</select>' +
-                    '</div>' +
-                    '<div class="gp-grid-2">' +
-                        '<div><label>DURATION (MS)</label><input type="number" id="gp-cnt-anim-duration" step="50" value="' + (el.animDuration || 600) + '"></div>' +
-                        '<div><label>START DELAY (MS)</label><input type="number" id="gp-cnt-anim-delay" step="50" value="' + (el.animDelay || 0) + '"></div>' +
-                    '</div>' +
-                '</div>';
-
             $('#wppoppop-gp-sanitized-content').html(html);
         },
 
@@ -992,13 +969,6 @@
                         break;
                 }
 
-                // Sync consolidated Animation settings
-                if ($('#gp-cnt-anim-effect').length) {
-                    el.animEffect = $('#gp-cnt-anim-effect').val() || 'none';
-                    el.animDuration = parseInt($('#gp-cnt-anim-duration').val(), 10) || 600;
-                    el.animDelay = parseInt($('#gp-cnt-anim-delay').val(), 10) || 0;
-                    $('#prop-anim-effect').val(el.animEffect);
-                }
 
                 window.WpPopPopBuilderCanvas.renderCanvas();
             });

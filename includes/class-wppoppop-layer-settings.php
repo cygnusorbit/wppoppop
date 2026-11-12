@@ -124,7 +124,7 @@ class WpPopPop_Layer_Settings {
         $cat['basic'] = array(
             self::entry('layer_name', __('Layer Name', 'wppoppop'), '#insp-section-layer-name', $all),
             self::entry('element_settings', '', '#panel-elem-{type}', $all, 'block', array(), true),
-            self::entry('animation', __('Animation (Appearance / Disappearance / Duration / Start Delay)', 'wppoppop'), '#insp-row-gp-animation', $all),
+            self::entry('animation', __('Animation (Appearance / Duration / Start Delay / Start Animation)', 'wppoppop'), '#insp-row-gp-animation', $all),
             self::entry('required', __('Required Switch', 'wppoppop'), '#insp-row-gp-required', $form, 'flex'),
             self::entry('required_msg', __('Required Error Message', 'wppoppop'), '#insp-row-gp-required-msg', $form),
             self::entry('autocomplete', __('Autocomplete Attribute', 'wppoppop'), '#insp-row-gp-autocomplete', array()),

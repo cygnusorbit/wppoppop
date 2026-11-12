@@ -74,7 +74,7 @@ class WpPopPop_Ajax_Element_Registry {
     }
 
     public static function sanitize_decomposed_layer_props( array $el, array $clean ) {$text_keys = array(
-            'name', 'autocomplete', 'animIn', 'animOut', 'animation',
+            'name', 'autocomplete', 'animIn', 'animOut', 'animStart', 'animation',
             'fontFamily', 'fontWeight', 'textAlign', 'color', 'bgColor',
             'borderStyle', 'borderColor', 'shadowColor', 'hoverBg', 'hoverColor', 'hoverBorder',
             'iconLeft', 'iconRight', 'customClass', 'cssClass', 'customId',

@@ -241,7 +241,7 @@
         if (jQuery('#prop-anim-in').length) {
             el.animIn       = jQuery('#prop-anim-in').val() || 'none';
             el.animation    = el.animIn;
-            el.animOut      = jQuery('#prop-anim-out').val() || 'none';
+            el.animStart      = jQuery('#prop-anim-start').val() === 'with' ? 'with' : 'after';
             el.animDuration = parseInt(jQuery('#prop-anim-duration').val(), 10) || 1000;
             el.animDelay    = parseInt(jQuery('#prop-anim-delay').val(), 10) || 0;
             if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.syncAliases(el); }
@@ -407,7 +407,7 @@
         jQuery('#prop-gp-autocomplete').val(el.autocomplete || (canonical === 'email' ? 'email' : (canonical === 'tel' ? 'tel' : 'off')));
         jQuery('#prop-gp-required').prop('checked', (el.required === undefined && String(el.type || '').toLowerCase() === 'email' ? true : !!el.required) /* WPPOPPOP_EMAIL_REQ_DEFAULT */);
         jQuery('#prop-anim-in').val(el.animIn || el.anim_appearance || el.animation || 'none');
-        jQuery('#prop-anim-out').val(el.animOut || el.anim_disappearance || 'none');
+        jQuery('#prop-anim-start').val(el.animStart === 'with' ? 'with' : 'after');
         jQuery('#prop-anim-duration').val(el.animDuration !== undefined ? el.animDuration : 1000);
         jQuery('#prop-anim-delay').val(el.animDelay !== undefined ? el.animDelay : 0);
 
@@ -489,13 +489,13 @@
         };
 
         // Autocomplete, Animation & Required bindings
-        jQuery(document).on('change input', '#prop-gp-autocomplete, #prop-anim-in, #prop-anim-out, #prop-anim-duration, #prop-anim-delay, #prop-gp-required', function() {
+        jQuery(document).on('change input', '#prop-gp-autocomplete, #prop-anim-in, #prop-anim-start, #prop-anim-duration, #prop-anim-delay, #prop-gp-required', function() {
             var el = getEl();
             if (!el) return;
             if (jQuery('#insp-row-gp-autocomplete').is(':visible')) { el.autocomplete = jQuery('#prop-gp-autocomplete').val(); } /* WPPOPPOP_AC_GUARD */
             el.animIn       = jQuery('#prop-anim-in').val();
             el.animation    = el.animIn;
-            el.animOut      = jQuery('#prop-anim-out').val();
+            el.animStart      = jQuery('#prop-anim-start').val() === 'with' ? 'with' : 'after';
             el.animDuration = parseInt(jQuery('#prop-anim-duration').val(), 10) || 1000;
             el.animDelay    = parseInt(jQuery('#prop-anim-delay').val(), 10) || 0;
             if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.syncAliases(el); }
@@ -973,10 +973,10 @@
         if ($('#prop-color').length && el.color) $('#prop-color').val(el.color);
         if ($('#prop-bg-color').length && el.bgColor) $('#prop-bg-color').val(el.bgColor);
 
-        // Animation (canonical keys: animIn / animOut / animDuration / animDelay)
+        // Animation (canonical keys: animIn / animStart / animDuration / animDelay)
         if ($('#prop-anim-in').length) {
             $('#prop-anim-in').val(el.animIn || el.anim_appearance || el.animation || 'none');
-            $('#prop-anim-out').val(el.animOut || el.anim_disappearance || 'none');
+            $('#prop-anim-start').val(el.animStart === 'with' ? 'with' : 'after');
             $('#prop-anim-duration').val(el.animDuration !== undefined && el.animDuration !== '' ? el.animDuration : 1000);
             $('#prop-anim-delay').val(el.animDelay !== undefined && el.animDelay !== '' ? el.animDelay : 0);
         }
@@ -1004,6 +1004,19 @@
             window.WpPopPopBuilderLayers.pushForInspector(false);
         }
     },
+
+        /* WPPOPPOP_ACTIVE_EL: resolves the live model object inside Core.state.canvases so inspector handlers mutate saved state (drives Save -> Update). */
+        getActiveEl: function() {
+            var core = window.WpPopPopBuilderCore;
+            if (!core || !core.state || !core.state.activeId) return null;
+            var cur = core.state.currentCanvas || 1;
+            var list = (core.state.canvases && core.state.canvases[cur]) || [];
+            var id = String(core.state.activeId).replace(/^el-/, '');
+            for (var i = 0; i < list.length; i++) {
+                if (list[i] && String(list[i].id).replace(/^el-/, '') === id) { return list[i]; }
+            }
+            return null;
+        },
 
         getActiveElement: function() {
             var core = window.WpPopPopBuilderCore;
@@ -4398,9 +4411,20 @@
         }
     }
 
+    /* WPPOPPOP_ANIM_HYDRATE: load the Layer Settings > Animation controls from the selected layer's own model, so each layer keeps its own values when switching layers */
+    function hydrateLayerAnimation(el) {
+        if (!el || !$('#prop-anim-in').length) return;
+        var hasVal = function(v) { return v !== undefined && v !== null && v !== ''; };
+        $('#prop-anim-in').val(el.animIn || el.anim_appearance || el.animation || 'none');
+        $('#prop-anim-duration').val(hasVal(el.animDuration) ? el.animDuration : (hasVal(el.anim_duration) ? el.anim_duration : 1000));
+        $('#prop-anim-delay').val(hasVal(el.animDelay) ? el.animDelay : (hasVal(el.anim_delay) ? el.anim_delay : 0));
+        $('#prop-anim-start').val(el.animStart === 'with' ? 'with' : 'after');
+    }
+
     function hydrateAllFiveTabs(el) {
         ensureFiveTabsDom();
         if (!el) return;
+        hydrateLayerAnimation(el);
 
         var type = String(el.type || 'label').toLowerCase().trim();
         var isForm = FORM_TYPES.indexOf(type) !== -1;

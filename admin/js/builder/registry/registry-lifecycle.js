@@ -47,7 +47,7 @@
         if ($('#prop-anim-in').length) {
             el.animIn       = $('#prop-anim-in').val() || 'none';
             el.animation    = el.animIn;
-            el.animOut      = $('#prop-anim-out').val() || 'none';
+            el.animStart      = $('#prop-anim-start').val() === 'with' ? 'with' : 'after';
             el.animDuration = parseInt($('#prop-anim-duration').val(), 10) || 1000;
             el.animDelay    = parseInt($('#prop-anim-delay').val(), 10) || 0;
             if (window.WpPopPopBuilderAnimation) { window.WpPopPopBuilderAnimation.syncAliases(el); }
