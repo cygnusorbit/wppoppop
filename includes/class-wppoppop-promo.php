@@ -314,7 +314,7 @@ class WpPopPop_Promo {
 
     /* ------------------------------------------------------------ rendering */
 
-    private static function vars($e) {
+    private static function vars_css($e) {
         $map = array(
             'text_color'     => '--wpp-promo-fg',
             'bg_color'       => '--wpp-promo-bg',
@@ -327,7 +327,14 @@ class WpPopPop_Promo {
                 $css .= $var . ':' . $e[$k] . ';';
             }
         }
-        return $css === '' ? '' : ' style="' . esc_attr($css) . '"';
+        return $css;
+    }
+
+    private static function print_vars($e) {
+        $css = self::vars_css($e);
+        if ($css !== '') {
+            echo ' style="' . esc_attr($css) . '"';
+        }
     }
 
     private static function link($e, $class) {
@@ -355,8 +362,12 @@ class WpPopPop_Promo {
         echo '<button type="button" class="wpp-promo-x" data-wpp-promo-dismiss="1" aria-label="' . esc_attr__('Dismiss', 'wppoppop') . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></button>';
     }
 
-    private static function root_attrs($item) {
-        return ' data-wpp-promo-id="' . esc_attr($item['id']) . '" data-wpp-promo-days="' . (int) $item['reshow_days'] . '"' . (empty($item['remember']) ? ' data-wpp-promo-remember="0"' : '') . self::vars($item);
+    private static function print_root_attrs($item) {
+        echo ' data-wpp-promo-id="' . esc_attr($item['id']) . '" data-wpp-promo-days="' . (int) $item['reshow_days'] . '"';
+        if (empty($item['remember'])) {
+            echo ' data-wpp-promo-remember="0"';
+        }
+        self::print_vars($item);
     }
 
     public static function render($slot) {
@@ -370,7 +381,9 @@ class WpPopPop_Promo {
         $allowed = self::allowed_html();
 
         if ($slot === 'header_text') {
-            echo '<div class="cell promo"' . self::root_attrs($item) . '>';
+            echo '<div class="cell promo"';
+            self::print_root_attrs($item);
+            echo '>';
             echo '<span class="wpp-promo-text">' . wp_kses($item['text'], $allowed) . '</span>';
             echo wp_kses(self::link($item, 'wpp-promo-cta'), $allowed);
             self::dismiss_button($item);
@@ -379,7 +392,9 @@ class WpPopPop_Promo {
         }
 
         if ($slot === 'builder_box') {
-            echo '<div class="wppoppop-promo wppoppop-promo--box"' . self::root_attrs($item) . '>';
+            echo '<div class="wppoppop-promo wppoppop-promo--box"';
+            self::print_root_attrs($item);
+            echo '>';
             self::dismiss_button($item);
             if ($item['image'] !== '') {
                 echo self::image_link($item, '<img class="wpp-promo-img" src="' . esc_url($item['image']) . '" alt="" loading="lazy">', 'wpp-promo-img-link'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in image_link()
@@ -398,14 +413,19 @@ class WpPopPop_Promo {
         if ($slot === 'dashboard_slider') {
             $total = count($item['slides']);
             // Same box markup as the other dashboard boxes, so dash-layout.js can drag it.
-            echo '<div class="wppoppop-box wppoppop-promo wpp-promo-slider" id="wppoppop-box-promo" data-box-title="' . esc_attr__('Promotions', 'wppoppop') . '"' . self::root_attrs($item) . ' data-interval="' . (int) $item['interval'] . '" role="region" aria-roledescription="carousel" aria-label="' . esc_attr__('Promotions', 'wppoppop') . '">';
+            echo '<div class="wppoppop-box wppoppop-promo wpp-promo-slider" id="wppoppop-box-promo" data-box-title="' . esc_attr__('Promotions', 'wppoppop') . '"';
+            self::print_root_attrs($item);
+            echo ' data-interval="' . (int) $item['interval'] . '" role="region" aria-roledescription="carousel" aria-label="' . esc_attr__('Promotions', 'wppoppop') . '">';
             self::dismiss_button($item);
             foreach ($item['slides'] as $n => $s) {
                 $has = ($s['image'] !== '');
                 $linked = ($has && $s['image_url'] !== '');
                 $fit    = ($s['image_fit'] === 'cover') ? ' fit-cover' : ' fit-auto';
                 $nocopy = ($s['title'] === '' && $s['text'] === '' && ($s['cta'] === '' || $s['url'] === '')) ? ' no-copy' : '';
-                echo '<div class="wpp-promo-slide' . ($n === 0 ? ' is-active' : '') . ($has ? ' has-img' . $fit . $nocopy : '') . ($linked ? ' has-link' : '') . '"' . self::vars($s) . ' role="group" aria-roledescription="slide" aria-label="' . esc_attr(($n + 1) . ' / ' . $total) . '"' . ($n === 0 ? '' : ' aria-hidden="true"') . '>';
+                $cls = 'wpp-promo-slide' . ($n === 0 ? ' is-active' : '') . ($has ? ' has-img' . $fit . $nocopy : '') . ($linked ? ' has-link' : '');
+                echo '<div class="' . esc_attr($cls) . '"';
+                self::print_vars($s);
+                echo ' role="group" aria-roledescription="slide" aria-label="' . esc_attr(($n + 1) . ' / ' . $total) . '"' . ($n === 0 ? '' : ' aria-hidden="true"') . '>';
                 if ($has) {
                     echo self::image_link($s, '<img class="wpp-promo-bg" src="' . esc_url($s['image']) . '" alt="" loading="lazy">', 'wpp-promo-bg-link'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in image_link()
                 }
