@@ -105,8 +105,7 @@ class WpPopPop_Ajax_Frontend {
         /* WPPOPPOP_DOI_AJAX: with Double Opt-In enabled (extension) the lead stays "pending" until the email link is opened */
         $wppoppop_doi     = WpPopPop_Module_Bridge::double_optin($wppoppop_cfg);
         $wppoppop_doi_cfg = $wppoppop_doi['cfg'];
-        $wppoppop_doi_on  = $wppoppop_doi['active']
-            && (($email !== '' && is_email($email)) || trim((string) (isset($wppoppop_doi_cfg['recipient']) ? $wppoppop_doi_cfg['recipient'] : '')) !== '');
+        $wppoppop_doi_on  = !empty($wppoppop_doi['active']); /* every submission stays pending until the link is confirmed */
         $wppoppop_doi_token = $wppoppop_doi_on ? wp_generate_password(32, false) : '';
 
         $wpdb->insert($table_name,
@@ -129,17 +128,39 @@ class WpPopPop_Ajax_Frontend {
             }
         }
 
-        $submission_id =$wpdb->insert_id;
-        if ($wppoppop_doi_on) {
-            WpPopPop_Module_Bridge::send_double_optin($popup_uid, $wppoppop_doi_cfg, (string) $email, $clean_fields, $wppoppop_doi_token, $submission_id);
-        }
+        $submission_id = $wpdb->insert_id;
         do_action('wppoppop_submission_saved', $submission_id);
+
+        /* WPPOPPOP_AJAX_DISPATCH: same pipeline as the REST route: Notifications module, then the extension steps (confirmation mail, autoresponder, webhook, ...) */
+        $wppoppop_tech_keys  = is_array($wppoppop_pre['tech']) ? array_keys($wppoppop_pre['tech']) : array('_ip');
+        $wppoppop_ctx_fields = array();
+        foreach ($clean_fields as $wppoppop_fk => $wppoppop_fv) {
+            if ($wppoppop_fk === '_name' || $wppoppop_fk === '_phone' || in_array($wppoppop_fk, $wppoppop_tech_keys, true) || substr((string) $wppoppop_fk, -5) === '_path') {
+                continue;
+            }
+            $wppoppop_ctx_fields[$wppoppop_fk] = $wppoppop_fv;
+        }
+        /* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and every value is prepared */ $wppoppop_title = $popup_uid !== '' ? (string) $wpdb->get_var($wpdb->prepare("SELECT title FROM {$wpdb->prefix}wppoppop_items WHERE uid = %s", $popup_uid)) : '';
+        if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
+        WpPopPop_Notifications::dispatch('after_submission', $popup_uid, $wppoppop_title, $wppoppop_cfg, (string) $email, $clean_fields, $submission_id, $visitor_country);
+        $wppoppop_out = WpPopPop_Module_Bridge::dispatch(array(
+            'uid'              => $popup_uid,
+            'title'            => $wppoppop_title,
+            'config'           => $wppoppop_cfg,
+            'email'            => (string) $email,
+            'fields'           => $wppoppop_ctx_fields,
+            'submission_id'    => $submission_id,
+            'country'          => $visitor_country,
+            'double_optin'     => $wppoppop_doi_on,
+            'double_optin_cfg' => $wppoppop_doi_cfg,
+            'confirm_token'    => $wppoppop_doi_token,
+        ));
 
         // 7. Automated Email Notification
         $admin_notification_email = wppoppop_get_setting('admin_email', get_option('admin_email'));
         $from_name                = wppoppop_get_setting('sender_name', wppoppop_get_setting('from_name', get_bloginfo('name')));$from_email               = wppoppop_get_setting('sender_email', wppoppop_get_setting('from_email', get_option('admin_email')));
 
-        if (!empty($admin_notification_email) && is_email($admin_notification_email)) {$lead_identifier = !empty($name) ?$name : (!empty($email) ?$email : 'Anonymous');
+        if (!WpPopPop_Module_Bridge::email_modules_active($wppoppop_cfg) && !empty($admin_notification_email) && is_email($admin_notification_email)) {$lead_identifier = !empty($name) ?$name : (!empty($email) ?$email : 'Anonymous');
             $subject = sprintf('[%s] New Lead Captured: %s', get_bloginfo('name'),$lead_identifier);
 
             $headers = [
@@ -153,11 +174,13 @@ class WpPopPop_Ajax_Frontend {
             $msg .= '<p style="color:#475569;">' . sprintf(/* translators: 1: site name or date, 2: campaign UID */
             esc_html__( 'A new submission was received on %1$s for Campaign UID: %2$s.', 'wppoppop' ), esc_html(current_time('mysql')), '<code>' . esc_html($popup_uid) . '</code>') . '</p>';$msg .= '<table style="width:100%;border-collapse:collapse;margin-top:16px;background:#ffffff;border-radius:6px;overflow:hidden;border:1px solid #e2e8f0;">';
 
+            if (!class_exists('WpPopPop_Notifications')) { require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php'; }
+            $wppoppop_lead_labels = WpPopPop_Notifications::field_labels($wppoppop_cfg); /* WPPOPPOP_LEAD_LABELS */
             foreach (array_diff_key($clean_fields, $wppoppop_sp_mail_skip) as $field_label =>$field_val) {
                 if (strpos($field_label, '_path') !== false) {
                     continue;
                 }
-                $msg .= '<tr>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:600;color:#334155;width:35%;">' . esc_html(ucwords(str_replace(['_', '-'], ' ', $field_label))) . '</td>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#64748b;">' . esc_html(is_array($field_val) ? implode(', ', $field_val) : $field_val) . '</td>';$msg .= '</tr>';
+                $msg .= '<tr>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:600;color:#334155;width:35%;">' . esc_html(isset($wppoppop_lead_labels[$field_label]) ? $wppoppop_lead_labels[$field_label] : ucwords(str_replace(['_', '-'], ' ', $field_label))) . '</td>';$msg .= '<td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#64748b;">' . esc_html(is_array($field_val) ? implode(', ', $field_val) : $field_val) . '</td>';$msg .= '</tr>';
             }
 
             if (empty($wppoppop_sp_mail_skip)) { $msg .= '<tr><td style="padding:10px 14px;font-weight:600;color:#334155;">' . esc_html__('IP Address', 'wppoppop') . '</td><td style="padding:10px 14px;color:#64748b;">' . esc_html($ip) . '</td></tr>'; }$msg .= '</table></div>';
@@ -177,7 +200,9 @@ class WpPopPop_Ajax_Frontend {
                 : __('Thank you! Your submission has been received.', 'wppoppop'),
             'submission_id' => $submission_id,
             'redirect_url'  => $redirect_url,
-            'double_optin'  => $wppoppop_doi_on
+            'double_optin'  => $wppoppop_doi_on,
+            'download_url'  => $wppoppop_out['download_url'],
+            'coupon_code'   => $wppoppop_out['coupon_code']
         ]);
     }
 

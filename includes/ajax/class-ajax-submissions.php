@@ -405,7 +405,9 @@ class WpPopPop_Ajax_Submissions {
         if ($total < 1) {
             $msg = ($target === 'user')
                 ? __('No user email is set up for this popup (enable Autoresponder or Double opt-in), or the address is unavailable.', 'wppoppop')
-                : __('Nothing was sent. Check that the popup has an enabled notification whose conditions match.', 'wppoppop');
+                : (WpPopPop_Notifications::module_active() /* WPPOPPOP_RESEND_MODULE */
+                ? __('Nothing was sent. Check that the popup has an enabled notification whose conditions match.', 'wppoppop')
+                : __('Nothing was sent because the Notifications module is turned off in Settings > Modules.', 'wppoppop'));
             wp_send_json_error(['message' => $msg]);
         }
         /* translators: 1: admin emails sent, 2: user emails sent */

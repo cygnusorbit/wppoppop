@@ -132,6 +132,7 @@ class WpPopPop_Ajax_Builder {
                     'reply_to'     => $wppoppop_t('reply_to'),
                     'from_email'   => $wppoppop_t('from_email'),
                     'from_name'    => $wppoppop_t('from_name'),
+                    'format'       => $wppoppop_t('format', 'html') === 'text' ? 'text' : 'html', /* WPPOPPOP_NTF_FORMAT */
                     'logic_enable' => $wppoppop_b('logic_enable'),
                     'logic_match'  => $wppoppop_t('logic_match', 'all') === 'any' ? 'any' : 'all',
                     'rules'        => $wppoppop_rules

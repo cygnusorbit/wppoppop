@@ -214,6 +214,15 @@ class WpPopPop_Module_Bridge {
         return is_array($rows) ? $rows : array();
     }
 
+    /** WPPOPPOP_EMAIL_MODULES: true when an email module is in use for this popup; the built-in "New Lead Captured" mail is then not sent. */
+    public static function email_modules_active(array $config) {
+        if (!class_exists('WpPopPop_Notifications')) {
+            require_once WPPOPPOP_PATH . 'includes/class-wppoppop-notifications.php';
+        }
+        $on = WpPopPop_Notifications::module_active() && WpPopPop_Notifications::has_enabled($config);
+        return (bool) apply_filters('wppoppop_email_modules_active', $on, $config);
+    }
+
     /** Submission details: an extension may hide the technical info. */
     public static function record_fields($fields, $uid) {
         $res = apply_filters('wppoppop_submission_record_fields', $fields, (string) $uid);

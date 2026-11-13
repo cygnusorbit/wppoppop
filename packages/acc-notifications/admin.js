@@ -24,7 +24,7 @@
         return {
             id: uid(), name: 'Notification', enable: true, send: 'after_submission',
             recipient: '', subject: 'New submission from {{form-name}}', message: '{{form-data}}',
-            attachments: [], reply_to: '', from_email: '{{global-from-email}}', from_name: '{{global-from-name}}',
+            attachments: [], reply_to: '', from_email: '{{global-from-email}}', from_name: '{{global-from-name}}', format: 'html', /* WPPOPPOP_NTF_FORMAT */
             logic_enable: false, logic_match: 'all', rules: []
         };
     }
@@ -97,10 +97,11 @@
                 '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">Name</label><input type="text" class="widefat" data-k="name" value="' + esc(n.name) + '"></div>' +
                 '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">Send</label><select class="widefat" data-k="send">' +
                     '<option value="after_submission"' + (n.send === 'after_submission' ? ' selected' : '') + '>After successful form submission</option>' +
-                    '<option value="after_confirmation"' + (n.send === 'after_confirmation' ? ' selected' : '') + '>After double opt-in confirmation</option></select></div>' +
+                    '<option value="after_confirmation"' + (n.send === 'after_confirmation' ? ' selected' : '') + '>After double opt-in confirmation (needs Double Opt-In)</option></select></div>' +
                 inputRow('Recipient', 'recipient', n, false) +
                 inputRow('Subject', 'subject', n, false) +
                 inputRow('Message', 'message', n, true) +
+                '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">Format</label><select class="widefat" data-k="format"><option value="html"' + (n.format !== 'text' ? ' selected' : '') + '>HTML</option><option value="text"' + (n.format === 'text' ? ' selected' : '') + '>Plain text</option></select><p class="description" style="margin:4px 0 0;font-size:11px;color:#64748b;">HTML sends a rich email: tags such as &lt;b&gt;, &lt;a&gt; and &lt;img&gt; are allowed in the Message. Plain text strips all tags.</p></div>' +
                 '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">Attachments</label>' + att + '<button type="button" class="button button-small wppoppop-ntf-att-add" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;line-height:1;"><span class="dashicons dashicons-plus" style="display:inline-flex;align-items:center;justify-content:center;font-size:14px;width:14px;height:14px;line-height:1;margin:0;padding:0;"></span>Add file</button></div>' +
                 inputRow('Reply-To', 'reply_to', n, false) +
                 '<div style="margin:0 0 10px;"><label style="font-weight:600;display:block;">From</label><div style="display:flex;gap:6px;"><input type="text" class="widefat" data-k="from_email" value="' + esc(n.from_email) + '"><input type="text" class="widefat" data-k="from_name" value="' + esc(n.from_name) + '"></div></div>' +
